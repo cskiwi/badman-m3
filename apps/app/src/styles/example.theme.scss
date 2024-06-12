@@ -1,0 +1,16 @@
+// info: https://material.angular.io/guide/theming-your-components
+
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  // change-me {
+  // themes
+  // }
+}
+
+@mixin typography($theme) {
+  // change-me {
+  // typo
+  // }
+}

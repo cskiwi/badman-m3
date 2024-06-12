@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+
+@use './src/root/root.component.theme.scss' as root;
+
+@mixin typography($theme) {
+  @include root.typography($theme);
+}
+
+@mixin color($theme) {
+  @include root.color($theme);
+}
+
+@mixin theme($theme) {
+  @include color($theme);
+  @include typography($theme);
+}

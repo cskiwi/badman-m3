@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - uses: nrwl/nx-set-shas@v4
+
+      - name: Install Playwright Browsers
+        run: bunx playwright install --with-deps
+
+      - run: bun nx affected -t lint test build
+      - run: bun nx affected --parallel 1 -t e2e-ci
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: dist/.playwright/apps/
+          retention-days: 30

@@ -1,0 +1,25 @@
+@use '@angular/material' as mat;
+@use './styles/theme.scss' as theme;
+@use '../../../libs/frontend/root/theme' as frontend-root;
+
+/* You can add global styles to this file, and also import other style files */
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+@include mat.core();
+
+html {
+  @include mat.all-component-themes(theme.$dark-theme);
+  @include frontend-root.theme(theme.$dark-theme);
+
+  @media (prefers-color-scheme: light) {
+    @include mat.all-component-colors(theme.$light-theme);
+    @include frontend-root.theme(theme.$light-theme);
+  }
+}

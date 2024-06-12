@@ -1,0 +1,28 @@
+<div class="container" [class.is-mobile]="isHandset()">
+  <mat-toolbar class="toolbar">
+    <button mat-icon-button (click)="snav.toggle()" aria-label="Open/Close sidenav">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <h1 class="app-name">Material + Nestjs!</h1>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav
+      #snav
+      [mode]="isHandset() ? 'over' : 'side'"
+      [fixedInViewport]="isHandset()"
+      [opened]="isHandset() === false"
+      fixedTopGap="56"
+    >
+      <div class="nav">
+        <mat-nav-list>
+          <a mat-list-item routerLink=".">Sidebar</a>
+        </mat-nav-list>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

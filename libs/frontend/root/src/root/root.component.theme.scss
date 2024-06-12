@@ -1,0 +1,18 @@
+// info: https://material.angular.io/guide/theming-your-components
+
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  app-root {
+    mat-toolbar.toolbar {
+      color: mat.get-theme-color($theme, secondary);
+      background: mat.get-theme-color($theme, secondary-container);
+    }
+  }
+}
+
+@mixin typography($theme) {
+  // app-root {
+  // }
+}

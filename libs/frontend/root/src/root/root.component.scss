@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+$toolbar-height: 75px;
+$min-height: calc(100vh - $toolbar-height);
+
+app-name{
+  font-size: 1.5em;
+  font-weight: bold;
+
+}
+
+.nav {
+  // width: 240px;
+  padding: 16px 8px;
+  min-height: $min-height;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+mat-sidenav {
+  width: 200px;
+}
+
+mat-sidenav-content {
+  min-height: $min-height;
+}
