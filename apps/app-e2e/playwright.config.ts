@@ -31,7 +31,13 @@ export default defineConfig({
     cwd: workspaceRoot,
     stdout: 'pipe',
     stderr: 'pipe',
+    env: {
+      DB_TYPE: 'sqlite',
+      DB_DATABASE: ':memory:',
+      DB_SYNCHRONIZE: 'true',
+    },
   },
+
   projects: [
     {
       name: 'chromium',
