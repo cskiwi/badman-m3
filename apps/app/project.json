@@ -28,13 +28,20 @@
           "includePaths": ["node_modules/"]
         },
         "externalDependencies": [
-          "@nestjs/microservices",
-          "@nestjs/microservices/microservices-module",
-          "@nestjs/websockets",
-          "@nestjs/websockets/socket-module",
+          "@apollo/gateway",
+          "@apollo/subgraph",
+          "@apollo/server",
+          "@as-integrations/fastify",
+          "@mikro-orm/core",
+          "@nestjs/*",
+          "jwks-rsa",
+          "node-fetch",
+          "dotenv",
+          "graphql-type-json",
           "cache-manager",
           "class-transformer",
-          "class-validator"
+          "class-validator",
+          "typeorm"
         ],
         "scripts": [],
         "prerender": {
@@ -49,8 +56,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "1mb",
+              "maximumError": "2mb"
             },
             {
               "type": "anyComponentStyle",

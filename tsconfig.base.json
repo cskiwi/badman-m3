@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@app/utils": ["libs/utils/src/index.ts"],
       "@app/models": ["libs/models/src/index.ts"],
       "@app/backend-root": ["libs/backend/root/src/index.ts"],
       "@app/backend-routes-generator": [
@@ -25,6 +26,7 @@
       "@app/backend-database": ["libs/backend/database/src/index.ts"],
       "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
       "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
+      "@app/frontend-pages-players": ["libs/frontend/pages/players/src/index.ts"],
       "@app/frontend-root": ["libs/frontend/root/src/index.ts"],
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
       "@app/frontend-modules-grahql": ["libs/frontend/modules/graphql/src/index.ts"],

@@ -5,12 +5,14 @@
 This project is a Angular (With SSR) + Nestjs monorepo using Nx. It is a full-stack application that demonstrates how to structure and manage frontend and backend applications within a single Nx workspace.
 
 ## TODO
-Feel free to contribute to this project by creating a pull request. 
 
-- [ ] Check on how to build for bun runtime 
-- [x] Pre rendering routes doesn't spin up the server, so the HTTP calls are not working (Made a build workaround npm script)      
+Feel free to contribute to this project by creating a pull request.
+
+- [ ] Check on how to build for bun runtime
+- [x] Pre rendering routes doesn't spin up the server, so the HTTP calls are not working (Made a build workaround npm script)
 
 ## Other variants of this project
+
 - Just Angular: https://github.com/cskiwi/angular-nestjs-starter
 - With TypeORM and Postgres: TODO
 
@@ -29,6 +31,7 @@ The directory structure of this Nx monorepo is organized as follows:
 - **libs/frontend/root**: This directory contains the entry point for the frontend services. It includes necessary configurations and files to initialize and run the frontend application.
 
 ## Getting Started
+
 s
 
 ### Prerequisites
@@ -57,10 +60,10 @@ Ensure you have the following installed on your machine:
 To run the application:
 
 ```bash
- npm  start
+npm start
 ```
-This will start the development server and the application will be available at `http://localhost:4200`.
 
+This will start the development server and the application will be available at `http://localhost:4200`.
 
 ### Building the Applications
 
@@ -69,13 +72,13 @@ This will start the development server and the application will be available at 
 To build the Angular application for production:
 
 ```bash
-npm  run build
+npm run build
 ```
 
 To run the Application:
 
 ```bash
-node dist/apps/app/server/server.mjs 
+node dist/apps/app/server/server.mjs
 ```
 
 ### Testing
@@ -96,6 +99,6 @@ To run end-to-end tests:
 nx e2e app-e2e
 ```
 
-
 ## Bun
+
 I really want bun to be supported, see https://github.com/nrwl/nx/issues/26053 for more information.

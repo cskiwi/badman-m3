@@ -3,7 +3,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
 import {
-  AppUser
+  Player
 } from './models';
 
 config();
@@ -12,7 +12,7 @@ const addMigrations = process.env['RUN_MIGRATIONS']?.trim() === 'true';
 const dbType = process.env['DB_TYPE']?.trim();
 
 const entities = [
-  AppUser,
+  Player,
 ];
 
 export let ormConfig: DataSourceOptions;
