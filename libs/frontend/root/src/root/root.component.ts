@@ -6,6 +6,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { AUTH, DEVICE, USER } from '@app/frontend-utils';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   standalone: true,
