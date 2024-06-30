@@ -12,7 +12,11 @@ import {
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withFetch,
+} from '@angular/common/http';
 import { BASE_URL } from '@app/frontend-utils';
 import { isPlatformBrowser } from '@angular/common';
 import { GraphQLModule } from '@app/frontend-modules-grahql';
@@ -23,9 +27,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 export const appConfig: ApplicationConfig = {
   providers: [
     importProvidersFrom(
-      GraphQLModule.forRoot({
-        api: './graphql',
-      }),
+      GraphQLModule.forRoot(),
       AuthModule.forRoot({
         domain: 'https://purr.eu.auth0.com',
         clientId: 'Xwj4PH6uePcn6nFSI5tPNO9OPOKFYdrv',

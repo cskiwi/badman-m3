@@ -1,11 +1,11 @@
 import { User } from '@app/backend-authorization';
-import { AppUser } from '@app/models';
+import { Player } from '@app/models';
 import { Query, Resolver } from '@nestjs/graphql';
 
-@Resolver(() => AppUser)
+@Resolver(() => Player)
 export class UserResolver {
-  @Query(() => AppUser, { nullable: true })
-  async me(@User() user: AppUser): Promise<AppUser | null> {
+  @Query(() => Player, { nullable: true })
+  async me(@User() user: Player): Promise<Player | null> {
     if (user?.id) {
       return user;
     } else {

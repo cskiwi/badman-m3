@@ -2,18 +2,14 @@ import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
-import {
-  Player
-} from './models';
+import { Player } from './models';
 
 config();
 
 const addMigrations = process.env['RUN_MIGRATIONS']?.trim() === 'true';
 const dbType = process.env['DB_TYPE']?.trim();
 
-const entities = [
-  Player,
-];
+const entities = [Player];
 
 export let ormConfig: DataSourceOptions;
 
@@ -22,7 +18,6 @@ if (dbType === 'sqlite') {
     type: 'sqlite',
     database: process.env['DB_DATABASE'],
     synchronize: process.env['DB_SYNCHRONIZE'] === 'true',
-    entities,
   } as SqliteConnectionOptions;
 } else if (dbType === 'postgres') {
   ormConfig = {
@@ -33,23 +28,25 @@ if (dbType === 'sqlite') {
     password: process.env['DB_PASSWORD'],
     database: process.env['DB_DATABASE'],
     ssl:
-      process.env['DB_SSL'] === 'true'
-        ? { rejectUnauthorized: false }
-        : false,
+      process.env['DB_SSL'] === 'true' ? { rejectUnauthorized: false } : false,
     migrationsTableName: 'typeorm_migrations',
-    applicationName: 'de-sutter',
+    applicationName: 'badman',
     options: { trustServerCertificate: true },
     migrations: addMigrations
       ? ['libs/backend/database/src/migrations/*.ts']
       : undefined,
     synchronize: false,
     migrationsRun: false,
-    entities,
   } as PostgresConnectionOptions;
 } else {
-  throw new Error('Unsupported DB_TYPE. Please specify either "sqlite" or "postgres".');
+  throw new Error(
+    'Unsupported DB_TYPE. Please specify either "sqlite" or "postgres".',
+  );
 }
 
-const datasource = new DataSource(ormConfig);
+const datasource = new DataSource({
+  ...ormConfig,
+  entities,
+});
 datasource.initialize();
 export default datasource;

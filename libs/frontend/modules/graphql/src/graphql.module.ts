@@ -1,109 +1,62 @@
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import {
   InjectionToken,
-  Injector,
-  isDevMode,
   ModuleWithProviders,
   NgModule,
-  PLATFORM_ID,
+  TransferState,
+  isDevMode,
+  makeStateKey,
 } from '@angular/core';
 import { ApolloLink, InMemoryCache } from '@apollo/client/core';
-import { setContext } from '@apollo/client/link/context';
-import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries';
-import { AuthService } from '@auth0/auth0-angular';
-import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
+import { BASE_URL } from '@app/frontend-utils';
+import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
-import { sha256 } from 'crypto-hash';
-import { lastValueFrom } from 'rxjs';
-import { take } from 'rxjs/operators';
 
+const STATE_KEY = makeStateKey<any>('apollo.state');
 export const APOLLO_CACHE = new InjectionToken<InMemoryCache>('apollo-cache');
 export const GRAPHQL_CONFIG_TOKEN = new InjectionToken<GraphqlConfiguration>(
   'graphql.config',
 );
 
 export type GraphqlConfiguration = Readonly<{
-  api: string;
+  suffix?: string;
   connectToDevTools?: boolean;
 }>;
 
 export function createApollo(
+  config: GraphqlConfiguration,
   httpLink: HttpLink,
   cache: InMemoryCache,
-  injector: Injector,
-  platformId: string,
-  config: GraphqlConfiguration,
+  transferState: TransferState,
+  BASE_URL: string,
 ) {
-  if (config.api === '') {
-    throw new Error('GraphQL API URL is not set');
+  const isBrowser = transferState.hasKey<any>(STATE_KEY);
+
+  if (isBrowser) {
+    const state = transferState.get<any>(STATE_KEY, null);
+    cache.restore(state);
+  } else {
+    transferState.onSerialize(STATE_KEY, () => {
+      return cache.extract();
+    });
+    // Reset cache after extraction to avoid sharing between requests
+    cache.reset();
   }
 
-  const basic = setContext(() => ({
-    headers: {
-      Accept: 'charset=utf-8',
-    },
-  }));
-
-  const isBrowser = isPlatformBrowser(platformId);
-  const isServer = isPlatformServer(platformId);
-  // const hasKey = transferState.hasKey(STATE_KEY);
-
-  const auth = setContext(async (_, { headers }) => {
-    if (isBrowser) {
-      const authService = injector.get(AuthService);
-      const isAuthenticated = await lastValueFrom(
-        authService.isAuthenticated$.pipe(take(1)),
-      );
-      if (isAuthenticated) {
-        const token = await lastValueFrom(authService.getAccessTokenSilently());
-        if (token) {
-          headers = {
-            ...headers,
-            Authorization: `Bearer ${token}`,
-          };
-        }
-      }
-    }
-
-    return {
-      headers: {
-        ...headers,
-        Accept: 'application/json; charset=utf-8',
-        'X-App-Magic': '1',
-      },
-    };
-  });
-
-  if (isDevMode() || isServer) {
-    console.log(`Setting up Apollo with API: ${config.api}`);
-    // console.log(`Platform: ${platformId}, hasKey: ${hasKey}`);
-  }
+  console.log(`Setting up Apollo with API: ${BASE_URL}/graphql`);
 
   const link = ApolloLink.from([
-    basic,
-    auth,
     httpLink.create({
-      uri: config.api,
+      uri: `${BASE_URL}/${config?.suffix ?? 'graphql'}`,
     }),
   ]);
 
   return {
-    link: createPersistedQueryLink({ sha256 }).concat(link),
+    link,
     persistedQueries: {
       ttl: 900, // 15 minutes
     },
     cache,
-    connectToDevTools: config.connectToDevTools ?? true,
-    ...(isBrowser
-      ? {
-          // queries with `forceFetch` enabled will be delayed
-          ssrForceFetchDelay: 200,
-        }
-      : {
-          // avoid to run twice queries with `forceFetch` enabled
-          ssrMode: true,
-        }),
+    connectToDevTools: config?.connectToDevTools ?? true,
   };
 }
 
@@ -119,18 +72,18 @@ export function createApollo(
       provide: APOLLO_OPTIONS,
       useFactory: createApollo,
       deps: [
+        GRAPHQL_CONFIG_TOKEN,
         HttpLink,
         APOLLO_CACHE,
-        Injector,
-        PLATFORM_ID,
-        GRAPHQL_CONFIG_TOKEN,
+        TransferState,
+        BASE_URL,
       ],
     },
   ],
 })
 export class GraphQLModule {
   static forRoot(
-    config: GraphqlConfiguration,
+    config?: GraphqlConfiguration,
   ): ModuleWithProviders<GraphQLModule> {
     return {
       ngModule: GraphQLModule,

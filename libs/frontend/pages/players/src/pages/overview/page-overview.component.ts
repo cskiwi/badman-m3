@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
-import { OverviewService } from './page-overview.service';
+import { Apollo, TypedDocumentNode, gql } from 'apollo-angular';
 import { derivedAsync } from 'ngxtension/derived-async';
+import { OverviewService } from './page-overview.service';
 
 @Component({
   selector: 'lib-page-overview',
@@ -13,26 +13,9 @@ import { derivedAsync } from 'ngxtension/derived-async';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageOverviewComponent {
-  // private readonly dataService = new OverviewService();
-  private readonly apollo = inject(Apollo);
-
-  players = derivedAsync(() =>
-    this.apollo.query<{
-      me: { id: string; fullName: string };
-    }>({
-      query: gql`
-        query GetPlayersInComponent {
-          players {
-            id
-            slug
-            memberId
-            fullName
-          }
-        }
-      `,
-    }),
-  );
-
+  private readonly dataService = new OverviewService();
+ 
   // selectors
-  // players = this.dataService.state.players;
+  players = this.dataService.state.players;
 }
+

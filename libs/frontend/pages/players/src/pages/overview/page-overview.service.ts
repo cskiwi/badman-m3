@@ -1,8 +1,13 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { BASE_URL } from '@app/frontend-utils';
 import { Player } from '@app/models';
-import { Apollo, gql } from 'apollo-angular';
+import { Apollo, TypedDocumentNode, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
 import {
@@ -13,6 +18,12 @@ import {
   switchMap,
 } from 'rxjs/operators';
 
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json',
+  }),
+};
+
 interface OverviewState {
   players: Player[];
   loading: boolean;
@@ -20,7 +31,9 @@ interface OverviewState {
 }
 
 export class OverviewService {
-  private readonly apollo = inject(Apollo);
+  // private readonly apollo = inject(Apollo);
+  private readonly http = inject(HttpClient);
+  private readonly base = inject(BASE_URL);
 
   filter = new FormGroup({
     where: new FormControl<{
@@ -80,31 +93,30 @@ export class OverviewService {
       emtpyWhere: { [key: string]: unknown };
     }>,
   ) {
-    return this.apollo
-      .query<{
-        players: Partial<Player>[];
-      }>({
-        query: gql`
-          query GetPlayers {
-            players {
-              id
-              slug
-              memberId
-              fullName
+    return this.http
+      .post<{
+        data: { players: Player[] };
+      }>(
+        `${this.base}/graphql`,
+        JSON.stringify({
+          query: `
+            query Players {
+              players {
+                id
+                memberId
+                fullName
+              }
             }
-          }
-        `,
-        variables: {
-          // where: this._playerSearchWhere(filter),
-        },
-      })
+          `,
+        }),
+        httpOptions,
+      )
       .pipe(
         catchError((err) => {
           this.handleError(err);
           return EMPTY;
         }),
         map((result) => {
-          console.log(result);
           if (!result?.data.players) {
             throw new Error('No players found');
           }

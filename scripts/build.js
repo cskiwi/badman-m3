@@ -68,6 +68,8 @@ async function getAndSaveRoutes(port, filePath) {
 
 // Main function to run the tasks
 async function main() {
+  require('dotenv').config();
+
   const port = process.env.PORT || 5000;
   if (!port) {
     console.error('Environment variable PORT is not set');
@@ -75,10 +77,15 @@ async function main() {
   }
 
   try {
+
     // use sqlite in memory database for testing
     process.env.DB_TYPE = process.env.DB_TYPE || 'sqlite';
     process.env.DB_DATABASE = process.env.DB_DATABASE || ':memory:';
     process.env.DB_SYNCHRONIZE = process.env.DB_SYNCHRONIZE || 'true';
+
+    console.log(process.env.DB_TYPE)
+    console.log(process.env.DB_DATABASE)
+    console.log(process.env.DB_SYNCHRONIZE)
 
     console.log('Build server...');
     await runCommandAndWait('nx', ['build', 'api']);
