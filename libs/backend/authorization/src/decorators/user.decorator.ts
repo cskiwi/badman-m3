@@ -1,4 +1,4 @@
-import { Player } from '@app/models';
+import { AppUser } from '@app/models';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { env } from 'process';
 import { getRequest } from '../utils';
@@ -24,7 +24,7 @@ export const User = createParamDecorator(
   },
 );
 
-export interface LoggedInUser extends Player {
+export interface LoggedInUser extends AppUser {
   context: {
     iss: string;
     sub: string;

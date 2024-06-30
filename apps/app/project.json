@@ -30,12 +30,11 @@
         "externalDependencies": [
           "@apollo/gateway",
           "@apollo/subgraph",
-          "@apollo/server",
           "@as-integrations/fastify",
           "@mikro-orm/core",
           "@nestjs/*",
           "jwks-rsa",
-          "node-fetch",
+          "moment",
           "dotenv",
           "graphql-type-json",
           "cache-manager",
@@ -56,7 +55,7 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "1mb",
+              "maximumWarning": "500kb",
               "maximumError": "2mb"
             },
             {

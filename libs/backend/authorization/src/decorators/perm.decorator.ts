@@ -1,4 +1,4 @@
-import { Player } from '@app/models';
+import { AppUser } from '@app/models';
 import {
   CanActivate,
   ExecutionContext,
@@ -69,7 +69,7 @@ export class PermGuard implements CanActivate {
   async validateUser(payload: { sub?: string }) {
     if (payload.sub) {
       try {
-        const user = await Player.findOne({
+        const user = await AppUser.findOne({
           where: { sub: payload.sub },
         });
         if (user) {

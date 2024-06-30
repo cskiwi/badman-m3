@@ -75,10 +75,10 @@ async function main() {
   }
 
   try {
-    // // use sqlite in memory database for testing
-    // process.env.DB_TYPE = process.env.DB_TYPE || 'sqlite';
-    // process.env.DB_DATABASE = process.env.DB_DATABASE || ':memory:';
-    // process.env.DB_SYNCHRONIZE = process.env.DB_SYNCHRONIZE || 'true';
+    // use sqlite in memory database for testing
+    process.env.DB_TYPE = process.env.DB_TYPE || 'sqlite';
+    process.env.DB_DATABASE = process.env.DB_DATABASE || ':memory:';
+    process.env.DB_SYNCHRONIZE = process.env.DB_SYNCHRONIZE || 'true';
 
     console.log('Build server...');
     await runCommandAndWait('nx', ['build', 'api']);

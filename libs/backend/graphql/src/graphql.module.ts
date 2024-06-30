@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
 
+
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
@@ -10,7 +11,7 @@ import {
 import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaReporting';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { AuthorizationModule } from '@app/backend-authorization';
-import { PlayerResolver } from './resolvers/player.resolver';
+import { UserResolver } from './resolvers/user.resolver';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { PlayerResolver } from './resolvers/player.resolver';
         const env = config.get<string>('NODE_ENV');
 
         if (env !== 'production') {
-          plugins.push(
+          plugins.push( 
             ApolloServerPluginLandingPageLocalDefault({ footer: false }),
           );
         } else if (env === 'production') {
@@ -59,6 +60,8 @@ import { PlayerResolver } from './resolvers/player.resolver';
       },
     }),
   ],
-  providers: [PlayerResolver],
+  providers: [
+    UserResolver,
+  ],
 })
 export class GraphQLModule {}
