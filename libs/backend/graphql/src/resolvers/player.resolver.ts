@@ -1,7 +1,7 @@
-import { User } from '@app/backend-authorization';
+import { PermGuard, User } from '@app/backend-authorization';
 import { Player } from '@app/models';
 import { IsUUID } from '@app/utils';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
 import { IsNull, Like, Not } from 'typeorm';
 
@@ -29,6 +29,7 @@ export class PlayerResolver {
   }
 
   @Query(() => Player, { nullable: true })
+  @UseGuards(PermGuard)
   async me(@User() user: Player): Promise<Player | null> {
     if (user?.id) {
       return user;
@@ -41,7 +42,7 @@ export class PlayerResolver {
   async players(): Promise<Player[]> {
     return Player.find({
       where: {
-        memberId: Like('3%')
+        memberId: Like('3%'),
       },
       take: 10,
     });

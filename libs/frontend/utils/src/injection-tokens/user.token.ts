@@ -5,16 +5,14 @@ import { AuthService } from '@auth0/auth0-angular';
 import { Apollo, gql } from 'apollo-angular';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Player } from '@app/models';
 
 export const USER$ = new InjectionToken('USER', {
   providedIn: 'root',
   factory: () => {
     const platform = inject(PLATFORM_ID);
     if (isPlatformServer(platform)) {
-      return of({ id: undefined, name: undefined } as const as {
-        id: string | undefined;
-        name: string | undefined;
-      });
+      return of({ id: undefined, name: undefined } as const as Partial<Player>);
     }
 
     const auth = inject(AuthService);
@@ -32,6 +30,7 @@ export const USER$ = new InjectionToken('USER', {
             query {
               me {
                 id
+                fullName
               }
             }
           `,

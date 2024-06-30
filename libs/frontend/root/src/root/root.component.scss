@@ -19,6 +19,10 @@ app-name{
   box-sizing: border-box;
 }
 
+.spacer{
+  flex: 1 1 auto;
+}
+
 mat-sidenav {
   width: 200px;
 }

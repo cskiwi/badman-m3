@@ -26,7 +26,7 @@ export class PermGuard implements CanActivate {
   ) {
     this.jwksClient = new JwksClient({
       cache: true,
-      jwksUri: `https://${this.configService.get('AUTH0_ISSUER_URL')}/.well-known/jwks.json`,
+      jwksUri: `${this.configService.get('AUTH0_ISSUER_URL')}/.well-known/jwks.json`,
     });
   }
 
@@ -43,6 +43,8 @@ export class PermGuard implements CanActivate {
     const request = getRequest(context);
 
     const token = this.extractTokenFromHeader(request);
+
+    this
 
     if (!token) {
       return false;
@@ -96,7 +98,7 @@ export class PermGuard implements CanActivate {
         algorithms: ['RS256'],
         publicKey: signingKey.getPublicKey(),
         audience: this.configService.get('AUTH0_AUDIENCE'),
-        issuer: `https://${this.configService.get('AUTH0_ISSUER_URL')}/`,
+        issuer: `${this.configService.get('AUTH0_ISSUER_URL')}/`,
       });
       return payload;
     } catch (error) {

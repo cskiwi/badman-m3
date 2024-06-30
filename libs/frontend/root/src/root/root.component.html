@@ -11,7 +11,7 @@
     <div class="spacer"></div>
     @if (user()) {
       @if (user()) {
-        {{ user()?.name }}
+        {{ user()?.fullName }}
       }
     } @else {
       <button mat-stroked-button (click)="login()">Log in</button>
