@@ -5,7 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
-import { DEVICE } from '@app/frontend-utils';
+import { AUTH, DEVICE, USER } from '@app/frontend-utils';
 
 @Component({
   standalone: true,
@@ -23,4 +23,10 @@ import { DEVICE } from '@app/frontend-utils';
 })
 export class RootComponent {
   isHandset = inject(DEVICE);
+  user = inject(USER);
+  auth = inject(AUTH);
+
+  login() {
+    this.auth.loginWithRedirect();
+  }
 }

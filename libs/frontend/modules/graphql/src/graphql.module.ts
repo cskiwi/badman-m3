@@ -1,15 +1,22 @@
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
   InjectionToken,
+  Injector,
   ModuleWithProviders,
   NgModule,
+  PLATFORM_ID,
   TransferState,
   isDevMode,
   makeStateKey,
 } from '@angular/core';
 import { ApolloLink, InMemoryCache } from '@apollo/client/core';
+import { setContext } from '@apollo/client/link/context';
 import { BASE_URL } from '@app/frontend-utils';
+import { AuthService } from '@auth0/auth0-angular';
 import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
+import { lastValueFrom } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 const STATE_KEY = makeStateKey<any>('apollo.state');
 export const APOLLO_CACHE = new InjectionToken<InMemoryCache>('apollo-cache');
@@ -23,12 +30,19 @@ export type GraphqlConfiguration = Readonly<{
 }>;
 
 export function createApollo(
-  config: GraphqlConfiguration,
   httpLink: HttpLink,
   cache: InMemoryCache,
+  injector: Injector,
   transferState: TransferState,
-  BASE_URL: string,
+  baseUrl: string,
+  config?: GraphqlConfiguration,
 ) {
+  const basic = setContext(() => ({
+    headers: {
+      Accept: 'charset=utf-8',
+    },
+  }));
+
   const isBrowser = transferState.hasKey<any>(STATE_KEY);
 
   if (isBrowser) {
@@ -42,11 +56,37 @@ export function createApollo(
     cache.reset();
   }
 
-  console.log(`Setting up Apollo with API: ${BASE_URL}/graphql`);
+  const auth = setContext(async (_, { headers }) => {
+    if (isBrowser) {
+      const authService = injector.get(AuthService);
+      const isAuthenticated = await lastValueFrom(
+        authService.isAuthenticated$.pipe(take(1)),
+      );
+      if (isAuthenticated) {
+        const token = await lastValueFrom(authService.getAccessTokenSilently());
+        if (token) {
+          headers = {
+            ...headers,
+            Authorization: `Bearer ${token}`,
+          };
+        }
+      }
+    }
+
+    return {
+      headers: {
+        ...headers,
+        Accept: 'application/json; charset=utf-8',
+        'X-App-Magic': '1',
+      },
+    };
+  });
 
   const link = ApolloLink.from([
+    basic,
+    auth,
     httpLink.create({
-      uri: `${BASE_URL}/${config?.suffix ?? 'graphql'}`,
+      uri: `${baseUrl}/${config?.suffix ?? 'graphql'}`,
     }),
   ]);
 
@@ -72,11 +112,12 @@ export function createApollo(
       provide: APOLLO_OPTIONS,
       useFactory: createApollo,
       deps: [
-        GRAPHQL_CONFIG_TOKEN,
         HttpLink,
         APOLLO_CACHE,
+        Injector,
         TransferState,
         BASE_URL,
+        GRAPHQL_CONFIG_TOKEN,
       ],
     },
   ],

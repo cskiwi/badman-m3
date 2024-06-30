@@ -1,13 +1,8 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { BASE_URL } from '@app/frontend-utils';
 import { Player } from '@app/models';
-import { Apollo, TypedDocumentNode, gql } from 'apollo-angular';
+import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
 import {
@@ -31,9 +26,7 @@ interface OverviewState {
 }
 
 export class OverviewService {
-  // private readonly apollo = inject(Apollo);
-  private readonly http = inject(HttpClient);
-  private readonly base = inject(BASE_URL);
+  private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
     where: new FormControl<{
@@ -63,7 +56,7 @@ export class OverviewService {
 
   private playersLoaded$ = this.filterChanged$.pipe(
     // debounceTime(300), // Queries are better when debounced
-    switchMap((filter) => this._loadPlayers(filter)),
+    switchMap((filter) => this._loadPlayersApollo(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -86,31 +79,25 @@ export class OverviewService {
     sources: [this.sources$],
   });
 
-  private _loadPlayers(
+  private _loadPlayersApollo(
     filter: Partial<{
       query: string | null;
       where: { [key: string]: unknown } | null;
       emtpyWhere: { [key: string]: unknown };
     }>,
   ) {
-    return this.http
-      .post<{
-        data: { players: Player[] };
-      }>(
-        `${this.base}/graphql`,
-        JSON.stringify({
-          query: `
-            query Players {
-              players {
-                id
-                memberId
-                fullName
-              }
+    return this.apollo
+      .query<{ players: Player[] }>({
+        query: gql`
+          query Players {
+            players {
+              id
+              memberId
+              fullName
             }
-          `,
-        }),
-        httpOptions,
-      )
+          }
+        `,
+      })
       .pipe(
         catchError((err) => {
           this.handleError(err);

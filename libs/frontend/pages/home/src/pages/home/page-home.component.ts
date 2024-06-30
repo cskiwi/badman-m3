@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TypedDocumentNode } from '@apollo/client/core';
-import { Apollo } from 'apollo-angular';
+import { Apollo, gql } from 'apollo-angular';
 
 import { derivedAsync } from 'ngxtension/derived-async';
 
@@ -18,11 +18,10 @@ export class PageHomeComponent {
 
   exampleFetch = derivedAsync(() =>
     this.apollo.query({
-      query: `
-        query Profile {
+      query: gql`
+        query ProfileViaApollo {
           me {
             id
-            name
           }
         }
       ` as unknown as TypedDocumentNode,

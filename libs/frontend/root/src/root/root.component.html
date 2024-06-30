@@ -1,9 +1,21 @@
 <div class="container" [class.is-mobile]="isHandset()">
   <mat-toolbar class="toolbar">
-    <button mat-icon-button (click)="snav.toggle()" aria-label="Open/Close sidenav">
+    <button
+      mat-icon-button
+      (click)="snav.toggle()"
+      aria-label="Open/Close sidenav"
+    >
       <mat-icon>menu</mat-icon>
     </button>
     <h1 class="app-name">Material + Nestjs!</h1>
+    <div class="spacer"></div>
+    @if (user()) {
+      @if (user()) {
+        {{ user()?.name }}
+      }
+    } @else {
+      <button mat-stroked-button (click)="login()">Log in</button>
+    }
   </mat-toolbar>
 
   <mat-sidenav-container class="sidenav-container">

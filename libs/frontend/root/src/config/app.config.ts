@@ -29,14 +29,14 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(
       GraphQLModule.forRoot(),
       AuthModule.forRoot({
-        domain: 'https://purr.eu.auth0.com',
-        clientId: 'Xwj4PH6uePcn6nFSI5tPNO9OPOKFYdrv',
+        domain: 'badvlasim.eu.auth0.com',
+        clientId: '2LqkYZMbrTTXEE0OMkQJLmpRrOVQheoF',
         useRefreshTokens: true,
         useRefreshTokensFallback: true,
         authorizationParams: {
           redirect_uri:
             typeof window !== 'undefined' ? window.location.origin : '',
-          audience: 'starter',
+          audience: 'ranking-simulation',
         },
         httpInterceptor: {
           allowedList: [
