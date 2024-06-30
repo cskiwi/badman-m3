@@ -1,12 +1,9 @@
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import {
   InjectionToken,
   Injector,
   ModuleWithProviders,
   NgModule,
-  PLATFORM_ID,
   TransferState,
-  isDevMode,
   makeStateKey,
 } from '@angular/core';
 import { ApolloLink, InMemoryCache } from '@apollo/client/core';

@@ -26,9 +26,11 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'bun start',
-    url: 'http://localhost:4200',
+    url: `${baseURL}/api/health`,
     reuseExistingServer: !process.env['CI'],
     cwd: workspaceRoot,
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
   projects: [
     {
