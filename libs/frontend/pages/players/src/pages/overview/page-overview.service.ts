@@ -104,6 +104,7 @@ export class OverviewService {
           return EMPTY;
         }),
         map((result) => {
+          console.log('debugging', result.data.players?.length);
           if (!result?.data.players) {
             throw new Error('No players found');
           }
