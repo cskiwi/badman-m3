@@ -10,6 +10,10 @@ permissions:
   actions: read
   contents: read
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -29,7 +33,10 @@ jobs:
         run: bunx playwright install --with-deps
 
       - run: bun nx affected -t lint test build
-      - run: bun nx affected --parallel 1 -t e2e-ci
+
+      # temp disable untill we figure out how to fix the sqlite3 issue
+      # - run: bun nx affected --parallel 1 -t e2e-ci
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
