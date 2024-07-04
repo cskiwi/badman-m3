@@ -8,11 +8,11 @@ export class RoutesGeneratorService {
     const mostSearchedPlayers = this.getMostSearchedPlayers();
 
     topPlayers.forEach((player) => {
-      routes.push(`/${player}`);
+      routes.push(`/players/${player}`);
     });
 
     mostSearchedPlayers.forEach((player) => {
-      routes.push(`/${player}`);
+      routes.push(`/players/${player}`);
     });
 
     return routes.join('\n');
