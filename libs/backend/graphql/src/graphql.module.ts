@@ -12,6 +12,7 @@ import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageRep
 import { AuthorizationModule } from '@app/backend-authorization';
 import { UserResolver } from './resolvers/user.resolver';
 import { PlayerResolver } from './resolvers/player.resolver';
+import { RankingSystemResolver } from './resolvers/ranking.resolver';
 
 @Module({
   imports: [
@@ -60,6 +61,6 @@ import { PlayerResolver } from './resolvers/player.resolver';
       },
     }),
   ],
-  providers: [UserResolver, PlayerResolver],
+  providers: [UserResolver, PlayerResolver, RankingSystemResolver],
 })
 export class GraphQLModule {}

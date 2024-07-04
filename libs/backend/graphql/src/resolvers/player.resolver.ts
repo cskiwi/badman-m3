@@ -1,9 +1,8 @@
-import { PermGuard, User } from '@app/backend-authorization';
 import { Player } from '@app/models';
 import { IsUUID } from '@app/utils';
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { IsNull, Like, Not } from 'typeorm';
+import { Like } from 'typeorm';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -26,16 +25,6 @@ export class PlayerResolver {
     }
 
     throw new NotFoundException(id);
-  }
-
-  @Query(() => Player, { nullable: true })
-  @UseGuards(PermGuard)
-  async me(@User() user: Player): Promise<Player | null> {
-    if (user?.id) {
-      return user;
-    } else {
-      return null;
-    }
   }
 
   @Query(() => [Player])

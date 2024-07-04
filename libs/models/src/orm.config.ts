@@ -2,14 +2,14 @@ import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
-import { Player } from './models';
+import { Player, RankingSystem } from './models';
 
 config();
 
 const addMigrations = process.env['RUN_MIGRATIONS']?.trim() === 'true';
 const dbType = process.env['DB_TYPE']?.trim();
 
-const entities = [Player];
+const entities = [Player, RankingSystem] ;
 
 export let ormConfig: DataSourceOptions;
 

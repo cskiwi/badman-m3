@@ -13,29 +13,46 @@ import {
 export class Player extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  declare id: string;
 
   @Column({ unique: true })
-  sub!: string;
+  declare sub: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
-  firstName?: string;
+  declare firstName: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
-  lastName?: string;
+  declare lastName: string;
 
-  
   @Field({ nullable: true })
   @Column({ nullable: true })
-  slug?: string;
+  declare slug: string;
 
-  
   @Field({ nullable: true })
   @Column({ nullable: true })
-  memberId?: string;
+  declare memberId: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  declare email: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  declare phone: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  declare gender: 'M' | 'F';
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  declare birthDate: Date;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  declare competitionPlayer: boolean;
 
   @Field()
   get fullName(): string {
