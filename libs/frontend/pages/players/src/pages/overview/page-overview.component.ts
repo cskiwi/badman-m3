@@ -3,11 +3,13 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Apollo, TypedDocumentNode, gql } from 'apollo-angular';
 import { derivedAsync } from 'ngxtension/derived-async';
 import { OverviewService } from './page-overview.service';
+import { MatListModule } from '@angular/material/list';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'lib-page-overview',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatListModule, RouterLink],
   templateUrl: './page-overview.component.html',
   styleUrl: './page-overview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

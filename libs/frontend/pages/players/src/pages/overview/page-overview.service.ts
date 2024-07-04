@@ -1,4 +1,4 @@
-import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Player } from '@app/models';
@@ -12,12 +12,6 @@ import {
   startWith,
   switchMap,
 } from 'rxjs/operators';
-
-const httpOptions = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/json',
-  }),
-};
 
 interface OverviewState {
   players: Player[];
@@ -104,7 +98,6 @@ export class OverviewService {
           return EMPTY;
         }),
         map((result) => {
-          console.log('debugging', result.data.players?.length);
           if (!result?.data.players) {
             throw new Error('No players found');
           }

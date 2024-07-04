@@ -1,3 +1,12 @@
-<pre>
-  {{ players() | json }}
-</pre>
+<mat-list>
+  @for (player of players(); track player.id) {
+    <mat-list-item  [routerLink]="player.id">
+      <!-- <img matListItemAvatar src="..." alt="..." /> -->
+      <h3 matListItemTitle>{{ player.fullName }}</h3>
+      <p matListItemLine>
+        <span>{{ player.memberId }}</span>
+        <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
+      </p>
+    </mat-list-item>
+  }
+</mat-list>

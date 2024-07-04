@@ -1,0 +1,8 @@
+@if (!loading()) {
+  <div>
+    <h1>{{ player()?.fullName }}</h1>
+    <h3>{{ player()?.memberId }}</h3>
+  </div>
+} @else {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
