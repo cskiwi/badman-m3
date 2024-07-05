@@ -19,7 +19,7 @@ type ISeoMetaData = {
   | {
       seoType: 'player';
       player: Player;
-      club: Club;
+      club?: Club;
     }
 );
 
@@ -52,7 +52,6 @@ export class SeoService {
         break;
       case 'player':
         this.setPlayer(data);
-        this.setPlayer(data);
         break;
     }
 
@@ -74,7 +73,7 @@ export class SeoService {
     }
   }
 
-  setPlayer(data: { player: Player; club: Club }) {
+  setPlayer(data: { player: Player; club?: Club }) {
     let desc = `The profile page of the player ${data.player.fullName} (${data.player.memberId}) `;
     if (data.club) {
       desc += `from the club ${data.club.fullName} (${data.club.clubId})`;
