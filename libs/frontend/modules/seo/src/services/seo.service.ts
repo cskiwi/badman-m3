@@ -73,14 +73,14 @@ export class SeoService {
   }
 
   setPlayer(data: { player: Player }) {
-    this.setTitle(`${data.player.fullName} (${data.player.memberId})`);
-    this.setDescription(`${data.player.fullName} (${data.player.memberId})`);
+    this.setTitle(`Player ${data.player.fullName} (${data.player.memberId})`);
+    this.setDescription(`The profile page of the player ${data.player.fullName} (${data.player.memberId})`);
     this.setImage(
       `${this.config.imageEndpoint}/?id=${encodeURIComponent(
         data.player.slug,
       )}`,
     );
-    this.setMetaTag('name', 'twitter:card', 'summary');
+    this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
   setMetaTag(
