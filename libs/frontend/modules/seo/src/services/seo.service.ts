@@ -1,9 +1,9 @@
 import { isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
+import { Club, Player } from '@app/models';
 import { ISeoConfig } from '../interfaces/seo-config.interface';
 import { SEO_CONFIG } from '../seo.module';
-import { Player } from '@app/models';
 
 type ISeoMetaData = {
   keywords?: string[];
@@ -19,6 +19,7 @@ type ISeoMetaData = {
   | {
       seoType: 'player';
       player: Player;
+      club: Club;
     }
 );
 
@@ -51,6 +52,7 @@ export class SeoService {
         break;
       case 'player':
         this.setPlayer(data);
+        this.setPlayer(data);
         break;
     }
 
@@ -72,9 +74,14 @@ export class SeoService {
     }
   }
 
-  setPlayer(data: { player: Player }) {
+  setPlayer(data: { player: Player; club: Club }) {
+    let desc = `The profile page of the player ${data.player.fullName} (${data.player.memberId}) `;
+    if (data.club) {
+      desc += `from the club ${data.club.fullName} (${data.club.clubId})`;
+    }
+
     this.setTitle(`Player ${data.player.fullName} (${data.player.memberId})`);
-    this.setDescription(`The profile page of the player ${data.player.fullName} (${data.player.memberId})`);
+    this.setDescription(desc);
     this.setImage(
       `${this.config.imageEndpoint}/?id=${encodeURIComponent(
         data.player.slug,

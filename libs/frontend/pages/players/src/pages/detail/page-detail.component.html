@@ -1,7 +1,7 @@
 @if (!loading()) {
   <div>
-    <h1>{{ player()?.fullName }}</h1>
-    <h2>{{ player()?.memberId }}</h2>
+    <h2>{{ player()?.fullName }}</h2>
+    <h3>{{ player()?.memberId }}</h3>
   </div>
 } @else {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
