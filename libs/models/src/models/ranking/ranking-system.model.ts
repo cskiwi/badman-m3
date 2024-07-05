@@ -3,9 +3,12 @@ import {
   BaseEntity,
   Column,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { RankingGroup } from './ranking-group.model';
+import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 
 @ObjectType('RankingSystem')
 @Entity('RankingSystems', { schema: 'ranking' })
@@ -161,4 +164,10 @@ export class RankingSystem extends BaseEntity {
   @Field()
   @Column()
   declare startingType: string;
+
+  @ManyToOne(
+    () => RankingSystemRankingGroupMembership,
+    (rankingGroup) => rankingGroup.rankingSystem,
+  )
+  declare rankingSystemRankingGroupMembership: RankingSystemRankingGroupMembership;
 }

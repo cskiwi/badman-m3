@@ -23,6 +23,7 @@ import { GraphQLModule } from '@app/frontend-modules-grahql';
 import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { SEO_CONFIG } from '@app/frontend-seo';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -77,6 +78,15 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHttpInterceptor,
       multi: true,
+    },
+    {
+      provide: SEO_CONFIG,
+      useFactory: (baseUrl: string) => ({
+        siteName: 'Badminton',
+        siteUrl: 'https://badman.app',
+        imageEndpoint: `${baseUrl}/api/v1/images`,
+      }),
+      deps: [BASE_URL],
     },
   ],
 };

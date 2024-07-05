@@ -4,6 +4,7 @@ import { AuthorizationModule } from '@app/backend-authorization';
 import { DatabaseModule } from '@app/backend-database';
 import { GraphQLModule } from '@app/backend-graphql';
 import { HealthModule } from '@app/backend-health';
+import { SeoModule } from '@app/backend-seo';
 import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     DatabaseModule,
     AuthorizationModule,
     GraphQLModule,
+    SeoModule,
     HealthModule,
   ],
   controllers: [],

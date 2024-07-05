@@ -80,6 +80,7 @@ export class DetailService {
               id
               fullName
               memberId
+              slug
             }
           }
         `,

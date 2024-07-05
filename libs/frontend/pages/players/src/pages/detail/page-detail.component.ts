@@ -1,8 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+} from '@angular/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { SeoService } from '@app/frontend-seo';
 
 @Component({
   selector: 'lib-page-detail',
@@ -14,6 +20,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 })
 export class PageDetailComponent {
   private readonly dataService = new DetailService();
+  private readonly seoService = inject(SeoService);
   private readonly playerId = injectParams('playerId');
 
   // selectors
@@ -24,6 +31,16 @@ export class PageDetailComponent {
   constructor() {
     effect(() => {
       this.dataService.filter.get('playerId')?.setValue(this.playerId());
+    });
+
+    effect(() => {
+      const player = this.player();
+      if (player) {
+        this.seoService.update({
+          seoType: 'player',
+          player,
+        });
+      }
     });
   }
 }
