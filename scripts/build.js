@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 
+
 // Function to run a shell command and return the process immediately
 function runCommand(command, args = [], options = {}) {
   const process = spawn(command, args, options);
@@ -40,7 +41,7 @@ function waitForServer(port) {
     const interval = setInterval(async () => {
       try {
         console.log('Checking server status...');
-        const response = await fetch(`http://localhost:${port}/api/routes`);
+        const response = await fetch(`http://localhost:${port}/api/v1/routes`);
         if (response.ok) {
           clearInterval(interval);
           resolve();
@@ -55,7 +56,7 @@ function waitForServer(port) {
 // Function to make a GET request and save the response to a file
 async function getAndSaveRoutes(port, filePath) {
   try {
-    const response = await fetch(`http://localhost:${port}/api/routes`);
+    const response = await fetch(`http://localhost:${port}/api/v1/routes`);
     if (!response.ok) {
       throw new Error(`Failed to fetch routes: ${response.statusText}`);
     }
