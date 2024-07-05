@@ -7,6 +7,7 @@ import bootstrap from '../src/main.server';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@app/backend-root';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { VersioningType } from '@nestjs/common';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -58,6 +59,10 @@ export async function app() {
   const adapter = new ExpressAdapter(server);
   const app = await NestFactory.create(AppModule, adapter);
   app.setGlobalPrefix('api');
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
   await app.init();
 
   return server;
