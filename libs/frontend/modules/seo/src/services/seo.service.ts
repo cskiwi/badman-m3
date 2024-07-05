@@ -80,7 +80,7 @@ export class SeoService {
         data.player.slug,
       )}`,
     );
-    this.setMetaTag('name', 'twitter:card', 'summary_large_image');
+    this.setMetaTag('name', 'twitter:card', 'summary');
   }
 
   setMetaTag(
@@ -145,7 +145,7 @@ export class SeoService {
   }
 
   private setImage(url?: string): void {
-    this.setMetaTag('name', 'twitter:image:src', url);
+    this.setMetaTag('name', 'twitter:image', url);
     this.setMetaTag('property', 'og:image', url, `itemprop='image'`);
     this.setMetaTag('property', 'og:image:width', '1200');
     this.setMetaTag('property', 'og:image:height', '630');
