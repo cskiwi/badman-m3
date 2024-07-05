@@ -1,8 +1,10 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
   InjectionToken,
   Injector,
   ModuleWithProviders,
   NgModule,
+  PLATFORM_ID,
   TransferState,
   makeStateKey,
 } from '@angular/core';
@@ -30,6 +32,7 @@ export function createApollo(
   httpLink: HttpLink,
   cache: InMemoryCache,
   injector: Injector,
+  platformId: string,
   transferState: TransferState,
   baseUrl: string,
   config?: GraphqlConfiguration,
@@ -40,7 +43,7 @@ export function createApollo(
     },
   }));
 
-  const isBrowser = transferState.hasKey<any>(STATE_KEY);
+  const isBrowser = isPlatformBrowser(platformId);
 
   if (isBrowser) {
     const state = transferState.get<any>(STATE_KEY, null);
@@ -59,6 +62,7 @@ export function createApollo(
       const isAuthenticated = await lastValueFrom(
         authService.isAuthenticated$.pipe(take(1)),
       );
+
       if (isAuthenticated) {
         const token = await lastValueFrom(authService.getAccessTokenSilently());
         if (token) {
@@ -112,6 +116,7 @@ export function createApollo(
         HttpLink,
         APOLLO_CACHE,
         Injector,
+        PLATFORM_ID,
         TransferState,
         BASE_URL,
         GRAPHQL_CONFIG_TOKEN,
