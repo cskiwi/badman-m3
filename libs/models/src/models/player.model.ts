@@ -2,10 +2,18 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
+  Relation,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
+import { ClubPlayerMembership } from './club-player-membership';
+import { RankingLastPlace } from './ranking';
+import { GamePlayerMembership } from './event/game-player-membership';
 
 @ObjectType('Player')
 @Entity('Players')
@@ -14,6 +22,14 @@ export class Player extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
+
+  @Field()
+  @CreateDateColumn()
+  declare createdAt: Date;
+
+  @Field({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
+  declare updatedAt: Date;
 
   @Column({ unique: true })
   declare sub: string;
@@ -58,4 +74,24 @@ export class Player extends BaseEntity {
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
   }
+
+  // @Field()
+  @OneToOne(
+    () => RankingLastPlace,
+    (rankingLastPlace) => rankingLastPlace.player,
+  )
+  declare rankingLastPlace: Relation<RankingLastPlace>;
+
+  // @Field()
+  @OneToMany(
+    () => ClubPlayerMembership,
+    (clubPlayerMembership) => clubPlayerMembership.player,
+  )
+  declare clubPlayerMemberships: ClubPlayerMembership[];
+  // @Field()
+  @OneToMany(
+    () => GamePlayerMembership,
+    (gamePlayerMembership) => gamePlayerMembership.player,
+  )
+  declare gamePlayerMemberships: GamePlayerMembership[];
 }

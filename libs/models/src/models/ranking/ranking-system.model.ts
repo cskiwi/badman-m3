@@ -2,12 +2,12 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique,
+  UpdateDateColumn,
 } from 'typeorm';
-import { RankingGroup } from './ranking-group.model';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 
 @ObjectType('RankingSystem')
@@ -16,6 +16,14 @@ export class RankingSystem extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
+
+  @Field()
+  @CreateDateColumn()
+  declare createdAt: Date;
+
+  @Field({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
+  declare updatedAt: Date;
 
   @Field()
   @Column()
