@@ -73,13 +73,14 @@ export class SeoService {
   }
 
   setPlayer(data: { player: Player }) {
-    this.setTitle(`${data.player.fullName} ${data.player.memberId}`);
-    this.setDescription(`${data.player.fullName} ${data.player.memberId}`);
+    this.setTitle(`${data.player.fullName} (${data.player.memberId})`);
+    this.setDescription(`${data.player.fullName} (${data.player.memberId})`);
     this.setImage(
       `${this.config.imageEndpoint}/?id=${encodeURIComponent(
         data.player.slug,
       )}`,
     );
+    this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
   setMetaTag(
@@ -109,6 +110,7 @@ export class SeoService {
 
   private setType(type?: 'article' | 'website'): void {
     this.setMetaTag('property', 'og:type', type);
+    this.setMetaTag('name', 'twitter:site', '@badman');
   }
 
   private setKeywords(keywords?: string | string[]) {
@@ -143,7 +145,9 @@ export class SeoService {
   }
 
   private setImage(url?: string): void {
-    this.setMetaTag('name', 'twitter:image', url);
+    this.setMetaTag('name', 'twitter:image:src', url);
     this.setMetaTag('property', 'og:image', url, `itemprop='image'`);
+    this.setMetaTag('property', 'og:image:width', '1200');
+    this.setMetaTag('property', 'og:image:height', '630');
   }
 }
