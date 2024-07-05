@@ -29,11 +29,11 @@ export class ClubPlayerMembership extends BaseEntity {
 
   @Column()
   @Field()
-  declare end?: Date | null;
+  declare end: Date;
   
   @Column()
   @Field()
-  declare confirmed?: boolean;
+  declare confirmed: boolean;
   
   // declare membershipType?: Relation<ClubMembershipType>;
 

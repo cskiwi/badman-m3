@@ -1,8 +1,6 @@
-import { Player } from '@app/models';
+import { GamePlayerMembership, GameType, Player } from '@app/models';
 import { Controller, Get, Logger, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { GameType } from 'libs/models/src/enums/gameType.enum';
-import { GamePlayerMembership } from 'libs/models/src/models/event/game-player-membership';
 
 @Controller({ path: 'images' })
 export class ImagesController {
