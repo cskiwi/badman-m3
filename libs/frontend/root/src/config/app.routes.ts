@@ -9,7 +9,7 @@ export const appRoutes: Route[] = [
   },
 
   {
-    path: 'players',
+    path: 'player',
     children: pagePlayersRoutes,
   },
 ];

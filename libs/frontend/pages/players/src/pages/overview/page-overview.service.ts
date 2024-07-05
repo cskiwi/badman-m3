@@ -88,6 +88,7 @@ export class OverviewService {
               id
               memberId
               fullName
+              slug
             }
           }
         `,
