@@ -16,13 +16,15 @@ export async function app() {
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
+  const isProduction = process.env['NODE_ENV'] === 'production';
+  const revalidateToken = process.env['REVALIDATE_SECRET_TOKEN'] || 'secret-token';
 
   const commonEngine = new CommonEngine();
 
   const isr = new ISRHandler({
     indexHtml,
-    invalidateSecretToken: 'MY_TOKEN', // replace with env secret key ex. process.env.REVALIDATE_SECRET_TOKEN
-    enableLogging: true,
+    invalidateSecretToken: revalidateToken,
+    enableLogging: !isProduction,
     serverDistFolder,
     browserDistFolder,
     bootstrap,
@@ -32,7 +34,7 @@ export async function app() {
   server.use(express.json());
   server.post(
     '/api/invalidate',
-    async (req, res) => await isr.invalidate(req, res)
+    async (req, res) => await isr.invalidate(req, res),
   );
 
   server.set('view engine', 'html');
@@ -47,7 +49,7 @@ export async function app() {
     express.static(browserDistFolder, {
       maxAge: '1y',
       index: 'index.html',
-    })
+    }),
   );
 
   server.get(
@@ -94,7 +96,7 @@ export async function app() {
 }
 
 async function run(): Promise<void> {
-  const port = process.env['PORT'] || 3000;
+  const port = process.env['PORT'] || 5000;
 
   // Start up the Node server
   const server = await app();
