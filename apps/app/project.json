@@ -34,7 +34,6 @@
           "@as-integrations/fastify",
           "@mikro-orm/core",
           "@nestjs/*",
-          "@rx-angular/isr",
           "jwks-rsa",
           "moment",
           "dotenv",

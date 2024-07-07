@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable()
-export class IsrService {
+export class InvalidateService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
