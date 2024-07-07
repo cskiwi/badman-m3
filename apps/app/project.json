@@ -45,9 +45,7 @@
           "sharp"
         ],
         "scripts": [],
-        "prerender": {
-          "routesFile": "routes.txt"
-        },
+        "prerender": false,
         "ssr": {
           "entry": "apps/app/server/server.ts"
         }

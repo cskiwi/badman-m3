@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@app/backend-root';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { VersioningType } from '@nestjs/common';
+import { ISRHandler } from '@rx-angular/isr/server';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -17,6 +18,22 @@ export async function app() {
   const indexHtml = join(serverDistFolder, 'index.server.html');
 
   const commonEngine = new CommonEngine();
+
+  const isr = new ISRHandler({
+    indexHtml,
+    invalidateSecretToken: 'MY_TOKEN', // replace with env secret key ex. process.env.REVALIDATE_SECRET_TOKEN
+    enableLogging: true,
+    serverDistFolder,
+    browserDistFolder,
+    bootstrap,
+    commonEngine,
+  });
+
+  server.use(express.json());
+  server.post(
+    '/api/invalidate',
+    async (req, res) => await isr.invalidate(req, res)
+  );
 
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
@@ -31,6 +48,14 @@ export async function app() {
       maxAge: '1y',
       index: 'index.html',
     })
+  );
+
+  server.get(
+    '*',
+    // Serve page if it exists in cache
+    async (req, res, next) => await isr.serveFromCache(req, res, next),
+    // Server side render the page and add to cache if needed
+    async (req, res, next) => await isr.render(req, res, next),
   );
 
   // All regular routes use the Angular engine for rendering
@@ -69,7 +94,7 @@ export async function app() {
 }
 
 async function run(): Promise<void> {
-  const port = process.env['PORT'] || 4000;
+  const port = process.env['PORT'] || 3000;
 
   // Start up the Node server
   const server = await app();

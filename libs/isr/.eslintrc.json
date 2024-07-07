@@ -1,0 +1,13 @@
+{
+  "extends": "../../.eslintrc.json",
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "extends": ["plugin:@nx/angular"],
+      "rules": {
+        "@typescript-eslint/no-non-null-assertion": "warn"
+      }
+    }
+  ]
+}
