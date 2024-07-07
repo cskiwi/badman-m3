@@ -35,7 +35,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - run: npx nx affected -t lint test build
+      - run: npx nx affected -t lint test
+      - run: npx nx affected -t build --exclude=app
+      - run: npm run build
 
       - run: npx nx affected --parallel 1 -t e2e-ci
 
