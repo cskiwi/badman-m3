@@ -39,6 +39,7 @@
     "@nestjs/terminus": "^10.2.3",
     "@nestjs/typeorm": "^10.0.2",
     "@nx/angular": "19.4.1",
+    "@rx-angular/isr": "^18.0.1",
     "apollo-angular": "^7.0.2",
     "axios": "^1.7.2",
     "crypto-hash": "^3.0.0",
