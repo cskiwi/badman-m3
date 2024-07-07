@@ -11,7 +11,7 @@ export const pagePlayersRoutes: Route[] = [
         path: '',
         component: PageDetailComponent,
         data: {
-          revalidate: 86400,
+          revalidate: 0,
         },
       },
     ],

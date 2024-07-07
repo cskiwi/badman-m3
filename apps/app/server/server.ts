@@ -1,14 +1,17 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { CommonEngine } from '@angular/ssr';
-import express from 'express';
-import { fileURLToPath } from 'url';
-import { dirname, join, resolve } from 'path';
-import bootstrap from '../src/main.server';
-import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@app/backend-root';
-import { ExpressAdapter } from '@nestjs/platform-express';
 import { VersioningType } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { ISRHandler } from '@rx-angular/isr/server';
+import { CacheHandler } from '@rx-angular/isr/models';
+import { FileSystemCacheHandler } from './filesystem-cache-handler';
+import { RedisCacheHandler } from './redis-cache-handler';
+import express from 'express';
+import { dirname, join, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import bootstrap from '../src/main.server';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -22,6 +25,26 @@ export async function app() {
 
   const commonEngine = new CommonEngine();
 
+  let cacheHandler: CacheHandler | null = null;
+
+  if (process.env['REDIS_HOST'] && process.env['REDIS_PORT']) {
+    cacheHandler = new RedisCacheHandler({
+      host: process.env['REDIS_HOST'],
+      port: parseInt(process.env['REDIS_PORT']),
+      db: parseInt(`${process.env['REDIS_DB'] ?? '0'}`),
+    });
+  } else {
+    const cacheFolderPath =
+      process.env['CACHE_LOCATION'] ?? join(serverDistFolder, '/cache');
+    cacheHandler = new FileSystemCacheHandler({
+      cacheFolderPath,
+      prerenderedPagesPath: serverDistFolder,
+      addPrerenderedPagesToCache: true,
+    });
+  }
+
+  console.log('enable logging', !isProduction);
+
   const isr = new ISRHandler({
     indexHtml,
     invalidateSecretToken: revalidateToken,
@@ -30,6 +53,7 @@ export async function app() {
     browserDistFolder,
     bootstrap,
     commonEngine,
+    cache: cacheHandler,
   });
 
   server.use(express.json());

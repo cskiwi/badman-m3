@@ -41,11 +41,14 @@
           "cache-manager",
           "class-transformer",
           "class-validator",
+          "ioredis",
           "typeorm",
           "sharp"
         ],
         "scripts": [],
-        "prerender": false,
+        "prerender": {
+          "routesFile": "routes.txt"
+        },
         "ssr": {
           "entry": "apps/app/server/server.ts"
         }

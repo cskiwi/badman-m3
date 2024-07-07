@@ -18,7 +18,7 @@ export class RoutesGeneratorService {
 
   // get top players
   private async getTopPlayers() {
-    return [];
+    return ['glenn-latomme'];
   }
 
   // get most searched players
