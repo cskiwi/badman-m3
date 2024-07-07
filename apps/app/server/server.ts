@@ -17,7 +17,8 @@ export async function app() {
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
   const isProduction = process.env['NODE_ENV'] === 'production';
-  const revalidateToken = process.env['REVALIDATE_SECRET_TOKEN'] || 'secret-token';
+  const revalidateToken =
+    process.env['REVALIDATE_SECRET_TOKEN'] || 'secret-token';
 
   const commonEngine = new CommonEngine();
 
@@ -55,9 +56,23 @@ export async function app() {
   server.get(
     '*',
     // Serve page if it exists in cache
-    async (req, res, next) => await isr.serveFromCache(req, res, next),
+    async (req, res, next) => {
+      if (req.originalUrl.startsWith('/api')) {
+        // Handle API routes separately
+        next();
+      } else {
+        return await isr.serveFromCache(req, res, next);
+      }
+    },
     // Server side render the page and add to cache if needed
-    async (req, res, next) => await isr.render(req, res, next),
+    async (req, res, next) => {
+      if (req.originalUrl.startsWith('/api')) {
+        // Handle API routes separately
+        next();
+      } else {
+        return await isr.render(req, res, next);
+      }
+    },
   );
 
   // All regular routes use the Angular engine for rendering
