@@ -31,7 +31,7 @@ export async function app() {
     cacheHandler = new RedisCacheHandler({
       host: process.env['REDIS_HOST'],
       port: parseInt(process.env['REDIS_PORT']),
-      db: parseInt(`${process.env['REDIS_DB'] ?? '0'}`),
+      db: parseInt(`${process.env['REDIS_ISR_DB'] ?? '0'}`),
     });
   } else {
     const cacheFolderPath =
