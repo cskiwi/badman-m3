@@ -32,11 +32,13 @@ export class Game extends BaseEntity {
   declare playedAt: Date;
 
   @Field(() => String)
-  @Column({ type: 'enum', enum: GameType })
+  // @Column({ type: 'enum', enum: GameType })
+  @Column({ type: 'string' })
   declare gameType: GameType;
 
   @Field(() => String)
-  @Column({ type: 'enum', enum: GameType })
+  // @Column({ type: 'enum', enum: GameType })
+  @Column({ type: 'string' })
   declare status: GameStatus;
 
   @Field()
