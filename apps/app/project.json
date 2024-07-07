@@ -41,7 +41,8 @@
           "cache-manager",
           "class-transformer",
           "class-validator",
-          "typeorm"
+          "typeorm",
+          "sharp"
         ],
         "scripts": [],
         "prerender": {
