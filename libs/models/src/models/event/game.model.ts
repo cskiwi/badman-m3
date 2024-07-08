@@ -29,53 +29,51 @@ export class Game extends BaseEntity {
 
   @Field()
   @Column()
-  declare playedAt: Date;
+  declare playedAt?: Date;
 
   @Field(() => String)
-  // @Column({ type: 'enum', enum: GameType })
-  @Column({ type: 'varchar' })
+  @Column({ type: 'simple-enum', enum: GameType })
   declare gameType: GameType;
 
   @Field(() => String)
-  // @Column({ type: 'enum', enum: GameType })
-  @Column({ type: 'varchar' })
-  declare status: GameStatus;
+  @Column({ type: 'simple-enum', enum: GameType })
+  declare status?: GameStatus;
 
   @Field()
-  @Column()
-  declare set1Team1: number;
+  @Column({nullable: true})
+  declare set1Team1?: number;
 
   @Field()
-  @Column()
-  declare set1Team2: number;
+  @Column({nullable: true})
+  declare set1Team2?: number;
 
   @Field()
-  @Column()
-  declare set2Team1: number;
+  @Column({nullable: true})
+  declare set2Team1?: number;
 
   @Field()
-  @Column()
-  declare set2Team2: number;
+  @Column({nullable: true})
+  declare set2Team2?: number;
 
   @Field()
-  @Column()
-  declare set3Team1: number;
+  @Column({nullable: true})
+  declare set3Team1?: number;
 
   @Field()
-  @Column()
-  declare set3Team2: number;
+  @Column({nullable: true})
+  declare set3Team2?: number;
 
   @Field()
-  @Column()
-  declare winner: number;
+  @Column({nullable: true})
+  declare winner?: number;
 
   @Field()
-  @Column()
-  declare order: number;
+  @Column({nullable: true})
+  declare order?: number;
 
   @Field()
-  @Column()
-  declare round: string;
+  @Column({nullable: true})
+  declare round?: string;
 
   @Field()
   @Column()
@@ -86,17 +84,17 @@ export class Game extends BaseEntity {
   declare linkType: string;
 
   @Field()
-  @Column()
-  declare courtId: string;
+  @Column({nullable: true})
+  declare courtId?: string;
 
   @Field()
-  @Column()
-  declare visualCode: string;
+  @Column({nullable: true})
+  declare visualCode?: string;
 
   // @Field()
   @OneToMany(
     () => GamePlayerMembership,
-    (gamePlayerMembership) => gamePlayerMembership.player,
+    (gamePlayerMembership) => gamePlayerMembership.gamePlayer,
   )
   declare gamePlayerMembership: GamePlayerMembership[];
 }

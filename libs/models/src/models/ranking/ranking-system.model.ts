@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
+import { Period, StartingType } from '../../enums';
 
 @ObjectType('RankingSystem')
 @Entity('RankingSystems', { schema: 'ranking' })
@@ -21,8 +22,8 @@ export class RankingSystem extends BaseEntity {
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @Field()
+  @UpdateDateColumn()
   declare updatedAt: Date;
 
   @Field()
@@ -31,147 +32,168 @@ export class RankingSystem extends BaseEntity {
 
   @Field()
   @Column()
-  declare amountOfLevels: number;
+  declare amountOfLevels?: number;
 
   @Field()
   @Column()
-  declare procentWinning: number;
+  declare procentWinning?: number;
 
   @Field()
   @Column()
-  declare procentWinningPlus1: number;
+  declare procentWinningPlus1?: number;
 
   @Field()
   @Column()
-  declare procentLosing: number;
+  declare procentLosing?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare minNumberOfGamesUsedForUpgrade: number;
+  declare minNumberOfGamesUsedForUpgrade?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare minNumberOfGamesUsedForDowngrade: number;
+  declare minNumberOfGamesUsedForDowngrade?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare maxDiffLevels: number;
+  declare maxDiffLevels?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare maxDiffLevelsHighest: number;
+  declare maxDiffLevelsHighest?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare latestXGamesToUse: number;
+  declare latestXGamesToUse?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare maxLevelUpPerChange: number;
+  declare maxLevelUpPerChange?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare maxLevelDownPerChange: number;
+  declare maxLevelDownPerChange?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare gamesForInactivty: number;
+  declare gamesForInactivty?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @Column()
-  declare inactivityAmount: number;
+  declare inactivityAmount?: number;
+
+  @Field()
+  @Column({
+    type: 'simple-enum',
+    enum: Period,
+  })
+  declare inactivityUnit: Period;
+
+  @Field()
+  @Column({ type: 'simple-enum', enum: ['freeze', 'decrease'] })
+  declare inactiveBehavior?: 'freeze' | 'decrease';
 
   @Field()
   @Column()
-  declare inactivityUnit: 'months' | 'weeks' | 'days';
-
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  declare inactiveBehavior: 'freeze' | 'decrease';
+  declare calculationLastUpdate?: Date;
 
   @Field()
   @Column()
-  declare calculationLastUpdate: Date;
+  declare calculationDayOfWeek?: number;
 
   @Field()
   @Column()
-  declare calculationDayOfWeek: number;
+  declare calculationIntervalAmount?: number;
+
+  @Field()
+  @Column({
+    type: 'simple-enum',
+    enum: Period,
+  })
+  declare calculationIntervalUnit?: Period;
 
   @Field()
   @Column()
-  declare calculationIntervalAmount: number;
+  declare periodAmount?: number;
+
+  @Field()
+  @Column({
+    type: 'simple-enum',
+    enum: Period,
+  })
+  declare periodUnit?: Period;
 
   @Field()
   @Column()
-  declare calculationIntervalUnit: 'months' | 'weeks' | 'days';
+  declare updateLastUpdate?: Date;
 
   @Field()
   @Column()
-  declare periodAmount: 'months' | 'weeks' | 'days';
+  declare updateDayOfWeek?: number;
 
   @Field()
   @Column()
-  declare periodUnit: string;
+  declare updateIntervalAmount?: number;
 
   @Field()
-  @Column()
-  declare updateLastUpdate: Date;
-
-  @Field()
-  @Column()
-  declare updateDayOfWeek: number;
-
-  @Field()
-  @Column()
-  declare updateIntervalAmount: number;
-
-  @Field()
-  @Column()
-  declare updateIntervalUnit: string;
+  @Column({
+    type: 'simple-enum',
+    enum: Period,
+  })
+  declare updateIntervalUnit?: Period;
 
   @Field()
   @Column()
   declare rankingSystem: string;
 
   @Field()
-  @Column()
+  @Column({ default: false})
   declare primary: boolean;
 
   @Field()
-  @Column()
+  @Column({ default: false})
   declare calculateUpdates: boolean;
 
   @Field()
-  @Column()
+  @Column({ default: false})
   declare runCurrently: boolean;
 
   @Field()
-  @Column()
-  declare differenceForUpgradeSingle: number;
+  @Column({ nullable: true})
+  declare differenceForUpgradeSingle?: number;
 
   @Field()
-  @Column()
-  declare differenceForUpgradeDouble: number;
+    @Column({ nullable: true})
+
+  declare differenceForUpgradeDouble?: number;
 
   @Field()
-  @Column()
-  declare differenceForUpgradeMix: number;
+    @Column({ nullable: true})
+
+  declare differenceForUpgradeMix?: number;
 
   @Field()
-  @Column()
-  declare differenceForDowngradeSingle: number;
+    @Column({ nullable: true})
+
+  declare differenceForDowngradeSingle?: number;
 
   @Field()
-  @Column()
-  declare differenceForDowngradeDouble: number;
+    @Column({ nullable: true})
+
+  declare differenceForDowngradeDouble?: number;
 
   @Field()
-  @Column()
-  declare differenceForDowngradeMix: number;
+    @Column({ nullable: true})
+
+  declare differenceForDowngradeMix?: number;
 
   @Field()
-  @Column()
-  declare startingType: string;
+  @Column({
+    type: 'simple-enum',
+    enum: StartingType,
+    default: StartingType.formula,
+  })
+  declare startingType: StartingType;
 
   @ManyToOne(
     () => RankingSystemRankingGroupMembership,

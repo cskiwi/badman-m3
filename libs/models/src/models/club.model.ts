@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ClubPlayerMembership } from './club-player-membership';
+import { UseForTeamName } from '../enums';
 
 @ObjectType('Club')
 @Entity('Clubs')
@@ -43,9 +44,13 @@ export class Club extends BaseEntity {
   @Column()
   declare contactCompetition: string;
 
-  // @Field(() => String, { defaultValue: UseForTeamName.TEAM_NAME })
-  // @Column({type: 'varchar'})
-  // declare useForTeamName: UseForTeamName;
+  @Field(() => String)
+  @Column({
+    type: 'simple-enum',
+    enum: UseForTeamName,
+    default: UseForTeamName.TEAM_NAME,
+  })
+  declare useForTeamName: UseForTeamName;
 
   @Field()
   @Column()
@@ -61,11 +66,11 @@ export class Club extends BaseEntity {
 
   @Field()
   @Column()
-  declare state: string;
+  declare state?: string;
 
   @Field()
   @Column()
-  declare country: string;
+  declare country?: string;
 
   // @Field()
   @OneToMany(

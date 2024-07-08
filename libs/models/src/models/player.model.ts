@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -17,7 +18,7 @@ import { GamePlayerMembership } from './event/game-player-membership';
 
 @ObjectType('Player')
 @Entity('Players')
-@Unique(['sub'])
+@Index(["firstName", "lastName"])
 export class Player extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
@@ -31,6 +32,7 @@ export class Player extends BaseEntity {
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
+  @Index({ unique: true })
   @Column({ unique: true })
   declare sub: string;
 
@@ -42,10 +44,12 @@ export class Player extends BaseEntity {
   @Column({ nullable: true })
   declare lastName: string;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Index({ unique: true })
+  @Field()
+  @Column()
   declare slug: string;
 
+  @Index({ unique: true })
   @Field({ nullable: true })
   @Column({ nullable: true })
   declare memberId: string;
@@ -91,7 +95,7 @@ export class Player extends BaseEntity {
   // @Field()
   @OneToMany(
     () => GamePlayerMembership,
-    (gamePlayerMembership) => gamePlayerMembership.player,
+    (gamePlayerMembership) => gamePlayerMembership.gamePlayer,
   )
   declare gamePlayerMemberships: GamePlayerMembership[];
 }

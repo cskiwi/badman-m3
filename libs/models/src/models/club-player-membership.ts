@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Club } from './club.model';
 import { Player } from './player.model';
+import { ClubMembershipType } from '../enums';
 
 @ObjectType('ClubPlayerMembership')
 @Entity('ClubPlayerMemberships')
@@ -21,31 +22,35 @@ export class ClubPlayerMembership extends BaseEntity {
   @Column({ type: 'uuid' })
   declare clubId?: string;
 
+  @Field()
+  @Column()
+  declare end: Date;
+
+  @Field()
+  @Column()
+  declare confirmed: boolean;
+
+  @Field()
+  @Column({
+    type: 'simple-enum',
+    enum: ClubMembershipType,
+  })
+  declare membershipType?: ClubMembershipType;
+
+  @Field()
+  @Column()
+  declare start: Date;
+
   @ManyToOne(() => Player, (player) => player.clubPlayerMemberships)
   declare player: Player;
 
   @ManyToOne(() => Club, (club) => club.clubPlayerMembership)
   declare club: Club;
 
-  @Column()
-  @Field()
-  declare end: Date;
-  
-  @Column()
-  @Field()
-  declare confirmed: boolean;
-  
-  // declare membershipType?: Relation<ClubMembershipType>;
-
-  @Column()
-  @Field()
-  declare start: Date;
-
   // @Field()
   get active() {
     return this.isActiveFrom(new Date());
   }
-
 
   isActiveFrom(date: Date, shouldBeConfirmed = true) {
     if (shouldBeConfirmed && !this.confirmed) {
@@ -53,5 +58,4 @@ export class ClubPlayerMembership extends BaseEntity {
     }
     return this.start <= date && (!this.end || this.end > date);
   }
-
 }

@@ -20,7 +20,7 @@ export class RankingLastPlace extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
-  
+
   @Field()
   @CreateDateColumn()
   declare createdAt: Date;
@@ -34,91 +34,94 @@ export class RankingLastPlace extends BaseEntity {
   declare rankingDate: Date;
 
   @Field()
-  @Column()
-  declare gender: string;
+  @Column({
+    type: 'simple-enum',
+    enum: ['M', 'F'],
+  })
+  declare gender: 'M' | 'F';
 
   @Field()
-  @Column()
-  declare singlePoints: number;
+  @Column({ nullable: true })
+  declare singlePoints?: number;
 
   @Field()
-  @Column()
-  declare mixPoints: number;
+  @Column({ nullable: true })
+  declare mixPoints?: number;
 
   @Field()
-  @Column()
-  declare doublePoints: number;
+  @Column({ nullable: true })
+  declare doublePoints?: number;
 
   @Field()
-  @Column()
-  declare singlePointsDowngrade: number;
+  @Column({ nullable: true })
+  declare singlePointsDowngrade?: number;
 
   @Field()
-  @Column()
-  declare mixPointsDowngrade: number;
+  @Column({ nullable: true })
+  declare mixPointsDowngrade?: number;
 
   @Field()
-  @Column()
-  declare doublePointsDowngrade: number;
+  @Column({ nullable: true })
+  declare doublePointsDowngrade?: number;
 
   @Field()
-  @Column()
-  declare singleRank: number;
+  @Column({ nullable: true })
+  declare singleRank?: number;
 
   @Field()
-  @Column()
-  declare mixRank: number;
+  @Column({ nullable: true })
+  declare mixRank?: number;
 
   @Field()
-  @Column()
-  declare doubleRank: number;
+  @Column({ nullable: true })
+  declare doubleRank?: number;
 
   @Field()
-  @Column()
-  declare totalSingleRanking: number;
+  @Column({ nullable: true })
+  declare totalSingleRanking?: number;
 
   @Field()
-  @Column()
-  declare totalMixRanking: number;
+  @Column({ nullable: true })
+  declare totalMixRanking?: number;
 
   @Field()
-  @Column()
-  declare totalDoubleRanking: number;
+  @Column({ nullable: true })
+  declare totalDoubleRanking?: number;
 
   @Field()
-  @Column()
-  declare totalWithinSingleLevel: number;
+  @Column({ nullable: true })
+  declare totalWithinSingleLevel?: number;
 
   @Field()
-  @Column()
-  declare totalWithinMixLevel: number;
+  @Column({ nullable: true })
+  declare totalWithinMixLevel?: number;
 
   @Field()
-  @Column()
-  declare totalWithinDoubleLevel: number;
+  @Column({ nullable: true })
+  declare totalWithinDoubleLevel?: number;
 
   @Field()
-  @Column()
-  declare single: number;
+  @Column({ nullable: true })
+  declare single?: number;
 
   @Field()
-  @Column()
-  declare mix: number;
+  @Column({ nullable: true })
+  declare mix?: number;
 
   @Field()
-  @Column()
-  declare double: number;
+  @Column({ nullable: true })
+  declare double?: number;
 
   @Field()
-  @Column()
+  @Column({ default: false })
   declare singleInactive: boolean;
 
   @Field()
-  @Column()
+  @Column({ default: false })
   declare mixInactive: boolean;
 
   @Field()
-  @Column()
+  @Column({ default: false })
   declare doubleInactive: boolean;
 
   @Field(() => ID)
