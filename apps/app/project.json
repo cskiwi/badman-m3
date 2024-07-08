@@ -35,6 +35,7 @@
           "@mikro-orm/core",
           "@nestjs/*",
           "jwks-rsa",
+          "sqlite3",
           "moment",
           "dotenv",
           "graphql-type-json",
