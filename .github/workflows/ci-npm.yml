@@ -10,6 +10,12 @@ permissions:
   actions: read
   contents: read
 
+# for building the app
+env:
+  DB_TYPE: 'sqlite'
+  DB_DATABASE: ':memory:'
+  DB_SYNCHRONIZE: 'true'
+
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
@@ -26,7 +32,7 @@ jobs:
         with:
           cache: 'npm'
 
-      # - run: npx nx-cloud start-ci-run 
+      # - run: npx nx-cloud start-ci-run
 
       - run: npm ci
 
