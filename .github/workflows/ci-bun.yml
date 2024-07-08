@@ -41,6 +41,7 @@ jobs:
 
       - run: bun nx affected -t lint test
       - run: bun nx affected --target=build --exclude=app
+      - run: bun add sqlite3 --save
       - run: bun run build
 
       # temp disable untill we figure out how to fix the sqlite3 issue
