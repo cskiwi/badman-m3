@@ -30,7 +30,7 @@ export class ClubPlayerMembership extends BaseEntity {
   @Column()
   declare confirmed: boolean;
 
-  @Field()
+  @Field(() => String)
   @Column({
     type: 'simple-enum',
     enum: ClubMembershipType,

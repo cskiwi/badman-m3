@@ -82,7 +82,7 @@ export class RankingSystem extends BaseEntity {
   @Column()
   declare inactivityAmount?: number;
 
-  @Field()
+  @Field(() => String)
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -91,7 +91,7 @@ export class RankingSystem extends BaseEntity {
 
   @Field()
   @Column({ type: 'simple-enum', enum: ['freeze', 'decrease'] })
-  declare inactiveBehavior?: 'freeze' | 'decrease';
+  declare inactiveBehavior: 'freeze' | 'decrease';
 
   @Field()
   @Column()
@@ -105,7 +105,7 @@ export class RankingSystem extends BaseEntity {
   @Column()
   declare calculationIntervalAmount?: number;
 
-  @Field()
+  @Field(() => String)
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -116,7 +116,7 @@ export class RankingSystem extends BaseEntity {
   @Column()
   declare periodAmount?: number;
 
-  @Field()
+  @Field(() => String)
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -135,7 +135,7 @@ export class RankingSystem extends BaseEntity {
   @Column()
   declare updateIntervalAmount?: number;
 
-  @Field()
+  @Field(() => String)
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -147,47 +147,42 @@ export class RankingSystem extends BaseEntity {
   declare rankingSystem: string;
 
   @Field()
-  @Column({ default: false})
+  @Column({ default: false })
   declare primary: boolean;
 
   @Field()
-  @Column({ default: false})
+  @Column({ default: false })
   declare calculateUpdates: boolean;
 
   @Field()
-  @Column({ default: false})
+  @Column({ default: false })
   declare runCurrently: boolean;
 
   @Field()
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   declare differenceForUpgradeSingle?: number;
 
   @Field()
-    @Column({ nullable: true})
-
+  @Column({ nullable: true })
   declare differenceForUpgradeDouble?: number;
 
   @Field()
-    @Column({ nullable: true})
-
+  @Column({ nullable: true })
   declare differenceForUpgradeMix?: number;
 
   @Field()
-    @Column({ nullable: true})
-
+  @Column({ nullable: true })
   declare differenceForDowngradeSingle?: number;
 
   @Field()
-    @Column({ nullable: true})
-
+  @Column({ nullable: true })
   declare differenceForDowngradeDouble?: number;
 
   @Field()
-    @Column({ nullable: true})
-
+  @Column({ nullable: true })
   declare differenceForDowngradeMix?: number;
 
-  @Field()
+  @Field(() => String)
   @Column({
     type: 'simple-enum',
     enum: StartingType,
