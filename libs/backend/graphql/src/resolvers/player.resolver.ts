@@ -46,6 +46,23 @@ export class PlayerResolver {
     return Player.find(listArgs);
   }
 
+  // get the active club
+  @ResolveField(() => Club, { nullable: true })
+  async club(@Parent() { id }: Player) {
+    const membership = await ClubPlayerMembership.find({
+      where: {
+        playerId: id,
+        confirmed: true,
+      },
+      order: {
+        start: 'DESC',
+      },
+      relations: ['club'],
+    });
+
+    return membership?.filter((m) => m.active).map((m) => m.club)?.[0];
+  }
+
   @ResolveField(() => [ClubPlayerMembership], { nullable: true })
   async clubPlayerMemberships(@Parent() { id }: Player) {
     return ClubPlayerMembership.find({

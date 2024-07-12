@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Player } from '@app/models';
+import { Club, Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
@@ -14,6 +14,7 @@ import {
 
 interface DetailState {
   player: Player | null;
+  club: Club | null;
   loading: boolean;
   error: string | null;
 }
@@ -28,13 +29,14 @@ export class DetailService {
   // state
   private initialState: DetailState = {
     player: null,
+    club: null,
     error: null,
     loading: true,
   };
 
   // selectors
   player = computed(() => this.state().player);
-  club = computed(() => this.state().player?.clubPlayerMemberships?.[0]?.club);
+  club = computed(() => this.state().club);
   error = computed(() => this.state().error);
   loading = computed(() => this.state().loading);
 
@@ -54,8 +56,9 @@ export class DetailService {
 
   sources$ = merge(
     this.playerLoaded$.pipe(
-      map((player) => ({
+      map(({ player, club }) => ({
         player,
+        club,
         loading: false,
       })),
     ),
@@ -74,7 +77,7 @@ export class DetailService {
     }>,
   ) {
     return this.apollo
-      .query<{ player: Player }>({
+      .query<{ player: Player & { club: Club } }>({
         query: gql`
           query Player($id: ID!) {
             player(id: $id) {
@@ -82,13 +85,9 @@ export class DetailService {
               fullName
               memberId
               slug
-              clubPlayerMemberships {
-                end
-                start
-                club {
-                  id
-                  name
-                }
+              club {
+                id
+                name
               }
             }
           }
@@ -106,7 +105,11 @@ export class DetailService {
           if (!result?.data.player) {
             throw new Error('No player found');
           }
-          return result.data.player;
+          const { club, ...player } = result.data.player;
+          return {
+            club: club as Club,
+            player: player as Player,
+          };
         }),
       );
   }
