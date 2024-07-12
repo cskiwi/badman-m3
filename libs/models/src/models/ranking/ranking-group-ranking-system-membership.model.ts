@@ -1,13 +1,13 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { RankingSystem } from './ranking-system.model';
-import { RankingGroup } from './ranking-group.model';
+import { ObjectType } from '@nestjs/graphql';
 import {
-  Entity,
   BaseEntity,
   Column,
+  Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { RankingGroup } from './ranking-group.model';
+import { RankingSystem } from './ranking-system.model';
 
 @ObjectType('RankingSystemRankingGroupMembership')
 @Entity('RankingSystemRankingGroupMemberships', { schema: 'ranking' })
@@ -23,13 +23,13 @@ export class RankingSystemRankingGroupMembership extends BaseEntity {
 
   @ManyToOne(
     () => RankingSystem,
-    (rankingSystem) => rankingSystem.rankingSystemRankingGroupMembership,
+    (membership) => membership.rankingSystemRankingGroupMemberships,
   )
   declare rankingSystem: RankingSystem;
 
   @ManyToOne(
     () => RankingGroup,
-    (rankingGroup) => rankingGroup.rankingSystemRankingGroupMembership,
+    (membership) => membership.rankingSystemRankingGroupMemberships,
   )
   declare rankingGroup: RankingGroup;
 }

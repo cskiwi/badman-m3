@@ -50,13 +50,14 @@ export class ImagesController {
       .orderBy('game.playedAt', 'DESC');
 
     const player = await playerQry.getOne();
+    const games = player?.gamePlayerMemberships || [];
 
     // this._logger.debug(playerQry.getSql());
     // this._logger.debug(JSON.stringify(player?.gamePlayerMemberships));
 
     // fake get games results last year for player
     const wins =
-      player?.gamePlayerMemberships.map((membership) => {
+      games.map((membership) => {
         return membership?.game?.winner == membership?.team ? 1 : 0;
       }) || [];
 
@@ -71,7 +72,7 @@ export class ImagesController {
       
         ${this.getGeneralInfo(player)}
         ${this.getRankging(player)}
-        ${this.getStats(player?.gamePlayerMemberships)}
+        ${this.getStats(games)}
         ${this.getGameRect(wins)}
 
       </svg>
@@ -88,9 +89,8 @@ export class ImagesController {
   }
 
   getGeneralInfo(player: Player) {
-    const club = player?.clubPlayerMemberships?.find(
-      (membership) => membership.active,
-    )?.club;
+    const clubs = player?.clubPlayerMemberships || [];
+    const club = clubs?.find((membership) => membership.active)?.club;
 
     return `
         <text x="75" y="150" font-family="Arial" font-size="100" fill="${this.textColor}">
@@ -103,7 +103,7 @@ export class ImagesController {
   }
 
   getRankging(player: Player) {
-    const rankingPlace = player?.rankingLastPlace;
+    const rankingPlace = player?.rankingLastPlaces?.[0];
     return `
         <text x="75" y="350" font-family="Arial" font-size="75" fill="${this.textColor}">
             <tspan font-weight="bold">${rankingPlace?.single} - ${rankingPlace?.double} - ${rankingPlace?.mix}</tspan>

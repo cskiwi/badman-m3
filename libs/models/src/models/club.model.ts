@@ -9,8 +9,8 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { ClubPlayerMembership } from './club-player-membership';
 import { UseForTeamName } from '../enums';
+import { ClubPlayerMembership } from './club-player-membership';
 
 @ObjectType('Club')
 @Entity('Clubs')
@@ -77,5 +77,5 @@ export class Club extends BaseEntity {
     () => ClubPlayerMembership,
     (clubPlayerMembership) => clubPlayerMembership.player,
   )
-  declare clubPlayerMembership: ClubPlayerMembership[];
+  declare clubPlayerMemberships: ClubPlayerMembership[];
 }

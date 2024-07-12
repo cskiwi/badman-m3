@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+
+@use './src/pages/detail/page-detail.component.theme.scss' as page-detail;
+
+@mixin typography($theme) {
+  @include page-detail.typography($theme);
+}
+
+@mixin color($theme) {
+  @include page-detail.color($theme);
+}
+
+@mixin theme($theme) {
+  @include color($theme);
+  @include typography($theme);
+}

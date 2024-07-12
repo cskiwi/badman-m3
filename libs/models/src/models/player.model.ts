@@ -6,19 +6,18 @@ import {
   Entity,
   Index,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
-  Unique,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 import { ClubPlayerMembership } from './club-player-membership';
-import { RankingLastPlace } from './ranking';
 import { GamePlayerMembership } from './event/game-player-membership';
+import { RankingLastPlace } from './ranking';
+import { TeamPlayerMembership } from './team-player-membership';
 
 @ObjectType('Player')
 @Entity('Players')
-@Index(["firstName", "lastName"])
+@Index(['firstName', 'lastName'])
 export class Player extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
@@ -79,23 +78,31 @@ export class Player extends BaseEntity {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  // @Field()
-  @OneToOne(
+  @Field(() => [RankingLastPlace], { nullable: true })
+  @OneToMany(
     () => RankingLastPlace,
     (rankingLastPlace) => rankingLastPlace.player,
   )
-  declare rankingLastPlace: Relation<RankingLastPlace>;
+  declare rankingLastPlaces: Relation<RankingLastPlace[]>;
 
-  // @Field()
+  @Field(() => [ClubPlayerMembership], { nullable: true })
   @OneToMany(
     () => ClubPlayerMembership,
     (clubPlayerMembership) => clubPlayerMembership.player,
   )
-  declare clubPlayerMemberships: ClubPlayerMembership[];
-  // @Field()
+  declare clubPlayerMemberships?: Relation<ClubPlayerMembership[]>;
+
+  @Field(() => [TeamPlayerMembership], { nullable: true })
+  @OneToMany(
+    () => TeamPlayerMembership,
+    (teamPlayerMembership) => teamPlayerMembership.player,
+  )
+  declare teamPlayerMemberships: Relation<TeamPlayerMembership[]>;
+
+  @Field(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(
     () => GamePlayerMembership,
     (gamePlayerMembership) => gamePlayerMembership.gamePlayer,
   )
-  declare gamePlayerMemberships: GamePlayerMembership[];
+  declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
 }

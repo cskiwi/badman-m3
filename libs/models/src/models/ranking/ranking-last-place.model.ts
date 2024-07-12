@@ -40,76 +40,76 @@ export class RankingLastPlace extends BaseEntity {
   })
   declare gender: 'M' | 'F';
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare singlePoints?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare mixPoints?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare doublePoints?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare singlePointsDowngrade?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare mixPointsDowngrade?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare doublePointsDowngrade?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare singleRank?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare mixRank?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare doubleRank?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare totalSingleRanking?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare totalMixRanking?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare totalDoubleRanking?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare totalWithinSingleLevel?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare totalWithinMixLevel?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare totalWithinDoubleLevel?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare single?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare mix?: number;
 
-  @Field()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare double?: number;
 
   @Field()
@@ -133,7 +133,7 @@ export class RankingLastPlace extends BaseEntity {
   declare systemId: string;
 
   // @Field()
-  @OneToOne(() => Player, (player) => player.rankingLastPlace)
+  @OneToOne(() => Player, (player) => player.rankingLastPlaces)
   @JoinColumn({ name: 'playerId' })
   declare player: Relation<Player>;
 

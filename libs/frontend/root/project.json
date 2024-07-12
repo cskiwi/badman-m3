@@ -2,18 +2,38 @@
   "name": "frontend-root",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/frontend/root/src",
+  "prefix": "lib",
   "projectType": "library",
   "tags": [],
-  "targets": {
+"targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "{projectRoot}/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "{projectRoot}/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "{projectRoot}/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/frontend/root/jest.config.ts"
+        "jestConfig": "{projectRoot}/jest.config.ts"
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "eslintConfig": "{projectRoot}/eslint.config.js"
+      }
     }
   }
 }

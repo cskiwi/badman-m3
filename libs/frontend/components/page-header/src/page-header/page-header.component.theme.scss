@@ -1,0 +1,26 @@
+// info: https://material.angular.io/guide/theming-your-components
+
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+@mixin color($theme) {
+  app-page-header {
+    a {
+      &,
+      &:visited,
+      &:hover {
+        color: mat.get-theme-color($theme, primary);
+      }
+    }
+  }
+}
+
+@mixin typography($theme) {
+  app-page-header {
+    .header {
+      .title {
+        font: mat.get-theme-typography($theme, 'headline-large');
+      }
+    }
+  }
+}

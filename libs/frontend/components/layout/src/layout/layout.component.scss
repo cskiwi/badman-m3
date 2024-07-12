@@ -1,0 +1,10 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 1200px;
+
+  &.fullWidth {
+    width: 100%;
+  }
+}

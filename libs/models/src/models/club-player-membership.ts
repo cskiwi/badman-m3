@@ -22,9 +22,13 @@ export class ClubPlayerMembership extends BaseEntity {
   @Column({ type: 'uuid' })
   declare clubId?: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column()
   declare end: Date;
+
+  @Field()
+  @Column()
+  declare start: Date;
 
   @Field()
   @Column()
@@ -37,14 +41,12 @@ export class ClubPlayerMembership extends BaseEntity {
   })
   declare membershipType?: ClubMembershipType;
 
-  @Field()
-  @Column()
-  declare start: Date;
-
+  @Field({ nullable: true})
   @ManyToOne(() => Player, (player) => player.clubPlayerMemberships)
   declare player: Player;
 
-  @ManyToOne(() => Club, (club) => club.clubPlayerMembership)
+  @Field({ nullable: true})
+  @ManyToOne(() => Club, (club) => club.clubPlayerMemberships)
   declare club: Club;
 
   // @Field()
