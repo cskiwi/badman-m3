@@ -30,7 +30,7 @@ export class ImagesController {
         'player.firstName',
         'player.lastName',
       ])
-      .leftJoinAndSelect('player.rankingLastPlace', 'rankingLastPlace')
+      .leftJoinAndSelect('player.rankingLastPlaces', 'rankingLastPlaces')
       .leftJoinAndSelect(
         'player.clubPlayerMemberships',
         'clubPlayerMemberships',
