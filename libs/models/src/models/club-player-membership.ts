@@ -6,9 +6,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ClubMembershipType } from '../enums';
 import { Club } from './club.model';
 import { Player } from './player.model';
-import { ClubMembershipType } from '../enums';
 
 @ObjectType('ClubPlayerMembership')
 @Entity('ClubPlayerMemberships')
@@ -41,15 +41,15 @@ export class ClubPlayerMembership extends BaseEntity {
   })
   declare membershipType?: ClubMembershipType;
 
-  @Field({ nullable: true})
+  @Field({ nullable: true })
   @ManyToOne(() => Player, (player) => player.clubPlayerMemberships)
   declare player: Player;
 
-  @Field({ nullable: true})
+  @Field({ nullable: true })
   @ManyToOne(() => Club, (club) => club.clubPlayerMemberships)
   declare club: Club;
 
-  // @Field()
+  @Field(() => Boolean)
   get active() {
     return this.isActiveFrom(new Date());
   }

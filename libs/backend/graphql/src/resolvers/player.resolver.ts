@@ -46,30 +46,27 @@ export class PlayerResolver {
     return Player.find(listArgs);
   }
 
-  // get the active club
-  @ResolveField(() => Club, { nullable: true })
-  async club(@Parent() { id }: Player) {
-    const membership = await ClubPlayerMembership.find({
-      where: {
-        playerId: id,
-        confirmed: true,
-      },
-      order: {
-        start: 'DESC',
-      },
-      relations: ['club'],
-    });
-
-    return membership?.filter((m) => m.active).map((m) => m.club)?.[0];
-  }
-
   @ResolveField(() => [ClubPlayerMembership], { nullable: true })
-  async clubPlayerMemberships(@Parent() { id }: Player) {
-    return ClubPlayerMembership.find({
-      where: {
+  async clubPlayerMemberships(
+    @Parent() { id }: Player,
+    @Args() listArgs: ListArgs<ClubPlayerMembership>,
+  ) {
+    const args = ListArgs.toFindOptions(listArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         playerId: id,
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          playerId: id,
+        },
+      ];
+    }
+
+    return ClubPlayerMembership.find(args);
   }
 
   @ResolveField(() => [RankingLastPlace], { nullable: true })
@@ -79,10 +76,18 @@ export class PlayerResolver {
   ) {
     const args = ListArgs.toFindOptions(listArgs);
 
-    args.where = args.where.map((where) => ({
-      ...where,
-      playerId: id,
-    }));
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        playerId: id,
+      }));
+    } else {
+      args.where = [
+        {
+          playerId: id,
+        },
+      ];
+    }
 
     return RankingLastPlace.find(args);
   }
