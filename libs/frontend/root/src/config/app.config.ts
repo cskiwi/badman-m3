@@ -19,12 +19,12 @@ import {
 } from '@angular/common/http';
 import { BASE_URL } from '@app/frontend-utils';
 import { isPlatformBrowser } from '@angular/common';
-import { GraphQLModule } from '@app/frontend-modules-grahql';
+import { GraphQLModule } from '@app/frontend-modules-graphql';
 import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { SEO_CONFIG } from '@app/frontend-seo';
-import { TranslationModule } from '@app/frontend-translation';
+import { SEO_CONFIG } from '@app/frontend-modules-seo';
+import { TranslationModule } from '@app/frontend-modules-translation';
 
 export const appConfig: ApplicationConfig = {
   providers: [

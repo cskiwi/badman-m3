@@ -32,26 +32,27 @@
         "libs/frontend/components/page-header/src/index.ts"
       ],
       "@app/frontend-modules-auth": ["libs/frontend/modules/auth/src/index.ts"],
-      "@app/frontend-modules-grahql": [
+      "@app/frontend-modules-graphql": [
         "libs/frontend/modules/graphql/src/index.ts"
       ],
       "@app/frontend-modules-graphql/ranking": [
         "libs/frontend/modules/graphql/ranking/src/index.ts"
       ],
+      "@app/frontend-modules-seo": ["libs/frontend/modules/seo/src/index.ts"],
+      "@app/frontend-modules-seo/service": [
+        "libs/frontend/modules/seo/service/src/index.ts"
+      ],
       "@app/frontend-pages-club": ["libs/frontend/pages/club/src/index.ts"],
       "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
-      "@app/frontend-pages-player": [
-        "libs/frontend/pages/player/src/index.ts"
-      ],
+      "@app/frontend-pages-player": ["libs/frontend/pages/player/src/index.ts"],
       "@app/frontend-root": ["libs/frontend/root/src/index.ts"],
-      "@app/frontend-seo": ["libs/frontend/modules/seo/src/index.ts"],
-      "@app/frontend-translation": [
+      "@app/frontend-modules-translation": [
         "libs/frontend/modules/translation/src/index.ts"
       ],
-      "@app/frontend-translation/languages": [
+      "@app/frontend-modules-translation/languages": [
         "libs/frontend/modules/translation/languages/src/index.ts"
       ],
-      "@app/frontend-translation/selection": [
+      "@app/frontend-modules-translation/selection": [
         "libs/frontend/modules/translation/selection/src/index.ts"
       ],
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],

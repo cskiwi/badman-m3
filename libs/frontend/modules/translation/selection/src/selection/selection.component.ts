@@ -4,8 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { setLanguage } from '@app/frontend-translation';
-import { AvaliableLanguages, languages } from '@app/frontend-translation/languages';
+import { setLanguage } from '@app/frontend-modules-translation';
+import { AvaliableLanguages, languages } from '@app/frontend-modules-translation/languages';
 
 @Component({
   selector: 'app-language-selection',

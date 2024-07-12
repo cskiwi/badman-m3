@@ -1,10 +1,10 @@
 {
-  "name": "frontend-translation",
+  "name": "frontend-modules-translation",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/frontend/modules/translation/src",
-  "prefix": "badman",
-  "tags": [],
+  "prefix": "app",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/angular:ng-packagr-lite",

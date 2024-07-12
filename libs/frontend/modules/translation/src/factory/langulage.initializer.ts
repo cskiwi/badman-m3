@@ -1,6 +1,6 @@
 import { isPlatformBrowser, LOCATION_INITIALIZED } from '@angular/common';
 import { effect, Injector, PLATFORM_ID } from '@angular/core';
-import { AvaliableLanguages, languages } from '@app/frontend-translation/languages';
+import { AvaliableLanguages, languages } from '@app/frontend-modules-translation/languages';
 import { TranslateService } from '@ngx-translate/core';
 import { lastValueFrom } from 'rxjs';
 

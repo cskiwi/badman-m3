@@ -1,6 +1,9 @@
 {
-  "name": "@app/frontend-translation",
-  "version": "6.156.0",
-  "dependencies": {},
+"name": "@app/frontend-modules-translation",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^18.0.0",
+    "@angular/core": "^18.0.0"
+  },
   "sideEffects": false
 }

@@ -1,9 +1,8 @@
 import { isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
+import { SEO_CONFIG, ISeoConfig } from '@app/frontend-modules-seo';
 import { Club, Player } from '@app/models';
-import { ISeoConfig } from '../interfaces/seo-config.interface';
-import { SEO_CONFIG } from '../seo.module';
 
 type ISeoMetaData = {
   keywords?: string[];
