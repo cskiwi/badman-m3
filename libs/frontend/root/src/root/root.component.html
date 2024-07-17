@@ -10,7 +10,7 @@
     <h1 class="app-name">Badman</h1>
     <div class="spacer"></div>
     @if (user()?.slug) {
-      {{ user()?.fullName }}
+      {{ user()?.firstName }}
     } @else {
       <button mat-stroked-button (click)="login()">Log in</button>
     }

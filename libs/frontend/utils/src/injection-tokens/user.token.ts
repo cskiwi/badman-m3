@@ -30,7 +30,7 @@ export const USER$ = new InjectionToken('USER', {
             query {
               me {
                 id
-                fullName
+                firstName
                 slug
                 clubPlayerMemberships {
                   id
