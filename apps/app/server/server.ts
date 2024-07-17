@@ -1,17 +1,15 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { CommonEngine } from '@angular/ssr';
-import { AppModule } from '@app/backend-root';
-import { VersioningType } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { getServer } from '@app/backend-root';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { ISRHandler } from '@rx-angular/isr/server';
 import { CacheHandler } from '@rx-angular/isr/models';
-import { FileSystemCacheHandler } from './filesystem-cache-handler';
-import { RedisCacheHandler } from './redis-cache-handler';
+import { ISRHandler } from '@rx-angular/isr/server';
 import express from 'express';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
+import { FileSystemCacheHandler } from './filesystem-cache-handler';
+import { RedisCacheHandler } from './redis-cache-handler';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -123,12 +121,7 @@ export async function app() {
 
   // setup NestJS app
   const adapter = new ExpressAdapter(server);
-  const app = await NestFactory.create(AppModule, adapter);
-  app.setGlobalPrefix('api');
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  });
+  const app = await getServer(adapter);
   await app.init();
 
   return server;
@@ -139,9 +132,7 @@ async function run(): Promise<void> {
 
   // Start up the Node server
   const server = await app();
-  server.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
-  });
+  server.listen(port);
 }
 
 run();

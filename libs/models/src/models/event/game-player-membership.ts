@@ -2,14 +2,13 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
-  CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
-import { Game } from './game.model';
 import { Player } from '../player.model';
+import { Game } from './game.model';
 
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
@@ -17,13 +16,6 @@ export class GamePlayerMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   declare id: number;
 
-  @Field()
-  @CreateDateColumn()
-  declare createdAt: Date;
-
-  @Field({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
-  declare updatedAt: Date;
 
   @Column({ type: 'uuid' })
   declare playerId?: string;
@@ -31,18 +23,23 @@ export class GamePlayerMembership extends BaseEntity {
   @Column({ type: 'uuid' })
   declare gameId?: string;
 
+  @Field()
   @Column()
   declare team: number;
 
+  @Field()
   @Column()
   declare player: number;
 
+  @Field()
   @Column()
   declare single?: number;
 
+  @Field()
   @Column()
   declare double?: number;
 
+  @Field()
   @Column()
   declare mix?: number;
 
@@ -50,6 +47,7 @@ export class GamePlayerMembership extends BaseEntity {
   declare systemId: string;
 
   @ManyToOne(() => Player, (player) => player.gamePlayerMemberships)
+  @JoinColumn({ name: 'playerId' })
   declare gamePlayer: Player;
 
   @ManyToOne(() => Game, (game) => game.gamePlayerMembership)

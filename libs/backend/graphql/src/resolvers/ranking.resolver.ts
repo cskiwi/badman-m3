@@ -5,7 +5,7 @@ import { Args, ID, Query, Resolver } from '@nestjs/graphql';
 @Resolver(() => RankingSystem)
 export class RankingSystemResolver {
   @Query(() => RankingSystem)
-  async rankingsystem(
+  async rankingSystem(
     @Args('id', { type: () => ID, nullable: true }) id: string,
   ): Promise<RankingSystem> {
     const rankingsystem = id
@@ -28,7 +28,7 @@ export class RankingSystemResolver {
   }
 
   @Query(() => [RankingSystem])
-  async rankingsystems(): Promise<RankingSystem[]> {
+  async rankingSystems(): Promise<RankingSystem[]> {
     return RankingSystem.find({
       take: 10,
     });

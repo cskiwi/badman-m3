@@ -15,28 +15,49 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@app/utils": ["libs/utils/src/index.ts"],
-      "@app/models": ["libs/models/src/index.ts"],
+      "@app/backend-authorization": ["libs/backend/authorization/src/index.ts"],
+      "@app/backend-database": ["libs/backend/database/src/index.ts"],
+      "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
+      "@app/backend-health": ["libs/backend/health/src/index.ts"],
       "@app/backend-root": ["libs/backend/root/src/index.ts"],
       "@app/backend-routes-generator": [
         "libs/backend/routes-generator/src/index.ts"
       ],
-      "@app/backend-authorization": ["libs/backend/authorization/src/index.ts"],
-      "@app/backend-health": ["libs/backend/health/src/index.ts"],
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
-      "@app/backend-database": ["libs/backend/database/src/index.ts"],
-      "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
-      "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
-      "@app/frontend-pages-players": [
-        "libs/frontend/pages/players/src/index.ts"
+      "@app/frontend-components": ["libs/frontend/components/src/index.ts"],
+      "@app/frontend-components/layout": [
+        "libs/frontend/components/layout/src/index.ts"
       ],
-      "@app/frontend-root": ["libs/frontend/root/src/index.ts"],
-      "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
-      "@app/frontend-seo": ["libs/frontend/modules/seo/src/index.ts"],
-      "@app/frontend-modules-grahql": [
+      "@app/frontend-components/page-header": [
+        "libs/frontend/components/page-header/src/index.ts"
+      ],
+      "@app/frontend-modules-auth": ["libs/frontend/modules/auth/src/index.ts"],
+      "@app/frontend-modules-graphql": [
         "libs/frontend/modules/graphql/src/index.ts"
       ],
-      "@app/frontend-modules-auth": ["libs/frontend/modules/auth/src/index.ts"]
+      "@app/frontend-modules-graphql/ranking": [
+        "libs/frontend/modules/graphql/ranking/src/index.ts"
+      ],
+      "@app/frontend-modules-seo": ["libs/frontend/modules/seo/src/index.ts"],
+      "@app/frontend-modules-seo/service": [
+        "libs/frontend/modules/seo/service/src/index.ts"
+      ],
+      "@app/frontend-pages-club": ["libs/frontend/pages/club/src/index.ts"],
+      "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
+      "@app/frontend-pages-player": ["libs/frontend/pages/player/src/index.ts"],
+      "@app/frontend-root": ["libs/frontend/root/src/index.ts"],
+      "@app/frontend-modules-translation": [
+        "libs/frontend/modules/translation/src/index.ts"
+      ],
+      "@app/frontend-modules-translation/languages": [
+        "libs/frontend/modules/translation/languages/src/index.ts"
+      ],
+      "@app/frontend-modules-translation/selection": [
+        "libs/frontend/modules/translation/selection/src/index.ts"
+      ],
+      "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
+      "@app/models": ["libs/models/src/index.ts"],
+      "@app/utils": ["libs/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

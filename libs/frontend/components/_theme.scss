@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+
+@use './page-header/src/page-header/page-header.component.theme.scss' as page-header;
+
+@mixin typography($theme) {
+  @include page-header.typography($theme);
+}
+
+@mixin color($theme) {
+  @include page-header.color($theme);
+}
+
+@mixin theme($theme) {
+  @include color($theme);
+  @include typography($theme);
+}

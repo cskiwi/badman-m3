@@ -1,0 +1,8 @@
+{
+  "exportall.config.folderListener": [
+    "/libs/models/src/models",
+    "/libs/models/src/models/ranking",
+    "/libs/models/src/enums",
+    "/libs/backend/graphql/src/resolvers"
+  ]
+}

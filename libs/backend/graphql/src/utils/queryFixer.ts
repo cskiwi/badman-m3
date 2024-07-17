@@ -28,6 +28,9 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
       input[key] = queryFixer(input[key]);
       return input;
     }
+    if (!key.startsWith('$')) {
+      continue;
+    }
 
     const operatorMap = new Map<string, Record<string, unknown>>([
       ['$eq', input[key]],
@@ -51,7 +54,7 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
       return operatorMap.get(key);
     }
 
-    console.warn(`Unknown key: ${key}`);
+    console.warn(`Unknown key: ${key}, value: ${input[key]}`);
   }
 
   return input as unknown;

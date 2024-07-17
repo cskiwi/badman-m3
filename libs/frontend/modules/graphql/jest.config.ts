@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'frontend-modules-graphql',
   preset: '../../../../jest.preset.js',

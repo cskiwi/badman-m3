@@ -1,8 +1,22 @@
-import { Player } from '@app/models';
+import {
+  Club,
+  ClubPlayerMembership,
+  Player,
+  RankingLastPlace,
+} from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  ID,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { Like } from 'typeorm';
+import { WhereArgs } from '../utils/list.args';
+import { ListArgs } from '../utils/input';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -28,12 +42,53 @@ export class PlayerResolver {
   }
 
   @Query(() => [Player])
-  async players(): Promise<Player[]> {
-    return Player.find({
-      where: {
-        memberId: Like('3%'),
-      },
-      take: 10,
-    });
+  async players(@Args() listArgs: ListArgs<Player>): Promise<Player[]> {
+    return Player.find(listArgs);
+  }
+
+  @ResolveField(() => [ClubPlayerMembership], { nullable: true })
+  async clubPlayerMemberships(
+    @Parent() { id }: Player,
+    @Args() listArgs: ListArgs<ClubPlayerMembership>,
+  ) {
+    const args = ListArgs.toFindOptions(listArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        playerId: id,
+      }));
+    } else {
+      args.where = [
+        {
+          playerId: id,
+        },
+      ];
+    }
+
+    return ClubPlayerMembership.find(args);
+  }
+
+  @ResolveField(() => [RankingLastPlace], { nullable: true })
+  async rankingLastPlaces(
+    @Parent() { id }: Player,
+    @Args() listArgs: ListArgs<RankingLastPlace>,
+  ) {
+    const args = ListArgs.toFindOptions(listArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        playerId: id,
+      }));
+    } else {
+      args.where = [
+        {
+          playerId: id,
+        },
+      ];
+    }
+
+    return RankingLastPlace.find(args);
   }
 }

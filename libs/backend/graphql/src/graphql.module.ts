@@ -10,9 +10,13 @@ import {
 import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaReporting';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { AuthorizationModule } from '@app/backend-authorization';
-import { UserResolver } from './resolvers/user.resolver';
-import { PlayerResolver } from './resolvers/player.resolver';
-import { RankingSystemResolver } from './resolvers/ranking.resolver';
+import {
+  ClubPlayerMembershipResolver,
+  ClubResolver,
+  PlayerResolver,
+  RankingSystemResolver,
+  UserResolver,
+} from './resolvers';
 
 @Module({
   imports: [
@@ -61,6 +65,12 @@ import { RankingSystemResolver } from './resolvers/ranking.resolver';
       },
     }),
   ],
-  providers: [UserResolver, PlayerResolver, RankingSystemResolver],
+  providers: [
+    UserResolver,
+    PlayerResolver,
+    ClubPlayerMembershipResolver,
+    ClubResolver,
+    RankingSystemResolver,
+  ],
 })
 export class GraphQLModule {}

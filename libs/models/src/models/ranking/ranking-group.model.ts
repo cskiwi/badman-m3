@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,9 +30,9 @@ export class RankingGroup extends BaseEntity {
   @Column()
   declare name: string;
 
-  @ManyToOne(
+  @OneToMany(
     () => RankingSystemRankingGroupMembership,
-    (rankingGroup) => rankingGroup.rankingGroup,
+    (membership) => membership.rankingGroup,
   )
-  declare rankingSystemRankingGroupMembership: RankingSystemRankingGroupMembership;
+  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership;
 }

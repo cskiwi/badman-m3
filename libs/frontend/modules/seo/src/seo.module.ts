@@ -1,7 +1,7 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { ISeoConfig } from './interfaces/seo-config.interface';
+import { ISeoConfig } from './interfaces';
 
 export const SEO_CONFIG = new InjectionToken<ISeoConfig>('SEO_CONFIG');
 

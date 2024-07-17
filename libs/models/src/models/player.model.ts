@@ -6,19 +6,18 @@ import {
   Entity,
   Index,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { ClubPlayerMembership } from './club-player-membership';
-import { RankingLastPlace } from './ranking';
 import { GamePlayerMembership } from './event/game-player-membership';
+import { RankingLastPlace } from './ranking';
+import { TeamPlayerMembership } from './team-player-membership';
 
 @ObjectType('Player')
 @Entity('Players')
-@Index(["firstName", "lastName"])
+@Index(['firstName', 'lastName'])
 export class Player extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
@@ -79,23 +78,19 @@ export class Player extends BaseEntity {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  // @Field()
-  @OneToOne(
-    () => RankingLastPlace,
-    (rankingLastPlace) => rankingLastPlace.player,
-  )
-  declare rankingLastPlace: Relation<RankingLastPlace>;
+  @Field(() => [RankingLastPlace], { nullable: true })
+  @OneToMany(() => RankingLastPlace, (membership) => membership.player)
+  declare rankingLastPlaces: Relation<RankingLastPlace[]>;
 
-  // @Field()
-  @OneToMany(
-    () => ClubPlayerMembership,
-    (clubPlayerMembership) => clubPlayerMembership.player,
-  )
-  declare clubPlayerMemberships: ClubPlayerMembership[];
-  // @Field()
-  @OneToMany(
-    () => GamePlayerMembership,
-    (gamePlayerMembership) => gamePlayerMembership.gamePlayer,
-  )
-  declare gamePlayerMemberships: GamePlayerMembership[];
+  @Field(() => [ClubPlayerMembership], { nullable: true })
+  @OneToMany(() => ClubPlayerMembership, (membership) => membership.player)
+  declare clubPlayerMemberships?: Relation<ClubPlayerMembership[]>;
+
+  @Field(() => [TeamPlayerMembership], { nullable: true })
+  @OneToMany(() => TeamPlayerMembership, (membership) => membership.player)
+  declare teamPlayerMemberships: Relation<TeamPlayerMembership[]>;
+
+  @Field(() => [GamePlayerMembership], { nullable: true })
+  @OneToMany(() => GamePlayerMembership, (membership) => membership.gamePlayer)
+  declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
 }
