@@ -9,7 +9,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 import { Player } from './player.model';
 import { TeamPlayerMembership } from './team-player-membership';
@@ -93,7 +93,6 @@ export class Team extends BaseEntity {
   @OneToOne(() => Player)
   @JoinColumn({ name: 'captainId' })
   declare captain: Relation<Player>;
-
 
   @Field(() => [Player], { nullable: true })
   @OneToMany(

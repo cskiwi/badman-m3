@@ -5,10 +5,9 @@
 $toolbar-height: 75px;
 $min-height: calc(100vh - $toolbar-height);
 
-app-name{
+app-name {
   font-size: 1.5em;
   font-weight: bold;
-
 }
 
 .nav {
@@ -17,9 +16,13 @@ app-name{
   min-height: $min-height;
   overflow: auto;
   box-sizing: border-box;
+
+  mat-divider {
+    margin: 1rem 0;
+  }
 }
 
-.spacer{
+.spacer {
   flex: 1 1 auto;
 }
 

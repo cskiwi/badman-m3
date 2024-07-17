@@ -9,7 +9,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Like } from 'typeorm';
+import { ListArgs } from '../utils';
 
 @Resolver(() => Club)
 export class ClubResolver {
@@ -36,10 +36,9 @@ export class ClubResolver {
   }
 
   @Query(() => [Club])
-  async Clubs(): Promise<Club[]> {
-    return Club.find({
-      take: 10,
-    });
+  async clubs(@Args() listArgs: ListArgs<Club>): Promise<Club[]> {
+    const args = ListArgs.toFindOptions(listArgs);
+    return Club.find(args);
   }
 
   @ResolveField(() => [ClubPlayerMembership], { nullable: true })

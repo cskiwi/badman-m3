@@ -1,12 +1,31 @@
-<mat-list>
-  @for (player of players(); track player.id) {
-    <mat-list-item  [routerLink]="player.slug">
-      <!-- <img matListItemAvatar src="..." alt="..." /> -->
-      <h3 matListItemTitle>{{ player.fullName }}</h3>
-      <p matListItemLine>
-        <span>{{ player.memberId }}</span>
-        <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
-      </p>
-    </mat-list-item>
-  }
-</mat-list>
+@if (!loading()) {
+  <lib-layout>
+    <app-page-header>
+      <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
+      <ng-content title>Players</ng-content>
+    </app-page-header>
+    <section class="players">
+      <mat-list>
+        @for (player of players(); track player.id) {
+          <mat-list-item [routerLink]="player.slug">
+            <!-- <img matListItemAvatar src="..." alt="..." /> -->
+            <h3 matListItemTitle>{{ player.fullName }}</h3>
+            <p matListItemLine>
+              <span>{{ player.memberId }}</span>
+              <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
+            </p>
+          </mat-list-item>
+        }
+      </mat-list>
+    </section>
+  </lib-layout>
+} @else {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+@if (error()) {
+  <div class="error">
+    <mat-icon>error</mat-icon>
+    {{ error() }}
+  </div>
+}

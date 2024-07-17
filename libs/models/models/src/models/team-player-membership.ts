@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { TeamMembershipType } from '../enums';
+import { TeamMembershipType } from '@app/models/enums';
 import { Player } from './player.model';
 import { Team } from './team.model';
 
@@ -21,7 +21,6 @@ export class TeamPlayerMembership extends BaseEntity {
 
   @Column({ type: 'uuid' })
   declare teamId?: string;
-
 
   @Field(() => String)
   @Column({

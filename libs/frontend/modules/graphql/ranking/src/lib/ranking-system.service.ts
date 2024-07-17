@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, computed, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, effect, inject } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Observable, merge, of } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
@@ -63,6 +63,25 @@ export class RankingSystemService {
 
   watchId = computed(() => this.queryParams()?.get('watch'));
 
+  constructor(){
+    effect(() => {
+      if (this.watchId()) {
+        this.state.watchSystem(this.watchId() as string);
+
+        const queryParams: { [key: string]: string | undefined } = {
+          ...this.route.snapshot.queryParams,
+          watch: undefined,
+        };
+
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams,
+          queryParamsHandling: 'merge',
+        });
+      }
+    });
+  }
+
   // state
   initialState: RankingState = {
     rankingSystem: null,
@@ -126,24 +145,7 @@ export class RankingSystemService {
           ),
         ),
     },
-    effects: (state) => ({
-      init: () => {
-        if (this.watchId()) {
-          state.watchSystem(this.watchId() as string);
-
-          const queryParams: { [key: string]: string | undefined } = {
-            ...this.route.snapshot.queryParams,
-            watch: undefined,
-          };
-
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams,
-            queryParamsHandling: 'merge',
-          });
-        }
-      },
-    }),
+  
   });
 
   private _loadSystem(id?: string | null) {

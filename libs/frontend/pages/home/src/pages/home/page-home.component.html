@@ -1,1 +1,36 @@
-<p>page-home works!</p>
+<!-- @if (!loading()) { -->
+<lib-layout>
+  <app-page-header>
+    <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
+    <ng-content title>Home</ng-content>
+    <ng-content subTitle>
+      <div class="info">
+        <!-- <div class="click-for-breakdown">
+          {{ 'all.ranking.breakdown.hint' | translate }}
+        </div> -->
+      </div>
+    </ng-content>
+  </app-page-header>
+  <section class="ranking">
+    <mtx-grid
+      [data]="dataSource()"
+      [loading]="loading()"
+      [columns]="columns"
+      [showPaginator]="false"
+      [pageSize]="99"
+      sortActive="level"
+      sortDirection="asc"
+    />
+  </section>
+</lib-layout>
+<!-- } @else {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+ -->
+
+ @if (error()) {
+  <div class="error">
+    <mat-icon>error</mat-icon>
+    {{ error() }}
+  </div>
+}

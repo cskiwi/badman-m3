@@ -1,6 +1,8 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
 
+console.log(`Building server... ${process.env.NODE_ENV}`);
+
 module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/api'),

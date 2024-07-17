@@ -1,4 +1,5 @@
-import { GamePlayerMembership, GameType, Player } from '@app/models';
+import { GamePlayerMembership,  Player } from '@app/models';
+import { GameType } from '@app/models/enums';
 import { Controller, Get, Logger, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 

@@ -83,8 +83,8 @@ export class OverviewService {
     return this.apollo
       .query<{ players: Player[] }>({
         query: gql`
-          query Players {
-            players {
+          query Players($where: JSONObject) {
+            players(where: $where) {
               id
               memberId
               fullName
@@ -92,6 +92,11 @@ export class OverviewService {
             }
           }
         `,
+        variables: {
+          where: {
+            memberId: { $like: '5%' },
+          },
+        },
       })
       .pipe(
         catchError((err) => {

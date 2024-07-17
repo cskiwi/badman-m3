@@ -1,9 +1,9 @@
 // transformer
 export class DecimalColumnTransformer {
   to(data: number): number {
-      return data;
+    return data;
   }
   from(data: string): number {
-      return parseFloat(data);
+    return parseFloat(data);
   }
 }

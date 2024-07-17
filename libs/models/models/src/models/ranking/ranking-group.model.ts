@@ -17,7 +17,7 @@ export class RankingGroup extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
-    
+
   @Field()
   @CreateDateColumn()
   declare createdAt: Date;

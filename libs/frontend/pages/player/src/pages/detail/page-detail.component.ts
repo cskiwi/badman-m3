@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
 } from '@angular/core';
@@ -16,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { ShowLevelComponent } from './components/show-level.component';
+import { USER, AUTH } from '@app/frontend-utils';
 
 @Component({
   selector: 'lib-page-detail',
@@ -48,6 +50,35 @@ export class PageDetailComponent {
   club = this.dataService.club;
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  user = inject(USER);
+  auth = inject(AUTH);
+
+  clubs = computed(
+    () =>
+      (this.user()?.clubPlayerMemberships ?? [])
+        .filter((membership) => membership?.active)
+        .sort((a, b) => {
+          console.log(a?.membershipType, b?.membershipType);
+          return 0;
+        }),
+    // .sort((a, b) => {
+    //   // sort by membership type, first normal then loan
+    //   if (a?.membershipType === b?.membershipType) {
+    //     return 0;
+    //   }
+
+    //   if (a?.membershipType === ClubMembershipType.NORMAL) {
+    //     return -1;
+    //   }
+
+    //   if (b?.membershipType === ClubMembershipType.NORMAL) {
+    //     return 1;
+    //   }
+
+    //   return 0;
+    // }),
+  );
 
   constructor() {
     effect(() => {

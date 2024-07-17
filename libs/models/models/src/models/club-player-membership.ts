@@ -6,19 +6,22 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ClubMembershipType } from '../enums';
+import { ClubMembershipType } from '@app/models/enums';
 import { Club } from './club.model';
 import { Player } from './player.model';
 
 @ObjectType('ClubPlayerMembership')
 @Entity('ClubPlayerMemberships')
 export class ClubPlayerMembership extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid', { name: 'id' })
-  declare id: number;
+  @Field()
+  @PrimaryGeneratedColumn('uuid')
+  declare id: string;
 
+  @Field()
   @Column({ type: 'uuid' })
   declare playerId?: string;
 
+  @Field()
   @Column({ type: 'uuid' })
   declare clubId?: string;
 

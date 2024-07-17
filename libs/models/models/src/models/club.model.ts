@@ -9,7 +9,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { UseForTeamName } from '../enums';
+import { UseForTeamName } from '@app/models/enums';
 import { ClubPlayerMembership } from './club-player-membership';
 
 @ObjectType('Club')

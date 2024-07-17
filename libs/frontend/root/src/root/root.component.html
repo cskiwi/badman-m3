@@ -9,10 +9,8 @@
     </button>
     <h1 class="app-name">Badman</h1>
     <div class="spacer"></div>
-    @if (user()) {
-      @if (user()) {
-        {{ user()?.fullName }}
-      }
+    @if (user()?.slug) {
+      {{ user()?.fullName }}
     } @else {
       <button mat-stroked-button (click)="login()">Log in</button>
     }
@@ -28,7 +26,20 @@
     >
       <div class="nav">
         <mat-nav-list>
-          <a mat-list-item routerLink=".">Root</a>
+          @if (user()?.slug) {
+            <a mat-list-item [routerLink]="['/player', user()?.slug]">
+              {{ 'all.shell.sidebar.persnal.games' | translate }}
+            </a>
+
+            @if (clubs().length === 1) {
+              <a mat-list-item [routerLink]="['/club', clubs()[0].club.slug]">
+                {{ 'all.shell.sidebar.persnal.club' | translate }}
+              </a>
+            }
+            <mat-divider />
+          }
+
+          <a mat-list-item routerLink=".">Home</a>
           <a mat-list-item routerLink="player">Players</a>
         </mat-nav-list>
       </div>

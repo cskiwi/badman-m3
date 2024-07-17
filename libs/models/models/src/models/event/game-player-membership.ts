@@ -5,7 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Player } from '../player.model';
 import { Game } from './game.model';
@@ -15,7 +15,6 @@ import { Game } from './game.model';
 export class GamePlayerMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid', { name: 'id' })
   declare id: number;
-
 
   @Column({ type: 'uuid' })
   declare playerId?: string;

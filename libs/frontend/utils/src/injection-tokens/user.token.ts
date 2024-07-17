@@ -31,6 +31,17 @@ export const USER$ = new InjectionToken('USER', {
               me {
                 id
                 fullName
+                slug
+                clubPlayerMemberships {
+                  id
+                  active
+                  membershipType
+                  club {
+                    id
+                    name
+                    slug
+                  }
+                }
               }
             }
           `,

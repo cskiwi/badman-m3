@@ -2,7 +2,7 @@ import { ArgsType, Field, Int, InputType } from '@nestjs/graphql';
 import { Min } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { queryFixer } from './queryFixer';
-import { FindOptionsWhere } from 'typeorm';
+import { FindManyOptions, FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 
 @InputType()
 export class SortOrderType {
@@ -21,7 +21,7 @@ export class SortOrder {
 @ArgsType()
 export class WhereArgs<T> {
   @Field(() => GraphQLJSONObject, { nullable: true })
-  where?: FindOptionsWhere<T>;
+  where?: FindOptionsWhere<T>[];
 }
 
 @ArgsType()
@@ -35,14 +35,26 @@ export class ListArgs<T> extends WhereArgs<T> {
   take?: number | null;
 
   @Field(() => [SortOrderType], { nullable: true })
-  order?: SortOrderType[];
+  order?: FindOptionsOrder<T>;
 
-  static toFindOptions<T>(args: ListArgs<T>) {
+  static toFindOptions<T>(args: ListArgs<T>): Omit<
+    FindManyOptions<T>,
+    'where'
+  > & {
+    where: FindOptionsWhere<T>[];
+  } {
     return {
-      limit: args.take,
-      offset: args.skip,
-      where: queryFixer(args.where),
-      order: args.order?.map(({ field, direction }) => [field, direction]) ?? [],
-    } as FindOptionsWhere<T>;
+      take: args.take ?? 10,
+      skip: args.skip,
+      where: this.getQuery(args.where),
+      order: args.order,
+    };
+  }
+
+  static getQuery<T>(
+    args?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+  ): FindOptionsWhere<T>[] {
+    const where = queryFixer(args) ?? [];
+    return Array.isArray(where) ? where : [where];
   }
 }

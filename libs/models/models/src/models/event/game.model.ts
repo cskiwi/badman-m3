@@ -9,8 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
-import { GameType } from '../../enums/gameType.enum';
-import { GameStatus } from '../../enums/gameStatus.enum';
+import { GameStatus, GameType } from '@app/models/enums';
 
 @ObjectType('Game')
 @Entity('Games', { schema: 'event' })
@@ -33,46 +32,46 @@ export class Game extends BaseEntity {
 
   @Field(() => String)
   @Column({ type: 'simple-enum', enum: GameType })
-  declare gameType: GameType;
+  declare gameType?: GameType;
 
   @Field(() => String)
   @Column({ type: 'simple-enum', enum: GameType })
   declare status?: GameStatus;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare set1Team1?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare set1Team2?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare set2Team1?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare set2Team2?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare set3Team1?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare set3Team2?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare winner?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare order?: number;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare round?: string;
 
   @Field()
@@ -84,11 +83,11 @@ export class Game extends BaseEntity {
   declare linkType: string;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare courtId?: string;
 
   @Field()
-  @Column({nullable: true})
+  @Column({ nullable: true })
   declare visualCode?: string;
 
   // @Field()

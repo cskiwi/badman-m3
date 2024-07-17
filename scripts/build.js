@@ -92,8 +92,14 @@ async function main() {
     await runCommandAndWait('nx', ['build', 'api']);
 
     console.log('Server build completed. Starting server...');
-    const apiProcess = runCommand('node', ['dist/apps/api/main.js']);
+    // find any api/main.****.js file and run it
+    const files = fs.readdirSync('dist/apps/api');
+    const mainFile = files.find((file) => file.startsWith('main.'));
+    if (!mainFile) {
+      throw new Error('Main file not found');
+    }
 
+    const apiProcess = runCommand('node', [`dist/apps/api/${mainFile}`]);
     console.log(
       `Waiting for server ${apiProcess.pid} to be ready on port ${port}...`,
     );

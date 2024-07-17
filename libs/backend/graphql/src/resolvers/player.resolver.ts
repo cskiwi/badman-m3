@@ -1,9 +1,4 @@
-import {
-  Club,
-  ClubPlayerMembership,
-  Player,
-  RankingLastPlace,
-} from '@app/models';
+import { ClubPlayerMembership, Player, RankingLastPlace } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException } from '@nestjs/common';
 import {
@@ -14,9 +9,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Like } from 'typeorm';
-import { WhereArgs } from '../utils/list.args';
-import { ListArgs } from '../utils/input';
+import { ListArgs } from '../utils';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -43,7 +36,8 @@ export class PlayerResolver {
 
   @Query(() => [Player])
   async players(@Args() listArgs: ListArgs<Player>): Promise<Player[]> {
-    return Player.find(listArgs);
+    const args = ListArgs.toFindOptions(listArgs);
+    return Player.find(args);
   }
 
   @ResolveField(() => [ClubPlayerMembership], { nullable: true })

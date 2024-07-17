@@ -7,9 +7,9 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
-import { Period, RankingSystems, StartingType } from '../../enums';
+import { Period, RankingSystems, StartingType } from '@app/models/enums';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 
 @ObjectType('RankingSystem')

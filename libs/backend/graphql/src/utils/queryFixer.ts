@@ -1,4 +1,6 @@
 import {
+  And,
+  Any,
   Between,
   ILike,
   In,
@@ -9,6 +11,7 @@ import {
   MoreThan,
   MoreThanOrEqual,
   Not,
+  Or,
 } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,10 +44,10 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
       ['$gte', MoreThanOrEqual(input[key])],
       ['$in', In(input[key])],
       ['$nIn', Not(In(input[key]))],
-      ['$like', Like(`%${input[key]}%`)],
-      ['$nLike', Not(Like(`%${input[key]}%`))],
-      ['$iLike', ILike(`%${input[key]}%`)],
-      ['$nILike', Not(ILike(`%${input[key]}%`))],
+      ['$like', Like(input[key])],
+      ['$nLike', Not(Like(input[key]))],
+      ['$iLike', ILike(input[key])],
+      ['$nILike', Not(ILike(input[key]))],
       ['$null', IsNull()],
       ['$nNull', Not(IsNull())],
       ['$between', Between(input[key][0], input[key][1])],
