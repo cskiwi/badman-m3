@@ -3,6 +3,7 @@ import {
   ApplicationConfig,
   PLATFORM_ID,
   importProvidersFrom,
+  isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
@@ -25,6 +26,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import { TranslationModule } from '@app/frontend-modules-translation';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -63,6 +65,10 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
     provideHttpClient(withFetch()),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
     {
       provide: BASE_URL,
       useFactory: (platformId: string) => {

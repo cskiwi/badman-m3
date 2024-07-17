@@ -89,7 +89,7 @@ async function main() {
     console.log(process.env.DB_SYNCHRONIZE)
 
     console.log('Build server...');
-    await runCommandAndWait('nx', ['build', 'api']);
+    await runCommandAndWait('nx', ['run', 'api:build:production']);
 
     console.log('Server build completed. Starting server...');
     // find any api/main.****.js file and run it
