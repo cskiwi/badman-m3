@@ -5,8 +5,8 @@ import { signalSlice } from 'ngxtension/signal-slice';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-export interface ShowLevelState {
-  rankingPlace: RankingPlace | null;
+export interface upcomingGameTeamState {
+  encounters: EncounterCompet;
   loaded: boolean;
 }
 
@@ -16,7 +16,7 @@ export interface ShowLevelState {
 export class ShowLevelService {
   apollo = inject(Apollo);
 
-  initialState: ShowLevelState = {
+  initialState: upcomingGameTeamState = {
     rankingPlace: null,
     loaded: false,
   };
