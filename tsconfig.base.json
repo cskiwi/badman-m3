@@ -24,7 +24,13 @@
         "libs/backend/routes-generator/src/index.ts"
       ],
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
-      "@app/frontend-components": ["libs/frontend/components/src/index.ts"],
+      "@app/frontend-components": ["libs/frontend/components/index.ts"],
+      "@app/frontend-components/games/recent": [
+        "libs/frontend/components/games/recent/src/index.ts"
+      ],
+      "@app/frontend-components/games/upcoming": [
+        "libs/frontend/components/games/upcoming/src/index.ts"
+      ],
       "@app/frontend-components/layout": [
         "libs/frontend/components/layout/src/index.ts"
       ],

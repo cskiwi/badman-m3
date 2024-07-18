@@ -91,7 +91,16 @@
       "buildable": true
     },
     "@nx/angular:component": {
-      "style": "scss"
+      "style": "scss",
+      "standalone": true,
+      "prefix": "app",
+      "changeDetection": "OnPush",
+      "displayBlock": true,
+      "skipTests": true
+    },
+    "@nx/angular:library-secondary-entry-point": {
+      "library": "frontend-components",
+      "skipModule": true
     }
   },
   "nxCloudAccessToken": "Zjk2OTU4MTgtOWYzYS00YTRkLTk3YjYtNjg0NDhjMjg5ZjBifHJlYWQtd3JpdGU="
