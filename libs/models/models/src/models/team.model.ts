@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -13,6 +14,7 @@ import {
 } from 'typeorm';
 import { Player } from './player.model';
 import { TeamPlayerMembership } from './team-player-membership';
+import { Club } from './club.model';
 
 @ObjectType('Team')
 @Entity('Teams')
@@ -100,6 +102,11 @@ export class Team extends BaseEntity {
     (teamPlayerMembership) => teamPlayerMembership.player,
   )
   declare teamPlayerMemberships: TeamPlayerMembership[];
+
+  // belongs to club
+  @Field(() => Club, { nullable: true })
+  @ManyToOne(() => Club, (club) => club.teams)
+  declare club?: Club;
 
   // @Field({ nullable: true })
   // @Column({ nullable: true })

@@ -1,4 +1,4 @@
-import { ClubPlayerMembership, Club } from '@app/models';
+import { ClubPlayerMembership, Club, Team } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException } from '@nestjs/common';
 import {
@@ -14,7 +14,7 @@ import { ListArgs } from '../utils';
 @Resolver(() => Club)
 export class ClubResolver {
   @Query(() => Club)
-  async Club(@Args('id', { type: () => ID }) id: string): Promise<Club> {
+  async club(@Args('id', { type: () => ID }) id: string): Promise<Club> {
     const club = IsUUID(id)
       ? await Club.findOne({
           where: {
@@ -44,6 +44,15 @@ export class ClubResolver {
   @ResolveField(() => [ClubPlayerMembership], { nullable: true })
   async clubPlayerMemberships(@Parent() { id }: Club) {
     return ClubPlayerMembership.find({
+      where: {
+        clubId: id,
+      },
+    });
+  }
+  
+  @ResolveField(() => [Team], { nullable: true })
+  async teams(@Parent() { id }: Club) {
+    return Team.find({
       where: {
         clubId: id,
       },

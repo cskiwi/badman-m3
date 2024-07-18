@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { UseForTeamName } from '@app/models/enums';
 import { ClubPlayerMembership } from './club-player-membership';
+import { Team } from './team.model';
 
 @ObjectType('Club')
 @Entity('Clubs')
@@ -72,10 +73,14 @@ export class Club extends BaseEntity {
   @Column()
   declare country?: string;
 
-  // @Field()
+  @Field(() => ClubPlayerMembership)
   @OneToMany(
     () => ClubPlayerMembership,
     (clubPlayerMembership) => clubPlayerMembership.player,
   )
   declare clubPlayerMemberships: ClubPlayerMembership[];
+
+  @Field(() => [Team])
+  @OneToMany(() => Team, (team) => team.club)
+  declare teams?: Team[];
 }
