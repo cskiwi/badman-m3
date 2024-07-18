@@ -18,6 +18,8 @@ import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { ShowLevelComponent } from './components/show-level.component';
 import { USER, AUTH } from '@app/frontend-utils';
+import { RecentGamesComponent } from '@app/frontend-components/games/recent';
+import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 
 @Component({
   selector: 'lib-page-detail',
@@ -34,7 +36,9 @@ import { USER, AUTH } from '@app/frontend-utils';
 
     LayoutComponent,
     PageHeaderComponent,
-    ShowLevelComponent
+    ShowLevelComponent,
+    RecentGamesComponent,
+    UpcomingGamesComponent,
   ],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',

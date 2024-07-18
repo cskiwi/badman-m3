@@ -1,47 +1,48 @@
 @if (!loading()) {
-  <lib-layout>
-    <app-page-header>
-      <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-      <ng-content title>{{ this.player()?.fullName }}</ng-content>
-      <ng-content subTitle>
-        <div class="info">
-          <div class="sub-text">
-            <ng-container
-              ><a [routerLink]="['/', 'club', this.club()?.slug]">{{
-                this.club()?.name
-              }}</a></ng-container
-            >
-            @if (this.club()?.name && this.player()?.memberId) {
-              -
-            }
-            {{ this.player()?.memberId }}
-          </div>
-          @if (this.player()?.id) {
-            <div class="levels">
-              <app-show-level
-                [routerLink]="['ranking', 'single']"
-                [playerId]="this.player()?.id!"
-                type="single"
-              />
-              <app-show-level
-                [routerLink]="['ranking', 'double']"
-                [playerId]="this.player()?.id!"
-                type="double"
-              />
-              <app-show-level
-                [routerLink]="['ranking', 'mix']"
-                [playerId]="this.player()?.id!"
-                type="mix"
-              />
+  @if (this.player(); as player) {
+    <lib-layout>
+      <app-page-header>
+        <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
+        <ng-content title>{{ player.fullName }}</ng-content>
+        <ng-content subTitle>
+          <div class="info">
+            <div class="sub-text">
+              <ng-container
+                ><a [routerLink]="['/', 'club', this.club()?.slug]">{{
+                  this.club()?.name
+                }}</a></ng-container
+              >
+              @if (this.club()?.name && player.memberId) {
+                -
+              }
+              {{ player.memberId }}
             </div>
-          }
-          <!-- <div class="click-for-breakdown">
+            @if (player.id) {
+              <div class="levels">
+                <app-show-level
+                  [routerLink]="['ranking', 'single']"
+                  [playerId]="player.id"
+                  type="single"
+                />
+                <app-show-level
+                  [routerLink]="['ranking', 'double']"
+                  [playerId]="player.id"
+                  type="double"
+                />
+                <app-show-level
+                  [routerLink]="['ranking', 'mix']"
+                  [playerId]="player.id"
+                  type="mix"
+                />
+              </div>
+            }
+            <!-- <div class="click-for-breakdown">
           {{ 'all.ranking.breakdown.hint' | translate }}
         </div> -->
-        </div>
-      </ng-content>
-      <ng-content actions>
-        <!-- @if (this.hasMenu()) {
+          </div>
+        </ng-content>
+        <ng-content actions>
+          <!-- @if (this.hasMenu()) {
           <button mat-icon-button [matMenuTriggerFor]="menu" title="more options">
             <mat-icon>more_vert</mat-icon>
           </button>
@@ -65,27 +66,27 @@
             </app-has-claim>
           </mat-menu>
         } -->
-      </ng-content>
-    </app-page-header>
-    <section class="games">
-      <section class="recent-games">
-        <h3>
-          <mat-icon color="primary">history</mat-icon>
-          {{ 'all.game.recent.title' | translate }}
-        </h3>
-        <!-- <app-recent-games [playerId]="this.player().id"></app-recent-games> -->
+        </ng-content>
+      </app-page-header>
+      <section class="games">
+        <section class="recent-games">
+          <h3>
+            <mat-icon color="primary">history</mat-icon>
+            {{ 'all.game.recent.title' | translate }}
+          </h3>
+          <app-recent-games [for]="player.id" [type]="'player'" />
+        </section>
+        <section class="upcoming-games">
+          <h3>
+            <mat-icon color="primary">calendar_month</mat-icon>
+            {{ 'all.game.upcoming.title' | translate }}
+          </h3>
+          <!-- @if (this.hasTeams()) { -->
+          <app-upcoming-games [for]="player.id" [type]="'player'" />
+        </section>
       </section>
-      <section class="upcoming-games">
-        <h3>
-          <mat-icon color="primary">calendar_month</mat-icon>
-          {{ 'all.game.upcoming.title' | translate }}
-        </h3>
-        <!-- @if (this.hasTeams()) {
-          <app-upcoming-games [playerId]="player()?.id" [teams]="this.teams()"></app-upcoming-games>
-        } -->
-      </section>
-    </section>
-  </lib-layout>
+    </lib-layout>
+  }
 } @else {
   <mat-progress-bar mode="indeterminate" />
 }

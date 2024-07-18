@@ -1,1 +1,8 @@
-<p>recent-games works!</p>
+@switch (this.type()) {
+  @case ('player') {
+    <app-recent-games-player [for]="this.for()" />
+  }
+  @case ('team') {
+    <app-recent-games-team [for]="this.for()" />
+  }
+}
