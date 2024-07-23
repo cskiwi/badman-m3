@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Player } from '@app/models';
+import { Club } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators';
 
 interface DetailState {
-  player: Player | null;
+  club: Club | null;
   loading: boolean;
   error: string | null;
 }
@@ -22,34 +22,29 @@ export class DetailService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
-    playerId: new FormControl<string | null>(null),
+    clubId: new FormControl<string | null>(null),
   });
 
   // state
   private initialState: DetailState = {
-    player: null,
+    club: null,
     error: null,
     loading: true,
   };
 
   // selectors
-  player = computed(() => this.state().player);
-  club = computed(
-    () =>
-      this.state().player?.clubPlayerMemberships?.find((cpm) => cpm.active)
-        ?.club,
-  );
+  club = computed(() => this.state().club);
   error = computed(() => this.state().error);
   loading = computed(() => this.state().loading);
 
   //sources
   private error$ = new Subject<string | null>();
   private filterChanged$ = this.filter.valueChanges.pipe(
-    distinctUntilChanged((a, b) => a.playerId === b.playerId),
+    distinctUntilChanged((a, b) => a.clubId === b.clubId),
   );
 
-  private playerLoaded$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadPlayerApollo(filter)),
+  private clubLoaded$ = this.filterChanged$.pipe(
+    switchMap((filter) => this._loadClubApollo(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -57,9 +52,9 @@ export class DetailService {
   );
 
   sources$ = merge(
-    this.playerLoaded$.pipe(
-      map((player) => ({
-        player,
+    this.clubLoaded$.pipe(
+      map((club) => ({
+        club,
         loading: false,
       })),
     ),
@@ -72,35 +67,28 @@ export class DetailService {
     sources: [this.sources$],
   });
 
-  private _loadPlayerApollo(
+  private _loadClubApollo(
     filter: Partial<{
-      playerId: string | null;
+      clubId: string | null;
     }>,
   ) {
     return this.apollo
-      .query<{ player: Player }>({
+      .query<{ club: Club }>({
         query: gql`
-          query Player($id: ID!) {
-            player(id: $id) {
+          query Club($id: ID!) {
+            club(id: $id) {
               id
               fullName
-              memberId
               slug
-              clubPlayerMemberships {
-                end
-                start
-                active
-                club {
-                  id
-                  name
-                  slug
-                }
+              teams {
+                id
+                name
               }
             }
           }
         `,
         variables: {
-          id: filter?.playerId,
+          id: filter?.clubId,
         },
       })
       .pipe(
@@ -109,10 +97,10 @@ export class DetailService {
           return EMPTY;
         }),
         map((result) => {
-          if (!result?.data.player) {
-            throw new Error('No player found');
+          if (!result?.data.club) {
+            throw new Error('No club found');
           }
-          return result.data.player;
+          return result.data.club;
         }),
       );
   }
@@ -120,7 +108,7 @@ export class DetailService {
   private handleError(err: HttpErrorResponse) {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load player`);
+      this.error$.next(`Failed to load club`);
       return;
     }
 

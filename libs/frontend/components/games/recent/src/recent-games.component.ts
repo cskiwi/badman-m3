@@ -12,5 +12,5 @@ import { RecentGamesPlayerComponent } from './player/recent-games-player.compone
 })
 export class RecentGamesComponent {
   for = input.required<string | string[]>();
-  type = input.required<'team' | 'player'>();
+  type = input.required<'team' | 'player' >();
 }

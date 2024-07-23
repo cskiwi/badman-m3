@@ -20,12 +20,13 @@ export class ClubResolver {
           where: {
             id,
           },
-          relations: ['ClubPlayerMemberships'],
+          // relations: ['ClubPlayerMemberships'],
         })
       : await Club.findOne({
           where: {
             slug: id,
           },
+          // relations: ['ClubPlayerMemberships'],
         });
 
     if (club) {

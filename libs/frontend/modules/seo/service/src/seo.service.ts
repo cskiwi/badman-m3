@@ -20,6 +20,10 @@ type ISeoMetaData = {
       player: Player;
       club?: Club;
     }
+  | {
+      seoType: 'club';
+      club: Club;
+    }
 );
 
 @Injectable({
@@ -51,6 +55,9 @@ export class SeoService {
         break;
       case 'player':
         this.setPlayer(data);
+        break;
+      case 'club':
+        this.setClub(data);
         break;
     }
 
@@ -85,6 +92,22 @@ export class SeoService {
         data.player.slug,
       )}`,
     );
+    this.setMetaTag('name', 'twitter:card', 'summary_large_image');
+  }
+
+  setClub(data: { club: Club }) {
+    let desc = `The detail page of the club ${data.club.fullName} (${data.club.clubId}) `;
+    if (data.club) {
+      desc += `from the club ${data.club.fullName} (${data.club.clubId})`;
+    }
+
+    this.setTitle(`Player ${data.club.fullName} (${data.club.clubId})`);
+    this.setDescription(desc);
+    // this.setImage(
+    //   `${this.config.imageEndpoint}/?id=${encodeURIComponent(
+    //     data.player.slug,
+    //   )}`,
+    // );
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
