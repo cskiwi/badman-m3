@@ -1,8 +1,9 @@
 import { ArgsType, Field, Int, InputType } from '@nestjs/graphql';
 import { Min } from 'class-validator';
-import { GraphQLJSONObject } from 'graphql-type-json';
+import GraphQLJSON, { GraphQLJSONObject } from 'graphql-type-json';
 import { queryFixer } from './queryFixer';
 import { FindManyOptions, FindOptionsOrder, FindOptionsWhere } from 'typeorm';
+import { GraphQLScalarType, GraphQLUnionType, Kind } from 'graphql';
 
 @InputType()
 export class SortOrderType {
@@ -20,8 +21,8 @@ export class SortOrder {
 
 @ArgsType()
 export class WhereArgs<T> {
-  @Field(() => GraphQLJSONObject, { nullable: true })
-  where?: FindOptionsWhere<T>[];
+  @Field(() => JSONObjectOrArray, { nullable: true })
+  where?: FindOptionsWhere<T>[] | FindOptionsWhere<T>;
 }
 
 @ArgsType()
@@ -58,3 +59,26 @@ export class ListArgs<T> extends WhereArgs<T> {
     return Array.isArray(where) ? where : [where];
   }
 }
+
+const JSONObjectOrArray = new GraphQLScalarType({
+  name: 'JSONObjectOrArray',
+  description: 'JSON object and an array of JSON objects',
+  parseValue(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => GraphQLJSONObject.parseValue(item));
+    }
+    return GraphQLJSONObject.parseValue(value);
+  },
+  serialize(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => GraphQLJSONObject.serialize(item));
+    }
+    return GraphQLJSONObject.serialize(value);
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.LIST) {
+      return ast.values.map((item) => GraphQLJSONObject.parseLiteral(item));
+    }
+    return GraphQLJSONObject.parseLiteral(ast);
+  },
+});

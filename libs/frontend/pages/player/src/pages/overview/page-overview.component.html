@@ -5,6 +5,11 @@
       <ng-content title>Players</ng-content>
     </app-page-header>
     <section class="players">
+      <mat-form-field>
+        <mat-label>{{'all.players.search' | translate}}</mat-label>
+        <input matInput [formControl]="this.query" />
+      </mat-form-field>
+
       <mat-list>
         @for (player of players(); track player.id) {
           <mat-list-item [routerLink]="player.slug">

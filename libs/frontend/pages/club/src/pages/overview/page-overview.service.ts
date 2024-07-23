@@ -7,6 +7,7 @@ import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
 import {
   catchError,
+  debounceTime,
   distinctUntilChanged,
   map,
   startWith,
@@ -23,9 +24,7 @@ export class OverviewService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
-    where: new FormControl<{
-      [key: string]: unknown;
-    }>({}),
+    query: new FormControl(undefined),
   });
 
   // state
@@ -44,12 +43,11 @@ export class OverviewService {
   private error$ = new Subject<string | null>();
   private filterChanged$ = this.filter.valueChanges.pipe(
     startWith(this.filter.value),
-    // filter((filter) => Object.keys(filter.where ?? {}).length > 0),
     distinctUntilChanged(),
   );
 
   private clubsLoaded$ = this.filterChanged$.pipe(
-    // debounceTime(300), // Queries are better when debounced
+    debounceTime(300), // Queries are better when debounced
     switchMap((filter) => this._loadClubsApollo(filter)),
     catchError((err) => {
       this.error$.next(err);
@@ -65,7 +63,7 @@ export class OverviewService {
       })),
     ),
     this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
+    // this.filterChanged$.pipe(map(() => ({ loading: true }))),
   );
 
   state = signalSlice({
@@ -83,7 +81,7 @@ export class OverviewService {
     return this.apollo
       .query<{ clubs: Club[] }>({
         query: gql`
-          query Clubs($where: JSONObject) {
+          query Clubs($where: JSONObjectOrArray) {
             clubs(where: $where) {
               id
               clubId
@@ -93,7 +91,7 @@ export class OverviewService {
           }
         `,
         variables: {
-          where: {},
+          where: this._clubSearchWhere(filter.query),
         },
       })
       .pipe(
@@ -121,38 +119,28 @@ export class OverviewService {
     this.error$.next(err.statusText);
   }
 
-  private _clubSearchWhere(
-    args: Partial<{
-      query: string | null;
-      where: { [key: string]: unknown } | null;
-      emptyWhere: { [key: string]: unknown };
-    }>,
-  ) {
-    if (!args?.query) {
-      return args?.emptyWhere ?? {};
-    }
-
-    const parts = args?.query
+  private _clubSearchWhere(query: string | null | undefined) {
+    const parts = query
       ?.toLowerCase()
       .replace(/[;\\\\/:*?"<>|&',]/, ' ')
-      .split(' ');
+      .split(' ')
+      .map((part) => part.trim());
     const queries: unknown[] = [];
     if (!parts) {
       return;
     }
+
     for (const part of parts) {
-      queries.push({
-        $or: [
-          { firstName: { $iLike: `%${part}%` } },
-          { lastName: { $iLike: `%${part}%` } },
-          { memberId: { $iLike: `%${part}%` } },
-        ],
-      });
+      if (part.length < 1) continue;
+
+      const possibleClubId = parseInt(part);
+
+      if (!isNaN(possibleClubId)) {
+        queries.push({ clubId: possibleClubId });
+      }
+      queries.push({ fullName: { $iLike: `%${part}%` } });
     }
 
-    return {
-      $and: queries,
-      ...args?.where,
-    };
+    return queries;
   }
 }

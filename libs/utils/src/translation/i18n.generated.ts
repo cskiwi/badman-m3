@@ -6,6 +6,9 @@ import { Path } from "nestjs-i18n";
 /* prettier-ignore */
 export type I18nTranslations = {
     "all": {
+        "clubs": {
+            "search": string;
+        };
         "game": {
             "recent": {
                 "title": string;
@@ -16,6 +19,9 @@ export type I18nTranslations = {
         };
         "landing": {
             "description": string;
+        };
+        "players": {
+            "search": string;
         };
         "points": {
             "table": {

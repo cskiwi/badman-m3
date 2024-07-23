@@ -5,6 +5,13 @@
       <ng-content title>Clubs</ng-content>
     </app-page-header>
     <section class="clubs">
+
+      <mat-form-field>
+        <mat-label>{{'all.clubs.search' | translate}}</mat-label>
+        <input matInput [formControl]="this.query" />
+      </mat-form-field>
+
+      
       <mat-list>
         @for (club of clubs(); track club.id) {
           <mat-list-item [routerLink]="club.slug">

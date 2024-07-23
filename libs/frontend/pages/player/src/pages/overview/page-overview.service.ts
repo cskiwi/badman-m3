@@ -7,6 +7,7 @@ import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
 import {
   catchError,
+  debounceTime,
   distinctUntilChanged,
   map,
   startWith,
@@ -23,9 +24,7 @@ export class OverviewService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
-    where: new FormControl<{
-      [key: string]: unknown;
-    }>({}),
+    query: new FormControl(undefined),
   });
 
   // state
@@ -44,12 +43,11 @@ export class OverviewService {
   private error$ = new Subject<string | null>();
   private filterChanged$ = this.filter.valueChanges.pipe(
     startWith(this.filter.value),
-    // filter((filter) => Object.keys(filter.where ?? {}).length > 0),
     distinctUntilChanged(),
   );
 
   private playersLoaded$ = this.filterChanged$.pipe(
-    // debounceTime(300), // Queries are better when debounced
+    debounceTime(300), // Queries are better when debounced
     switchMap((filter) => this._loadPlayersApollo(filter)),
     catchError((err) => {
       this.error$.next(err);
@@ -65,7 +63,7 @@ export class OverviewService {
       })),
     ),
     this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
+    // this.filterChanged$.pipe(map(() => ({ loading: true }))),
   );
 
   state = signalSlice({
@@ -76,14 +74,16 @@ export class OverviewService {
   private _loadPlayersApollo(
     filter: Partial<{
       query: string | null;
-      where: { [key: string]: unknown } | null;
-      emtpyWhere: { [key: string]: unknown };
     }>,
   ) {
+    if (!filter) {
+      return EMPTY;
+    }
+
     return this.apollo
       .query<{ players: Player[] }>({
         query: gql`
-          query Players($where: JSONObject) {
+          query Players($where: JSONObjectOrArray) {
             players(where: $where) {
               id
               memberId
@@ -93,9 +93,7 @@ export class OverviewService {
           }
         `,
         variables: {
-          where: {
-            memberId: { $like: '5%' },
-          },
+          where: this._playerSearchWhere(filter.query),
         },
       })
       .pipe(
@@ -123,18 +121,8 @@ export class OverviewService {
     this.error$.next(err.statusText);
   }
 
-  private _playerSearchWhere(
-    args: Partial<{
-      query: string | null;
-      where: { [key: string]: unknown } | null;
-      emptyWhere: { [key: string]: unknown };
-    }>,
-  ) {
-    if (!args?.query) {
-      return args?.emptyWhere ?? {};
-    }
-
-    const parts = args?.query
+  private _playerSearchWhere(query: string | null | undefined) {
+    const parts = query
       ?.toLowerCase()
       .replace(/[;\\\\/:*?"<>|&',]/, ' ')
       .split(' ');
@@ -143,18 +131,13 @@ export class OverviewService {
       return;
     }
     for (const part of parts) {
-      queries.push({
-        $or: [
-          { firstName: { $iLike: `%${part}%` } },
-          { lastName: { $iLike: `%${part}%` } },
-          { memberId: { $iLike: `%${part}%` } },
-        ],
-      });
+      queries.push(
+        { firstName: { $iLike: `%${part}%` } },
+        { lastName: { $iLike: `%${part}%` } },
+        { memberId: { $iLike: `%${part}%` } },
+      );
     }
 
-    return {
-      $and: queries,
-      ...args?.where,
-    };
+    return queries;
   }
 }

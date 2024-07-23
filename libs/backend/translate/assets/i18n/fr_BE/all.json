@@ -1,4 +1,7 @@
 {
+  "clubs": {
+    "search": "Chercher club"
+  },
   "game": {
     "recent": {
       "title": "Matchs récents"
@@ -9,6 +12,9 @@
   },
   "landing": {
     "description": "Bienvenue sur cette version de test de Badman"
+  },
+  "players": {
+    "search": "Rechercher joueur"
   },
   "points": {
     "table": {

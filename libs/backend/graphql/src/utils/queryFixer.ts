@@ -28,6 +28,16 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
     if (input[key] === null || input[key] === undefined) {
       delete input[key];
     } else if (typeof input[key] === 'object' && key != '$between') {
+      // if (key === '$and') {
+      //   const andConditions = input[key].map(queryFixer);
+      //   return And(...andConditions);
+      // }
+  
+      // if (key === '$or') {
+      //   const orConditions = input[key].map(queryFixer);
+      //   return Or(...orConditions);
+      // }
+
       input[key] = queryFixer(input[key]);
       return input;
     }
@@ -35,6 +45,8 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
       continue;
     }
 
+   
+    
     const operatorMap = new Map<string, Record<string, unknown>>([
       ['$eq', input[key]],
       ['$ne', Not(input[key])],

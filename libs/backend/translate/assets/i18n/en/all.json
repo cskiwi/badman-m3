@@ -1,4 +1,7 @@
 {
+  "clubs": {
+    "search": "Find a club"
+  },
   "game": {
     "recent": {
       "title": "Recent games"
@@ -9,6 +12,9 @@
   },
   "landing": {
     "description": "Welcome to this test version of Badman"
+  },
+  "players": {
+    "search": "Search player"
   },
   "points": {
     "table": {

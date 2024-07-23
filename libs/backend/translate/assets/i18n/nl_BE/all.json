@@ -1,4 +1,7 @@
 {
+  "clubs": {
+    "search": "Zoek club"
+  },
   "game": {
     "recent": {
       "title": "Recente ontmoetingen"
@@ -9,6 +12,9 @@
   },
   "landing": {
     "description": "Welkom op deze test versie van Badman"
+  },
+  "players": {
+    "search": "Zoek speler"
   },
   "points": {
     "table": {
