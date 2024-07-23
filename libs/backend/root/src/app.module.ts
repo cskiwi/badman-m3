@@ -6,6 +6,8 @@ import { GraphQLModule } from '@app/backend-graphql';
 import { HealthModule } from '@app/backend-health';
 import { SeoModule } from '@app/backend-seo';
 import { ConfigModule } from '@nestjs/config';
+import { TranslateModule } from '@app/backend-translate';
+
 @Module({
   imports: [
     RoutesGeneratorModule, // Server imports
@@ -15,8 +17,8 @@ import { ConfigModule } from '@nestjs/config';
     GraphQLModule,
     SeoModule,
     HealthModule,
+    TranslateModule,
   ],
   controllers: [],
 })
 export class AppModule {}
-

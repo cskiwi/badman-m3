@@ -10,7 +10,7 @@ import {
 import { DateAdapter } from '@angular/material/core';
 import {
   TranslateLoader,
-  TranslateModule,
+  TranslateModule as NgxTranslateModule,
   TranslateParser,
   TranslateService,
 } from '@ngx-translate/core';
@@ -25,7 +25,7 @@ export const TRANSLATE_CONFIG = new InjectionToken<ITranslateConfig>('TRANSLATE_
 @NgModule({
   imports: [
     CommonModule,
-    TranslateModule.forRoot({
+    NgxTranslateModule.forRoot({
       defaultLanguage: 'en',
       parser: {
         provide: TranslateParser,
@@ -49,10 +49,10 @@ export const TRANSLATE_CONFIG = new InjectionToken<ITranslateConfig>('TRANSLATE_
     },
   ],
 })
-export class TranslationModule {
-  public static forRoot(config: ITranslateConfig): ModuleWithProviders<TranslationModule> {
+export class TranslateModule {
+  public static forRoot(config: ITranslateConfig): ModuleWithProviders<TranslateModule> {
     return {
-      ngModule: TranslationModule,
+      ngModule: TranslateModule,
       providers: [{ provide: TRANSLATE_CONFIG, useValue: config }],
     };
   }

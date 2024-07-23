@@ -1,0 +1,32 @@
+{
+  "game": {
+    "recent": {
+      "title": "Matchs récents"
+    },
+    "upcoming": {
+      "title": "Prochains matches"
+    }
+  },
+  "landing": {
+    "description": "Bienvenue sur cette version de test de Badman"
+  },
+  "points": {
+    "table": {
+      "level": "Classement",
+      "points-needed-down": "Palier de descente",
+      "points-needed-up": "Palier de montée",
+      "points-won": "Points en cas de victoire contre ce classement"
+    }
+  },
+  "settings": {
+    "general": {
+      "title": "General"
+    },
+    "languages": {
+      "en": "English",
+      "fr_BE": "Français",
+      "nl_BE": "Nederlands",
+      "title": "Language"
+    }
+  }
+}

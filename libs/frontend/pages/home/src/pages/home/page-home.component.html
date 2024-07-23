@@ -11,6 +11,9 @@
       </div>
     </ng-content>
   </app-page-header>
+  <p>
+    {{ 'all.landing.description' | translate }}
+  </p>
   <section class="ranking">
     <mtx-grid
       [data]="dataSource()"

@@ -15,6 +15,14 @@ module.exports = {
       tsConfig: './tsconfig.app.json',
       outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
       optimization: process.env['NODE_ENV'] === 'production',
+      assets: [
+        // './src/assets',
+        {
+          glob: '**/*',
+          input: 'libs/backend/translate/assets',
+          output: 'assets',
+        },
+      ],
     }),
   ],
 };

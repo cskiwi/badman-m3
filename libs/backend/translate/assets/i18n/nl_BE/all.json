@@ -1,0 +1,32 @@
+{
+  "game": {
+    "recent": {
+      "title": "Recente ontmoetingen"
+    },
+    "upcoming": {
+      "title": "Komende ontmoetingen"
+    }
+  },
+  "landing": {
+    "description": "Welkom op deze test versie van Badman"
+  },
+  "points": {
+    "table": {
+      "level": "Level",
+      "points-needed-down": "Grenswaarde voor dalen",
+      "points-needed-up": "Grenswaarde voor stijgen",
+      "points-won": "Punten gewonnen tegen dit niveau"
+    }
+  },
+  "settings": {
+    "general": {
+      "title": "General"
+    },
+    "languages": {
+      "en": "English",
+      "fr_BE": "Français",
+      "nl_BE": "Nederlands",
+      "title": "Taal"
+    }
+  }
+}

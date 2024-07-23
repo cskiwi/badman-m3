@@ -25,7 +25,7 @@ import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
-import { TranslationModule } from '@app/frontend-modules-translation';
+import { TranslateModule } from '@app/frontend-modules-translation';
 import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
@@ -51,8 +51,8 @@ export const appConfig: ApplicationConfig = {
           ],
         },
       }),
-      TranslationModule.forRoot({
-        api: `https://badman.app/api/v1/translate/i18n/`,
+      TranslateModule.forRoot({
+        api: `/api/v1/translate/i18n/`,
       }),
     ),
     provideClientHydration(

@@ -1,0 +1,32 @@
+{
+  "game": {
+    "recent": {
+      "title": "Recent games"
+    },
+    "upcoming": {
+      "title": "Upcoming games"
+    }
+  },
+  "landing": {
+    "description": "Welcome to this test version of Badman"
+  },
+  "points": {
+    "table": {
+      "level": "Level",
+      "points-needed-down": "Points needed to go down",
+      "points-needed-up": "Points needed to go up",
+      "points-won": "Points won against this level"
+    }
+  },
+  "settings": {
+    "general": {
+      "title": "General"
+    },
+    "languages": {
+      "en": "English",
+      "fr_BE": "Français",
+      "nl_BE": "Nederlands",
+      "title": "Language"
+    }
+  }
+}

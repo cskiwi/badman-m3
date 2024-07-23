@@ -24,6 +24,7 @@
         "libs/backend/routes-generator/src/index.ts"
       ],
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
+      "@app/backend-translate": ["libs/backend/translate/src/index.ts"],
       "@app/frontend-components": ["libs/frontend/components/index.ts"],
       "@app/frontend-components/games/recent": [
         "libs/frontend/components/games/recent/src/index.ts"

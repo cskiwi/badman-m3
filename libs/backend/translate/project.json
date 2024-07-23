@@ -1,0 +1,16 @@
+{
+  "name": "backend-translate",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourcetranslate": "libs/backend/translate/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspacetranslate}/coverage/{projecttranslate}"],
+      "options": {
+        "jestConfig": "libs/backend/translate/jest.config.ts"
+      }
+    }
+  }
+}
