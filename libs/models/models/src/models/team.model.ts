@@ -15,6 +15,7 @@ import {
 import { Player } from './player.model';
 import { TeamPlayerMembership } from './team-player-membership';
 import { Club } from './club.model';
+import { SubEventTypeEnum } from '@app/models/enums';
 
 @ObjectType('Team')
 @Entity('Teams')
@@ -62,6 +63,13 @@ export class Team extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   slug?: string;
+
+  @Field(() => String)
+  @Column({
+    type: 'simple-enum',
+    enum: SubEventTypeEnum,
+  })
+  type?: SubEventTypeEnum;
 
   @Field({ nullable: true })
   @Column({ nullable: true })

@@ -90,7 +90,7 @@ export class SeoService {
     this.setImage(
       `${this.config.imageEndpoint}/?id=${encodeURIComponent(
         data.player.slug,
-      )}`,
+      )}&type=player`,
     );
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
@@ -101,13 +101,13 @@ export class SeoService {
       desc += `from the club ${data.club.fullName} (${data.club.clubId})`;
     }
 
-    this.setTitle(`Player ${data.club.fullName} (${data.club.clubId})`);
+    this.setTitle(`Club ${data.club.fullName} (${data.club.clubId})`);
     this.setDescription(desc);
-    // this.setImage(
-    //   `${this.config.imageEndpoint}/?id=${encodeURIComponent(
-    //     data.player.slug,
-    //   )}`,
-    // );
+    this.setImage(
+      `${this.config.imageEndpoint}/?id=${encodeURIComponent(
+        data.club.slug,
+      )}&type=club`,
+    );
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
