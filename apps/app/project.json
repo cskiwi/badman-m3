@@ -44,7 +44,9 @@
           "class-validator",
           "ioredis",
           "typeorm",
-          "sharp"
+          "sharp",
+          "canvas",
+          "nestjs-i18n"
         ],
         "scripts": [],
         "prerender": {
