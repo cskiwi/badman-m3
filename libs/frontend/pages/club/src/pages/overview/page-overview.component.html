@@ -16,7 +16,7 @@
         @for (club of clubs(); track club.id) {
           <mat-list-item [routerLink]="club.slug">
             <!-- <img matListItemAvatar src="..." alt="..." /> -->
-            <h3 matListItemTitle>{{ club.fullName }}</h3>
+            <h3 matListItemTitle>{{ club.name }}</h3>
             <p matListItemLine>
               <span>{{ club.clubId }}</span>
               <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
