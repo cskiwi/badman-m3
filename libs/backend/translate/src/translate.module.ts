@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { TranslateController } from './controllers';
 import { I18nModule, QueryResolver } from 'nestjs-i18n';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 @Module({
   controllers: [TranslateController],
@@ -11,8 +12,8 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
       resolvers: [{ use: QueryResolver, options: ['lang'] }],
 
       useFactory: () => {
-        // check if generated director/file exists
-        const dir = join(__dirname, '../../../libs/utils/src/translation/');
+        const apiDistFolderPath = join(process.cwd(), 'dist/apps/api');
+        const dir = join(apiDistFolderPath, '../../../libs/utils/src/translation/');
         const file = join(dir, 'i18n.generated.ts');
 
         if (!existsSync(file)) {
@@ -31,7 +32,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
         return {
           fallbackLanguage: 'nl_BE',
           loaderOptions: {
-            path: join(__dirname, `./assets/i18n/`),
+            path: join(apiDistFolderPath, `./assets/i18n/`),
             // watch: true,
           },
           typesOutputPath: file,

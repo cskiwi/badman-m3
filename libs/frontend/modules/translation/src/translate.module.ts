@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
   APP_INITIALIZER,
@@ -6,6 +6,7 @@ import {
   Injector,
   ModuleWithProviders,
   NgModule,
+  PLATFORM_ID,
 } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import {
@@ -17,10 +18,12 @@ import {
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { langulageInitializer } from './factory';
 import { ITranslateConfig } from './interfaces';
-import { USER } from '@app/frontend-utils';
+import { BASE_URL, USER } from '@app/frontend-utils';
 import { SingleBracketInterpolation } from './services';
 
-export const TRANSLATE_CONFIG = new InjectionToken<ITranslateConfig>('TRANSLATE_CONFIG');
+export const TRANSLATE_CONFIG = new InjectionToken<ITranslateConfig>(
+  'TRANSLATE_CONFIG',
+);
 
 @NgModule({
   imports: [
@@ -50,10 +53,23 @@ export const TRANSLATE_CONFIG = new InjectionToken<ITranslateConfig>('TRANSLATE_
   ],
 })
 export class TranslateModule {
-  public static forRoot(config: ITranslateConfig): ModuleWithProviders<TranslateModule> {
+  public static forRoot(
+    config: ITranslateConfig,
+  ): ModuleWithProviders<TranslateModule> {
     return {
       ngModule: TranslateModule,
-      providers: [{ provide: TRANSLATE_CONFIG, useValue: config }],
+      providers: [
+        {
+          provide: TRANSLATE_CONFIG,
+          useFactory: (baseUrl: string) => {
+            return {
+              ...config,
+              api: baseUrl + config.api,
+            };
+          },
+          deps: [BASE_URL],
+        },
+      ],
     };
   }
 }

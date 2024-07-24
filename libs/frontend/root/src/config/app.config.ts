@@ -52,7 +52,7 @@ export const appConfig: ApplicationConfig = {
         },
       }),
       TranslateModule.forRoot({
-        api: `${process.env?.['BASE_URL'] || ''}/api/v1/translate/i18n/`,
+        api: `/api/v1/translate/i18n/`,
       }),
     ),
     provideClientHydration(
@@ -76,7 +76,7 @@ export const appConfig: ApplicationConfig = {
           return window.location.origin;
         }
         return (
-          process.env?.['BASE_URL'] ||
+          process?.env?.['BASE_URL'] ||
           `http://localhost:${process.env['PORT'] || 4200}`
         );
       },

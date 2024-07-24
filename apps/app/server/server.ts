@@ -122,7 +122,11 @@ export async function app() {
   // setup NestJS app
   const adapter = new ExpressAdapter(server);
   const app = await getServer(adapter);
+
+
   await app.init();
+
+
 
   return server;
 }
