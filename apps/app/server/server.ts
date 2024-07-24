@@ -137,7 +137,7 @@ async function run(): Promise<void> {
 }
 
 function shouldSkip(url: string) {
-  if (url === '/api' || url === '/graphql') {
+  if (url.startsWith('/api') || url.startsWith('/graphql')) {
     return true;
   }
   return false;
