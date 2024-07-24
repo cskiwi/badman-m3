@@ -52,7 +52,7 @@ export const appConfig: ApplicationConfig = {
         },
       }),
       TranslateModule.forRoot({
-        api: `/api/v1/translate/i18n/`,
+        api: `${process.env?.['BASE_URL'] || ''}/api/v1/translate/i18n/`,
       }),
     ),
     provideClientHydration(
