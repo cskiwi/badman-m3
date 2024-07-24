@@ -103,5 +103,6 @@
       "library": "frontend-components",
       "skipModule": true
     }
-  }
+  },
+  "nxCloudAccessToken": "ODc0OWI3OWEtYjQ3Mi00ZTcxLTg2MDAtOTc4NmRlODk0NDE0fHJlYWQtd3JpdGU="
 }
