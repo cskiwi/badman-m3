@@ -13,6 +13,11 @@ export const getServer = async (adapter?: AbstractHttpAdapter) => {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
+  app.enableCors({
+    origin: '*',
+    methods: '*',
+    allowedHeaders: '*',
+  });
 
   return app;
 };
