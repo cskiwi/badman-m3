@@ -38,8 +38,8 @@ export class Club extends BaseEntity {
   declare teamName: string;
 
   @Field()
-  @Column()
-  declare fullName: string;
+  @Column({nullable: true})
+  declare fullName?: string;
 
   @Field()
   @Column()

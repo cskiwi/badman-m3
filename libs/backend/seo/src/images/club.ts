@@ -16,7 +16,7 @@ export class ClubImageGenerator {
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
     const clubQry = Club.createQueryBuilder('club')
-      .select(['club.id', 'club.clubId', 'club.fullName', 'teams.type'])
+      .select(['club.id', 'club.clubId', 'club.name', 'teams.type'])
       .leftJoinAndSelect('club.teams', 'teams')
       .where('club.slug = :id ', { id });
 
@@ -50,7 +50,7 @@ export class ClubImageGenerator {
 
   getGeneralInfo(club: Club) {
     let fontSize = 100;
-    const clubName = club.fullName;
+    const clubName = club.name;
     const clubNameWidth = this.getTextWidth(clubName, 'Arial', fontSize);
 
     if (clubNameWidth > this.width - 350) {
