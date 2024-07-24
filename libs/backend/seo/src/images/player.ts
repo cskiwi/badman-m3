@@ -1,5 +1,6 @@
-import { GamePlayerMembership,  Player } from '@app/models';
+import { GamePlayerMembership, Player } from '@app/models';
 import { GameType } from '@app/models/enums';
+import sharp from 'sharp';
 
 export class PlayerImageGenerator {
   private readonly backgroundColor = '#ffffff';
@@ -11,8 +12,6 @@ export class PlayerImageGenerator {
 
   private readonly amountGames = 25;
 
-  private readonly sharp = require('sharp');
-  
   async generateImage(id: string) {
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -77,9 +76,7 @@ export class PlayerImageGenerator {
 
     // console.log(svgImage);
 
-    const imageBuffer = await this.sharp(Buffer.from(svgImage))
-      .png()
-      .toBuffer();
+    const imageBuffer = await sharp(Buffer.from(svgImage)).png().toBuffer();
 
     return imageBuffer;
   }

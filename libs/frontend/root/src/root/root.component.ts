@@ -4,21 +4,21 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
-  effect,
   inject,
-  PLATFORM_ID,
+  OnDestroy,
+  PLATFORM_ID
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AUTH, USER } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
@@ -37,7 +37,7 @@ import { filter, map } from 'rxjs/operators';
   templateUrl: './root.component.html',
   styleUrl: './root.component.scss',
 })
-export class RootComponent {
+export class RootComponent implements OnDestroy {
   mobileQuery: MediaQueryList;
   private platformId = inject<string>(PLATFORM_ID);
 

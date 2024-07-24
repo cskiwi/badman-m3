@@ -21,7 +21,7 @@ import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 
 @Component({
-  selector: 'lib-page-detail',
+  selector: 'app-page-detail',
   standalone: true,
   imports: [
     CommonModule,

@@ -13,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'lib-page-overview',
+  selector: 'app-page-overview',
   standalone: true,
   imports: [
     CommonModule,

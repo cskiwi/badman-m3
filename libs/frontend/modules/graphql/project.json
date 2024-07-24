@@ -28,12 +28,6 @@
       "options": {
         "jestConfig": "{projectRoot}/jest.config.ts"
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "eslintConfig": "{projectRoot}/eslint.config.js"
-      }
     }
   }
 }

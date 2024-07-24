@@ -13,14 +13,26 @@ export class ImagesController {
     @Query('id') id: string,
     @Query('type') type: 'player' | 'club',
   ) {
+    let result;
     let imageBuffer: Buffer | undefined;
 
     switch (type) {
       case 'player':
-        imageBuffer = await new PlayerImageGenerator().generateImage(id);
+        result = await new PlayerImageGenerator().generateImage(id);
+        if ('status' in result) {
+          res.status(result.status).send(result.message);
+          return;
+        }
+        imageBuffer = result;
         break;
       case 'club':
-        imageBuffer = await new ClubImageGenerator().generateImage(id);
+        result = await new ClubImageGenerator().generateImage(id);
+        if ('status' in result) {
+          res.status(result.status).send(result.message);
+          return;
+        }
+
+        imageBuffer = result;
         break;
       default:
         break;

@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'lib-layout',
+  selector: 'app-layout',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './layout.component.html',

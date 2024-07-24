@@ -7,7 +7,7 @@
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspacetranslate}/coverage/{projecttranslate}"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "libs/backend/translate/jest.config.ts"
       }

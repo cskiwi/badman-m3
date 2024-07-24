@@ -1,6 +1,6 @@
 @if (!loading()) {
   @if (this.player(); as player) {
-    <lib-layout>
+    <app-layout>
       <app-page-header>
         <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
         <ng-content title>{{ player.fullName }}</ng-content>
@@ -85,7 +85,7 @@
           <app-upcoming-games [for]="player.id" [type]="'player'" />
         </section>
       </section>
-    </lib-layout>
+    </app-layout>
   }
 } @else {
   <mat-progress-bar mode="indeterminate" />

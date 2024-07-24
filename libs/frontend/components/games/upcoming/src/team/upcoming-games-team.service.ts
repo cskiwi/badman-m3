@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 export interface upcomingGameTeamState {
-  encounters: EncounterCompet;
+  encounters: unknown;
   loaded: boolean;
 }
 
@@ -17,11 +17,11 @@ export class ShowLevelService {
   apollo = inject(Apollo);
 
   initialState: upcomingGameTeamState = {
-    rankingPlace: null,
+    encounters: null,
     loaded: false,
   };
 
-  rankingPlace = computed(() => this.state().rankingPlace);
+  // rankingPlace = computed(() => this.state().rankingPlace);
 
   // sources
   state = signalSlice({

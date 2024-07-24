@@ -33,7 +33,7 @@ export function langulageInitializer(
       translate.addLangs([...languages.keys()]);
       translate.setDefaultLang(AvaliableLanguages.nl_BE);
 
-      let savedLang = isPlatformBrowser(platform)
+      const savedLang = isPlatformBrowser(platform)
         ? (localStorage.getItem('translation.language') as AvaliableLanguages)
         : undefined;
 

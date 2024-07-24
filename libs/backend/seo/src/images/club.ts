@@ -1,5 +1,7 @@
 import { Club, Team } from '@app/models';
 import { SubEventTypeEnum } from '@app/models/enums';
+import { createCanvas } from 'canvas';
+import sharp from 'sharp';
 
 export class ClubImageGenerator {
   private readonly backgroundColor = '#ffffff';
@@ -8,8 +10,6 @@ export class ClubImageGenerator {
 
   private readonly width = 1200;
   private readonly height = 630;
-
-  private readonly sharp = require('sharp');
 
   async generateImage(id: string) {
     const oneYearAgo = new Date();
@@ -41,9 +41,7 @@ export class ClubImageGenerator {
 
     // console.log(svgImage);
 
-    const imageBuffer = await this.sharp(Buffer.from(svgImage))
-      .png()
-      .toBuffer();
+    const imageBuffer = await sharp(Buffer.from(svgImage)).png().toBuffer();
 
     return imageBuffer;
   }
@@ -98,7 +96,6 @@ export class ClubImageGenerator {
   }
 
   getTextWidth(text: string, fontFamily: string, fontSize: number) {
-    const { createCanvas } = require('canvas');
     const canvas = createCanvas(0, 0);
     const context = canvas.getContext('2d');
 

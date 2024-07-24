@@ -15,7 +15,7 @@ import { HomeService } from './page-home.service';
 import { LayoutComponent } from '@app/frontend-components/layout';
 
 @Component({
-  selector: 'lib-page-home',
+  selector: 'app-page-home',
   standalone: true,
   imports: [
     CommonModule,
