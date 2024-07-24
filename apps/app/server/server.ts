@@ -102,7 +102,10 @@ export async function app() {
   server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
-    if (req.originalUrl.startsWith('/api')) {
+    if (
+      req.originalUrl.startsWith('/api') ||
+      req.originalUrl.startsWith('/graphql')
+    ) {
       // Handle API routes separately
       next();
     } else {
@@ -123,10 +126,7 @@ export async function app() {
   const adapter = new ExpressAdapter(server);
   const app = await getServer(adapter);
 
-
   await app.init();
-
-
 
   return server;
 }
