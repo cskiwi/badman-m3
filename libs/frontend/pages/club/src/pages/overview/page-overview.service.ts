@@ -85,7 +85,7 @@ export class OverviewService {
             clubs(where: $where) {
               id
               clubId
-              fullName
+              name
               slug
             }
           }
