@@ -79,7 +79,7 @@ export async function app() {
     '*',
     // Serve page if it exists in cache
     async (req, res, next) => {
-      if (req.originalUrl.startsWith('/api')) {
+      if (shouldSkip(req.originalUrl)) {
         // Handle API routes separately
         next();
       } else {
@@ -88,7 +88,7 @@ export async function app() {
     },
     // Server side render the page and add to cache if needed
     async (req, res, next) => {
-      if (req.originalUrl.startsWith('/api')) {
+      if (shouldSkip(req.originalUrl)) {
         // Handle API routes separately
         next();
       } else {
@@ -102,10 +102,7 @@ export async function app() {
   server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
-    if (
-      req.originalUrl.startsWith('/api') ||
-      req.originalUrl.startsWith('/graphql')
-    ) {
+    if (shouldSkip(req.originalUrl)) {
       // Handle API routes separately
       next();
     } else {
@@ -137,6 +134,13 @@ async function run(): Promise<void> {
   // Start up the Node server
   const server = await app();
   server.listen(port);
+}
+
+function shouldSkip(url: string) {
+  if (url === '/api' || url === '/graphql') {
+    return true;
+  }
+  return false;
 }
 
 run();
