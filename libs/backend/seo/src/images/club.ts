@@ -58,7 +58,7 @@ export class ClubImageGenerator {
 
     return `
       <text x="75" y="150" font-family="Arial" font-size="${fontSize}" fill="${this.textColor}">
-        <tspan font-weight="bold">${club.fullName}</tspan>
+        <tspan font-weight="bold">${club.name}</tspan>
       </text>
 
       <text x="75" y="210" font-family="Arial" font-size="30" fill="${this.subTextColor}">
