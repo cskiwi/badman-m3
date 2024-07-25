@@ -1,31 +1,27 @@
 @if (!loading()) {
-  <app-layout>
-    <app-page-header>
-      <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-      <ng-content title>Clubs</ng-content>
-    </app-page-header>
-    <section class="clubs">
+  <app-page-header>
+    <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
+    <ng-content title>Clubs</ng-content>
+  </app-page-header>
+  <section class="clubs">
+    <mat-form-field>
+      <mat-label>{{ 'all.clubs.search' | translate }}</mat-label>
+      <input matInput [formControl]="this.query" />
+    </mat-form-field>
 
-      <mat-form-field>
-        <mat-label>{{'all.clubs.search' | translate}}</mat-label>
-        <input matInput [formControl]="this.query" />
-      </mat-form-field>
-
-      
-      <mat-list>
-        @for (club of clubs(); track club.id) {
-          <mat-list-item [routerLink]="club.slug">
-            <!-- <img matListItemAvatar src="..." alt="..." /> -->
-            <h3 matListItemTitle>{{ club.name }}</h3>
-            <p matListItemLine>
-              <span>{{ club.clubId }}</span>
-              <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
-            </p>
-          </mat-list-item>
-        }
-      </mat-list>
-    </section>
-  </app-layout>
+    <mat-list>
+      @for (club of clubs(); track club.id) {
+        <mat-list-item [routerLink]="club.slug">
+          <!-- <img matListItemAvatar src="..." alt="..." /> -->
+          <h3 matListItemTitle>{{ club.name }}</h3>
+          <p matListItemLine>
+            <span>{{ club.clubId }}</span>
+            <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
+          </p>
+        </mat-list-item>
+      }
+    </mat-list>
+  </section>
 } @else {
   <mat-progress-bar mode="indeterminate" />
 }

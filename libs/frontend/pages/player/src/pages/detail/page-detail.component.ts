@@ -6,20 +6,19 @@ import {
   effect,
   inject,
 } from '@angular/core';
-import { injectParams } from 'ngxtension/inject-params';
-import { DetailService } from './page-detail.service';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { SeoService } from '@app/frontend-modules-seo/service';
-import { LayoutComponent } from '@app/frontend-components/layout';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
-import { TranslateModule } from '@ngx-translate/core';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { ShowLevelComponent } from './components/show-level.component';
-import { USER, AUTH } from '@app/frontend-utils';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RouterModule } from '@angular/router';
 import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
+import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { SeoService } from '@app/frontend-modules-seo/service';
+import { AUTH, USER } from '@app/frontend-utils';
+import { TranslateModule } from '@ngx-translate/core';
+import { injectParams } from 'ngxtension/inject-params';
+import { ShowLevelComponent } from './components/show-level.component';
+import { DetailService } from './page-detail.service';
 
 @Component({
   selector: 'app-page-detail',
@@ -34,7 +33,6 @@ import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming'
     RouterModule,
     TranslateModule,
 
-    LayoutComponent,
     PageHeaderComponent,
     ShowLevelComponent,
     RecentGamesComponent,

@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
-import { LayoutComponent } from '@app/frontend-components/layout';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { OverviewService } from './page-overview.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,7 +27,6 @@ import { TranslateModule } from '@ngx-translate/core';
     MatFormFieldModule,
     MatInputModule,
 
-    LayoutComponent,
     PageHeaderComponent,
   ],
   templateUrl: './page-overview.component.html',

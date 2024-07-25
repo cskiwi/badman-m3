@@ -1,29 +1,27 @@
 @if (!loading()) {
-  <app-layout>
-    <app-page-header>
-      <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-      <ng-content title>Players</ng-content>
-    </app-page-header>
-    <section class="players">
-      <mat-form-field>
-        <mat-label>{{'all.players.search' | translate}}</mat-label>
-        <input matInput [formControl]="this.query" />
-      </mat-form-field>
+  <app-page-header>
+    <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
+    <ng-content title>Players</ng-content>
+  </app-page-header>
+  <section class="players">
+    <mat-form-field>
+      <mat-label>{{ 'all.players.search' | translate }}</mat-label>
+      <input matInput [formControl]="this.query" />
+    </mat-form-field>
 
-      <mat-list>
-        @for (player of players(); track player.id) {
-          <mat-list-item [routerLink]="player.slug">
-            <!-- <img matListItemAvatar src="..." alt="..." /> -->
-            <h3 matListItemTitle>{{ player.fullName }}</h3>
-            <p matListItemLine>
-              <span>{{ player.memberId }}</span>
-              <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
-            </p>
-          </mat-list-item>
-        }
-      </mat-list>
-    </section>
-  </app-layout>
+    <mat-list>
+      @for (player of players(); track player.id) {
+        <mat-list-item [routerLink]="player.slug">
+          <!-- <img matListItemAvatar src="..." alt="..." /> -->
+          <h3 matListItemTitle>{{ player.fullName }}</h3>
+          <p matListItemLine>
+            <span>{{ player.memberId }}</span>
+            <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
+          </p>
+        </mat-list-item>
+      }
+    </mat-list>
+  </section>
 } @else {
   <mat-progress-bar mode="indeterminate" />
 }

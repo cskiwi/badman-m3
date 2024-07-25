@@ -12,14 +12,12 @@ import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { MtxGrid, MtxGridColumn } from '@ng-matero/extensions/grid';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HomeService } from './page-home.service';
-import { LayoutComponent } from '@app/frontend-components/layout';
 
 @Component({
   selector: 'app-page-home',
   standalone: true,
   imports: [
     CommonModule,
-    LayoutComponent,
     PageHeaderComponent,
     MtxGrid,
     MatIconModule,
