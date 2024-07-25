@@ -80,6 +80,7 @@ export class DetailService {
               id
               fullName
               slug
+              clubId
               teams {
                 id
                 name
