@@ -59,8 +59,6 @@
     "jwks-rsa": "^3.1.0",
     "nestjs-i18n": "^10.4.5",
     "ng-packagr": "^18.1.0",
-    "ngx-cookie-service": "^18.0.0",
-    "ngx-cookie-service-ssr": "^18.0.0",
     "ngxtension": "^4.0.0",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",

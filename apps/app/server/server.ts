@@ -10,7 +10,10 @@ import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
 import { FileSystemCacheHandler } from './filesystem-cache-handler';
 import { RedisCacheHandler } from './redis-cache-handler';
-import { REQUEST as SSR_REQUEST } from 'ngx-cookie-service-ssr';
+import {
+  REQUEST as COOKIE_SERVICE_REQ,
+  RESPONSE as COOKIE_SERVICE_RES,
+} from 'ngx-cookie-service-ssr';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -112,8 +115,8 @@ export async function app() {
           publicPath: browserDistFolder,
           providers: [
             { provide: APP_BASE_HREF, useValue: baseUrl },
-            { provide: SSR_REQUEST, useValue: req },
-            { provide: 'RESPONSE', useValue: res },
+            { provide: COOKIE_SERVICE_REQ, useValue: req },
+            { provide: COOKIE_SERVICE_RES, useValue: res },
           ],
         })
         .then((html) => res.send(html))

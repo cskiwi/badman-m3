@@ -11,7 +11,8 @@ export const USER$ = new InjectionToken('USER', {
   factory: () => {
     const cookie = inject(SsrCookieService);
 
-    if (!cookie.get('token')) {
+    if (!cookie.check('token')) {
+      console.log('No token found in cookie');
       return of({ id: undefined, name: undefined } as const as Partial<Player>);
     }
 
