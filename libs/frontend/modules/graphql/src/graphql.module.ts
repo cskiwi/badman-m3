@@ -37,12 +37,6 @@ export function createApollo(
   baseUrl: string,
   config?: GraphqlConfiguration,
 ) {
-  const basic = setContext(() => ({
-    headers: {
-      Accept: 'charset=utf-8',
-    },
-  }));
-
   const isBrowser = isPlatformBrowser(platformId);
 
   if (isBrowser) {
@@ -56,36 +50,9 @@ export function createApollo(
     cache.reset();
   }
 
-  const auth = setContext(async (_, { headers }) => {
-    if (isBrowser) {
-      const authService = injector.get(AuthService);
-      const isAuthenticated = await lastValueFrom(
-        authService.isAuthenticated$.pipe(take(1)),
-      );
-
-      if (isAuthenticated) {
-        const token = await lastValueFrom(authService.getAccessTokenSilently());
-        if (token) {
-          headers = {
-            ...headers,
-            Authorization: `Bearer ${token}`,
-          };
-        }
-      }
-    }
-
-    return {
-      headers: {
-        ...headers,
-        Accept: 'application/json; charset=utf-8',
-        'X-App-Magic': '1',
-      },
-    };
-  });
-
   const link = ApolloLink.from([
-    basic,
-    auth,
+    // basic,
+    // auth,
     httpLink.create({
       uri: `${baseUrl}/${config?.suffix ?? 'graphql'}`,
     }),

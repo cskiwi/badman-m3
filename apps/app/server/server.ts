@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
 import { FileSystemCacheHandler } from './filesystem-cache-handler';
 import { RedisCacheHandler } from './redis-cache-handler';
+import { REQUEST as SSR_REQUEST } from 'ngx-cookie-service-ssr';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -63,9 +64,6 @@ export async function app() {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
-
   // Serve static files from /browser
   server.get(
     '**',
@@ -112,7 +110,11 @@ export async function app() {
           documentFilePath: indexHtml,
           url: `${protocol}://${headers.host}${originalUrl}`,
           publicPath: browserDistFolder,
-          providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+          providers: [
+            { provide: APP_BASE_HREF, useValue: baseUrl },
+            { provide: SSR_REQUEST, useValue: req },
+            { provide: 'RESPONSE', useValue: res },
+          ],
         })
         .then((html) => res.send(html))
         .catch((err) => next(err));

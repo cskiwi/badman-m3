@@ -12,6 +12,8 @@ import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { MtxGrid, MtxGridColumn } from '@ng-matero/extensions/grid';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HomeService } from './page-home.service';
+import { BASE_URL } from '@app/frontend-utils';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-page-home',
@@ -31,6 +33,10 @@ export class PageHomeComponent {
   private readonly dataService = new HomeService();
   private readonly translate = inject(TranslateService);
   private readonly rankingSystemService = inject(RankingSystemService);
+
+  private readonly baseUrl = inject(BASE_URL);
+
+  private readonly http = inject(HttpClient);
 
   id = input<string | null>(null);
 
@@ -63,5 +69,7 @@ export class PageHomeComponent {
         rankingSystemId: this.rankingSystemService.systemId(),
       });
     });
+
+    // this.http.get(`${this.baseUrl}/api/health/test`).subscribe();
   }
 }

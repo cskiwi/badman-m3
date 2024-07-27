@@ -1,54 +1,49 @@
-import { isPlatformServer } from '@angular/common';
-import { InjectionToken, PLATFORM_ID, inject, signal } from '@angular/core';
+import { InjectionToken, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from '@auth0/auth0-angular';
-import { Apollo, gql } from 'apollo-angular';
-import { filter, map, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { Player } from '@app/models';
+import { Apollo, gql } from 'apollo-angular';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
+import { of } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 export const USER$ = new InjectionToken('USER', {
   providedIn: 'root',
   factory: () => {
-    const platform = inject(PLATFORM_ID);
-    if (isPlatformServer(platform)) {
+    const cookie = inject(SsrCookieService);
+
+    if (!cookie.get('token')) {
       return of({ id: undefined, name: undefined } as const as Partial<Player>);
     }
 
-    const auth = inject(AuthService);
     const apollo = inject(Apollo);
-    return auth.user$.pipe(
-      filter((user) => !!user),
-      switchMap(() =>
-        apollo.query<{
-          me: {
-            id: string;
-            name: string;
-          };
-        }>({
-          query: gql`
-            query {
-              me {
+    return apollo
+      .query<{
+        me: Player;
+      }>({
+        query: gql`
+          query {
+            me {
+              id
+              firstName
+              slug
+              clubPlayerMemberships {
                 id
-                firstName
-                slug
-                clubPlayerMemberships {
+                active
+                membershipType
+                club {
                   id
-                  active
-                  membershipType
-                  club {
-                    id
-                    name
-                    slug
-                  }
+                  name
+                  slug
                 }
               }
             }
-          `,
-        }),
-      ),
-      map((result) => result.data.me),
-    );
+          }
+        `,
+      })
+      .pipe(
+        filter((user) => !!user),
+        map((result) => result.data.me),
+      );
   },
 });
 

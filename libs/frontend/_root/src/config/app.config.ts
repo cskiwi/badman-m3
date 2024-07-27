@@ -1,3 +1,11 @@
+import { isPlatformBrowser } from '@angular/common';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import {
   APP_ID,
   ApplicationConfig,
@@ -6,27 +14,22 @@ import {
   isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
-import { appRoutes } from './app.routes';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import {
   provideClientHydration,
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {
-  HTTP_INTERCEPTORS,
-  provideHttpClient,
-  withFetch,
-} from '@angular/common/http';
-import { BASE_URL } from '@app/frontend-utils';
-import { isPlatformBrowser } from '@angular/common';
+import { provideRouter, withViewTransitions } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
+import { AuthInterceptor } from '@app/frontend-modules-auth';
 import { GraphQLModule } from '@app/frontend-modules-graphql';
-import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import { TranslateModule } from '@app/frontend-modules-translation';
-import { provideServiceWorker } from '@angular/service-worker';
+import { BASE_URL } from '@app/frontend-utils';
+import { AuthModule } from '@auth0/auth0-angular';
+import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -64,7 +67,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
@@ -89,9 +92,10 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthHttpInterceptor,
+      useClass: AuthInterceptor,
       multi: true,
     },
+
     {
       provide: SEO_CONFIG,
       useFactory: (baseUrl: string) => ({
