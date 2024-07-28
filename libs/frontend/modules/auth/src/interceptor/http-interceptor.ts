@@ -23,7 +23,6 @@ export class AuthInterceptor implements HttpInterceptor {
       return auth.getAccessTokenSilently().pipe(
         tap((token) => {
           cookie.set('token', token);
-          console.log(`client cookie: ${cookie.get('token')}`);
         }),
         switchMap((token) => {
           return next.handle(
@@ -37,8 +36,6 @@ export class AuthInterceptor implements HttpInterceptor {
         }),
       );
     }
-    console.log(`server cookie: ${cookie.get('token')}`);
-    console.log(cookie.getAll());
 
     return next.handle(
       request.clone({

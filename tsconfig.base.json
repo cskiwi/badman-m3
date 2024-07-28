@@ -66,7 +66,6 @@
       "@app/models": ["libs/models/models/src/index.ts"],
       "@app/models/enums": ["libs/models/enum/src/index.ts"],
       "@app/utils": ["libs/utils/src/index.ts"],
-      "ngx-cookie-service": ["libs/ngx-cookie-service/src/public-api"],
       "ngx-cookie-service-ssr": ["libs/ngx-cookie-service-ssr/src/public-api"]
     }
   },
