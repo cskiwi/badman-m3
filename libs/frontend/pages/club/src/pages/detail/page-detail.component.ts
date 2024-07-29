@@ -14,7 +14,6 @@ import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SeoService } from '@app/frontend-modules-seo/service';
-import { AUTH, USER } from '@app/frontend-utils';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
@@ -51,9 +50,6 @@ export class PageDetailComponent {
 
   error = this.dataService.error;
   loading = this.dataService.loading;
-
-  user = inject(USER);
-  auth = inject(AUTH);
 
   constructor() {
     effect(() => {

@@ -1,35 +1,42 @@
+import { isPlatformBrowser } from '@angular/common';
+import {
+  HTTP_INTERCEPTORS,
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import {
   APP_ID,
+  APP_INITIALIZER,
   ApplicationConfig,
   PLATFORM_ID,
   importProvidersFrom,
   isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
-import { appRoutes } from './app.routes';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import {
   provideClientHydration,
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {
-  HTTP_INTERCEPTORS,
-  provideHttpClient,
-  withFetch,
-} from '@angular/common/http';
-import { BASE_URL } from '@app/frontend-utils';
-import { isPlatformBrowser } from '@angular/common';
-import { GraphQLModule } from '@app/frontend-modules-graphql';
-import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { SEO_CONFIG } from '@app/frontend-modules-seo';
-import { TranslateModule } from '@app/frontend-modules-translation';
+import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
+import { AuthInterceptor } from '@app/frontend-modules-auth';
+import { GraphQLModule } from '@app/frontend-modules-graphql';
+import { SEO_CONFIG } from '@app/frontend-modules-seo';
+import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
+import { BASE_URL } from '@app/frontend-utils';
+import { AuthModule } from '@auth0/auth0-angular';
+import { appRoutes } from './app.routes';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     importProvidersFrom(
       GraphQLModule.forRoot(),
       AuthModule.forRoot({
@@ -51,9 +58,11 @@ export const appConfig: ApplicationConfig = {
           ],
         },
       }),
-      TranslateModule.forRoot({
-        api: `/api/v1/translate/i18n/`,
-      }),
+      TranslateModule.forRoot(
+        provideTranslation({
+          api: `/api/v1/translate/i18n/`,
+        }),
+      ),
     ),
     provideClientHydration(
       withHttpTransferCacheOptions({
@@ -64,7 +73,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
-    provideHttpClient(withFetch()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
@@ -89,9 +97,10 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthHttpInterceptor,
+      useClass: AuthInterceptor,
       multi: true,
     },
+
     {
       provide: SEO_CONFIG,
       useFactory: (baseUrl: string) => ({
@@ -100,6 +109,12 @@ export const appConfig: ApplicationConfig = {
         imageEndpoint: `${baseUrl}/api/v1/images`,
       }),
       deps: [BASE_URL],
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: langulageInitializer,
+      deps: [TranslateService, SsrCookieService],
+      multi: true,
     },
   ],
 };

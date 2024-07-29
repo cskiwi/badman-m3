@@ -1,7 +1,7 @@
 {
   "name": "backend-translate",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourcetranslate": "libs/backend/translate/src",
+  "sourceRoot": "libs/backend/translate/src",
   "projectType": "library",
   "tags": [],
   "targets": {

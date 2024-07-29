@@ -49,9 +49,7 @@
           "nestjs-i18n"
         ],
         "scripts": [],
-        "prerender": {
-          "routesFile": "routes.txt"
-        },
+        "prerender": false,
         "ssr": {
           "entry": "apps/app/server/server.ts"
         }

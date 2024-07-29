@@ -11,9 +11,12 @@
     }
   },
   "landing": {
-    "description": "Welcome to this test version of Badman"
+    "description": "Welcome to the v2 test version of Badman"
   },
   "players": {
+    "my-club": "My club",
+    "my-clubs": "My clubs",
+    "my-profile": "My profile",
     "search": "Search player"
   },
   "points": {

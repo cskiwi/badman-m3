@@ -99,6 +99,16 @@ To run end-to-end tests:
 nx e2e app-e2e
 ```
 
-## Bun
+## For blogs and documentation sites
+You can enable SSG then because there is no login or dynamic content, you can build the site and serve it statically.
+To do this, follow the steps below:
 
-I really want bun to be supported, see https://github.com/nrwl/nx/issues/26053 for more information.
+1. Add prerender to `apps/app/project.json`
+```json
+"prerender": {
+   "routesFile": "routes.txt"
+},
+```
+
+2. switch the `build` script to with the one from `build:ssg` in `package.json`
+3. done
