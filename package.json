@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nx run-many -t serve -p tag:scope:app",
     "start:prod": "node ./dist/apps/app/server/server.mjs",
-    "build": "node scripts/build.js",
+    "build": "nx run-many -t build",
+    "build:ssg": "node scripts/build.js",
     "typeorm": "set RUN_MIGRATIONS=true && ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --dataSource ./libs/models/src/orm.config.ts",
     "migrate:create": "npm run typeorm -- migration:generate ",
     "migrate": "npm run typeorm -- migration:run",

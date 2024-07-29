@@ -28,12 +28,12 @@
         <mat-nav-list>
           @if (user()?.slug) {
             <a mat-list-item [routerLink]="['/player', user()?.slug]">
-              {{ 'all.shell.sidebar.persnal.games' | translate }}
+              {{ 'all.players.my-profile' | translate }}
             </a>
 
             @if (clubs().length === 1) {
               <a mat-list-item [routerLink]="['/club', clubs()[0].club.slug]">
-                {{ 'all.shell.sidebar.persnal.club' | translate }}
+                {{ 'all.players.my-club' | translate }}
               </a>
             }
             <mat-divider />

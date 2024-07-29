@@ -14,6 +14,9 @@
     "description": "Welcome to this test version of Badman"
   },
   "players": {
+    "my-club": "My club",
+    "my-clubs": "My clubs",
+    "my-profile": "My profile",
     "search": "Search player"
   },
   "points": {

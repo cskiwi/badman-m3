@@ -27,6 +27,15 @@ export async function app() {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
+  
+  // Serve static files from /browser
+  server.get(
+    '**',
+    express.static(browserDistFolder, {
+      maxAge: '1y',
+      index: 'index.html',
+    }),
+  );
 
   // initializeIsr(
   //   indexHtml,
@@ -123,20 +132,11 @@ function initializeIsr(
     ],
   });
 
-  server.use(express.json());
   server.post(
     '/api/invalidate',
     async (req, res) => await isr.invalidate(req, res),
   );
 
-  // Serve static files from /browser
-  server.get(
-    '**',
-    express.static(browserDistFolder, {
-      maxAge: '1y',
-      index: 'index.html',
-    }),
-  );
 
   server.get(
     '*',
