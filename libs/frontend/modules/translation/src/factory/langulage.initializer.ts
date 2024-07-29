@@ -1,13 +1,14 @@
-import { isPlatformBrowser, LOCATION_INITIALIZED } from '@angular/common';
-import { effect, Injector, PLATFORM_ID } from '@angular/core';
-import { AvaliableLanguages, languages } from '@app/frontend-modules-translation/languages';
+import {
+  AvaliableLanguages,
+  languages,
+} from '@app/frontend-modules-translation/languages';
 import { TranslateService } from '@ngx-translate/core';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { lastValueFrom } from 'rxjs';
 
 export function langulageInitializer(
   translate: TranslateService,
-  injector: Injector,
-  user?: { id: string },
+  cookieService: SsrCookieService,
 ) {
   return async () => {
     const setLang = async (savedLang?: AvaliableLanguages) => {
@@ -23,38 +24,16 @@ export function langulageInitializer(
         return;
       }
 
-      await setLanguage(values.translate, translate);
+      await setLanguage(values.translate, translate, cookieService);
     };
 
     try {
-      await injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
-      const platform = injector.get(PLATFORM_ID);
-
       translate.addLangs([...languages.keys()]);
-      translate.setDefaultLang(AvaliableLanguages.nl_BE);
+      const savedLang =
+        (cookieService.get('translation.language') as AvaliableLanguages) ||
+        AvaliableLanguages.nl_BE;
 
-      const savedLang = isPlatformBrowser(platform)
-        ? (localStorage.getItem('translation.language') as AvaliableLanguages)
-        : undefined;
-
-      if (!savedLang && isPlatformBrowser(platform)) {
-        effect(
-          () => {
-            // if (authenticateService.loggedIn()) {
-            //   if (authenticateService.user()?.setting?.language) {
-            //     savedLang = authenticateService.user()?.setting?.language;
-            //   }
-            // }
-            setLang(savedLang);
-          },
-          {
-            injector,
-          },
-        );
-      }
-
-      // Set language if saved
-      setLang(savedLang ?? AvaliableLanguages.nl_BE);
+      await setLang(savedLang);
     } catch (err) {
       console.error('Error', err);
     }
@@ -64,7 +43,11 @@ export function langulageInitializer(
 export async function setLanguage(
   translateFormat: string,
   translateService: TranslateService,
+  cookieService: SsrCookieService,
 ) {
+  // Set cookie
+  cookieService.set('translation.language', translateFormat);
+
   // Set values
   await lastValueFrom(translateService.use(translateFormat));
 }

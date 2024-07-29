@@ -21,6 +21,9 @@ export type I18nTranslations = {
             "description": string;
         };
         "players": {
+            "my-club": string;
+            "my-clubs": string;
+            "my-profile": string;
             "search": string;
         };
         "points": {

@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 import {
   APP_ID,
+  APP_INITIALIZER,
   ApplicationConfig,
   PLATFORM_ID,
   importProvidersFrom,
@@ -26,13 +27,16 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@app/frontend-modules-auth';
 import { GraphQLModule } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
-import { TranslateModule } from '@app/frontend-modules-translation';
+import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { appRoutes } from './app.routes';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     importProvidersFrom(
       GraphQLModule.forRoot(),
       AuthModule.forRoot({
@@ -54,9 +58,11 @@ export const appConfig: ApplicationConfig = {
           ],
         },
       }),
-      TranslateModule.forRoot({
-        api: `/api/v1/translate/i18n/`,
-      }),
+      TranslateModule.forRoot(
+        provideTranslation({
+          api: `/api/v1/translate/i18n/`,
+        }),
+      ),
     ),
     provideClientHydration(
       withHttpTransferCacheOptions({
@@ -67,7 +73,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
-    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
@@ -104,6 +109,12 @@ export const appConfig: ApplicationConfig = {
         imageEndpoint: `${baseUrl}/api/v1/images`,
       }),
       deps: [BASE_URL],
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: langulageInitializer,
+      deps: [TranslateService, SsrCookieService],
+      multi: true,
     },
   ],
 };
