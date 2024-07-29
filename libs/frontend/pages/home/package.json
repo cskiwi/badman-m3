@@ -14,7 +14,8 @@
     "@app/models": "0.0.1",
     "apollo-angular": "^7.0.2",
     "ngxtension": "^4.0.0",
-    "rxjs": "~7.8.1"
+    "rxjs": "~7.8.1",
+    "@app/frontend-utils": "0.0.1"
   },
   "sideEffects": false
 }

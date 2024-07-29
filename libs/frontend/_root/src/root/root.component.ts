@@ -66,7 +66,7 @@ export class RootComponent implements OnDestroy {
   );
 
   login() {
-    this.auth.loginWithRedirect();
+    this.auth?.loginWithRedirect();
   }
 
   private _mobileQueryListener: () => void;

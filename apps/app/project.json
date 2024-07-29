@@ -87,7 +87,7 @@
         },
         "development": {
           "buildTarget": "app:build:development",
-          "proxyConfig": "apps/app/proxy.conf.json"
+          "proxyConfig": "{projectRoot}/proxy.conf.json"
         }
       },
       "defaultConfiguration": "development"
@@ -105,7 +105,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/app/jest.config.ts"
+        "jestConfig": "{projectRoot}/jest.config.ts"
       }
     }
   }

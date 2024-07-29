@@ -20,9 +20,7 @@
       "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
       "@app/backend-health": ["libs/backend/health/src/index.ts"],
       "@app/backend-root": ["libs/backend/_root/src/index.ts"],
-      "@app/backend-routes-generator": [
-        "libs/backend/routes-generator/src/index.ts"
-      ],
+
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
       "@app/backend-translate": ["libs/backend/translate/src/index.ts"],
       "@app/frontend-components": ["libs/frontend/components/index.ts"],

@@ -8,7 +8,8 @@
     "@ngx-translate/core": "^15.0.0",
     "rxjs": "~7.8.1",
     "@ngx-translate/http-loader": "^8.0.0",
-    "@app/frontend-utils": "0.0.1"
+    "@app/frontend-utils": "0.0.1",
+    "ngx-cookie-service-ssr": "^18.0.0"
   },
   "sideEffects": false
 }

@@ -15,9 +15,7 @@ export const pagePlayersRoutes: Route[] = [
           {
             path: '',
             component: PageDetailComponent,
-            data: {
-              revalidate: 86400, // one day
-            },
+           
           },
         ],
       },

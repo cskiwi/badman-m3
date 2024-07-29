@@ -10,9 +10,7 @@ export const pageHomeRoutes: Route[] = [
       {
         path: '',
         component: PageHomeComponent,
-        data: {
-          revalidate: 0,
-        },
+       
       },
     ],
   },
