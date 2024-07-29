@@ -19,9 +19,9 @@
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav
       #snav
-      [mode]="mobileQuery.matches ? 'over' : 'side'"
-      [fixedInViewport]="mobileQuery.matches"
-      [opened]="mobileQuery.matches === false"
+      [mode]="isMobile() ? 'over' : 'side'"
+      [fixedInViewport]="isMobile()"
+      [opened]="isMobile() === false"
       fixedTopGap="56"
     >
       <div class="nav">

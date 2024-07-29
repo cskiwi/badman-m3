@@ -1,13 +1,7 @@
-import { MediaMatcher } from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
-import {
-  ChangeDetectorRef,
-  Component,
-  computed,
-  inject,
-  OnDestroy,
-  PLATFORM_ID
-} from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -37,8 +31,15 @@ import { filter, map } from 'rxjs/operators';
   templateUrl: './root.component.html',
   styleUrl: './root.component.scss',
 })
-export class RootComponent implements OnDestroy {
-  mobileQuery: MediaQueryList;
+export class RootComponent {
+  private breakpointObserver$ = inject(BreakpointObserver);
+  private isMobile$ = this.breakpointObserver$
+    .observe(Breakpoints.Handset)
+    .pipe(map((result) => result.matches));
+
+  isMobile = toSignal(this.isMobile$, { initialValue: true });
+
+  // mobileQuery: MediaQueryList;
   private platformId = inject<string>(PLATFORM_ID);
 
   user = inject(USER);
@@ -69,13 +70,7 @@ export class RootComponent implements OnDestroy {
     this.auth?.loginWithRedirect();
   }
 
-  private _mobileQueryListener: () => void;
-
-  constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
-    this.mobileQuery = media.matchMedia('(max-width: 600px)');
-    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addListener(this._mobileQueryListener);
-
+  constructor() {
     if (isPlatformBrowser(this.platformId)) {
       const snackBar = inject(MatSnackBar);
       const updates = inject(SwUpdate);
@@ -100,9 +95,5 @@ export class RootComponent implements OnDestroy {
             });
         });
     }
-  }
-
-  ngOnDestroy(): void {
-    this.mobileQuery.removeListener(this._mobileQueryListener);
   }
 }
