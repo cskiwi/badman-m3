@@ -17,31 +17,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler) {
     const cookie = inject(SsrCookieService);
-
-    if (this.isBrowser) {
-      const auth = inject(AuthService);
-      return auth.getAccessTokenSilently().pipe(
-        tap((token) => {
-          cookie.set(AUTH_KEY, token);
-        }),
-        switchMap((token) => {
-          return next.handle(
-            request.clone({
-              setHeaders: {
-                'X-MY-APP-CLIENT': 'ssr',
-                Authorization: `Bearer ${token}`,
-              },
-            }),
-          );
-        }),
-      );
-    }
-
     return next.handle(
       request.clone({
         setHeaders: {
-          'X-MY-APP-CLIENT': 'ssr',
-          Authorization: `Bearer ${cookie.get(AUTH_KEY)}`,
+          Authorization: cookie.check(AUTH_KEY)
+            ? `Bearer ${cookie.get(AUTH_KEY)}`
+            : '',
         },
       }),
     );
