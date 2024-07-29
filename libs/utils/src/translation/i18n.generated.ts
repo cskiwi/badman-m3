@@ -27,6 +27,8 @@ export type I18nTranslations = {
             "search": string;
         };
         "points": {
+            "needed-for-downgrade": string;
+            "needed-for-upgrade": string;
             "table": {
                 "level": string;
                 "points-needed-down": string;

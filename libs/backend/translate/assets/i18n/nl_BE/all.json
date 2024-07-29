@@ -20,6 +20,8 @@
     "search": "Zoek speler"
   },
   "points": {
+    "needed-for-downgrade": "Promotie",
+    "needed-for-upgrade": "Degradatie",
     "table": {
       "level": "Level",
       "points-needed-down": "Grenswaarde voor dalen",

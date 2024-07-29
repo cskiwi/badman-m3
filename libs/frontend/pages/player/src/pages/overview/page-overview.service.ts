@@ -126,16 +126,18 @@ export class OverviewService {
       ?.toLowerCase()
       .replace(/[;\\\\/:*?"<>|&',]/, ' ')
       .split(' ');
-    const queries: unknown[] = [];
-    if (!parts) {
-      return;
-    }
-    for (const part of parts) {
+    const queries: unknown[] = [{ memberId: '$nNull' }];
+
+    for (const part of parts ?? []) {
       queries.push(
         { firstName: { $iLike: `%${part}%` } },
         { lastName: { $iLike: `%${part}%` } },
         { memberId: { $iLike: `%${part}%` } },
       );
+    }
+
+    if (queries.length === 0) {
+      return;
     }
 
     return queries;

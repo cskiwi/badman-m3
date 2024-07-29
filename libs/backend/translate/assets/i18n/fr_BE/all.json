@@ -20,6 +20,8 @@
     "search": "Rechercher joueur"
   },
   "points": {
+    "needed-for-downgrade": "Promotion",
+    "needed-for-upgrade": "Dégradation",
     "table": {
       "level": "Classement",
       "points-needed-down": "Palier de descente",

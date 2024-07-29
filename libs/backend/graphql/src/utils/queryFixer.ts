@@ -28,25 +28,26 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
     if (input[key] === null || input[key] === undefined) {
       delete input[key];
     } else if (typeof input[key] === 'object' && key != '$between') {
-      // if (key === '$and') {
-      //   const andConditions = input[key].map(queryFixer);
-      //   return And(...andConditions);
-      // }
-  
-      // if (key === '$or') {
-      //   const orConditions = input[key].map(queryFixer);
-      //   return Or(...orConditions);
-      // }
-
       input[key] = queryFixer(input[key]);
       return input;
     }
+
+    if (input[key].startsWith('$')) {
+      // const operatorMaps = new Map<string, Record<string, unknown>>([
+      //   ['$null', IsNull()],
+      //   ['$nNull', Not(IsNull())],
+      // ]);
+      if (input[key] === '$null') {
+        input[key] = IsNull();
+      } else if (input[key] === '$nNull') {
+        input[key] = Not(IsNull());
+      }
+    }
+
     if (!key.startsWith('$')) {
       continue;
     }
 
-   
-    
     const operatorMap = new Map<string, Record<string, unknown>>([
       ['$eq', input[key]],
       ['$ne', Not(input[key])],
@@ -60,8 +61,7 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
       ['$nLike', Not(Like(input[key]))],
       ['$iLike', ILike(input[key])],
       ['$nILike', Not(ILike(input[key]))],
-      ['$null', IsNull()],
-      ['$nNull', Not(IsNull())],
+
       ['$between', Between(input[key][0], input[key][1])],
     ]);
 

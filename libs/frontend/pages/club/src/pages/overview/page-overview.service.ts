@@ -125,12 +125,13 @@ export class OverviewService {
       .replace(/[;\\\\/:*?"<>|&',]/, ' ')
       .split(' ')
       .map((part) => part.trim());
-    const queries: unknown[] = [];
-    if (!parts) {
-      return;
-    }
+    const queries: unknown[] = [
+      {
+        clubId: '$nNull',
+      },
+    ];
 
-    for (const part of parts) {
+    for (const part of parts ?? []) {
       if (part.length < 1) continue;
 
       const possibleClubId = parseInt(part);
@@ -139,6 +140,10 @@ export class OverviewService {
         queries.push({ clubId: possibleClubId });
       }
       queries.push({ fullName: { $iLike: `%${part}%` } });
+    }
+
+    if (queries.length === 0) {
+      return;
     }
 
     return queries;

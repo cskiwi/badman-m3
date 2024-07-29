@@ -20,6 +20,8 @@
     "search": "Search player"
   },
   "points": {
+    "needed-for-downgrade": "Upgrade",
+    "needed-for-upgrade": "Degradation",
     "table": {
       "level": "Level",
       "points-needed-down": "Points needed to go down",
