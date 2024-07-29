@@ -1,5 +1,6 @@
 import { InjectionToken, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AUTH_KEY } from '@app/frontend-modules-auth';
 import { Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
@@ -11,7 +12,7 @@ export const USER$ = new InjectionToken('USER', {
   factory: () => {
     const cookie = inject(SsrCookieService);
 
-    if (!cookie.check('token')) {
+    if (!cookie.check(AUTH_KEY)) {
       return of({
         id: undefined,
         name: undefined,
@@ -46,10 +47,14 @@ export const USER$ = new InjectionToken('USER', {
       })
       .pipe(
         filter((user) => !!user),
-        map((result) => ({
-          ...result.data.me,
-          authenticated: true,
-        } as Player & { authenticated: boolean })),
+
+        map(
+          (result) =>
+            ({
+              ...result.data.me,
+              authenticated: true,
+            }) as Player & { authenticated: boolean },
+        ),
       );
   },
 });
