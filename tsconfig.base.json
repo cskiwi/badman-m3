@@ -65,8 +65,7 @@
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
       "@app/models": ["libs/models/models/src/index.ts"],
       "@app/models/enums": ["libs/models/enum/src/index.ts"],
-      "@app/utils": ["libs/utils/src/index.ts"],
-      "ngx-cookie-service-ssr": ["libs/ngx-cookie-service-ssr/src/public-api"]
+      "@app/utils": ["libs/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

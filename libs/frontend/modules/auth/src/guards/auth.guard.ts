@@ -17,29 +17,23 @@ export class AuthGuard {
   private readonly router = inject(Router);
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    return this.auth.isAuthenticated$.pipe(
-      switchMap((isAuthenticated) => {
-        if (!isAuthenticated) {
-          this.auth.loginWithRedirect({
+    return this.user.pipe(
+      map((user) => {
+        if (!user.authenticated) {
+          this.auth?.loginWithRedirect({
             appState: { target: state.url },
           });
 
           return of(false);
         }
 
-        return this.user.pipe(
-          map((user) => {
-            if (!user?.id) {
-              this.router.navigate(['/']);
-              return false;
-            }
+        if (!user?.id) {
+          this.router.navigate(['/']);
+          return false;
+        }
 
-            return true;
-          }),
-        );
+        return true;
       }),
     );
   }
 }
-
-

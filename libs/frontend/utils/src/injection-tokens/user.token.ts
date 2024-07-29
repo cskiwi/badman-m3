@@ -12,7 +12,11 @@ export const USER$ = new InjectionToken('USER', {
     const cookie = inject(SsrCookieService);
 
     if (!cookie.check('token')) {
-      return of({ id: undefined, name: undefined } as const as Partial<Player>);
+      return of({
+        id: undefined,
+        name: undefined,
+        authenticated: false,
+      } as const as Partial<Player> & { authenticated: boolean });
     }
 
     const apollo = inject(Apollo);
@@ -42,7 +46,10 @@ export const USER$ = new InjectionToken('USER', {
       })
       .pipe(
         filter((user) => !!user),
-        map((result) => result.data.me),
+        map((result) => ({
+          ...result.data.me,
+          authenticated: true,
+        } as Player & { authenticated: boolean })),
       );
   },
 });
