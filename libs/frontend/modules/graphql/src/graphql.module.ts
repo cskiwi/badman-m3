@@ -9,13 +9,9 @@ import {
   makeStateKey,
 } from '@angular/core';
 import { ApolloLink, InMemoryCache } from '@apollo/client/core';
-import { setContext } from '@apollo/client/link/context';
 import { BASE_URL } from '@app/frontend-utils';
-import { AuthService } from '@auth0/auth0-angular';
 import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
-import { lastValueFrom } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 const STATE_KEY = makeStateKey<any>('apollo.state');
 export const APOLLO_CACHE = new InjectionToken<InMemoryCache>('apollo-cache');
@@ -31,7 +27,6 @@ export type GraphqlConfiguration = Readonly<{
 export function createApollo(
   httpLink: HttpLink,
   cache: InMemoryCache,
-  injector: Injector,
   platformId: string,
   transferState: TransferState,
   baseUrl: string,
@@ -82,7 +77,6 @@ export function createApollo(
       deps: [
         HttpLink,
         APOLLO_CACHE,
-        Injector,
         PLATFORM_ID,
         TransferState,
         BASE_URL,

@@ -44,11 +44,13 @@ export const appConfig: ApplicationConfig = {
         clientId: '2LqkYZMbrTTXEE0OMkQJLmpRrOVQheoF',
         useRefreshTokens: true,
         useRefreshTokensFallback: true,
+        useCookiesForTransactions: true,
         authorizationParams: {
           redirect_uri:
             typeof window !== 'undefined' ? window.location.origin : '',
           audience: 'ranking-simulation',
         },
+        cacheLocation: 'localstorage',
         httpInterceptor: {
           allowedList: [
             {
