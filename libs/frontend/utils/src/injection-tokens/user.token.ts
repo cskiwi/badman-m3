@@ -1,13 +1,13 @@
 import { InjectionToken, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AUTH_KEY } from '@app/frontend-modules-auth';
+import { AUTH_KEY } from '@app/frontend-utils';
 import { Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-export const USER$ = new InjectionToken('USER', {
+export const USER$ = new InjectionToken('USER$', {
   providedIn: 'root',
   factory: () => {
     const cookie = inject(SsrCookieService);

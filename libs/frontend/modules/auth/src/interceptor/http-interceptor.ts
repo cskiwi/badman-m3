@@ -5,10 +5,10 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { AUTH_KEY } from '@app/frontend-utils';
 import { AuthService } from '@auth0/auth0-angular';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { switchMap, tap } from 'rxjs/operators';
-export const AUTH_KEY = 'access_token';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
