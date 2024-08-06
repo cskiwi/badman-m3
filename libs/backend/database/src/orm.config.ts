@@ -11,7 +11,6 @@ import {
   Team,
   TeamPlayerMembership,
 } from '@app/models';
-import { Logger } from '@nestjs/common';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
@@ -35,8 +34,6 @@ const entities = [
   Team,
   TeamPlayerMembership,
 ];
-
-Logger.debug(`DB_TYPE: ${dbType}`);
 
 
 export let ormConfig: DataSourceOptions;
@@ -73,7 +70,6 @@ if (dbType === 'sqlite') {
   );
 }
 
-Logger.debug(`ORM Config:`, ormConfig);
 
 
 const datasource = new DataSource({

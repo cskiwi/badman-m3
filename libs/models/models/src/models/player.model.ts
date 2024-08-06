@@ -37,10 +37,12 @@ export class Player extends BaseEntity {
 
   @Field({ nullable: true })
   @Column({ nullable: true })
+  @Index({ fulltext: true })
   declare firstName: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
+  @Index({ fulltext: true })
   declare lastName: string;
 
   @Index({ unique: true })

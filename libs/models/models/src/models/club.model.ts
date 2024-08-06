@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
@@ -31,6 +32,7 @@ export class Club extends BaseEntity {
 
   @Field()
   @Column()
+  @Index({ fulltext: true })
   declare name: string;
 
   @Field()
