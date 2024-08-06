@@ -12,7 +12,6 @@
         "jestConfig": "{projectRoot}/jest.config.ts"
       }
     },
-   
     "migration-generate": {
       "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:generate -d {projectRoot}/src/orm.config -p {projectRoot}/src/migrations/{args.name}",
       "options": {

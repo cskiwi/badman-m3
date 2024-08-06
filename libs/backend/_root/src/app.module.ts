@@ -6,6 +6,7 @@ import { HealthModule } from '@app/backend-health';
 import { SeoModule } from '@app/backend-seo';
 import { ConfigModule } from '@nestjs/config';
 import { TranslateModule } from '@app/backend-translate';
+import { SearchModule } from '@app/backend-serach';
 
 @Module({
   imports: [
@@ -16,6 +17,10 @@ import { TranslateModule } from '@app/backend-translate';
     SeoModule,
     HealthModule,
     TranslateModule,
+    SearchModule.forRoot({
+      applicationId: process.env['ALGOLIA_APP_ID'] ?? '',
+      apiKey: process.env['ALGOLIA_API_KEY'] ?? '',
+    }),
   ],
   controllers: [],
 })

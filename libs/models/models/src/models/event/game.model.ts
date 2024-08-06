@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -14,7 +14,7 @@ import { GameStatus, GameType } from '@app/models/enums';
 @ObjectType('Game')
 @Entity('Games', { schema: 'event' })
 export class Game extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 

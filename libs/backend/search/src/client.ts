@@ -1,0 +1,1 @@
+export const ALGOLIA_CLIENT = 'ALGOLIA_CLIENT';

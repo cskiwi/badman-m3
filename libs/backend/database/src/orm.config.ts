@@ -10,6 +10,8 @@ import {
   RankingSystemRankingGroupMembership,
   Team,
   TeamPlayerMembership,
+  EventTournament,
+  EventCompetition
 } from '@app/models';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -33,6 +35,9 @@ const entities = [
   GamePlayerMembership,
   Team,
   TeamPlayerMembership,
+
+  EventCompetition,
+  EventTournament
 ];
 
 
