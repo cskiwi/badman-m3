@@ -23,7 +23,7 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { AuthInterceptor } from '@app/frontend-modules-auth';
+import { AuthInterceptor } from '@app/frontend-modules-auth/interceptor';
 import { GraphQLModule } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import {

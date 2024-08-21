@@ -14,7 +14,7 @@ import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SeoService } from '@app/frontend-modules-seo/service';
-import { AUTH, USER } from '@app/frontend-utils';
+import { AuthService } from '@app/frontend-utils';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ShowLevelComponent } from './components/show-level.component';
@@ -53,33 +53,17 @@ export class PageDetailComponent {
   error = this.dataService.error;
   loading = this.dataService.loading;
 
-  user = inject(USER);
-  auth = inject(AUTH);
+  auth = inject(AuthService);
 
-  clubs = computed(
-    () =>
-      (this.user()?.clubPlayerMemberships ?? [])
-        .filter((membership) => membership?.active)
-        .sort((a, b) => {
-          console.log(a?.membershipType, b?.membershipType);
-          return 0;
-        }),
-    // .sort((a, b) => {
-    //   // sort by membership type, first normal then loan
-    //   if (a?.membershipType === b?.membershipType) {
-    //     return 0;
-    //   }
+  user = this.auth.user;
 
-    //   if (a?.membershipType === ClubMembershipType.NORMAL) {
-    //     return -1;
-    //   }
-
-    //   if (b?.membershipType === ClubMembershipType.NORMAL) {
-    //     return 1;
-    //   }
-
-    //   return 0;
-    // }),
+  clubs = computed(() =>
+    (this.user()?.clubPlayerMemberships ?? [])
+      .filter((membership) => membership?.active)
+      .sort((a, b) => {
+        console.log(a?.membershipType, b?.membershipType);
+        return 0;
+      }),
   );
 
   constructor() {

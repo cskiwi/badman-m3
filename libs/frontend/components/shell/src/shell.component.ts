@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { AUTH, USER } from '@app/frontend-utils';
+import { AuthService } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
@@ -42,8 +42,9 @@ export class ShellComponent {
   // mobileQuery: MediaQueryList;
   private platformId = inject<string>(PLATFORM_ID);
 
-  user = inject(USER);
-  auth = inject(AUTH);
+  auth = inject(AuthService);
+
+  user = this.auth.state.user;
 
   clubs = computed(() =>
     (this.user()?.clubPlayerMemberships ?? [])
@@ -67,7 +68,7 @@ export class ShellComponent {
   );
 
   login() {
-    this.auth?.loginWithRedirect();
+    this.auth.state.login();
   }
 
   constructor() {

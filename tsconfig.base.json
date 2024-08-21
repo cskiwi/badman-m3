@@ -40,6 +40,12 @@
         "libs/frontend/components/shell/src/index.ts"
       ],
       "@app/frontend-modules-auth": ["libs/frontend/modules/auth/src/index.ts"],
+      "@app/frontend-modules-auth/guard": [
+        "libs/frontend/modules/auth/guard/src/index.ts"
+      ],
+      "@app/frontend-modules-auth/interceptor": [
+        "libs/frontend/modules/auth/interceptor/src/index.ts"
+      ],
       "@app/frontend-modules-graphql": [
         "libs/frontend/modules/graphql/src/index.ts"
       ],
