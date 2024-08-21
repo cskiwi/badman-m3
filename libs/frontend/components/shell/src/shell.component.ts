@@ -68,7 +68,11 @@ export class ShellComponent {
   );
 
   login() {
-    this.auth.state.login();
+    this.auth.state.login({
+      appState: {
+        target: window.location.pathname,
+      },
+    });
   }
 
   constructor() {
