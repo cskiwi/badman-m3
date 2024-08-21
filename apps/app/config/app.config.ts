@@ -3,7 +3,6 @@ import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
   withFetch,
-  withInterceptors,
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import {
@@ -27,12 +26,15 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@app/frontend-modules-auth';
 import { GraphQLModule } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
-import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
+import {
+  langulageInitializer,
+  provideTranslation,
+} from '@app/frontend-modules-translation';
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
-import { appRoutes } from './app.routes';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
+import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [

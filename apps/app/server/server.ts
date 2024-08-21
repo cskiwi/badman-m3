@@ -3,9 +3,7 @@ import { CommonEngine } from '@angular/ssr';
 import { getServer } from '@app/backend-shared';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
-import {
-  REQUEST as COOKIE_SERVICE_REQ,
-} from 'ngx-cookie-service-ssr';
+import { REQUEST as COOKIE_SERVICE_REQ } from 'ngx-cookie-service-ssr';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
@@ -49,7 +47,7 @@ export async function app() {
           providers: [
             { provide: APP_BASE_HREF, useValue: baseUrl },
             { provide: COOKIE_SERVICE_REQ, useValue: req },
-            { provide: 'REQUEST', useValue: res },
+            { provide: 'RESPONSE', useValue: res },
           ],
         })
         .then((html) => res.send(html))

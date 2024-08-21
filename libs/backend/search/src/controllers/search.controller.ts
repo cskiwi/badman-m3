@@ -1,18 +1,23 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { SearchService } from '../services';
+import { Response } from 'express';
 
 @Controller('backend-search')
 export class SearchController {
   constructor(private searchService: SearchService) {}
 
   @Get('/search')
-  search(@Query('query') query: string) {
-    return this.searchService.search([
-      {
-        indexName: 'searchable',
-        query,
-      },
-    ]);
+  async search(@Query('query') query: string, @Res() res: Response) {
+    const result = await this.searchService.search({
+      requests: [
+        {
+          indexName: 'searchable',
+          query,
+        },
+      ],
+    });
+
+    return res.json(result);
   }
 
   // @Get('/indexAll')

@@ -1,7 +1,6 @@
-import { AlgoliaSearchOptions } from 'algoliasearch';
-
+import { ClientOptions } from '@algolia/client-common';
 export interface ISearchConfig {
-  applicationId: string;
+  appId: string;
   apiKey: string;
-  clientOptions?: AlgoliaSearchOptions;
+  clientOptions?: ClientOptions;
 }

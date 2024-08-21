@@ -48,13 +48,10 @@ export const USER$ = new InjectionToken('USER$', {
       .pipe(
         filter((user) => !!user),
 
-        map(
-          (result) =>
-            ({
-              ...result.data.me,
-              authenticated: true,
-            }) as Player & { authenticated: boolean },
-        ),
+        map((result) => ({
+          ...(result.data.me as Partial<Player>),
+          authenticated: true,
+        })),
       );
   },
 });

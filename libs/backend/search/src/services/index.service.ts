@@ -17,15 +17,14 @@ export class IndexService {
     @Inject(ALGOLIA_CLIENT) private readonly algoliaClient: SearchClient,
   ) {}
 
-  getIndex(indexName: string) {
-    return this.algoliaClient.initIndex(indexName);
-  }
-
-  addObjects<T = any>(
+  async addObjects<T = unknown>(
     indexName: string,
-    objects: ReadonlyArray<Readonly<Record<string, T>>>,
+    objects: Array<Record<string, T>>,
   ) {
-    return this.algoliaClient.initIndex(indexName).saveObjects(objects);
+    await this.algoliaClient.saveObjects({
+      indexName,
+      objects,
+    });
   }
 
   async indexPlayers() {
@@ -100,7 +99,7 @@ export class IndexService {
           name: club.name,
           fullName: club.fullName,
           clubId: club.clubId,
-          order: multiMatchOrder.club
+          order: multiMatchOrder.club,
         };
       }),
     );
@@ -125,7 +124,7 @@ export class IndexService {
           slug: event.slug,
           name: event.name,
           date: moment(`${event.season}-09-01`).toDate().getTime(),
-          order: multiMatchOrder.eventCompetition
+          order: multiMatchOrder.eventCompetition,
         };
       }),
     );
@@ -150,7 +149,7 @@ export class IndexService {
           slug: event.slug,
           name: event.name,
           date: event.firstDay.getTime(),
-          order: multiMatchOrder.eventTournament
+          order: multiMatchOrder.eventTournament,
         };
       }),
     );

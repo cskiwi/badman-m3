@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SearchClient } from 'algoliasearch';
-import { MultipleQueriesQuery } from '@algolia/client-search';
+import { SearchClient, SearchMethodParams } from 'algoliasearch';
 import { ALGOLIA_CLIENT } from '../client';
 
 @Injectable()
@@ -9,7 +8,7 @@ export class SearchService {
     @Inject(ALGOLIA_CLIENT) private readonly algoliaClient: SearchClient,
   ) {}
 
-  search<T = any>(queries: MultipleQueriesQuery[]) {
-    return this.algoliaClient.search<T>(queries);
+  async search<T = any>(queries: SearchMethodParams) {
+    return this.algoliaClient.search<T>(queries) as any;
   }
 }

@@ -18,7 +18,7 @@ import { SearchModule } from '@app/backend-serach';
     HealthModule, 
     TranslateModule,
     SearchModule.forRoot({
-      applicationId: process.env['ALGOLIA_APP_ID'] ?? '',
+      appId: process.env['ALGOLIA_APP_ID'] ?? '',
       apiKey: process.env['ALGOLIA_API_KEY'] ?? '',
     }),
   ],

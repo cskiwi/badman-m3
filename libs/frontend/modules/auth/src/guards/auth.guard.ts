@@ -4,9 +4,9 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { map, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { AUTH, USER$ } from '@app/frontend-utils';
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',

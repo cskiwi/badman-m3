@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import algoliasearch, { SearchClient } from 'algoliasearch';
+import { algoliasearch, SearchClient } from 'algoliasearch';
 import { ALGOLIA_CLIENT } from './client';
 import { SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
@@ -16,14 +16,11 @@ export class SearchModule {
       providers: [
         {
           provide: ALGOLIA_CLIENT,
-          useFactory: (): SearchClient =>
-            algoliasearch(
-              config.applicationId,
-              config.apiKey,
-              config.clientOptions,
-            ),
+          useFactory: () =>
+            algoliasearch(config.appId, config.apiKey, config.clientOptions),
         },
       ],
     };
   }
 }
+ 

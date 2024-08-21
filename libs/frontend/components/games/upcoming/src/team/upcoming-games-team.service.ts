@@ -1,11 +1,11 @@
-import { Injectable, computed, inject } from '@angular/core';
-import { Player, RankingPlace } from '@app/models';
+import { Injectable, inject } from '@angular/core';
+import { Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-export interface upcomingGameTeamState {
+export interface UpcomingGameTeamState {
   encounters: unknown;
   loaded: boolean;
 }
@@ -16,7 +16,7 @@ export interface upcomingGameTeamState {
 export class ShowLevelService {
   apollo = inject(Apollo);
 
-  initialState: upcomingGameTeamState = {
+  initialState: UpcomingGameTeamState = {
     encounters: null,
     loaded: false,
   };
