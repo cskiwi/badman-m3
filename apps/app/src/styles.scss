@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
 @use './styles/theme.scss' as theme;
-@use '../../../libs/frontend/_root/theme' as frontend-root;
 @use '../../../libs/frontend/components/theme' as frontend-components;
 @use '../../../libs/frontend/pages/player/theme' as frontend-player;
 
@@ -19,13 +18,11 @@ body {
 
 html {
   @include mat.all-component-themes(theme.$dark-theme);
-  @include frontend-root.theme(theme.$dark-theme);
   @include frontend-components.theme(theme.$dark-theme);
   @include frontend-player.theme(theme.$dark-theme);
 
   @media (prefers-color-scheme: light) {
     @include mat.all-component-colors(theme.$light-theme);
-    @include frontend-root.theme(theme.$light-theme);
     @include frontend-components.theme(theme.$light-theme);
     @include frontend-player.theme(theme.$light-theme);
   }

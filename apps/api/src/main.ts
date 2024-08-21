@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 
-import { getServer } from '@app/backend-root';
+import { getServer } from '@app/backend-shared';
 
 async function bootstrap() {
   const app = await getServer();

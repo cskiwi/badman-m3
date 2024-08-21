@@ -1,12 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { IndexService, SearchService } from '../services';
+import { SearchService } from '../services';
 
 @Controller('backend-search')
 export class SearchController {
-  constructor(
-    private searchService: SearchService,
-    private indexService: IndexService,
-  ) {}
+  constructor(private searchService: SearchService) {}
 
   @Get('/search')
   search(@Query('query') query: string) {
@@ -14,18 +11,6 @@ export class SearchController {
       {
         indexName: 'searchable',
         query,
-        params: {
-          hitsPerPage: 20,
-          attributesToHighlight: [],
-        },
-      },
-      {
-        indexName: 'searchable',
-        query,
-        params: {
-          hitsPerPage: 10,
-          attributesToHighlight: [],
-        },
       },
     ]);
   }

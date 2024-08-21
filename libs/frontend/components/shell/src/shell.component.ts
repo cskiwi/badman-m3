@@ -27,11 +27,11 @@ import { filter, map } from 'rxjs/operators';
     MatIconModule,
     MatListModule,
   ],
-  selector: 'app-root',
-  templateUrl: './root.component.html',
-  styleUrl: './root.component.scss',
+  selector: 'app-shell',
+  templateUrl: './shell.component.html',
+  styleUrl: './shell.component.scss',
 })
-export class RootComponent {
+export class ShellComponent {
   private breakpointObserver$ = inject(BreakpointObserver);
   private isMobile$ = this.breakpointObserver$
     .observe(Breakpoints.Handset)

@@ -103,7 +103,7 @@ export class OverviewService {
           if (!result?.data.clubs) {
             throw new Error('No clubs found');
           }
-          return result.data.clubs.map((row) => row as Club);
+          return result.data.clubs;
         }),
       );
   }

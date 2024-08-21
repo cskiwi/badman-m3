@@ -19,7 +19,7 @@
       "@app/backend-database": ["libs/backend/database/src/index.ts"],
       "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
       "@app/backend-health": ["libs/backend/health/src/index.ts"],
-      "@app/backend-root": ["libs/backend/_root/src/index.ts"],
+      "@app/backend-shared": ["libs/backend/_shared/src/index.ts"],
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
       "@app/backend-serach": ["libs/backend/search/src/index.ts"],
       "@app/backend-translate": ["libs/backend/translate/src/index.ts"],
@@ -35,6 +35,9 @@
       ],
       "@app/frontend-components/page-header": [
         "libs/frontend/components/page-header/src/index.ts"
+      ],
+      "@app/frontend-components/shell": [
+        "libs/frontend/components/shell/src/index.ts"
       ],
       "@app/frontend-modules-auth": ["libs/frontend/modules/auth/src/index.ts"],
       "@app/frontend-modules-graphql": [
@@ -59,7 +62,6 @@
       "@app/frontend-pages-club": ["libs/frontend/pages/club/src/index.ts"],
       "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
       "@app/frontend-pages-player": ["libs/frontend/pages/player/src/index.ts"],
-      "@app/frontend-root": ["libs/frontend/_root/src/index.ts"],
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
       "@app/models": ["libs/models/models/src/index.ts"],
       "@app/models/enums": ["libs/models/enum/src/index.ts"],

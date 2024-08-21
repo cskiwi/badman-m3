@@ -15,7 +15,7 @@ import { SearchModule } from '@app/backend-serach';
     AuthorizationModule,
     GraphQLModule,
     SeoModule,
-    HealthModule,
+    HealthModule, 
     TranslateModule,
     SearchModule.forRoot({
       applicationId: process.env['ALGOLIA_APP_ID'] ?? '',

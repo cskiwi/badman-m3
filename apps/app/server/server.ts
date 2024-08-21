@@ -1,6 +1,6 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { CommonEngine } from '@angular/ssr';
-import { getServer } from '@app/backend-root';
+import { getServer } from '@app/backend-shared';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import {
