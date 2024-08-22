@@ -16,7 +16,7 @@ import {
 import { Apollo, gql } from 'apollo-angular';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { signalSlice } from 'ngxtension/signal-slice';
-import { merge, Observable, of } from 'rxjs';
+import { merge, Observable, of, iif } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { AUTH_KEY } from './auth.key';
 
@@ -81,6 +81,23 @@ export class AuthService {
       fetchUser: (_state, action$: Observable<void>) =>
         action$.pipe(
           switchMap(() => this.fetchUser()),
+          // if null fetch some info from the auth0 user
+          switchMap((user) =>
+            iif(
+              () => user.id === null,
+              this.authService?.user$.pipe(
+                map(
+                  (p) =>
+                    ({
+                      fullName: p?.nickname,
+                      firstName: p?.nickname?.split('.')[0],
+                      lastName: p?.nickname?.split('.')[1],
+                    }) as Player,
+                ),
+              ) ?? of(null),
+              of(user),
+            ),
+          ),
           map((user) => ({
             user,
           })),
@@ -155,6 +172,8 @@ export class AuthService {
             me {
               id
               firstName
+              lastName
+              fullName
               slug
               clubPlayerMemberships {
                 id

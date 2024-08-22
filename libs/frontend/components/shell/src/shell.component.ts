@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, JsonPipe } from '@angular/common';
 import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,6 +19,7 @@ import { filter, map } from 'rxjs/operators';
   imports: [
     RouterModule,
     TranslateModule,
+    JsonPipe,
 
     MatSidenavModule,
     MatToolbarModule,
