@@ -1,7 +1,5 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
 import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -10,7 +8,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { AuthService } from '@app/frontend-utils';
+import { AuthService } from '@app/frontend-modules-auth/service';
+import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
@@ -32,16 +31,9 @@ import { filter, map } from 'rxjs/operators';
   styleUrl: './shell.component.scss',
 })
 export class ShellComponent {
-  private breakpointObserver$ = inject(BreakpointObserver);
-  private isMobile$ = this.breakpointObserver$
-    .observe(Breakpoints.Handset)
-    .pipe(map((result) => result.matches));
-
-  isMobile = toSignal(this.isMobile$, { initialValue: true });
-
-  // mobileQuery: MediaQueryList;
   private platformId = inject<string>(PLATFORM_ID);
 
+  isMobile = inject(IS_MOBILE);
   auth = inject(AuthService);
 
   user = this.auth.state.user;

@@ -18,7 +18,7 @@ import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { merge, Observable, of } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { AUTH_KEY } from '../constats';
+import { AUTH_KEY } from './auth.key';
 
 export interface AuthState {
   user: Player | null;

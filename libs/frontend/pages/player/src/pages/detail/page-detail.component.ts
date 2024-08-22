@@ -14,7 +14,7 @@ import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SeoService } from '@app/frontend-modules-seo/service';
-import { AuthService } from '@app/frontend-utils';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ShowLevelComponent } from './components/show-level.component';
