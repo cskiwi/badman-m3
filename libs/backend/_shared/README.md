@@ -1,7 +1,11 @@
-# backend-root
+# backend-shared
 
 This library was generated with [Nx](https://nx.dev).
 
+## Building
+
+Run `nx build backend-shared` to build the library.
+
 ## Running unit tests
 
-Run `nx test backend-root` to execute the unit tests via [Jest](https://jestjs.io).
+Run `nx test backend-shared` to execute the unit tests via [Jest](https://jestjs.io).

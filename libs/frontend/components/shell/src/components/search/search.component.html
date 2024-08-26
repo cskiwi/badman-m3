@@ -1,0 +1,14 @@
+<ng-container>
+  <mat-form-field>
+    <mat-label>Search</mat-label>
+
+    <mtx-select
+      [items]="results()"
+      bindLabel="title"
+      (change)="search($event)"
+      (search)="this.filter.get('query')?.setValue($event.term)"
+      [closeOnSelect]="true"
+    >
+    </mtx-select>
+  </mat-form-field>
+</ng-container>

@@ -27,7 +27,7 @@ The directory structure of this Nx monorepo is organized as follows:
 
 ### Libsf
 
-- **libs/backend/root**: This directory contains the entry point for the backend services. It includes necessary configurations and files to initialize and run the backend application.
+- **libs/backend/_shared**: This directory contains the entry point for the backend services. It includes necessary configurations and files to initialize and run the backend application.
 - **libs/frontend/root**: This directory contains the entry point for the frontend services. It includes necessary configurations and files to initialize and run the frontend application.
 
 ## Getting Started

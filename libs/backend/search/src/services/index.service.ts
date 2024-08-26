@@ -63,6 +63,8 @@ export class IndexService {
           slug: player.slug,
           lastName: player.lastName,
           memberId: player.memberId,
+
+          type: 'player',
           club: {
             id: activeClub?.id,
             name: activeClub?.name,
@@ -99,6 +101,7 @@ export class IndexService {
           name: club.name,
           fullName: club.fullName,
           clubId: club.clubId,
+          type: 'club',
           order: multiMatchOrder.club,
         };
       }),
@@ -123,6 +126,7 @@ export class IndexService {
           objectID: event.id,
           slug: event.slug,
           name: event.name,
+          type: 'competition',
           date: moment(`${event.season}-09-01`).toDate().getTime(),
           order: multiMatchOrder.eventCompetition,
         };
@@ -148,6 +152,7 @@ export class IndexService {
           objectID: event.id,
           slug: event.slug,
           name: event.name,
+          type: 'tournament',
           date: event.firstDay.getTime(),
           order: multiMatchOrder.eventTournament,
         };

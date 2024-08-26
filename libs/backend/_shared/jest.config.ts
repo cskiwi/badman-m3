@@ -1,11 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'backend-root',
+  displayName: 'backend-shared',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../coverage/libs/backend/root',
+  coverageDirectory: '../../../coverage/libs/backend/_shared',
 };

@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { join, dirname } from 'path';
-import { TranslateController } from './controllers';
-import { I18nModule, QueryResolver } from 'nestjs-i18n';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { I18nModule, QueryResolver } from 'nestjs-i18n';
+import { join } from 'path';
+import { TranslateController } from './controllers';
 
 @Module({
   controllers: [TranslateController],
@@ -13,7 +12,10 @@ import { fileURLToPath } from 'url';
 
       useFactory: () => {
         const apiDistFolderPath = join(process.cwd(), 'dist/apps/api');
-        const dir = join(apiDistFolderPath, '../../../libs/utils/src/translation/');
+        const dir = join(
+          apiDistFolderPath,
+          '../../../libs/utils/src/translation/',
+        );
         const file = join(dir, 'i18n.generated.ts');
 
         if (!existsSync(file)) {

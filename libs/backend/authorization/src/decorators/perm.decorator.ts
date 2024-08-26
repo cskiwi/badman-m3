@@ -1,8 +1,7 @@
-import { Player } from '@app/models';
 import {
   CanActivate,
   ExecutionContext,
-  Injectable as Inject,
+  Injectable,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,8 +12,9 @@ import { Request } from 'express';
 import { JwksClient } from 'jwks-rsa';
 import { getRequest } from '../utils';
 import { ALLOW_ANONYMOUS_META_KEY } from './anonymous.decorator';
+import { Player } from '@app/models';
 
-@Inject()
+@Injectable()
 export class PermGuard implements CanActivate {
   private readonly _logger = new Logger(PermGuard.name);
   private readonly jwksClient: JwksClient;
@@ -35,7 +35,6 @@ export class PermGuard implements CanActivate {
       ALLOW_ANONYMOUS_META_KEY,
       [context.getHandler(), context.getClass()],
     );
-
     if (isPublic) {
       return true;
     }
@@ -43,8 +42,6 @@ export class PermGuard implements CanActivate {
     const request = getRequest(context);
 
     const token = this.extractTokenFromHeader(request);
-
-    this
 
     if (!token) {
       return false;

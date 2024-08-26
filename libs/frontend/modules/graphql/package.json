@@ -7,10 +7,9 @@
     "apollo-angular": "^7.0.2",
     "rxjs": "~7.8.1",
     "ngxtension": "^4.0.0",
-    "@angular/router": "~18.1.1",
-    "@apollo/client": "3.11.1",
-    "@app/frontend-utils": "0.0.1",
-    "@auth0/auth0-angular": "^2.2.3"
+    "@angular/router": "18.2.0",
+    "@apollo/client": "3.11.4",
+    "@app/frontend-utils": "0.0.1"
   },
   "sideEffects": false
 }

@@ -13,19 +13,20 @@ import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
+import { SearchComponent } from './components';
 
 @Component({
   standalone: true,
   imports: [
     RouterModule,
     TranslateModule,
-    JsonPipe,
-
     MatSidenavModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatListModule,
+
+    SearchComponent
   ],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
