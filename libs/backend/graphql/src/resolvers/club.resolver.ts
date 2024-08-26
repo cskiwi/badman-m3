@@ -20,13 +20,11 @@ export class ClubResolver {
           where: {
             id,
           },
-          // relations: ['ClubPlayerMemberships'],
         })
       : await Club.findOne({
           where: {
             slug: id,
           },
-          // relations: ['ClubPlayerMemberships'],
         });
 
     if (club) {
@@ -50,7 +48,7 @@ export class ClubResolver {
       },
     });
   }
-  
+
   @ResolveField(() => [Team], { nullable: true })
   async teams(@Parent() { id }: Club) {
     return Team.find({

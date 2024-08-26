@@ -46,9 +46,9 @@ export class OverviewService {
     distinctUntilChanged(),
   );
 
-  private playersLoaded$ = this.filterChanged$.pipe(
+  private data$ = this.filterChanged$.pipe(
     debounceTime(300), // Queries are better when debounced
-    switchMap((filter) => this._loadPlayersApollo(filter)),
+    switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -56,7 +56,7 @@ export class OverviewService {
   );
 
   sources$ = merge(
-    this.playersLoaded$.pipe(
+    this.data$.pipe(
       map((players) => ({
         players,
         loading: false,
@@ -71,7 +71,7 @@ export class OverviewService {
     sources: [this.sources$],
   });
 
-  private _loadPlayersApollo(
+  private _loadData(
     filter: Partial<{
       query: string | null;
     }>,

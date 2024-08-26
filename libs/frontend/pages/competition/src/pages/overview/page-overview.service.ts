@@ -1,54 +1,54 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Player } from '@app/models';
+import { EventCompetition } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
 import {
   catchError,
+  debounceTime,
   distinctUntilChanged,
   map,
+  startWith,
   switchMap,
+  tap,
 } from 'rxjs/operators';
 
-interface DetailState {
-  player: Player | null;
+interface OverviewState {
+  competitions: EventCompetition[];
   loading: boolean;
   error: string | null;
 }
 
-export class DetailService {
+export class OverviewService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
-    playerId: new FormControl<string | null>(null),
+    query: new FormControl(undefined),
   });
 
   // state
-  private initialState: DetailState = {
-    player: null,
+  private initialState: OverviewState = {
+    competitions: [],
     error: null,
     loading: true,
   };
 
   // selectors
-  player = computed(() => this.state().player);
-  club = computed(
-    () =>
-      this.state().player?.clubPlayerMemberships?.find((cpm) => cpm.active)
-        ?.club,
-  );
+  competitions = computed(() => this.state().competitions);
   error = computed(() => this.state().error);
   loading = computed(() => this.state().loading);
 
   //sources
   private error$ = new Subject<string | null>();
   private filterChanged$ = this.filter.valueChanges.pipe(
-    distinctUntilChanged((a, b) => a.playerId === b.playerId),
+    startWith(this.filter.value),
+    distinctUntilChanged(),
   );
 
   private data$ = this.filterChanged$.pipe(
+    debounceTime(300), // Queries are better when debounced
     switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
@@ -58,8 +58,8 @@ export class DetailService {
 
   sources$ = merge(
     this.data$.pipe(
-      map((player) => ({
-        player,
+      map((competitions) => ({
+        competitions,
         loading: false,
       })),
     ),
@@ -74,33 +74,24 @@ export class DetailService {
 
   private _loadData(
     filter: Partial<{
-      playerId: string | null;
+      query: string | null;
+      where: { [key: string]: unknown } | null;
+      emtpyWhere: { [key: string]: unknown };
     }>,
   ) {
     return this.apollo
-      .query<{ player: Player }>({
+      .query<{ eventCompetitions: EventCompetition[] }>({
         query: gql`
-          query Player($id: ID!) {
-            player(id: $id) {
+          query Competitions($where: [JSONObject!]) {
+            eventCompetitions(where: $where) {
               id
-              fullName
-              memberId
+              name
               slug
-              clubPlayerMemberships {
-                end
-                start
-                active
-                club {
-                  id
-                  name
-                  slug
-                }
-              }
             }
           }
         `,
         variables: {
-          id: filter?.playerId,
+          where: this._competitionSearchWhere(filter.query),
         },
       })
       .pipe(
@@ -109,10 +100,10 @@ export class DetailService {
           return EMPTY;
         }),
         map((result) => {
-          if (!result?.data.player) {
-            throw new Error('No player found');
+          if (!result?.data.eventCompetitions) {
+            throw new Error('No competitions found');
           }
-          return result.data.player;
+          return result.data.eventCompetitions;
         }),
       );
   }
@@ -120,11 +111,31 @@ export class DetailService {
   private handleError(err: HttpErrorResponse) {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load player`);
+      this.error$.next(`Failed to load competitions`);
       return;
     }
 
     // Generic error if no cases match
     this.error$.next(err.statusText);
+  }
+
+  private _competitionSearchWhere(query: string | null | undefined) {
+    const parts = query
+      ?.toLowerCase()
+      .replace(/[;\\\\/:*?"<>|&',]/, ' ')
+      .split(' ')
+      .map((part) => part.trim());
+    const queries: unknown[] = [];
+
+    for (const part of parts ?? []) {
+      if (part.length < 1) continue;
+      queries.push({ fullName: { $iLike: `%${part}%` } });
+    }
+
+    if (queries.length === 0) {
+      return;
+    }
+
+    return queries;
   }
 }

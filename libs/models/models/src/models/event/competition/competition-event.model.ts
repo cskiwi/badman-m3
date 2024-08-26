@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity('EventCompetitions', { schema: 'event' })
-@ObjectType({ description: 'A EventTournament' })
+@ObjectType({ description: 'A EventCompetition' })
 export class EventCompetition extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -62,9 +62,6 @@ export class EventCompetition extends BaseEntity {
   // })
   // meta?: MetaEventCompetition;
 
-  @Field({ nullable: true })
-  @Column()
-  declare dates: string;
 
   @Field({ nullable: true })
   @Column()
@@ -78,16 +75,6 @@ export class EventCompetition extends BaseEntity {
   @Column()
   teamMatcher?: string;
 
-  @Field({ nullable: true })
-  @Column()
-  declare inactivityAmount?: number;
-
-  @Field(() => String, { nullable: true })
-  @Column({
-    type: 'simple-enum',
-    enum: Period,
-  })
-  declare usedRankingUnit: Period;
 
   @Field(() => Boolean)
   @Column({

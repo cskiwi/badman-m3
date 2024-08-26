@@ -13,8 +13,10 @@ import { AuthorizationModule } from '@app/backend-authorization';
 import {
   ClubPlayerMembershipResolver,
   ClubResolver,
+  EventCompetitionResolver,
   PlayerResolver,
   RankingSystemResolver,
+  SubEventCompetitionResolver,
   UserResolver,
 } from './resolvers';
 
@@ -42,11 +44,7 @@ import {
             }),
           );
           plugins.push(ApolloServerPluginSchemaReporting());
-          // plugins.push(
-          //   OperationRegistry({
-          //     forbidUnregisteredOperations: true,
-          //   }),
-          // );
+
           plugins.push(
             ApolloServerPluginUsageReporting({
               sendVariableValues: { all: true },
@@ -71,6 +69,8 @@ import {
     ClubPlayerMembershipResolver,
     ClubResolver,
     RankingSystemResolver,
+    EventCompetitionResolver,
+    SubEventCompetitionResolver
   ],
 })
 export class GraphQLModule {}

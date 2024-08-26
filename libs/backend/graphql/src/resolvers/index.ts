@@ -1,4 +1,5 @@
 export * from './club.resolver';
+export * from './competition';
 export * from './player-club.resolver';
 export * from './player.resolver';
 export * from './ranking.resolver';

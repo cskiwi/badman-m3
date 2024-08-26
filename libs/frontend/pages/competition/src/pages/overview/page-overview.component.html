@@ -1,20 +1,17 @@
 @if (!loading()) {
   <app-page-header>
-    <ng-content title>Clubs</ng-content>
+    <ng-content title>Competitions</ng-content>
   </app-page-header>
-  <section class="clubs">
+  <section class="competitions">
     <mat-form-field>
-      <mat-label>{{ 'all.clubs.search' | translate }}</mat-label>
+      <mat-label>{{ 'all.competitions.search' | translate }}</mat-label>
       <input matInput [formControl]="this.query" />
     </mat-form-field>
 
     <mat-list>
-      @for (club of clubs(); track club.id) {
-        <mat-list-item [routerLink]="club.slug">
-          <h3 matListItemTitle>{{ club.name }}</h3>
-          <p matListItemLine>
-            <span>{{ club.clubId }}</span>
-          </p>
+      @for (competition of competitions(); track competition.id) {
+        <mat-list-item [routerLink]="competition.slug">
+          <h3 matListItemTitle>{{ competition.name }}</h3>
         </mat-list-item>
       }
     </mat-list>

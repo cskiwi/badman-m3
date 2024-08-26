@@ -43,8 +43,8 @@ export class DetailService {
     distinctUntilChanged((a, b) => a.clubId === b.clubId),
   );
 
-  private clubLoaded$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadClubApollo(filter)),
+  private data$ = this.filterChanged$.pipe(
+    switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -52,7 +52,7 @@ export class DetailService {
   );
 
   sources$ = merge(
-    this.clubLoaded$.pipe(
+    this.data$.pipe(
       map((club) => ({
         club,
         loading: false,
@@ -67,7 +67,7 @@ export class DetailService {
     sources: [this.sources$],
   });
 
-  private _loadClubApollo(
+  private _loadData(
     filter: Partial<{
       clubId: string | null;
     }>,

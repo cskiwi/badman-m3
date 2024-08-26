@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Player } from '@app/models';
+import { EventCompetition } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators';
 
 interface DetailState {
-  player: Player | null;
+  competition: EventCompetition | null;
   loading: boolean;
   error: string | null;
 }
@@ -22,30 +22,25 @@ export class DetailService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
-    playerId: new FormControl<string | null>(null),
+    competitionId: new FormControl<string | null>(null),
   });
 
   // state
   private initialState: DetailState = {
-    player: null,
+    competition: null,
     error: null,
     loading: true,
   };
 
   // selectors
-  player = computed(() => this.state().player);
-  club = computed(
-    () =>
-      this.state().player?.clubPlayerMemberships?.find((cpm) => cpm.active)
-        ?.club,
-  );
+  competition = computed(() => this.state().competition);
   error = computed(() => this.state().error);
   loading = computed(() => this.state().loading);
 
   //sources
   private error$ = new Subject<string | null>();
   private filterChanged$ = this.filter.valueChanges.pipe(
-    distinctUntilChanged((a, b) => a.playerId === b.playerId),
+    distinctUntilChanged((a, b) => a.competitionId === b.competitionId),
   );
 
   private data$ = this.filterChanged$.pipe(
@@ -58,8 +53,8 @@ export class DetailService {
 
   sources$ = merge(
     this.data$.pipe(
-      map((player) => ({
-        player,
+      map((competition) => ({
+        competition,
         loading: false,
       })),
     ),
@@ -74,33 +69,22 @@ export class DetailService {
 
   private _loadData(
     filter: Partial<{
-      playerId: string | null;
+      competitionId: string | null;
     }>,
   ) {
     return this.apollo
-      .query<{ player: Player }>({
+      .query<{ competition: EventCompetition }>({
         query: gql`
-          query Player($id: ID!) {
-            player(id: $id) {
+          query Competition($id: ID!) {
+            eventCompetition(id: $id) {
               id
-              fullName
-              memberId
+              name
               slug
-              clubPlayerMemberships {
-                end
-                start
-                active
-                club {
-                  id
-                  name
-                  slug
-                }
-              }
             }
           }
         `,
         variables: {
-          id: filter?.playerId,
+          id: filter?.competitionId,
         },
       })
       .pipe(
@@ -109,10 +93,10 @@ export class DetailService {
           return EMPTY;
         }),
         map((result) => {
-          if (!result?.data.player) {
-            throw new Error('No player found');
+          if (!result?.data.competition) {
+            throw new Error('No competition found');
           }
-          return result.data.player;
+          return result.data.competition;
         }),
       );
   }
@@ -120,7 +104,7 @@ export class DetailService {
   private handleError(err: HttpErrorResponse) {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load player`);
+      this.error$.next(`Failed to load competition`);
       return;
     }
 

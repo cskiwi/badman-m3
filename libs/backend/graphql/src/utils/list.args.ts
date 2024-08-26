@@ -1,22 +1,13 @@
-import { ArgsType, Field, InputType, Int } from '@nestjs/graphql';
+import {
+  ArgsType,
+  Field,
+  Int
+} from '@nestjs/graphql';
 import { Min } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { FindManyOptions, FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 import { queryFixer } from './queryFixer';
-
-@InputType()
-export class SortOrderType {
-  @Field(() => String)
-  field!: string;
-
-  @Field(() => String)
-  direction!: string;
-}
-
-export class SortOrder {
-  field!: string;
-  direction!: string;
-}
+import { SortOrderType } from './sort-order';
 
 @ArgsType()
 export class WhereArgs<T> {
