@@ -79,7 +79,7 @@ export class SearchService {
               linkType: hit.type,
               linkId: hit.objectID,
               title:
-                hit.type === 'club'
+                hit.type !== 'player'
                   ? hit.name
                   : `${hit.firstName} ${hit.lastName}`,
             }) as SearchHit,

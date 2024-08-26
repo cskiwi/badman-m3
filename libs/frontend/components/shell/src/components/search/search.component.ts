@@ -1,15 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-} from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SearchHit, SearchService } from './search.service';
-import { MtxSelectModule } from '@ng-matero/extensions/select';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { MtxSelectModule } from '@ng-matero/extensions/select';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { SearchHit, SearchService } from './search.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -20,6 +17,8 @@ import { Router } from '@angular/router';
     MatLabel,
     FormsModule,
     MatFormFieldModule,
+    MatSelectModule,
+    NgxMatSelectSearchModule,
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
@@ -31,11 +30,21 @@ export class SearchComponent {
 
   filter = this.searchService.filter;
   results = this.searchService.results;
+  loading = this.searchService.loading;
+
+  query = this.filter.get('query') as FormControl;
+  selected = new FormControl();
+
+  constructor() {
+    this.selected.valueChanges.pipe(filter((r) => !!r)).subscribe((value) => {
+      this.search(value);
+    });
+  }
 
   search(model: SearchHit) {
     console.log('search', model);
 
-    switch (model.linkType) {
+    switch (model?.linkType) {
       case 'player':
         this.router.navigate(['/player', model.linkId]);
         break;
@@ -51,6 +60,10 @@ export class SearchComponent {
       case 'tournament':
         this.router.navigate(['/tournament', model.linkId]);
         break;
+      default:
+        break;
     }
+
+    this.selected.reset();
   }
 }

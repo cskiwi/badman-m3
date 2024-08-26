@@ -1,14 +1,21 @@
 <ng-container>
   <mat-form-field>
-    <mat-label>Search</mat-label>
+    <mat-select [formControl]="selected" placeholder="Search">
+      <!-- place ngx-mat-select-search inside mat-option to allow opening without initial selection -->
+      <mat-option>
+        <ngx-mat-select-search
+          [formControl]="query"
+          [searching]="loading()"
+          placeholderLabel="Search"
+          noEntriesFoundLabel="no matching entry found"
+        ></ngx-mat-select-search>
+      </mat-option>
 
-    <mtx-select
-      [items]="results()"
-      bindLabel="title"
-      (change)="search($event)"
-      (search)="this.filter.get('query')?.setValue($event.term)"
-      [closeOnSelect]="true"
-    >
-    </mtx-select>
+      @for (result of results(); track result.linkId) {
+        <mat-option [value]="result">
+          {{ result.title }} ({{ result.linkType }})
+        </mat-option>
+      }
+    </mat-select>
   </mat-form-field>
 </ng-container>

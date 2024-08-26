@@ -143,7 +143,7 @@ export class IndexService {
 
     if (!events) {
       return;
-    }
+    } 
 
     return this.addObjects(
       'searchable',
