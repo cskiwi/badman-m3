@@ -1,0 +1,7 @@
+[phases.build]
+# The build phase will install dependencies using `bun` and build the project
+cmd = "bun i && bun run build --prod"
+
+[phases.start]
+# The start phase will run the built application in production mode
+cmd = "bun run start:prod"
