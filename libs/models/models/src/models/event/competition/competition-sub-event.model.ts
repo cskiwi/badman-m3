@@ -1,3 +1,4 @@
+import { SortableField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -15,15 +16,15 @@ export class SubEventCompetition extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare name: string;
 }

@@ -11,8 +11,7 @@ import {
   distinctUntilChanged,
   map,
   startWith,
-  switchMap,
-  tap,
+  switchMap
 } from 'rxjs/operators';
 
 interface OverviewState {
@@ -82,8 +81,8 @@ export class OverviewService {
     return this.apollo
       .query<{ eventCompetitions: EventCompetition[] }>({
         query: gql`
-          query Competitions($where: [JSONObject!]) {
-            eventCompetitions(where: $where) {
+          query Competitions($args: EventCompetitionArgs) {
+            eventCompetitions(args: $args) {
               id
               name
               slug
@@ -91,7 +90,7 @@ export class OverviewService {
           }
         `,
         variables: {
-          where: this._competitionSearchWhere(filter.query),
+          args: { where: this._competitionSearchWhere(filter.query) },
         },
       })
       .pipe(

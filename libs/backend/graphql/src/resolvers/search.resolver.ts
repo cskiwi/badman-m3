@@ -1,4 +1,4 @@
-import { PermGuard, User } from '@app/backend-authorization';
+import { PermGuard } from '@app/backend-authorization';
 import { Player } from '@app/models';
 import { UseGuards } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';

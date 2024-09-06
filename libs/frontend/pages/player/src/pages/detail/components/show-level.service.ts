@@ -40,10 +40,10 @@ export class ShowLevelService {
               player: Player;
             }>({
               query: gql`
-                query GetPlayerLevel($id: ID!, $systemId: ID) {
+                query GetPlayerLevel($id: ID!, $args: RankingLastPlaceArgs) {
                   player(id: $id) {
                     id
-                    rankingLastPlaces(where: { systemId: $systemId }) {
+                    rankingLastPlaces(args: $args) {
                       id
                       single
                       singlePoints
@@ -61,7 +61,11 @@ export class ShowLevelService {
               `,
               variables: {
                 id,
-                systemId: systemId || null,
+                args: {
+                  where: {
+                    systemId: systemId || null,
+                  },
+                },
               },
             }),
           ),

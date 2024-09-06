@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -13,41 +13,42 @@ import {
 import { UseForTeamName } from '@app/models/enums';
 import { ClubPlayerMembership } from './club-player-membership';
 import { Team } from './team.model';
+import { SortableField } from '@app/utils';
 
 @ObjectType('Club')
 @Entity('Clubs')
 @Unique(['clubId'])
 export class Club extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   @Index({ fulltext: true })
   declare name: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare teamName: string;
 
-  @Field()
+  @SortableField()
   @Column({nullable: true})
   declare fullName?: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare contactCompetition: string;
 
-  @Field(() => String)
+  @SortableField(() => String)
   @Column({
     type: 'simple-enum',
     enum: UseForTeamName,
@@ -55,34 +56,34 @@ export class Club extends BaseEntity {
   })
   declare useForTeamName: UseForTeamName;
 
-  @Field()
+  @SortableField()
   @Column()
   declare abbreviation: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare clubId: number;
 
-  @Field()
+  @SortableField()
   @Column()
   declare slug: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare state?: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare country?: string;
 
-  @Field(() => ClubPlayerMembership)
+  @SortableField(() => ClubPlayerMembership)
   @OneToMany(
     () => ClubPlayerMembership,
     (clubPlayerMembership) => clubPlayerMembership.player,
   )
   declare clubPlayerMemberships: ClubPlayerMembership[];
 
-  @Field(() => [Team])
+  @SortableField(() => [Team])
   @OneToMany(() => Team, (team) => team.club)
   declare teams?: Team[];
 }

@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
 import { GameStatus, GameType } from '@app/models/enums';
+import { SortableField } from '@app/utils';
 
 @ObjectType('Game')
 @Entity('Games', { schema: 'event' })
@@ -18,79 +19,79 @@ export class Game extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare playedAt?: Date;
 
-  @Field(() => String)
+  @SortableField(() => String)
   @Column({ type: 'simple-enum', enum: GameType })
   declare gameType?: GameType;
 
-  @Field(() => String)
+  @SortableField(() => String)
   @Column({ type: 'simple-enum', enum: GameType })
   declare status?: GameStatus;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare set1Team1?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare set1Team2?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare set2Team1?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare set2Team2?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare set3Team1?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare set3Team2?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare winner?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare order?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare round?: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare linkId: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare linkType: string;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare courtId?: string;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare visualCode?: string;
 
-  // @Field()
+  // @SortableField()
   @OneToMany(
     () => GamePlayerMembership,
     (gamePlayerMembership) => gamePlayerMembership.gamePlayer,

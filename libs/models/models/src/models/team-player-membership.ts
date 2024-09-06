@@ -9,6 +9,7 @@ import {
 import { TeamMembershipType } from '@app/models/enums';
 import { Player } from './player.model';
 import { Team } from './team.model';
+import { SortableField } from '@app/utils';
 
 @ObjectType('TeamPlayerMembership')
 @Entity('TeamPlayerMemberships')
@@ -22,18 +23,18 @@ export class TeamPlayerMembership extends BaseEntity {
   @Column({ type: 'uuid' })
   declare teamId?: string;
 
-  @Field(() => String)
+  @SortableField(() => String)
   @Column({
     type: 'simple-enum',
     enum: TeamMembershipType,
   })
   declare membershipType?: TeamMembershipType;
 
-  @Field()
+  @SortableField()
   @Column()
   declare end: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare start: Date;
 

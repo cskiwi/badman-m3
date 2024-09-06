@@ -9,7 +9,11 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { ListArgs } from '../utils';
+import {
+  ClubPlayerMembershipArgs,
+  PlayerArgs,
+  RankingLastPlaceArgs,
+} from '../args';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -35,17 +39,24 @@ export class PlayerResolver {
   }
 
   @Query(() => [Player])
-  async players(@Args() listArgs: ListArgs<Player>): Promise<Player[]> {
-    const args = ListArgs.toFindOptions(listArgs);
+  async players(
+    @Args('args',{ type: () => PlayerArgs, nullable: true })
+    inputArgs?: InstanceType<typeof PlayerArgs>,
+  ): Promise<Player[]> {
+    const args = PlayerArgs.toFindManyOptions(inputArgs);
     return Player.find(args);
   }
 
   @ResolveField(() => [ClubPlayerMembership], { nullable: true })
   async clubPlayerMemberships(
     @Parent() { id }: Player,
-    @Args() listArgs: ListArgs<ClubPlayerMembership>,
+    @Args('args', {
+      type: () => ClubPlayerMembershipArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof ClubPlayerMembershipArgs>,
   ) {
-    const args = ListArgs.toFindOptions(listArgs);
+    const args = ClubPlayerMembershipArgs.toFindOneOptions(inputArgs);
 
     if (args.where?.length > 0) {
       args.where = args.where.map((where) => ({
@@ -66,9 +77,10 @@ export class PlayerResolver {
   @ResolveField(() => [RankingLastPlace], { nullable: true })
   async rankingLastPlaces(
     @Parent() { id }: Player,
-    @Args() listArgs: ListArgs<RankingLastPlace>,
+    @Args('args',  { type: () => RankingLastPlaceArgs, nullable: true })
+    inputArgs?: InstanceType<typeof RankingLastPlaceArgs>,
   ) {
-    const args = ListArgs.toFindOptions(listArgs);
+    const args = RankingLastPlaceArgs.toFindOneOptions(inputArgs);
 
     if (args.where?.length > 0) {
       args.where = args.where.map((where) => ({

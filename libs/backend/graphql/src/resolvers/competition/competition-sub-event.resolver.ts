@@ -1,7 +1,7 @@
 import { SubEventCompetition } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
-import { ListArgs } from '../../utils';
+import { SubEventCompetitionArgs } from '../../args';
 
 @Resolver(() => SubEventCompetition)
 export class SubEventCompetitionResolver {
@@ -24,9 +24,10 @@ export class SubEventCompetitionResolver {
 
   @Query(() => [SubEventCompetition])
   async subEventCompetitions(
-    @Args() listArgs: ListArgs<SubEventCompetition>,
+    @Args('args',  { type: () => SubEventCompetitionArgs, nullable: true  })
+    inputArgs?: InstanceType<typeof SubEventCompetitionArgs>,
   ): Promise<SubEventCompetition[]> {
-    const args = ListArgs.toFindOptions(listArgs);
+    const args = SubEventCompetitionArgs.toFindOneOptions(inputArgs);
     return SubEventCompetition.find(args);
   }
 }

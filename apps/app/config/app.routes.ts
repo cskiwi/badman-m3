@@ -10,18 +10,16 @@ export const appRoutes: Route[] = [
   {
     path: 'player',
     loadChildren: () =>
-      import('@app/frontend-pages-player').then((m) => m.pagePlayersRoutes),
+      import('@app/frontend-pages-player').then((m) => m.routes),
   },
   {
     path: 'club',
     loadChildren: () =>
-      import('@app/frontend-pages-club').then((m) => m.pageClubRoutes),
+      import('@app/frontend-pages-club').then((m) => m.routes),
   },
   {
     path: 'competition',
     loadChildren: () =>
-      import('@app/frontend-pages-competition').then(
-        (m) => m.pageCompetitionRoutes,
-      ),
+      import('@app/frontend-pages-competition').then((m) => m.routes),
   },
 ];

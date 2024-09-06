@@ -1,4 +1,5 @@
 import { LevelType, Period } from '@app/models/enums';
+import { SortableField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
   Entity,
@@ -16,91 +17,91 @@ export class EventCompetition extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare name: string;
 
-  @Field(() => Int, { nullable: true })
+  @SortableField(() => Int, { nullable: true })
   @Column()
   declare season: number;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
   @Column()
   declare lastSync: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
   @Column()
   declare openDate: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
   @Column()
   declare closeDate: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
   @Column()
   declare changeOpenDate: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
   @Column()
   declare changeCloseDate: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
   @Column()
   declare changeCloseRequestDate: Date;
 
-  // @Field(() => EventCompetitionMetaType, { nullable: true })
+  // @SortableField(() => EventCompetitionMetaType, { nullable: true })
   // @Column({
   //   type: DataType.JSON,
   // })
   // meta?: MetaEventCompetition;
 
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare visualCode: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare slug: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   teamMatcher?: string;
 
 
-  @Field(() => Boolean)
+  @SortableField(() => Boolean)
   @Column({
     default: false,
   })
   declare official: boolean;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: LevelType,
   })
   declare type: LevelType;
 
-  @Field(() => Boolean)
+  @SortableField(() => Boolean)
   @Column({
     default: false,
   })
   declare checkEncounterForFilledIn: boolean;
 
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare state: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare country: string;
 }

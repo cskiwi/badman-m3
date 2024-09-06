@@ -1,5 +1,8 @@
-import { Field, InputType, registerEnumType } from '@nestjs/graphql';
+import { getSortableFields } from '@app/utils';
 import { Type } from '@nestjs/common';
+import { Field, InputType, registerEnumType } from '@nestjs/graphql';
+import 'reflect-metadata'; // Ensure reflect-metadata is imported for TypeScript metadata
+
 export enum SortDirection {
   ASC = 'ASC',
   DESC = 'DESC',
@@ -9,20 +12,24 @@ registerEnumType(SortDirection, {
   name: 'SortDirection',
 });
 
-// A utility function to generate a SortOrderType for any entity type
-export function SortOrderType<T>(classRef: Type<T>): Type<any> {
-  @InputType({ isAbstract: true })
-  class SortOrderTypeClass {
-    constructor() {
-      const instance = new classRef();
-      const keys = Object.keys(instance as object);
+export function SortOrderType<T>(classRef: Type<T>) {
+  const className = `${classRef.name}SortOrder`;
 
-      keys.forEach((key) => {
-        // Dynamically define a field for each key in the input type
-        Field(() => SortDirection, { nullable: true })(this, key);
-      });
-    }
+  @InputType(className)
+  class SortOrder {}
+
+  const fields = getSortableFields(classRef);
+
+  for (const key of fields) {
+    // Dynamically add a decorated field to the SortOrder class
+    Object.defineProperty(SortOrder.prototype, key, {
+      value: undefined,
+      writable: true,
+      enumerable: true,
+    });
+
+    Field(() => SortDirection, { nullable: true })(SortOrder.prototype, key);
   }
 
-  return SortOrderTypeClass;
+  return SortOrder;
 }

@@ -81,8 +81,8 @@ export class OverviewService {
     return this.apollo
       .query<{ clubs: Club[] }>({
         query: gql`
-          query Clubs($where: [JSONObject!]) {
-            clubs(where: $where) {
+          query Clubs($args: ClubArgs) {
+            clubs(args: $args) {
               id
               clubId
               name
@@ -91,7 +91,7 @@ export class OverviewService {
           }
         `,
         variables: {
-          where: this._clubSearchWhere(filter.query),
+          args: { where: this._clubSearchWhere(filter.query) },
         },
       })
       .pipe(

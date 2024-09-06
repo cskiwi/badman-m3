@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { Game } from './game.model';
+import { SortableField } from '@app/utils';
 
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
@@ -22,23 +23,23 @@ export class GamePlayerMembership extends BaseEntity {
   @Column({ type: 'uuid' })
   declare gameId?: string;
 
-  @Field()
+  @SortableField()
   @Column()
   declare team: number;
 
-  @Field()
+  @SortableField()
   @Column()
   declare player: number;
 
-  @Field()
+  @SortableField()
   @Column()
   declare single?: number;
 
-  @Field()
+  @SortableField()
   @Column()
   declare double?: number;
 
-  @Field()
+  @SortableField()
   @Column()
   declare mix?: number;
 
