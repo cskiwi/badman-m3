@@ -17,7 +17,8 @@
     "@app/frontend-modules-auth": "0.0.1",
     "@app/frontend-utils": "0.0.1",
     "@app/models/enums": "0.0.1",
-    "@ngx-translate/core": "^15.0.0"
+    "@ngx-translate/core": "^15.0.0",
+    "ngx-mat-select-search": "^7.0.7"
   },
   "sideEffects": false
 }

@@ -119,7 +119,7 @@ export class SeoService {
   }
 
   setCompetition(data: { competition: EventCompetition }) {
-    let desc = `The detail page of the club ${data.competition.name} `;
+    const desc = `The detail page of the club ${data.competition.name} `;
 
     this.setTitle(`Club ${data.competition.name} `);
     this.setDescription(desc);

@@ -14,7 +14,8 @@
     "typeorm": "^0.3.20",
     "graphql": "^16.9.0",
     "graphql-type-json": "^0.3.2",
-    "class-validator": "^0.14.1"
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.2.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",
