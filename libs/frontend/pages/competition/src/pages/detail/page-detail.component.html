@@ -1,0 +1,28 @@
+@if (!loading()) {
+  @if (this.competition(); as competition) {
+    <app-page-header>
+      <ng-content title>{{ competition.name }}</ng-content>
+      <ng-content subTitle>
+        <div class="info">
+          <div class="sub-text">
+            <ng-container
+              ><a [routerLink]="['/', 'competition', this.competition?.slug]">{{
+                this.competition?.name
+              }}</a></ng-container
+            >
+          </div>
+        </div>
+      </ng-content>
+      <ng-content actions> </ng-content>
+    </app-page-header>
+  }
+} @else {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (error()) {
+  <div class="error">
+    <mat-icon>error</mat-icon>
+    {{ error() }}
+  </div>
+}

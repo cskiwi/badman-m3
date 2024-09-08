@@ -1,6 +1,5 @@
 @if (!loading()) {
   <app-page-header>
-    <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
     <ng-content title>Clubs</ng-content>
   </app-page-header>
   <section class="clubs">
@@ -12,11 +11,9 @@
     <mat-list>
       @for (club of clubs(); track club.id) {
         <mat-list-item [routerLink]="club.slug">
-          <!-- <img matListItemAvatar src="..." alt="..." /> -->
           <h3 matListItemTitle>{{ club.name }}</h3>
           <p matListItemLine>
             <span>{{ club.clubId }}</span>
-            <!-- <span class="demo-2"> -- {{ message.content }}</span> -->
           </p>
         </mat-list-item>
       }

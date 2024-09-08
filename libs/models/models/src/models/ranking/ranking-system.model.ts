@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
   AfterLoad,
   BaseEntity,
@@ -11,194 +11,195 @@ import {
 } from 'typeorm';
 import { Period, RankingSystems, StartingType } from '@app/models/enums';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
+import { SortableField } from '@app/utils';
 
 @ObjectType('RankingSystem')
 @Entity('RankingSystems', { schema: 'ranking' })
 export class RankingSystem extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field()
+  @SortableField()
   @UpdateDateColumn()
   declare updatedAt: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare name: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare amountOfLevels?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare procentWinning?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare procentWinningPlus1?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare procentLosing?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare minNumberOfGamesUsedForUpgrade?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare minNumberOfGamesUsedForDowngrade?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare maxDiffLevels?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare maxDiffLevelsHighest?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare latestXGamesToUse?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare maxLevelUpPerChange?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare maxLevelDownPerChange?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare gamesForInactivty?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare inactivityAmount?: number;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
   })
   declare inactivityUnit: Period;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: ['freeze', 'decrease'] })
   declare inactiveBehavior: 'freeze' | 'decrease';
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare calculationLastUpdate?: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare calculationDayOfWeek?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare calculationIntervalAmount?: number;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
   })
   declare calculationIntervalUnit?: Period;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare periodAmount?: number;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
   })
   declare periodUnit?: Period;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare updateLastUpdate?: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare updateDayOfWeek?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare updateIntervalAmount?: number;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
   })
   declare updateIntervalUnit?: Period;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare rankingSystem: string;
 
-  @Field()
+  @SortableField()
   @Column({ default: false })
   declare primary: boolean;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ default: false })
   declare calculateUpdates: boolean;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ default: false })
   declare runCurrently: boolean;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForUpgradeSingle?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForUpgradeDouble?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForUpgradeMix?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForDowngradeSingle?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForDowngradeDouble?: number;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForDowngradeMix?: number;
 
-  @Field(() => [Int], { nullable: true })
+  @SortableField(() => [Int], { nullable: true })
   declare pointsToGoUp?: number[];
 
-  @Field(() => [Int], { nullable: true })
+  @SortableField(() => [Int], { nullable: true })
   declare pointsWhenWinningAgainst?: number[];
 
-  @Field(() => [Int], { nullable: true })
+  @SortableField(() => [Int], { nullable: true })
   declare pointsToGoDown?: number[];
 
-  @Field(() => [Int], { nullable: true })
+  @SortableField(() => [Int], { nullable: true })
   declare levelArray?: number[];
 
-  @Field(() => [Int], { nullable: true })
+  @SortableField(() => [Int], { nullable: true })
   declare levelArrayOneMinus?: number[];
 
-  @Field(() => String)
+  @SortableField(() => String)
   @Column({
     type: 'simple-enum',
     enum: StartingType,

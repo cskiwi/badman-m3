@@ -1,0 +1,8 @@
+[phases.install]
+cmd = "bun i"
+
+[phases.build]
+cmd = "bun run build --prod"
+
+[phases.start]
+cmd = "bun run start:prod"

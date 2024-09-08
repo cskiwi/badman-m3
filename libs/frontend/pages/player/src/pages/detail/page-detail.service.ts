@@ -48,8 +48,8 @@ export class DetailService {
     distinctUntilChanged((a, b) => a.playerId === b.playerId),
   );
 
-  private playerLoaded$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadPlayerApollo(filter)),
+  private data$ = this.filterChanged$.pipe(
+    switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -57,7 +57,7 @@ export class DetailService {
   );
 
   sources$ = merge(
-    this.playerLoaded$.pipe(
+    this.data$.pipe(
       map((player) => ({
         player,
         loading: false,
@@ -72,7 +72,7 @@ export class DetailService {
     sources: [this.sources$],
   });
 
-  private _loadPlayerApollo(
+  private _loadData(
     filter: Partial<{
       playerId: string | null;
     }>,

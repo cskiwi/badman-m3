@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -14,20 +14,21 @@ import { ClubPlayerMembership } from './club-player-membership';
 import { GamePlayerMembership } from './event/game-player-membership';
 import { RankingLastPlace } from './ranking';
 import { TeamPlayerMembership } from './team-player-membership';
+import { SortableField } from '@app/utils';
 
 @ObjectType('Player')
 @Entity('Players')
 @Index(['firstName', 'lastName'])
 export class Player extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
@@ -35,64 +36,64 @@ export class Player extends BaseEntity {
   @Column({ unique: true })
   declare sub: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   @Index({ fulltext: true })
   declare firstName: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   @Index({ fulltext: true })
   declare lastName: string;
 
   @Index({ unique: true })
-  @Field()
+  @SortableField()
   @Column()
   declare slug: string;
 
   @Index({ unique: true })
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare memberId: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare email: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare phone: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare gender: 'M' | 'F';
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare birthDate: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare competitionPlayer: boolean;
 
-  @Field()
+  @SortableField()
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  @Field(() => [RankingLastPlace], { nullable: true })
+  @SortableField(() => [RankingLastPlace], { nullable: true })
   @OneToMany(() => RankingLastPlace, (membership) => membership.player)
   declare rankingLastPlaces: Relation<RankingLastPlace[]>;
 
-  @Field(() => [ClubPlayerMembership], { nullable: true })
+  @SortableField(() => [ClubPlayerMembership], { nullable: true })
   @OneToMany(() => ClubPlayerMembership, (membership) => membership.player)
   declare clubPlayerMemberships?: Relation<ClubPlayerMembership[]>;
 
-  @Field(() => [TeamPlayerMembership], { nullable: true })
+  @SortableField(() => [TeamPlayerMembership], { nullable: true })
   @OneToMany(() => TeamPlayerMembership, (membership) => membership.player)
   declare teamPlayerMemberships: Relation<TeamPlayerMembership[]>;
 
-  @Field(() => [GamePlayerMembership], { nullable: true })
+  @SortableField(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(() => GamePlayerMembership, (membership) => membership.gamePlayer)
   declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
 }

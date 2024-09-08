@@ -2,7 +2,7 @@ import { isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { SEO_CONFIG, ISeoConfig } from '@app/frontend-modules-seo';
-import { Club, Player } from '@app/models';
+import { Club, EventCompetition, Player } from '@app/models';
 
 type ISeoMetaData = {
   keywords?: string[];
@@ -23,6 +23,10 @@ type ISeoMetaData = {
   | {
       seoType: 'club';
       club: Club;
+    }
+  | {
+      seoType: 'competition';
+      competition: EventCompetition;
     }
 );
 
@@ -58,6 +62,9 @@ export class SeoService {
         break;
       case 'club':
         this.setClub(data);
+        break;
+      case 'competition':
+        this.setCompetition(data);
         break;
     }
 
@@ -106,6 +113,19 @@ export class SeoService {
     this.setImage(
       `${this.config.imageEndpoint}/?id=${encodeURIComponent(
         data.club.slug,
+      )}&type=club`,
+    );
+    this.setMetaTag('name', 'twitter:card', 'summary_large_image');
+  }
+
+  setCompetition(data: { competition: EventCompetition }) {
+    const desc = `The detail page of the club ${data.competition.name} `;
+
+    this.setTitle(`Club ${data.competition.name} `);
+    this.setDescription(desc);
+    this.setImage(
+      `${this.config.imageEndpoint}/?id=${encodeURIComponent(
+        data.competition.slug,
       )}&type=club`,
     );
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');

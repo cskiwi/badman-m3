@@ -43,8 +43,8 @@ export class HomeService {
     distinctUntilChanged((a, b) => a.rankingSystemId === b.rankingSystemId),
   );
 
-  private rankingSystemLoaded$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadRankingSystemApollo(filter)),
+  private data$ = this.filterChanged$.pipe(
+    switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -52,7 +52,7 @@ export class HomeService {
   );
 
   sources$ = merge(
-    this.rankingSystemLoaded$.pipe(
+    this.data$.pipe(
       map((rankingSystem) => ({
         rankingSystem,
         loading: false,
@@ -97,7 +97,7 @@ export class HomeService {
     }),
   });
 
-  private _loadRankingSystemApollo(
+  private _loadData(
     filter: Partial<{
       rankingSystemId: string | null;
     }>,

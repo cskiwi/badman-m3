@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -9,50 +9,51 @@ import {
 import { ClubMembershipType } from '@app/models/enums';
 import { Club } from './club.model';
 import { Player } from './player.model';
+import { SortableField } from '@app/utils';
 
 @ObjectType('ClubPlayerMembership')
 @Entity('ClubPlayerMemberships')
 export class ClubPlayerMembership extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @Column({ type: 'uuid' })
   declare playerId?: string;
 
-  @Field()
+  @SortableField()
   @Column({ type: 'uuid' })
   declare clubId?: string;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare end: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare start: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare confirmed: boolean;
 
-  @Field(() => String)
+  @SortableField(() => String)
   @Column({
     type: 'simple-enum',
     enum: ClubMembershipType,
   })
   declare membershipType?: ClubMembershipType;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @ManyToOne(() => Player, (player) => player.clubPlayerMemberships)
   declare player: Player;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @ManyToOne(() => Club, (club) => club.clubPlayerMemberships)
   declare club: Club;
 
-  @Field(() => Boolean)
+  @SortableField(() => Boolean)
   get active() {
     return this.isActiveFrom(new Date());
   }

@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -10,23 +10,24 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
+import { SortableField } from '@app/utils';
 
 @ObjectType('RankingGroup')
 @Entity('RankingGroups', { schema: 'ranking' })
 export class RankingGroup extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare name: string;
 

@@ -9,7 +9,10 @@
     "@app/backend-authorization": "0.0.1",
     "@algolia/client-common": "5.1.1",
     "algoliasearch": "^5.1.1",
-    "moment": "^2.30.1"
+    "moment": "^2.30.1",
+    "@nestjs/swagger": "^7.4.0",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/config": "^3.2.3"
   },
   "type": "commonjs",
   "main": "./src/index.js",

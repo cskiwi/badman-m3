@@ -9,15 +9,15 @@
 // @ObjectType('EncounterCompetition')
 // @Entity('EncounterCompetitions', { schema: 'event' })
 // export class EncounterCompetition extends BaseEntity {
-//   @Field()
+//   @Field(() => ID)
 //   @PrimaryGeneratedColumn('uuid')
 //   declare id: string;
 
-//   @Field()
+//   @SortableField()
 //   @CreateDateColumn()
 //   declare createdAt: Date;
 
-//   @Field({ nullable: true })
+//   @SortableField({ nullable: true })
 //   @UpdateDateColumn({ nullable: true })
 //   declare updatedAt: Date;
 

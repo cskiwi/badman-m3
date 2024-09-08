@@ -1,60 +1,54 @@
-import { ArgsType, Field, InputType, Int } from '@nestjs/graphql';
+import { Type } from '@nestjs/common';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { Min } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { FindManyOptions, FindOptionsOrder, FindOptionsWhere } from 'typeorm';
+import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 import { queryFixer } from './queryFixer';
+import { SortOrderType } from './sort-order';
 
-@InputType()
-export class SortOrderType {
-  @Field(() => String)
-  field!: string;
+export function args<T>(classRef: Type<T>, name?: string) {
+  const SortOrder = SortOrderType(classRef);
+  const className = `${name}Args`;
 
-  @Field(() => String)
-  direction!: string;
-}
+  @InputType(className)
+  class Args {
+    @Field(() => Int, { nullable: true })
+    @Min(0)
+    skip = 0;
 
-export class SortOrder {
-  field!: string;
-  direction!: string;
-}
+    @Field(() => Int, { nullable: true })
+    @Min(1)
+    take?: number | null;
 
-@ArgsType()
-export class WhereArgs<T> {
-  @Field(() => [GraphQLJSONObject], { nullable: true })
-  where?: FindOptionsWhere<T>[];
-}
+    @Field(() => SortOrder, { nullable: true })
+    order?: FindOptionsOrder<T>;
 
-@ArgsType()
-export class ListArgs<T> extends WhereArgs<T> {
-  @Field(() => Int, { nullable: true })
-  @Min(0)
-  skip = 0;
+    @Field(() => [GraphQLJSONObject], { nullable: true })
+    where?: FindOptionsWhere<T>[];
 
-  @Field(() => Int, { nullable: true })
-  @Min(1)
-  take?: number | null;
+    static toFindManyOptions(args?: Args) {
+      return {
+        take: args?.take ?? 10,
+        skip: args?.skip,
+        where: this.getQuery(args?.where),
+        order: args?.order,
+      };
+    }
 
-  @Field(() => [SortOrderType], { nullable: true })
-  order?: FindOptionsOrder<T>;
+    static toFindOneOptions(args?: Args) {
+      return {
+        where: this.getQuery(args?.where),
+        order: args?.order,
+      };
+    }
 
-  static toFindOptions<T>(args: ListArgs<T>): Omit<
-    FindManyOptions<T>,
-    'where'
-  > & {
-    where: FindOptionsWhere<T>[];
-  } {
-    return {
-      take: args.take ?? 10,
-      skip: args.skip,
-      where: this.getQuery(args.where),
-      order: args.order,
-    };
+    static getQuery<T>(
+      args?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
+    ): FindOptionsWhere<T>[] {
+      const where = queryFixer(args) ?? [];
+      return Array.isArray(where) ? where : [where];
+    }
   }
 
-  static getQuery<T>(
-    args?: FindOptionsWhere<T> | FindOptionsWhere<T>[],
-  ): FindOptionsWhere<T>[] {
-    const where = queryFixer(args) ?? [];
-    return Array.isArray(where) ? where : [where];
-  }
+  return Args;
 }

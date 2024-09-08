@@ -46,9 +46,9 @@ export class OverviewService {
     distinctUntilChanged(),
   );
 
-  private playersLoaded$ = this.filterChanged$.pipe(
+  private data$ = this.filterChanged$.pipe(
     debounceTime(300), // Queries are better when debounced
-    switchMap((filter) => this._loadPlayersApollo(filter)),
+    switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -56,7 +56,7 @@ export class OverviewService {
   );
 
   sources$ = merge(
-    this.playersLoaded$.pipe(
+    this.data$.pipe(
       map((players) => ({
         players,
         loading: false,
@@ -71,7 +71,7 @@ export class OverviewService {
     sources: [this.sources$],
   });
 
-  private _loadPlayersApollo(
+  private _loadData(
     filter: Partial<{
       query: string | null;
     }>,
@@ -83,8 +83,8 @@ export class OverviewService {
     return this.apollo
       .query<{ players: Player[] }>({
         query: gql`
-          query Players($where: [JSONObject!]) {
-            players(where: $where) {
+          query Players($args: PlayerArgs) {
+            players(args: $args) {
               id
               memberId
               fullName
@@ -93,7 +93,9 @@ export class OverviewService {
           }
         `,
         variables: {
-          where: this._playerSearchWhere(filter.query),
+          args: {
+            where: this._playerSearchWhere(filter.query),
+          },
         },
       })
       .pipe(
@@ -105,7 +107,7 @@ export class OverviewService {
           if (!result?.data.players) {
             throw new Error('No players found');
           }
-          return result.data.players.map((row) => row as Player);
+          return result.data.players.map((row) => row);
         }),
       );
   }
@@ -126,8 +128,12 @@ export class OverviewService {
       ?.toLowerCase()
       .replace(/[;\\\\/:*?"<>|&',]/, ' ')
       .split(' ');
-    const queries: unknown[] = [{ memberId: '$nNull' }];
 
+    if (!parts) {
+      return [{ memberId: '$nNull' }];
+    }
+
+    const queries: unknown[] = [];
     for (const part of parts ?? []) {
       queries.push(
         { firstName: { $iLike: `%${part}%` } },

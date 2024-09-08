@@ -1,3 +1,4 @@
+import { SortableField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -6,8 +7,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -18,110 +17,110 @@ import { RankingSystem } from './ranking-system.model';
 @ObjectType('RankingPlace')
 @Entity('RankingPlaces', { schema: 'ranking' })
 export class RankingPlace extends BaseEntity {
-  @Field()
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
   @CreateDateColumn()
   declare createdAt: Date;
 
-  @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @Field()
+  @SortableField()
   @Column()
   declare rankingDate: Date;
 
-  @Field()
+  @SortableField()
   @Column({
     type: 'simple-enum',
     enum: ['M', 'F'],
   })
   declare gender: 'M' | 'F';
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare singlePoints?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare mixPoints?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare doublePoints?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare singlePointsDowngrade?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare mixPointsDowngrade?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare doublePointsDowngrade?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare singleRank?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare mixRank?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare doubleRank?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare totalSingleRanking?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare totalMixRanking?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare totalDoubleRanking?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare totalWithinSingleLevel?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare totalWithinMixLevel?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare totalWithinDoubleLevel?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare single?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare mix?: number;
 
-  @Field()
+  @SortableField()
   @Column({ nullable: true })
   declare double?: number;
 
-  @Field()
+  @SortableField()
   @Column({ default: false })
   declare singleInactive: boolean;
 
-  @Field()
+  @SortableField()
   @Column({ default: false })
   declare mixInactive: boolean;
 
-  @Field()
+  @SortableField()
   @Column({ default: false })
   declare doubleInactive: boolean;
 
@@ -133,12 +132,12 @@ export class RankingPlace extends BaseEntity {
   @Column()
   declare systemId: string;
 
-  // @Field()
+  // @SortableField()
   @ManyToOne(() => Player, (player) => player.rankingLastPlaces)
   @JoinColumn({ name: 'playerId' })
   declare player: Relation<Player>;
 
-  // @Field()
+  // @SortableField()
   @ManyToOne(() => RankingSystem)
   @JoinColumn()
   declare system: Relation<RankingSystem>;

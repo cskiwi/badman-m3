@@ -1,7 +1,5 @@
 import { Route } from '@angular/router';
 import { pageHomeRoutes } from '@app/frontend-pages-home';
-import { pagePlayersRoutes } from '@app/frontend-pages-player';
-import { pageClubRoutes } from '@app/frontend-pages-club';
 
 export const appRoutes: Route[] = [
   {
@@ -11,10 +9,17 @@ export const appRoutes: Route[] = [
 
   {
     path: 'player',
-    children: pagePlayersRoutes,
+    loadChildren: () =>
+      import('@app/frontend-pages-player').then((m) => m.routes),
   },
   {
     path: 'club',
-    children: pageClubRoutes,
+    loadChildren: () =>
+      import('@app/frontend-pages-club').then((m) => m.routes),
+  },
+  {
+    path: 'competition',
+    loadChildren: () =>
+      import('@app/frontend-pages-competition').then((m) => m.routes),
   },
 ];

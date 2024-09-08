@@ -46,9 +46,9 @@ export class OverviewService {
     distinctUntilChanged(),
   );
 
-  private clubsLoaded$ = this.filterChanged$.pipe(
+  private data$ = this.filterChanged$.pipe(
     debounceTime(300), // Queries are better when debounced
-    switchMap((filter) => this._loadClubsApollo(filter)),
+    switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
@@ -56,7 +56,7 @@ export class OverviewService {
   );
 
   sources$ = merge(
-    this.clubsLoaded$.pipe(
+    this.data$.pipe(
       map((clubs) => ({
         clubs,
         loading: false,
@@ -71,7 +71,7 @@ export class OverviewService {
     sources: [this.sources$],
   });
 
-  private _loadClubsApollo(
+  private _loadData(
     filter: Partial<{
       query: string | null;
       where: { [key: string]: unknown } | null;
@@ -81,8 +81,8 @@ export class OverviewService {
     return this.apollo
       .query<{ clubs: Club[] }>({
         query: gql`
-          query Clubs($where: [JSONObject!]) {
-            clubs(where: $where) {
+          query Clubs($args: ClubArgs) {
+            clubs(args: $args) {
               id
               clubId
               name
@@ -91,7 +91,7 @@ export class OverviewService {
           }
         `,
         variables: {
-          where: this._clubSearchWhere(filter.query),
+          args: { where: this._clubSearchWhere(filter.query) },
         },
       })
       .pipe(

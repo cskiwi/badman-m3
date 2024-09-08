@@ -9,7 +9,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { ListArgs } from '../utils';
+import { ClubArgs } from '../args';
 
 @Resolver(() => Club)
 export class ClubResolver {
@@ -20,13 +20,11 @@ export class ClubResolver {
           where: {
             id,
           },
-          // relations: ['ClubPlayerMemberships'],
         })
       : await Club.findOne({
           where: {
             slug: id,
           },
-          // relations: ['ClubPlayerMemberships'],
         });
 
     if (club) {
@@ -37,8 +35,11 @@ export class ClubResolver {
   }
 
   @Query(() => [Club])
-  async clubs(@Args() listArgs: ListArgs<Club>): Promise<Club[]> {
-    const args = ListArgs.toFindOptions(listArgs);
+  async clubs(
+    @Args('args',  { type: () => ClubArgs, nullable: true  })
+    inputArgs?: InstanceType<typeof ClubArgs>,
+  ): Promise<Club[]> {
+    const args = ClubArgs.toFindOneOptions(inputArgs);
     return Club.find(args);
   }
 
@@ -50,7 +51,7 @@ export class ClubResolver {
       },
     });
   }
-  
+
   @ResolveField(() => [Team], { nullable: true })
   async teams(@Parent() { id }: Club) {
     return Team.find({
