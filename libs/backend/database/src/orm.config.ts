@@ -97,4 +97,4 @@ export function initializeDataSource(configService?: ConfigService) {
   };
 }
 
-export default initializeDataSource;
+export default initializeDataSource().datasource;
