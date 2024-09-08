@@ -1,3 +1,4 @@
+import { Player } from '@app/models';
 import {
   CanActivate,
   ExecutionContext,
@@ -12,7 +13,6 @@ import { Request } from 'express';
 import { JwksClient } from 'jwks-rsa';
 import { getRequest } from '../utils';
 import { ALLOW_ANONYMOUS_META_KEY } from './anonymous.decorator';
-import { Player } from '@app/models';
 
 @Injectable()
 export class PermGuard implements CanActivate {
@@ -26,7 +26,7 @@ export class PermGuard implements CanActivate {
   ) {
     this.jwksClient = new JwksClient({
       cache: true,
-      jwksUri: `${this.configService.get('AUTH0_ISSUER_URL')}/.well-known/jwks.json`,
+      jwksUri: `https://${this.configService.get('AUTH0_ISSUER_URL')}/.well-known/jwks.json`,
     });
   }
 
@@ -88,6 +88,12 @@ export class PermGuard implements CanActivate {
         throw new UnauthorizedException();
       }
 
+      this._logger.debug({
+        algorithms: ['RS256'],
+        audience: this.configService.get('AUTH0_AUDIENCE'),
+        issuer: `https://${this.configService.get('AUTH0_ISSUER_URL')}/`,
+      });
+
       const signingKey = await this.jwksClient.getSigningKey(
         decoded.header.kid,
       );
@@ -95,7 +101,7 @@ export class PermGuard implements CanActivate {
         algorithms: ['RS256'],
         publicKey: signingKey.getPublicKey(),
         audience: this.configService.get('AUTH0_AUDIENCE'),
-        issuer: `${this.configService.get('AUTH0_ISSUER_URL')}/`,
+        issuer: `https://${this.configService.get('AUTH0_ISSUER_URL')}/`,
       });
       return payload;
     } catch (error) {

@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import initializeDataSource from './orm.config';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: () => {
-        const { config } = initializeDataSource();
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const { config } = initializeDataSource(configService);
 
         return config;
       },

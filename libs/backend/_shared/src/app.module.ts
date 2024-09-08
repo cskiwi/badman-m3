@@ -10,7 +10,7 @@ import { SearchModule } from '@app/backend-serach';
 
 @Module({
   imports: [
-    ConfigModule,
+    ConfigModule.forRoot(),
     DatabaseModule,
     AuthorizationModule,
     GraphQLModule,

@@ -43,9 +43,6 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
 
   const addMigrations = getEnvVar('RUN_MIGRATIONS')?.trim() === 'true';
   const dbType = getEnvVar('DB_TYPE')?.trim();
-
-  console.error('DB_TYPE:', dbType);
-
   let config: DataSourceOptions;
 
   if (dbType === 'sqlite') {
