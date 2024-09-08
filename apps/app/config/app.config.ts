@@ -42,15 +42,15 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(
       GraphQLModule.forRoot(),
       AuthModule.forRoot({
-        domain: 'badvlasim.eu.auth0.com',
-        clientId: '2LqkYZMbrTTXEE0OMkQJLmpRrOVQheoF',
+        domain: process.env['AUTH0_ISSUER_URL'] || '',
+        clientId: process.env['AUTH0_CLIENT_ID'] || '',
         useRefreshTokens: true,
         useRefreshTokensFallback: true,
         useCookiesForTransactions: true,
         authorizationParams: {
           redirect_uri:
             typeof window !== 'undefined' ? window.location.origin : '',
-          audience: 'ranking-simulation',
+          audience: process.env['AUTH0_AUDIENCE'],
         },
         cacheLocation: 'localstorage',
         httpInterceptor: {

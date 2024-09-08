@@ -7,13 +7,14 @@
   "tags": ["scope:app"],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@nx/angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/app",
         "index": "apps/app/src/index.html",
         "browser": "apps/app/src/main.ts",
         "server": "apps/app/src/main.server.ts",
+      
         "polyfills": ["zone.js"],
         "tsConfig": "apps/app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
@@ -27,6 +28,7 @@
         "stylePreprocessorOptions": {
           "includePaths": ["node_modules/"]
         },
+        "plugins": ["apps/app/plugins/env-var-plugin.js"],
         "externalDependencies": [
           "@apollo/gateway",
           "@apollo/subgraph",
@@ -80,7 +82,10 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:dev-server",
+      "options": {
+        "port": 3000
+      },
       "configurations": {
         "production": {
           "buildTarget": "app:build:production"
@@ -93,7 +98,7 @@
       "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@nx/angular:extract-i18n",
       "options": {
         "buildTarget": "app:build"
       }

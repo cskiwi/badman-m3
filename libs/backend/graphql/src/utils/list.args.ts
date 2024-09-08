@@ -6,9 +6,9 @@ import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 import { queryFixer } from './queryFixer';
 import { SortOrderType } from './sort-order';
 
-export function args<T>(classRef: Type<T>) {
+export function args<T>(classRef: Type<T>, name?: string) {
   const SortOrder = SortOrderType(classRef);
-  const className = `${classRef.name}Args`;
+  const className = `${name}Args`;
 
   @InputType(className)
   class Args {
@@ -20,7 +20,7 @@ export function args<T>(classRef: Type<T>) {
     @Min(1)
     take?: number | null;
 
-    @Field(() => [SortOrder], { nullable: true })
+    @Field(() => SortOrder, { nullable: true })
     order?: FindOptionsOrder<T>;
 
     @Field(() => [GraphQLJSONObject], { nullable: true })
