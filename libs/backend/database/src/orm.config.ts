@@ -1,6 +1,8 @@
 import {
   Club,
   ClubPlayerMembership,
+  EventCompetition,
+  EventTournament,
   Game,
   GamePlayerMembership,
   Player,
@@ -10,13 +12,11 @@ import {
   RankingSystemRankingGroupMembership,
   Team,
   TeamPlayerMembership,
-  EventTournament,
-  EventCompetition,
 } from '@app/models';
+import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
-import { ConfigService } from '@nestjs/config';
 
 const entities = [
   Player,
@@ -44,7 +44,7 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
   const addMigrations = getEnvVar('RUN_MIGRATIONS')?.trim() === 'true';
   const dbType = getEnvVar('DB_TYPE')?.trim();
 
-  console.log('DB_TYPE:', dbType);
+  console.error('DB_TYPE:', dbType);
 
   let config: DataSourceOptions;
 
@@ -94,8 +94,10 @@ export function initializeDataSource(configService?: ConfigService) {
   });
   datasource.initialize();
 
-  return datasource;
+  return {
+    datasource,
+    config,
+  };
 }
 
-export const ormConfig = getDbConfig();
 export default initializeDataSource;
