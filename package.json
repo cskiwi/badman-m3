@@ -49,7 +49,7 @@
     "algoliasearch": "^5.1.1",
     "apollo-angular": "^7.1.2",
     "axios": "^1.7.7",
-    "canvas": "^2.11.2",
+    "canvas": "3.0.0-rc2",
     "class-validator": "^0.14.1",
     "crypto-hash": "^3.1.0",
     "express": "~4.19.2",
@@ -124,10 +124,10 @@
     "webpack-cli": "^5.1.4"
   },
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "volta": {
-    "node": "20.17.0"
+    "node": "22.8.0"
   },
   "browser": {
     "node:fs": false,
