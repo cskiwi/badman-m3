@@ -43,3 +43,4 @@ Thumbs.db
 .angular
 routes.txt
 .env
+typesense-data/

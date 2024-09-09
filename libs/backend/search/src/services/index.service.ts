@@ -1,8 +1,9 @@
 import { Club, EventCompetition, EventTournament, Player } from '@app/models';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SearchClient } from 'algoliasearch';
-import { ALGOLIA_CLIENT } from '../client';
+import { SEARCH_CLIENTS, ALGOLIA_CLIENT, TYPESENSE_CLIENT } from '../client';
 import moment from 'moment';
+import { Client } from 'typesense';
 
 enum multiMatchOrder {
   club,
@@ -12,19 +13,104 @@ enum multiMatchOrder {
 }
 
 @Injectable()
-export class IndexService {
+export class IndexService implements OnModuleInit {
+  private readonly _logger = new Logger(IndexService.name);
+
   constructor(
     @Inject(ALGOLIA_CLIENT) private readonly algoliaClient: SearchClient,
+    @Inject(TYPESENSE_CLIENT) private readonly typeSenseClient: Client,
   ) {}
+
+  async onModuleInit(): Promise<void> {
+    this._logger.log('Indexing started...');
+
+    // temo delete all schemas on startup
+
+    // await this.typeSenseClient.collections('players').delete();
+    // await this.typeSenseClient.collections('clubs').delete();
+    // await this.typeSenseClient.collections('events').delete();
+
+    const currentCollection = await this.typeSenseClient
+      .collections()
+      .retrieve();
+
+    if (
+      !currentCollection.some((collection) => collection.name === 'players')
+    ) {
+      await this.typeSenseClient.collections().create({
+        name: 'players',
+        fields: [
+          { name: 'objectID', type: 'string' },
+          { name: 'firstName', type: 'string' },
+          { name: 'lastName', type: 'string' },
+          { name: 'fullName', type: 'string' },
+          { name: 'slug', type: 'string' },
+          { name: 'memberId', type: 'string' },
+          { name: 'clubId', type: 'string', reference: 'clubs.objectID' },
+          { name: 'order', type: 'int32' },
+        ],
+        default_sorting_field: 'order',
+      });
+    }
+
+    if (!currentCollection.some((collection) => collection.name === 'clubs')) {
+      await this.typeSenseClient.collections().create({
+        name: 'clubs',
+        fields: [
+          { name: 'objectID', type: 'string' },
+          { name: 'name', type: 'string' },
+          { name: 'fullName', type: 'string' },
+          { name: 'slug', type: 'string' },
+          { name: 'clubId', type: 'int32' },
+          { name: 'type', type: 'string' },
+          { name: 'order', type: 'int32' },
+        ],
+        default_sorting_field: 'order',
+      });
+    }
+
+    if (!currentCollection.some((collection) => collection.name === 'events')) {
+      await this.typeSenseClient.collections().create({
+        name: 'events',
+        fields: [
+          { name: 'objectID', type: 'string' },
+          { name: 'name', type: 'string' },
+          { name: 'slug', type: 'string' },
+          { name: 'type', type: 'string' },
+          { name: 'date', type: 'int64' },
+          { name: 'order', type: 'int32' },
+        ],
+        default_sorting_field: 'order',
+      });
+    }
+
+    this._logger.log('Schemas made...');
+  }
 
   async addObjects<T = unknown>(
     indexName: string,
     objects: Array<Record<string, T>>,
   ) {
-    await this.algoliaClient.saveObjects({
-      indexName,
-      objects,
-    });
+    if (SEARCH_CLIENTS.includes(TYPESENSE_CLIENT)) {
+      this._logger.log(`Indexing ${objects.length} objects to ${indexName}`);
+      try {
+        await this.typeSenseClient
+          .collections(indexName)
+          .documents()
+          .import(objects);
+      } catch (e) {
+        this._logger.error(e);
+      } finally {
+        this._logger.log(`Indexed ${objects.length} objects to ${indexName}`);
+      }
+    }
+
+    if (SEARCH_CLIENTS.includes(ALGOLIA_CLIENT)) {
+      await this.algoliaClient.saveObjects({
+        indexName,
+        objects,
+      });
+    }
   }
 
   async indexPlayers() {
@@ -36,7 +122,6 @@ export class IndexService {
         'player.firstName',
         'player.lastName',
         'club.id',
-        'club.name',
       ])
       .leftJoinAndSelect(
         'player.clubPlayerMemberships',
@@ -51,28 +136,25 @@ export class IndexService {
       return;
     }
 
-    return this.addObjects(
-      'searchable',
-      players.map((player) => {
-        const activeClub = player.clubPlayerMemberships?.find(
-          (membership) => membership.active,
-        )?.club;
-        return {
-          objectID: player.id,
-          firstName: player.firstName,
-          slug: player.slug,
-          lastName: player.lastName,
-          memberId: player.memberId,
+    let objects = players.map((player) => {
+      const activeClub = player.clubPlayerMemberships?.find(
+        (membership) => membership.active,
+      )?.club;
+      return {
+        objectID: player.id,
+        firstName: player.firstName,
+        lastName: player.lastName,
+        fullName: player.fullName,
+        slug: player.slug,
+        memberId: player.memberId,
 
-          type: 'player',
-          club: {
-            id: activeClub?.id,
-            name: activeClub?.name,
-          },
-          order: multiMatchOrder.player,
-        };
-      }),
-    );
+        type: 'player',
+        clubId: activeClub?.id,
+        order: multiMatchOrder.player,
+      };
+    });
+
+    await this.addObjects('players', objects);
   }
 
   async indexClubs() {
@@ -92,20 +174,19 @@ export class IndexService {
       return;
     }
 
-    return this.addObjects(
-      'searchable',
-      clubs.map((club) => {
-        return {
-          objectID: club.id,
-          slug: club.slug,
-          name: club.name,
-          fullName: club.fullName,
-          clubId: club.clubId,
-          type: 'club',
-          order: multiMatchOrder.club,
-        };
-      }),
-    );
+    const objects = clubs.map((club) => {
+      return {
+        objectID: club.id,
+        slug: club.slug,
+        name: club.name,
+        fullName: club.fullName || club.name,
+        clubId: club.clubId,
+        type: 'club',
+        order: multiMatchOrder.club,
+      };
+    });
+
+    await this.addObjects('clubs', objects);
   }
 
   async indexCompetitionEvents() {
@@ -119,19 +200,18 @@ export class IndexService {
       return;
     }
 
-    return this.addObjects(
-      'searchable',
-      events.map((event) => {
-        return {
-          objectID: event.id,
-          slug: event.slug,
-          name: event.name,
-          type: 'competition',
-          date: moment(`${event.season}-09-01`).toDate().getTime(),
-          order: multiMatchOrder.eventCompetition,
-        };
-      }),
-    );
+    const objects = events.map((event) => {
+      return {
+        objectID: event.id,
+        slug: event.slug,
+        name: event.name,
+        type: 'competition',
+        date: moment(`${event.season}-09-01`).toDate().getTime(),
+        order: multiMatchOrder.eventCompetition,
+      };
+    });
+
+    await this.addObjects('events', objects);
   }
 
   async indexTournamentEvents() {
@@ -143,20 +223,19 @@ export class IndexService {
 
     if (!events) {
       return;
-    } 
+    }
 
-    return this.addObjects(
-      'searchable',
-      events.map((event) => {
-        return {
-          objectID: event.id,
-          slug: event.slug,
-          name: event.name,
-          type: 'tournament',
-          date: event.firstDay.getTime(),
-          order: multiMatchOrder.eventTournament,
-        };
-      }),
-    );
+    const objects = events.map((event) => {
+      return {
+        objectID: event.id,
+        slug: event.slug,
+        name: event.name,
+        type: 'tournament',
+        date: event.firstDay.getTime(),
+        order: multiMatchOrder.eventTournament,
+      };
+    });
+
+    await this.addObjects('events', objects);
   }
 }

@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { algoliasearch } from 'algoliasearch';
-import { ALGOLIA_CLIENT } from './client';
+import { Client } from 'typesense';
+import { ALGOLIA_CLIENT, TYPESENSE_CLIENT } from './client';
 import { IndexController, SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
@@ -12,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
   controllers: [SearchController, IndexController],
   providers: [SearchService, IndexService],
 })
-export class SearchModule {
+export class SearchModule  {
   static forRoot(config: ISearchConfig) {
     return {
       module: SearchModule,
@@ -20,7 +21,12 @@ export class SearchModule {
         {
           provide: ALGOLIA_CLIENT,
           useFactory: () =>
-            algoliasearch(config.appId, config.apiKey, config.clientOptions),
+            algoliasearch(config.algolia.appId, config.algolia.apiKey, config.algolia.clientOptions),
+        },
+        {
+          provide: TYPESENSE_CLIENT,
+          useFactory: () =>
+            new Client(config.typesense),
         },
       ],
     };

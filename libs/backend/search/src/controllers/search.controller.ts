@@ -8,14 +8,8 @@ export class SearchController {
 
   @Get('/')
   async search(@Query('query') query: string, @Res() res: Response) {
-    const result = await this.searchService.search({
-      requests: [
-        {
-          indexName: 'searchable',
-          query,
-        },
-      ],
-    });
+
+    const result = await this.searchService.search(query);
 
     return res.json(result);
   }
