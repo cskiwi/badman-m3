@@ -39,6 +39,7 @@ export class IndexService implements OnModuleInit {
     ) {
       await this.typeSenseClient.collections().create({
         name: 'players',
+        enable_nested_fields: true,
         fields: [
           { name: 'objectID', type: 'string' },
           { name: 'firstName', type: 'string' },
@@ -46,7 +47,7 @@ export class IndexService implements OnModuleInit {
           { name: 'fullName', type: 'string' },
           { name: 'slug', type: 'string' },
           { name: 'memberId', type: 'string' },
-          { name: 'clubId', type: 'string', reference: 'clubs.objectID' },
+          { name: 'club', type: 'object' },
           { name: 'order', type: 'int32' },
         ],
         default_sorting_field: 'order',
@@ -110,6 +111,12 @@ export class IndexService implements OnModuleInit {
         indexName,
         objects,
       });
+
+      // combined index
+      await this.algoliaClient.saveObjects({
+        indexName: 'searchable',
+        objects,
+      });
     }
   }
 
@@ -141,6 +148,7 @@ export class IndexService implements OnModuleInit {
         (membership) => membership.active,
       )?.club;
       return {
+        id: player.id,
         objectID: player.id,
         firstName: player.firstName,
         lastName: player.lastName,
@@ -149,7 +157,11 @@ export class IndexService implements OnModuleInit {
         memberId: player.memberId,
 
         type: 'player',
-        clubId: activeClub?.id,
+        club: {
+          id: activeClub?.id,
+          name: activeClub?.name,
+          clubId: activeClub?.clubId,
+        },
         order: multiMatchOrder.player,
       };
     });
@@ -176,6 +188,7 @@ export class IndexService implements OnModuleInit {
 
     const objects = clubs.map((club) => {
       return {
+        id: club.id,
         objectID: club.id,
         slug: club.slug,
         name: club.name,
@@ -202,6 +215,7 @@ export class IndexService implements OnModuleInit {
 
     const objects = events.map((event) => {
       return {
+        id: event.id,
         objectID: event.id,
         slug: event.slug,
         name: event.name,
@@ -227,6 +241,7 @@ export class IndexService implements OnModuleInit {
 
     const objects = events.map((event) => {
       return {
+        id: event.id,
         objectID: event.id,
         slug: event.slug,
         name: event.name,

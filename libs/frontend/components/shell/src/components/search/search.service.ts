@@ -68,7 +68,7 @@ export class SearchService {
     this.data$.pipe(
       map((data) => {
         return {
-          results: data?.results?.[0].hits,
+          results: data?.algoliaType?.results?.[0].hits,
           loading: false,
         };
       }),
@@ -105,9 +105,11 @@ export class SearchService {
       .then(
         (res) =>
           res.json() as Promise<{
-            results: {
-              hits: Hit[];
-            }[];
+            algoliaType: {
+              results: {
+                hits: Hit[];
+              }[];
+            };
           }>,
       )
       .catch((err) => {
