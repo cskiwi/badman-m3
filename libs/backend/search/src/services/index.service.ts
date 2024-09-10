@@ -1,9 +1,9 @@
 import { Club, EventCompetition, EventTournament, Player } from '@app/models';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SearchClient } from 'algoliasearch';
-import { SEARCH_CLIENTS, ALGOLIA_CLIENT, TYPESENSE_CLIENT } from '../client';
 import moment from 'moment';
 import { Client } from 'typesense';
+import { DEFAULT_CLIENTS, IndexingClient } from '../client';
 
 enum multiMatchOrder {
   club,
@@ -17,8 +17,10 @@ export class IndexService implements OnModuleInit {
   private readonly _logger = new Logger(IndexService.name);
 
   constructor(
-    @Inject(ALGOLIA_CLIENT) private readonly algoliaClient: SearchClient,
-    @Inject(TYPESENSE_CLIENT) private readonly typeSenseClient: Client,
+    @Inject(IndexingClient.ALGOLIA_CLIENT)
+    private readonly algoliaClient: SearchClient,
+    @Inject(IndexingClient.TYPESENSE_CLIENT)
+    private readonly typeSenseClient: Client,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -46,8 +48,8 @@ export class IndexService implements OnModuleInit {
           { name: 'lastName', type: 'string' },
           { name: 'fullName', type: 'string' },
           { name: 'slug', type: 'string' },
-          { name: 'memberId', type: 'string' },
-          { name: 'club', type: 'object' },
+          { name: 'memberId', type: 'string', optional: true },
+          { name: 'club', type: 'object', optional: true },
           { name: 'order', type: 'int32' },
         ],
         default_sorting_field: 'order',
@@ -60,9 +62,9 @@ export class IndexService implements OnModuleInit {
         fields: [
           { name: 'objectID', type: 'string' },
           { name: 'name', type: 'string' },
-          { name: 'fullName', type: 'string' },
-          { name: 'slug', type: 'string' },
-          { name: 'clubId', type: 'int32' },
+          { name: 'fullName', type: 'string', optional: true },
+          { name: 'slug', type: 'string', optional: true },
+          { name: 'clubId', type: 'int32', optional: true },
           { name: 'type', type: 'string' },
           { name: 'order', type: 'int32' },
         ],
@@ -76,9 +78,9 @@ export class IndexService implements OnModuleInit {
         fields: [
           { name: 'objectID', type: 'string' },
           { name: 'name', type: 'string' },
-          { name: 'slug', type: 'string' },
+          { name: 'slug', type: 'string', optional: true },
           { name: 'type', type: 'string' },
-          { name: 'date', type: 'int64' },
+          { name: 'date', type: 'int64', optional: true },
           { name: 'order', type: 'int32' },
         ],
         default_sorting_field: 'order',
@@ -91,14 +93,15 @@ export class IndexService implements OnModuleInit {
   async addObjects<T = unknown>(
     indexName: string,
     objects: Array<Record<string, T>>,
+    clients: string[] = DEFAULT_CLIENTS,
   ) {
-    if (SEARCH_CLIENTS.includes(TYPESENSE_CLIENT)) {
+    if (clients.includes(IndexingClient.TYPESENSE_CLIENT)) {
       this._logger.log(`Indexing ${objects.length} objects to ${indexName}`);
       try {
         await this.typeSenseClient
           .collections(indexName)
           .documents()
-          .import(objects);
+          .upsert(objects);
       } catch (e) {
         this._logger.error(e);
       } finally {
@@ -106,7 +109,7 @@ export class IndexService implements OnModuleInit {
       }
     }
 
-    if (SEARCH_CLIENTS.includes(ALGOLIA_CLIENT)) {
+    if (clients.includes(IndexingClient.ALGOLIA_CLIENT)) {
       await this.algoliaClient.saveObjects({
         indexName,
         objects,
@@ -120,7 +123,7 @@ export class IndexService implements OnModuleInit {
     }
   }
 
-  async indexPlayers() {
+  async indexPlayers(clients: string[] = DEFAULT_CLIENTS) {
     const playerQry = Player.createQueryBuilder('player')
       .select([
         'player.id',
@@ -166,10 +169,10 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('players', objects);
+    await this.addObjects('players', objects, clients);
   }
 
-  async indexClubs() {
+  async indexClubs(clients: string[] = DEFAULT_CLIENTS) {
     const clubsQry = Club.createQueryBuilder('club')
       .select([
         'club.id',
@@ -199,10 +202,10 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('clubs', objects);
+    await this.addObjects('clubs', objects, clients);
   }
 
-  async indexCompetitionEvents() {
+  async indexCompetitionEvents(clients: string[] = DEFAULT_CLIENTS) {
     const eventsQry = EventCompetition.createQueryBuilder('event')
       .select(['event.id', 'event.name', 'event.season'])
       .where('event.official = true');
@@ -225,10 +228,10 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('events', objects);
+    await this.addObjects('events', objects, clients);
   }
 
-  async indexTournamentEvents() {
+  async indexTournamentEvents(clients: string[] = DEFAULT_CLIENTS) {
     const eventsQry = EventTournament.createQueryBuilder('event')
       .select(['event.id', 'event.name', 'event.firstDay'])
       .where('event.official = true');
@@ -251,6 +254,6 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('events', objects);
+    await this.addObjects('events', objects, clients);
   }
 }

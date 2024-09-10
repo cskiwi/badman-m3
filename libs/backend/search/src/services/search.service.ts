@@ -1,39 +1,54 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SearchClient, SearchMethodParams } from 'algoliasearch';
 import { Client } from 'typesense';
-import { SEARCH_CLIENTS, ALGOLIA_CLIENT, TYPESENSE_CLIENT } from '../client';
+import { IndexingClient, IndexType } from '../client';
 
 @Injectable()
 export class SearchService {
   constructor(
-    @Inject(ALGOLIA_CLIENT) private readonly algoliaClient: SearchClient,
-    @Inject(TYPESENSE_CLIENT) private readonly typeSenseClient: Client,
+    @Inject(IndexingClient.ALGOLIA_CLIENT)
+    private readonly algoliaClient: SearchClient,
+    @Inject(IndexingClient.TYPESENSE_CLIENT)
+    private readonly typeSenseClient: Client,
   ) {}
 
-  async search<T = any>(query: string) {
+  async search<T = any>(
+    query: string,
+    clients: IndexingClient[],
+    types: IndexType[],
+  ) {
     const results = {
       algoliaType: [],
       algoliaAll: [],
       typesense: [],
     };
-    if (SEARCH_CLIENTS.includes(ALGOLIA_CLIENT)) {
-      results.algoliaType = await this._searchAlgolia({
-        requests: [
-          {
-            indexName: 'players',
-            query,
-          },
-          {
-            indexName: 'clubs',
-            query,
-          },
-          {
-            indexName: 'events',
-            query,
-          },
-        ],
+    if (clients.includes(IndexingClient.ALGOLIA_CLIENT)) {
+      const requests = types.map((type) => {
+        switch (type) {
+          case IndexType.PLAYERS:
+            return {
+              indexName: 'players',
+              query,
+            };
+          case IndexType.CLUBS:
+            return {
+              indexName: 'clubs',
+              query,
+            };
+          case IndexType.COMPETITION_EVENTS:
+          case IndexType.TOURNAMENT_EVENTS:
+            return {
+              indexName: 'events',
+              query,
+            };
+        }
       });
-      results.algoliaAll = await this._searchAlgolia({
+     
+
+      results.algoliaType = await this._searchAlgolia<T>({
+        requests: requests,
+      });
+      results.algoliaAll = await this._searchAlgolia<T>({
         requests: [
           {
             indexName: 'searchable',
@@ -43,26 +58,34 @@ export class SearchService {
       });
     }
 
-    if (SEARCH_CLIENTS.includes(TYPESENSE_CLIENT)) {
-      results.typesense = (
-        await this._searchTypeSense({
-          searches: [
-            {
+    if (clients.includes(IndexingClient.TYPESENSE_CLIENT)) {
+      const searches = types.map((type) => {
+        switch (type) {
+          case IndexType.PLAYERS:
+            return {
               collection: 'players',
               query_by: 'firstName,lastName,fullName,memberId',
               q: query,
-            },
-            {
+            };
+          case IndexType.CLUBS:
+            return {
               collection: 'clubs',
               query_by: 'name',
               q: query,
-            },
-            {
+            };
+          case IndexType.COMPETITION_EVENTS:
+          case IndexType.TOURNAMENT_EVENTS:
+            return {
               collection: 'events',
               query_by: 'name',
               q: query,
-            },
-          ],
+            };
+        }
+      });
+
+      results.typesense = (
+        await this._searchTypeSense<T>({
+          searches,
         })
       ).results;
     }
