@@ -88,12 +88,6 @@ export class PermGuard implements CanActivate {
         throw new UnauthorizedException();
       }
 
-      this._logger.debug({
-        algorithms: ['RS256'],
-        audience: this.configService.get('AUTH0_AUDIENCE'),
-        issuer: `https://${this.configService.get('AUTH0_ISSUER_URL')}/`,
-      });
-
       const signingKey = await this.jwksClient.getSigningKey(
         decoded.header.kid,
       );

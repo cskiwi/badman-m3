@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { algoliasearch } from 'algoliasearch';
-import { ALGOLIA_CLIENT } from './client';
+import { Client } from 'typesense';
+import { IndexingClient } from './client';
 import { IndexController, SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [JwtModule, ConfigModule],
@@ -18,9 +19,17 @@ export class SearchModule {
       module: SearchModule,
       providers: [
         {
-          provide: ALGOLIA_CLIENT,
+          provide: IndexingClient.ALGOLIA_CLIENT,
           useFactory: () =>
-            algoliasearch(config.appId, config.apiKey, config.clientOptions),
+            algoliasearch(
+              config.algolia.appId,
+              config.algolia.apiKey,
+              config.algolia.clientOptions,
+            ),
+        },
+        {
+          provide: IndexingClient.TYPESENSE_CLIENT,
+          useFactory: () => new Client(config.typesense),
         },
       ],
     };

@@ -1,8 +1,32 @@
 import { PermGuard, User } from '@app/backend-authorization';
 import { Player } from '@app/models';
-import { Controller, Get, Logger, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsEnum, IsOptional } from 'class-validator';
+import { DEFAULT_CLIENTS, IndexingClient, IndexType } from '../client';
 import { IndexService } from '../services';
+
+export class IndexQuery {
+  @IsArray()
+  @IsEnum(IndexingClient, { each: true })
+  @IsOptional()
+  @ApiProperty({
+    enum: IndexingClient,
+    isArray: true,
+    description: 'Select one or both clients',
+  })
+  clients?: IndexingClient[];
+
+  @IsArray()
+  @IsEnum(IndexType, { each: true })
+  @IsOptional()
+  @ApiProperty({
+    enum: IndexType,
+    isArray: true,
+    description: 'Select one or more types to index',
+  })
+  types?: IndexType[];
+}
 
 @Controller('index')
 @ApiBearerAuth('Auth0')
@@ -12,39 +36,46 @@ export class IndexController {
 
   constructor(private indexService: IndexService) {}
 
-  @Get('/all')
-  async indexAll(@User() user: Player) {
+  @Get('/')
+  async indexAll(@User() user: Player, @Query() query: IndexQuery) {
     this.logger.log(`Indexing all data for user ${user.fullName}`);
 
-    return Promise.all([
-      this.indexService.indexPlayers(),
-      this.indexService.indexClubs(),
-      this.indexService.indexCompetitionEvents(),
-      this.indexService.indexTournamentEvents(),
-    ]);
-  }
+    const clients = Array.isArray(query.clients)
+      ? query.clients
+      : query.clients
+        ? [query.clients]
+        : [IndexingClient.TYPESENSE_CLIENT, IndexingClient.ALGOLIA_CLIENT];
 
-  @Get('/players')
-  async indexPlayers() {
-    this.logger.log(`Indexing players`);
-    return this.indexService.indexPlayers();
-  }
+    const types = Array.isArray(query.types)
+      ? query.types
+      : query.types
+        ? [query.types]
+        : [
+            IndexType.PLAYERS,
+            IndexType.CLUBS,
+            IndexType.COMPETITION_EVENTS,
+            IndexType.TOURNAMENT_EVENTS,
+          ];
 
-  @Get('/clubs')
-  async indexClubs() {
-    this.logger.log(`Indexing clubs`);
-    return this.indexService.indexClubs();
-  }
+    if (!clients.some((client) => DEFAULT_CLIENTS.includes(client))) {
+      throw new Error('Invalid client');
+    }
 
-  @Get('/competitionEvents')
-  async indexCompetitionEvents() {
-    this.logger.log(`Indexing competition events`);
-    return this.indexService.indexCompetitionEvents();
-  }
+    const toIndex = types.map((type) => {
+      switch (type) {
+        case IndexType.PLAYERS:
+          return this.indexService.indexPlayers(clients);
+        case IndexType.CLUBS:
+          return this.indexService.indexClubs(clients);
+        case IndexType.COMPETITION_EVENTS:
+          return this.indexService.indexCompetitionEvents(clients);
+        case IndexType.TOURNAMENT_EVENTS:
+          return this.indexService.indexTournamentEvents(clients);
+      }
+    });
 
-  @Get('/tournamentEvents')
-  async indexTournamentEvents() {
-    this.logger.log(`Indexing tournament events`);
-    return this.indexService.indexTournamentEvents();
+    await Promise.all(toIndex);
+
+    return { message: 'Indexing completed' };
   }
 }

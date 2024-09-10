@@ -68,7 +68,7 @@ export class SearchService {
     this.data$.pipe(
       map((data) => {
         return {
-          results: data?.results?.[0].hits,
+          results: data?.algoliaAll?.results?.[0].hits,
           loading: false,
         };
       }),
@@ -101,13 +101,25 @@ export class SearchService {
       query: string | null;
     }>,
   ) {
-    return fetch(`/api/v1/search?query=${filter.query}`)
+    return fetch(`/api/v1/search?query=${filter.query}&clients=ALGOLIA_CLIENT`)
       .then(
         (res) =>
           res.json() as Promise<{
-            results: {
-              hits: Hit[];
-            }[];
+            algoliaType: {
+              results: {
+                hits: Hit[];
+              }[];
+            };
+            algoliaAll: {
+              results: {
+                hits: Hit[];
+              }[];
+            };
+            typesense: {
+              results: {
+                hits: Hit[];
+              }[];
+            };
           }>,
       )
       .catch((err) => {

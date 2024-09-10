@@ -15,11 +15,23 @@ import { SearchModule } from '@app/backend-serach';
     AuthorizationModule,
     GraphQLModule,
     SeoModule,
-    HealthModule, 
+    HealthModule,
     TranslateModule,
     SearchModule.forRoot({
-      appId: process.env['ALGOLIA_APP_ID'] ?? '',
-      apiKey: process.env['ALGOLIA_API_KEY'] ?? '',
+      algolia: {
+        appId: process.env['ALGOLIA_APP_ID'] ?? '',
+        apiKey: process.env['ALGOLIA_API_KEY'] ?? '',
+      },
+      typesense: {
+        nodes: [
+          {
+            host: process.env['TYPESENSE_HOST'] ?? '',
+            port: Number(process.env['TYPESENSE_PORT']) ?? 443,
+            protocol: process.env['TYPESENSE_PROTOCOL'] ?? 'http',
+          },
+        ],
+        apiKey: process.env['TYPESENSE_API_KEY'] ?? '',
+      }
     }),
   ],
   controllers: [],

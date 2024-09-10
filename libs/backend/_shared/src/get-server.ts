@@ -1,13 +1,12 @@
 import { Logger, VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AbstractHttpAdapter, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import {
-  SwaggerModule,
   DocumentBuilder,
   SwaggerCustomOptions,
+  SwaggerModule,
 } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
-import { off } from 'process';
+import { AppModule } from './app.module';
 
 export const getServer = async (adapter?: AbstractHttpAdapter) => {
   const app = adapter
@@ -36,7 +35,7 @@ export const getServer = async (adapter?: AbstractHttpAdapter) => {
         type: 'oauth2',
         flows: {
           implicit: {
-            authorizationUrl: `${configService.get('AUTH0_ISSUER_URL')}/authorize?audience=${configService.get('AUTH0_AUDIENCE')}`,
+            authorizationUrl: `https://${configService.get('AUTH0_ISSUER_URL')}/authorize?audience=${configService.get('AUTH0_AUDIENCE')}`,
             scopes: {
               openid: 'Open Id',
               profile: 'Profile',
