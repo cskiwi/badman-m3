@@ -12,8 +12,8 @@ registerEnumType(SortDirection, {
   name: 'SortDirection',
 });
 
-export function SortOrderType<T>(classRef: Type<T>) {
-  const className = `${classRef.name}SortOrder`;
+export function SortOrderType<T>(classRef: Type<T>, name?: string) {
+  const className = `${name}SortOrder`;
 
   @InputType(className)
   class SortOrder {}

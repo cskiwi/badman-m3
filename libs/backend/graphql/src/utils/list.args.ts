@@ -7,7 +7,7 @@ import { queryFixer } from './queryFixer';
 import { SortOrderType } from './sort-order';
 
 export function args<T>(classRef: Type<T>, name?: string) {
-  const SortOrder = SortOrderType(classRef);
+  const SortOrder = SortOrderType(classRef, name);
   const className = `${name}Args`;
 
   @InputType(className)

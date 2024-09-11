@@ -52,6 +52,8 @@ export const getServer = async (adapter?: AbstractHttpAdapter) => {
     )
     .build();
 
+  console.log(process.env);
+
   const swaggerCustomOptions: SwaggerCustomOptions = {
     swaggerOptions: {
       persistAuthorization: true,

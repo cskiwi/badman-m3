@@ -28,6 +28,7 @@
         "stylePreprocessorOptions": {
           "includePaths": ["node_modules/"]
         },
+        "plugins": ["apps/app/plugins/env-var-plugin.js"],
         "externalDependencies": [
           "@apollo/gateway",
           "@apollo/subgraph",
