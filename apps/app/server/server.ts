@@ -15,7 +15,7 @@ export async function app() {
   // const browserDistFolder = resolve(serverDistFolder, '../browser');
   // const indexHtml = join(serverDistFolder, 'index.server.html');
 
-  const commonEngine = new CommonEngine();
+  // const commonEngine = new CommonEngine();
 
   // server.set('view engine', 'html');
   // server.set('views', browserDistFolder);
@@ -64,7 +64,7 @@ export async function app() {
 
   // serve some hello world
   server.get('/', (req, res) => {
-    res.send('Hello World');
+    res.json(process.env);
   });
 
   return server;
