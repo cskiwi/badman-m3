@@ -62,6 +62,8 @@ export async function app() {
   // await app.init();
   // adapter.init();
 
+  console.log('Server started', process.env);
+
   // serve some hello world
   server.get('/', (req, res) => {
     res.json(process.env);
