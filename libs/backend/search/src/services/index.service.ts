@@ -26,68 +26,73 @@ export class IndexService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     this._logger.log('Indexing started...');
 
-    // temo delete all schemas on startup
+    if (DEFAULT_CLIENTS.includes(IndexingClient.TYPESENSE_CLIENT)) {
+      // temo delete all schemas on startup
 
-    // await this.typeSenseClient.collections('players').delete();
-    // await this.typeSenseClient.collections('clubs').delete();
-    // await this.typeSenseClient.collections('events').delete();
+      // await this.typeSenseClient.collections('players').delete();
+      // await this.typeSenseClient.collections('clubs').delete();
+      // await this.typeSenseClient.collections('events').delete();
 
-    const currentCollection = await this.typeSenseClient
-      .collections()
-      .retrieve();
+      const currentCollection = await this.typeSenseClient
+        .collections()
+        .retrieve();
 
-    if (
-      !currentCollection.some((collection) => collection.name === 'players')
-    ) {
-      await this.typeSenseClient.collections().create({
-        name: 'players',
-        enable_nested_fields: true,
-        fields: [
-          { name: 'objectID', type: 'string' },
-          { name: 'firstName', type: 'string' },
-          { name: 'lastName', type: 'string' },
-          { name: 'fullName', type: 'string' },
-          { name: 'slug', type: 'string' },
-          { name: 'memberId', type: 'string', optional: true },
-          { name: 'club', type: 'object', optional: true },
-          { name: 'order', type: 'int32' },
-        ],
-        default_sorting_field: 'order',
-      });
+      if (
+        !currentCollection.some((collection) => collection.name === 'players')
+      ) {
+        await this.typeSenseClient.collections().create({
+          name: 'players',
+          enable_nested_fields: true,
+          fields: [
+            { name: 'objectID', type: 'string' },
+            { name: 'firstName', type: 'string' },
+            { name: 'lastName', type: 'string' },
+            { name: 'fullName', type: 'string' },
+            { name: 'slug', type: 'string' },
+            { name: 'memberId', type: 'string', optional: true },
+            { name: 'club', type: 'object', optional: true },
+            { name: 'order', type: 'int32' },
+          ],
+          default_sorting_field: 'order',
+        });
+      }
+
+      if (
+        !currentCollection.some((collection) => collection.name === 'clubs')
+      ) {
+        await this.typeSenseClient.collections().create({
+          name: 'clubs',
+          fields: [
+            { name: 'objectID', type: 'string' },
+            { name: 'name', type: 'string' },
+            { name: 'fullName', type: 'string', optional: true },
+            { name: 'slug', type: 'string', optional: true },
+            { name: 'clubId', type: 'int32', optional: true },
+            { name: 'type', type: 'string' },
+            { name: 'order', type: 'int32' },
+          ],
+          default_sorting_field: 'order',
+        });
+      }
+
+      if (
+        !currentCollection.some((collection) => collection.name === 'events')
+      ) {
+        await this.typeSenseClient.collections().create({
+          name: 'events',
+          fields: [
+            { name: 'objectID', type: 'string' },
+            { name: 'name', type: 'string' },
+            { name: 'slug', type: 'string', optional: true },
+            { name: 'type', type: 'string' },
+            { name: 'date', type: 'int64', optional: true },
+            { name: 'order', type: 'int32' },
+          ],
+          default_sorting_field: 'order',
+        });
+      }
+      this._logger.log('Schemas made...');
     }
-
-    if (!currentCollection.some((collection) => collection.name === 'clubs')) {
-      await this.typeSenseClient.collections().create({
-        name: 'clubs',
-        fields: [
-          { name: 'objectID', type: 'string' },
-          { name: 'name', type: 'string' },
-          { name: 'fullName', type: 'string', optional: true },
-          { name: 'slug', type: 'string', optional: true },
-          { name: 'clubId', type: 'int32', optional: true },
-          { name: 'type', type: 'string' },
-          { name: 'order', type: 'int32' },
-        ],
-        default_sorting_field: 'order',
-      });
-    }
-
-    if (!currentCollection.some((collection) => collection.name === 'events')) {
-      await this.typeSenseClient.collections().create({
-        name: 'events',
-        fields: [
-          { name: 'objectID', type: 'string' },
-          { name: 'name', type: 'string' },
-          { name: 'slug', type: 'string', optional: true },
-          { name: 'type', type: 'string' },
-          { name: 'date', type: 'int64', optional: true },
-          { name: 'order', type: 'int32' },
-        ],
-        default_sorting_field: 'order',
-      });
-    }
-
-    this._logger.log('Schemas made...');
   }
 
   async addObjects<T = unknown>(
@@ -146,7 +151,7 @@ export class IndexService implements OnModuleInit {
       return;
     }
 
-    let objects = players.map((player) => {
+    const objects = players.map((player) => {
       const activeClub = player.clubPlayerMemberships?.find(
         (membership) => membership.active,
       )?.club;
