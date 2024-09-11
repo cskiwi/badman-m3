@@ -1,0 +1,45 @@
+import { PromiseExecutor } from '@nx/devkit';
+import { BuildExecutorSchema } from './schema';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
+  options,
+  context,
+) => {
+  const environmentVariables = {
+    Auth0IssuerUrl: process.env.AUTH0_ISSUER_URL,
+    Auth0Audience: process.env.AUTH0_AUDIENCE,
+    Auth0ClientId: process.env.AUTH0_CLIENT_ID,
+    baseUrl: process.env.BASE_URL,
+  };
+
+  // Path to the Angular environment file (e.g., src/environments/environment.ts)
+  const envFilePath = path.join(
+    context.root,
+    'apps',
+    context.projectName,
+    'src',
+    'environments',
+    'environment.ts',
+  );
+
+  // Generate the content for the environment file
+  const envFileContent = `
+    export const environment = {
+      production: ${process.env.NODE_ENV === 'production'},
+      Auth0IssuerUrl: '${environmentVariables.Auth0IssuerUrl}',
+      Auth0Audience: '${environmentVariables.Auth0Audience}',
+      Auth0ClientId: '${environmentVariables.Auth0ClientId}',
+      baseUrl: '${environmentVariables.baseUrl}',
+    };
+  `;
+
+  // Write the environment file
+  fs.writeFileSync(envFilePath, envFileContent);
+
+  console.log(`Environment variables injected into ${envFilePath}`);
+  return { success: true };
+};
+
+export default runExecutor;

@@ -14,7 +14,6 @@
         "index": "apps/app/src/index.html",
         "browser": "apps/app/src/main.ts",
         "server": "apps/app/src/main.server.ts",
-      
         "polyfills": ["zone.js"],
         "tsConfig": "apps/app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
@@ -28,7 +27,6 @@
         "stylePreprocessorOptions": {
           "includePaths": ["node_modules/"]
         },
-        "plugins": ["apps/app/plugins/env-var-plugin.js"],
         "externalDependencies": [
           "@apollo/gateway",
           "@apollo/subgraph",
@@ -79,7 +77,13 @@
           "sourceMap": true
         }
       },
-      "defaultConfiguration": "production"
+      "defaultConfiguration": "production",
+      "dependsOn": [
+        {
+          "target": "set-env",
+          "projects": "self"
+        }
+      ]
     },
     "serve": {
       "executor": "@nx/angular:dev-server",
@@ -112,6 +116,9 @@
       "options": {
         "jestConfig": "{projectRoot}/jest.config.ts"
       }
+    },
+    "set-env": {
+      "executor": "@app/set-env:set-env"
     }
   }
 }

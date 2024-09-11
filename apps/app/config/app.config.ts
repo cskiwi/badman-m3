@@ -35,6 +35,7 @@ import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { appRoutes } from './app.routes';
+import { environment } from '../src/environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,15 +43,15 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(
       GraphQLModule.forRoot(),
       AuthModule.forRoot({
-        domain: process.env['AUTH0_ISSUER_URL'] || '',
-        clientId: process.env['AUTH0_CLIENT_ID'] || '',
+        domain: environment.Auth0IssuerUrl,
+        clientId: environment.Auth0ClientId,
         useRefreshTokens: true,
         useRefreshTokensFallback: true,
         useCookiesForTransactions: true,
         authorizationParams: {
           redirect_uri:
             typeof window !== 'undefined' ? window.location.origin : '',
-          audience: process.env['AUTH0_AUDIENCE'],
+          audience: environment.Auth0Audience,
         },
         cacheLocation: 'localstorage',
         httpInterceptor: {
@@ -88,7 +89,7 @@ export const appConfig: ApplicationConfig = {
           return window.location.origin;
         }
         return (
-          process?.env?.['BASE_URL'] ||
+          environment.baseUrl ||
           `http://localhost:${process.env['PORT'] || 4200}`
         );
       },

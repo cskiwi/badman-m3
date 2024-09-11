@@ -1,0 +1,48 @@
+{
+  "name": "set-env",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/set-env/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/set-env",
+        "main": "libs/set-env/src/index.ts",
+        "tsConfig": "libs/set-env/tsconfig.lib.json",
+        "assets": [
+          "libs/set-env/*.md",
+          {
+            "input": "./libs/set-env/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/set-env/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/set-env",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/set-env",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/set-env/jest.config.ts"
+      }
+    }
+  }
+}

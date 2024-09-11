@@ -77,6 +77,7 @@
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
       "@app/models": ["libs/models/models/src/index.ts"],
       "@app/models/enums": ["libs/models/enum/src/index.ts"],
+      "@app/set-env": ["libs/set-env/src/index.ts"],
       "@app/utils": ["libs/utils/src/index.ts"]
     }
   },

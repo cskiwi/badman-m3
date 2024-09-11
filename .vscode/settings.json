@@ -4,5 +4,6 @@
     "/libs/models/src/models/ranking",
     "/libs/models/src/enums",
     "/libs/backend/graphql/src/resolvers"
-  ]
+  ],
+  "eslint.validate": ["json"]
 }
