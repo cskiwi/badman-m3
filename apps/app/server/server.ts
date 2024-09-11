@@ -7,6 +7,9 @@ import { REQUEST as COOKIE_SERVICE_REQ } from 'ngx-cookie-service-ssr';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
+import { config } from 'dotenv';
+
+config();
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
