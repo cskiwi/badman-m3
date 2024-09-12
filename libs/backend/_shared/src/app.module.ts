@@ -23,20 +23,25 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     SearchModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
+        const getEnvVar = <T>(key: string, defaultValue?: string) =>
+          configService
+            ? configService.get<T>(key)
+            : process.env[key] || defaultValue;
+
         return {
           algolia: {
-            appId: configService.get<string>('ALGOLIA_APP_ID'),
-            apiKey: configService.get<string>('ALGOLIA_API_KEY'),
+            appId: getEnvVar<string>('ALGOLIA_APP_ID'),
+            apiKey: getEnvVar<string>('ALGOLIA_API_KEY'),
           },
           typesense: {
             nodes: [
               {
-                host: configService.get<string>('TYPESENSE_HOST'),
-                port: configService.get<number>('TYPESENSE_PORT'),
-                protocol: configService.get<string>('TYPESENSE_PROTOCOL'),
+                host: getEnvVar<string>('TYPESENSE_HOST'),
+                port: getEnvVar<number>('TYPESENSE_PORT'),
+                protocol: getEnvVar<string>('TYPESENSE_PROTOCOL'),
               },
             ],
-            apiKey: configService.get<string>('TYPESENSE_API_KEY'),
+            apiKey: getEnvVar<string>('TYPESENSE_API_KEY'),
           },
         } as ISearchConfig;
       },

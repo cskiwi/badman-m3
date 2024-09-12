@@ -34,16 +34,24 @@ export class SearchModule {
         {
           provide: IndexingClient.ALGOLIA_CLIENT,
           useFactory: (config: ISearchConfig) =>
-            algoliasearch(
-              config.algolia.appId,
-              config.algolia.apiKey,
-              config.algolia.clientOptions,
-            ),
+            {
+              console.log('config.algolia.appId', config.algolia.appId);
+              console.log('config.algolia.apiKey', config.algolia.apiKey);
+              console.log('config.algolia.clientOptions', config.algolia.clientOptions);
+              return algoliasearch(
+                config.algolia.appId,
+                config.algolia.apiKey,
+                config.algolia.clientOptions
+              );
+            },
           inject: ['SEARCH_CONFIG'],
         },
         {
           provide: IndexingClient.TYPESENSE_CLIENT,
-          useFactory: (config: ISearchConfig) => new Client(config.typesense),
+          useFactory: (config: ISearchConfig) => {
+            console.log('config.typesense', config.typesense);
+            return new Client(config.typesense);
+          },
           inject: ['SEARCH_CONFIG'],
         },
       ],
