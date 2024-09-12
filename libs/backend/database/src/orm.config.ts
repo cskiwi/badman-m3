@@ -45,6 +45,9 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
   const dbType = getEnvVar('DB_TYPE')?.trim();
   let config: DataSourceOptions;
 
+  console.log('DB_TYPE:', dbType);
+  console.log('RUN_MIGRATIONS:', addMigrations);
+
   if (dbType === 'sqlite') {
     config = {
       type: 'sqlite',
@@ -81,6 +84,7 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
 }
 
 export function initializeDataSource(configService?: ConfigService) {
+  console.log(`has configService: ${!!configService}`);
   const config = getDbConfig(configService);
 
   console.log('ORM Config:', config);

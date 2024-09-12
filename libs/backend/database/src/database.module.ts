@@ -7,9 +7,9 @@ import { initializeDataSource } from './orm.config';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: async (configService: ConfigService) => {
+        await ConfigModule.envVariablesLoaded;
         const { config } = initializeDataSource(configService);
 
         return config;

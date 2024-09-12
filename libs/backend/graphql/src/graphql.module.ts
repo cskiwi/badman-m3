@@ -1,6 +1,6 @@
 import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
 
 import {
@@ -23,10 +23,8 @@ import {
 @Module({
   imports: [
     AuthorizationModule,
-    ConfigModule,
     NestJsGql.forRootAsync({
       driver: ApolloDriver,
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
         const plugins = [];
@@ -70,7 +68,7 @@ import {
     ClubResolver,
     RankingSystemResolver,
     EventCompetitionResolver,
-    SubEventCompetitionResolver
+    SubEventCompetitionResolver,
   ],
 })
 export class GraphQLModule {}

@@ -10,7 +10,10 @@ import { SearchModule } from '@app/backend-serach';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+    }),
     DatabaseModule,
     AuthorizationModule,
     GraphQLModule,
@@ -31,7 +34,7 @@ import { SearchModule } from '@app/backend-serach';
           },
         ],
         apiKey: process.env['TYPESENSE_API_KEY'] ?? '',
-      }
+      },
     }),
   ],
   controllers: [],

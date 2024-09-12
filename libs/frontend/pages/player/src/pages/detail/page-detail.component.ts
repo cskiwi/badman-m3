@@ -58,12 +58,9 @@ export class PageDetailComponent {
   user = this.auth.user;
 
   clubs = computed(() =>
-    (this.user()?.clubPlayerMemberships ?? [])
-      .filter((membership) => membership?.active)
-      .sort((a, b) => {
-        console.log(a?.membershipType, b?.membershipType);
-        return 0;
-      }),
+    (this.user()?.clubPlayerMemberships ?? []).filter(
+      (membership) => membership?.active,
+    ),
   );
 
   constructor() {

@@ -39,8 +39,6 @@ export class ClubImageGenerator {
       </svg>
     `;
 
-    // console.log(svgImage);
-
     const imageBuffer = await sharp(Buffer.from(svgImage)).png().toBuffer();
 
     return imageBuffer;

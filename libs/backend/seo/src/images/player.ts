@@ -46,9 +46,6 @@ export class PlayerImageGenerator {
     const player = await playerQry.getOne();
     const games = player?.gamePlayerMemberships || [];
 
-    // this._logger.debug(playerQry.getSql());
-    // this._logger.debug(JSON.stringify(player?.gamePlayerMemberships));
-
     // fake get games results last year for player
     const wins =
       games.map((membership) => {
@@ -73,8 +70,6 @@ export class PlayerImageGenerator {
 
       </svg>
     `;
-
-    // console.log(svgImage);
 
     const imageBuffer = await sharp(Buffer.from(svgImage)).png().toBuffer();
 

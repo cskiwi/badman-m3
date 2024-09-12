@@ -42,8 +42,6 @@ export class SearchComponent {
   }
 
   search(model: SearchHit) {
-    console.log('search', model);
-
     switch (model?.linkType) {
       case 'player':
         this.router.navigate(['/player', model.linkId]);

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { algoliasearch } from 'algoliasearch';
 import { Client } from 'typesense';
@@ -9,7 +8,7 @@ import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
 
 @Module({
-  imports: [JwtModule, ConfigModule],
+  imports: [JwtModule],
   controllers: [SearchController, IndexController],
   providers: [SearchService, IndexService],
 })
