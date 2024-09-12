@@ -1,4 +1,5 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { SortableField } from '@app/utils';
+import { ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -9,7 +10,6 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { Game } from './game.model';
-import { SortableField } from '@app/utils';
 
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
@@ -31,15 +31,15 @@ export class GamePlayerMembership extends BaseEntity {
   @Column()
   declare player: number;
 
-  @SortableField()
+  @SortableField({nullable: true})
   @Column()
   declare single?: number;
 
-  @SortableField()
+  @SortableField({nullable: true})
   @Column()
   declare double?: number;
 
-  @SortableField()
+  @SortableField({nullable: true})
   @Column()
   declare mix?: number;
 

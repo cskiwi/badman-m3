@@ -43,7 +43,7 @@ export class ClubResolver {
     return Club.find(args);
   }
 
-  @ResolveField(() => [ClubPlayerMembership], { nullable: true })
+  @ResolveField(() => [ClubPlayerMembership], { nullable: true }) 
   async clubPlayerMemberships(@Parent() { id }: Club) {
     return ClubPlayerMembership.find({
       where: {

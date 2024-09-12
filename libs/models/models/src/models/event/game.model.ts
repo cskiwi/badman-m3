@@ -39,40 +39,40 @@ export class Game extends BaseEntity {
   @Column({ type: 'simple-enum', enum: GameType })
   declare status?: GameStatus;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare set1Team1?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare set1Team2?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare set2Team1?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare set2Team2?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare set3Team1?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare set3Team2?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare winner?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare order?: number;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare round?: string;
 
   @SortableField()
@@ -83,12 +83,12 @@ export class Game extends BaseEntity {
   @Column()
   declare linkType: string;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @SortableField({ nullable: true })
+  @Column()
   declare courtId?: string;
 
-  @SortableField()
-  @Column({ nullable: true })
+  @Field({ nullable: true })
+  @Column()
   declare visualCode?: string;
 
   // @SortableField()

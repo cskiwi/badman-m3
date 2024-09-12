@@ -81,19 +81,52 @@ export class Player extends BaseEntity {
     return `${this.firstName} ${this.lastName}`;
   }
 
-  @SortableField(() => [RankingLastPlace], { nullable: true })
+  @Field(() => [RankingLastPlace], { nullable: true })
   @OneToMany(() => RankingLastPlace, (membership) => membership.player)
   declare rankingLastPlaces: Relation<RankingLastPlace[]>;
 
-  @SortableField(() => [ClubPlayerMembership], { nullable: true })
+  @Field(() => [ClubPlayerMembership], { nullable: true })
   @OneToMany(() => ClubPlayerMembership, (membership) => membership.player)
   declare clubPlayerMemberships?: Relation<ClubPlayerMembership[]>;
 
-  @SortableField(() => [TeamPlayerMembership], { nullable: true })
+  @Field(() => [TeamPlayerMembership], { nullable: true })
   @OneToMany(() => TeamPlayerMembership, (membership) => membership.player)
   declare teamPlayerMemberships: Relation<TeamPlayerMembership[]>;
 
-  @SortableField(() => [GamePlayerMembership], { nullable: true })
+  @Field(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(() => GamePlayerMembership, (membership) => membership.gamePlayer)
   declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
+
+
+  
+  async getPermissions(): Promise<string[]> {
+    // let claims = (await this.getClaims()).map((r) => r.name);
+    // const roles = await this.getRoles({
+    //   include: [Claim],
+    // });
+    // claims = [
+    //   ...claims,
+    //   ...roles.map((r) => r?.claims?.map((c) => `${r.linkId}_${c.name}`)).flat(),
+    // ].filter((x) => x !== null && x !== undefined);
+
+    return [] as string[];
+  }
+
+  async hasAnyPermission(requiredPermissions: string[]) {
+    const claims = await this.getPermissions();
+    if (claims === null) {
+      return false;
+    }
+
+    return requiredPermissions.some((perm) => claims.some((claim) => claim === perm));
+  }
+
+  async hasAllPermission(requiredPermissions: string[]) {
+    const claims = await this.getPermissions();
+    if (claims === null) {
+      return false;
+    }
+
+    return requiredPermissions.every((perm) => claims.some((claim) => claim === perm));
+  }
 }

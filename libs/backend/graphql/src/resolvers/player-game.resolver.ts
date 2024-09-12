@@ -1,39 +1,40 @@
-import { Club, ClubPlayerMembership, Player } from '@app/models';
-import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { ClubArgs, PlayerArgs } from '../args';
 
-@Resolver(() => ClubPlayerMembership)
-export class ClubPlayerMembershipResolver {
-  @ResolveField(() => Club, { nullable: true })
-  async club(
-    @Parent() { clubId }: ClubPlayerMembership,
+import { Game, GamePlayerMembership, Player } from '@app/models';
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { GameArgs, PlayerArgs } from '../args';
+
+@Resolver(() => GamePlayerMembership)
+export class GamePlayerMembershipResolver {
+  @ResolveField(() => Game, { nullable: true })
+  async game(
+    @Parent() { gameId }: GamePlayerMembership,
     @Args('args', {
-      type: () => ClubArgs,
+      type: () => GameArgs,
       nullable: true,
     })
-    inputArgs?: InstanceType<typeof ClubArgs>,
+    inputArgs?: InstanceType<typeof GameArgs>,
   ) {
-    const args = ClubArgs.toFindOneOptions(inputArgs);
+    const args = GameArgs.toFindOneOptions(inputArgs);
 
     if (args.where?.length > 0) {
       args.where = args.where.map((where) => ({
         ...where,
-        id: clubId,
+        id: gameId,
       }));
     } else {
       args.where = [
         {
-          id: clubId,
+          id: gameId,
         },
       ];
     }
 
-    return Club.findOne(args);
+    return Game.findOne(args);
   }
 
   @ResolveField(() => Player, { nullable: true })
-  async player(
-    @Parent() { playerId }: ClubPlayerMembership,
+  async playerTEMP(
+    @Parent() { playerId }: GamePlayerMembership,
     @Args('args', {
       type: () => PlayerArgs,
       nullable: true,
@@ -58,3 +59,4 @@ export class ClubPlayerMembershipResolver {
     return Player.findOne(args);
   }
 }
+

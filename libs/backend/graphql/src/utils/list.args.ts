@@ -20,7 +20,7 @@ export function args<T>(classRef: Type<T>, name?: string) {
     @Min(1)
     take?: number | null;
 
-    @Field(() => SortOrder, { nullable: true })
+    @Field(() => SortOrder, { nullable: true }) 
     order?: FindOptionsOrder<T>;
 
     @Field(() => [GraphQLJSONObject], { nullable: true })
