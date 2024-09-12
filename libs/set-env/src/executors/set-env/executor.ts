@@ -8,6 +8,7 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
   context,
 ) => {
   const environmentVariables = {
+    production: process.env.NODE_ENV === 'production',
     Auth0IssuerUrl: process.env.AUTH0_ISSUER_URL,
     Auth0Audience: process.env.AUTH0_AUDIENCE,
     Auth0ClientId: process.env.AUTH0_CLIENT_ID,
@@ -27,7 +28,7 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
   // Generate the content for the environment file
   const envFileContent = `
     export const environment = {
-      production: ${process.env.NODE_ENV === 'production'},
+      production: ${environmentVariables.production},
       Auth0IssuerUrl: '${environmentVariables.Auth0IssuerUrl}',
       Auth0Audience: '${environmentVariables.Auth0Audience}',
       Auth0ClientId: '${environmentVariables.Auth0ClientId}',

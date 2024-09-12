@@ -88,10 +88,7 @@ export const appConfig: ApplicationConfig = {
         if (isPlatformBrowser(platformId)) {
           return window.location.origin;
         }
-        return (
-          environment.baseUrl ||
-          `http://localhost:${process.env['PORT'] || 4200}`
-        );
+        return environment.baseUrl || `http://localhost:4200`;
       },
       deps: [PLATFORM_ID],
     },

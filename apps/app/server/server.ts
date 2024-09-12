@@ -7,6 +7,7 @@ import { REQUEST as COOKIE_SERVICE_REQ } from 'ngx-cookie-service-ssr';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
+import { ConfigService } from '@nestjs/config';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -59,17 +60,15 @@ export async function app() {
   const adapter = new ExpressAdapter(server);
   const app = await getServer(adapter);
 
-  await app.init();
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT', 5000);
 
-  return server;
+  await app.init();
+  await app.listen(port);
 }
 
 async function run(): Promise<void> {
-  const port = process.env['PORT'] || 5000;
-
-  // Start up the Node server
-  const server = await app();
-  server.listen(port);
+  await app();
 }
 
 function shouldSkip(url: string) {
