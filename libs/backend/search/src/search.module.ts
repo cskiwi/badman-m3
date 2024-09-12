@@ -9,7 +9,7 @@ import {
 import { JwtModule } from '@nestjs/jwt';
 import { algoliasearch } from 'algoliasearch';
 import { Client } from 'typesense';
-import { IndexingClient } from './client';
+import { DEFAULT_CLIENTS, IndexingClient } from './client';
 import { IndexController, SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
@@ -34,24 +34,21 @@ export class SearchModule {
         {
           provide: IndexingClient.ALGOLIA_CLIENT,
           useFactory: (config: ISearchConfig) =>
-            {
-              console.log('config.algolia.appId', config.algolia.appId);
-              console.log('config.algolia.apiKey', config.algolia.apiKey);
-              console.log('config.algolia.clientOptions', config.algolia.clientOptions);
-              return algoliasearch(
-                config.algolia.appId,
-                config.algolia.apiKey,
-                config.algolia.clientOptions
-              );
-            },
+            !DEFAULT_CLIENTS.includes(IndexingClient.ALGOLIA_CLIENT)
+              ? undefined
+              : algoliasearch(
+                  config.algolia.appId,
+                  config.algolia.apiKey,
+                  config.algolia.clientOptions,
+                ),
           inject: ['SEARCH_CONFIG'],
         },
         {
           provide: IndexingClient.TYPESENSE_CLIENT,
-          useFactory: (config: ISearchConfig) => {
-            console.log('config.typesense', config.typesense);
-            return new Client(config.typesense);
-          },
+          useFactory: (config: ISearchConfig) =>
+            !DEFAULT_CLIENTS.includes(IndexingClient.TYPESENSE_CLIENT)
+              ? undefined
+              : new Client(config.typesense),
           inject: ['SEARCH_CONFIG'],
         },
       ],
