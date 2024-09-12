@@ -1,5 +1,6 @@
 import { PromiseExecutor } from '@nx/devkit';
 import { BuildExecutorSchema } from './schema';
+import { config } from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -7,6 +8,11 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
   options,
   context,
 ) => {
+  config();
+
+  console.log(process.env)
+
+
   const environmentVariables = {
     production: process.env.NODE_ENV === 'production',
     Auth0IssuerUrl: process.env.AUTH0_ISSUER_URL,
@@ -41,7 +47,6 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
 
   // debug environment file
   console.log('Environment file written:', envFileContent);
-  
 
   return { success: true };
 };
