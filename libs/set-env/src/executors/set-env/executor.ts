@@ -39,6 +39,10 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
   // Write the environment file
   fs.writeFileSync(envFilePath, envFileContent);
 
+  // debug environment file
+  console.log('Environment file written:', envFileContent);
+  
+
   return { success: true };
 };
 
