@@ -5,7 +5,7 @@
   "packageManager": "npm@10.8.3",
   "scripts": {
     "start": "nx run-many -t serve -p tag:scope:app",
-    "start:prod": "node ./dist/apps/app/server/server.mjs",
+    "start:prod": "npx nx run app:set-env && node ./dist/apps/app/server/server.mjs",
     "build": "nx run-many -t build --prod",
     "migrate:create": "nx run backend-database:migration-generate",
     "migrate": "nx run backend-database:migration-run",

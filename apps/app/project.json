@@ -77,13 +77,7 @@
           "sourceMap": true
         }
       },
-      "defaultConfiguration": "production",
-      "dependsOn": [
-        {
-          "target": "set-env",
-          "projects": "self"
-        }
-      ]
+      "defaultConfiguration": "production"
     },
     "serve": {
       "executor": "@nx/angular:dev-server",
