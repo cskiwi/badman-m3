@@ -84,7 +84,6 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
 }
 
 export function initializeDataSource(configService?: ConfigService) {
-  console.log(`has configService: ${!!configService}`);
   const config = getDbConfig(configService);
 
   console.log('ORM Config:', config);
@@ -101,4 +100,3 @@ export function initializeDataSource(configService?: ConfigService) {
   };
 }
 
-export default initializeDataSource().datasource;

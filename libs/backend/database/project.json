@@ -24,19 +24,19 @@
       }
     },
     "migration-generate": {
-      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:generate -d {projectRoot}/src/orm.config -p {projectRoot}/src/migrations/{args.name}",
+      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:generate -d {projectRoot}/src/datasource -p {projectRoot}/src/migrations/{args.name}",
       "options": {
         "envFile": "{workspaceRoot}/.env"
       }
     },
     "migration-run": {
-      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:run -d {projectRoot}/src/orm.config",
+      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:run -d {projectRoot}/src/datasource",
       "options": {
         "envFile": "{workspaceRoot}/.env"
       }
     },
     "migration-revert": {
-      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:revert -d {projectRoot}/src/orm.config",
+      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:revert -d {projectRoot}/src/datasource",
       "options": {
         "envFile": "{workspaceRoot}/.env"
       }
