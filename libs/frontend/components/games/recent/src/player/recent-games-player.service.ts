@@ -86,6 +86,12 @@ export class PlayerGamesService {
                   id
                   playedAt
                   gameType
+                  set1Team1
+                  set1Team2
+                  set2Team1
+                  set2Team2
+                  set3Team1
+                  set3Team2
                   gamePlayerMemberships {
                     id
                     player
