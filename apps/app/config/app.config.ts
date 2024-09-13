@@ -30,7 +30,7 @@ import {
   langulageInitializer,
   provideTranslation,
 } from '@app/frontend-modules-translation';
-import { BASE_URL } from '@app/frontend-utils';
+import { BASE_URL, NAVIGATOR } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
@@ -118,5 +118,7 @@ export const appConfig: ApplicationConfig = {
       deps: [TranslateService, SsrCookieService],
       multi: true,
     },
+    // this is a workaround for the server-side rendering
+    { provide: NAVIGATOR, useValue: undefined },
   ],
 };
