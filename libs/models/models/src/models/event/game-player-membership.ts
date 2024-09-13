@@ -1,5 +1,5 @@
 import { SortableField, SortableObject } from '@app/utils';
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -14,8 +14,9 @@ import { Game } from './game.model';
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
 export class GamePlayerMembership extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid', { name: 'id' })
-  declare id: number;
+  @Field()
+  @PrimaryGeneratedColumn('uuid')
+  declare id: string;
 
   @Column({ type: 'uuid' })
   declare playerId?: string;

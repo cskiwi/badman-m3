@@ -1,4 +1,4 @@
-import { Type } from '@nestjs/common';
+import { Logger, Type } from '@nestjs/common';
 import { Field as GraphQLField, FieldOptions, ReturnTypeFunc, ReturnTypeFuncValue } from '@nestjs/graphql';
 import 'reflect-metadata';
 
@@ -30,15 +30,18 @@ export function SortableField(
 }
 
 // Custom Field decorator that tracks fields
-export function SortableObject(propertyType: string): PropertyDecorator & MethodDecorator {
+export function SortableObject(propertyName: string): PropertyDecorator & MethodDecorator {
   return function (target: object, propertyKey: string | symbol) {
     // we need to get the type of the property
+    // but typeorm does something weird with the types
+    // const propertyType = Reflect.getMetadata('design:type', target, propertyKey);
+    // Logger.debug(`propertyType: ${target.constructor.name}:${propertyType?.name}`);
 
     // Retrieve the existing tracked fields or initialize a new array
     const existingFields = Reflect.getMetadata(OBJECT_TRACKER_METADATA_KEY, target.constructor) || [];
 
     // Add the class name to the tracked fields list
-    Reflect.defineMetadata(OBJECT_TRACKER_METADATA_KEY, [...existingFields, { propertyKey, propertyName: propertyType }], target.constructor);
+    Reflect.defineMetadata(OBJECT_TRACKER_METADATA_KEY, [...existingFields, { propertyKey, propertyName }], target.constructor);
   };
 }
 

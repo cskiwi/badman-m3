@@ -1,14 +1,6 @@
 import { Game, GamePlayerMembership } from '@app/models';
-import { IsUUID } from '@app/utils';
 import { NotFoundException } from '@nestjs/common';
-import {
-  Args,
-  ID,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GameArgs, GamePlayerMembershipArgs } from '../args';
 
 @Resolver(() => Game)

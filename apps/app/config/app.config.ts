@@ -1,46 +1,29 @@
 import { isPlatformBrowser } from '@angular/common';
-import {
-  HTTP_INTERCEPTORS,
-  provideHttpClient,
-  withFetch,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
-import {
-  APP_ID,
-  APP_INITIALIZER,
-  ApplicationConfig,
-  PLATFORM_ID,
-  importProvidersFrom,
-  isDevMode,
-  provideZoneChangeDetection,
-} from '@angular/core';
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { APP_ID, APP_INITIALIZER, ApplicationConfig, PLATFORM_ID, importProvidersFrom, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import {
-  provideClientHydration,
-  withHttpTransferCacheOptions,
-} from '@angular/platform-browser';
+import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@app/frontend-modules-auth/interceptor';
 import { GraphQLModule } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
-import {
-  langulageInitializer,
-  provideTranslation,
-} from '@app/frontend-modules-translation';
+import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
 import { BASE_URL, NAVIGATOR } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { appRoutes } from './app.routes';
 import { environment } from '../src/environments/environment';
+import { MomentModule } from 'ngx-moment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
     importProvidersFrom(
+      MomentModule.forRoot(),
       GraphQLModule.forRoot(),
       AuthModule.forRoot({
         domain: environment.Auth0IssuerUrl,
@@ -49,8 +32,7 @@ export const appConfig: ApplicationConfig = {
         useRefreshTokensFallback: true,
         useCookiesForTransactions: true,
         authorizationParams: {
-          redirect_uri:
-            typeof window !== 'undefined' ? window.location.origin : '',
+          redirect_uri: typeof window !== 'undefined' ? window.location.origin : '',
           audience: environment.Auth0Audience,
         },
         cacheLocation: 'localstorage',

@@ -1,1 +1,9 @@
-<!-- <p>recent-games-player works!</p> -->
+@for (game of games(); track game.id) {
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ game.playedAt | amDateFormat: 'llll' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+    </mat-card-content>
+  </mat-card>
+}
