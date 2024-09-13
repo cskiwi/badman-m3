@@ -3,10 +3,7 @@ import { BuildExecutorSchema } from './schema';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
-  options,
-  context,
-) => {
+const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (options, context) => {
   const environmentVariables = {
     production: process.env.NODE_ENV === 'production',
     Auth0IssuerUrl: process.env.AUTH0_ISSUER_URL,
@@ -16,14 +13,7 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (
   };
 
   // Path to the Angular environment file (e.g., src/environments/environment.ts)
-  const envFilePath = path.join(
-    context.root,
-    'apps',
-    context.projectName,
-    'src',
-    'environments',
-    'environment.ts',
-  );
+  const envFilePath = path.join(context.root, 'apps', context.projectName, 'src', 'environments', 'environment.ts');
 
   // Generate the content for the environment file
   const envFileContent = `
