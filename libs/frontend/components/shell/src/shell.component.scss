@@ -21,8 +21,11 @@ app-name {
   }
 }
 
-.spacer {
-  flex: 1 1 auto;
+.toolbar {
+  gap: 1rem;
+  .spacer {
+    flex: 1 1 auto;
+  }
 }
 
 mat-sidenav {

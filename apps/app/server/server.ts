@@ -36,6 +36,8 @@ export async function app() {
   server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
+    console.debug(`${req.headers['user-agent']}`)
+
 
     if (shouldSkip(req.originalUrl)) {
       // Handle API routes separately

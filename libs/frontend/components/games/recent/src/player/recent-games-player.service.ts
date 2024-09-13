@@ -114,6 +114,13 @@ export class PlayerGamesService {
           args: {
             skip: filter?.skip,
             take: filter?.take,
+            where: {
+              game: {
+                playedAt: {
+                  $lte: Date.now(),
+                },
+              },
+            },
             order: {
               game: {
                 playedAt: 'DESC',

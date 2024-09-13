@@ -14,7 +14,7 @@ export const IS_MOBILE = new InjectionToken('DEVICE', {
     if (isPlatformServer(platformId)) {
       const navigator = inject(NAVIGATOR);
       const isMoileNavigator =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
           navigator,
         );
       return signal(isMoileNavigator);
