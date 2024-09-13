@@ -40,6 +40,8 @@ export async function app() {
       // Handle API routes separately
       next();
     } else {
+      const userAgent = req.headers['user-agent'];
+      console.log('userAgent', userAgent);
       commonEngine
         .render({
           bootstrap,
@@ -50,7 +52,7 @@ export async function app() {
             { provide: APP_BASE_HREF, useValue: baseUrl },
             { provide: COOKIE_SERVICE_REQ, useValue: req },
             { provide: 'RESPONSE', useValue: res },
-            { provide: NAVIGATOR, useValue: req.headers['user-agent'] },
+            { provide: NAVIGATOR, useValue: userAgent },
           ],
         })
         .then((html) => res.send(html))
