@@ -117,7 +117,7 @@ export class PlayerGamesService {
             where: {
               game: {
                 playedAt: {
-                  $lte: Date.now(),
+                  $lte: new Date().toISOString(),
                 },
               },
             },

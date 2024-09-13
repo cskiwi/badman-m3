@@ -26,6 +26,7 @@ export class GameResolver {
     inputArgs?: InstanceType<typeof GameArgs>,
   ): Promise<Game[]> {
     const args = GameArgs.toFindOneOptions(inputArgs);
+
     return Game.find(args);
   }
 
@@ -52,6 +53,7 @@ export class GameResolver {
         },
       ];
     }
+
     return GamePlayerMembership.find(args);
   }
 }

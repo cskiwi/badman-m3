@@ -1,18 +1,4 @@
-import {
-  And,
-  Any,
-  Between,
-  ILike,
-  In,
-  IsNull,
-  LessThan,
-  LessThanOrEqual,
-  Like,
-  MoreThan,
-  MoreThanOrEqual,
-  Not,
-  Or,
-} from 'typeorm';
+import { Between, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const queryFixer: (input: any) => unknown = (input: any) => {
@@ -33,10 +19,6 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
     }
 
     if (input[key].startsWith('$')) {
-      // const operatorMaps = new Map<string, Record<string, unknown>>([
-      //   ['$null', IsNull()],
-      //   ['$nNull', Not(IsNull())],
-      // ]);
       if (input[key] === '$null') {
         input[key] = IsNull();
       } else if (input[key] === '$nNull') {
