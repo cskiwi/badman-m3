@@ -70,8 +70,6 @@ export class ShellComponent {
   }
 
   constructor() {
-    console.log(this.isMobile())
-
     if (isPlatformBrowser(this.platformId)) {
       const snackBar = inject(MatSnackBar);
       const updates = inject(SwUpdate);
