@@ -1,4 +1,4 @@
-import { SortableField } from '@app/utils';
+import { SortableField, SortableObject } from '@app/utils';
 import { ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -46,10 +46,12 @@ export class GamePlayerMembership extends BaseEntity {
   @Column({ type: 'uuid' })
   declare systemId: string;
 
+  @SortableObject('Player')
   @ManyToOne(() => Player, (player) => player.gamePlayerMemberships)
   @JoinColumn({ name: 'playerId' })
   declare gamePlayer: Player;
 
+  @SortableObject('Game')
   @ManyToOne(() => Game, (game) => game.gamePlayerMembership)
   declare game: Game;
 }

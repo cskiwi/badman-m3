@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity('EventTournaments', { schema: 'event' })
-@ObjectType({ description: 'A EventTournament' })
+@ObjectType('EventTournaments', { description: 'A EventTournament' })
 export class EventTournament extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')

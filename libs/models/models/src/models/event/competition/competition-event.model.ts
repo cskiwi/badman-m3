@@ -1,17 +1,17 @@
-import { LevelType, Period } from '@app/models/enums';
+import { LevelType } from '@app/models/enums';
 import { SortableField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
-  Entity,
   BaseEntity,
+  Column,
   CreateDateColumn,
+  Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  Column,
 } from 'typeorm';
 
 @Entity('EventCompetitions', { schema: 'event' })
-@ObjectType({ description: 'A EventCompetition' })
+@ObjectType('EventCompetitions', { description: 'A EventCompetition' })
 export class EventCompetition extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')

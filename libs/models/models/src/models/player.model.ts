@@ -1,3 +1,4 @@
+import { SortableField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -14,7 +15,6 @@ import { ClubPlayerMembership } from './club-player-membership';
 import { GamePlayerMembership } from './event/game-player-membership';
 import { RankingLastPlace } from './ranking';
 import { TeamPlayerMembership } from './team-player-membership';
-import { SortableField } from '@app/utils';
 
 @ObjectType('Player')
 @Entity('Players')
@@ -96,9 +96,6 @@ export class Player extends BaseEntity {
   @Field(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(() => GamePlayerMembership, (membership) => membership.gamePlayer)
   declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
-
-
-  
   async getPermissions(): Promise<string[]> {
     // let claims = (await this.getClaims()).map((r) => r.name);
     // const roles = await this.getRoles({
@@ -118,7 +115,9 @@ export class Player extends BaseEntity {
       return false;
     }
 
-    return requiredPermissions.some((perm) => claims.some((claim) => claim === perm));
+    return requiredPermissions.some((perm) =>
+      claims.some((claim) => claim === perm),
+    );
   }
 
   async hasAllPermission(requiredPermissions: string[]) {
@@ -127,6 +126,8 @@ export class Player extends BaseEntity {
       return false;
     }
 
-    return requiredPermissions.every((perm) => claims.some((claim) => claim === perm));
+    return requiredPermissions.every((perm) =>
+      claims.some((claim) => claim === perm),
+    );
   }
 }

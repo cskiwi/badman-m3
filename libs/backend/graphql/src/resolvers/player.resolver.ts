@@ -1,25 +1,8 @@
-import {
-  ClubPlayerMembership,
-  GamePlayerMembership,
-  Player,
-  RankingLastPlace,
-} from '@app/models';
+import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException } from '@nestjs/common';
-import {
-  Args,
-  ID,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
-import {
-  ClubPlayerMembershipArgs,
-  GamePlayerMembershipArgs,
-  PlayerArgs,
-  RankingLastPlaceArgs,
-} from '../args';
+import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs } from '../args';
 import { User } from '@app/backend-authorization';
 
 @Resolver(() => Player)
@@ -114,7 +97,7 @@ export class PlayerResolver {
     @Parent() { id }: Player,
     @Args('args', {
       type: () => GamePlayerMembershipArgs,
-      nullable: true,
+      nullable: true, 
     })
     inputArgs?: InstanceType<typeof GamePlayerMembershipArgs>,
   ) {
@@ -132,14 +115,6 @@ export class PlayerResolver {
         },
       ];
     }
-
-    // default order
-    args.order = {
-      game: {
-        playedAt: 'DESC',
-      },
-      ...args.order,
-    };
 
     return GamePlayerMembership.find({ ...args, relations: ['game'] });
   }

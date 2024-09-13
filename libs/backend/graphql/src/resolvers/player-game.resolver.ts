@@ -33,7 +33,7 @@ export class GamePlayerMembershipResolver {
   }
 
   @ResolveField(() => Player, { nullable: true })
-  async playerTEMP(
+  async gamePlayer(
     @Parent() { playerId }: GamePlayerMembership,
     @Args('args', {
       type: () => PlayerArgs,
