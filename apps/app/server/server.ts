@@ -8,6 +8,7 @@ import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
 import { ConfigService } from '@nestjs/config';
+import { NAVIGATOR } from '@app/frontend-utils';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -35,6 +36,7 @@ export async function app() {
   server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
+
     if (shouldSkip(req.originalUrl)) {
       // Handle API routes separately
       next();
@@ -49,6 +51,7 @@ export async function app() {
             { provide: APP_BASE_HREF, useValue: baseUrl },
             { provide: COOKIE_SERVICE_REQ, useValue: req },
             { provide: 'RESPONSE', useValue: res },
+            { provide: NAVIGATOR, useValue: req.headers['user-agent'] },
           ],
         })
         .then((html) => res.send(html))

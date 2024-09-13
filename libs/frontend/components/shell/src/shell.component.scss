@@ -32,4 +32,8 @@ mat-sidenav {
 
 mat-sidenav-content {
   min-height: $min-height;
+
+  @media (min-width: 600px) {
+    margin-left: 200px;
+  }
 }
