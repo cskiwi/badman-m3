@@ -7,13 +7,13 @@ import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, merge, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
-interface PlayerRecentGamesState {
+interface PlayerUpcommingGamesState {
   games: Game[];
   loading: boolean;
   error: string | null;
 }
 
-export class PlayerRecentGamesService {
+export class PlayerUpcommingGamesService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
@@ -23,7 +23,7 @@ export class PlayerRecentGamesService {
   });
 
   // state
-  private initialState: PlayerRecentGamesState = {
+  private initialState: PlayerUpcommingGamesState = {
     games: [],
     error: null,
     loading: true,
@@ -77,7 +77,7 @@ export class PlayerRecentGamesService {
     return this.apollo
       .query<{ player: Player }>({
         query: gql`
-          query PlayerRecentGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
+          query PlayerUpcommingGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
             player(id: $playerId) {
               id
               gamePlayerMemberships(args: $args) {
@@ -86,12 +86,6 @@ export class PlayerRecentGamesService {
                   id
                   playedAt
                   gameType
-                  set1Team1
-                  set1Team2
-                  set2Team1
-                  set2Team2
-                  set3Team1
-                  set3Team2
                   gamePlayerMemberships {
                     id
                     player
@@ -116,14 +110,8 @@ export class PlayerRecentGamesService {
             take: filter?.take,
             where: {
               game: {
-                set1Team1: {
-                  $gt: 0,
-                },
-                set1Team2: {
-                  $gt: 0,
-                },
                 playedAt: {
-                  $lte: new Date().toISOString(),
+                  $lte: new Date('2023-01-01').toISOString(),
                 },
               },
             },

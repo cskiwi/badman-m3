@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PlayerGamesService } from './recent-games-player.service';
+import { PlayerRecentGamesService } from './recent-games-player.service';
 import { MomentModule } from 'ngx-moment';
 import { MatCardModule } from '@angular/material/card';
 import { IS_MOBILE } from '@app/frontend-utils';
@@ -18,7 +18,7 @@ export class RecentGamesPlayerComponent {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
 
-  private playerGamesService = new PlayerGamesService();
+  private playerGamesService = new PlayerRecentGamesService();
 
   games = this.playerGamesService.games;
   loading = this.playerGamesService.loading;
@@ -31,7 +31,7 @@ export class RecentGamesPlayerComponent {
         id = id[0];
       }
 
-      this.playerGamesService.filter.patchValue({ playerId: id, take: 5});
+      this.playerGamesService.filter.patchValue({ playerId: id, take: this.isMobile() ? 5 : 10 });
     });
   }
 }
