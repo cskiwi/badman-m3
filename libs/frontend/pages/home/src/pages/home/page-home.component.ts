@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
@@ -18,13 +12,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-page-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    PageHeaderComponent,
-    MtxGrid,
-    MatIconModule,
-    TranslateModule,
-  ],
+  imports: [CommonModule, PageHeaderComponent, MtxGrid, MatIconModule, TranslateModule],
   templateUrl: './page-home.component.html',
   styleUrl: './page-home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,10 +21,6 @@ export class PageHomeComponent {
   private readonly dataService = new HomeService();
   private readonly translate = inject(TranslateService);
   private readonly rankingSystemService = inject(RankingSystemService);
-
-  private readonly baseUrl = inject(BASE_URL);
-
-  private readonly http = inject(HttpClient);
 
   id = input<string | null>(null);
 

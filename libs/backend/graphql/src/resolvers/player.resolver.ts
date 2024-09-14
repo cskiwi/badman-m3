@@ -116,7 +116,7 @@ export class PlayerResolver {
       ];
     }
 
-    return GamePlayerMembership.find({ ...args, relations: ['game'] });
+    return GamePlayerMembership.find(args);
   }
 
   @ResolveField(() => [RankingLastPlace], { nullable: true })

@@ -10,6 +10,7 @@ export function args<T>(name?: string) {
   if (!SortOrder) {
     throw new Error(`SortOrderType for ${name} not found`);
   }
+
   const className = `${name}Args`;
 
   @InputType(className)
@@ -34,6 +35,7 @@ export function args<T>(name?: string) {
         skip: args?.skip,
         where: this.getQuery(args?.where),
         order: args?.order,
+        relations: this.getRelations(args?.order),
       };
     }
 
@@ -47,6 +49,32 @@ export function args<T>(name?: string) {
     static getQuery<T>(args?: FindOptionsWhere<T> | FindOptionsWhere<T>[]): FindOptionsWhere<T>[] {
       const where = queryFixer(args) ?? [];
       return Array.isArray(where) ? where : [where];
+    }
+
+    static getRelations(order?: { [key: string]: unknown }) {
+      // we need to include all assocations based on the order
+      // these are all that are more then one level deep
+
+      const relations = new Set<string>();
+      if (!order) {
+        return [];
+      }
+
+      const fields = Object.keys(order);
+
+      for (const field of fields) {
+        // get the value of the field
+        const value = (order as { [key: string]: unknown })[field];
+
+        // if the value is 'ASC' or 'DESC' we can skip it
+        if (value === 'ASC' || value === 'DESC') {
+          continue;
+        }
+
+        relations.add(field);
+      }
+
+      return Array.from(relations);
     }
   }
 

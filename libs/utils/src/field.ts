@@ -1,5 +1,5 @@
-import { Logger, Type } from '@nestjs/common';
-import { Field as GraphQLField, FieldOptions, ReturnTypeFunc, ReturnTypeFuncValue } from '@nestjs/graphql';
+import { Type } from '@nestjs/common';
+import { FieldOptions, Field as GraphQLField, ReturnTypeFunc, ReturnTypeFuncValue } from '@nestjs/graphql';
 import 'reflect-metadata';
 
 // Metadata key for storing fields

@@ -31,7 +31,7 @@ export class GamePlayerMembership extends BaseEntity {
   @SortableField()
   @Column()
   declare player: number;
-
+  
   @SortableField({nullable: true})
   @Column()
   declare single?: number;

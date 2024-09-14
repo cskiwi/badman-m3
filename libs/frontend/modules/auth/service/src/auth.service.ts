@@ -162,7 +162,7 @@ export class AuthService {
       }
     });
   }
-  private fetchUser() {
+  fetchUser() {
     return this.apollo
       .query<{
         me: Player;
