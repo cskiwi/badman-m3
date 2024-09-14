@@ -1,20 +1,18 @@
 <section class="game">
   @for (game of games(); track game.id) {
-    @if ((game.set1Team1 ?? 0) > 0 && (game.set1Team2 ?? 0) > 0) {
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>{{ game.playedAt | amDateFormat: 'llll' }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="sets">
-            <mat-chip>{{ game.set1Team1 }} - {{ game.set1Team2 }}</mat-chip>
-            <mat-chip>{{ game.set2Team1 }} - {{ game.set2Team2 }}</mat-chip>
-            @if (game.set3Team1 && game.set3Team2) {
-              <mat-chip>{{ game.set3Team1 }} - {{ game.set3Team2 }}</mat-chip>
-            }
-          </div>
-        </mat-card-content>
-      </mat-card>
-    }
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ game.playedAt | amDateFormat: 'llll' }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="sets">
+          <mat-chip>{{ game.set1Team1 }} - {{ game.set1Team2 }}</mat-chip>
+          <mat-chip>{{ game.set2Team1 }} - {{ game.set2Team2 }}</mat-chip>
+          @if (game.set3Team1 && game.set3Team2) {
+            <mat-chip>{{ game.set3Team1 }} - {{ game.set3Team2 }}</mat-chip>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
   }
 </section>

@@ -31,7 +31,7 @@ export class RecentGamesPlayerComponent {
         id = id[0];
       }
 
-      this.playerGamesService.filter.patchValue({ playerId: id, take: this.isMobile() ? 5 : 10 });
+      this.playerGamesService.filter.patchValue({ playerId: id, take: 5});
     });
   }
 }

@@ -116,6 +116,12 @@ export class PlayerGamesService {
             take: filter?.take,
             where: {
               game: {
+                set1Team1: {
+                  $gt: 0,
+                },
+                set1Team2: {
+                  $gt: 0,
+                },
                 playedAt: {
                   $lte: new Date().toISOString(),
                 },
