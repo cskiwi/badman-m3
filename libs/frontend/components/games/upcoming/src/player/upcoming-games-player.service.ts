@@ -111,7 +111,7 @@ export class PlayerUpcommingGamesService {
             where: {
               game: {
                 playedAt: {
-                  $lte: new Date('2023-01-01').toISOString(),
+                  $gt: new Date().toISOString(),
                 },
               },
             },
