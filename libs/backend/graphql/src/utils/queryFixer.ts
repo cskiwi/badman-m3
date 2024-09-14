@@ -13,12 +13,13 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
   for (const key in input) {
     if (input[key] === null || input[key] === undefined) {
       delete input[key];
-    } else if (typeof input[key] === 'object' && key != '$between') {
+      continue;
+    } else if (typeof input[key] === 'object' && key !== '$between') {
+      // Recursively apply queryFixer to nested objects
       input[key] = queryFixer(input[key]);
-      return input;
     }
 
-    if (input[key].startsWith('$')) {
+    if (typeof input[key] === 'string' && input[key].startsWith('$')) {
       if (input[key] === '$null') {
         input[key] = IsNull();
       } else if (input[key] === '$nNull') {
@@ -43,15 +44,14 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
       ['$nLike', Not(Like(input[key]))],
       ['$iLike', ILike(input[key])],
       ['$nILike', Not(ILike(input[key]))],
-
       ['$between', Between(input[key][0], input[key][1])],
     ]);
 
     if (operatorMap.has(key)) {
-      return operatorMap.get(key);
+      input = operatorMap.get(key);
+    } else {
+      console.warn(`Unknown key: ${key}, value: ${input[key]}`);
     }
-
-    console.warn(`Unknown key: ${key}, value: ${input[key]}`);
   }
 
   return input as unknown;
