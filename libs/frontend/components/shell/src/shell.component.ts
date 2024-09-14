@@ -14,6 +14,7 @@ import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   standalone: true,
@@ -25,6 +26,7 @@ import { SearchComponent } from './components';
     MatButtonModule,
     MatIconModule,
     MatListModule,
+    MatMenuModule,
 
     SearchComponent
   ],
@@ -67,6 +69,10 @@ export class ShellComponent {
         target: window.location.pathname,
       },
     });
+  }
+
+  logout() {
+    this.auth.state.logout();
   }
 
   constructor() {

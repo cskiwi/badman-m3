@@ -1,31 +1,35 @@
 <div class="container">
   <mat-toolbar class="toolbar">
-    <button
-      mat-icon-button
-      (click)="snav.toggle()"
-      aria-label="Open/Close sidenav"
-    >
+    <button mat-icon-button (click)="snav.toggle()" aria-label="Open/Close sidenav">
       <mat-icon>menu</mat-icon>
     </button>
-    <h1 class="app-name">Badman</h1>
+    @if (isMobile() === false) {
+      <h1 class="app-name">Badman</h1>
+    }
     <div class="spacer"></div>
     <app-search />
     <div class="spacer"></div>
     @if (user()?.firstName) {
-      {{ user()?.firstName }}
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>{{ user()?.firstName }}</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+      </mat-menu>
+      @if (isMobile() === false) {
+        <button mat-button [matMenuTriggerFor]="menu" aria-label="User menu">
+          {{ user()?.firstName }}
+        </button>
+      } @else {
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="User menu">
+          <mat-icon>person</mat-icon>
+        </button>
+      }
     } @else {
       <button mat-stroked-button (click)="login()">Log in</button>
     }
   </mat-toolbar>
 
   <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav
-      #snav
-      [mode]="isMobile() ? 'over' : 'side'"
-      [fixedInViewport]="isMobile()"
-      [opened]="isMobile() === false"
-      fixedTopGap="56"
-    >
+    <mat-sidenav #snav [mode]="isMobile() ? 'over' : 'side'" [fixedInViewport]="isMobile()" [opened]="isMobile() === false" fixedTopGap="56">
       <div class="nav">
         <mat-nav-list>
           @if (user()?.slug) {
