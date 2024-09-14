@@ -41,7 +41,6 @@ export async function app() {
       next();
     } else {
       const userAgent = req.headers['user-agent'];
-      console.log('userAgent', userAgent);
       commonEngine
         .render({
           bootstrap,

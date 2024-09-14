@@ -26,6 +26,12 @@ const runExecutor: PromiseExecutor<BuildExecutorSchema> = async (options, contex
     };
   `;
 
+  // create the environments directory if it doesn't exist
+  const envDir = path.dirname(envFilePath);
+  if (!fs.existsSync(envDir)) {
+    fs.mkdirSync(envDir, { recursive: true });
+  }
+
   // Write the environment file
   fs.writeFileSync(envFilePath, envFileContent);
 

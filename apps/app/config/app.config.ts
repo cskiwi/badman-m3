@@ -11,13 +11,13 @@ import { AuthInterceptor } from '@app/frontend-modules-auth/interceptor';
 import { GraphQLModule } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
-import { BASE_URL, NAVIGATOR } from '@app/frontend-utils';
+import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
-import { appRoutes } from './app.routes';
-import { environment } from '../src/environments/environment';
 import { MomentModule } from 'ngx-moment';
+import { environment } from '../src/environments/environment';
+import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -84,7 +84,6 @@ export const appConfig: ApplicationConfig = {
       useClass: AuthInterceptor,
       multi: true,
     },
-
     {
       provide: SEO_CONFIG,
       useFactory: (baseUrl: string) => ({
