@@ -100,7 +100,5 @@ export const appConfig: ApplicationConfig = {
       deps: [TranslateService, SsrCookieService],
       multi: true,
     },
-    // this is a workaround for the server-side rendering
-    { provide: NAVIGATOR, useValue: undefined },
   ],
 };

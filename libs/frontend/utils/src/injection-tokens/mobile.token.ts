@@ -4,6 +4,7 @@ import { isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { NAVIGATOR } from './navigator.token';
+import { REQUEST } from 'ngx-cookie-service-ssr';
 
 export const IS_MOBILE = new InjectionToken('DEVICE', {
   providedIn: 'root',
@@ -12,21 +13,24 @@ export const IS_MOBILE = new InjectionToken('DEVICE', {
     const breakpointObserver = inject(BreakpointObserver);
 
     if (isPlatformServer(platformId)) {
-      const navigator = inject(NAVIGATOR);
-      const isMoileNavigator =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
-          navigator,
-        );
+      let navigator = inject(NAVIGATOR, { optional: true });
+      const req = inject(REQUEST, { optional: true });
+
+      if (!navigator) {
+        navigator = req?.headers['user-agent'] ?? null;
+      }
+
+      if (!navigator) {
+        return signal(false);
+      }
+
+      const isMoileNavigator = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator);
 
       console.log('isMoileNavigator', isMoileNavigator, navigator);
       return signal(isMoileNavigator);
     } else {
       // Fallback to the client-side breakpoint observer for responsiveness
-      return toSignal(
-        breakpointObserver
-          .observe(['(max-width: 959.98px)'])
-          .pipe(map((result) => result.matches)),
-      );
+      return toSignal(breakpointObserver.observe(['(max-width: 959.98px)']).pipe(map((result) => result.matches)));
     }
   },
 });
