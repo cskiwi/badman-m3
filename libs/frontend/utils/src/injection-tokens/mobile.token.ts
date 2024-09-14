@@ -26,7 +26,6 @@ export const IS_MOBILE = new InjectionToken('DEVICE', {
 
       const isMoileNavigator = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator);
 
-      console.log('isMoileNavigator', isMoileNavigator, navigator);
       return signal(isMoileNavigator);
     } else {
       // Fallback to the client-side breakpoint observer for responsiveness
