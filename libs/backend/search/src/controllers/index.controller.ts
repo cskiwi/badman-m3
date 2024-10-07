@@ -44,7 +44,7 @@ export class IndexController {
       ? query.clients
       : query.clients
         ? [query.clients]
-        : [IndexingClient.TYPESENSE_CLIENT, IndexingClient.ALGOLIA_CLIENT];
+        : DEFAULT_CLIENTS;
 
     const types = Array.isArray(query.types)
       ? query.types

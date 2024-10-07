@@ -1,7 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SearchClient, SearchMethodParams } from 'algoliasearch';
+import {
+  SearchClient,
+  SearchMethodParams,
+  SearchResponse as AlSearchResult,
+} from 'algoliasearch';
 import { Client } from 'typesense';
 import { IndexingClient, IndexType } from '../client';
+import { ClubDocument, EventDocument, PlayerDocument } from '../documents';
+import { resourceLimits } from 'worker_threads';
 
 @Injectable()
 export class SearchService {
@@ -12,15 +18,15 @@ export class SearchService {
     private readonly typeSenseClient: Client,
   ) {}
 
-  async search<T = any>(
+  async search<T extends { order: number } = any>(
     query: string,
     clients: IndexingClient[],
     types: IndexType[],
   ) {
     const results = {
-      algoliaType: [],
-      algoliaAll: [],
-      typesense: [],
+      algoliaType: [] as SearchResult<T>[],
+      algoliaAll: [] as SearchResult<T>[],
+      typesense: [] as SearchResult<T>[],
     };
     if (clients.includes(IndexingClient.ALGOLIA_CLIENT)) {
       const requests = types.map((type) => {
@@ -43,7 +49,6 @@ export class SearchService {
             };
         }
       });
-     
 
       results.algoliaType = await this._searchAlgolia<T>({
         requests: requests,
@@ -83,21 +88,38 @@ export class SearchService {
         }
       });
 
-      results.typesense = (
-        await this._searchTypeSense<T>({
-          searches,
-        })
-      ).results;
+      results.typesense = await this._searchTypeSense<T>({
+        searches,
+      });
     }
 
     return results;
   }
 
-  private async _searchAlgolia<T = any>(queries: SearchMethodParams) {
-    return this.algoliaClient.search<T>(queries) as any;
+  private async _searchAlgolia<T extends { order: number } = any>(queries: SearchMethodParams) {
+    const hits = await this.algoliaClient.search<T>(queries) as {
+      results: AlSearchResult<T>[];
+    };
+
+   
+    const results: SearchResult<T>[] = [];
+
+    for (const result of hits.results) {
+      if (result.hits) {
+        results.push(
+          ...result.hits.map((hit) => ({
+            ...hit as any,
+            _highlightResult: undefined,
+          })),
+        );
+      }
+    }
+
+    return results;
+
   }
 
-  private async _searchTypeSense<T = any>(queries: {
+  private async _searchTypeSense<T extends { order: number } = any>(queries: {
     searches: {
       collection: string;
       q: string;
@@ -108,6 +130,42 @@ export class SearchService {
       max_hits?: number;
     }[];
   }) {
-    return this.typeSenseClient.multiSearch.perform(queries);
+    const hits =
+      await this.typeSenseClient.multiSearch.perform<
+        [typeof PlayerDocument, typeof ClubDocument, typeof EventDocument]
+      >(queries);
+
+    const results: SearchResult<T>[] = [];
+
+    for (const result of hits.results) {
+      if (result.hits) {
+        results.push(
+          ...result.hits.map((hit) => ({
+            hit: hit.document as never,
+            score: hit.text_match,
+          })),
+        );
+      }
+    }
+
+    // sort first by sore, then by hit.order
+    return results.sort((a, b) => {
+      // ignore sorting if no score
+      if (!a.score || !b.score) {
+        return 0;
+      }
+     
+
+      if (a.score === b.score) {
+        return a.hit.order - b.hit.order;
+      }
+      return b.score - a.score;
+    });
   }
+}
+
+export interface SearchResult<T extends { order: number }> {
+  hit: T;
+  type?: IndexType;
+  score?: number;
 }

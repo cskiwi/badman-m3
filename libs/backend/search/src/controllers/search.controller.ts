@@ -2,7 +2,7 @@ import { Controller, Get, Query, Res } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsOptional } from 'class-validator';
 import { Response } from 'express';
-import { IndexingClient, IndexType } from '../client';
+import { DEFAULT_CLIENTS, IndexingClient, IndexType } from '../client';
 import { SearchService } from '../services';
 
 export class SearchQuery {
@@ -36,11 +36,12 @@ export class SearchController {
 
   @Get('/')
   async search(@Query() query: SearchQuery, @Res() res: Response) {
-    const clients = query.clients || [
-      IndexingClient.TYPESENSE_CLIENT,
-      IndexingClient.ALGOLIA_CLIENT,
-    ];
-
+    const clients = Array.isArray(query.clients)
+      ? query.clients
+      : query.clients
+        ? [query.clients]
+        : DEFAULT_CLIENTS;
+        
     const types = query.types || [
       IndexType.PLAYERS,
       IndexType.CLUBS,

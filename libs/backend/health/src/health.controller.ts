@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Headers,
-  Logger,
-  VERSION_NEUTRAL,
-} from '@nestjs/common';
-import { Args } from '@nestjs/graphql';
+import { Controller, Get, Logger, VERSION_NEUTRAL } from '@nestjs/common';
 import {
   HealthCheck,
   HealthCheckService,
@@ -24,6 +17,8 @@ export class HealthController {
     private readonly health: HealthCheckService,
     private readonly typeOrm: TypeOrmHealthIndicator,
     private readonly memory: MemoryHealthIndicator,
+
+    // private readonly typesense: TypeSenseIndicator,
   ) {}
 
   @Get()
@@ -32,15 +27,7 @@ export class HealthController {
     return this.health.check([
       () => this.typeOrm.pingCheck('database'),
       () => this.memory.checkHeap('memory_heap', 1 * 1024 * 1024 * 1024 * 1024),
+      // () => this.typesense.isHealthy('typesense'),
     ]);
-  }
-
-  @Get('test')
-  randomTest(@Headers('X-MY-APP-CLIENT') auth: any) {
-    this._logger.log(`Received key: ${auth}`);
-
-    return {
-      message: 'Hello World!',
-    };
   }
 }

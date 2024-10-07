@@ -3,13 +3,12 @@ import {
   FactoryProvider,
   Module,
   ModuleMetadata,
-  Provider,
   Type,
 } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { algoliasearch } from 'algoliasearch';
 import { Client } from 'typesense';
-import { DEFAULT_CLIENTS, IndexingClient } from './client';
+import { IndexingClient } from './client';
 import { IndexController, SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
@@ -34,21 +33,19 @@ export class SearchModule {
         {
           provide: IndexingClient.ALGOLIA_CLIENT,
           useFactory: (config: ISearchConfig) =>
-            !DEFAULT_CLIENTS.includes(IndexingClient.ALGOLIA_CLIENT)
+            !config.algolia
               ? undefined
               : algoliasearch(
                   config.algolia.appId,
                   config.algolia.apiKey,
                   config.algolia.clientOptions,
                 ),
-          inject: ['SEARCH_CONFIG'],
+          inject: ['SEARCH_CONFIG'], 
         },
         {
           provide: IndexingClient.TYPESENSE_CLIENT,
           useFactory: (config: ISearchConfig) =>
-            !DEFAULT_CLIENTS.includes(IndexingClient.TYPESENSE_CLIENT)
-              ? undefined
-              : new Client(config.typesense),
+            !config.typesense ? undefined : new Client(config.typesense),
           inject: ['SEARCH_CONFIG'],
         },
       ],
