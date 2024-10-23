@@ -7,7 +7,7 @@
     "express": "~4.19.2",
     "@app/models": "0.0.1",
     "@app/backend-authorization": "0.0.1",
-    "@algolia/client-common": "5.1.1",
+    "@algolia/client-common": "5.10.2",
     "algoliasearch": "^5.1.1",
     "moment": "^2.30.1",
     "@nestjs/swagger": "^7.4.0",
