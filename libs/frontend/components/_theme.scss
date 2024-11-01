@@ -8,12 +8,12 @@
   @include shell.typography($theme);
 }
 
-@mixin color($theme) {
-  @include page-header.color($theme);
-  @include shell.color($theme);
+@mixin colors($theme) {
+  @include page-header.colors($theme);
+  @include shell.colors($theme);
 }
 
 @mixin theme($theme) {
-  @include color($theme);
+  @include colors($theme);
   @include typography($theme);
 }

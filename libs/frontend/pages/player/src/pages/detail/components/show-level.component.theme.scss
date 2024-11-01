@@ -3,7 +3,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@mixin color($theme) {
+@mixin colors($theme) {
   app-show-level {
     // $isDark: map.get($theme, 'is-dark');
     $level-color: mat.get-theme-color($theme, secondary);

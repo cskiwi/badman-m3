@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SearchClient, SearchMethodParams } from 'algoliasearch';
 import { Client } from 'typesense';
-import { IndexingClient, IndexType } from '../client';
+import { IndexingClient, IndexType } from '../utils';
 
 @Injectable()
 export class SearchService {

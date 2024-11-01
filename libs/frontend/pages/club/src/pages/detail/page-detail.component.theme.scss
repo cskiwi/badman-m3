@@ -5,8 +5,8 @@
 
 @use './components/show-level.component.theme.scss' as show-level;
 
-@mixin color($theme) {
-  @include show-level.color($theme);
+@mixin colors($theme) {
+  @include show-level.colors($theme);
  
   app-page-detail {
     .games mat-icon {

@@ -6,11 +6,11 @@
   @include page-detail.typography($theme);
 }
 
-@mixin color($theme) {
-  @include page-detail.color($theme);
+@mixin colors($theme) {
+  @include page-detail.colors($theme);
 }
 
 @mixin theme($theme) {
-  @include color($theme);
+  @include colors($theme);
   @include typography($theme);
 }

@@ -3,7 +3,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@mixin color($theme) {
+@mixin colors($theme) {
   app-root {
     mat-toolbar.toolbar {
       color: mat.get-theme-color($theme, secondary);

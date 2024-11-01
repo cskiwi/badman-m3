@@ -3,8 +3,9 @@ import { Player } from '@app/models';
 import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsOptional } from 'class-validator';
-import { DEFAULT_CLIENTS, IndexingClient, IndexType } from '../client';
+import { DEFAULT_CLIENTS, getClients, getTypes, IndexingClient, IndexType } from '../utils';
 import { IndexService } from '../services';
+import { Cron } from '@nestjs/schedule';
 
 export class IndexQuery {
   @IsArray()
@@ -34,28 +35,28 @@ export class IndexQuery {
 export class IndexController {
   private readonly logger = new Logger(IndexController.name);
 
-  constructor(private indexService: IndexService) {}
+  constructor(private readonly indexService: IndexService) {}
+
+  @Cron('28 13 * * *')
+  async cronIndex() {
+    this.logger.log(`Indexing`);
+
+    const toIndex = [
+      this.indexService.indexPlayers(DEFAULT_CLIENTS),
+      this.indexService.indexClubs(DEFAULT_CLIENTS),
+      this.indexService.indexCompetitionEvents(DEFAULT_CLIENTS),
+      this.indexService.indexTournamentEvents(DEFAULT_CLIENTS),
+    ];
+
+    await Promise.all(toIndex);
+  }
 
   @Get('/')
   async indexAll(@User() user: Player, @Query() query: IndexQuery) {
-    this.logger.log(`Indexing all data for user ${user.fullName}`);
+    this.logger.log(`Indexing all data for user ${user?.fullName}`);
 
-    const clients = Array.isArray(query.clients)
-      ? query.clients
-      : query.clients
-        ? [query.clients]
-        : [IndexingClient.TYPESENSE_CLIENT, IndexingClient.ALGOLIA_CLIENT];
-
-    const types = Array.isArray(query.types)
-      ? query.types
-      : query.types
-        ? [query.types]
-        : [
-            IndexType.PLAYERS,
-            IndexType.CLUBS,
-            IndexType.COMPETITION_EVENTS,
-            IndexType.TOURNAMENT_EVENTS,
-          ];
+    const clients = getClients(query.clients);
+    const types = getTypes(query.types);
 
     if (!clients.some((client) => DEFAULT_CLIENTS.includes(client))) {
       throw new Error('Invalid client');

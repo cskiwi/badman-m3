@@ -1,7 +1,6 @@
 <ng-container>
   <mat-form-field>
-    <mat-select [formControl]="selected" placeholder="Search">
-      <!-- place ngx-mat-select-search inside mat-option to allow opening without initial selection -->
+    <!-- <mat-select [formControl]="selected" placeholder="Search">
       <mat-option>
         <ngx-mat-select-search
           [formControl]="query"
@@ -16,6 +15,8 @@
           {{ result.title }} ({{ result.linkType }})
         </mat-option>
       }
-    </mat-select>
+    </mat-select> -->
+
+    <mtx-select [items]="results()" [typeahead]="typeahead" bindValue="id" bindLabel="title" (change)="select($event)"> </mtx-select>
   </mat-form-field>
 </ng-container>

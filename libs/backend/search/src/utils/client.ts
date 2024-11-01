@@ -11,5 +11,5 @@ export enum IndexType {
 }
 
 export const DEFAULT_CLIENTS = [
-  /*IndexingClient.TYPESENSE_CLIENT,*/ IndexingClient.ALGOLIA_CLIENT,
+  IndexingClient.TYPESENSE_CLIENT,/* IndexingClient.ALGOLIA_CLIENT, */
 ];

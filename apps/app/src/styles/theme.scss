@@ -1,5 +1,7 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
+@use '@ng-matero/extensions' as mtx;
+
 
 /// Defines a dark color theme with success and danger colors.
 /// @param {Map} $primary The primary color map.
@@ -8,25 +10,18 @@
 /// @param {Map} $success The success color map.
 /// @param {Map} $danger The danger color map.
 
-@function define-theme(
-  $primary,
-  $type: dark,
-  $warn: $mat-orange,
-  $success: mat.$mat-green,
-  $danger: mat.$mat-red,
-  $density: -2
-) {
-  $theme: mat.define-theme(
-    (
-      color: (
-        theme-type: $type,
-        primary: $primary,
-      ),
-      density: (
-        scale: $density,
-      ),
-    )
+@function define-theme($primary, $type: dark, $warn: $mat-orange, $success: mat.$mat-green, $danger: mat.$mat-red, $density: -2) {
+  $config: (
+    color: (
+      theme-type: $type,
+      primary: $primary,
+    ),
+    density: (
+      scale: $density,
+    ),
   );
+
+  $theme: mat.private-deep-merge-all(mat.define-theme($config), mtx.define-theme($config));
 
   $rest: (
     warn: $warn,
@@ -40,20 +35,6 @@ $theme-warn: mat.$orange-palette;
 $theme-success: mat.$green-palette;
 $theme-danger: mat.$red-palette;
 
-$dark-theme: define-theme(
-  mat.$blue-palette,
-  dark,
-  $theme-warn,
-  $theme-success,
-  $theme-danger,
-  -2
-);
+$dark-theme: define-theme(mat.$blue-palette, dark, $theme-warn, $theme-success, $theme-danger, -2);
 
-$light-theme: define-theme(
-  mat.$violet-palette,
-  light,
-  $theme-warn,
-  $theme-success,
-  $theme-danger,
-  -2
-);
+$light-theme: define-theme(mat.$violet-palette, light, $theme-warn, $theme-success, $theme-danger, -2);
