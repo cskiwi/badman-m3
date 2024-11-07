@@ -8,7 +8,7 @@
     "rxjs": "~7.8.1",
     "ngxtension": "^4.0.0",
     "@angular/router": "18.2.0",
-    "@apollo/client": "3.11.4",
+    "@apollo/client": "3.11.9",
     "@app/frontend-utils": "0.0.1"
   },
   "sideEffects": false
