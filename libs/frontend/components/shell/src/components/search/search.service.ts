@@ -1,12 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Player } from '@app/models';
-import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, Subject, merge } from 'rxjs';
-import { catchError, distinctUntilChanged, map, switchMap, filter, debounceTime, tap } from 'rxjs/operators';
-import { ObjectId } from 'typeorm';
+import { EMPTY, merge, Subject } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 interface SearchState {
   results: SearchHit[];
@@ -54,7 +51,6 @@ export class SearchService {
     catchError((err) => {
       this.error$.next(err);
       return EMPTY;
-      ``;
     }),
   );
 

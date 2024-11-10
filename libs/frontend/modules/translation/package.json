@@ -2,14 +2,13 @@
 "name": "@app/frontend-modules-translation",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^18.0.0",
-    "@angular/core": "^18.0.0",
-    "@angular/material": "^18.1.1",
-    "@ngx-translate/core": "^15.0.0",
-    "rxjs": "~7.8.1",
-    "@ngx-translate/http-loader": "^8.0.0",
     "@app/frontend-utils": "0.0.1",
-    "ngx-cookie-service-ssr": "^18.0.0"
+    "@angular/common": "18.2.10",
+    "@angular/core": "18.2.10",
+    "@angular/material": "18.2.10",
+    "@ngx-translate/core": "^15.0.0",
+    "ngx-cookie-service-ssr": "^18.0.0",
+    "rxjs": "~7.8.1"
   },
   "sideEffects": false
 }
