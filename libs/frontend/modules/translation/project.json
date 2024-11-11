@@ -10,8 +10,7 @@
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "{projectRoot}/ng-package.json",
-        "workerThreads": false
+        "project": "{projectRoot}/ng-package.json"
       },
       "configurations": {
         "production": {
