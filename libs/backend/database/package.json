@@ -6,7 +6,7 @@
     "@app/models": "0.0.1",
     "@nestjs/common": "^10.4.6",
     "@nestjs/typeorm": "^10.0.2",
-    "@nestjs/config": "3.2.3"
+    "@nestjs/config": "3.3.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
