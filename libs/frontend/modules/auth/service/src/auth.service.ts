@@ -1,22 +1,11 @@
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import {
-  computed,
-  effect,
-  inject,
-  Injectable,
-  PLATFORM_ID,
-  untracked,
-} from '@angular/core';
+import { computed, effect, inject, Injectable, PLATFORM_ID, untracked } from '@angular/core';
 import { Player } from '@app/models';
-import {
-  AppState,
-  AuthService as Auth0Service,
-  RedirectLoginOptions,
-} from '@auth0/auth0-angular';
+import { AppState, AuthService as Auth0Service, RedirectLoginOptions } from '@auth0/auth0-angular';
 import { Apollo, gql } from 'apollo-angular';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { signalSlice } from 'ngxtension/signal-slice';
-import { merge, Observable, of, iif } from 'rxjs';
+import { iif, merge, Observable, of } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { AUTH_KEY } from './auth.key';
 
@@ -81,6 +70,7 @@ export class AuthService {
       fetchUser: (_state, action$: Observable<void>) =>
         action$.pipe(
           switchMap(() => this.fetchUser()),
+
           // if null fetch some info from the auth0 user
           switchMap((user) =>
             iif(
@@ -102,15 +92,10 @@ export class AuthService {
             user,
           })),
         ),
-      login: (
-        _state,
-        action$: Observable<RedirectLoginOptions<AppState> | void>,
-      ) =>
+      login: (_state, action$: Observable<RedirectLoginOptions<AppState> | void>) =>
         action$.pipe(
           switchMap((options) => {
-            return (
-              this.authService?.loginWithRedirect(options ?? undefined) ?? of()
-            );
+            return this.authService?.loginWithRedirect(options ?? undefined) ?? of();
           }),
           map(() => _state()),
         ),
@@ -126,8 +111,14 @@ export class AuthService {
       getToken: (_state, action$: Observable<void>) =>
         action$.pipe(
           switchMap(() => {
-            return this.authService?.getAccessTokenSilently() ?? of();
+            const token =
+              this.authService?.getAccessTokenSilently({
+                cacheMode: 'off',
+              }) ?? of();
+
+            return token;
           }),
+
           map((token) => {
             return {
               token,
@@ -142,13 +133,15 @@ export class AuthService {
       this.authService = inject(Auth0Service);
     }
 
-    effect(() => {
+    effect(async () => {
       if (this.state.loggedIn()) {
-        this.state.getToken();
+        await this.state.getToken();
       }
+    }, {
+      allowSignalWrites: true,
     });
 
-    effect(() => {
+    effect(async () => {
       const token = this.state.token();
       let user = null;
       // Technically we don't need to check this as apollo will fetch it from the local cache
@@ -156,10 +149,13 @@ export class AuthService {
       untracked(() => {
         user = this.state.user();
       });
+
       if (token && !user) {
         this.cookie.set(AUTH_KEY, token);
-        this.state.fetchUser();
+        await this.state.fetchUser();
       }
+    }, {
+      allowSignalWrites: true,
     });
   }
   fetchUser() {

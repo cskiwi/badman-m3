@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
+import { Component, computed, effect, inject, PLATFORM_ID } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -28,22 +28,22 @@ import { MatMenuModule } from '@angular/material/menu';
     MatListModule,
     MatMenuModule,
 
-    SearchComponent
+    SearchComponent,
   ],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
 })
 export class ShellComponent {
-  private platformId = inject<string>(PLATFORM_ID);
+  private readonly platformId = inject<string>(PLATFORM_ID);
 
   isMobile = inject(IS_MOBILE);
   auth = inject(AuthService);
 
   user = this.auth.state.user;
 
-  clubs = computed(() =>
-    (this.user()?.clubPlayerMemberships ?? [])
+  clubs = computed(() => {
+    return (this.user()?.clubPlayerMemberships ?? [])
       .filter((membership) => membership?.active)
       .sort((a, b) => {
         // sort by membership type, first normal then loan
@@ -60,8 +60,8 @@ export class ShellComponent {
         }
 
         return 0;
-      }),
-  );
+      });
+  });
 
   login() {
     this.auth.state.login({
@@ -82,9 +82,7 @@ export class ShellComponent {
 
       updates.versionUpdates
         .pipe(
-          filter(
-            (evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY',
-          ),
+          filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
           map((evt) => ({
             type: 'UPDATE_AVAILABLE',
             current: evt.currentVersion,
