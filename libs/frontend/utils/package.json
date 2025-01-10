@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/core": "18.2.10",
-    "@angular/cdk": "18.2.10",
+    "@angular/cdk": "18.2.14",
     "@angular/common": "18.2.10",
     "rxjs": "~7.8.1",
     "ngx-cookie-service-ssr": "^18.0.0"
