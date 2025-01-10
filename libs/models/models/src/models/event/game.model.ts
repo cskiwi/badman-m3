@@ -1,16 +1,9 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
 import { GameStatus, GameType } from '@app/models/enums';
 import { SortableField } from '@app/utils';
+import { DrawTournament } from './tournament';
 
 @ObjectType('Game')
 @Entity('Games', { schema: 'event' })
@@ -92,9 +85,15 @@ export class Game extends BaseEntity {
   declare visualCode?: string;
 
   // @SortableField()
-  @OneToMany(
-    () => GamePlayerMembership,
-    (gamePlayerMembership) => gamePlayerMembership.gamePlayer,
-  )
-  declare gamePlayerMembership: GamePlayerMembership[];
+  @OneToMany(() => GamePlayerMembership, (gamePlayerMembership) => gamePlayerMembership.gamePlayer)
+  declare gamePlayerMemberships: GamePlayerMembership[];
+
+  @ManyToOne(() => DrawTournament, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'linkId' })
+  declare tournament?: DrawTournament;
+
+  // @Field(() => EncounterCompetition, { nullable: true })
+  // @ManyToOne(() => EncounterCompetition, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  // @JoinColumn({ name: 'linkId' })
+  // competition?: EncounterCompetition;
 }

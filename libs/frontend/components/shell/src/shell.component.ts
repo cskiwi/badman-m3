@@ -1,8 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, computed, effect, inject, PLATFORM_ID } from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -14,7 +15,6 @@ import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
-import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   standalone: true,

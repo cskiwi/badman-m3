@@ -1,22 +1,5 @@
 <ng-container>
   <mat-form-field>
-    <!-- <mat-select [formControl]="selected" placeholder="Search">
-      <mat-option>
-        <ngx-mat-select-search
-          [formControl]="query"
-          [searching]="loading()"
-          placeholderLabel="Search"
-          noEntriesFoundLabel="no matching entry found"
-        ></ngx-mat-select-search>
-      </mat-option>
-
-      @for (result of results(); track result.linkId) {
-        <mat-option [value]="result">
-          {{ result.title }} ({{ result.linkType }})
-        </mat-option>
-      }
-    </mat-select> -->
-
     <mtx-select [items]="results()" [typeahead]="typeahead" bindValue="id" bindLabel="title" (change)="select($event)"> </mtx-select>
   </mat-form-field>
 </ng-container>

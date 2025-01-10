@@ -1,16 +1,10 @@
 import { SortableField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  Entity,
-  BaseEntity,
-  CreateDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  Column,
-} from 'typeorm';
+import { Entity, BaseEntity, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, Column, OneToMany } from 'typeorm';
+import { SubEventTournament } from './tournament-sub-event.model';
 
 @Entity('EventTournaments', { schema: 'event' })
-@ObjectType('EventTournaments', { description: 'A EventTournament' })
+@ObjectType('EventTournament', { description: 'A EventTournament' })
 export class EventTournament extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -71,4 +65,7 @@ export class EventTournament extends BaseEntity {
   @SortableField(() => String, { nullable: true })
   @Column()
   declare country: string;
+
+  @OneToMany(() => SubEventTournament, (drawTournament) => drawTournament.eventTournament, { cascade: true, onDelete: 'CASCADE' })
+  declare subEventTournaments?: SubEventTournament[];
 }

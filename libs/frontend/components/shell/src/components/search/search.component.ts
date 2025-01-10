@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { MtxSelectModule } from '@ng-matero/extensions/select';
@@ -11,7 +11,7 @@ import { SearchHit, SearchService } from './search.service';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [ReactiveFormsModule, MtxSelectModule, MatLabel, FormsModule, MatFormFieldModule, MatSelectModule, NgxMatSelectSearchModule],
+  imports: [ReactiveFormsModule, MtxSelectModule, FormsModule, MatFormFieldModule, MatSelectModule, NgxMatSelectSearchModule],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

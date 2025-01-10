@@ -31,7 +31,7 @@ export function args<T>(name?: string) {
 
     static toFindManyOptions(args?: Args) {
       return {
-        take: args?.take ?? 10,
+        take: args?.take == null ? undefined : args?.take,
         skip: args?.skip,
         where: this.getQuery(args?.where),
         order: args?.order,

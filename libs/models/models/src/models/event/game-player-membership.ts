@@ -53,6 +53,6 @@ export class GamePlayerMembership extends BaseEntity {
   declare gamePlayer: Player;
 
   @SortableObject('Game')
-  @ManyToOne(() => Game, (game) => game.gamePlayerMembership)
+  @ManyToOne(() => Game, (game) => game.gamePlayerMemberships)
   declare game: Game;
 }

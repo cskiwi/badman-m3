@@ -1,0 +1,48 @@
+<!-- datepicker -->
+@if (this.filter.getRawValue().date) {
+  <div class="filters">
+    <ng-container [formGroup]="this.filter">
+      <mat-form-field>
+        <mat-label>{{ 'all.partner.filters.start-date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field> 
+
+      <mat-form-field>
+        <mat-label>{{ 'all.partner.filters.games' | translate }}</mat-label>
+        <input matInput type="number" formControlName="minGames" />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>{{ 'all.partner.filters.linktype' | translate }}</mat-label>
+        <mat-select formControlName="linkType">
+          <mat-option [value]="null">{{ 'all.partner.filters.all' | translate }}</mat-option>
+          <mat-option value="competition">{{ 'all.partner.filters.competition' | translate }}</mat-option>
+          <mat-option value="tournament">{{ 'all.partner.filters.tournament' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- gameType -->
+      <mat-form-field>
+        <mat-label>{{ 'all.partner.filters.gameType' | translate }}</mat-label>
+        <mat-select formControlName="gameType">
+          <mat-option [value]="null">{{ 'all.partner.filters.all' | translate }}</mat-option>
+          <mat-option value="MX">{{ 'all.partner.filters.mix' | translate }}</mat-option>
+          <mat-option value="D">{{ 'all.partner.filters.double' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+  </div>
+}
+
+<div class="partners">
+  <app-partner-grid [dataSource]="partners()" [loading]="loading()"></app-partner-grid>
+</div>
+
+@if (error()) {
+  <div class="error">
+    <mat-icon>error</mat-icon>
+    {{ error() }}
+  </div>
+}

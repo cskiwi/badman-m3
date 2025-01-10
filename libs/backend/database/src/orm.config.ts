@@ -1,6 +1,7 @@
 import {
   Club,
   ClubPlayerMembership,
+  DrawTournament,
   EventCompetition,
   EventTournament,
   Game,
@@ -10,6 +11,7 @@ import {
   RankingLastPlace,
   RankingSystem,
   RankingSystemRankingGroupMembership,
+  SubEventTournament,
   Team,
   TeamPlayerMembership,
 } from '@app/models';
@@ -33,6 +35,8 @@ const entities = [
 
   EventCompetition,
   EventTournament,
+  SubEventTournament,
+  DrawTournament,
 ];
 
 export function getDbConfig(configService?: ConfigService): DataSourceOptions {

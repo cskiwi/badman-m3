@@ -13,6 +13,22 @@
   "landing": {
     "description": "Welcome to the v2 test version of Badman"
   },
+  "partner": {
+    "amount-of-games": "Number of contests",
+    "filters": {
+      "all": "All",
+      "competition": "Competition",
+      "double": "Double",
+      "games": "Min matches",
+      "gameType": "Type",
+      "linktype": "Tournament/competition",
+      "mix": "Mixed",
+      "start-date": "From",
+      "tournament": "Tournament"
+    },
+    "name": "Name",
+    "win-rate": "Win percentage"
+  },
   "players": {
     "my-club": "My club",
     "my-clubs": "My clubs",

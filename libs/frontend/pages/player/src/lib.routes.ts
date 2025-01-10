@@ -15,7 +15,10 @@ export const routes: Route[] = [
           {
             path: '',
             component: PageDetailComponent,
-           
+          },
+          {
+            path: 'partners',
+            loadComponent: () => import('./pages/partners/page-partner.component').then((m) => m.PagePartnerComponent),
           },
         ],
       },

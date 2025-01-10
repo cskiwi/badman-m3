@@ -24,54 +24,24 @@
       "@app/backend-shared": ["libs/backend/_shared/src/index.ts"],
       "@app/backend-translate": ["libs/backend/translate/src/index.ts"],
       "@app/frontend-components": ["libs/frontend/components/index.ts"],
-      "@app/frontend-components/games/recent": [
-        "libs/frontend/components/games/recent/src/index.ts"
-      ],
-      "@app/frontend-components/games/upcoming": [
-        "libs/frontend/components/games/upcoming/src/index.ts"
-      ],
-      "@app/frontend-components/layout": [
-        "libs/frontend/components/layout/src/index.ts"
-      ],
-      "@app/frontend-components/page-header": [
-        "libs/frontend/components/page-header/src/index.ts"
-      ],
-      "@app/frontend-components/shell": [
-        "libs/frontend/components/shell/src/index.ts"
-      ],
+      "@app/frontend-components/games/recent": ["libs/frontend/components/games/recent/src/index.ts"],
+      "@app/frontend-components/games/upcoming": ["libs/frontend/components/games/upcoming/src/index.ts"],
+      "@app/frontend-components/layout": ["libs/frontend/components/layout/src/index.ts"],
+      "@app/frontend-components/page-header": ["libs/frontend/components/page-header/src/index.ts"],
+      "@app/frontend-components/shell": ["libs/frontend/components/shell/src/index.ts"],
       "@app/frontend-modules-auth": ["libs/frontend/modules/auth/src/index.ts"],
-      "@app/frontend-modules-auth/guard": [
-        "libs/frontend/modules/auth/guard/src/index.ts"
-      ],
-      "@app/frontend-modules-auth/interceptor": [
-        "libs/frontend/modules/auth/interceptor/src/index.ts"
-      ],
-      "@app/frontend-modules-auth/service": [
-        "libs/frontend/modules/auth/service/src/index.ts"
-      ],
-      "@app/frontend-modules-graphql": [
-        "libs/frontend/modules/graphql/src/index.ts"
-      ],
-      "@app/frontend-modules-graphql/ranking": [
-        "libs/frontend/modules/graphql/ranking/src/index.ts"
-      ],
+      "@app/frontend-modules-auth/guard": ["libs/frontend/modules/auth/guard/src/index.ts"],
+      "@app/frontend-modules-auth/interceptor": ["libs/frontend/modules/auth/interceptor/src/index.ts"],
+      "@app/frontend-modules-auth/service": ["libs/frontend/modules/auth/service/src/index.ts"],
+      "@app/frontend-modules-graphql": ["libs/frontend/modules/graphql/src/index.ts"],
+      "@app/frontend-modules-graphql/ranking": ["libs/frontend/modules/graphql/ranking/src/index.ts"],
       "@app/frontend-modules-seo": ["libs/frontend/modules/seo/src/index.ts"],
-      "@app/frontend-modules-seo/service": [
-        "libs/frontend/modules/seo/service/src/index.ts"
-      ],
-      "@app/frontend-modules-translation": [
-        "libs/frontend/modules/translation/src/index.ts"
-      ],
-      "@app/frontend-modules-translation/languages": [
-        "libs/frontend/modules/translation/languages/src/index.ts"
-      ],
-      "@app/frontend-modules-translation/selection": [
-        "libs/frontend/modules/translation/selection/src/index.ts"
-      ],
+      "@app/frontend-modules-seo/service": ["libs/frontend/modules/seo/service/src/index.ts"],
+      "@app/frontend-modules-translation": ["libs/frontend/modules/translation/src/index.ts"],
+      "@app/frontend-modules-translation/languages": ["libs/frontend/modules/translation/languages/src/index.ts"],
+      "@app/frontend-modules-translation/selection": ["libs/frontend/modules/translation/selection/src/index.ts"],
       "@app/frontend-pages-club": ["libs/frontend/pages/club/src/index.ts"],
-      "@app/frontend-pages-competition": [
-        "libs/frontend/pages/competition/src/index.ts"
-      ],
+      "@app/frontend-pages-competition": ["libs/frontend/pages/competition/src/index.ts"],
       "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
       "@app/frontend-pages-player": ["libs/frontend/pages/player/src/index.ts"],
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],

@@ -20,6 +20,22 @@ export type I18nTranslations = {
         "landing": {
             "description": string;
         };
+        "partner": {
+            "amount-of-games": string;
+            "filters": {
+                "all": string;
+                "competition": string;
+                "double": string;
+                "games": string;
+                "gameType": string;
+                "linktype": string;
+                "mix": string;
+                "start-date": string;
+                "tournament": string;
+            };
+            "name": string;
+            "win-rate": string;
+        };
         "players": {
             "my-club": string;
             "my-clubs": string;
