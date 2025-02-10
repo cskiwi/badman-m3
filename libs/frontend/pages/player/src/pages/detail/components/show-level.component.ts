@@ -15,12 +15,11 @@ import { ShowLevelService } from './show-level.service';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 
 @Component({
-  selector: 'app-show-level',
-  standalone: true,
-  imports: [CommonModule, MatTooltipModule],
-  templateUrl: './show-level.component.html',
-  styleUrl: './show-level.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-show-level',
+    imports: [CommonModule, MatTooltipModule],
+    templateUrl: './show-level.component.html',
+    styleUrl: './show-level.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShowLevelComponent implements OnInit {
   showLevelService = inject(ShowLevelService);

@@ -7,36 +7,36 @@
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": ["{workspaceRoot}/coverage/libs/backend/database"],
       "options": {
-        "jestConfig": "{projectRoot}/jest.config.ts"
+        "jestConfig": "libs/backend/database/jest.config.ts"
       }
     },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "packageJson": "{projectRoot}/package.json",
-        "main": "{projectRoot}/src/index.ts",
+        "outputPath": "{workspaceRoot}/dist/libs/backend/database",
+        "tsConfig": "libs/backend/database/tsconfig.lib.json",
+        "packageJson": "libs/backend/database/package.json",
+        "main": "libs/backend/database/src/index.ts",
         "assets": ["{projectRoot/*.md"]
       }
     },
     "migration-generate": {
-      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:generate -d {projectRoot}/src/datasource -p {projectRoot}/src/migrations/{args.name}",
+      "command": "ts-node -r tsconfig-paths/register --project libs/backend/database/tsconfig.json ./node_modules/typeorm/cli migration:generate -d libs/backend/database/src/datasource -p libs/backend/database/src/migrations/{args.name}",
       "options": {
         "envFile": "{workspaceRoot}/.env"
       }
     },
     "migration-run": {
-      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:run -d {projectRoot}/src/datasource",
+      "command": "ts-node -r tsconfig-paths/register --project libs/backend/database/tsconfig.json ./node_modules/typeorm/cli migration:run -d libs/backend/database/src/datasource",
       "options": {
         "envFile": "{workspaceRoot}/.env"
       }
     },
     "migration-revert": {
-      "command": "ts-node -r tsconfig-paths/register --project {projectRoot}/tsconfig.json ./node_modules/typeorm/cli migration:revert -d {projectRoot}/src/datasource",
+      "command": "ts-node -r tsconfig-paths/register --project libs/backend/database/tsconfig.json ./node_modules/typeorm/cli migration:revert -d libs/backend/database/src/datasource",
       "options": {
         "envFile": "{workspaceRoot}/.env"
       }

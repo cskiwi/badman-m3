@@ -1,6 +1,15 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
-import { APP_ID, APP_INITIALIZER, ApplicationConfig, PLATFORM_ID, importProvidersFrom, isDevMode, provideZoneChangeDetection } from '@angular/core';
+import {
+  APP_ID,
+  ApplicationConfig,
+  PLATFORM_ID,
+  importProvidersFrom,
+  isDevMode,
+  provideZoneChangeDetection,
+  inject,
+  provideAppInitializer,
+} from '@angular/core';
 import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
@@ -93,11 +102,9 @@ export const appConfig: ApplicationConfig = {
       }),
       deps: [BASE_URL],
     },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: langulageInitializer,
-      deps: [TranslateService, SsrCookieService],
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      const initializerFn = langulageInitializer(inject(TranslateService), inject(SsrCookieService));
+      return initializerFn();
+    }),
   ],
 };

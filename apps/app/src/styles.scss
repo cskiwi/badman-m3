@@ -15,7 +15,8 @@ body {
   font-display: swap;
 }
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 html {
   @include mat.all-component-themes(theme.$dark-theme);

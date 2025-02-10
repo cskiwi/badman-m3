@@ -10,12 +10,11 @@ import { BASE_URL } from '@app/frontend-utils';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-page-home',
-  standalone: true,
-  imports: [CommonModule, PageHeaderComponent, MtxGrid, MatIconModule, TranslateModule],
-  templateUrl: './page-home.component.html',
-  styleUrl: './page-home.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-page-home',
+    imports: [CommonModule, PageHeaderComponent, MtxGrid, MatIconModule, TranslateModule],
+    templateUrl: './page-home.component.html',
+    styleUrl: './page-home.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageHomeComponent {
   private readonly dataService = new HomeService();

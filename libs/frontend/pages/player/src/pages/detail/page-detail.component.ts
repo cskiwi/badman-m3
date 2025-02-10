@@ -21,26 +21,22 @@ import { ShowLevelComponent } from './components/show-level.component';
 import { DetailService } from './page-detail.service';
 
 @Component({
-  selector: 'app-page-detail',
-  standalone: true,
-  imports: [
-    CommonModule,
-
-    MatProgressBarModule,
-    MatIconModule,
-    MatButtonModule,
-
-    RouterModule,
-    TranslateModule,
-
-    PageHeaderComponent,
-    ShowLevelComponent,
-    RecentGamesComponent,
-    UpcomingGamesComponent,
-  ],
-  templateUrl: './page-detail.component.html',
-  styleUrl: './page-detail.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-page-detail',
+    imports: [
+        CommonModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatButtonModule,
+        RouterModule,
+        TranslateModule,
+        PageHeaderComponent,
+        ShowLevelComponent,
+        RecentGamesComponent,
+        UpcomingGamesComponent,
+    ],
+    templateUrl: './page-detail.component.html',
+    styleUrl: './page-detail.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageDetailComponent {
   private readonly dataService = new DetailService();

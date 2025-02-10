@@ -12,26 +12,23 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-page-overview',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    ReactiveFormsModule,
-    FormsModule,
-    TranslateModule,
-
-    MatListModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-
-    PageHeaderComponent,
-  ],
-  templateUrl: './page-overview.component.html',
-  styleUrl: './page-overview.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-page-overview',
+    imports: [
+        CommonModule,
+        RouterLink,
+        ReactiveFormsModule,
+        FormsModule,
+        TranslateModule,
+        MatListModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        PageHeaderComponent,
+    ],
+    templateUrl: './page-overview.component.html',
+    styleUrl: './page-overview.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageOverviewComponent {
   private readonly dataService = new OverviewService();

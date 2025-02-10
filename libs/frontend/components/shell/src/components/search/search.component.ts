@@ -9,12 +9,11 @@ import { filter, Subject } from 'rxjs';
 import { SearchHit, SearchService } from './search.service';
 
 @Component({
-  selector: 'app-search',
-  standalone: true,
-  imports: [ReactiveFormsModule, MtxSelectModule, FormsModule, MatFormFieldModule, MatSelectModule, NgxMatSelectSearchModule],
-  templateUrl: './search.component.html',
-  styleUrl: './search.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-search',
+    imports: [ReactiveFormsModule, MtxSelectModule, FormsModule, MatFormFieldModule, MatSelectModule, NgxMatSelectSearchModule],
+    templateUrl: './search.component.html',
+    styleUrl: './search.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchComponent {
   private readonly searchService = inject(SearchService);

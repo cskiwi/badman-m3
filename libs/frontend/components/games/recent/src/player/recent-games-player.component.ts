@@ -7,12 +7,11 @@ import { IS_MOBILE } from '@app/frontend-utils';
 import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
-  selector: 'app-recent-games-player',
-  standalone: true,
-  imports: [CommonModule, MomentModule, MatCardModule, MatChipsModule],
-  templateUrl: './recent-games-player.component.html',
-  styleUrl: './recent-games-player.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-recent-games-player',
+    imports: [CommonModule, MomentModule, MatCardModule, MatChipsModule],
+    templateUrl: './recent-games-player.component.html',
+    styleUrl: './recent-games-player.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecentGamesPlayerComponent {
   for = input.required<string | string[]>();

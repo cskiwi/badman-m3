@@ -10,18 +10,18 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "packageJson": "{projectRoot}/package.json",
-        "main": "{projectRoot}/src/index.ts",
-        "assets": ["{projectRoot}/*.md"]
+        "outputPath": "{workspaceRoot}/dist/libs/utils",
+        "tsConfig": "libs/utils/tsconfig.lib.json",
+        "packageJson": "libs/utils/package.json",
+        "main": "libs/utils/src/index.ts",
+        "assets": ["libs/utils/*.md"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": ["{workspaceRoot}/coverage/libs/utils"],
       "options": {
-        "jestConfig": "{projectRoot}/jest.config.ts"
+        "jestConfig": "libs/utils/jest.config.ts"
       }
     }
   }

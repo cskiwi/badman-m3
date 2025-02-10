@@ -23,30 +23,29 @@ import { DetailService } from './page-partner.service';
 import { PartnerGridComponent } from './partner-grid/partner-grid.component';
 
 @Component({
-  selector: 'app-page-partner',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatProgressBarModule,
-    MatIconModule,
-    MatButtonModule,
-    RouterModule,
-    TranslateModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MatFormFieldModule,
-    PartnerGridComponent,
-    MatInputModule,
-    MtxDatetimepickerModule,
-    MatDatepickerModule,
-    // MatOptionModule,
-    MatSelectModule,
-  ],
-  providers: [{ provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }],
-  templateUrl: './page-partner.component.html',
-  styleUrl: './page-partner.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-page-partner',
+    imports: [
+        CommonModule,
+        MatCardModule,
+        MatProgressBarModule,
+        MatIconModule,
+        MatButtonModule,
+        RouterModule,
+        TranslateModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatFormFieldModule,
+        PartnerGridComponent,
+        MatInputModule,
+        MtxDatetimepickerModule,
+        MatDatepickerModule,
+        // MatOptionModule,
+        MatSelectModule,
+    ],
+    providers: [{ provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }],
+    templateUrl: './page-partner.component.html',
+    styleUrl: './page-partner.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PagePartnerComponent {
   private readonly dataService = new DetailService();

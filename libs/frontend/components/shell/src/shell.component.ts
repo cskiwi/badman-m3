@@ -17,22 +17,20 @@ import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
 
 @Component({
-  standalone: true,
-  imports: [
-    RouterModule,
-    TranslateModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatMenuModule,
-
-    SearchComponent,
-  ],
-  selector: 'app-shell',
-  templateUrl: './shell.component.html',
-  styleUrl: './shell.component.scss',
+    imports: [
+        RouterModule,
+        TranslateModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatMenuModule,
+        SearchComponent,
+    ],
+    selector: 'app-shell',
+    templateUrl: './shell.component.html',
+    styleUrl: './shell.component.scss'
 })
 export class ShellComponent {
   private readonly platformId = inject<string>(PLATFORM_ID);

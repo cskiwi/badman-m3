@@ -6,12 +6,11 @@ import { Player } from '@app/models';
 import { PlayerGrid } from './sort.type';
 
 @Component({
-  selector: 'app-partner-grid',
-  standalone: true,
-  imports: [CommonModule, MtxGrid, TranslateModule],
-  templateUrl: './partner-grid.component.html',
-  styleUrl: './partner-grid.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-partner-grid',
+    imports: [CommonModule, MtxGrid, TranslateModule],
+    templateUrl: './partner-grid.component.html',
+    styleUrl: './partner-grid.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerGridComponent {
   private readonly translate = inject(TranslateService);

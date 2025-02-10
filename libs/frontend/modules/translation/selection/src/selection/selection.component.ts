@@ -9,17 +9,16 @@ import { AvaliableLanguages, languages } from '@app/frontend-modules-translation
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 
 @Component({
-  selector: 'app-language-selection',
-  templateUrl: './selection.component.html',
-  styleUrls: ['./selection.component.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    TranslateModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
+    selector: 'app-language-selection',
+    templateUrl: './selection.component.html',
+    styleUrls: ['./selection.component.scss'],
+    imports: [
+        CommonModule,
+        TranslateModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatIconModule,
+    ]
 })
 export class LanguageSelectionComponent implements OnInit {
   public translate = inject(TranslateService);

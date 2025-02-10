@@ -7,12 +7,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MomentModule } from 'ngx-moment';
 
 @Component({
-  selector: 'app-upcoming-games-player',
-  standalone: true,
-  imports: [CommonModule, MomentModule, MatCardModule, MatChipsModule],
-  templateUrl: './upcoming-games-player.component.html',
-  styleUrl: './upcoming-games-player.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-upcoming-games-player',
+    imports: [CommonModule, MomentModule, MatCardModule, MatChipsModule],
+    templateUrl: './upcoming-games-player.component.html',
+    styleUrl: './upcoming-games-player.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpcomingGamesPlayerComponent {
   for = input.required<string | string[]>();
