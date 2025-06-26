@@ -51,7 +51,7 @@
     "algoliasearch": "^5.13.0",
     "apollo-angular": "^8.0.0",
     "axios": "^1.7.7",
-    "canvas": "3.0.0-rc2",
+    "canvas": "3.1.2",
     "class-validator": "^0.14.1",
     "cross-env": "^7.0.3",
     "crypto-hash": "^3.1.0",
@@ -134,7 +134,7 @@
     "webpack-cli": "^5.1.4"
   },
   "overrides": {
-    "canvas": "3.0.0-rc2"
+    "canvas": "3.1.2"
   },
   "engines": {
     "node": "22"
