@@ -4,7 +4,7 @@ import { isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { NAVIGATOR } from './navigator.token';
-import { REQUEST } from 'ngx-cookie-service-ssr';
+import { REQUEST } from '@angular/core';
 
 export const IS_MOBILE = new InjectionToken('DEVICE', {
   providedIn: 'root',
@@ -17,7 +17,7 @@ export const IS_MOBILE = new InjectionToken('DEVICE', {
       const req = inject(REQUEST, { optional: true });
 
       if (!navigator) {
-        navigator = req?.headers['user-agent'] ?? null;
+        navigator = req?.headers.get('user-agent') ?? null;
       }
 
       if (!navigator) {

@@ -4,5 +4,8 @@
     "/libs/models/src/models/ranking",
     "/libs/models/src/enums"
   ],
-  "eslint.validate": ["json"]
+  "eslint.validate": [
+    "json"
+  ],
+  "nxConsole.generateAiAgentRules": true
 }

@@ -17,10 +17,10 @@ export class RecentGamesPlayerComponent {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
 
-  private playerGamesService = new PlayerRecentGamesService();
+  private readonly _playerGamesService = new PlayerRecentGamesService();
 
-  games = this.playerGamesService.games;
-  loading = this.playerGamesService.loading;
+  games = this._playerGamesService.games;
+  loading = this._playerGamesService.loading;
 
   constructor() {
     effect(() => {
@@ -30,7 +30,7 @@ export class RecentGamesPlayerComponent {
         id = id[0];
       }
 
-      this.playerGamesService.filter.patchValue({ playerId: id, take: this.isMobile() ? 5 : 10 });
+      this._playerGamesService.filter.patchValue({ playerId: id, take: this.isMobile() ? 5 : 10 });
     });
   }
 }

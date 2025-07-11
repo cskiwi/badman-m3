@@ -44,3 +44,5 @@ Thumbs.db
 routes.txt
 .env
 typesense-data/
+.cursor\rules\nx-rules.mdc
+.github\instructions\nx.instructions.md

@@ -6,7 +6,7 @@
         <div class="info">
           <div class="sub-text">
             <ng-container
-              ><a [routerLink]="['/', 'competition', this.competition?.slug]">{{
+              ><a [routerLink]="['/', 'competition', this.competition()?.slug]">{{
                 this.competition?.name
               }}</a></ng-container
             >
