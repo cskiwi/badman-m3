@@ -9,14 +9,14 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateService } from '@ngx-translate/core';
 import { ShowLevelService } from './show-level.service';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
     selector: 'app-show-level',
-    imports: [CommonModule, MatTooltipModule],
+    imports: [CommonModule, TooltipModule],
     templateUrl: './show-level.component.html',
     styleUrl: './show-level.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,4 +1,4 @@
-<div [matTooltip]="tooltip()" matTooltipClass="tooltip-multi-line">
+<div [pTooltip]="tooltip()" tooltipStyleClass="tooltip-multi-line">
   @if (this.showLevelService.rankingPlace()) {
     <div class="level">{{ this.showLevelService.rankingPlace()?.[type()] }}</div>
 

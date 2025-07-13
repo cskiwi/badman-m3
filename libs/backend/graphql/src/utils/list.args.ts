@@ -48,7 +48,7 @@ export function args<T>(name?: string) {
 
     static getQuery<T>(args?: FindOptionsWhere<T> | FindOptionsWhere<T>[]): FindOptionsWhere<T>[] {
       const where = queryFixer(args) ?? [];
-      return Array.isArray(where) ? where : [where];
+      return Array.isArray(where) ? where as FindOptionsWhere<T>[] : [where as FindOptionsWhere<T>];
     }
 
     static getRelations(order?: { [key: string]: unknown }) {

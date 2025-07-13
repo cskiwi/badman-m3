@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-recent-games-team',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './recent-games-team.component.html',
     styleUrl: './recent-games-team.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,44 +1,64 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
+import { ThemeService } from '@app/frontend-modules-theme';
 import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/models/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
+import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
+import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
     imports: [
         RouterModule,
         TranslateModule,
-        MatSidenavModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatIconModule,
-        MatListModule,
-        MatMenuModule,
+        ButtonModule,
+        MenuModule,
+        DividerModule,
+        ToastModule,
         SearchComponent,
     ],
     selector: 'app-shell',
     templateUrl: './shell.component.html',
-    styleUrl: './shell.component.scss'
+    styleUrl: './shell.component.scss',
+    providers: [MessageService]
 })
 export class ShellComponent {
   private readonly platformId = inject<string>(PLATFORM_ID);
+  private readonly messageService = inject(MessageService);
 
   isMobile = inject(IS_MOBILE);
   auth = inject(AuthService);
+  readonly themeService = inject(ThemeService);
 
   user = this.auth.state.user;
+  sidebarVisible = false;
+
+  // Theme computed properties
+  isDarkMode = computed(() => this.themeService.currentTheme() === 'dark');
+  themeToggleIcon = computed(() => this.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon');
+  themeToggleLabel = computed(() => `Toggle ${this.isDarkMode() ? 'light' : 'dark'} mode`);
+
+  userMenuItems = computed(() => [
+    {
+      label: this.user()?.firstName || 'User',
+      disabled: true
+    },
+    {
+      separator: true
+    },
+    {
+      label: 'Logout',
+      command: () => this.logout()
+    }
+  ]);
 
   clubs = computed(() => {
     return (this.user()?.clubPlayerMemberships ?? [])
@@ -73,9 +93,20 @@ export class ShellComponent {
     this.auth.state.logout();
   }
 
+  toggleSidebar() {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+
+  get isDesktop() {
+    return !this.isMobile();
+  }
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      const snackBar = inject(MatSnackBar);
       const updates = inject(SwUpdate);
 
       updates.versionUpdates
@@ -88,12 +119,13 @@ export class ShellComponent {
           })),
         )
         .subscribe(() => {
-          snackBar
-            .open(`New version available.`, 'refresh', { duration: 0 })
-            .onAction()
-            .subscribe(() => {
-              document.location.reload();
-            });
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Update Available',
+            detail: 'New version available. Click to refresh.',
+            life: 0,
+            closable: true,
+          });
         });
     }
   }

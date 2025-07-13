@@ -6,9 +6,7 @@
         <div class="info">
           <div class="sub-text">
             <ng-container
-              ><a [routerLink]="['/', 'competition', this.competition()?.slug]">{{
-                this.competition?.name
-              }}</a></ng-container
+              ><a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a></ng-container
             >
           </div>
         </div>
@@ -17,12 +15,12 @@
     </app-page-header>
   }
 } @else {
-  <mat-progress-bar mode="indeterminate" />
+  <p-progressbar mode="indeterminate" [style]="{'height': '6px'}" />
 }
 
 @if (error()) {
-  <div class="error">
-    <mat-icon>error</mat-icon>
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
     {{ error() }}
   </div>
 }

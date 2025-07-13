@@ -5,12 +5,7 @@
     "tslib": "^2.3.0",
     "@app/models": "0.0.1",
     "@app/backend-authorization": "0.0.1",
-    "@app/utils": "0.0.1",
-    "typeorm": "^0.3.20",
-    "graphql": "^16.9.0",
-    "graphql-type-json": "^0.3.2",
-    "@nestjs/graphql": "^12.2.1",
-    "class-validator": "^0.14.1"
+    "@app/utils": "0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -17,8 +17,6 @@ import {
 } from '@app/models';
 import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
 
 const entities = [
   Player,
@@ -57,12 +55,12 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
       type: 'sqlite',
       database: getEnvVar('DB_DATABASE'),
       synchronize: getEnvVar('DB_SYNCHRONIZE') === 'true',
-    } as SqliteConnectionOptions;
+    } as DataSourceOptions;
   } else if (dbType === 'postgres') {
     config = {
       type: 'postgres',
       host: getEnvVar('DB_IP'),
-      port: getEnvVar('DB_PORT') ? parseInt(getEnvVar('DB_PORT')!) : 5432,
+      port: getEnvVar('DB_PORT') ? parseInt(getEnvVar('DB_PORT') as string) : 5432,
       username: getEnvVar('DB_USER'),
       password: getEnvVar('DB_PASSWORD'),
       database: getEnvVar('DB_DATABASE'),
@@ -77,7 +75,7 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
       synchronize: false,
       migrationsRun: false,
       // logging: true,
-    } as PostgresConnectionOptions;
+    } as DataSourceOptions;
   } else {
     throw new Error(
       'Unsupported DB_TYPE. Please specify either "sqlite" or "postgres".',

@@ -9,17 +9,17 @@ import {
   provideZoneChangeDetection,
   inject,
   provideAppInitializer,
+  afterNextRender,
 } from '@angular/core';
-import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AuthInterceptor } from '@app/frontend-modules-auth/interceptor';
-import { GraphQLModule } from '@app/frontend-modules-graphql';
+import { provideGraphQL } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
+import { ThemeService } from '@app/frontend-modules-theme';
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -27,13 +27,14 @@ import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { MomentModule } from 'ngx-moment';
 import { environment } from '../src/environments/environment';
 import { appRoutes } from './app.routes';
+import { providePrimeNGWithTheme } from './primeng-theme.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    provideGraphQL(),
     importProvidersFrom(
       MomentModule.forRoot(),
-      GraphQLModule.forRoot(),
       AuthModule.forRoot({
         domain: environment.Auth0IssuerUrl,
         clientId: environment.Auth0ClientId,
@@ -68,7 +69,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
-    provideMomentDateAdapter(),
+    // PrimeNG configuration with theme
+    ...providePrimeNGWithTheme(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
@@ -84,10 +86,6 @@ export const appConfig: ApplicationConfig = {
       deps: [PLATFORM_ID],
     },
     { provide: APP_ID, useValue: 'starter' },
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: { appearance: 'outline', subscriptSizing: 'dynamic' },
-    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

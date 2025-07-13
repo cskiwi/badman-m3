@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -7,13 +7,13 @@ import {
   ElementRef,
   QueryList,
 } from '@angular/core';
-import { MatDividerModule } from '@angular/material/divider';
+import { DividerModule } from 'primeng/divider';
 import { injectDestroy } from 'ngxtension/inject-destroy';
 import { takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-page-header',
-    imports: [CommonModule, MatDividerModule],
+    imports: [DividerModule],
     templateUrl: './page-header.component.html',
     styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush

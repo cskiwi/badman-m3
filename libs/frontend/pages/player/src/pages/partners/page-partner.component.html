@@ -1,37 +1,27 @@
 <!-- datepicker -->
 @if (this.filter.getRawValue().date) {
-  <div class="filters">
+  <div class="filters grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
     <ng-container [formGroup]="this.filter">
-      <mat-form-field>
-        <mat-label>{{ 'all.partner.filters.start-date' | translate }}</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="date" />
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field> 
+      <p-floatlabel>
+        <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
+        <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
+      </p-floatlabel>
 
-      <mat-form-field>
-        <mat-label>{{ 'all.partner.filters.games' | translate }}</mat-label>
-        <input matInput type="number" formControlName="minGames" />
-      </mat-form-field>
+      <p-floatlabel>
+        <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
+        <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
+      </p-floatlabel>
 
-      <mat-form-field>
-        <mat-label>{{ 'all.partner.filters.linktype' | translate }}</mat-label>
-        <mat-select formControlName="linkType">
-          <mat-option [value]="null">{{ 'all.partner.filters.all' | translate }}</mat-option>
-          <mat-option value="competition">{{ 'all.partner.filters.competition' | translate }}</mat-option>
-          <mat-option value="tournament">{{ 'all.partner.filters.tournament' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <p-floatlabel>
+        <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
+        <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
+      </p-floatlabel>
 
       <!-- gameType -->
-      <mat-form-field>
-        <mat-label>{{ 'all.partner.filters.gameType' | translate }}</mat-label>
-        <mat-select formControlName="gameType">
-          <mat-option [value]="null">{{ 'all.partner.filters.all' | translate }}</mat-option>
-          <mat-option value="MX">{{ 'all.partner.filters.mix' | translate }}</mat-option>
-          <mat-option value="D">{{ 'all.partner.filters.double' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <p-floatlabel>
+        <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
+        <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
+      </p-floatlabel>
     </ng-container>
   </div>
 }
@@ -41,8 +31,8 @@
 </div>
 
 @if (error()) {
-  <div class="error">
-    <mat-icon>error</mat-icon>
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
     {{ error() }}
   </div>
 }

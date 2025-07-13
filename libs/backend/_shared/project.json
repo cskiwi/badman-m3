@@ -6,23 +6,21 @@
   "tags": [],
   "targets": {
     "build": {
-      "test": {
-        "executor": "@nx/jest:jest",
-        "outputs": ["{workspaceRoot}/coverage/libs/backend/_shared"],
-        "options": {
-          "jestConfig": "libs/backend/_shared/jest.config.ts"
-        }
-      },
-      "build": {
-        "executor": "@nx/js:tsc",
-        "outputs": ["{options.outputPath}"],
-        "options": {
-          "outputPath": "{workspaceRoot}/dist/libs/backend/_shared",
-          "tsConfig": "libs/backend/_shared/tsconfig.lib.json",
-          "packageJson": "libs/backend/_shared/package.json",
-          "main": "libs/backend/_shared/src/index.ts",
-          "assets": ["{projectRoot/*.md"]
-        }
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "{workspaceRoot}/dist/libs/backend/_shared",
+        "tsConfig": "libs/backend/_shared/tsconfig.lib.json",
+        "packageJson": "libs/backend/_shared/package.json",
+        "main": "libs/backend/_shared/src/index.ts",
+        "assets": ["{projectRoot}/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/backend/_shared"],
+      "options": {
+        "jestConfig": "libs/backend/_shared/jest.config.ts"
       }
     }
   }

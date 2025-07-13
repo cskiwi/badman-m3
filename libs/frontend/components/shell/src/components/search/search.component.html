@@ -1,5 +1,15 @@
-<ng-container>
-  <mat-form-field>
-    <mtx-select [items]="results()" [typeahead]="typeahead" bindValue="id" bindLabel="title" (change)="select($event)"> </mtx-select>
-  </mat-form-field>
-</ng-container>
+<div class="w-full">
+  <p-autoComplete
+    [(ngModel)]="searchValue"
+    [suggestions]="filteredResults"
+    (completeMethod)="onSearch($event)"
+    (onSelect)="onSelect($event)"
+    field="title"
+    placeholder="Search players, clubs, competitions..."
+    [dropdown]="false"
+    [multiple]="false"
+    [minLength]="2"
+    styleClass="w-full"
+    inputStyleClass="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>

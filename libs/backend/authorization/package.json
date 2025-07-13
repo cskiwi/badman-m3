@@ -2,11 +2,8 @@
   "name": "@app/backend-authorization",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0",
     "@app/models": "0.0.1",
-    "@nestjs/common": "^10.4.6",
-    "@nestjs/jwt": "^10.2.0",
-    "@nestjs/graphql": "^12.2.1"
+    "tslib": "^2.0.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

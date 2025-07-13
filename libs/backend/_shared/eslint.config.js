@@ -1,11 +1,4 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
 const baseConfig = require('../../../eslint.config.js');
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-});
 
 module.exports = [
   ...baseConfig,
@@ -27,7 +20,12 @@ module.exports = [
   {
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': 'error',
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: ['tslib'],
+        },
+      ],
     },
     languageOptions: {
       parser: require('jsonc-eslint-parser'),

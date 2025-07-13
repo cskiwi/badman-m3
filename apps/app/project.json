@@ -23,7 +23,9 @@
             "input": "apps/app/public"
           }
         ],
-        "styles": ["apps/app/src/styles.scss"],
+        "styles": [
+          "apps/app/src/styles.scss"
+        ],
         "stylePreprocessorOptions": {
           "includePaths": ["node_modules/"]
         },
@@ -92,7 +94,8 @@
           "proxyConfig": "{projectRoot}/proxy.conf.json"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@nx/angular:extract-i18n",

@@ -50,7 +50,17 @@ module.exports = [
   {
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': 'error',
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: [
+            '@angular/core',
+            '@ngx-translate/core',
+            'ngx-cookie-service-ssr',
+            'primeng'
+          ],
+        },
+      ],
     },
     languageOptions: {
       parser: require('jsonc-eslint-parser'),

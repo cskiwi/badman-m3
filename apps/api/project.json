@@ -25,7 +25,15 @@
       }
     },
     "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
+      "options": {
+        "outputPath": "dist/apps/api",
+        "main": "apps/api/src/main.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "webpackConfig": "apps/api/webpack.config.js"
+      },
       "configurations": {
         "development": {
           "cwd": "apps/api",

@@ -1,0 +1,7 @@
+{
+  "name": "frontend-modules-theme",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/modules/theme/src",
+  "projectType": "library",
+  "tags": ["scope:frontend", "type:modules"]
+}

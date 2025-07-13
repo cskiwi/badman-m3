@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
   // displayName: 'frontend-modules-seo',
   preset: '../../../../jest.preset.js',

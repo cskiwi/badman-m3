@@ -1,31 +1,28 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatListModule } from '@angular/material/list';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { OverviewService } from './page-overview.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { InputTextModule } from 'primeng/inputtext';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'app-page-overview',
     imports: [
-        CommonModule,
-        RouterLink,
-        ReactiveFormsModule,
-        FormsModule,
-        TranslateModule,
-        MatListModule,
-        MatProgressBarModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatInputModule,
-        PageHeaderComponent,
-    ],
+    RouterLink,
+    ReactiveFormsModule,
+    FormsModule,
+    TranslateModule,
+    InputTextModule,
+    ProgressBarModule,
+    CardModule,
+    ButtonModule,
+    PageHeaderComponent
+],
     templateUrl: './page-overview.component.html',
     styleUrl: './page-overview.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

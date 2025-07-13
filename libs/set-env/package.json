@@ -2,8 +2,7 @@
   "name": "@app/set-env",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0",
-    "@nx/devkit": "20.0.12"
+    "tslib": "^2.0.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

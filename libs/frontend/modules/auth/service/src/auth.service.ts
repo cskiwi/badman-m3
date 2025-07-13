@@ -137,8 +137,6 @@ export class AuthService {
       if (this.state.loggedIn()) {
         await this.state.getToken();
       }
-    }, {
-      allowSignalWrites: true,
     });
 
     effect(async () => {
@@ -154,8 +152,6 @@ export class AuthService {
         this.cookie.set(AUTH_KEY, token);
         await this.state.fetchUser();
       }
-    }, {
-      allowSignalWrites: true,
     });
   }
   fetchUser() {

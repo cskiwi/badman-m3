@@ -1,48 +1,39 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { Player } from '@app/models';
-import { MtxDatetimepickerModule } from '@ng-matero/extensions/datetimepicker';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { distinctUntilChanged, map, of, startWith } from 'rxjs';
 import { DetailService } from './page-partner.service';
 import { PartnerGridComponent } from './partner-grid/partner-grid.component';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { InputTextModule } from 'primeng/inputtext';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
     selector: 'app-page-partner',
     imports: [
-        CommonModule,
-        MatCardModule,
-        MatProgressBarModule,
-        MatIconModule,
-        MatButtonModule,
-        RouterModule,
-        TranslateModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatFormFieldModule,
-        PartnerGridComponent,
-        MatInputModule,
-        MtxDatetimepickerModule,
-        MatDatepickerModule,
-        // MatOptionModule,
-        MatSelectModule,
-    ],
-    providers: [{ provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] }],
+    CardModule,
+    ProgressBarModule,
+    ButtonModule,
+    RouterModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    FormsModule,
+    InputTextModule,
+    PartnerGridComponent,
+    DatePickerModule,
+    SelectModule,
+    FloatLabelModule
+],
     templateUrl: './page-partner.component.html',
     styleUrl: './page-partner.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -50,6 +41,7 @@ import { PartnerGridComponent } from './partner-grid/partner-grid.component';
 export class PagePartnerComponent {
   private readonly dataService = new DetailService();
   private readonly playerId = injectParams('playerId');
+  private readonly translateService = inject(TranslateService);
 
   // selectors
 
@@ -60,6 +52,19 @@ export class PagePartnerComponent {
   loading = this.dataService.loading;
 
   auth = inject(AuthService);
+
+  // Options for PrimeNG selects
+  linkTypeOptions = [
+    { value: null, label: this.translateService.instant('all.partner.filters.all') },
+    { value: 'competition', label: this.translateService.instant('all.partner.filters.competition') },
+    { value: 'tournament', label: this.translateService.instant('all.partner.filters.tournament') }
+  ];
+
+  gameTypeOptions = [
+    { value: null, label: this.translateService.instant('all.partner.filters.all') },
+    { value: 'MX', label: this.translateService.instant('all.partner.filters.mix') },
+    { value: 'D', label: this.translateService.instant('all.partner.filters.double') }
+  ];
 
   // create signal from minGames filter
   minGames = toSignal<number>(

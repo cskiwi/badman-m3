@@ -1,7 +1,6 @@
 // info: https://material.angular.io/guide/theming-your-components
 
 @use 'sass:map';
-@use '@angular/material' as mat;
 
 @mixin colors($theme) {
   app-page-header {
@@ -9,7 +8,8 @@
       &,
       &:visited,
       &:hover {
-        color: mat.get-theme-color($theme, primary);
+        // Using the new CSS variable approach for Angular 20
+        color: var(--mat-sys-primary);
       }
     }
   }
@@ -19,7 +19,8 @@
   app-page-header {
     .header {
       .title {
-        font: mat.get-theme-typography($theme, 'headline-large');
+        // Using the new CSS variable approach for Angular 20
+        font: var(--mat-sys-headline-large);
       }
     }
   }

@@ -1,16 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
-import { MtxSelectModule } from '@ng-matero/extensions/select';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { filter, Subject } from 'rxjs';
 import { SearchHit, SearchService } from './search.service';
 
 @Component({
     selector: 'app-search',
-    imports: [ReactiveFormsModule, MtxSelectModule, FormsModule, MatFormFieldModule, MatSelectModule, NgxMatSelectSearchModule],
+    imports: [ReactiveFormsModule, FormsModule, AutoCompleteModule],
     templateUrl: './search.component.html',
     styleUrl: './search.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,13 +16,13 @@ export class SearchComponent {
   private readonly searchService = inject(SearchService);
   private readonly router = inject(Router);
 
-  selectedCars = [];
-
   filter = this.searchService.filter;
   results = this.searchService.results;
   loading = this.searchService.loading;
 
   query = this.filter.get('query') as FormControl;
+  filteredResults: SearchHit[] = [];
+  searchValue = '';
 
   typeahead: Subject<string> = new Subject();
 
@@ -33,6 +30,18 @@ export class SearchComponent {
     this.typeahead.pipe(filter((r) => !!r)).subscribe((term) => {
       this.query.patchValue(term);
     });
+  }
+
+  onSearch(event: { query: string }) {
+    const query = event.query || '';
+    this.searchValue = query;
+    this.typeahead.next(query);
+    this.filteredResults = this.results() || [];
+  }
+
+  onSelect(event: AutoCompleteSelectEvent) {
+    const model = event.value as SearchHit;
+    this.select(model);
   }
 
   select(model: SearchHit) {

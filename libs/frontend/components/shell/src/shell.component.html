@@ -1,60 +1,188 @@
-<div class="container">
-  <mat-toolbar class="toolbar">
-    <button mat-icon-button (click)="snav.toggle()" aria-label="Open/Close sidenav">
-      <mat-icon>menu</mat-icon>
-    </button>
-    @if (isMobile() === false) {
-      <h1 class="app-name">Badman</h1>
-    }
-    <div class="spacer"></div>
-    <app-search />
-    <div class="spacer"></div>
-    @if (user()?.firstName) {
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item>{{ user()?.firstName }}</button>
-        <button mat-menu-item (click)="logout()">Logout</button>
-      </mat-menu>
-      @if (isMobile() === false) {
-        <button mat-button [matMenuTriggerFor]="menu" aria-label="User menu">
-          {{ user()?.firstName }}
-        </button>
-      } @else {
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="User menu">
-          <mat-icon>person</mat-icon>
-        </button>
+<div class="min-h-screen bg-gray-50">
+  <!-- Top Navigation Bar -->
+  <div class="bg-white shadow-md px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <p-button 
+        icon="pi pi-bars" 
+        (click)="toggleSidebar()"
+        [outlined]="true"
+        [rounded]="true"
+        size="small"
+        aria-label="Toggle sidebar"
+        class="lg:hidden"
+      />
+      @if (isDesktop) {
+        <h1 class="text-xl font-bold text-gray-800">Badman</h1>
       }
-    } @else {
-      <button mat-stroked-button (click)="login()">Log in</button>
-    }
-  </mat-toolbar>
+    </div>
+    
+    <div class="flex-1 max-w-md mx-4">
+      <app-search />
+    </div>
+    
+    <div class="flex items-center space-x-2">
+      <!-- Theme toggle button -->
+      <p-button 
+        [icon]="themeToggleIcon()"
+        [outlined]="true"
+        [rounded]="true"
+        (click)="toggleTheme()"
+        [attr.aria-label]="themeToggleLabel()"
+        size="small"
+      />
+      
+      @if (user()?.firstName) {
+        <p-menu #menu [model]="userMenuItems()" [popup]="true" />
+        @if (isDesktop) {
+          <p-button 
+            [label]="user()?.firstName" 
+            [outlined]="true"
+            (click)="menu.toggle($event)"
+            aria-label="User menu"
+          />
+        } @else {
+          <p-button 
+            icon="pi pi-user" 
+            [outlined]="true"
+            [rounded]="true"
+            (click)="menu.toggle($event)"
+            aria-label="User menu"
+          />
+        }
+      } @else {
+        <p-button 
+          label="Log in" 
+          [outlined]="true"
+          (click)="login()"
+        />
+      }
+    </div>
+  </div>
 
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #snav [mode]="isMobile() ? 'over' : 'side'" [fixedInViewport]="isMobile()" [opened]="isMobile() === false" fixedTopGap="56">
-      <div class="nav">
-        <mat-nav-list>
+  <div class="flex">
+    <!-- Desktop Sidebar -->
+    <aside 
+      class="hidden lg:block w-64 bg-white shadow-md p-4 min-h-screen"
+      [class.hidden]="!isDesktop"
+    >
+      <nav class="space-y-2">
+        @if (user()?.slug) {
+          <a 
+            [routerLink]="['/player', user()?.slug]"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {{ 'all.players.my-profile' | translate }}
+          </a>
+
+          @if (clubs().length === 1) {
+            <a 
+              [routerLink]="['/club', clubs()[0].club.slug]"
+              class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              {{ 'all.players.my-club' | translate }}
+            </a>
+          }
+          <p-divider />
+        }
+
+        <a 
+          routerLink="."
+          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          Home
+        </a>
+        <a 
+          routerLink="player"
+          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          Players
+        </a>
+        <a 
+          routerLink="club"
+          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          Clubs
+        </a>
+        <a 
+          routerLink="competition"
+          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          Competition
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    @if (sidebarVisible && !isDesktop) {
+      <div 
+        class="fixed inset-0 bg-black bg-opacity-50 z-40"
+        (click)="sidebarVisible = false"
+      ></div>
+      <aside 
+        class="fixed left-0 top-0 w-64 bg-white shadow-md p-4 min-h-screen z-50 transform transition-transform"
+        [class.translate-x-0]="sidebarVisible"
+        [class.-translate-x-full]="!sidebarVisible"
+      >
+        <nav class="space-y-2 mt-16">
           @if (user()?.slug) {
-            <a mat-list-item [routerLink]="['/player', user()?.slug]">
+            <a 
+              [routerLink]="['/player', user()?.slug]"
+              class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              (click)="sidebarVisible = false"
+            >
               {{ 'all.players.my-profile' | translate }}
             </a>
 
             @if (clubs().length === 1) {
-              <a mat-list-item [routerLink]="['/club', clubs()[0].club.slug]">
+              <a 
+                [routerLink]="['/club', clubs()[0].club.slug]"
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                (click)="sidebarVisible = false"
+              >
                 {{ 'all.players.my-club' | translate }}
               </a>
             }
-            <mat-divider />
+            <p-divider />
           }
 
-          <a mat-list-item routerLink=".">Home</a>
-          <a mat-list-item routerLink="player">Players</a>
-          <a mat-list-item routerLink="club">Clubs</a>
-          <a mat-list-item routerLink="competition">Competition</a>
-        </mat-nav-list>
-      </div>
-    </mat-sidenav>
+          <a 
+            routerLink="."
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            (click)="sidebarVisible = false"
+          >
+            Home
+          </a>
+          <a 
+            routerLink="player"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            (click)="sidebarVisible = false"
+          >
+            Players
+          </a>
+          <a 
+            routerLink="club"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            (click)="sidebarVisible = false"
+          >
+            Clubs
+          </a>
+          <a 
+            routerLink="competition"
+            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            (click)="sidebarVisible = false"
+          >
+            Competition
+          </a>
+        </nav>
+      </aside>
+    }
 
-    <mat-sidenav-content>
+    <!-- Main Content -->
+    <main class="flex-1 p-4">
       <router-outlet />
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+    </main>
+  </div>
+  
+  <!-- Toast for notifications -->
+  <p-toast position="top-right" />
 </div>

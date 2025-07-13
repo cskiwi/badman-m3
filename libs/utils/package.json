@@ -2,10 +2,6 @@
   "name": "@app/utils",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.6.3",
-    "@nestjs/common": "^10.4.6",
-    "@nestjs/graphql": "^12.2.1",
-    "reflect-metadata": "^0.2.2",
-    "nestjs-i18n": "^10.4.9"
+    "tslib": "^2.0.0"
   }
 }

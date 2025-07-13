@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { PlayerUpcommingGamesService } from './upcoming-games-player.service';
 import { IS_MOBILE } from '@app/frontend-utils';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
+import { CardModule } from 'primeng/card';
+import { ChipModule } from 'primeng/chip';
 import { MomentModule } from 'ngx-moment';
 
 @Component({
     selector: 'app-upcoming-games-player',
-    imports: [CommonModule, MomentModule, MatCardModule, MatChipsModule],
+    imports: [MomentModule, CardModule, ChipModule],
     templateUrl: './upcoming-games-player.component.html',
     styleUrl: './upcoming-games-player.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

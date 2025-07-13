@@ -1,12 +1,7 @@
 {
   "name": "@app/backend-health",
   "version": "0.0.1",
-  "dependencies": {
-    "tslib": "^2.3.0",
-    "@nestjs/common": "^10.4.6",
-    "@nestjs/graphql": "^12.2.1",
-    "@nestjs/terminus": "^10.2.3"
-  },
+  "dependencies": {},
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",

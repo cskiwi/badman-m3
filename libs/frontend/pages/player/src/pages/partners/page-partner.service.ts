@@ -6,7 +6,7 @@ import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
-import { catchError, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
 interface DetailState {
   games: GamePlayerMembership[] | null;

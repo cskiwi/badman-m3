@@ -2,17 +2,8 @@
   "name": "@app/backend-search",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0",
     "@app/models": "0.0.1",
-    "@app/backend-authorization": "0.0.1",
-    "@nestjs/common": "^10.4.6",
-    "@nestjs/swagger": "^8.0.1",
-    "class-validator": "^0.14.1",
-    "express": "~4.21.1",
-    "@algolia/client-common": "5.13.0",
-    "@nestjs/jwt": "^10.2.0",
-    "algoliasearch": "^5.12.0",
-    "typesense": "^1.8.2"
+    "@app/backend-authorization": "0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

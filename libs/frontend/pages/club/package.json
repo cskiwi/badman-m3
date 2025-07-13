@@ -4,7 +4,13 @@
   "peerDependencies": {
     "@app/frontend-modules-seo": "0.0.1",
     "@app/frontend-components": "0.0.1",
-    "@app/models": "0.0.1"
+    "@app/models": "0.0.1",
+    "@angular/core": "*",
+    "@angular/router": "*",
+    "@angular/forms": "*",
+    "@ngx-translate/core": "*",
+    "ngxtension": "*",
+    "primeng": "*"
   },
   "sideEffects": false
 }

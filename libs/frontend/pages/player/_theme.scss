@@ -1,5 +1,3 @@
-@use '@angular/material' as mat;
-
 @use './src/pages/detail/page-detail.component.theme.scss' as page-detail;
 
 @mixin typography($theme) {

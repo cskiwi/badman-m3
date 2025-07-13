@@ -1,17 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+
+import { ChangeDetectionStrategy, Component, effect, inject, input, PLATFORM_ID } from '@angular/core';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
-import { MtxGrid, MtxGridColumn } from '@ng-matero/extensions/grid';
+import { TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HomeService } from './page-home.service';
-import { BASE_URL } from '@app/frontend-utils';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-page-home',
-    imports: [CommonModule, PageHeaderComponent, MtxGrid, MatIconModule, TranslateModule],
+    imports: [PageHeaderComponent, TableModule, TranslateModule, AsyncPipe],
     templateUrl: './page-home.component.html',
     styleUrl: './page-home.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,10 +18,15 @@ export class PageHomeComponent {
   private readonly dataService = new HomeService();
   private readonly translate = inject(TranslateService);
   private readonly rankingSystemService = inject(RankingSystemService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   id = input<string | null>(null);
 
-  columns: MtxGridColumn[] = [
+  isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
+  columns = [
     {
       header: this.translate.stream('all.points.table.level'),
       field: 'level',
