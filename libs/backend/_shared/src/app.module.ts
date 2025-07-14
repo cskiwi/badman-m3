@@ -23,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     TranslateModule,
     ScheduleModule.forRoot(),
     SearchModule.forRootAsync({
+      isGlobal: true,
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const getEnvVar = <T>(key: string, defaultValue?: string) =>

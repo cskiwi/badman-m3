@@ -1,16 +1,22 @@
 import { DynamicModule, FactoryProvider, Module, ModuleMetadata, Type } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { Client } from 'typesense';
-import { IndexController, SearchController } from './controllers';
+import { SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
 import { TYPESENSE_CLIENT } from './utils';
 
-@Module({ imports: [JwtModule], controllers: [SearchController, IndexController], providers: [SearchService, IndexService] })
+@Module({
+  imports: [JwtModule],
+  controllers: [SearchController],
+  providers: [SearchService, IndexService],
+  exports: [IndexService, SearchService],
+})
 export class SearchModule {
   static forRootAsync(options: SearchModuleRegisterAsyncOptions): DynamicModule {
     return {
       module: SearchModule,
+      global: options.isGlobal,
       providers: [
         { provide: 'SEARCH_CONFIG', useFactory: options.useFactory, inject: options.inject },
         {
@@ -19,7 +25,7 @@ export class SearchModule {
           inject: ['SEARCH_CONFIG'],
         },
       ],
-      exports: [TYPESENSE_CLIENT],
+      exports: [TYPESENSE_CLIENT, IndexService, SearchService],
     };
   }
 
@@ -30,6 +36,7 @@ export class SearchModule {
         { provide: TYPESENSE_CLIENT, useFactory: () => new Client(config.typesense) },
         { provide: 'SEARCH_CONFIG', useValue: config },
       ],
+      exports: [TYPESENSE_CLIENT, IndexService, SearchService],
     };
   }
 }

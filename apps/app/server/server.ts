@@ -23,7 +23,7 @@ export async function app() {
 
   // Serve static files from /browser
   server.get(
-    '**',
+    /(.*)/,
     express.static(browserDistFolder, {
       maxAge: '1y',
       index: 'index.html',
@@ -32,7 +32,7 @@ export async function app() {
 
   // All regular routes use the Angular engine for rendering
   // except for /api/** routes
-  server.get('**', (req, res, next) => {
+  server.get(/(.*)/, (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
     if (shouldSkip(req.originalUrl)) {
