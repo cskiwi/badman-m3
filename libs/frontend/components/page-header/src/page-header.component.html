@@ -1,17 +1,23 @@
-<section class="header">
-  <div class="avatar">
-    <ng-content select="[avatar]"></ng-content>
-  </div>
-  <!-- Name and ranking -->
-  <div class="info">
-    <h2 class="title"><ng-content select="[title]"></ng-content></h2>
-    <div class="sub-title"><ng-content select="[subTitle]"></ng-content></div>
-  </div>
+<section class="header bg-white shadow-sm border-b p-6">
+  <div class="flex items-center space-x-4">
+    <div class="avatar">
+      <ng-content select="[avatar]"></ng-content>
+    </div>
+    <!-- Name and ranking -->
+    <div class="info flex-1">
+      <h2 class="title text-2xl font-bold text-gray-900 mb-2">
+        <ng-content select="[title]"></ng-content>
+      </h2>
+      <div class="sub-title text-gray-600">
+        <ng-content select="[subTitle]"></ng-content>
+      </div>
+    </div>
 
-  <!-- Actions -->
-  <div class="actions">
-    <ng-content select="[actions]"></ng-content>
+    <!-- Actions -->
+    <div class="actions">
+      <ng-content select="[actions]"></ng-content>
+    </div>
   </div>
 </section>
 
-<mat-divider></mat-divider>
+<p-divider class="m-0"></p-divider>

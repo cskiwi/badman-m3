@@ -1,21 +1,15 @@
-<ng-container>
-  <mat-form-field>
-    <mat-select [formControl]="selected" placeholder="Search">
-      <!-- place ngx-mat-select-search inside mat-option to allow opening without initial selection -->
-      <mat-option>
-        <ngx-mat-select-search
-          [formControl]="query"
-          [searching]="loading()"
-          placeholderLabel="Search"
-          noEntriesFoundLabel="no matching entry found"
-        ></ngx-mat-select-search>
-      </mat-option>
-
-      @for (result of results(); track result.linkId) {
-        <mat-option [value]="result">
-          {{ result.title }} ({{ result.linkType }})
-        </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-</ng-container>
+<div class="w-full">
+  <p-autoComplete
+    [(ngModel)]="searchValue"
+    [suggestions]="filteredResults"
+    (completeMethod)="onSearch($event)"
+    (onSelect)="onSelect($event)"
+    field="title"
+    placeholder="Search players, clubs, competitions..."
+    [dropdown]="false"
+    [multiple]="false"
+    [minLength]="2"
+    styleClass="w-full"
+    inputStyleClass="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>

@@ -4,6 +4,7 @@ import { IsArray, IsEnum, IsOptional } from 'class-validator';
 import { Response } from 'express';
 import { DEFAULT_CLIENTS, IndexingClient, IndexType } from '../client';
 import { SearchService } from '../services';
+import { getClients, getTypes, IndexingClient, IndexType } from '../utils';
 
 export class SearchQuery {
   @IsArray()
@@ -13,6 +14,7 @@ export class SearchQuery {
     enum: IndexingClient,
     isArray: true,
     description: 'Select one or both clients',
+    required: false,
   })
   clients?: IndexingClient[];
 
@@ -23,6 +25,7 @@ export class SearchQuery {
     enum: IndexType,
     isArray: true,
     description: 'Select one or more types to search',
+    required: false,
   })
   types?: IndexType[];
 
@@ -32,7 +35,7 @@ export class SearchQuery {
 
 @Controller('search')
 export class SearchController {
-  constructor(private searchService: SearchService) {}
+  constructor(private readonly searchService: SearchService) {}
 
   @Get('/')
   async search(@Query() query: SearchQuery, @Res() res: Response) {

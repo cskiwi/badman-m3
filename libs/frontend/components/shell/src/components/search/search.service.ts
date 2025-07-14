@@ -1,19 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Player } from '@app/models';
-import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, Subject, merge } from 'rxjs';
-import {
-  catchError,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  filter,
-  debounceTime,
-} from 'rxjs/operators';
-import { ObjectId } from 'typeorm';
+import { EMPTY, merge, Subject } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 interface SearchState {
   results: SearchHit[];
@@ -36,7 +26,7 @@ export class SearchService {
   });
 
   // state
-  private initialState: SearchState = {
+  private readonly initialState: SearchState = {
     results: [],
     error: null,
     loading: true,
@@ -48,15 +38,15 @@ export class SearchService {
   loading = computed(() => this.state().loading);
 
   //sources
-  private error$ = new Subject<string | null>();
-  private filterChanged$ = this.filter.valueChanges.pipe(
+  private readonly error$ = new Subject<string | null>();
+  private readonly filterChanged$ = this.filter.valueChanges.pipe(
     distinctUntilChanged((a, b) => a.query === b.query),
     filter((filter) => !!filter.query),
     filter((filter) => `${filter.query}`.length > 2),
     debounceTime(300),
   );
 
-  private data$ = this.filterChanged$.pipe(
+  private readonly data$ = this.filterChanged$.pipe(
     switchMap((filter) => this._loadData(filter)),
     catchError((err) => {
       this.error$.next(err);
@@ -67,21 +57,29 @@ export class SearchService {
   sources$ = merge(
     this.data$.pipe(
       map((data) => {
-        return {
-          results: data?.algoliaAll?.results?.[0].hits,
-          loading: false,
-        };
+        const algoliaResults = data?.algoliaAll?.results?.[0].hits || [];
+        const typesenseResults = (data?.typesense || [])
+          .reduce(
+            (acc, curr) => acc.concat(curr.hits),
+            [] as {
+              document: Hit;
+              score: number;
+            }[][],
+          )
+          .flat()
+          .sort((a, b) => b.score - a.score)
+          .map((hit) => hit.document);
+
+        // combine all the algolia hits
+        return [...algoliaResults, ...typesenseResults];
       }),
       map((data) => ({
-        results: data.results?.map(
+        results: data?.map(
           (hit) =>
             ({
               linkType: hit.type,
               linkId: hit.objectID,
-              title:
-                hit.type !== 'player'
-                  ? hit.name
-                  : `${hit.firstName} ${hit.lastName}`,
+              title: hit.type !== 'player' ? hit.name : `${hit.firstName} ${hit.lastName}`,
             }) as SearchHit,
         ),
         loading: false,
@@ -101,7 +99,7 @@ export class SearchService {
       query: string | null;
     }>,
   ) {
-    return fetch(`/api/v1/search?query=${filter.query}&clients=ALGOLIA_CLIENT`)
+    return fetch(`/api/v1/search?query=${filter.query}`)
       .then(
         (res) =>
           res.json() as Promise<{
@@ -115,11 +113,7 @@ export class SearchService {
                 hits: Hit[];
               }[];
             };
-            typesense: {
-              results: {
-                hits: Hit[];
-              }[];
-            };
+            typesense: typesenseHit[];
           }>,
       )
       .catch((err) => {
@@ -159,4 +153,12 @@ export type ClubHit = {
   name: string;
   objectID: string;
   type: 'club';
+};
+
+export type typesenseHit = {
+  found: number;
+  hits: {
+    document: Hit;
+    score: number;
+  }[];
 };

@@ -1,40 +1,15 @@
-import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-} from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { RecentGamesComponent } from '@app/frontend-components/games/recent';
-import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 @Component({
   selector: 'app-page-detail',
-  standalone: true,
-  imports: [
-    CommonModule,
-
-    MatProgressBarModule,
-    MatIconModule,
-    MatButtonModule,
-
-    RouterModule,
-    TranslateModule,
-
-    PageHeaderComponent,
-    RecentGamesComponent,
-    UpcomingGamesComponent,
-  ],
+  imports: [ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

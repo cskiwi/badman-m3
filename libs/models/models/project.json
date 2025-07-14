@@ -9,18 +9,18 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
-        "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "packageJson": "{projectRoot}/package.json",
-        "main": "{projectRoot}/src/index.ts",
-        "assets": ["{projectRoot}/*.md"]
+        "outputPath": "{workspaceRoot}/dist/libs/models/models",
+        "tsConfig": "libs/models/models/tsconfig.lib.json",
+        "packageJson": "libs/models/models/package.json",
+        "main": "libs/models/models/src/index.ts",
+        "assets": ["libs/models/models/*.md"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": ["{workspaceRoot}/coverage/libs/models/models"],
       "options": {
-        "jestConfig": "{projectRoot}/jest.config.ts"
+        "jestConfig": "libs/models/models/jest.config.ts"
       }
     }
   }

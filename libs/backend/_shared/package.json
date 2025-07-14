@@ -2,7 +2,14 @@
   "name": "@app/backend-shared",
   "version": "0.0.1",
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@app/backend-authorization": "0.0.1",
+    "@app/backend-database": "0.0.1",
+    "@app/backend-graphql": "0.0.1",
+    "@app/backend-health": "0.0.1",
+    "@app/backend-seo": "0.0.1",
+    "@app/backend-search": "0.0.1",
+    "@app/backend-translate": "0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

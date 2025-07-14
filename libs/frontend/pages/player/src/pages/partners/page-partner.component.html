@@ -1,0 +1,38 @@
+<!-- datepicker -->
+@if (this.filter.getRawValue().date) {
+  <div class="filters grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+    <ng-container [formGroup]="this.filter">
+      <p-floatlabel>
+        <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
+        <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
+      </p-floatlabel>
+
+      <p-floatlabel>
+        <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
+        <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
+      </p-floatlabel>
+
+      <p-floatlabel>
+        <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
+        <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
+      </p-floatlabel>
+
+      <!-- gameType -->
+      <p-floatlabel>
+        <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
+        <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
+      </p-floatlabel>
+    </ng-container>
+  </div>
+}
+
+<div class="partners">
+  <app-partner-grid [dataSource]="partners()" [loading]="loading()"></app-partner-grid>
+</div>
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}

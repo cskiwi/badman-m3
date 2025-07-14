@@ -1,19 +1,19 @@
 <section class="game">
   @for (game of games(); track game.id) {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ game.playedAt | amDateFormat: 'llll' }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+    <p-card>
+      <ng-template pTemplate="header">
+        <h3>{{ game.playedAt | amDateFormat: 'llll' }}</h3>
+      </ng-template>
+      <ng-template pTemplate="content">
         <div class="sets">
-          <mat-chip>{{ game.set1Team1 }} - {{ game.set1Team2 }}</mat-chip>
-          <mat-chip>{{ game.set2Team1 }} - {{ game.set2Team2 }}</mat-chip>
+          <p-chip label="{{ game.set1Team1 }} - {{ game.set1Team2 }}"></p-chip>
+          <p-chip label="{{ game.set2Team1 }} - {{ game.set2Team2 }}"></p-chip>
           @if (game.set3Team1 && game.set3Team2) {
-            <mat-chip>{{ game.set3Team1 }} - {{ game.set3Team2 }}</mat-chip>
+            <p-chip label="{{ game.set3Team1 }} - {{ game.set3Team2 }}"></p-chip>
           }
         </div>
-      </mat-card-content>
-    </mat-card>
+      </ng-template>
+    </p-card>
   } @empty {
     No items found
   }

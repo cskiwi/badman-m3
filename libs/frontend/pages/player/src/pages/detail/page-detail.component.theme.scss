@@ -1,16 +1,16 @@
 // info: https://material.angular.io/guide/theming-your-components
 
 @use 'sass:map';
-@use '@angular/material' as mat;
 
 @use './components/show-level.component.theme.scss' as show-level;
 
-@mixin color($theme) {
-  @include show-level.color($theme);
+@mixin colors($theme) {
+  @include show-level.colors($theme);
  
   app-page-detail {
     .games mat-icon {
-      color: mat.get-theme-color($theme, primary);
+      // Using the new CSS variable approach for Angular 20
+      color: var(--mat-sys-primary);
     }
   }
 }
@@ -21,7 +21,8 @@
   app-page-detail {
     .games {
       h3 {
-        font: mat.get-theme-typography($theme, 'title-medium');
+        // Using the new CSS variable approach for Angular 20
+        font: var(--mat-sys-title-medium);
       }
     }
   }

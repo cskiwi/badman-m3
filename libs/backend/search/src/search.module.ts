@@ -12,6 +12,7 @@ import { IndexingClient } from './client';
 import { IndexController, SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
+import { DEFAULT_CLIENTS, IndexingClient } from './utils';
 
 @Module({
   imports: [JwtModule],
@@ -19,9 +20,7 @@ import { IndexService, SearchService } from './services';
   providers: [SearchService, IndexService],
 })
 export class SearchModule {
-  static forRootAsync(
-    options: SearchModuleRegisterAsyncOptions,
-  ): DynamicModule {
+  static forRootAsync(options: SearchModuleRegisterAsyncOptions): DynamicModule {
     return {
       module: SearchModule,
       providers: [
@@ -59,12 +58,7 @@ export class SearchModule {
       providers: [
         {
           provide: IndexingClient.ALGOLIA_CLIENT,
-          useFactory: () =>
-            algoliasearch(
-              config.algolia.appId,
-              config.algolia.apiKey,
-              config.algolia.clientOptions,
-            ),
+          useFactory: () => algoliasearch(config.algolia.appId, config.algolia.apiKey, config.algolia.clientOptions),
         },
         {
           provide: IndexingClient.TYPESENSE_CLIENT,
@@ -83,8 +77,7 @@ export interface SearchOptionsFactory {
   createSearchOptions(): ISearchConfig;
 }
 
-export interface SearchModuleRegisterAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface SearchModuleRegisterAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   isGlobal?: boolean;
   useClass?: Type<SearchOptionsFactory>;
   useExisting?: Type<SearchOptionsFactory>;

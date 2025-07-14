@@ -8,6 +8,16 @@ const context: ExecutorContext = {
   root: '',
   cwd: process.cwd(),
   isVerbose: false,
+  projectName: 'test-project',
+  projectsConfigurations: {
+    projects: {},
+    version: 2,
+  },
+  nxJsonConfiguration: {},
+  projectGraph: {
+    nodes: {},
+    dependencies: {},
+  },
 };
 
 describe('Build Executor', () => {

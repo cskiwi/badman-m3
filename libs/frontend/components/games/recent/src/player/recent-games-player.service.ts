@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Game, Player } from '@app/models';
+import { Game, GamePlayerMembership, Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, merge, Subject } from 'rxjs';
@@ -144,7 +144,7 @@ export class PlayerRecentGamesService {
           if (!result?.data.player?.gamePlayerMemberships) {
             throw new Error('No rankingSystem found');
           }
-          return result.data.player.gamePlayerMemberships;
+          return result.data.player.gamePlayerMemberships as GamePlayerMembership[]
         }),
         map((games) => games.map((game) => game.game).flat()),
       );

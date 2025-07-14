@@ -1,27 +1,22 @@
 // info: https://material.angular.io/guide/theming-your-components
 
 @use 'sass:map';
-@use '@angular/material' as mat;
 
-@mixin color($theme) {
+@mixin colors($theme) {
   app-show-level {
-    // $isDark: map.get($theme, 'is-dark');
-    $level-color: mat.get-theme-color($theme, secondary);
-
-    $success-palette: map.get($theme, success);
-    $danger-palette: map.get($theme, danger);
+    // Using the new CSS variable approach for Angular 20
     & > div {
-      border-color: $level-color;
+      border-color: var(--mat-sys-secondary);
     }
 
     .level {
-      border-right: 1px solid $level-color;
+      border-right: 1px solid var(--mat-sys-secondary);
     }
 
     .points,
     .separator,
     .level {
-      color: $level-color;
+      color: var(--mat-sys-secondary);
     }
   }
 }
@@ -30,7 +25,8 @@
   app-show-level {
     .points,
     .level {
-      font: mat.get-theme-typography($theme, label-large);
+      // Using the new CSS variable approach for Angular 20
+      font: var(--mat-sys-label-large);
     }
   }
 }

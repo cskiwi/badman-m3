@@ -3,11 +3,8 @@
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.3.0",
-    "@nestjs/common": "^10.4.1",
-    "express": "~4.19.2",
     "@app/backend-authorization": "0.0.1",
-    "@app/utils": "0.0.1",
-    "nestjs-i18n": "^10.4.5"
+    "@app/utils": "0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

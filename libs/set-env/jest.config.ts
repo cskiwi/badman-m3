@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
   displayName: 'set-env',
   preset: '../../jest.preset.js',

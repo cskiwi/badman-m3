@@ -34,9 +34,7 @@ export class IndexService implements OnModuleInit {
       // await this.typeSenseClient.collections('clubs').delete();
       // await this.typeSenseClient.collections('events').delete();
 
-      const currentCollection = await this.typeSenseClient
-        .collections()
-        .retrieve();
+      const currentCollection = await this.typeSenseClient.collections().retrieve();
 
       if (
         !currentCollection.some((collection) => collection.name === 'players')
@@ -59,18 +57,10 @@ export class IndexService implements OnModuleInit {
     }
   }
 
-  async addObjects<T = unknown>(
-    indexName: string,
-    objects: Array<Record<string, T>>,
-    clients: string[] = DEFAULT_CLIENTS,
-  ) {
+  async addObjects(indexName: string, objects: any[], clients: string[]) {
     if (clients.includes(IndexingClient.TYPESENSE_CLIENT)) {
-      this._logger.log(`Indexing ${objects.length} objects to ${indexName}`);
       try {
-        await this.typeSenseClient
-          .collections(indexName)
-          .documents()
-          .upsert(objects);
+        await this.typeSenseClient.collections(indexName).documents().import(objects, { action: 'upsert' });
       } catch (e) {
         this._logger.error(e);
       } finally {
@@ -94,18 +84,8 @@ export class IndexService implements OnModuleInit {
 
   async indexPlayers(clients: string[] = DEFAULT_CLIENTS) {
     const playerQry = Player.createQueryBuilder('player')
-      .select([
-        'player.id',
-        'player.slug',
-        'player.memberId',
-        'player.firstName',
-        'player.lastName',
-        'club.id',
-      ])
-      .leftJoinAndSelect(
-        'player.clubPlayerMemberships',
-        'clubPlayerMemberships',
-      )
+      .select(['player.id', 'player.slug', 'player.memberId', 'player.firstName', 'player.lastName', 'club.id'])
+      .leftJoinAndSelect('player.clubPlayerMemberships', 'clubPlayerMemberships')
       .leftJoinAndSelect('clubPlayerMemberships.club', 'club')
       .where('player.competitionPlayer = true');
 
@@ -116,9 +96,7 @@ export class IndexService implements OnModuleInit {
     }
 
     const objects = players.map((player) => {
-      const activeClub = player.clubPlayerMemberships?.find(
-        (membership) => membership.active,
-      )?.club;
+      const activeClub = player.clubPlayerMemberships?.find((membership) => membership.active)?.club;
       return {
         id: player.id,
         objectID: player.id,
@@ -143,13 +121,7 @@ export class IndexService implements OnModuleInit {
 
   async indexClubs(clients: string[] = DEFAULT_CLIENTS) {
     const clubsQry = Club.createQueryBuilder('club')
-      .select([
-        'club.id',
-        'club.name',
-        'club.fullName',
-        'club.clubId',
-        'club.slug',
-      ])
+      .select(['club.id', 'club.name', 'club.fullName', 'club.clubId', 'club.slug'])
       .where('club.clubId IS NOT NULL');
 
     const clubs = await clubsQry.getMany();
@@ -175,9 +147,7 @@ export class IndexService implements OnModuleInit {
   }
 
   async indexCompetitionEvents(clients: string[] = DEFAULT_CLIENTS) {
-    const eventsQry = EventCompetition.createQueryBuilder('event')
-      .select(['event.id', 'event.name', 'event.season'])
-      .where('event.official = true');
+    const eventsQry = EventCompetition.createQueryBuilder('event').select(['event.id', 'event.name', 'event.season']).where('event.official = true');
 
     const events = await eventsQry.getMany();
 
@@ -201,9 +171,7 @@ export class IndexService implements OnModuleInit {
   }
 
   async indexTournamentEvents(clients: string[] = DEFAULT_CLIENTS) {
-    const eventsQry = EventTournament.createQueryBuilder('event')
-      .select(['event.id', 'event.name', 'event.firstDay'])
-      .where('event.official = true');
+    const eventsQry = EventTournament.createQueryBuilder('event').select(['event.id', 'event.name', 'event.firstDay']).where('event.official = true');
 
     const events = await eventsQry.getMany();
 

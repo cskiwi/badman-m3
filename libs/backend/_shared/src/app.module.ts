@@ -3,10 +3,11 @@ import { DatabaseModule } from '@app/backend-database';
 import { GraphQLModule } from '@app/backend-graphql';
 import { HealthModule } from '@app/backend-health';
 import { SeoModule } from '@app/backend-seo';
-import { ISearchConfig, SearchModule } from '@app/backend-serach';
+import { ISearchConfig, SearchModule } from '@app/backend-search';
 import { TranslateModule } from '@app/backend-translate';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     SeoModule,
     HealthModule,
     TranslateModule,
+    ScheduleModule.forRoot(),
     SearchModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {

@@ -27,7 +27,17 @@ export class HealthController {
     return this.health.check([
       () => this.typeOrm.pingCheck('database'),
       () => this.memory.checkHeap('memory_heap', 1 * 1024 * 1024 * 1024 * 1024),
-      // () => this.typesense.isHealthy('typesense'),
     ]);
+  }
+
+  @Get('test')
+  randomTest(@Headers('X-MY-APP-CLIENT') auth: any) {
+    this._logger.log(`Received key: ${auth}`);
+
+    // create typorm trnasaction
+
+    return {
+      message: 'Hello World!',
+    };
   }
 }

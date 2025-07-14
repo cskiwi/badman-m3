@@ -2,18 +2,15 @@
   "name": "@app/frontend-pages-club",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^18.0.0",
-    "@angular/core": "^18.0.0",
-    "@angular/router": "18.2.0",
-    "ngxtension": "^4.0.0",
-    "@angular/material": "^18.1.1",
     "@app/frontend-modules-seo": "0.0.1",
     "@app/frontend-components": "0.0.1",
-    "@ngx-translate/core": "^15.0.0",
-    "@angular/forms": "18.2.0",
     "@app/models": "0.0.1",
-    "apollo-angular": "^7.0.2",
-    "rxjs": "~7.8.1"
+    "@angular/core": "*",
+    "@angular/router": "*",
+    "@angular/forms": "*",
+    "@ngx-translate/core": "*",
+    "ngxtension": "*",
+    "primeng": "*"
   },
   "sideEffects": false
 }

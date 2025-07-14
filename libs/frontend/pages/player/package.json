@@ -2,20 +2,21 @@
   "name": "@app/frontend-pages-player",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^18.0.0",
-    "@angular/core": "^18.0.0",
-    "@angular/router": "18.2.0",
-    "@angular/material": "^18.1.1",
-    "@ngx-translate/core": "^15.0.0",
     "@app/frontend-modules-graphql": "0.0.1",
     "@app/models": "0.0.1",
-    "apollo-angular": "^7.0.2",
-    "ngxtension": "^4.0.0",
-    "rxjs": "~7.8.1",
     "@app/frontend-modules-seo": "0.0.1",
     "@app/frontend-components": "0.0.1",
-    "@angular/forms": "18.2.0",
-    "@app/frontend-modules-auth": "0.0.1"
+    "@app/frontend-modules-auth": "0.0.1",
+    "@angular/common": "20.1.0",
+    "@angular/core": "20.1.0",
+    "@ngx-translate/core": "^16.0.4",
+    "primeng": "^20.0.0-rc.3",
+    "@angular/router": "20.1.0",
+    "ngxtension": "^5.1.0",
+    "@angular/forms": "20.1.0",
+    "rxjs": "~7.8.2",
+    "apollo-angular": "^8.0.0",
+    "moment": "^2.29.4"
   },
   "sideEffects": false
 }

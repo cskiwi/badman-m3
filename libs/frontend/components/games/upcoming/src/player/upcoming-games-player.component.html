@@ -1,11 +1,13 @@
 <section class="game">
   @for (game of games(); track game.id) {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ game.playedAt | amDateFormat: 'llll' }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content> </mat-card-content>
-    </mat-card>
+    <p-card>
+      <ng-template pTemplate="header">
+        <h3>{{ game.playedAt | amDateFormat: 'llll' }}</h3>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <!-- Game content can be added here -->
+      </ng-template>
+    </p-card>
   } @empty {
     No items found
   }

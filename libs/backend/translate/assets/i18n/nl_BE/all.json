@@ -13,6 +13,22 @@
   "landing": {
     "description": "Welkom op de v2 test versie van Badman"
   },
+  "partner": {
+    "amount-of-games": "Aantal wedstrijden",
+    "filters": {
+      "all": "Alles",
+      "competition": "Competitie",
+      "double": "Dubbel",
+      "games": "Min wedstrijden",
+      "gameType": "Type",
+      "linktype": "Toernooi/competitie",
+      "mix": "Gemengd",
+      "start-date": "Vanaf",
+      "tournament": "Toernooi"
+    },
+    "name": "Naam",
+    "win-rate": "Win percentage"
+  },
   "players": {
     "my-club": "Mijn club",
     "my-clubs": "Mijn clubs",

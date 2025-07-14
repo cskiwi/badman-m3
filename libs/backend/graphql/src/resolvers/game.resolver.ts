@@ -1,4 +1,4 @@
-import { Game, GamePlayerMembership } from '@app/models';
+import { DrawTournament, Game, GamePlayerMembership } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GameArgs, GamePlayerMembershipArgs } from '../args';
@@ -55,5 +55,18 @@ export class GameResolver {
     }
 
     return GamePlayerMembership.find(args);
+  }
+
+  @ResolveField(() => DrawTournament, { nullable: true })
+  async tournament(@Parent() { linkId, linkType }: Game) {
+    if (linkId && linkType === 'tournament') {
+      return DrawTournament.findOne({
+        where: {
+          id: linkId,
+        },
+      });
+    }
+
+    return null;
   }
 }

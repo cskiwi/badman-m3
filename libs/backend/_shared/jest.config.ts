@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
   displayName: 'backend-shared',
   preset: '../../../jest.preset.js',

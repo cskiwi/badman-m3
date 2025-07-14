@@ -1,28 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
-import { MtxSelectModule } from '@ng-matero/extensions/select';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
+import { filter, Subject } from 'rxjs';
 import { SearchHit, SearchService } from './search.service';
-import { filter } from 'rxjs';
 
 @Component({
-  selector: 'app-search',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MtxSelectModule,
-    MatLabel,
-    FormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    NgxMatSelectSearchModule,
-  ],
-  templateUrl: './search.component.html',
-  styleUrl: './search.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-search',
+    imports: [ReactiveFormsModule, FormsModule, AutoCompleteModule],
+    templateUrl: './search.component.html',
+    styleUrl: './search.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchComponent {
   private readonly searchService = inject(SearchService);
@@ -33,15 +21,30 @@ export class SearchComponent {
   loading = this.searchService.loading;
 
   query = this.filter.get('query') as FormControl;
-  selected = new FormControl();
+  filteredResults: SearchHit[] = [];
+  searchValue = '';
+
+  typeahead: Subject<string> = new Subject();
 
   constructor() {
-    this.selected.valueChanges.pipe(filter((r) => !!r)).subscribe((value) => {
-      this.search(value);
+    this.typeahead.pipe(filter((r) => !!r)).subscribe((term) => {
+      this.query.patchValue(term);
     });
   }
 
-  search(model: SearchHit) {
+  onSearch(event: { query: string }) {
+    const query = event.query || '';
+    this.searchValue = query;
+    this.typeahead.next(query);
+    this.filteredResults = this.results() || [];
+  }
+
+  onSelect(event: AutoCompleteSelectEvent) {
+    const model = event.value as SearchHit;
+    this.select(model);
+  }
+
+  select(model: SearchHit) {
     switch (model?.linkType) {
       case 'player':
         this.router.navigate(['/player', model.linkId]);
@@ -61,7 +64,5 @@ export class SearchComponent {
       default:
         break;
     }
-
-    this.selected.reset();
   }
 }
