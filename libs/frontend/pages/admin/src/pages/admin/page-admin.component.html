@@ -1,0 +1,133 @@
+@if (!hasAdminAccess()) {
+  <app-page-header>
+    <ng-content title>Admin Access Required</ng-content>
+    <ng-content subTitle>
+      <div class="info">
+        <div class="sub-text">
+          You do not have permission to access this page.
+        </div>
+      </div>
+    </ng-content>
+  </app-page-header>
+
+  <p-message severity="error" [text]="'You need administrator permissions to access this page.'"></p-message>
+} @else {
+  <app-page-header>
+    <ng-content title>Admin Panel</ng-content>
+    <ng-content subTitle>
+      <div class="info">
+        <div class="sub-text">
+          Manage search indexing operations
+        </div>
+      </div>
+    </ng-content>
+  </app-page-header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Index Management Card -->
+    <p-card header="Search Index Management" class="h-fit">
+      <p class="text-muted-color mb-4">
+        Select the types of data you want to index for search functionality. 
+        This operation will rebuild the search index for the selected types.
+      </p>
+
+      <form [formGroup]="indexForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Type Selection -->
+        <div class="space-y-3">
+          <h3 class="text-lg font-medium text-surface-900">Select Types to Index</h3>
+          
+          @for (indexType of indexTypes; track indexType.key) {
+            <div class="flex items-center space-x-2">
+              <p-checkbox 
+                [formControlName]="indexType.key"
+                [inputId]="indexType.key"
+                [binary]="true">
+              </p-checkbox>
+              <label [for]="indexType.key" class="text-surface-700 cursor-pointer">
+                {{ indexType.label }}
+              </label>
+            </div>
+          }
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex gap-2 pt-2">
+          <p-button 
+            label="Select All" 
+            [outlined]="true" 
+            size="small"
+            type="button"
+            (click)="selectAll()">
+          </p-button>
+          <p-button 
+            label="Select None" 
+            [outlined]="true" 
+            size="small"
+            type="button"
+            (click)="selectNone()">
+          </p-button>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-4 border-t border-surface-200">
+          <p-button 
+            label="Start Indexing" 
+            icon="pi pi-refresh"
+            type="submit"
+            [loading]="loading()"
+            [disabled]="loading()">
+          </p-button>
+        </div>
+
+        <!-- Loading Indicator -->
+        @if (loading()) {
+          <div class="pt-4">
+            <p-progressbar mode="indeterminate" [style]="{'height': '6px'}"></p-progressbar>
+            <p class="text-sm text-muted-color mt-2">
+              Indexing in progress... This may take a few minutes.
+            </p>
+          </div>
+        }
+
+        <!-- Error Message -->
+        @if (error(); as errorMessage) {
+          <p-message severity="error" [text]="errorMessage"></p-message>
+        }
+      </form>
+    </p-card>
+
+    <!-- Information Card -->
+    <p-card header="Information" class="h-fit">
+      <div class="space-y-4">
+        <div>
+          <h4 class="font-medium text-surface-900 mb-2">What is indexing?</h4>
+          <p class="text-muted-color text-sm">
+            Indexing rebuilds the search database with the latest data from your application. 
+            This ensures that search results are up-to-date and accurate.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-medium text-surface-900 mb-2">Available Types</h4>
+          <ul class="text-muted-color text-sm space-y-1">
+            <li><strong>Players:</strong> All competitive players in the system</li>
+            <li><strong>Clubs:</strong> All registered clubs and organizations</li>
+            <li><strong>Competition Events:</strong> Official competition events</li>
+            <li><strong>Tournament Events:</strong> Tournament and championship events</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-medium text-surface-900 mb-2">Performance Impact</h4>
+          <p class="text-muted-color text-sm">
+            Indexing operations may temporarily impact search performance. 
+            It's recommended to perform indexing during low-traffic periods.
+          </p>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Toast Messages -->
+  <p-toast position="top-right"></p-toast>
+}

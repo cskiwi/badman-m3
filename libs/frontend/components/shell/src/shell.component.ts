@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { ThemeService } from '@app/frontend-modules-theme';
@@ -15,6 +15,7 @@ import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { MessageService } from 'primeng/api';
+import type { MenuItem } from 'primeng/api';
 
 @Component({
     imports: [
@@ -35,6 +36,7 @@ import { MessageService } from 'primeng/api';
 export class ShellComponent {
   private readonly platformId = inject<string>(PLATFORM_ID);
   private readonly messageService = inject(MessageService);
+  private readonly router = inject(Router);
 
   isMobile = inject(IS_MOBILE);
   auth = inject(AuthService);
@@ -48,27 +50,50 @@ export class ShellComponent {
   themeToggleIcon = computed(() => this.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon');
   themeToggleLabel = computed(() => `Toggle ${this.isDarkMode() ? 'light' : 'dark'} mode`);
 
-  userMenuItems = computed(() => [
-    {
-      label: this.user()?.firstName || 'User',
-      disabled: true
-    },
-    {
-      separator: true
-    },
-    {
-      label: `${this.isDarkMode() ? 'Light' : 'Dark'} Mode`,
-      icon: this.themeToggleIcon(),
-      command: () => this.toggleTheme()
-    },
-    {
-      separator: true
-    },
-    {
-      label: 'Logout',
-      command: () => this.logout()
+  // Check if user has admin access
+  hasAdminAccess = computed(() => {
+    const currentUser = this.user();
+    return currentUser?.hasAnyPermission?.(['index:all']) ?? false;
+  });
+
+  userMenuItems = computed<MenuItem[]>(() => {
+    const baseItems: MenuItem[] = [
+      {
+        label: this.user()?.firstName || 'User',
+        disabled: true
+      },
+      {
+        separator: true
+      },
+    ];
+
+    // Add admin menu item if user has access
+    if (this.hasAdminAccess()) {
+      baseItems.push({
+        label: 'Admin Panel',
+        command: () => this.navigateToAdmin()
+      });
+      baseItems.push({
+        separator: true
+      });
     }
-  ]);
+
+    baseItems.push(
+      {
+        label: `${this.isDarkMode() ? 'Light' : 'Dark'} Mode`,
+        command: () => this.toggleTheme()
+      },
+      {
+        separator: true
+      },
+      {
+        label: 'Logout',
+        command: () => this.logout()
+      }
+    );
+
+    return baseItems;
+  });
 
   clubs = computed(() => {
     return (this.user()?.clubPlayerMemberships ?? [])
@@ -113,6 +138,10 @@ export class ShellComponent {
 
   get isDesktop() {
     return !this.isMobile();
+  }
+
+  navigateToAdmin() {
+    this.router.navigate(['/admin']);
   }
 
   constructor() {

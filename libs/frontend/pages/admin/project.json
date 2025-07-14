@@ -1,0 +1,26 @@
+{
+  "name": "frontend-pages-admin",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/pages/admin/src",
+  "projectType": "library",
+  "tags": ["npm:public"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/libs/frontend/pages/admin"],
+      "options": {
+        "project": "libs/frontend/pages/admin/ng-package.json"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/frontend/pages/admin"],
+      "options": {
+        "jestConfig": "libs/frontend/pages/admin/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

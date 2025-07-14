@@ -22,4 +22,9 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import('@app/frontend-pages-competition').then((m) => m.routes),
   },
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('@app/frontend-pages-admin').then((m) => m.adminRoutes),
+  },
 ];

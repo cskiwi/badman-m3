@@ -43,6 +43,7 @@
       "@app/frontend-modules-translation/selection": ["libs/frontend/modules/translation/selection/src/index.ts"],
       "@app/frontend-pages-club": ["libs/frontend/pages/club/src/index.ts"],
       "@app/frontend-pages-competition": ["libs/frontend/pages/competition/src/index.ts"],
+      "@app/frontend-pages-admin": ["libs/frontend/pages/admin/src/index.ts"],
       "@app/frontend-pages-home": ["libs/frontend/pages/home/src/index.ts"],
       "@app/frontend-pages-player": ["libs/frontend/pages/player/src/index.ts"],
       "@app/frontend-utils": ["libs/frontend/utils/src/index.ts"],
