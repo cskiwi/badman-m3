@@ -72,7 +72,7 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura,
         options: {
-          // darkModeSelector: '.amui-dark-mode',
+          darkModeSelector: '.dark-theme',
         },
       },
     }),

@@ -21,7 +21,7 @@
       "continuous": true,
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "dependsOn": ["^build"],
       "options": {
         "buildTarget": "api:build",
         "runBuildTargetDependencies": false
