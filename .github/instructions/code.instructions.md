@@ -144,3 +144,4 @@ https://www.conventionalcommits.org
 #### 9. Commands and Tools
 * for building use `npm run build` or `nx build <project-name>`
 * for running use `npm run start`
+* dont use tsc to check types, use `nx run <project-name>:lint`
