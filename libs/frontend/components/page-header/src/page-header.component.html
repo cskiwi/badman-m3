@@ -1,20 +1,22 @@
-<section class="header shadow-sm border-b p-6">
-  <div class="flex items-center space-x-4">
-    <div class="avatar">
+<section class="flex flex-col gap-4">
+  <div class="header flex flex-row gap-4">
+    <div
+      class="avatar block mx-8 ml-10 w-28 h-28 leading-[110px] rounded-full bg-surface-200 text-surface-900 text-3xl text-center overflow-hidden hidden md:block [&:empty]:hidden"
+    >
       <ng-content select="[avatar]"></ng-content>
     </div>
     <!-- Name and ranking -->
-    <div class="info flex-1">
-      <h2 class="title text-2xl font-bold text-color mb-2">
+    <div class="info flex flex-1 flex-col justify-center">
+      <h2 class="title flex flex-row gap-4 text-5xl font-normal text-color mb-0">
         <ng-content select="[title]"></ng-content>
       </h2>
-      <div class="sub-title text-muted-color">
+      <div class="sub-title flex flex-row gap-4 text-muted-color">
         <ng-content select="[subTitle]"></ng-content>
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="actions">
+    <div class="actions flex flex-row items-end justify-end [&:empty]:hidden">
       <ng-content select="[actions]"></ng-content>
     </div>
   </div>

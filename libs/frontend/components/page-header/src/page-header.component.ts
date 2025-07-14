@@ -15,7 +15,6 @@ import { takeUntil } from 'rxjs';
     selector: 'app-page-header',
     imports: [DividerModule],
     templateUrl: './page-header.component.html',
-    styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageHeaderComponent implements AfterContentInit {

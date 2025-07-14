@@ -34,8 +34,8 @@
     <section class="games grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
       <section class="recent-games">
         <p-card>
-          <h3 class="flex items-center text-lg font-semibold mb-4">
-            <i class="pi pi-history text-blue-600 mr-2"></i>
+          <h3 class="flex items-center text-xl font-semibold mb-4 text-surface-700">
+            <i class="pi pi-history text-primary-500 mr-2"></i>
             {{ 'all.game.recent.title' | translate }}
           </h3>
           <app-recent-games [for]="player.id" [type]="'player'" />
@@ -43,8 +43,8 @@
       </section>
       <section class="upcoming-games">
         <p-card>
-          <h3 class="flex items-center text-lg font-semibold mb-4">
-            <i class="pi pi-calendar text-blue-600 mr-2"></i>
+          <h3 class="flex items-center text-xl font-semibold mb-4 text-surface-700">
+            <i class="pi pi-calendar text-primary-500 mr-2"></i>
             {{ 'all.game.upcoming.title' | translate }}
           </h3>
           <app-upcoming-games [for]="player.id" [type]="'player'" />

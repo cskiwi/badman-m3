@@ -1,14 +1,12 @@
-@use './page-header/src/page-header.component.theme.scss' as page-header;
-@use './shell/src/shell.component.theme.scss' as shell;
+// All component themes have been migrated to Tailwind CSS
+// This file is kept for backward compatibility but no longer includes any themes
 
 @mixin typography($theme) {
-  @include page-header.typography($theme);
-  @include shell.typography($theme);
+  // All typography styles have been moved to Tailwind classes in component templates
 }
 
 @mixin colors($theme) {
-  @include page-header.colors($theme);
-  @include shell.colors($theme);
+  // All color styles have been moved to Tailwind classes in component templates
 }
 
 @mixin theme($theme) {

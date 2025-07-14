@@ -1,18 +1,18 @@
-
 import { ChangeDetectionStrategy, Component, effect, inject, input, PLATFORM_ID } from '@angular/core';
 import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { TableModule } from 'primeng/table';
+import { CardModule } from 'primeng/card';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HomeService } from './page-home.service';
 
 @Component({
-    selector: 'app-page-home',
-    imports: [PageHeaderComponent, TableModule, TranslateModule, AsyncPipe],
-    templateUrl: './page-home.component.html',
-    styleUrl: './page-home.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-page-home',
+  imports: [PageHeaderComponent, TableModule, TranslateModule, CardModule, AsyncPipe],
+  templateUrl: './page-home.component.html',
+  styleUrl: './page-home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageHomeComponent {
   private readonly dataService = new HomeService();

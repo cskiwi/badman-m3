@@ -24,9 +24,10 @@ body {
   margin: 0;
   height: 100%;
   background-color: var(--p-surface-50);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
-
 
 // make input fields full width
 input,
@@ -79,4 +80,15 @@ small.hint {
 small {
   font-size: small;
   color: var(--p-surface-400);
+}
+
+.p-toolbar-start,
+.p-toolbar-center,
+.p-toolbar-end {
+  flex: 1;
+}
+
+
+.p-toolbar-end{
+  justify-content: flex-end;
 }

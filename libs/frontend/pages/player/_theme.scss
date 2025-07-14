@@ -1,11 +1,12 @@
-@use './src/pages/detail/page-detail.component.theme.scss' as page-detail;
+// All page themes have been migrated to Tailwind CSS
+// This file is kept for backward compatibility but no longer includes any themes
 
 @mixin typography($theme) {
-  @include page-detail.typography($theme);
+  // All typography styles have been moved to Tailwind classes in component templates
 }
 
 @mixin colors($theme) {
-  @include page-detail.colors($theme);
+  // All color styles have been moved to Tailwind classes in component templates
 }
 
 @mixin theme($theme) {

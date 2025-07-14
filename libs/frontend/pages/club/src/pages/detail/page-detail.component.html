@@ -27,15 +27,15 @@
     @if (teamIds(); as teamIds) {
       <section class="games">
         <section class="recent-games">
-          <h3 class="flex items-center gap-2">
-            <i class="pi pi-history text-primary"></i>
+          <h3 class="flex items-center gap-2 text-xl font-semibold text-surface-700">
+            <i class="pi pi-history text-primary-500"></i>
             {{ 'all.game.recent.title' | translate }}
           </h3>
           <app-recent-games [for]="teamIds" [type]="'team'" />
         </section>
         <section class="upcoming-games">
-          <h3 class="flex items-center gap-2">
-            <i class="pi pi-calendar text-primary"></i>
+          <h3 class="flex items-center gap-2 text-xl font-semibold text-surface-700">
+            <i class="pi pi-calendar text-primary-500"></i>
             {{ 'all.game.upcoming.title' | translate }}
           </h3>
           <!-- @if (this.hasTeams()) { -->
