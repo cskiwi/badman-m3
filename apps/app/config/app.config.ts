@@ -25,7 +25,8 @@ import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { MomentModule } from 'ngx-moment';
 import { environment } from '../src/environments/environment';
 import { appRoutes } from './app.routes';
-import { providePrimeNGWithTheme } from './primeng-theme.provider';
+import Aura from '@primeuix/themes/aura';
+import { providePrimeNG } from 'primeng/config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -67,8 +68,14 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
-    // PrimeNG configuration with theme
-    ...providePrimeNGWithTheme(),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+        options: {
+          // darkModeSelector: '.amui-dark-mode',
+        },
+      },
+    }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
