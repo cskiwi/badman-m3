@@ -2,27 +2,27 @@
   <!-- Top Navigation Bar -->
   <div class="bg-white shadow-md px-4 py-3 flex items-center justify-between">
     <div class="flex items-center space-x-4">
-      <p-button 
-        icon="pi pi-bars" 
+      <p-button
+        icon="pi pi-bars"
         (click)="toggleSidebar()"
-        [outlined]="true"
+      [outlined]="true"
         [rounded]="true"
         size="small"
         aria-label="Toggle sidebar"
         class="lg:hidden"
       />
       @if (isDesktop) {
-        <h1 class="text-xl font-bold text-gray-800">Badman</h1>
+        <h1 class="text-xl font-bold text-gray-800" [routerLink]="['/']">Badman</h1>
       }
     </div>
-    
-    <div class="flex-1 max-w-md mx-4">
+
+    <div class="flex-1 max-w-xl mx-4">
       <app-search />
     </div>
-    
+
     <div class="flex items-center space-x-2">
       <!-- Theme toggle button -->
-      <p-button 
+      <p-button
         [icon]="themeToggleIcon()"
         [outlined]="true"
         [rounded]="true"
@@ -30,102 +30,55 @@
         [attr.aria-label]="themeToggleLabel()"
         size="small"
       />
-      
+
       @if (user()?.firstName) {
         <p-menu #menu [model]="userMenuItems()" [popup]="true" />
         @if (isDesktop) {
-          <p-button 
-            [label]="user()?.firstName" 
-            [outlined]="true"
-            (click)="menu.toggle($event)"
-            aria-label="User menu"
-          />
+          <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
         } @else {
-          <p-button 
-            icon="pi pi-user" 
-            [outlined]="true"
-            [rounded]="true"
-            (click)="menu.toggle($event)"
-            aria-label="User menu"
-          />
+          <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" (click)="menu.toggle($event)" aria-label="User menu" />
         }
       } @else {
-        <p-button 
-          label="Log in" 
-          [outlined]="true"
-          (click)="login()"
-        />
+        <p-button label="Log in" [outlined]="true" (click)="login()" />
       }
     </div>
   </div>
 
   <div class="flex">
     <!-- Desktop Sidebar -->
-    <aside 
-      class="hidden lg:block w-64 bg-white shadow-md p-4 min-h-screen"
-      [class.hidden]="!isDesktop"
-    >
+    <aside class="hidden lg:block w-64 bg-white shadow-md p-4 min-h-screen" [class.hidden]="!isDesktop">
       <nav class="space-y-2">
         @if (user()?.slug) {
-          <a 
-            [routerLink]="['/player', user()?.slug]"
-            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-          >
+          <a [routerLink]="['/player', user()?.slug]" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
             {{ 'all.players.my-profile' | translate }}
           </a>
 
           @if (clubs().length === 1) {
-            <a 
-              [routerLink]="['/club', clubs()[0].club.slug]"
-              class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
+            <a [routerLink]="['/club', clubs()[0].club.slug]" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
               {{ 'all.players.my-club' | translate }}
             </a>
           }
           <p-divider />
         }
 
-        <a 
-          routerLink="."
-          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          Home
-        </a>
-        <a 
-          routerLink="player"
-          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          Players
-        </a>
-        <a 
-          routerLink="club"
-          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          Clubs
-        </a>
-        <a 
-          routerLink="competition"
-          class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          Competition
-        </a>
+        <a routerLink="." class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Home </a>
+        <a routerLink="player" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Players </a>
+        <a routerLink="club" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Clubs </a>
+        <a routerLink="competition" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Competition </a>
       </nav>
     </aside>
 
     <!-- Mobile Sidebar Overlay -->
     @if (sidebarVisible && !isDesktop) {
-      <div 
-        class="fixed inset-0 bg-black bg-opacity-50 z-40"
-        (click)="sidebarVisible = false"
-      ></div>
-      <aside 
+      <div class="fixed inset-0 bg-black bg-opacity-50 z-40" (click)="sidebarVisible = false"></div>
+      <aside
         class="fixed left-0 top-0 w-64 bg-white shadow-md p-4 min-h-screen z-50 transform transition-transform"
         [class.translate-x-0]="sidebarVisible"
         [class.-translate-x-full]="!sidebarVisible"
       >
         <nav class="space-y-2 mt-16">
           @if (user()?.slug) {
-            <a 
+            <a
               [routerLink]="['/player', user()?.slug]"
               class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               (click)="sidebarVisible = false"
@@ -134,7 +87,7 @@
             </a>
 
             @if (clubs().length === 1) {
-              <a 
+              <a
                 [routerLink]="['/club', clubs()[0].club.slug]"
                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 (click)="sidebarVisible = false"
@@ -145,28 +98,20 @@
             <p-divider />
           }
 
-          <a 
-            routerLink="."
-            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            (click)="sidebarVisible = false"
-          >
+          <a routerLink="." class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" (click)="sidebarVisible = false">
             Home
           </a>
-          <a 
+          <a
             routerLink="player"
             class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             (click)="sidebarVisible = false"
           >
             Players
           </a>
-          <a 
-            routerLink="club"
-            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            (click)="sidebarVisible = false"
-          >
+          <a routerLink="club" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" (click)="sidebarVisible = false">
             Clubs
           </a>
-          <a 
+          <a
             routerLink="competition"
             class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             (click)="sidebarVisible = false"
@@ -182,7 +127,7 @@
       <router-outlet />
     </main>
   </div>
-  
+
   <!-- Toast for notifications -->
   <p-toast position="top-right" />
 </div>

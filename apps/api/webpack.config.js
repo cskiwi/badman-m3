@@ -1,8 +1,6 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
 
-console.log(`Building server... ${process.env.NODE_ENV}`);
-
 module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/api'),
@@ -13,8 +11,9 @@ module.exports = {
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
-      outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
-      optimization: process.env['NODE_ENV'] === 'production',
+      optimization: false,
+      outputHashing: 'none',
+      generatePackageJson: true,
       assets: [
         // './src/assets',
         {

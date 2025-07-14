@@ -1,15 +1,60 @@
 <div class="w-full">
   <p-autoComplete
     [(ngModel)]="searchValue"
-    [suggestions]="filteredResults"
+    [suggestions]="results()"
     (completeMethod)="onSearch($event)"
     (onSelect)="onSelect($event)"
-    field="title"
+    [optionLabel]="'title'"
     placeholder="Search players, clubs, competitions..."
     [dropdown]="false"
     [multiple]="false"
     [minLength]="2"
     styleClass="w-full"
-    inputStyleClass="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
+  >
+    <ng-template let-item #item>
+      <div class="flex items-center gap-3">
+        <!-- Icon based on linkType -->
+        <i 
+          [class]="getIconClass(item.linkType)" 
+          class="text-lg"
+          [style.color]="getIconColor(item.linkType)"
+        ></i>
+        
+        <!-- Content -->
+        <div class="flex flex-col flex-1">
+          <div class="font-medium text-gray-900 dark:text-gray-100">
+            {{ item.title }}
+          </div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            <!-- Show subtitle (e.g., club name) if available, otherwise show type label -->
+            {{ item.subtitle || getTypeLabel(item.linkType) }}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <div class="font-medium px-3 py-2">
+        <div class="flex items-center gap-2">
+          <span>Search Results</span>
+          @if (loading()) {
+            <i class="pi pi-spin pi-spinner text-sm"></i>
+          }
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #empty>
+      <div class="px-3 py-2 text-gray-500 dark:text-gray-400 text-center">
+        @if (loading()) {
+          <div class="flex items-center justify-center gap-2">
+            <i class="pi pi-spin pi-spinner"></i>
+            <span>Searching...</span>
+          </div>
+        } @else {
+          <span>No results found</span>
+        }
+      </div>
+    </ng-template>
+  </p-autoComplete>
 </div>

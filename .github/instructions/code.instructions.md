@@ -140,3 +140,7 @@ You can expect to hear things from me like:
 https://www.conventionalcommits.org
 ) format: `type(scope): summary`.
 *   **Examples:** `feat(auth): add password reset endpoint`, `fix(api): correct error status code`.
+
+#### 9. Commands and Tools
+* for building use `npm run build` or `nx build <project-name>`
+* for running use `npm run start`

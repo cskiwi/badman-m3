@@ -11,6 +11,7 @@ export const PlayerDocument: CollectionCreateSchema = {
     { name: 'slug', type: 'string' },
     { name: 'memberId', type: 'string', optional: true },
     { name: 'club', type: 'object', optional: true },
+    { name: 'type', type: 'string' },
     { name: 'order', type: 'int32' },
   ],
   default_sorting_field: 'order',

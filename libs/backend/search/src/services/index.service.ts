@@ -26,24 +26,18 @@ export class IndexService implements OnModuleInit {
 
     const currentCollection = await this.typeSenseClient.collections().retrieve();
 
-    if (
-      !currentCollection.some((collection) => collection.name === 'players')
-    ) {
+    if (!currentCollection.some((collection) => collection.name === 'players')) {
       await this.typeSenseClient.collections().create(PlayerDocument);
     }
 
-    if (
-      !currentCollection.some((collection) => collection.name === 'clubs')
-    ) {
+    if (!currentCollection.some((collection) => collection.name === 'clubs')) {
       await this.typeSenseClient.collections().create(ClubDocument);
     }
 
-    if (
-      !currentCollection.some((collection) => collection.name === 'events')
-    ) {
+    if (!currentCollection.some((collection) => collection.name === 'events')) {
       await this.typeSenseClient.collections().create(EventDocument);
     }
-    this._logger.log('Schemas made...');
+    this._logger.log('Schemas made... awesome!');
   }
 
   async addObjects(indexName: string, objects: Record<string, unknown>[]) {

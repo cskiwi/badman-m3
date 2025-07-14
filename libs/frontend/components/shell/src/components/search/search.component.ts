@@ -1,42 +1,29 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
-import { filter, Subject } from 'rxjs';
 import { SearchHit, SearchService } from './search.service';
 
 @Component({
-    selector: 'app-search',
-    imports: [ReactiveFormsModule, FormsModule, AutoCompleteModule],
-    templateUrl: './search.component.html',
-    styleUrl: './search.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-search',
+  imports: [FormsModule, AutoCompleteModule],
+  templateUrl: './search.component.html',
+  styleUrl: './search.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchComponent {
   private readonly searchService = inject(SearchService);
   private readonly router = inject(Router);
 
-  filter = this.searchService.filter;
   results = this.searchService.results;
   loading = this.searchService.loading;
 
-  query = this.filter.get('query') as FormControl;
-  filteredResults: SearchHit[] = [];
   searchValue = '';
-
-  typeahead: Subject<string> = new Subject();
-
-  constructor() {
-    this.typeahead.pipe(filter((r) => !!r)).subscribe((term) => {
-      this.query.patchValue(term);
-    });
-  }
 
   onSearch(event: { query: string }) {
     const query = event.query || '';
     this.searchValue = query;
-    this.typeahead.next(query);
-    this.filteredResults = this.results() || [];
+    this.searchService.updateQuery(query);
   }
 
   onSelect(event: AutoCompleteSelectEvent) {
@@ -63,6 +50,59 @@ export class SearchComponent {
         break;
       default:
         break;
+    }
+  }
+
+  getIconClass(linkType: string): string {
+    switch (linkType) {
+      case 'player':
+        return 'pi pi-user';
+      case 'team':
+        return 'pi pi-users';
+      case 'club':
+        return 'pi pi-building';
+      case 'competition':
+      case 'tournament':
+      case 'event':
+        return 'pi pi-trophy';
+      default:
+        return 'pi pi-search';
+    }
+  }
+
+  getIconColor(linkType: string): string {
+    switch (linkType) {
+      case 'player':
+        return '#3b82f6'; // blue
+      case 'team':
+        return '#10b981'; // green
+      case 'club':
+        return '#8b5cf6'; // purple
+      case 'competition':
+      case 'tournament':
+      case 'event':
+        return '#f59e0b'; // yellow/gold
+      default:
+        return '#6b7280'; // gray
+    }
+  }
+
+  getTypeLabel(linkType: string): string {
+    switch (linkType) {
+      case 'player':
+        return 'Player';
+      case 'team':
+        return 'Team';
+      case 'club':
+        return 'Club';
+      case 'competition':
+        return 'Competition';
+      case 'tournament':
+        return 'Tournament';
+      case 'event':
+        return 'Event';
+      default:
+        return 'Result';
     }
   }
 }

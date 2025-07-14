@@ -14,18 +14,16 @@
   {{ 'all.landing.description' | translate }}
 </p>
 <section class="ranking">
-  <!-- @if (isBrowser()) { -->
   <p-table [value]="dataSource()" [loading]="loading()" [sortField]="'level'" [sortOrder]="1" styleClass="p-datatable-sm">
-    <!-- <ng-template pTemplate="header">
+    <ng-template pTemplate="header">
       <tr>
         @for (col of columns; track col) {
-          <th [pSortableColumn]="col.field">
+          <th>
             {{ col.header | async }}
-            <p-sortIcon [field]="col.field"></p-sortIcon>
           </th>
         }
       </tr>
-    </ng-template> -->
+    </ng-template>
     <ng-template pTemplate="body" let-rowData>
       <tr>
         @for (col of columns; track col) {
@@ -36,12 +34,6 @@
       </tr>
     </ng-template>
   </p-table>
-  <!-- } @else {
-    <div class="p-4 text-center">
-      <i class="pi pi-spin pi-spinner text-2xl"></i>
-      <p class="mt-2">Loading table...</p>
-    </div>
-  } -->
 </section>
 
 @if (error()) {
