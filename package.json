@@ -6,9 +6,9 @@
   "scripts": {
     "start": "nx run-many -t serve -p tag:scope:app",
     "start:prod": "npx nx run app:set-env && node ./dist/apps/app/server/server.mjs",
-    "build": "cross-env NODE_OPTIONS='' nx run-many -t build --prod",
+    "build": "npx cross-env NODE_OPTIONS='' nx run-many -t build --prod",
     "migrate:create": "nx run backend-database:migration-generate",
-    "migrate": "cross-env RUN_MIGRATIONS=true nx run backend-database:migration-run",
+    "migrate": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-run",
     "migrate:undo": "nx run backend-database:migration-revert"
   },
   "private": true,
