@@ -5,11 +5,10 @@ import {
   ApplicationConfig,
   PLATFORM_ID,
   importProvidersFrom,
-  isDevMode,
-  provideZoneChangeDetection,
   inject,
+  isDevMode,
   provideAppInitializer,
-  afterNextRender,
+  provideZoneChangeDetection,
 } from '@angular/core';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -19,7 +18,6 @@ import { AuthInterceptor } from '@app/frontend-modules-auth/interceptor';
 import { provideGraphQL } from '@app/frontend-modules-graphql';
 import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
-import { ThemeService } from '@app/frontend-modules-theme';
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';

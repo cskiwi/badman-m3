@@ -6,6 +6,6 @@
     "moduleResolution": "bundler"
   },
   "files": ["src/main.ts", "src/main.server.ts", "server/server.ts"],
-  "include": ["src/**/*.d.ts"],
+  "include": ["src/**/*.d.ts", "config/**/*.ts"],
   "exclude": ["jest.config.ts", "src/**/*.test.ts", "src/**/*.spec.ts"]
 }
