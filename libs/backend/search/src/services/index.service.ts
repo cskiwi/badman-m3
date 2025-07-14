@@ -1,9 +1,8 @@
 import { Club, EventCompetition, EventTournament, Player } from '@app/models';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { SearchClient } from 'algoliasearch';
 import moment from 'moment';
 import { Client } from 'typesense';
-import { DEFAULT_CLIENTS, IndexingClient } from '../client';
+import { TYPESENSE_CLIENT } from '../utils';
 import { ClubDocument, EventDocument, PlayerDocument } from '../documents';
 
 enum multiMatchOrder {
@@ -18,71 +17,46 @@ export class IndexService implements OnModuleInit {
   private readonly _logger = new Logger(IndexService.name);
 
   constructor(
-    @Inject(IndexingClient.ALGOLIA_CLIENT)
-    private readonly algoliaClient: SearchClient,
-    @Inject(IndexingClient.TYPESENSE_CLIENT)
+    @Inject(TYPESENSE_CLIENT)
     private readonly typeSenseClient: Client,
   ) {}
 
   async onModuleInit(): Promise<void> {
     this._logger.log('Indexing started...');
 
-    if (DEFAULT_CLIENTS.includes(IndexingClient.TYPESENSE_CLIENT)) {
-      // temo delete all schemas on startup
+    const currentCollection = await this.typeSenseClient.collections().retrieve();
 
-      // await this.typeSenseClient.collections('players').delete();
-      // await this.typeSenseClient.collections('clubs').delete();
-      // await this.typeSenseClient.collections('events').delete();
+    if (
+      !currentCollection.some((collection) => collection.name === 'players')
+    ) {
+      await this.typeSenseClient.collections().create(PlayerDocument);
+    }
 
-      const currentCollection = await this.typeSenseClient.collections().retrieve();
+    if (
+      !currentCollection.some((collection) => collection.name === 'clubs')
+    ) {
+      await this.typeSenseClient.collections().create(ClubDocument);
+    }
 
-      if (
-        !currentCollection.some((collection) => collection.name === 'players')
-      ) {
-        await this.typeSenseClient.collections().create(PlayerDocument);
-      }
+    if (
+      !currentCollection.some((collection) => collection.name === 'events')
+    ) {
+      await this.typeSenseClient.collections().create(EventDocument);
+    }
+    this._logger.log('Schemas made...');
+  }
 
-      if (
-        !currentCollection.some((collection) => collection.name === 'clubs')
-      ) {
-        await this.typeSenseClient.collections().create(ClubDocument);
-      }
-
-      if (
-        !currentCollection.some((collection) => collection.name === 'events')
-      ) {
-        await this.typeSenseClient.collections().create(EventDocument);
-      }
-      this._logger.log('Schemas made...');
+  async addObjects(indexName: string, objects: Record<string, unknown>[]) {
+    try {
+      await this.typeSenseClient.collections(indexName).documents().import(objects, { action: 'upsert' });
+    } catch (e) {
+      this._logger.error(e);
+    } finally {
+      this._logger.log(`Indexed ${objects.length} objects to ${indexName}`);
     }
   }
 
-  async addObjects(indexName: string, objects: any[], clients: string[]) {
-    if (clients.includes(IndexingClient.TYPESENSE_CLIENT)) {
-      try {
-        await this.typeSenseClient.collections(indexName).documents().import(objects, { action: 'upsert' });
-      } catch (e) {
-        this._logger.error(e);
-      } finally {
-        this._logger.log(`Indexed ${objects.length} objects to ${indexName}`);
-      }
-    }
-
-    if (clients.includes(IndexingClient.ALGOLIA_CLIENT)) {
-      await this.algoliaClient.saveObjects({
-        indexName,
-        objects,
-      });
-
-      // combined index
-      await this.algoliaClient.saveObjects({
-        indexName: 'searchable',
-        objects,
-      });
-    }
-  }
-
-  async indexPlayers(clients: string[] = DEFAULT_CLIENTS) {
+  async indexPlayers() {
     const playerQry = Player.createQueryBuilder('player')
       .select(['player.id', 'player.slug', 'player.memberId', 'player.firstName', 'player.lastName', 'club.id'])
       .leftJoinAndSelect('player.clubPlayerMemberships', 'clubPlayerMemberships')
@@ -116,10 +90,10 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('players', objects, clients);
+    await this.addObjects('players', objects);
   }
 
-  async indexClubs(clients: string[] = DEFAULT_CLIENTS) {
+  async indexClubs() {
     const clubsQry = Club.createQueryBuilder('club')
       .select(['club.id', 'club.name', 'club.fullName', 'club.clubId', 'club.slug'])
       .where('club.clubId IS NOT NULL');
@@ -143,10 +117,10 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('clubs', objects, clients);
+    await this.addObjects('clubs', objects);
   }
 
-  async indexCompetitionEvents(clients: string[] = DEFAULT_CLIENTS) {
+  async indexCompetitionEvents() {
     const eventsQry = EventCompetition.createQueryBuilder('event').select(['event.id', 'event.name', 'event.season']).where('event.official = true');
 
     const events = await eventsQry.getMany();
@@ -167,10 +141,10 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('events', objects, clients);
+    await this.addObjects('events', objects);
   }
 
-  async indexTournamentEvents(clients: string[] = DEFAULT_CLIENTS) {
+  async indexTournamentEvents() {
     const eventsQry = EventTournament.createQueryBuilder('event').select(['event.id', 'event.name', 'event.firstDay']).where('event.official = true');
 
     const events = await eventsQry.getMany();
@@ -191,6 +165,6 @@ export class IndexService implements OnModuleInit {
       };
     });
 
-    await this.addObjects('events', objects, clients);
+    await this.addObjects('events', objects);
   }
 }

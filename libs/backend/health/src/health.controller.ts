@@ -1,15 +1,7 @@
 import { Controller, Get, Logger, VERSION_NEUTRAL } from '@nestjs/common';
-import {
-  HealthCheck,
-  HealthCheckService,
-  MemoryHealthIndicator,
-  TypeOrmHealthIndicator,
-} from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService, MemoryHealthIndicator, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
-@Controller({
-  path: 'health',
-  version: VERSION_NEUTRAL,
-})
+@Controller({ path: 'health', version: VERSION_NEUTRAL })
 export class HealthController {
   private _logger = new Logger(HealthController.name);
 
@@ -24,20 +16,6 @@ export class HealthController {
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([
-      () => this.typeOrm.pingCheck('database'),
-      () => this.memory.checkHeap('memory_heap', 1 * 1024 * 1024 * 1024 * 1024),
-    ]);
-  }
-
-  @Get('test')
-  randomTest(@Headers('X-MY-APP-CLIENT') auth: any) {
-    this._logger.log(`Received key: ${auth}`);
-
-    // create typorm trnasaction
-
-    return {
-      message: 'Hello World!',
-    };
+    return this.health.check([() => this.typeOrm.pingCheck('database'), () => this.memory.checkHeap('memory_heap', 1 * 1024 * 1024 * 1024 * 1024)]);
   }
 }

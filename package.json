@@ -47,7 +47,6 @@
     "@nx/nest": "21.2.3",
     "@nx/node": "21.2.3",
     "@primeuix/themes": "^1.2.1",
-    "algoliasearch": "^5.32.0",
     "apollo-angular": "^11.0.0",
     "axios": "^1.10.0",
     "canvas": "3.1.2",

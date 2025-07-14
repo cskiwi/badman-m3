@@ -31,10 +31,6 @@ import { ScheduleModule } from '@nestjs/schedule';
             : process.env[key] || defaultValue;
 
         return {
-          algolia: {
-            appId: getEnvVar<string>('ALGOLIA_APP_ID'),
-            apiKey: getEnvVar<string>('ALGOLIA_API_KEY'),
-          },
           typesense: {
             nodes: [
               {

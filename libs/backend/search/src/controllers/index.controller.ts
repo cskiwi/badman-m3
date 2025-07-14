@@ -3,21 +3,11 @@ import { Player } from '@app/models';
 import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsOptional } from 'class-validator';
-import { DEFAULT_CLIENTS, getClients, getTypes, IndexingClient, IndexType } from '../utils';
+import { IndexType } from '../utils';
 import { IndexService } from '../services';
 import { Cron } from '@nestjs/schedule';
 
 export class IndexQuery {
-  @IsArray()
-  @IsEnum(IndexingClient, { each: true })
-  @IsOptional()
-  @ApiProperty({
-    enum: IndexingClient,
-    isArray: true,
-    description: 'Select one or both clients',
-  })
-  clients?: IndexingClient[];
-
   @IsArray()
   @IsEnum(IndexType, { each: true })
   @IsOptional()
@@ -42,10 +32,10 @@ export class IndexController {
     this.logger.log(`Indexing`);
 
     const toIndex = [
-      this.indexService.indexPlayers(DEFAULT_CLIENTS),
-      this.indexService.indexClubs(DEFAULT_CLIENTS),
-      this.indexService.indexCompetitionEvents(DEFAULT_CLIENTS),
-      this.indexService.indexTournamentEvents(DEFAULT_CLIENTS),
+      this.indexService.indexPlayers(),
+      this.indexService.indexClubs(),
+      this.indexService.indexCompetitionEvents(),
+      this.indexService.indexTournamentEvents(),
     ];
 
     await Promise.all(toIndex);
@@ -54,12 +44,6 @@ export class IndexController {
   @Get('/')
   async indexAll(@User() user: Player, @Query() query: IndexQuery) {
     this.logger.log(`Indexing all data for user ${user?.fullName}`);
-
-    const clients = Array.isArray(query.clients)
-      ? query.clients
-      : query.clients
-        ? [query.clients]
-        : DEFAULT_CLIENTS;
 
     const types = Array.isArray(query.types)
       ? query.types
@@ -72,20 +56,16 @@ export class IndexController {
             IndexType.TOURNAMENT_EVENTS,
           ];
 
-    if (!clients.some((client) => DEFAULT_CLIENTS.includes(client))) {
-      throw new Error('Invalid client');
-    }
-
     const toIndex = types.map((type) => {
       switch (type) {
         case IndexType.PLAYERS:
-          return this.indexService.indexPlayers(clients);
+          return this.indexService.indexPlayers();
         case IndexType.CLUBS:
-          return this.indexService.indexClubs(clients);
+          return this.indexService.indexClubs();
         case IndexType.COMPETITION_EVENTS:
-          return this.indexService.indexCompetitionEvents(clients);
+          return this.indexService.indexCompetitionEvents();
         case IndexType.TOURNAMENT_EVENTS:
-          return this.indexService.indexTournamentEvents(clients);
+          return this.indexService.indexTournamentEvents();
       }
     });
 
