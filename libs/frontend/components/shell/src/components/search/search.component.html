@@ -22,10 +22,10 @@
         
         <!-- Content -->
         <div class="flex flex-col flex-1">
-          <div class="font-medium text-gray-900 dark:text-gray-100">
+          <div class="font-medium text-color">
             {{ item.title }}
           </div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">
+          <div class="text-sm text-muted-color">
             <!-- Show subtitle (e.g., club name) if available, otherwise show type label -->
             {{ item.subtitle || getTypeLabel(item.linkType) }}
           </div>
@@ -45,7 +45,7 @@
     </ng-template>
 
     <ng-template #empty>
-      <div class="px-3 py-2 text-gray-500 dark:text-gray-400 text-center">
+      <div class="px-3 py-2 text-muted-color text-center">
         @if (loading()) {
           <div class="flex items-center justify-center gap-2">
             <i class="pi pi-spin pi-spinner"></i>

@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -23,6 +24,7 @@ import { MessageService } from 'primeng/api';
         MenuModule,
         DividerModule,
         ToastModule,
+        ToolbarModule,
         SearchComponent,
     ],
     selector: 'app-shell',
@@ -50,6 +52,14 @@ export class ShellComponent {
     {
       label: this.user()?.firstName || 'User',
       disabled: true
+    },
+    {
+      separator: true
+    },
+    {
+      label: `${this.isDarkMode() ? 'Light' : 'Dark'} Mode`,
+      icon: this.themeToggleIcon(),
+      command: () => this.toggleTheme()
     },
     {
       separator: true

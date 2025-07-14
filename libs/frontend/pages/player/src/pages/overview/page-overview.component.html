@@ -6,7 +6,7 @@
   <section class="players p-4">
     <!-- Search Input -->
     <div class="mb-6">
-      <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+      <label for="search" class="block text-sm font-medium text-color mb-2">
         {{ 'all.players.search' | translate }}
       </label>
       <input 
@@ -27,10 +27,10 @@
         >
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-semibold text-gray-900">{{ player.fullName }}</h3>
-              <p class="text-gray-600">{{ player.memberId }}</p>
+              <h3 class="text-lg font-semibold text-color">{{ player.fullName }}</h3>
+              <p class="text-muted-color">{{ player.memberId }}</p>
             </div>
-            <i class="pi pi-chevron-right text-gray-400"></i>
+            <i class="pi pi-chevron-right text-muted-color"></i>
           </div>
         </p-card>
       }

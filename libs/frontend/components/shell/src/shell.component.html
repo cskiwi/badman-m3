@@ -1,86 +1,65 @@
-<div class="min-h-screen bg-gray-50">
-  <!-- Top Navigation Bar -->
-  <div class="bg-white shadow-md px-4 py-3 flex items-center justify-between">
-    <div class="flex items-center space-x-4">
-      <p-button
-        icon="pi pi-bars"
-        (click)="toggleSidebar()"
-      [outlined]="true"
-        [rounded]="true"
-        size="small"
-        aria-label="Toggle sidebar"
-        class="lg:hidden"
-      />
-      @if (isDesktop) {
-        <h1 class="text-xl font-bold text-gray-800" [routerLink]="['/']">Badman</h1>
-      }
-    </div>
+<div>
+  <!-- Floating Toolbar -->
+  <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4 floating-toolbar">
+    <p-toolbar>
+      <ng-template #start>
+        <div class="flex items-center space-x-4">
+          <h1 class="text-xl font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
 
-    <div class="flex-1 max-w-xl mx-4">
-      <app-search />
-    </div>
+          @if (isDesktop) {
+            <!-- Desktop Navigation Links -->
+            <nav class="flex items-center space-x-2">
+              @if (user()?.slug) {
+                <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/player', user()?.slug]" [text]="true" size="small" />
+                @if (clubs().length === 1) {
+                  <p-button [label]="'all.players.my-club' | translate" [routerLink]="['/club', clubs()[0].club.slug]" [text]="true" size="small" />
+                }
+              }
+            </nav>
+          } @else {
+            <!-- Mobile Menu Button -->
+            <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
+          }
+        </div>
+      </ng-template>
 
-    <div class="flex items-center space-x-2">
-      <!-- Theme toggle button -->
-      <p-button
-        [icon]="themeToggleIcon()"
-        [outlined]="true"
-        [rounded]="true"
-        (click)="toggleTheme()"
-        [attr.aria-label]="themeToggleLabel()"
-        size="small"
-      />
+      <ng-template #center>
+        <div class="flex-1">
+          <app-search />
+        </div>
+      </ng-template>
 
-      @if (user()?.firstName) {
-        <p-menu #menu [model]="userMenuItems()" [popup]="true" />
-        @if (isDesktop) {
-          <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
-        } @else {
-          <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" (click)="menu.toggle($event)" aria-label="User menu" />
-        }
-      } @else {
-        <p-button label="Log in" [outlined]="true" (click)="login()" />
-      }
-    </div>
+      <ng-template #end>
+        <div class="flex items-center space-x-2">
+          @if (user()?.firstName) {
+            <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
+            @if (isDesktop) {
+              <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+            } @else {
+              <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+            }
+          } @else {
+            <p-button label="Log in" [outlined]="true" (click)="login()" />
+          }
+        </div>
+      </ng-template>
+    </p-toolbar>
   </div>
 
-  <div class="flex">
-    <!-- Desktop Sidebar -->
-    <aside class="hidden lg:block w-64 bg-white shadow-md p-4 min-h-screen" [class.hidden]="!isDesktop">
-      <nav class="space-y-2">
-        @if (user()?.slug) {
-          <a [routerLink]="['/player', user()?.slug]" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-            {{ 'all.players.my-profile' | translate }}
-          </a>
-
-          @if (clubs().length === 1) {
-            <a [routerLink]="['/club', clubs()[0].club.slug]" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              {{ 'all.players.my-club' | translate }}
-            </a>
-          }
-          <p-divider />
-        }
-
-        <a routerLink="." class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Home </a>
-        <a routerLink="player" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Players </a>
-        <a routerLink="club" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Clubs </a>
-        <a routerLink="competition" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"> Competition </a>
-      </nav>
-    </aside>
-
+  <div class="pt-20">
     <!-- Mobile Sidebar Overlay -->
     @if (sidebarVisible && !isDesktop) {
-      <div class="fixed inset-0 bg-black bg-opacity-50 z-40" (click)="sidebarVisible = false"></div>
+      <div class="fixed inset-0 z-40 mobile-overlay" (click)="sidebarVisible = false"></div>
       <aside
-        class="fixed left-0 top-0 w-64 bg-white shadow-md p-4 min-h-screen z-50 transform transition-transform"
+        class="fixed left-0 top-0 w-64 shadow-md p-4 min-h-screen z-50 transform transition-transform mobile-sidebar"
         [class.translate-x-0]="sidebarVisible"
         [class.-translate-x-full]="!sidebarVisible"
       >
-        <nav class="space-y-2 mt-16">
+        <nav class="space-y-2 mt-20">
           @if (user()?.slug) {
             <a
               [routerLink]="['/player', user()?.slug]"
-              class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
               (click)="sidebarVisible = false"
             >
               {{ 'all.players.my-profile' | translate }}
@@ -89,7 +68,7 @@
             @if (clubs().length === 1) {
               <a
                 [routerLink]="['/club', clubs()[0].club.slug]"
-                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
                 (click)="sidebarVisible = false"
               >
                 {{ 'all.players.my-club' | translate }}
@@ -98,22 +77,18 @@
             <p-divider />
           }
 
-          <a routerLink="." class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" (click)="sidebarVisible = false">
+          <a routerLink="." class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             Home
           </a>
-          <a
-            routerLink="player"
-            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            (click)="sidebarVisible = false"
-          >
+          <a routerLink="player" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             Players
           </a>
-          <a routerLink="club" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" (click)="sidebarVisible = false">
+          <a routerLink="club" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             Clubs
           </a>
           <a
             routerLink="competition"
-            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
             (click)="sidebarVisible = false"
           >
             Competition

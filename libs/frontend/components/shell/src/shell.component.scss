@@ -2,41 +2,26 @@
   display: block;
 }
 
-$toolbar-height: 75px;
-$min-height: calc(100vh - $toolbar-height);
-
-app-name {
-  font-size: 1.5em;
-  font-weight: bold;
+// Floating toolbar styles
+.mobile-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-.nav {
-  padding: 16px 8px;
-  min-height: $min-height;
-  overflow: auto;
-  box-sizing: border-box;
+.mobile-sidebar {
+  background-color: var(--surface-ground);
+}
 
-  mat-divider {
-    margin: 1rem 0;
+// Responsive adjustments for the floating toolbar
+@media (max-width: 1024px) {
+  .floating-toolbar {
+    margin: 0 1rem;
+    max-width: calc(100% - 2rem);
   }
 }
 
-.toolbar {
-  gap: 1rem;
-  .spacer {
-    flex: 1 1 auto;
-  }
-}
-
-mat-sidenav {
-  width: 200px;
-}
-
-mat-sidenav-content {
-  min-height: $min-height;
-  margin-left: 200px;
-
-  @media (max-width: 959.98px) {
-    margin-left: 0;
+@media (max-width: 640px) {
+  .floating-toolbar {
+    margin: 0 0.5rem;
+    max-width: calc(100% - 1rem);
   }
 }
