@@ -1,6 +1,8 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/api'),
@@ -11,8 +13,8 @@ module.exports = {
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
-      optimization: false,
-      outputHashing: 'none',
+      optimization: isProd,
+      outputHashing: isProd ? 'all' : 'none',
       generatePackageJson: true,
       assets: [
         // './src/assets',
