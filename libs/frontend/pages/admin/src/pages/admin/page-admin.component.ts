@@ -13,10 +13,10 @@ import { AuthService } from '@app/frontend-modules-auth/service';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 
 export enum IndexType {
-  PLAYERS = 'players',
-  CLUBS = 'clubs',
-  COMPETITION_EVENTS = 'competitionEvents',
-  TOURNAMENT_EVENTS = 'tournamentEvents',
+  PLAYERS = 'PLAYERS',
+  CLUBS = 'CLUBS',
+  COMPETITION_EVENTS = 'COMPETITION_EVENTS',
+  TOURNAMENT_EVENTS = 'TOURNAMENT_EVENTS',
 }
 
 const INDEX_ALL_MUTATION = gql`
@@ -65,8 +65,7 @@ export class PageAdminComponent {
   // Check if user has admin access
   user = this.auth.user;
   hasAdminAccess = computed(() => {
-    const currentUser = this.user();
-    return currentUser?.hasAnyPermission?.(['index:all']) ?? false;
+    return this.auth.hasAnyPermission?.(['change:job']) ?? false;
   });
 
   // Available index types with labels

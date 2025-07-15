@@ -7,7 +7,10 @@
     "@angular/forms": "*",
     "@ngx-translate/core": "*",
     "ngxtension": "*",
-    "primeng": "*"
+    "primeng": "*",
+    "@app/frontend-components": "0.0.1",
+    "apollo-angular": "^11.0.0",
+    "@app/frontend-modules-auth": "0.0.1"
   },
   "sideEffects": false
 }

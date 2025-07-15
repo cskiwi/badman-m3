@@ -21,6 +21,7 @@ import {
   RankingSystemResolver,
   SubEventCompetitionResolver,
   UserResolver,
+  PlayerPermissionsResolver,
 } from './resolvers';
 
 @Module({
@@ -75,6 +76,7 @@ import {
     RankingSystemResolver,
     EventCompetitionResolver,
     SubEventCompetitionResolver,
+    PlayerPermissionsResolver
   ],
 })
 export class GraphQLModule {}

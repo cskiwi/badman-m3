@@ -6,6 +6,8 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
@@ -15,6 +17,8 @@ import { ClubPlayerMembership } from './club-player-membership';
 import { GamePlayerMembership } from './event/game-player-membership';
 import { RankingLastPlace } from './ranking';
 import { TeamPlayerMembership } from './team-player-membership';
+import { Role } from './security/role.model';
+import { Claim } from './security/claim.model';
 
 @ObjectType('Player')
 @Entity('Players')
@@ -96,38 +100,47 @@ export class Player extends BaseEntity {
   @Field(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(() => GamePlayerMembership, (membership) => membership.gamePlayer)
   declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
-  async getPermissions(): Promise<string[]> {
-    // let claims = (await this.getClaims()).map((r) => r.name);
-    // const roles = await this.getRoles({
-    //   include: [Claim],
-    // });
-    // claims = [
-    //   ...claims,
-    //   ...roles.map((r) => r?.claims?.map((c) => `${r.linkId}_${c.name}`)).flat(),
-    // ].filter((x) => x !== null && x !== undefined);
 
-    return [] as string[];
+  @Field(() => [Role], { nullable: true })
+  @ManyToMany(() => Role, (role) => role.players, { nullable: true })
+  declare roles?: Relation<Role[]>;
+
+  @Field(() => [Claim], { nullable: true })
+  @ManyToMany(() => Claim, (claim) => claim.players, { nullable: true })
+  @JoinTable({
+    name: 'PlayerClaimMemberships',
+    schema: 'security',
+    joinColumn: { name: 'playerId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'claimId', referencedColumnName: 'id' },
+  })
+  declare claims?: Relation<Claim[]>;
+
+  /**
+   * Permissions for the player, exposed via GraphQL.
+   */
+  @Field(() => [String], { nullable: true })
+  get permissions(): string[] {
+    // This should be resolved via a resolver, not directly here.
+    return [];
   }
 
-  async hasAnyPermission(requiredPermissions: string[]) {
-    const claims = await this.getPermissions();
+  //  only run these on the server side
+  hasAnyPermission(requiredPermissions: string[]) {
+    const claims = this.permissions;
+
     if (claims === null) {
       return false;
     }
 
-    return requiredPermissions.some((perm) =>
-      claims.some((claim) => claim === perm),
-    );
+    return requiredPermissions.some((perm) => claims.some((claim) => claim === perm));
   }
 
-  async hasAllPermission(requiredPermissions: string[]) {
-    const claims = await this.getPermissions();
+  hasAllPermission(requiredPermissions: string[]) {
+    const claims = this.permissions;
     if (claims === null) {
       return false;
     }
 
-    return requiredPermissions.every((perm) =>
-      claims.some((claim) => claim === perm),
-    );
+    return requiredPermissions.every((perm) => claims.some((claim) => claim === perm));
   }
 }

@@ -4,6 +4,7 @@ export * from './game.resolver';
 export * from './index.resolver';
 export * from './player-club.resolver';
 export * from './player-game.resolver';
+export * from './player-permissions.resolver';
 export * from './player.resolver';
 export * from './ranking.resolver';
 export * from './search.resolver';

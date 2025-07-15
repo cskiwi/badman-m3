@@ -1,4 +1,5 @@
 import {
+  Claim,
   Club,
   ClubPlayerMembership,
   DrawTournament,
@@ -7,10 +8,14 @@ import {
   Game,
   GamePlayerMembership,
   Player,
+  PlayerClaimMembership,
+  PlayerRoleMembership,
   RankingGroup,
   RankingLastPlace,
   RankingSystem,
   RankingSystemRankingGroupMembership,
+  Role,
+  RoleClaimMembership,
   SubEventTournament,
   Team,
   TeamPlayerMembership,
@@ -35,13 +40,16 @@ const entities = [
   EventTournament,
   SubEventTournament,
   DrawTournament,
+
+  Role,
+  Claim,
+  PlayerRoleMembership,
+  RoleClaimMembership,
+  PlayerClaimMembership,
 ];
 
 export function getDbConfig(configService?: ConfigService): DataSourceOptions {
-  const getEnvVar = (key: string, defaultValue?: string) =>
-    configService
-      ? configService.get<string>(key)
-      : process.env[key] || defaultValue;
+  const getEnvVar = (key: string, defaultValue?: string) => (configService ? configService.get<string>(key) : process.env[key] || defaultValue);
 
   const addMigrations = getEnvVar('RUN_MIGRATIONS')?.trim() === 'true';
   const dbType = getEnvVar('DB_TYPE')?.trim();
@@ -64,22 +72,17 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
       username: getEnvVar('DB_USER'),
       password: getEnvVar('DB_PASSWORD'),
       database: getEnvVar('DB_DATABASE'),
-      ssl:
-        getEnvVar('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
+      ssl: getEnvVar('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
       migrationsTableName: 'typeorm_migrations',
       applicationName: 'badman',
       options: { trustServerCertificate: true },
-      migrations: addMigrations
-        ? ['libs/backend/database/src/migrations/*.ts']
-        : undefined,
+      migrations: addMigrations ? ['libs/backend/database/src/migrations/*.ts'] : undefined,
       synchronize: false,
       migrationsRun: false,
       // logging: true,
     } as DataSourceOptions;
   } else {
-    throw new Error(
-      'Unsupported DB_TYPE. Please specify either "sqlite" or "postgres".',
-    );
+    throw new Error('Unsupported DB_TYPE. Please specify either "sqlite" or "postgres".');
   }
 
   return config;
@@ -95,10 +98,9 @@ export function initializeDataSource(configService?: ConfigService) {
     entities,
   });
   datasource.initialize();
- 
+
   return {
     datasource,
     config,
   };
 }
-

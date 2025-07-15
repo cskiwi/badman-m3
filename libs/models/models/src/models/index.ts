@@ -3,5 +3,7 @@ export * from './club.model';
 export * from './event';
 export * from './player.model';
 export * from './ranking';
+export * from './search.model';
+export * from './security';
 export * from './team-player-membership';
 export * from './team.model';

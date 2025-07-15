@@ -14,6 +14,7 @@ export interface AuthState {
   loggedIn: boolean;
   loaded: boolean;
   token: string | null;
+  permissions: string[];
 }
 
 @Injectable({
@@ -30,9 +31,29 @@ export class AuthService {
     loaded: false,
     loggedIn: false,
     token: null,
+    permissions: [],
   };
 
   user = computed(() => this.state().user);
+
+  hasAnyPermission(requiredPermissions: string[]) {
+    const claims = this.state().user?.permissions || null;
+
+    if (claims === null) {
+      return false;
+    }
+
+    return requiredPermissions.some((perm) => claims.some((claim) => claim === perm));
+  }
+
+  hasAllPermission(requiredPermissions: string[]) {
+    const claims = this.state().user?.permissions || null;
+    if (claims === null) {
+      return false;
+    }
+
+    return requiredPermissions.every((perm) => claims.some((claim) => claim === perm));
+  }
 
   loggedin$ = () => {
     if (isPlatformServer(this.platform)) {
@@ -167,6 +188,7 @@ export class AuthService {
               lastName
               fullName
               slug
+              permissions
               clubPlayerMemberships {
                 id
                 active

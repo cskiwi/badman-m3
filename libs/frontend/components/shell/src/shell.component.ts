@@ -18,20 +18,11 @@ import { MessageService } from 'primeng/api';
 import type { MenuItem } from 'primeng/api';
 
 @Component({
-    imports: [
-        RouterModule,
-        TranslateModule,
-        ButtonModule,
-        MenuModule,
-        DividerModule,
-        ToastModule,
-        ToolbarModule,
-        SearchComponent,
-    ],
-    selector: 'app-shell',
-    templateUrl: './shell.component.html',
-    styleUrl: './shell.component.scss',
-    providers: [MessageService]
+  imports: [RouterModule, TranslateModule, ButtonModule, MenuModule, DividerModule, ToastModule, ToolbarModule, SearchComponent],
+  selector: 'app-shell',
+  templateUrl: './shell.component.html',
+  styleUrl: './shell.component.scss',
+  providers: [MessageService],
 })
 export class ShellComponent {
   private readonly platformId = inject<string>(PLATFORM_ID);
@@ -47,23 +38,22 @@ export class ShellComponent {
 
   // Theme computed properties
   isDarkMode = computed(() => this.themeService.currentTheme() === 'dark');
-  themeToggleIcon = computed(() => this.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon');
+  themeToggleIcon = computed(() => (this.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'));
   themeToggleLabel = computed(() => `Toggle ${this.isDarkMode() ? 'light' : 'dark'} mode`);
 
   // Check if user has admin access
   hasAdminAccess = computed(() => {
-    const currentUser = this.user();
-    return currentUser?.hasAnyPermission?.(['index:all']) ?? false;
+    return this.auth.hasAnyPermission?.(['change:job']) ?? false;
   });
 
   userMenuItems = computed<MenuItem[]>(() => {
     const baseItems: MenuItem[] = [
       {
         label: this.user()?.firstName || 'User',
-        disabled: true
+        disabled: true,
       },
       {
-        separator: true
+        separator: true,
       },
     ];
 
@@ -71,25 +61,28 @@ export class ShellComponent {
     if (this.hasAdminAccess()) {
       baseItems.push({
         label: 'Admin Panel',
-        command: () => this.navigateToAdmin()
+        icon: 'pi pi-shield',
+        command: () => this.navigateToAdmin(),
       });
       baseItems.push({
-        separator: true
+        separator: true,
       });
     }
 
     baseItems.push(
       {
         label: `${this.isDarkMode() ? 'Light' : 'Dark'} Mode`,
-        command: () => this.toggleTheme()
+        icon: this.themeToggleIcon(),
+        command: () => this.toggleTheme(),
       },
       {
-        separator: true
+        separator: true,
       },
       {
         label: 'Logout',
-        command: () => this.logout()
-      }
+        icon: 'pi pi-sign-out',
+        command: () => this.logout(),
+      },
     );
 
     return baseItems;

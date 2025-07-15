@@ -1,22 +1,21 @@
 <div [pTooltip]="tooltip()" tooltipStyleClass="tooltip-multi-line" class="border border-surface-300">
   @if (this.showLevelService.rankingPlace()) {
-    <div class="level border-r border-surface-300 text-surface-600 text-lg font-semibold px-2 py-1">{{ this.showLevelService.rankingPlace()?.[type()] }}</div>
+    <div class="level border-r border-surface-300 text-color text-lg px-2 py-1">
+      {{ this.showLevelService.rankingPlace()?.[type()] }}
+    </div>
 
     @if (this.showLevelService.rankingPlace()?.[upgrade] !== null) {
-      <span class="points text-surface-600 text-lg font-semibold px-1" [ngClass]="{ upgrade: this.canUpgrade() }">
+      <span class="points text-color text-lg px-1" [ngClass]="{ upgrade: this.canUpgrade() }">
         {{ this.showLevelService.rankingPlace()?.[upgrade] }}
       </span>
     }
 
-    @if (
-      this.showLevelService.rankingPlace()?.[upgrade] !== null &&
-      this.showLevelService.rankingPlace()?.[downgrade] !== null
-    ) {
-      <span class="separator text-surface-600 px-1">-</span>
+    @if (this.showLevelService.rankingPlace()?.[upgrade] !== null && this.showLevelService.rankingPlace()?.[downgrade] !== null) {
+      <span class="separator text-color px-1">-</span>
     }
 
     @if (this.showLevelService.rankingPlace()?.[downgrade] !== null) {
-      <span class="points text-surface-600 text-lg font-semibold px-1" [ngClass]="{ downgrade: this.canDowngrade() }">
+      <span class="points text-color text-lg px-1" [ngClass]="{ downgrade: this.canDowngrade() }">
         {{ this.showLevelService.rankingPlace()?.[downgrade] }}
       </span>
     }
