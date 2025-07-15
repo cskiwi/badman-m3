@@ -2,7 +2,7 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
-
+import { ConfigModule } from '@nestjs/config';
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
@@ -26,9 +26,11 @@ import {
 
 @Module({
   imports: [
+    ConfigModule,
     AuthorizationModule,
     NestJsGql.forRootAsync({
       driver: ApolloDriver,
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
         const plugins = [];

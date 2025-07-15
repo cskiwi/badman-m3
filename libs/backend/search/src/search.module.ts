@@ -5,9 +5,10 @@ import { SearchController } from './controllers';
 import { ISearchConfig } from './interfaces';
 import { IndexService, SearchService } from './services';
 import { TYPESENSE_CLIENT } from './utils';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [JwtModule],
+  imports: [JwtModule, ConfigModule],
   controllers: [SearchController],
   providers: [SearchService, IndexService],
   exports: [IndexService, SearchService],

@@ -12,7 +12,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       cache: true,
     }),
     DatabaseModule,
@@ -24,12 +23,10 @@ import { ScheduleModule } from '@nestjs/schedule';
     ScheduleModule.forRoot(),
     SearchModule.forRootAsync({
       isGlobal: true,
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        const getEnvVar = <T>(key: string, defaultValue?: string) =>
-          configService
-            ? configService.get<T>(key)
-            : process.env[key] || defaultValue;
+        const getEnvVar = <T>(key: string, defaultValue?: string) => (configService ? configService.get<T>(key) : process.env[key] || defaultValue);
 
         return {
           typesense: {

@@ -11,7 +11,7 @@ registerEnumType(IndexType, {
   description: 'The types of data that can be indexed',
 });
 
-@InputType()
+@InputType('IndexInput', { description: 'Input for indexing data' })
 export class IndexInput {
   @Field(() => [IndexType], { 
     nullable: true,
@@ -23,7 +23,7 @@ export class IndexInput {
   types?: IndexType[];
 }
 
-@ObjectType()
+@ObjectType('IndexResult', { description: 'Result of the indexing operation' })
 export class IndexResult {
   @Field(() => String)
   message!: string;

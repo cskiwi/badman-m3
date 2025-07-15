@@ -3,10 +3,12 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { I18nModule, QueryResolver } from 'nestjs-i18n';
 import { join } from 'path';
 import { TranslateController } from './controllers';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [TranslateController],
   imports: [
+    ConfigModule,
     I18nModule.forRootAsync({
       resolvers: [{ use: QueryResolver, options: ['lang'] }],
 
