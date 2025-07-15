@@ -1,15 +1,13 @@
 {
   "name": "@app/frontend-pages-admin",
   "version": "0.0.1",
-  "private": true,
   "peerDependencies": {
-    "@angular/common": "^19.0.0",
-    "@angular/core": "^19.0.0"
+    "@angular/core": "*",
+    "@angular/router": "*",
+    "@angular/forms": "*",
+    "@ngx-translate/core": "*",
+    "ngxtension": "*",
+    "primeng": "*"
   },
-  "dependencies": {
-    "tslib": "^2.3.0"
-  },
-  "type": "commonjs",
-  "main": "./src/index.js",
-  "typings": "./src/index.d.ts"
+  "sideEffects": false
 }

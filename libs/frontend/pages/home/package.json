@@ -5,11 +5,15 @@
     "@app/frontend-components": "0.0.1",
     "@app/frontend-modules-graphql": "0.0.1",
     "@app/models": "0.0.1",
-    "@app/frontend-utils": "0.0.1",
     "@angular/core": "20.1.0",
     "primeng": "^20.0.0-rc.3",
     "@ngx-translate/core": "^16.0.4",
-    "@angular/common": "20.1.0"
+    "@angular/common": "20.1.0",
+    "@angular/router": "20.1.0",
+    "@angular/forms": "20.1.0",
+    "apollo-angular": "^11.0.0",
+    "ngxtension": "^5.1.0",
+    "rxjs": "~7.8.2"
   },
   "sideEffects": false
 }

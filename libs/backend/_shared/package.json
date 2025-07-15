@@ -9,7 +9,12 @@
     "@app/backend-health": "0.0.1",
     "@app/backend-seo": "0.0.1",
     "@app/backend-search": "0.0.1",
-    "@app/backend-translate": "0.0.1"
+    "@app/backend-translate": "0.0.1",
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/config": "4.0.2",
+    "@nestjs/schedule": "^6.0.0",
+    "@nestjs/core": "^11.1.3",
+    "@nestjs/swagger": "^11.2.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

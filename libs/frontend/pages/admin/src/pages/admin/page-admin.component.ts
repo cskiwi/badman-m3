@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
-import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo, gql } from 'apollo-angular';
 import { ButtonModule } from 'primeng/button';
@@ -11,6 +9,8 @@ import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { AuthService } from '@app/frontend-modules-auth/service';
+import { PageHeaderComponent } from '@app/frontend-components/page-header';
 
 export enum IndexType {
   PLAYERS = 'players',
@@ -66,7 +66,7 @@ export class PageAdminComponent {
   user = this.auth.user;
   hasAdminAccess = computed(() => {
     const currentUser = this.user();
-    return currentUser?.hasAnyPermission?.('index:all') ?? false;
+    return currentUser?.hasAnyPermission?.(['index:all']) ?? false;
   });
 
   // Available index types with labels
@@ -137,11 +137,12 @@ export class PageAdminComponent {
         })
         .toPromise();
 
-      if (result?.data?.indexAll?.message) {
+      const data = result?.data as { indexAll?: { message?: string } };
+      if (data?.indexAll?.message) {
         this.messageService.add({
           severity: 'success',
           summary: 'Indexing Complete',
-          detail: result.data.indexAll.message,
+          detail: data.indexAll.message,
         });
       }
     } catch (error) {

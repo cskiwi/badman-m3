@@ -1,1 +1,1 @@
-export * from './test-setup';
+export const nothing = 'nothing';
