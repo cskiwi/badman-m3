@@ -1,6 +1,6 @@
 import { ObjectType } from '@nestjs/graphql';
 
-@ObjectType('Search')
+@ObjectType('Search', { description: 'A Search' })
 export class Search {
   declare id: string;
   declare createdAt: Date;

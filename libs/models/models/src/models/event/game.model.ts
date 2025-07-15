@@ -5,7 +5,7 @@ import { GameStatus, GameType } from '@app/models/enums';
 import { SortableField } from '@app/utils';
 import { DrawTournament } from './tournament';
 
-@ObjectType('Game')
+@ObjectType('Game', { description: 'A Game' })
 @Entity('Games', { schema: 'event' })
 export class Game extends BaseEntity {
   @Field(() => ID)

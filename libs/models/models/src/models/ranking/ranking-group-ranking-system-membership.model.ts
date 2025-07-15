@@ -9,7 +9,7 @@ import {
 import { RankingGroup } from './ranking-group.model';
 import { RankingSystem } from './ranking-system.model';
 
-@ObjectType('RankingSystemRankingGroupMembership')
+@ObjectType('RankingSystemRankingGroupMembership', { description: 'A RankingSystemRankingGroupMembership' })
 @Entity('RankingSystemRankingGroupMemberships', { schema: 'ranking' })
 export class RankingSystemRankingGroupMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')

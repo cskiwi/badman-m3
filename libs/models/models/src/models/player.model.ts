@@ -20,7 +20,7 @@ import { TeamPlayerMembership } from './team-player-membership';
 import { Role } from './security/role.model';
 import { Claim } from './security/claim.model';
 
-@ObjectType('Player')
+@ObjectType('Player', { description: 'A Player' })
 @Entity('Players')
 @Index(['firstName', 'lastName'])
 export class Player extends BaseEntity {

@@ -15,7 +15,7 @@ import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
 import { SortableField } from '@app/utils';
 
-@ObjectType('RankingPoint')
+@ObjectType('RankingPoint', { description: 'A RankingPoint' })
 @Entity('RankingPoints', { schema: 'ranking' })
 export class RankingPoint extends BaseEntity {
   @Field(() => ID)

@@ -11,7 +11,7 @@ import {
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { SortableField } from '@app/utils';
 
-@ObjectType('RankingGroup')
+@ObjectType('RankingGroup', { description: 'A RankingGroup' })
 @Entity('RankingGroups', { schema: 'ranking' })
 export class RankingGroup extends BaseEntity {
   @Field(() => ID)

@@ -13,7 +13,7 @@ import {
 import { Claim } from './claim.model';
 import { Role } from './role.model';
 
-@ObjectType('RoleClaimMembership')
+@ObjectType('RoleClaimMembership', { description: 'A RoleClaimMembership' })
 @Entity({ name: 'RoleClaimMemberships', schema: 'security' })
 export class RoleClaimMembership extends BaseEntity {
   @Field(() => ID)

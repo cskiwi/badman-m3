@@ -18,7 +18,7 @@ import { Club } from './club.model';
 import { SubEventTypeEnum } from '@app/models/enums';
 import { SortableField } from '@app/utils';
 
-@ObjectType('Team')
+@ObjectType('Team', { description: 'A Team' })
 @Entity('Teams')
 export class Team extends BaseEntity {
   @Field(() => ID)

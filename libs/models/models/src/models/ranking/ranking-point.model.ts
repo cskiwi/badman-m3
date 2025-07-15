@@ -14,7 +14,7 @@ import {
 import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
 
-@ObjectType('RankingPlace')
+@ObjectType('RankingPlace', { description: 'A RankingPlace' })
 @Entity('RankingPlaces', { schema: 'ranking' })
 export class RankingPlace extends BaseEntity {
   @Field(() => ID)

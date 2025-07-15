@@ -15,7 +15,7 @@ import { ClubPlayerMembership } from './club-player-membership';
 import { Team } from './team.model';
 import { SortableField } from '@app/utils';
 
-@ObjectType('Club')
+@ObjectType('Club', { description: 'A Club' })
 @Entity('Clubs')
 @Unique(['clubId'])
 export class Club extends BaseEntity {

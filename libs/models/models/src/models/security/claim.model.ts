@@ -15,7 +15,7 @@ import { Player } from '../player.model';
 import { Role } from './role.model';
 import { SecurityType } from '@app/models/enums';
 
-@ObjectType('Claim')
+@ObjectType('Claim', { description: 'A Claim' })
 @Entity({ name: 'Claims', schema: 'security' })
 @Index('Claims_name_category', ['name', 'category'], {
   unique: true,

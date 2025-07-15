@@ -19,7 +19,7 @@ import { Team } from '../team.model';
 import { Claim, ClaimUpdateInput } from './claim.model';
 import { SecurityType } from '@app/models/enums';
 
-@ObjectType('Role')
+@ObjectType('Role', { description: 'A Role' })
 @Entity({ name: 'Roles', schema: 'security' })
 export class Role extends BaseEntity {
   @Field(() => ID)

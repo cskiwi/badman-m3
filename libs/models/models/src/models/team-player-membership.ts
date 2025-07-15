@@ -5,7 +5,7 @@ import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 't
 import { Player } from './player.model';
 import { Team } from './team.model';
 
-@ObjectType('TeamPlayerMembership')
+@ObjectType('TeamPlayerMembership', { description: 'A TeamPlayerMembership' })
 @Entity('TeamPlayerMemberships')
 export class TeamPlayerMembership extends BaseEntity {
   @Field()

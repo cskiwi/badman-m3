@@ -13,7 +13,7 @@ import { Period, RankingSystems, StartingType } from '@app/models/enums';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { SortableField } from '@app/utils';
 
-@ObjectType('RankingSystem')
+@ObjectType('RankingSystem', { description: 'A RankingSystem' })
 @Entity('RankingSystems', { schema: 'ranking' })
 export class RankingSystem extends BaseEntity {
   @Field(() => ID)

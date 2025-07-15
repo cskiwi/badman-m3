@@ -3,7 +3,7 @@ import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn, R
 import { Player } from '../player.model';
 import { Claim } from './claim.model';
 
-@ObjectType('PlayerClaimMembership')
+@ObjectType('PlayerClaimMembership', { description: 'A PlayerClaimMembership' })
 @Entity('PlayerClaimMemberships', { schema: 'security' })
 export class PlayerClaimMembership extends BaseEntity {
   @Field(() => ID)

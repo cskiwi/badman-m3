@@ -13,7 +13,7 @@ import {
 import { Player } from '../player.model';
 import { Role } from './role.model';
 
-@ObjectType('PlayerRoleMembership')
+@ObjectType('PlayerRoleMembership', { description: 'A PlayerRoleMembership' })
 @Entity({ name: 'PlayerRoleMemberships', schema: 'security' })
 export class PlayerRoleMembership extends BaseEntity {
   @Field(() => ID)
