@@ -5,6 +5,9 @@ import { Response } from 'express';
 import { SearchService } from '../services';
 import { IndexType } from '../utils';
 
+/**
+ * DTO for search query parameters.
+ */
 export class SearchQuery {
   @IsArray()
   @IsEnum(IndexType, { each: true })
@@ -20,9 +23,20 @@ export class SearchQuery {
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
+  /**
+   * Handles search requests.
+   * Ensures 'types' is always an array for downstream processing.
+   */
   @Get('/')
   async search(@Query() query: SearchQuery, @Res() res: Response) {
-    const types = query.types || [IndexType.PLAYERS, IndexType.CLUBS, IndexType.COMPETITION_EVENTS, IndexType.TOURNAMENT_EVENTS];
+    let types: IndexType[];
+    if (!query.types) {
+      types = [IndexType.PLAYERS, IndexType.CLUBS, IndexType.COMPETITION_EVENTS, IndexType.TOURNAMENT_EVENTS];
+    } else if (Array.isArray(query.types)) {
+      types = query.types;
+    } else {
+      types = [query.types as IndexType];
+    }
 
     const result = await this.searchService.search(query.query, types);
 
