@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { ThemeService } from '@app/frontend-modules-theme';
+import { LanguageSelectionComponent } from '@app/frontend-modules-translation/selection';
 import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/model/enums';
 import { TranslateModule } from '@ngx-translate/core';
@@ -18,7 +19,7 @@ import { MessageService } from 'primeng/api';
 import type { MenuItem } from 'primeng/api';
 
 @Component({
-  imports: [RouterModule, TranslateModule, ButtonModule, MenuModule, DividerModule, ToastModule, ToolbarModule, SearchComponent],
+  imports: [RouterModule, TranslateModule, ButtonModule, MenuModule, DividerModule, ToastModule, ToolbarModule, SearchComponent, LanguageSelectionComponent],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',

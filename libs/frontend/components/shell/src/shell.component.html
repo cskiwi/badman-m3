@@ -29,6 +29,7 @@
 
       <ng-template #end>
         <div class="flex items-center space-x-2">
+          <app-language-selection />
           @if (user()?.firstName) {
             <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
             @if (isDesktop) {
