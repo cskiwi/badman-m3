@@ -1,4 +1,4 @@
-import { TeamMembershipType } from '@app/models/enums';
+import { TeamMembershipType } from '@app/model/enums';
 import { SortableField, SortableObject } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';

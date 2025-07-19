@@ -13,11 +13,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Club } from '../club.model';
-import { EventCompetition, EventTournament } from '../event';
 import { Player } from '../player.model';
 import { Team } from '../team.model';
 import { Claim, ClaimUpdateInput } from './claim.model';
-import { SecurityType } from '@app/models/enums';
+import { SecurityType } from '@app/model/enums';
+import { CompetitionEvent, TournamentEvent } from '../event';
 
 @ObjectType('Role', { description: 'A Role' })
 @Entity({ name: 'Roles', schema: 'security' })
@@ -74,13 +74,13 @@ export class Role extends BaseEntity {
   @ManyToOne(() => Team, { nullable: true })
   team?: Relation<Team>;
 
-  @Field(() => EventCompetition, { nullable: true })
-  @ManyToOne(() => EventCompetition, { nullable: true })
-  competition?: Relation<EventCompetition>;
+  @Field(() => CompetitionEvent, { nullable: true })
+  @ManyToOne(() => CompetitionEvent, { nullable: true })
+  competition?: Relation<CompetitionEvent>;
 
-  @Field(() => EventTournament, { nullable: true })
-  @ManyToOne(() => EventTournament, { nullable: true })
-  tournament?: Relation<EventTournament>;
+  @Field(() => TournamentEvent, { nullable: true })
+  @ManyToOne(() => TournamentEvent, { nullable: true })
+  tournament?: Relation<TournamentEvent>;
 
   @Field(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })

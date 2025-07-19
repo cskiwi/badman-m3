@@ -5,7 +5,7 @@ import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { ThemeService } from '@app/frontend-modules-theme';
 import { IS_MOBILE } from '@app/frontend-utils';
-import { ClubMembershipType } from '@app/models/enums';
+import { ClubMembershipType } from '@app/model/enums';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';

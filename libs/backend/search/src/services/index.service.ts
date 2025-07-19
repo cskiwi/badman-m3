@@ -1,4 +1,4 @@
-import { Club, EventCompetition, EventTournament, Player } from '@app/models';
+import { Club, CompetitionEvent, TournamentEvent, Player } from '@app/models';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import moment from 'moment';
 import { Client } from 'typesense';
@@ -8,8 +8,8 @@ import { ClubDocument, EventDocument, PlayerDocument } from '../documents';
 enum multiMatchOrder {
   club,
   player,
-  eventCompetition,
-  eventTournament,
+  competitionEvent,
+  tournamentEvent,
 }
 
 @Injectable()
@@ -115,7 +115,7 @@ export class IndexService implements OnModuleInit {
   }
 
   async indexCompetitionEvents() {
-    const eventsQry = EventCompetition.createQueryBuilder('event').select(['event.id', 'event.name', 'event.season']).where('event.official = true');
+    const eventsQry = CompetitionEvent.createQueryBuilder('event').select(['event.id', 'event.name', 'event.season']).where('event.official = true');
 
     const events = await eventsQry.getMany();
 
@@ -131,7 +131,7 @@ export class IndexService implements OnModuleInit {
         name: event.name,
         type: 'competition',
         date: moment(`${event.season}-09-01`).toDate().getTime(),
-        order: multiMatchOrder.eventCompetition,
+        order: multiMatchOrder.competitionEvent,
       };
     });
 
@@ -139,7 +139,7 @@ export class IndexService implements OnModuleInit {
   }
 
   async indexTournamentEvents() {
-    const eventsQry = EventTournament.createQueryBuilder('event').select(['event.id', 'event.name', 'event.firstDay']).where('event.official = true');
+    const eventsQry = TournamentEvent.createQueryBuilder('event').select(['event.id', 'event.name', 'event.firstDay']).where('event.official = true');
 
     const events = await eventsQry.getMany();
 
@@ -155,7 +155,7 @@ export class IndexService implements OnModuleInit {
         name: event.name,
         type: 'tournament',
         date: event.firstDay.getTime(),
-        order: multiMatchOrder.eventTournament,
+        order: multiMatchOrder.tournamentEvent,
       };
     });
 

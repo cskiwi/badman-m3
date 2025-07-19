@@ -1,55 +1,58 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { DrawTournament } from './tournament-draw.model';
-import { EventTournament } from './tournament-event.model';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { SortableField } from '@app/utils';
+import { TournamentDraw } from './tournament-draw.model';
+import { TournamentEvent } from './tournament-event.model';
 
-ObjectType('SubEventTournament', {
-  description: 'A SubEventTournament',
-});
+@ObjectType('TournamentSubEvent', {
+  description: 'A TournamentSubEvent',
+})
 @Entity('SubEventTournaments', { schema: 'event' })
-export class SubEventTournament extends BaseEntity {
+export class TournamentSubEvent extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field(() => Date, { nullable: true })
-  @Column({ type: 'timestamp', nullable: true })
-  updatedAt?: Date;
+  @SortableField()
+  @CreateDateColumn()
+  declare createdAt: Date;
 
-  @Field(() => Date, { nullable: true })
-  @Column({ type: 'timestamp', nullable: true })
-  createdAt?: Date;
+  @SortableField({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
+  declare updatedAt: Date;
 
-  @Field(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
-  name?: string;
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
+  declare name?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField({ nullable: true })
   @Column({ type: 'enum', enum: ['M', 'F', 'MX', 'MINIBAD'], nullable: true })
-  eventType?: string;
+  declare eventType?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField({ nullable: true })
   @Column({ type: 'enum', enum: ['S', 'D', 'MX'], nullable: true })
-  gameType?: string;
+  declare gameType?: string;
 
-  @Field(() => Int, { nullable: true })
-  @Column({ type: 'int', nullable: true })
-  level?: number;
+  @SortableField(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  declare level?: number;
 
-  @Field(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
-  visualCode?: string;
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
+  declare visualCode?: string;
 
-  @OneToMany(() => DrawTournament, (drawTournament) => drawTournament.subEventTournament, { cascade: true, onDelete: 'CASCADE' })
-  drawTournaments?: DrawTournament[];
+  @Field(() => [TournamentDraw], { nullable: true })
+  @OneToMany(() => TournamentDraw, (tournamentDraw) => tournamentDraw.tournamentSubEvent, { cascade: true, onDelete: 'CASCADE' })
+  declare drawTournaments?: TournamentDraw[];
 
-  @ManyToOne(() => EventTournament, (eventTournament) => eventTournament.subEventTournaments, { onDelete: 'CASCADE' })
+  @Field(() => TournamentEvent, { nullable: true })
+  @ManyToOne(() => TournamentEvent, (tournamentEvent) => tournamentEvent.tournamentSubEvents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })
-  eventTournament?: EventTournament;
+  declare tournamentEvent?: TournamentEvent;
 
-  @Field(() => ID, { nullable: true })
-  @Column({ type: 'uuid', nullable: true })
-  eventId?: string;
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
+  declare eventId?: string;
 
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, (eventEntry) => eventEntry.subEventTournament, { cascade: true, onDelete: 'CASCADE' })

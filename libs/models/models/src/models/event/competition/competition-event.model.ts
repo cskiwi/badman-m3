@@ -1,4 +1,4 @@
-import { LevelType } from '@app/models/enums';
+import { LevelType } from '@app/model/enums';
 import { SortableField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
@@ -6,13 +6,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CompetitionSubEvent } from './competition-sub-event.model';
 
 @Entity('EventCompetitions', { schema: 'event' })
-@ObjectType('EventCompetitions', { description: 'A EventCompetition' })
-export class EventCompetition extends BaseEntity {
+@ObjectType('CompetitionEvent', { description: 'A CompetitionEvent' })
+export class CompetitionEvent extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
@@ -51,11 +53,19 @@ export class EventCompetition extends BaseEntity {
 
   @SortableField(() => Date, { nullable: true })
   @Column()
-  declare changeCloseDate: Date;
+  declare changeCloseDatePeriod1: Date;
 
   @SortableField(() => Date, { nullable: true })
   @Column()
-  declare changeCloseRequestDate: Date;
+  declare changeCloseRequestDatePeriod1: Date;
+  
+  @SortableField(() => Date, { nullable: true })
+  @Column()
+  declare changeCloseDatePeriod2: Date;
+
+  @SortableField(() => Date, { nullable: true })
+  @Column()
+  declare changeCloseRequestDatePeriod2: Date;
 
   // @SortableField(() => EventCompetitionMetaType, { nullable: true })
   // @Column({
@@ -74,7 +84,7 @@ export class EventCompetition extends BaseEntity {
 
   @SortableField({ nullable: true })
   @Column()
-  teamMatcher?: string;
+  declare teamMatcher?: string;
 
 
   @SortableField(() => Boolean)
@@ -104,4 +114,8 @@ export class EventCompetition extends BaseEntity {
   @SortableField({ nullable: true })
   @Column()
   declare country: string;
+
+  @Field(() => [CompetitionSubEvent], { nullable: true })
+  @OneToMany(() => CompetitionSubEvent, (subEvent) => subEvent.competitionEvent)
+  declare competitionSubEvents?: CompetitionSubEvent[];
 }

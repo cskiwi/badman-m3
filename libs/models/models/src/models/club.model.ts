@@ -10,7 +10,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { UseForTeamName } from '@app/models/enums';
+import { UseForTeamName } from '@app/model/enums';
 import { ClubPlayerMembership } from './club-player-membership';
 import { Team } from './team.model';
 import { SortableField } from '@app/utils';

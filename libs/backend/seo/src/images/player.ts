@@ -1,5 +1,5 @@
 import { GamePlayerMembership, Player } from '@app/models';
-import { GameType } from '@app/models/enums';
+import { GameType } from '@app/model/enums';
 import sharp from 'sharp';
 
 export class PlayerImageGenerator {

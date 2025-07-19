@@ -1,55 +1,61 @@
-<div class="recent-games-container space-y-3">
+<div class="recent-games-container space-y-2">
   @if (loading()) {
-    <div class="flex justify-center py-8">
+    <div class="flex justify-center py-4">
       <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
     </div>
   } @else {
     @for (game of games(); track game.id) {
-      <div class="rounded-border border overflow-hidden">
+      <div class="rounded-border border overflow-hidden mb-2">
         <!-- Game Header -->
-        <div class="bg-highlight pl-4">
+        <div class="bg-highlight px-3 py-2">
           <div class="flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-              <div class="bg-primary-100 rounded-full p-2">
-                <i class="pi pi-calendar text-primary-600"></i>
-              </div>
-              <div>
-                <p class="text-sm font-medium">
-                  {{ game.playedAt | amDateFormat: 'dddd, MMMM Do YYYY' }}
-                </p>
-                <p class="text-xs">
-                  {{ game.playedAt | amDateFormat: 'HH:mm' }}
-                </p>
-                @if (game.tournament?.subEventTournament?.eventTournament?.name) {
-                  <p class="text-xs font-medium">
-                    {{ game.tournament?.subEventTournament?.eventTournament?.name }}
-                  </p>
-                }
-                @if (game.tournament?.subEventTournament?.name) {
-                  <p class="text-xs font-medium">
-                    {{ game.tournament?.subEventTournament?.name }}
-                  </p>
-                }
-              </div>
+            <!-- Left: Date and Time -->
+            <div class="flex items-center gap-2 text-sm">
+              <span class="font-medium">{{ game?.playedAt | amDateFormat: 'MMM Do' }}</span>
+              <span class="text-xs">{{ game?.playedAt | amDateFormat: 'HH:mm' }}</span>
             </div>
-            <div class="flex items-center space-x-2">
-              <p-chip [label]="game.gameType" [style]="{ background: 'var(--primary-100)', color: 'var(--primary-700)' }" class="text-xs"></p-chip>
+
+            <!-- Center: Tournament/Competition Title -->
+            <div class="flex-1 text-center">
+              @if (
+                game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name ||
+                game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name
+              ) {
+                @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
+                  <span class="text-sm font-medium text-primary-600"
+                    >{{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                    @if (game?.tournamentDraw?.name) {
+                      ({{ game?.tournamentDraw?.name }})
+                    }
+                  </span>
+                } @else if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
+                  <span class="text-sm font-medium text-primary-600">
+                    {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                    @if (game?.competitionEncounter?.drawCompetition?.name) {
+                      ({{ game?.competitionEncounter?.drawCompetition?.name }})
+                    }
+                  </span>
+                }
+              }
             </div>
+
+            <!-- Right: Game Type -->
+            <p-chip [label]="game?.gameType" [style]="{ background: 'var(--primary-100)', color: 'var(--primary-700)' }" class="text-xs"></p-chip>
           </div>
         </div>
 
         <!-- Game Content -->
-        <div class="game-content p-3">
+        <div class="game-content p-2">
           <!-- Players/Teams Section -->
-          <div class="players-section mb-3">
+          <div class="players-section mb-2">
             <div class="flex items-center justify-between gap-3">
               <!-- Team 1 -->
               <div class="team-section flex-1">
                 <div class="text-right space-y-1">
-                  @for (membership of game.gamePlayerMemberships; track membership.id) {
-                    @if (membership.team === 1) {
-                      <div class="text-base {{ isCurrentPlayer(membership.gamePlayer.id) ? 'underline' : '' }}">
-                        {{ membership.gamePlayer.fullName }}
+                  @for (membership of game?.gamePlayerMemberships; track membership?.id) {
+                    @if (membership?.team === 1) {
+                      <div class="text-base {{ isCurrentPlayer(membership?.gamePlayer?.id || '') ? 'underline' : '' }}">
+                        {{ membership?.gamePlayer?.fullName }}
                       </div>
                     }
                   }
@@ -86,10 +92,10 @@
               <!-- Team 2 -->
               <div class="team-section flex-1">
                 <div class="text-left space-y-1">
-                  @for (membership of game.gamePlayerMemberships; track membership.id) {
-                    @if (membership.team === 2) {
-                      <div class="text-base {{ isCurrentPlayer(membership.gamePlayer.id) ? 'underline' : '' }}">
-                        {{ membership.gamePlayer.fullName }}
+                  @for (membership of game?.gamePlayerMemberships; track membership?.id) {
+                    @if (membership?.team === 2) {
+                      <div class="text-base {{ isCurrentPlayer(membership?.gamePlayer?.id || '') ? 'underline' : '' }}">
+                        {{ membership?.gamePlayer?.fullName }}
                       </div>
                     }
                   }
@@ -100,39 +106,51 @@
 
           <!-- Score Section -->
           <div class="score-section">
-            <div class="sets-container flex justify-center gap-2">
+            <div class="sets-container flex justify-center gap-1">
               <!-- Set 1 -->
-              @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
-                <div class="border border-surface rounded-lg p-2 text-center">
+              @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+                <div class="border border-surface rounded-lg p-1 text-center">
                   <div class="text-xs mb-1">Set 1</div>
                   <div class="text-2xl">
-                    <span class="{{ getSetWinner(game.set1Team1, game.set1Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{ game.set1Team1 }}</span>
+                    <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
+                      game?.set1Team1
+                    }}</span>
                     <span class="mx-1">-</span>
-                    <span class="{{ getSetWinner(game.set1Team1, game.set1Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{ game.set1Team2 }}</span>
+                    <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{
+                      game?.set1Team2
+                    }}</span>
                   </div>
                 </div>
               }
 
               <!-- Set 2 -->
-              @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
-                <div class="border border-surface rounded-lg p-2 text-center">
+              @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+                <div class="border border-surface rounded-lg p-1 text-center">
                   <div class="text-xs mb-1">Set 2</div>
                   <div class="text-2xl">
-                    <span class="{{ getSetWinner(game.set2Team1, game.set2Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{ game.set2Team1 }}</span>
+                    <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
+                      game?.set2Team1
+                    }}</span>
                     <span class="mx-1">-</span>
-                    <span class="{{ getSetWinner(game.set2Team1, game.set2Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{ game.set2Team2 }}</span>
+                    <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{
+                      game?.set2Team2
+                    }}</span>
                   </div>
                 </div>
               }
 
               <!-- Set 3 (only if exists) -->
-              @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
-                <div class="border border-surface rounded-lg p-2 text-center">
+              @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+                <div class="border border-surface rounded-lg p-1 text-center">
                   <div class="text-xs mb-1">Set 3</div>
                   <div class="text-2xl">
-                    <span class="{{ getSetWinner(game.set3Team1, game.set3Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{ game.set3Team1 }}</span>
+                    <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
+                      game?.set3Team1
+                    }}</span>
                     <span class="mx-1">-</span>
-                    <span class="{{ getSetWinner(game.set3Team1, game.set3Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{ game.set3Team2 }}</span>
+                    <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{
+                      game?.set3Team2
+                    }}</span>
                   </div>
                 </div>
               }
@@ -141,7 +159,7 @@
         </div>
       </div>
     } @empty {
-      <div class="empty-state text-center py-12">
+      <div class="empty-state text-center py-6">
         <div class="rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
           <i class="pi pi-search text-2xl"></i>
         </div>

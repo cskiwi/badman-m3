@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Period, RankingSystems, StartingType } from '@app/models/enums';
+import { Period, RankingSystems, StartingType } from '@app/model/enums';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { SortableField } from '@app/utils';
 

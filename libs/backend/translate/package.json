@@ -2,6 +2,7 @@
   "name": "@app/backend-translate",
   "version": "0.0.1",
   "dependencies": {
+    "@nestjs/config": "4.0.2",
     "tslib": "^2.3.0",
     "@app/backend-authorization": "0.0.1",
     "@app/utils": "0.0.1",

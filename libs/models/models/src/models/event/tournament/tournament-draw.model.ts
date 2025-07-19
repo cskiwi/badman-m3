@@ -1,23 +1,23 @@
 import { SortableField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { TournamentSubEvent } from './tournament-sub-event.model';
 import { Game } from '../game.model';
-import { SubEventTournament } from './tournament-sub-event.model';
 
 @Entity('DrawTournaments', { schema: 'event' })
-@ObjectType('DrawTournament', { description: 'A DrawTournament' })
-export class DrawTournament extends BaseEntity {
+@ObjectType('TournamentDraw', { description: 'A TournamentDraw' })
+export class TournamentDraw extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @SortableField(() => Date, { nullable: true })
-  @Column({ type: 'timestamp', nullable: true })
-  declare updatedAt?: Date;
+  @SortableField()
+  @CreateDateColumn()
+  declare createdAt: Date;
 
-  @SortableField(() => Date, { nullable: true })
-  @Column({ type: 'timestamp', nullable: true })
-  declare createdAt?: Date;
+  @SortableField({ nullable: true })
+  @UpdateDateColumn({ nullable: true })
+  declare updatedAt?: Date;
 
   @SortableField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
@@ -32,7 +32,7 @@ export class DrawTournament extends BaseEntity {
   declare size?: number;
 
   @Field(() => [Game], { nullable: true })
-  @OneToMany(() => Game, (game) => game.tournament, { cascade: true })
+  @OneToMany(() => Game, (game) => game.tournamentDraw, { cascade: true })
   declare games?: Game[];
 
   // @Field(() => [EventEntry], { nullable: true })
@@ -51,9 +51,10 @@ export class DrawTournament extends BaseEntity {
   @Column({ type: 'int', default: 0 })
   declare fallers: number;
 
-  @ManyToOne(() => SubEventTournament, (subEventTournament) => subEventTournament.drawTournaments, { onDelete: 'CASCADE' })
+  @Field(() => TournamentSubEvent, { nullable: true })
+  @ManyToOne(() => TournamentSubEvent, (tournamentSubEvent) => tournamentSubEvent.drawTournaments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'subeventId' })
-  declare subEventTournament?: SubEventTournament;
+  declare tournamentSubEvent?: TournamentSubEvent;
 
   @Field(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })

@@ -1,7 +1,28 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:www.toernooi.nl)"
+      "WebFetch(domain:www.toernooi.nl)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(*)",
+      "FileRead(*)",
+      "FileEdit(*)",
+      "FileWrite(*)",
+      "Read(*)",
+      "Edit(*)",
+      "Write(*)",
+      "Bash(npm run build:*)",
+      "Bash(npx nx run-many:*)",
+      "Bash(cmd /c \"npx nx run-many -t build --prod --verbose\")",
+      "Bash(npx nx:*)",
+      "Bash(cmd /c \"npm run build\")",
+      "Bash(cmd /c \"npx nx run-many -t build --prod\")",
+      "Bash(npm:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(ls:*)",
+      "Bash(dir)"
     ],
     "deny": []
   }

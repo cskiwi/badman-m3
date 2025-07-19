@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { EventCompetition } from '@app/models';
+import { CompetitionEvent } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
@@ -15,7 +15,7 @@ import {
 } from 'rxjs/operators';
 
 interface OverviewState {
-  competitions: EventCompetition[];
+  competitions: CompetitionEvent[];
   loading: boolean;
   error: string | null;
 }
@@ -79,10 +79,10 @@ export class OverviewService {
     }>,
   ) {
     return this.apollo
-      .query<{ eventCompetitions: EventCompetition[] }>({
+      .query<{ competitionEvents: CompetitionEvent[] }>({
         query: gql`
-          query Competitions($args: EventCompetitionArgs) {
-            eventCompetitions(args: $args) {
+          query Competitions($args: CompetitionEventArgs) {
+            competitionEvents(args: $args) {
               id
               name
               slug
@@ -99,10 +99,10 @@ export class OverviewService {
           return EMPTY;
         }),
         map((result) => {
-          if (!result?.data.eventCompetitions) {
+          if (!result?.data.competitionEvents) {
             throw new Error('No competitions found');
           }
-          return result.data.eventCompetitions;
+          return result.data.competitionEvents;
         }),
       );
   }

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { EventCompetition } from '@app/models';
+import { CompetitionEvent } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators';
 
 interface DetailState {
-  competition: EventCompetition | null;
+  competition: CompetitionEvent | null;
   loading: boolean;
   error: string | null;
 }
@@ -73,10 +73,10 @@ export class DetailService {
     }>,
   ) {
     return this.apollo
-      .query<{ competition: EventCompetition }>({
+      .query<{ competition: CompetitionEvent }>({
         query: gql`
           query Competition($id: ID!) {
-            eventCompetition(id: $id) {
+            competitionEvent(id: $id) {
               id
               name
               slug

@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ClubMembershipType } from '@app/models/enums';
+import { ClubMembershipType } from '@app/model/enums';
 import { Club } from './club.model';
 import { Player } from './player.model';
 import { SortableField } from '@app/utils';

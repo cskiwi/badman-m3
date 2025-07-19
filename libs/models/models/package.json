@@ -2,7 +2,7 @@
   "name": "@app/models",
   "version": "0.0.1",
   "dependencies": {
-    "@app/models/enums": "0.0.1",
+    "@app/model/enums": "0.0.1",
     "@app/utils": "0.0.1",
     "@nestjs/graphql": "*",
     "typeorm": "*",

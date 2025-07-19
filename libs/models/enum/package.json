@@ -1,5 +1,5 @@
 {
-  "name": "@app/models/enums",
+  "name": "@app/model/enums",
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.0.0"

@@ -24,9 +24,53 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
           set2Team2
           set3Team1
           set3Team2
-          tournament {
+          tournamentDraw {
             name
             id
+            type
+            visualCode
+            tournamentSubEvent {
+              id
+              name
+              eventType
+              gameType
+              level
+              tournamentEvent {
+                id
+                name
+                tournamentNumber
+                official
+                visualCode
+                state
+                country
+              }
+            }
+          }
+          competitionEncounter {
+            id
+            date
+            visualCode
+            drawCompetition {
+              id
+              name
+              type
+              competitionSubEvent {
+                id
+                name
+                eventType
+                level
+                competitionEvent {
+                  id
+                  name
+                  season
+                  official
+                  visualCode
+                  type
+                  state
+                  country
+                }
+              }
+            }
           }
           gamePlayerMemberships {
             id

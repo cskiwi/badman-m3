@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { Role } from './role.model';
-import { SecurityType } from '@app/models/enums';
+import { SecurityType } from '@app/model/enums';
 
 @ObjectType('Claim', { description: 'A Claim' })
 @Entity({ name: 'Claims', schema: 'security' })

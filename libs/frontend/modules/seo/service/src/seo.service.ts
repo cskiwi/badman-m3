@@ -2,7 +2,7 @@ import { isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { SEO_CONFIG, ISeoConfig } from '@app/frontend-modules-seo';
-import { Club, EventCompetition, Player } from '@app/models';
+import { Club, CompetitionEvent, Player } from '@app/models';
 
 type ISeoMetaData = {
   keywords?: string[];
@@ -26,7 +26,7 @@ type ISeoMetaData = {
     }
   | {
       seoType: 'competition';
-      competition: EventCompetition;
+      competition: CompetitionEvent;
     }
 );
 
@@ -118,7 +118,7 @@ export class SeoService {
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
-  setCompetition(data: { competition: EventCompetition }) {
+  setCompetition(data: { competition: CompetitionEvent }) {
     const desc = `The detail page of the club ${data.competition.name} `;
 
     this.setTitle(`Club ${data.competition.name} `);
