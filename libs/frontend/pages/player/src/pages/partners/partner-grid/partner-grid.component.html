@@ -45,10 +45,10 @@
           <td class="font-bold text-right">
             @switch (col.field) {
               @case ('winRate') {
-                Average: {{ averageWinRate | number: '1.0-2' }} %
+                {{ 'all.partner.grid.average' | translate }}: {{ averageWinRate | number: '1.0-2' }} %
               }
               @case ('amountOfGames') {
-                Total: {{ totalGames }}
+                {{ 'all.partner.grid.total' | translate }}: {{ totalGames }}
               }
               @default {
                 <!-- empty for alignment -->
@@ -63,6 +63,6 @@
   <!-- SSR fallback -->
   <div class="p-4 text-center">
     <i class="pi pi-spin pi-spinner text-2xl"></i>
-    <p class="mt-2">Loading table...</p>
+    <p class="mt-2">{{ 'all.partner.grid.loading' | translate }}</p>
   </div>
 }

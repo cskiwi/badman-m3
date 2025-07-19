@@ -2,17 +2,6 @@
   "clubs": {
     "search": "Find a club"
   },
-  "game": {
-    "recent": {
-      "title": "Recent games"
-    },
-    "upcoming": {
-      "title": "Upcoming games"
-    }
-  },
-  "landing": {
-    "description": "Welcome to the v2 test version of Badman"
-  },
   "partner": {
     "amount-of-games": "Number of contests",
     "filters": {
@@ -24,10 +13,16 @@
       "linktype": "Tournament/competition",
       "mix": "Mixed",
       "start-date": "From",
+      "club": "Club",
       "tournament": "Tournament"
     },
     "name": "Name",
-    "win-rate": "Win percentage"
+    "win-rate": "Win percentage",
+    "grid": {
+      "average": "Average",
+      "total": "Total",
+      "loading": "Loading table..."
+    }
   },
   "players": {
     "my-club": "My club",
@@ -57,3 +52,4 @@
     }
   }
 }
+

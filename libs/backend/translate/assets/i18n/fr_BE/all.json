@@ -2,17 +2,6 @@
   "clubs": {
     "search": "Chercher club"
   },
-  "game": {
-    "recent": {
-      "title": "Matchs récents"
-    },
-    "upcoming": {
-      "title": "Prochains matches"
-    }
-  },
-  "landing": {
-    "description": "Bienvenue sur la version test v2 de Badman"
-  },
   "partner": {
     "amount-of-games": "Nombre de correspondances",
     "filters": {
@@ -24,10 +13,16 @@
       "linktype": "Tournoi/concours",
       "mix": "Mixte",
       "start-date": "De",
+      "club": "Club",
       "tournament": "Tournoi"
     },
     "name": "Nom",
-    "win-rate": "Pourcentage de victoire"
+    "win-rate": "Pourcentage de victoire",
+    "grid": {
+      "average": "Moyenne",
+      "total": "Total",
+      "loading": "Chargement du tableau..."
+    }
   },
   "players": {
     "my-club": "Mon club",

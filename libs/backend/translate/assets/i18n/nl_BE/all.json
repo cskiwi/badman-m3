@@ -2,17 +2,6 @@
   "clubs": {
     "search": "Zoek club"
   },
-  "game": {
-    "recent": {
-      "title": "Recente ontmoetingen"
-    },
-    "upcoming": {
-      "title": "Komende ontmoetingen"
-    }
-  },
-  "landing": {
-    "description": "Welkom op de v2 test versie van Badman"
-  },
   "partner": {
     "amount-of-games": "Aantal wedstrijden",
     "filters": {
@@ -24,10 +13,17 @@
       "linktype": "Toernooi/competitie",
       "mix": "Gemengd",
       "start-date": "Vanaf",
+      "club": "Club",
       "tournament": "Toernooi"
     },
     "name": "Naam",
-    "win-rate": "Win percentage"
+    "club": "Club",
+    "win-rate": "Win percentage",
+    "grid": {
+      "average": "Gemiddelde",
+      "total": "Totaal",
+      "loading": "Tabel laden..."
+    }
   },
   "players": {
     "my-club": "Mijn club",
