@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, PLATFORM_ID } from '@angular/core';
+import { Component, computed, inject, PLATFORM_ID, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -25,7 +25,7 @@ import type { MenuItem } from 'primeng/api';
   styleUrl: './shell.component.scss',
   providers: [MessageService],
 })
-export class ShellComponent {
+export class ShellComponent implements OnInit {
   private readonly platformId = inject<string>(PLATFORM_ID);
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
@@ -36,6 +36,7 @@ export class ShellComponent {
 
   user = this.auth.state.user;
   sidebarVisible = false;
+  isScrolled = false;
 
   // Theme computed properties
   isDarkMode = computed(() => this.themeService.currentTheme() === 'dark');
@@ -136,6 +137,19 @@ export class ShellComponent {
 
   navigateToAdmin() {
     this.router.navigate(['/admin']);
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isScrolled = window.scrollY > 10;
+    }
+  }
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isScrolled = window.scrollY > 10;
+    }
   }
 
   constructor() {

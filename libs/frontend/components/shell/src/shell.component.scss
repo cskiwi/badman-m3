@@ -2,26 +2,133 @@
   display: block;
 }
 
-// Floating toolbar styles
-.mobile-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-}
 
-.mobile-sidebar {
-  background-color: var(--surface-ground);
-}
-
-// Responsive adjustments for the floating toolbar
-@media (max-width: 1024px) {
-  .floating-toolbar {
-    margin: 0 1rem;
-    max-width: calc(100% - 2rem);
+// Pinned Toolbar
+.pinned-toolbar {
+  background: rgba(var(--surface-ground-rgb), 0.7);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1rem 0;
+  
+  &.scrolled {
+    background: rgba(var(--surface-ground-rgb), 0.95);
+    backdrop-filter: blur(25px);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(var(--surface-border-rgb), 0.3);
+    box-shadow: 
+      0 4px 32px rgba(0, 0, 0, 0.1),
+      0 1px 3px rgba(0, 0, 0, 0.1);
   }
 }
 
+.modern-toolbar {
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &.toolbar-scrolled {
+    background: transparent !important;
+  }
+  
+  ::ng-deep .p-toolbar {
+    background: transparent !important;
+    border: none !important;
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+// Enhanced Mobile Styles
+.mobile-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease-in-out;
+}
+
+.mobile-sidebar {
+  background: rgba(var(--surface-ground-rgb), 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(var(--surface-border-rgb), 0.3);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Enhanced Button Styles
+::ng-deep {
+  .p-button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(var(--primary-color-rgb), 0.3);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  .p-menu {
+    backdrop-filter: blur(20px);
+    background: rgba(var(--surface-overlay-rgb), 0.9) !important;
+    border: 1px solid rgba(var(--surface-border-rgb), 0.3) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    
+    .p-menuitem-link {
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(var(--primary-color-rgb), 0.1) !important;
+        transform: translateX(4px);
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .pinned-toolbar {
+    padding: 0.75rem 0;
+    
+    &.scrolled {
+      padding: 0.5rem 0;
+    }
+    
+    > div {
+      padding: 0 1rem;
+    }
+  }
+  
+}
+
 @media (max-width: 640px) {
-  .floating-toolbar {
-    margin: 0 0.5rem;
-    max-width: calc(100% - 1rem);
+  .pinned-toolbar {
+    padding: 0.5rem 0;
+    
+    &.scrolled {
+      padding: 0.375rem 0;
+    }
+    
+    > div {
+      padding: 0 0.5rem;
+    }
+  }
+  
+}
+
+// Dark mode enhancements
+:host-context(.dark) {
+  .pinned-toolbar {
+    background: rgba(var(--surface-ground-rgb), 0.8);
+    
+    &.scrolled {
+      background: rgba(var(--surface-ground-rgb), 0.95);
+      box-shadow: 
+        0 4px 32px rgba(0, 0, 0, 0.4),
+        0 1px 3px rgba(0, 0, 0, 0.3);
+    }
   }
 }

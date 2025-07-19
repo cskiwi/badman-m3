@@ -22,7 +22,8 @@
       "Bash(grep:*)",
       "Bash(sed:*)",
       "Bash(ls:*)",
-      "Bash(dir)"
+      "Bash(dir)",
+      "WebFetch(domain:primeng.org)"
     ],
     "deny": []
   }
