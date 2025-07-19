@@ -1,5 +1,4 @@
-// ...existing code...
-import { ChangeDetectionStrategy, Component, inject, input, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, PLATFORM_ID } from '@angular/core';
 import { AsyncPipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 
 import { TableModule } from 'primeng/table';
@@ -19,33 +18,47 @@ export class PartnerGridComponent {
 
   loading = input<boolean>(false);
   dataSource = input<PlayerGrid[]>([]);
+  viewMode = input<'partners' | 'opponents'>('partners');
 
   isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 
-  columns = [
-    {
-      header: this.translate.stream('all.partner.name'),
-      field: 'player.fullName',
-      sortable: true,
-    },
-    {
-      header: this.translate.stream('all.partner.club'),
-      field: 'club.name',
-      sortable: true,
-    },
-    {
-      header: this.translate.stream('all.partner.win-rate'),
-      field: 'winRate',
-      sortable: true,
-    },
-    {
-      header: this.translate.stream('all.partner.amount-of-games'),
-      field: 'amountOfGames',
-      sortable: true,
-    },
-  ];
+  columns = computed(() => {
+    const baseColumns = [
+      {
+        header: this.translate.stream('all.partner.name'),
+        field: 'player.fullName',
+        sortable: true,
+      }
+    ];
+
+    // Add partner column for opponent mode
+    if (this.viewMode() === 'opponents') {
+      baseColumns.push({
+        header: this.translate.stream('all.partner.partner'),
+        field: 'partner',
+        sortable: true,
+      });
+    }
+
+    baseColumns.push(
+      {
+        header: this.viewMode() === 'partners' 
+          ? this.translate.stream('all.partner.win-rate')
+          : this.translate.stream('all.partner.win-rate-against'),
+        field: 'winRate',
+        sortable: true,
+      },
+      {
+        header: this.translate.stream('all.partner.amount-of-games'),
+        field: 'amountOfGames',
+        sortable: true,
+      }
+    );
+
+    return baseColumns;
+  });
 
   get totalGames(): number {
     const data = this.dataSource();

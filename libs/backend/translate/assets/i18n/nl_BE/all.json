@@ -13,6 +13,13 @@
   "partner": {
     "amount-of-games": "Aantal wedstrijden",
     "club": "Club",
+    "filter-groups": {
+      "game-type": "Speltype",
+      "opponent-filters": "Tegenstander filters",
+      "partner-filters": "Partner filters",
+      "time-performance": "Periode en Ondergrens",
+      "view-mode": "Analyse"
+    },
     "filters": {
       "all": "Alles",
       "club": "Club",
@@ -22,16 +29,33 @@
       "gameType": "Type",
       "linktype": "Toernooi/competitie",
       "mix": "Gemengd",
+      "opponent-club": "Tegenstander club",
+      "opponents": "Tegenstanders",
+      "partner-club": "Partner club",
+      "partners": "Partners",
       "start-date": "Vanaf",
-      "tournament": "Toernooi"
+      "title": "Filters",
+      "tournament": "Toernooi",
+      "view-mode": "Weergavemodus",
+      "with-partner": "Met partner"
     },
     "grid": {
       "average": "Gemiddelde",
       "loading": "Tabel laden...",
       "total": "Totaal"
     },
+    "info": {
+      "club-display": "Clubnamen worden onder spelernamen getoond (partnerclubs alleen als ze verschillen)",
+      "description": "Analyseer je prestaties met partners en tegen tegenstanders met behulp van onderstaande filters:",
+      "opponents-mode": "Tegenstanders Modus: Toont spelers tegen wie je hebt gespeeld en je winpercentage tegen hen",
+      "partner-filter": "Partner Filter: In tegenstanders modus, selecteer een specifieke partner om teamprestaties te bekijken",
+      "partners-mode": "Partners Modus: Toont spelers met wie je hebt gespeeld en jullie gecombineerde winpercentage",
+      "title": "Hoe deze pagina werkt"
+    },
     "name": "Naam",
-    "win-rate": "Win percentage"
+    "partner": "Partner",
+    "win-rate": "Win percentage",
+    "win-rate-against": "Winpercentage tegen"
   },
   "players": {
     "my-club": "Mijn club",

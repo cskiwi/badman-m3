@@ -12,7 +12,14 @@
   },
   "partner": {
     "amount-of-games": "Nombre de correspondances",
-    "club": "",
+    "club": "Club",
+    "filter-groups": {
+      "game-type": "Type de jeu",
+      "opponent-filters": "Filtres adversaires",
+      "partner-filters": "Filtres partenaires",
+      "time-performance": "Période et limite inférieure",
+      "view-mode": "Analyse"
+    },
     "filters": {
       "all": "Tous",
       "club": "Club",
@@ -22,16 +29,33 @@
       "gameType": "Type",
       "linktype": "Tournoi/concours",
       "mix": "Mixte",
+      "opponent-club": "Club adversaire",
+      "opponents": "Adversaires",
+      "partner-club": "Club partenaire",
+      "partners": "Partenaires",
       "start-date": "De",
-      "tournament": "Tournoi"
+      "title": "Filtres",
+      "tournament": "Tournoi",
+      "view-mode": "Mode d'affichage",
+      "with-partner": "Avec partenaire"
     },
     "grid": {
       "average": "Moyenne",
       "loading": "Chargement du tableau...",
       "total": "Total"
     },
+    "info": {
+      "club-display": "Les noms des clubs sont affichés sous les noms des joueurs (clubs des partenaires uniquement si différents)",
+      "description": "Analysez vos performances avec vos partenaires et contre vos adversaires en utilisant les filtres ci-dessous :",
+      "opponents-mode": "Mode Adversaires : Affiche les joueurs contre qui vous avez joué et votre taux de victoire contre eux",
+      "partner-filter": "Filtre Partenaire : En mode adversaires, sélectionnez un partenaire spécifique pour voir les performances en équipe",
+      "partners-mode": "Mode Partenaires : Affiche les joueurs avec qui vous avez joué et votre taux de victoire combiné",
+      "title": "Comment cette page fonctionne"
+    },
     "name": "Nom",
-    "win-rate": "Pourcentage de victoire"
+    "partner": "Partenaire",
+    "win-rate": "Pourcentage de victoire",
+    "win-rate-against": "Taux de victoire contre"
   },
   "players": {
     "my-club": "Mon club",

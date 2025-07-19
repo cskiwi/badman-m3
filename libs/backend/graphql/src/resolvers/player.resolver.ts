@@ -1,4 +1,4 @@
-import { PermGuard, User } from '@app/backend-authorization';
+import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException, UseGuards } from '@nestjs/common';
@@ -9,6 +9,7 @@ import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, Ranking
 export class PlayerResolver {
   @Query(() => Player)
   @UseGuards(PermGuard)
+  @AllowAnonymous()
   async player(@Args('id', { type: () => ID }) id: string): Promise<Player> {
     const player = IsUUID(id)
       ? await Player.findOne({

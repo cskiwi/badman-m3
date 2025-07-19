@@ -8,7 +8,7 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        @for (col of columns; track col) {
+        @for (col of columns(); track col) {
           <th [pSortableColumn]="col.field">
             {{ col.header | async }}
             <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -18,14 +18,28 @@
     </ng-template>
     <ng-template pTemplate="body" let-rowData>
       <tr>
-        @for (col of columns; track col) {
+        @for (col of columns(); track col) {
           <td>
             @switch (col.field) {
               @case ('player.fullName') {
-                <span>{{ rowData.player?.fullName }}</span>
+                <div>
+                  <div>{{ rowData.player?.fullName }}</div>
+                  @if (rowData.club?.name) {
+                    <div class="text-gray-500 text-xs">{{ rowData.club.name }}</div>
+                  }
+                </div>
               }
-              @case ('club.name') {
-                <span>{{ rowData.club?.name || '-' }}</span>
+              @case ('partner') {
+                @if (rowData.partner) {
+                  <div>
+                    <div>{{ rowData.partner.fullName }}</div>
+                    @if (rowData.partnerClub?.name && rowData.partnerClub.name !== rowData.club?.name) {
+                      <div class="text-gray-500 text-xs">{{ rowData.partnerClub.name }}</div>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-gray-400">-</span>
+                }
               }
               @case ('winRate') {
                 {{ rowData[col.field] | number: '1.0-2' }} %
@@ -41,7 +55,7 @@
 
     <ng-template pTemplate="footer">
       <tr>
-        @for (col of columns; track col) {
+        @for (col of columns(); track col) {
           <td class="font-bold text-right">
             @switch (col.field) {
               @case ('winRate') {

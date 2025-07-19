@@ -20,6 +20,13 @@ export type I18nTranslations = {
         "partner": {
             "amount-of-games": string;
             "club": string;
+            "filter-groups": {
+                "game-type": string;
+                "opponent-filters": string;
+                "partner-filters": string;
+                "time-performance": string;
+                "view-mode": string;
+            };
             "filters": {
                 "all": string;
                 "club": string;
@@ -29,16 +36,33 @@ export type I18nTranslations = {
                 "gameType": string;
                 "linktype": string;
                 "mix": string;
+                "opponent-club": string;
+                "opponents": string;
+                "partner-club": string;
+                "partners": string;
                 "start-date": string;
+                "title": string;
                 "tournament": string;
+                "view-mode": string;
+                "with-partner": string;
             };
             "grid": {
                 "average": string;
                 "loading": string;
                 "total": string;
             };
+            "info": {
+                "club-display": string;
+                "description": string;
+                "opponents-mode": string;
+                "partner-filter": string;
+                "partners-mode": string;
+                "title": string;
+            };
             "name": string;
+            "partner": string;
             "win-rate": string;
+            "win-rate-against": string;
         };
         "players": {
             "my-club": string;

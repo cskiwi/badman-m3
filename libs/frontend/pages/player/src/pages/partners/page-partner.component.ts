@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -61,12 +62,63 @@ export class PagePartnerComponent {
     { value: 'D', label: this.translateService.instant('all.partner.filters.double') },
   ];
 
-  // Club options from service with "All" option
-  clubOptions = computed(() => [{ value: null, label: this.translateService.instant('all.partner.filters.all') }, ...this.dataService.clubOptions()]);
+  viewModeOptions = [
+    { value: 'partners', label: this.translateService.instant('all.partner.filters.partners') },
+    { value: 'opponents', label: this.translateService.instant('all.partner.filters.opponents') },
+  ];
+
+  // Partner club options from service with "All" option
+  partnerClubOptions = computed(() => [{ value: null, label: this.translateService.instant('all.partner.filters.all') }, ...this.dataService.partnerClubOptions()]);
+
+  // Opponent club options from service with "All" option
+  opponentClubOptions = computed(() => [{ value: null, label: this.translateService.instant('all.partner.filters.all') }, ...this.dataService.opponentClubOptions()]);
+
+  // Partner options from service with "All" option (for opponent filtering)
+  partnerOptions = computed(() => [
+    { value: null, label: this.translateService.instant('all.partner.filters.all') },
+    ...this.dataService.partnerOptions(),
+  ]);
+
+  // Convert form values to signals for reactivity
+  private viewModeSignal = toSignal(this.filter.get('viewMode')!.valueChanges, { initialValue: 'partners' });
+
+  // Check if we're in opponent mode
+  isOpponentMode = computed(() => this.viewModeSignal() === 'opponents');
+
+  // UI state management
+  filtersExpanded = signal(true);
+  showExplanation = signal(this.shouldShowExplanation());
+
+  private shouldShowExplanation(): boolean {
+    if (typeof localStorage === 'undefined') return true;
+    return localStorage.getItem('partners-explanation-dismissed') !== 'true';
+  }
+
+  toggleFilters(): void {
+    this.filtersExpanded.update((expanded) => !expanded);
+  }
+
+  dismissExplanation(): void {
+    this.showExplanation.set(false);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('partners-explanation-dismissed', 'true');
+    }
+  }
 
   constructor() {
     effect(() => {
       this.filter.get('playerId')?.setValue(this.playerId());
+    });
+
+    // Clear mode-specific filters when switching modes
+    effect(() => {
+      const viewMode = this.filter.get('viewMode')?.value;
+      if (viewMode === 'partners') {
+        this.filter.get('partnerFilter')?.setValue(null);
+        this.filter.get('opponentClub')?.setValue(null);
+      } else {
+        this.filter.get('partnerClub')?.setValue(null);
+      }
     });
   }
 }

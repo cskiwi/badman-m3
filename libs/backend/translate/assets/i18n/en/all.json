@@ -12,7 +12,14 @@
   },
   "partner": {
     "amount-of-games": "Number of contests",
-    "club": "",
+    "club": "Club",
+    "filter-groups": {
+      "game-type": "Game Type",
+      "opponent-filters": "Opponent Filters",
+      "partner-filters": "Partner Filters",
+      "time-performance": "Period and Lower limit",
+      "view-mode": "Analysis"
+    },
     "filters": {
       "all": "All",
       "club": "Club",
@@ -22,16 +29,33 @@
       "gameType": "Type",
       "linktype": "Tournament/competition",
       "mix": "Mixed",
+      "opponent-club": "Opponent club",
+      "opponents": "Opponents",
+      "partner-club": "Partner club",
+      "partners": "Partners",
       "start-date": "From",
-      "tournament": "Tournament"
+      "title": "Filters",
+      "tournament": "Tournament",
+      "view-mode": "View mode",
+      "with-partner": "With partner"
     },
     "grid": {
       "average": "Average",
       "loading": "Loading table...",
       "total": "Total"
     },
+    "info": {
+      "club-display": "Club names are shown below player names (partner clubs only shown if different)",
+      "description": "Analyze your performance with partners and against opponents using the filters below:",
+      "opponents-mode": "Opponents Mode: Shows players you played AGAINST and your win rate against them",
+      "partner-filter": "Partner Filter: In opponents mode, select a specific partner to see performance as a team",
+      "partners-mode": "Partners Mode: Shows players you played WITH and your combined win rate",
+      "title": "How This Page Works"
+    },
     "name": "Name",
-    "win-rate": "Win percentage"
+    "partner": "Partner",
+    "win-rate": "Win percentage",
+    "win-rate-against": "Win rate against"
   },
   "players": {
     "my-club": "My club",

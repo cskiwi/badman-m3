@@ -1,36 +1,155 @@
-<!-- datepicker -->
-<div class="filters grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-  <ng-container [formGroup]="this.filter">
-    <p-iftalabel>
-      <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
-      <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
-    </p-iftalabel>
+<p-card class="filters-card mb-3">
+  <ng-template pTemplate="header">
+    <div class="px-3 py-1 flex justify-between items-center cursor-pointer" (click)="toggleFilters()">
+      <h3 class="text-base font-medium m-0">{{ 'all.partner.filters.title' | translate }}</h3>
+      <div class="flex items-center justify-center w-8 h-8">
+        <i class="pi transition-transform duration-200 text-gray-400" 
+           [class.pi-chevron-down]="filtersExpanded()"
+           [class.pi-chevron-right]="!filtersExpanded()"></i>
+      </div>
+    </div>
+  </ng-template>
+  
+  @if (filtersExpanded()) {
+    <div class="px-3 pb-3 -mt-1">
+    <ng-container [formGroup]="this.filter">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <!-- Analysis Mode Column -->
+        <div class="filter-group">
+          <span class="block text-base font-medium text-blue-600 mb-2 border-b border-blue-200 pb-1">
+            {{ 'all.partner.filter-groups.view-mode' | translate }}
+          </span>
+          <div class="space-y-2">
+            <p-iftalabel>
+              <p-select formControlName="viewMode" inputId="view-mode-filter" [options]="viewModeOptions" optionLabel="label" optionValue="value" />
+              <label for="view-mode-filter">{{ 'all.partner.filters.view-mode' | translate }}</label>
+            </p-iftalabel>
+          </div>
+        </div>
 
-    <p-iftalabel>
-      <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
-      <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
-    </p-iftalabel>
+        <!-- Partner/Opponent Filters Column -->
+        <div class="filter-group">
+          <span class="block text-base font-medium text-orange-600 mb-2 border-b border-orange-200 pb-1">
+            {{ isOpponentMode() ? ('all.partner.filter-groups.opponent-filters' | translate) : ('all.partner.filter-groups.partner-filters' | translate) }}
+          </span>
+          <div class="space-y-2">
+            @if (isOpponentMode()) {
+              <p-iftalabel>
+                <p-select
+                  formControlName="partnerFilter"
+                  inputId="partner-filter"
+                  [options]="partnerOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  [filter]="true"
+                  filterPlaceholder="Search partners..."
+                />
+                <label for="partner-filter">{{ 'all.partner.filters.with-partner' | translate }}</label>
+              </p-iftalabel>
+              
+              <p-iftalabel>
+                <p-select
+                  formControlName="opponentClub"
+                  inputId="opponent-club-filter"
+                  [options]="opponentClubOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  [filter]="true"
+                  filterPlaceholder="Search clubs..."
+                />
+                <label for="opponent-club-filter">{{ 'all.partner.filters.opponent-club' | translate }}</label>
+              </p-iftalabel>
+            } @else {
+              <p-iftalabel>
+                <p-select
+                  formControlName="partnerClub"
+                  inputId="partner-club-filter"
+                  [options]="partnerClubOptions()"
+                  optionLabel="label"
+                  optionValue="value"
+                  [filter]="true"
+                  filterPlaceholder="Search clubs..."
+                />
+                <label for="partner-club-filter">{{ 'all.partner.filters.partner-club' | translate }}</label>
+              </p-iftalabel>
+            }
+          </div>
+        </div>
 
-    <p-iftalabel>
-      <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
-      <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
-    </p-iftalabel>
+        <!-- Time & Performance Column -->
+        <div class="filter-group">
+          <span class="block text-base font-medium text-green-600 mb-2 border-b border-green-200 pb-1">
+            {{ 'all.partner.filter-groups.time-performance' | translate }}
+          </span>
+          <div class="space-y-2">
+            <p-iftalabel>
+              <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
+              <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
+            </p-iftalabel>
 
-    <!-- gameType -->
-    <p-iftalabel>
-      <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
-      <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
-    </p-iftalabel>
-    <p-iftalabel>
-      <p-select formControlName="club" inputId="club-filter" [options]="clubOptions()" optionLabel="label" optionValue="value" />
-      <label for="club-filter">{{ 'all.partner.filters.club' | translate }}</label>
-    </p-iftalabel>
-  </ng-container>
-</div>
+            <p-iftalabel>
+              <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
+              <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
+            </p-iftalabel>
+          </div>
+        </div>
+
+        <!-- Game Type Column -->
+        <div class="filter-group">
+          <span class="block text-base font-medium text-purple-600 mb-2 border-b border-purple-200 pb-1">
+            {{ 'all.partner.filter-groups.game-type' | translate }}
+          </span>
+          <div class="space-y-2">
+            <p-iftalabel>
+              <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
+              <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
+            </p-iftalabel>
+
+            <p-iftalabel>
+              <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
+              <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
+            </p-iftalabel>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    </div>
+  }
+</p-card>
+
+@if (showExplanation()) {
+  <div class="info-section mb-3">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="px-3 py-1 flex justify-between items-center">
+          <h3 class="text-base font-medium m-0">{{ 'all.partner.info.title' | translate }}</h3>
+          <p-button 
+            [text]="true" 
+            [rounded]="true" 
+            size="small"
+            icon="pi pi-times"
+            (onClick)="dismissExplanation()"
+            [ariaLabel]="'Close explanation'"
+            styleClass="!w-8 !h-8 !p-0 text-gray-400 hover:text-gray-600">
+          </p-button>
+        </div>
+      </ng-template>
+      <div class="px-3 pb-3 -mt-1 text-gray-600 space-y-2">
+        <p class="text-sm">{{ 'all.partner.info.description' | translate }}</p>
+        <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
+          <li>{{ 'all.partner.info.partners-mode' | translate }}</li>
+          <li>{{ 'all.partner.info.opponents-mode' | translate }}</li>
+          <li>{{ 'all.partner.info.partner-filter' | translate }}</li>
+          <li>{{ 'all.partner.info.club-display' | translate }}</li>
+        </ul>
+      </div>
+    </p-card>
+  </div>
+}
 
 <div class="partners">
   <p-card>
-    <app-partner-grid [dataSource]="partners()" [loading]="loading()"></app-partner-grid>
+    <app-partner-grid [dataSource]="partners()" [loading]="loading()" [viewMode]="filter.get('viewMode')?.value || 'partners'"></app-partner-grid>
   </p-card>
 </div>
 
