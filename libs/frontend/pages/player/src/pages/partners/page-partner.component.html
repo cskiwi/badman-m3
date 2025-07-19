@@ -1,33 +1,40 @@
 <!-- datepicker -->
-@if (this.filter.getRawValue().date) {
-  <div class="filters grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
-    <ng-container [formGroup]="this.filter">
-      <p-iftalabel>
-        <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
-        <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
-      </p-iftalabel>
+<div class="filters grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+  <ng-container [formGroup]="this.filter">
+    <p-iftalabel>
+      <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
+      <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
+    </p-iftalabel>
 
-      <p-iftalabel>
-        <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
-        <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
-      </p-iftalabel>
+    <p-iftalabel>
+      <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
+      <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
+    </p-iftalabel>
 
-      <p-iftalabel>
-        <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
-        <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
-      </p-iftalabel>
+    <p-iftalabel>
+      <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
+      <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
+    </p-iftalabel>
 
-      <!-- gameType -->
-      <p-iftalabel>
-        <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
-        <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
-      </p-iftalabel>
-    </ng-container>
-  </div>
-}
+    <!-- gameType -->
+    <p-iftalabel>
+      <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
+      <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
+    </p-iftalabel>
+  </ng-container>
+</div>
 
 <div class="partners">
-  <p-card><app-partner-grid [dataSource]="partners()" [loading]="loading()"></app-partner-grid></p-card>
+  <p-card>
+    <app-partner-grid
+      [dataSource]="paginatedPartners()"
+      [loading]="loading()"
+      [page]="page"
+      [pageSize]="pageSize"
+      [total]="partnersTotal()"
+      (pageChange)="onPageChange($event)"
+    ></app-partner-grid>
+  </p-card>
 </div>
 
 @if (error()) {

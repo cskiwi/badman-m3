@@ -6,7 +6,7 @@ import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, Subject, merge } from 'rxjs';
-import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, switchMap, filter, tap } from 'rxjs/operators';
 
 interface DetailState {
   games: GamePlayerMembership[] | null;
@@ -41,6 +41,11 @@ export class DetailService {
   private readonly error$ = new Subject<string | null>();
   private readonly filterChanged$ = this.filter.valueChanges.pipe(
     distinctUntilChanged((a, b) => a.playerId === b.playerId && a.date === b.date && a.linkType === b.linkType && a.gameType === b.gameType),
+    filter((filter) => {
+      // Only allow null or valid dates (using moment)
+      const d = filter?.date;
+      return moment(d).isValid();
+    }),
   );
 
   private readonly data$ = this.filterChanged$.pipe(

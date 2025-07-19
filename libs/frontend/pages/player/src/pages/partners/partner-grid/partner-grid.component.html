@@ -5,6 +5,11 @@
     [sortField]="'winRate'"
     [sortOrder]="-1"
     styleClass="p-datatable-sm"
+    [paginator]="true"
+    [rows]="pageSize"
+    [first]="(page-1)*pageSize"
+    [totalRecords]="total"
+    (onPage)="onPageChange($event)"
     >
     <ng-template pTemplate="header">
       <tr>
