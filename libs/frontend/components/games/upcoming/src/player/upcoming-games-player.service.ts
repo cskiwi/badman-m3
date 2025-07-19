@@ -3,6 +3,7 @@ import { computed, inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Game, Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
+import moment from 'moment';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { EMPTY, merge, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
@@ -12,6 +13,34 @@ interface PlayerUpcommingGamesState {
   loading: boolean;
   error: string | null;
 }
+
+const PLAYER_UPCOMING_GAMES_QUERY = gql`
+  query PlayerUpcommingGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
+    player(id: $playerId) {
+      id
+      gamePlayerMemberships(args: $args) {
+        id
+        game {
+          id
+          playedAt
+          gameType
+          gamePlayerMemberships {
+            id
+            player
+            single
+            team
+            mix
+            double
+            gamePlayer {
+              id
+              fullName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export class PlayerUpcommingGamesService {
   private readonly apollo = inject(Apollo);
@@ -76,33 +105,7 @@ export class PlayerUpcommingGamesService {
   ) {
     return this.apollo
       .query<{ player: Player }>({
-        query: gql`
-          query PlayerUpcommingGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
-            player(id: $playerId) {
-              id
-              gamePlayerMemberships(args: $args) {
-                id
-                game {
-                  id
-                  playedAt
-                  gameType
-                  gamePlayerMemberships {
-                    id
-                    player
-                    single
-                    team
-                    mix
-                    double
-                    gamePlayer {
-                      id
-                      fullName
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `,
+        query: PLAYER_UPCOMING_GAMES_QUERY,
         variables: {
           playerId: filter?.playerId,
           args: {
@@ -111,7 +114,7 @@ export class PlayerUpcommingGamesService {
             where: {
               game: {
                 playedAt: {
-                  $gt: new Date().toISOString(),
+                  $gt: moment().format('YYYY-MM-DD'),
                 },
               },
             },
