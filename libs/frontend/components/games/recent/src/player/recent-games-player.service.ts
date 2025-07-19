@@ -24,6 +24,10 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
           set2Team2
           set3Team1
           set3Team2
+          tournament {
+            name
+            id
+          }
           gamePlayerMemberships {
             id
             player

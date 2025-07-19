@@ -1,20 +1,153 @@
-<section class="game">
-  @for (game of games(); track game.id) {
-    <p-card>
-      <ng-template pTemplate="header">
-        <h3>{{ game.playedAt | amDateFormat: 'llll' }}</h3>
-      </ng-template>
-      <ng-template pTemplate="content">
-        <div class="sets">
-          <p-chip label="{{ game.set1Team1 }} - {{ game.set1Team2 }}"></p-chip>
-          <p-chip label="{{ game.set2Team1 }} - {{ game.set2Team2 }}"></p-chip>
-          @if (game.set3Team1 && game.set3Team2) {
-            <p-chip label="{{ game.set3Team1 }} - {{ game.set3Team2 }}"></p-chip>
-          }
+<div class="recent-games-container space-y-3">
+  @if (loading()) {
+    <div class="flex justify-center py-8">
+      <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+    </div>
+  } @else {
+    @for (game of games(); track game.id) {
+      <div class="rounded-border border overflow-hidden">
+        <!-- Game Header -->
+        <div class="bg-highlight pl-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+              <div class="bg-primary-100 rounded-full p-2">
+                <i class="pi pi-calendar text-primary-600"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium">
+                  {{ game.playedAt | amDateFormat: 'dddd, MMMM Do YYYY' }}
+                </p>
+                <p class="text-xs">
+                  {{ game.playedAt | amDateFormat: 'HH:mm' }}
+                </p>
+                @if (game.tournament?.subEventTournament?.eventTournament?.name) {
+                  <p class="text-xs font-medium">
+                    {{ game.tournament?.subEventTournament?.eventTournament?.name }}
+                  </p>
+                }
+                @if (game.tournament?.subEventTournament?.name) {
+                  <p class="text-xs font-medium">
+                    {{ game.tournament?.subEventTournament?.name }}
+                  </p>
+                }
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <p-chip [label]="game.gameType" [style]="{ background: 'var(--primary-100)', color: 'var(--primary-700)' }" class="text-xs"></p-chip>
+            </div>
+          </div>
         </div>
-      </ng-template>
-    </p-card>
-  } @empty {
-    No items found
+
+        <!-- Game Content -->
+        <div class="game-content p-3">
+          <!-- Players/Teams Section -->
+          <div class="players-section mb-3">
+            <div class="flex items-center justify-between gap-3">
+              <!-- Team 1 -->
+              <div class="team-section flex-1">
+                <div class="text-right space-y-1">
+                  @for (membership of game.gamePlayerMemberships; track membership.id) {
+                    @if (membership.team === 1) {
+                      <div class="text-base {{ isCurrentPlayer(membership.gamePlayer.id) ? 'underline' : '' }}">
+                        {{ membership.gamePlayer.fullName }}
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+
+              <!-- Team 1 Bullet -->
+              <div class="flex items-center pr-2">
+                @if (getMatchWinner(game) === 1) {
+                  <div class="w-2 h-2 bg-green-600 rounded-full"></div>
+                } @else if (getMatchWinner(game) === 2) {
+                  <div class="w-2 h-2 bg-red-600 rounded-full"></div>
+                } @else {
+                  <div class="w-2 h-2"></div>
+                }
+              </div>
+
+              <!-- VS Divider -->
+              <div class="flex items-center">
+                <span class="text-lg font-bold">vs</span>
+              </div>
+
+              <!-- Team 2 Bullet -->
+              <div class="flex items-center pl-2">
+                @if (getMatchWinner(game) === 2) {
+                  <div class="w-2 h-2 bg-green-600 rounded-full"></div>
+                } @else if (getMatchWinner(game) === 1) {
+                  <div class="w-2 h-2 bg-red-600 rounded-full"></div>
+                } @else {
+                  <div class="w-2 h-2"></div>
+                }
+              </div>
+
+              <!-- Team 2 -->
+              <div class="team-section flex-1">
+                <div class="text-left space-y-1">
+                  @for (membership of game.gamePlayerMemberships; track membership.id) {
+                    @if (membership.team === 2) {
+                      <div class="text-base {{ isCurrentPlayer(membership.gamePlayer.id) ? 'underline' : '' }}">
+                        {{ membership.gamePlayer.fullName }}
+                      </div>
+                    }
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Score Section -->
+          <div class="score-section">
+            <div class="sets-container flex justify-center gap-2">
+              <!-- Set 1 -->
+              @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+                <div class="border border-surface rounded-lg p-2 text-center">
+                  <div class="text-xs mb-1">Set 1</div>
+                  <div class="text-2xl font-bold">
+                    <span class="{{ getSetWinner(game.set1Team1, game.set1Team2) === 1 ? 'text-green-600' : '' }}">{{ game.set1Team1 }}</span>
+                    <span class="mx-1">-</span>
+                    <span class="{{ getSetWinner(game.set1Team1, game.set1Team2) === 2 ? 'text-green-600' : '' }}">{{ game.set1Team2 }}</span>
+                  </div>
+                </div>
+              }
+
+              <!-- Set 2 -->
+              @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+                <div class="border border-surface rounded-lg p-2 text-center">
+                  <div class="text-xs mb-1">Set 2</div>
+                  <div class="text-2xl font-bold">
+                    <span class="{{ getSetWinner(game.set2Team1, game.set2Team2) === 1 ? 'text-green-600' : '' }}">{{ game.set2Team1 }}</span>
+                    <span class="mx-1">-</span>
+                    <span class="{{ getSetWinner(game.set2Team1, game.set2Team2) === 2 ? 'text-green-600' : '' }}">{{ game.set2Team2 }}</span>
+                  </div>
+                </div>
+              }
+
+              <!-- Set 3 (only if exists) -->
+              @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+                <div class="border border-surface rounded-lg p-2 text-center">
+                  <div class="text-xs mb-1">Set 3</div>
+                  <div class="text-2xl font-bold">
+                    <span class="{{ getSetWinner(game.set3Team1, game.set3Team2) === 1 ? 'text-green-600' : '' }}">{{ game.set3Team1 }}</span>
+                    <span class="mx-1">-</span>
+                    <span class="{{ getSetWinner(game.set3Team1, game.set3Team2) === 2 ? 'text-green-600' : '' }}">{{ game.set3Team2 }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state text-center py-12">
+        <div class="rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+          <i class="pi pi-search text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-medium mb-2">No recent games found</h3>
+        <p class="">This player hasn't played any games recently.</p>
+      </div>
+    }
   }
-</section>
+</div>

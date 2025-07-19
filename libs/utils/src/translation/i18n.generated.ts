@@ -9,10 +9,20 @@ export type I18nTranslations = {
         "clubs": {
             "search": string;
         };
+        "game": {
+            "recent": {
+                "title": string;
+            };
+            "upcoming": {
+                "title": string;
+            };
+        };
         "partner": {
             "amount-of-games": string;
+            "club": string;
             "filters": {
                 "all": string;
+                "club": string;
                 "competition": string;
                 "double": string;
                 "games": string;
@@ -20,17 +30,15 @@ export type I18nTranslations = {
                 "linktype": string;
                 "mix": string;
                 "start-date": string;
-                "club": string;
                 "tournament": string;
+            };
+            "grid": {
+                "average": string;
+                "loading": string;
+                "total": string;
             };
             "name": string;
             "win-rate": string;
-            "grid": {
-                "average": string;
-                "total": string;
-                "loading": string;
-            };
-            "club": string;
         };
         "players": {
             "my-club": string;

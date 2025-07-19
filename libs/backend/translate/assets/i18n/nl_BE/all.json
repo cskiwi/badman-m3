@@ -2,10 +2,20 @@
   "clubs": {
     "search": "Zoek club"
   },
+  "game": {
+    "recent": {
+      "title": "Recente ontmoetingen"
+    },
+    "upcoming": {
+      "title": "Komende ontmoetingen"
+    }
+  },
   "partner": {
     "amount-of-games": "Aantal wedstrijden",
+    "club": "Club",
     "filters": {
       "all": "Alles",
+      "club": "Club",
       "competition": "Competitie",
       "double": "Dubbel",
       "games": "Min wedstrijden",
@@ -13,17 +23,15 @@
       "linktype": "Toernooi/competitie",
       "mix": "Gemengd",
       "start-date": "Vanaf",
-      "club": "Club",
       "tournament": "Toernooi"
     },
-    "name": "Naam",
-    "club": "Club",
-    "win-rate": "Win percentage",
     "grid": {
       "average": "Gemiddelde",
-      "total": "Totaal",
-      "loading": "Tabel laden..."
-    }
+      "loading": "Tabel laden...",
+      "total": "Totaal"
+    },
+    "name": "Naam",
+    "win-rate": "Win percentage"
   },
   "players": {
     "my-club": "Mijn club",

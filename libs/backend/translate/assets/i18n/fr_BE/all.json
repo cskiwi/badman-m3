@@ -2,10 +2,20 @@
   "clubs": {
     "search": "Chercher club"
   },
+  "game": {
+    "recent": {
+      "title": "Matchs récents"
+    },
+    "upcoming": {
+      "title": "Prochains matches"
+    }
+  },
   "partner": {
     "amount-of-games": "Nombre de correspondances",
+    "club": "",
     "filters": {
       "all": "Tous",
+      "club": "Club",
       "competition": "Concours",
       "double": "Double",
       "games": "Correspondances minimales",
@@ -13,16 +23,15 @@
       "linktype": "Tournoi/concours",
       "mix": "Mixte",
       "start-date": "De",
-      "club": "Club",
       "tournament": "Tournoi"
     },
-    "name": "Nom",
-    "win-rate": "Pourcentage de victoire",
     "grid": {
       "average": "Moyenne",
-      "total": "Total",
-      "loading": "Chargement du tableau..."
-    }
+      "loading": "Chargement du tableau...",
+      "total": "Total"
+    },
+    "name": "Nom",
+    "win-rate": "Pourcentage de victoire"
   },
   "players": {
     "my-club": "Mon club",

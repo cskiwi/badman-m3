@@ -2,10 +2,20 @@
   "clubs": {
     "search": "Find a club"
   },
+  "game": {
+    "recent": {
+      "title": "Recent games"
+    },
+    "upcoming": {
+      "title": "Upcoming games"
+    }
+  },
   "partner": {
     "amount-of-games": "Number of contests",
+    "club": "",
     "filters": {
       "all": "All",
+      "club": "Club",
       "competition": "Competition",
       "double": "Double",
       "games": "Min matches",
@@ -13,16 +23,15 @@
       "linktype": "Tournament/competition",
       "mix": "Mixed",
       "start-date": "From",
-      "club": "Club",
       "tournament": "Tournament"
     },
-    "name": "Name",
-    "win-rate": "Win percentage",
     "grid": {
       "average": "Average",
-      "total": "Total",
-      "loading": "Loading table..."
-    }
+      "loading": "Loading table...",
+      "total": "Total"
+    },
+    "name": "Name",
+    "win-rate": "Win percentage"
   },
   "players": {
     "my-club": "My club",
@@ -52,4 +61,3 @@
     }
   }
 }
-
