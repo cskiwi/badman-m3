@@ -1,3 +1,4 @@
+import { AllowAnonymous } from '@app/backend-authorization';
 import { TournamentDraw, Game, GamePlayerMembership, CompetitionEncounter } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
@@ -6,6 +7,7 @@ import { GameArgs, GamePlayerMembershipArgs } from '../args';
 @Resolver(() => Game)
 export class GameResolver {
   @Query(() => Game)
+  @AllowAnonymous()
   async game(@Args('id', { type: () => ID }) id: string): Promise<Game> {
     const game = await Game.findOne({
       where: {
@@ -21,6 +23,7 @@ export class GameResolver {
   }
 
   @Query(() => [Game])
+  @AllowAnonymous()
   async games(
     @Args('args', { type: () => GameArgs, nullable: true })
     inputArgs?: InstanceType<typeof GameArgs>,

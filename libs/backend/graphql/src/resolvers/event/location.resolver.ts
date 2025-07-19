@@ -1,3 +1,4 @@
+import { AllowAnonymous } from '@app/backend-authorization';
 import { Court, Location } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
@@ -6,6 +7,7 @@ import { CourtArgs, LocationArgs } from '../../args';
 @Resolver(() => Location)
 export class LocationResolver {
   @Query(() => Location)
+  @AllowAnonymous()
   async location(@Args('id', { type: () => ID }) id: string): Promise<Location> {
     const location = await Location.findOne({
       where: {
@@ -21,6 +23,7 @@ export class LocationResolver {
   }
 
   @Query(() => [Location])
+  @AllowAnonymous()
   async locations(
     @Args('args', { type: () => LocationArgs, nullable: true })
     inputArgs?: InstanceType<typeof LocationArgs>,

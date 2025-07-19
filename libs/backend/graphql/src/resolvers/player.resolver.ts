@@ -1,13 +1,14 @@
+import { PermGuard, User } from '@app/backend-authorization';
 import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace } from '@app/models';
 import { IsUUID } from '@app/utils';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs } from '../args';
-import { User } from '@app/backend-authorization';
 
 @Resolver(() => Player)
 export class PlayerResolver {
   @Query(() => Player)
+  @UseGuards(PermGuard)
   async player(@Args('id', { type: () => ID }) id: string): Promise<Player> {
     const player = IsUUID(id)
       ? await Player.findOne({
@@ -29,6 +30,7 @@ export class PlayerResolver {
   }
 
   @Query(() => [Player])
+  @UseGuards(PermGuard)
   async players(
     @Args('args', { type: () => PlayerArgs, nullable: true })
     inputArgs?: InstanceType<typeof PlayerArgs>,
@@ -97,7 +99,7 @@ export class PlayerResolver {
     @Parent() { id }: Player,
     @Args('args', {
       type: () => GamePlayerMembershipArgs,
-      nullable: true, 
+      nullable: true,
     })
     inputArgs?: InstanceType<typeof GamePlayerMembershipArgs>,
   ) {

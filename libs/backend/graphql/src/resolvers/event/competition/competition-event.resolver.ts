@@ -1,3 +1,4 @@
+import { AllowAnonymous } from '@app/backend-authorization';
 import { CompetitionEvent, CompetitionSubEvent } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
@@ -7,6 +8,7 @@ import { CompetitionEventArgs } from '../../../args';
 @Resolver(() => CompetitionEvent)
 export class CompetitionEventResolver {
   @Query(() => CompetitionEvent)
+  @AllowAnonymous()
   async competitionEvent(
     @Args('id', { type: () => ID }) id: string,
   ): Promise<CompetitionEvent> {
@@ -30,6 +32,7 @@ export class CompetitionEventResolver {
   }
 
   @Query(() => [CompetitionEvent])
+  @AllowAnonymous()
   async competitionEvents(
     @Args('args',  { type: () => CompetitionEventArgs, nullable: true  })
     inputArgs?: InstanceType<typeof CompetitionEventArgs>,
