@@ -20,7 +20,7 @@ export class DetailService {
   filter = new FormGroup({
     playerId: new FormControl<string | null>(null),
     date: new FormControl<Date | null>(moment().subtract(1, 'year').toDate()),
-    minGames: new FormControl<number>(2),
+    minGames: new FormControl<number>(0),
     linkType: new FormControl<'tournament' | 'competition' | null>(null),
     gameType: new FormControl<'D' | 'X' | null>(null),
   });

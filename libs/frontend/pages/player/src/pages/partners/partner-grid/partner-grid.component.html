@@ -5,12 +5,7 @@
     [sortField]="'winRate'"
     [sortOrder]="-1"
     styleClass="p-datatable-sm"
-    [paginator]="true"
-    [rows]="pageSize"
-    [first]="(page-1)*pageSize"
-    [totalRecords]="total"
-    (onPage)="onPageChange($event)"
-    >
+  >
     <ng-template pTemplate="header">
       <tr>
         @for (col of columns; track col) {
@@ -29,8 +24,31 @@
               @case ('player.fullName') {
                 <span>{{ rowData.player?.fullName }}</span>
               }
+              @case ('winRate') {
+                {{ rowData[col.field] | number: '1.0-2' }} %
+              }
               @default {
                 <span>{{ rowData[col.field] }}</span>
+              }
+            }
+          </td>
+        }
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <tr>
+        @for (col of columns; track col) {
+          <td class="font-bold text-right">
+            @switch (col.field) {
+              @case ('winRate') {
+                Average: {{ averageWinRate | number: '1.0-2' }} %
+              }
+              @case ('amountOfGames') {
+                Total: {{ totalGames }}
+              }
+              @default {
+                <!-- empty for alignment -->
               }
             }
           </td>

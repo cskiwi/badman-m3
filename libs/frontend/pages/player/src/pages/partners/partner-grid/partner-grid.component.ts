@@ -1,16 +1,17 @@
-import { ChangeDetectionStrategy, Component, inject, input, PLATFORM_ID, Input, Output, EventEmitter } from '@angular/core';
-import { AsyncPipe, isPlatformBrowser } from '@angular/common';
+// ...existing code...
+import { ChangeDetectionStrategy, Component, inject, input, PLATFORM_ID } from '@angular/core';
+import { AsyncPipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 
 import { TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PlayerGrid } from './sort.type';
 
 @Component({
-    selector: 'app-partner-grid',
-    imports: [TableModule, TranslateModule, AsyncPipe],
-    templateUrl: './partner-grid.component.html',
-    styleUrl: './partner-grid.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-partner-grid',
+  imports: [TableModule, TranslateModule, AsyncPipe, DecimalPipe],
+  templateUrl: './partner-grid.component.html',
+  styleUrl: './partner-grid.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PartnerGridComponent {
   private readonly translate = inject(TranslateService);
@@ -19,19 +20,8 @@ export class PartnerGridComponent {
   loading = input<boolean>(false);
   dataSource = input<PlayerGrid[]>([]);
 
-  @Input() page = 1;
-  @Input() pageSize = 20;
-  @Input() total = 0;
-  @Output() pageChange = new EventEmitter<{ page: number; pageSize: number }>();
-
   isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
-  }
-
-  onPageChange(event: { first: number; rows: number; page?: number; pageCount?: number }) {
-    // Calculate page if not present (PrimeNG TablePageEvent may not provide page/pageCount)
-    const page = event.page !== undefined ? event.page + 1 : Math.floor((event.first ?? 0) / (event.rows ?? 1)) + 1;
-    this.pageChange.emit({ page, pageSize: event.rows });
   }
 
   columns = [
@@ -51,4 +41,16 @@ export class PartnerGridComponent {
       sortable: true,
     },
   ];
+
+  get totalGames(): number {
+    const data = this.dataSource();
+    return Array.isArray(data) ? data.reduce((sum, row) => sum + (row.amountOfGames ?? 0), 0) : 0;
+  }
+
+  get averageWinRate(): number {
+    const data = this.dataSource();
+    if (!Array.isArray(data) || data.length === 0) return 0;
+    const total = data.reduce((sum, row) => sum + (row.winRate ?? 0), 0);
+    return total / data.length;
+  }
 }

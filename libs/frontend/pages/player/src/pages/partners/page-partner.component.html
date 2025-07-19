@@ -26,14 +26,7 @@
 
 <div class="partners">
   <p-card>
-    <app-partner-grid
-      [dataSource]="paginatedPartners()"
-      [loading]="loading()"
-      [page]="page"
-      [pageSize]="pageSize"
-      [total]="partnersTotal()"
-      (pageChange)="onPageChange($event)"
-    ></app-partner-grid>
+    <app-partner-grid [dataSource]="partners()" [loading]="loading()"></app-partner-grid>
   </p-card>
 </div>
 

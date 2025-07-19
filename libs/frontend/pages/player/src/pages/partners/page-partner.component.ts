@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,8 +18,8 @@ import { SelectModule } from 'primeng/select';
 import { IftaLabelModule } from 'primeng/iftalabel';
 
 @Component({
-    selector: 'app-page-partner',
-    imports: [
+  selector: 'app-page-partner',
+  imports: [
     CardModule,
     ProgressBarModule,
     ButtonModule,
@@ -32,11 +31,11 @@ import { IftaLabelModule } from 'primeng/iftalabel';
     PartnerGridComponent,
     DatePickerModule,
     SelectModule,
-    IftaLabelModule
-],
-    templateUrl: './page-partner.component.html',
-    styleUrl: './page-partner.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    IftaLabelModule,
+  ],
+  templateUrl: './page-partner.component.html',
+  styleUrl: './page-partner.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePartnerComponent {
   private readonly dataService = new DetailService();
@@ -57,13 +56,13 @@ export class PagePartnerComponent {
   linkTypeOptions = [
     { value: null, label: this.translateService.instant('all.partner.filters.all') },
     { value: 'competition', label: this.translateService.instant('all.partner.filters.competition') },
-    { value: 'tournament', label: this.translateService.instant('all.partner.filters.tournament') }
+    { value: 'tournament', label: this.translateService.instant('all.partner.filters.tournament') },
   ];
 
   gameTypeOptions = [
     { value: null, label: this.translateService.instant('all.partner.filters.all') },
     { value: 'MX', label: this.translateService.instant('all.partner.filters.mix') },
-    { value: 'D', label: this.translateService.instant('all.partner.filters.double') }
+    { value: 'D', label: this.translateService.instant('all.partner.filters.double') },
   ];
 
   // create signal from minGames filter
@@ -74,19 +73,6 @@ export class PagePartnerComponent {
       startWith(this.filter.get('minGames')?.value ?? 0),
     ) ?? of(2),
   );
-
-  // Pagination state
-  page = 1;
-  pageSize = 20;
-
-  setPage(page: number) {
-    this.page = page;
-  }
-
-  setPageSize(size: number) {
-    this.pageSize = size;
-    this.page = 1;
-  }
 
   partners = computed(() => {
     const playerStats = new Map<string, { player: Player; winRate: number; amountOfGames: number }>();
@@ -110,25 +96,13 @@ export class PagePartnerComponent {
             Math.round(
               (((stats.winRate / 100) * (stats.amountOfGames - 1) + (membership.game.winner == m.team ? 1 : 0)) / stats.amountOfGames) * 100 * 100,
             ) / 100;
-
         });
     });
 
     return Array.from(playerStats.values()).filter((p) => p.amountOfGames >= (this.minGames() ?? 0));
   });
 
-  paginatedPartners = computed(() => {
-    const partners = this.partners() ?? [];
-    const start = (this.page - 1) * this.pageSize;
-    return partners.slice(start, start + this.pageSize);
-  });
 
-  partnersTotal = computed(() => (this.partners()?.length ?? 0));
-
-  onPageChange(event: { page: number; pageSize: number }) {
-    this.page = event.page;
-    this.pageSize = event.pageSize;
-  }
 
   constructor() {
     effect(() => {
