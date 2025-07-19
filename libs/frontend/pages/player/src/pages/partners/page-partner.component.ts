@@ -16,7 +16,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
-import { FloatLabelModule } from 'primeng/floatlabel';
+import { IftaLabelModule } from 'primeng/iftalabel';
 
 @Component({
     selector: 'app-page-partner',
@@ -32,7 +32,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     PartnerGridComponent,
     DatePickerModule,
     SelectModule,
-    FloatLabelModule
+    IftaLabelModule
 ],
     templateUrl: './page-partner.component.html',
     styleUrl: './page-partner.component.scss',
