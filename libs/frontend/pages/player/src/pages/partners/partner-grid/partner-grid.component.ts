@@ -31,6 +31,11 @@ export class PartnerGridComponent {
       sortable: true,
     },
     {
+      header: this.translate.stream('all.partner.club'),
+      field: 'club.name',
+      sortable: true,
+    },
+    {
       header: this.translate.stream('all.partner.win-rate'),
       field: 'winRate',
       sortable: true,

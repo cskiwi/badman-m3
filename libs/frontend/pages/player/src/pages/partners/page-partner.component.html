@@ -21,6 +21,10 @@
       <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
       <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
     </p-iftalabel>
+    <p-iftalabel>
+      <p-select formControlName="club" inputId="club-filter" [options]="clubOptions()" optionLabel="label" optionValue="value" />
+      <label for="club-filter">{{ 'all.partner.filters.club' | translate }}</label>
+    </p-iftalabel>
   </ng-container>
 </div>
 
