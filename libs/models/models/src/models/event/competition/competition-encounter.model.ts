@@ -14,6 +14,7 @@ import { SortableField } from '@app/utils';
 import { Game } from '../game.model';
 import { CompetitionDraw } from './competition-draw.model';
 import { CompetitionAssembly as Assembly } from './assembly.model';
+import { Team } from '../../team.model';
 
 @ObjectType('CompetitionEncounter', { description: 'A Competition Encounter' })
 @Entity('EncounterCompetitions', { schema: 'event' })
@@ -97,4 +98,14 @@ export class CompetitionEncounter extends BaseEntity {
 
   @OneToMany(() => Assembly, (assembly) => assembly.encounterCompetition)
   declare assemblies?: Assembly[];
+
+  @Field(() => Team, { nullable: true })
+  @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'homeTeamId' })
+  declare homeTeam?: Team;
+
+  @Field(() => Team, { nullable: true })
+  @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'awayTeamId' })
+  declare awayTeam?: Team;
 }

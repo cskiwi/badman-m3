@@ -212,4 +212,48 @@ export class RecentGamesPlayerComponent {
     // This method is kept for backward compatibility but styling is now handled in CSS
     return '';
   }
+
+  /**
+   * Checks if a game is a competition game
+   * @param game The game object
+   * @returns true if the game has competition encounter information
+   */
+  isCompetitionGame(game: Game): boolean {
+    return !!game?.competitionEncounter;
+  }
+
+  /**
+   * Gets the home team name for a competition game
+   * @param game The game object
+   * @returns Home team name, abbreviation, or 'Home' as fallback
+   */
+  getHomeTeamName(game: Game): string {
+    const homeTeam = game?.competitionEncounter?.homeTeam;
+    return homeTeam?.name || homeTeam?.abbreviation || 'Home';
+  }
+
+  /**
+   * Gets the away team name for a competition game
+   * @param game The game object
+   * @returns Away team name, abbreviation, or 'Away' as fallback
+   */
+  getAwayTeamName(game: Game): string {
+    const awayTeam = game?.competitionEncounter?.awayTeam;
+    return awayTeam?.name || awayTeam?.abbreviation || 'Away';
+  }
+
+  /**
+   * Gets the team name for a specific team number
+   * @param game The game object
+   * @param team Team number (1 or 2)
+   * @returns Team name based on whether it's home or away
+   */
+  getTeamName(game: Game, team: number): string {
+    if (!this.isCompetitionGame(game)) return '';
+    
+    // For competitions, we need to determine which team (1 or 2) corresponds to home/away
+    // This is a simplified approach - in practice, this mapping might need more logic
+    // based on how the game data is structured in your system
+    return team === 1 ? this.getHomeTeamName(game) : this.getAwayTeamName(game);
+  }
 }

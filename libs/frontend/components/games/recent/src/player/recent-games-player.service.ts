@@ -55,6 +55,18 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
             id
             date
             visualCode
+            homeTeamId
+            awayTeamId
+            homeTeam {
+              id
+              name
+              abbreviation
+            }
+            awayTeam {
+              id
+              name
+              abbreviation
+            }
             drawCompetition {
               id
               name

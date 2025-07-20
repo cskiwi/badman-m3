@@ -1,4 +1,4 @@
-import { CompetitionEncounter, CompetitionDraw, Game, CompetitionAssembly } from '@app/models';
+import { CompetitionEncounter, CompetitionDraw, Game, CompetitionAssembly, Team } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 
@@ -51,6 +51,28 @@ export class CompetitionEncounterResolver {
       where: {
         encounterId: id,
       },
+    });
+  }
+
+  @ResolveField(() => Team, { nullable: true })
+  async homeTeam(@Parent() { homeTeamId }: CompetitionEncounter): Promise<Team | null> {
+    if (!homeTeamId) {
+      return null;
+    }
+
+    return Team.findOne({
+      where: { id: homeTeamId },
+    });
+  }
+
+  @ResolveField(() => Team, { nullable: true })
+  async awayTeam(@Parent() { awayTeamId }: CompetitionEncounter): Promise<Team | null> {
+    if (!awayTeamId) {
+      return null;
+    }
+
+    return Team.findOne({
+      where: { id: awayTeamId },
     });
   }
 }

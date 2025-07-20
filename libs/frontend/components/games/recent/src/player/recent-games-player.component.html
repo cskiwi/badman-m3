@@ -56,6 +56,39 @@
         <div class="game-content p-6">
           <!-- Players/Teams Section -->
           <div class="players-section">
+            <!-- Team Labels for Competition Games -->
+            @if (isCompetitionGame(game)) {
+              <div class="flex items-center justify-between gap-6 mb-2">
+                <!-- Team 1 Label -->
+                <div class="team-section flex-1 min-w-0">
+                  <div class="text-right">
+                    <div class="text-xs font-semibold text-muted-color uppercase tracking-wide">
+                      {{ getTeamName(game, 1) }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center">
+                  <div class="w-4 h-4"></div>
+                </div>
+                <div class="flex items-center">
+                  <div class="px-6 py-1"></div>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-4 h-4"></div>
+                </div>
+
+                <!-- Team 2 Label -->
+                <div class="team-section flex-1 min-w-0">
+                  <div class="text-left">
+                    <div class="text-xs font-semibold text-muted-color uppercase tracking-wide">
+                      {{ getTeamName(game, 2) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
             <!-- Player Names Row -->
             <div class="flex items-center justify-between gap-6">
               <!-- Team 1 -->
@@ -133,7 +166,7 @@
               <!-- Team 1 Points -->
               <div class="flex-1 flex justify-end">
                 @if (getTeamPoints(game, 1) !== 0) {
-                  <div class="text-sm font-extralight text-gray-500">
+                  <div class="text-sm font-extralight text-muted-color">
                     <span>{{ formatPoints(getTeamPoints(game, 1)) }}</span>
                     <span class="text-xs ml-0.5">pts</span>
                   </div>
@@ -154,7 +187,7 @@
               <!-- Team 2 Points -->
               <div class="flex-1 flex justify-start">
                 @if (getTeamPoints(game, 2) !== 0) {
-                  <div class="text-sm font-extralight text-gray-500">
+                  <div class="text-sm font-extralight text-muted-color">
                     <span>{{ formatPoints(getTeamPoints(game, 2)) }}</span>
                     <span class="text-xs ml-0.5">pts</span>
                   </div>
@@ -166,7 +199,7 @@
           <p-divider class="my-6" />
 
           <!-- Score Section -->
-          <div class="score-section pt-2">
+          <div class="score-section">
             <div class="sets-container flex justify-center gap-4 flex-wrap">
               <!-- Set 1 -->
               @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
