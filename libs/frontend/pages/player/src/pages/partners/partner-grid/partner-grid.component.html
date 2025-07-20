@@ -1,11 +1,5 @@
 @if (isBrowser()) {
-  <p-table
-    [value]="dataSource()"
-    [loading]="loading()"
-    [sortField]="'winRate'"
-    [sortOrder]="-1"
-    styleClass="p-datatable-sm"
-  >
+  <p-table [value]="dataSource()" [loading]="loading()" [sortField]="'winRate'" [sortOrder]="-1" styleClass="p-datatable-sm">
     <ng-template pTemplate="header">
       <tr>
         @for (col of columns(); track col) {
@@ -33,9 +27,7 @@
                 @if (rowData.partner) {
                   <div>
                     <div>{{ rowData.partner.fullName }}</div>
-                    @if (rowData.partnerClub?.name && rowData.partnerClub.name !== rowData.club?.name) {
-                      <div class="text-gray-500 text-xs">{{ rowData.partnerClub.name }}</div>
-                    }
+                    <div class="text-gray-500 text-xs">{{ rowData.partnerClub.name }}</div>
                   </div>
                 } @else {
                   <span class="text-gray-400">-</span>
