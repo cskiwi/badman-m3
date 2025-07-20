@@ -26,7 +26,10 @@
       "WebFetch(domain:primeng.org)",
       "Bash(nx build:*)",
       "Bash(nx show:*)",
-      "Bash(nx lint:*)"
+      "Bash(nx lint:*)",
+      "Bash(nx build:*)",
+      "Bash(nx run-many:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }
