@@ -7,7 +7,7 @@ import { ThemeService } from '@app/frontend-modules-theme';
 import { LanguageSelectionComponent } from '@app/frontend-modules-translation/selection';
 import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/model/enums';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
 import { ButtonModule } from 'primeng/button';
@@ -27,8 +27,9 @@ import type { MenuItem } from 'primeng/api';
 })
 export class ShellComponent implements OnInit {
   private readonly platformId = inject<string>(PLATFORM_ID);
-  private readonly messageService = inject(MessageService);
+  readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   isMobile = inject(IS_MOBILE);
   auth = inject(AuthService);
@@ -139,6 +140,12 @@ export class ShellComponent implements OnInit {
     this.router.navigate(['/admin']);
   }
 
+  refreshApp() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.location.reload();
+    }
+  }
+
   @HostListener('window:scroll', ['$event'])
   onWindowScroll() {
     if (isPlatformBrowser(this.platformId)) {
@@ -168,10 +175,14 @@ export class ShellComponent implements OnInit {
         .subscribe(() => {
           this.messageService.add({
             severity: 'info',
-            summary: 'Update Available',
-            detail: 'New version available. Click to refresh.',
+            summary: this.translate.instant('system.update.available'),
+            detail: this.translate.instant('system.update.description'),
             life: 0,
             closable: true,
+            sticky: true,
+            data: {
+              showRefreshButton: true,
+            },
           });
         });
     }
