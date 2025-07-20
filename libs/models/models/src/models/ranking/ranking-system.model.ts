@@ -15,7 +15,7 @@ import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-sys
 import { RankingPoint } from './ranking-point.model';
 import { RankingPlace } from './ranking-place.model';
 import { RankingLastPlace } from './ranking-last-place.model';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('RankingSystem', { description: 'A RankingSystem' })
 @Entity('RankingSystems', { schema: 'ranking' })
@@ -25,70 +25,87 @@ export class RankingSystem extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField()
+  @WhereField()
   @UpdateDateColumn()
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare name: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare amountOfLevels?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare procentWinning?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare procentWinningPlus1?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare procentLosing?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare minNumberOfGamesUsedForUpgrade?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare minNumberOfGamesUsedForDowngrade?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare maxDiffLevels?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare maxDiffLevelsHighest?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare latestXGamesToUse?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare maxLevelUpPerChange?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare maxLevelDownPerChange?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare gamesForInactivty?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare inactivityAmount?: number;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -96,22 +113,27 @@ export class RankingSystem extends BaseEntity {
   declare inactivityUnit: Period;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: ['freeze', 'decrease'] })
   declare inactiveBehavior: 'freeze' | 'decrease';
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare calculationLastUpdate?: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare calculationDayOfWeek?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare calculationIntervalAmount?: number;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -119,10 +141,12 @@ export class RankingSystem extends BaseEntity {
   declare calculationIntervalUnit?: Period;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare periodAmount?: number;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -130,18 +154,22 @@ export class RankingSystem extends BaseEntity {
   declare periodUnit?: Period;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare updateLastUpdate?: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare updateDayOfWeek?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare updateIntervalAmount?: number;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: Period,
@@ -149,42 +177,52 @@ export class RankingSystem extends BaseEntity {
   declare updateIntervalUnit?: Period;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare rankingSystem: string;
 
   @SortableField()
+  @WhereField()
   @Column({ default: false })
   declare primary: boolean;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ default: false })
   declare calculateUpdates: boolean;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ default: false })
   declare runCurrently: boolean;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForUpgradeSingle?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForUpgradeDouble?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForUpgradeMix?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForDowngradeSingle?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForDowngradeDouble?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare differenceForDowngradeMix?: number;
 
@@ -204,6 +242,7 @@ export class RankingSystem extends BaseEntity {
   declare levelArrayOneMinus?: number[];
 
   @SortableField(() => String)
+  @WhereField(() => String)
   @Column({
     type: 'simple-enum',
     enum: StartingType,

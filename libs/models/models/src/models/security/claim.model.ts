@@ -14,6 +14,7 @@ import {
 import { Player } from '../player.model';
 import { Role } from './role.model';
 import { SecurityType } from '@app/model/enums';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Claim', { description: 'A Claim' })
 @Entity({ name: 'Claims', schema: 'security' })
@@ -25,29 +26,35 @@ export class Claim extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @UpdateDateColumn({ nullable: true })
   updatedAt?: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @CreateDateColumn({ nullable: true })
   createdAt?: Date;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   @Index()
   name?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   @Index()
   description?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   category?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'enum', enum: SecurityType, nullable: true })
   type?: SecurityType;
 

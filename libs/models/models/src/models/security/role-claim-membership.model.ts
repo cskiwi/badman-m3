@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { Claim } from './claim.model';
 import { Role } from './role.model';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('RoleClaimMembership', { description: 'A RoleClaimMembership' })
 @Entity({ name: 'RoleClaimMemberships', schema: 'security' })
@@ -20,20 +21,24 @@ export class RoleClaimMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @UpdateDateColumn({ nullable: true })
   updatedAt?: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @CreateDateColumn({ nullable: true })
   createdAt?: Date;
 
-  @Field(() => ID, { nullable: true })
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })
   @Index()
   roleId?: string;
 
-  @Field(() => ID, { nullable: true })
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })
   @Index()
   claimId?: string;

@@ -1,4 +1,4 @@
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Entity, BaseEntity, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, Column, OneToMany } from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
@@ -11,58 +11,72 @@ export class TournamentEvent extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare tournamentNumber: string;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare name: string;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare firstDay: Date;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare lastSync: Date;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare openDate: Date;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare closeDate: Date;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare dates: string;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare visualCode: string;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare slug: string;
 
   @SortableField(() => Boolean, { nullable: true })
+  @WhereField(() => Boolean, { nullable: true })
   @Column()
   declare official: boolean;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare state: string;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare country: string;
 

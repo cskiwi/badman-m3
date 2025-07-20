@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('RankingGroup', { description: 'A RankingGroup' })
 @Entity('RankingGroups', { schema: 'ranking' })
@@ -19,14 +19,17 @@ export class RankingGroup extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare name: string;
 

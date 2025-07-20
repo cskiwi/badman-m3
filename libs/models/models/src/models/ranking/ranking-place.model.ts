@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('RankingPlace', { description: 'A RankingPlace' })
 @Entity('RankingPlaces', { schema: 'ranking' })
@@ -23,18 +23,22 @@ export class RankingPlace extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare rankingDate: Date;
 
   @SortableField()
+  @WhereField()
   @Column({
     type: 'simple-enum',
     enum: ['M', 'F'],
@@ -42,86 +46,107 @@ export class RankingPlace extends BaseEntity {
   declare gender: 'M' | 'F';
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare singlePoints?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare mixPoints?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare doublePoints?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare singlePointsDowngrade?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare mixPointsDowngrade?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare doublePointsDowngrade?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare singleRank?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare mixRank?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare doubleRank?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare totalSingleRanking?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare totalMixRanking?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare totalDoubleRanking?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare totalWithinSingleLevel?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare totalWithinMixLevel?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare totalWithinDoubleLevel?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare single?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare mix?: number;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare double?: number;
 
   @SortableField()
+  @WhereField()
   @Column({ default: false })
   declare singleInactive: boolean;
 
   @SortableField()
+  @WhereField()
   @Column({ default: false })
   declare mixInactive: boolean;
 
   @SortableField()
+  @WhereField()
   @Column({ default: false })
   declare doubleInactive: boolean;
 

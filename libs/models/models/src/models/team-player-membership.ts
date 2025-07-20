@@ -1,4 +1,4 @@
-import { SortableField, SortableObject } from '@app/utils';
+import { SortableField, SortableObject, WhereField } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.model';
@@ -12,15 +12,18 @@ export class TeamPlayerMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @Field()
+  @SortableField()
+  @WhereField()
   @Column({ type: 'uuid' })
   declare playerId?: string;
 
-  @Field()
+  @SortableField()
+  @WhereField()
   @Column({ type: 'uuid' })
   declare teamId?: string;
 
   @SortableField(() => String)
+  @WhereField(() => String)
   @Column({
     type: 'simple-enum',
     enum: TeamMembershipType,
@@ -29,10 +32,12 @@ export class TeamPlayerMembership extends BaseEntity {
   declare membershipType: TeamMembershipType;
 
   @SortableField()
+  @WhereField()
   @Column({ nullable: true })
   declare end?: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare start: Date;
 

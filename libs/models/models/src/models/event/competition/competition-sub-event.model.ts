@@ -11,7 +11,7 @@ import {
   UpdateDateColumn,
   Unique,
 } from 'typeorm';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { SubEventTypeEnum, LevelType } from '@app/model/enums';
 import { CompetitionDraw } from './competition-draw.model';
 import { CompetitionEvent } from './competition-event.model';
@@ -25,22 +25,27 @@ export class CompetitionSubEvent extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare name?: string;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: SubEventTypeEnum, nullable: true })
   declare eventType?: SubEventTypeEnum;
 
   @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
   @Column({ nullable: true })
   declare level?: number;
 
@@ -49,14 +54,17 @@ export class CompetitionSubEvent extends BaseEntity {
   // declare levelType?: LevelType;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare eventId?: string;
 
   @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
   @Column({ nullable: true })
   declare maxLevel?: number;
 
   @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
   @Column({ nullable: true })
   declare minBaseIndex?: number;
 

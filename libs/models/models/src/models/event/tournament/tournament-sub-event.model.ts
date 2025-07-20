@@ -1,6 +1,6 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament-draw.model';
 import { TournamentEvent } from './tournament-event.model';
 
@@ -14,30 +14,37 @@ export class TournamentSubEvent extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare name?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ type: 'enum', enum: ['M', 'F', 'MX', 'MINIBAD'], nullable: true })
   declare eventType?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ type: 'enum', enum: ['S', 'D', 'MX'], nullable: true })
   declare gameType?: string;
 
   @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
   @Column({ nullable: true })
   declare level?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare visualCode?: string;
 
@@ -51,6 +58,7 @@ export class TournamentSubEvent extends BaseEntity {
   declare tournamentEvent?: TournamentEvent;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare eventId?: string;
 

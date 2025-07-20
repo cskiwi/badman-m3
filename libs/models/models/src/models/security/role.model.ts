@@ -18,6 +18,7 @@ import { Team } from '../team.model';
 import { Claim, ClaimUpdateInput } from './claim.model';
 import { SecurityType } from '@app/model/enums';
 import { CompetitionEvent, TournamentEvent } from '../event';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Role', { description: 'A Role' })
 @Entity({ name: 'Roles', schema: 'security' })
@@ -26,25 +27,30 @@ export class Role extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @UpdateDateColumn({ nullable: true })
   updatedAt?: Date;
 
-  @Field(() => Date, { nullable: true })
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @CreateDateColumn({ nullable: true })
   createdAt?: Date;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   @Index()
   name?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   @Index()
   description?: string;
 
-  @Field(() => Boolean)
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
   @Column({ type: 'boolean', default: false })
   locked?: boolean;
 
@@ -82,11 +88,13 @@ export class Role extends BaseEntity {
   @ManyToOne(() => TournamentEvent, { nullable: true })
   tournament?: Relation<TournamentEvent>;
 
-  @Field(() => ID, { nullable: true })
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })
   linkId?: string;
 
-  @Field(() => String, { nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'enum', enum: SecurityType, nullable: true })
   linkType?: string;
 }

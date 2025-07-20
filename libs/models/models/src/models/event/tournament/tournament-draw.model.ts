@@ -1,4 +1,4 @@
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
@@ -12,22 +12,27 @@ export class TournamentDraw extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt?: Date;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   declare name?: string;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'enum', enum: ['KO', 'POULE', 'QUALIFICATION'], nullable: true })
   declare type?: string;
 
   @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
   @Column({ type: 'int', nullable: true })
   declare size?: number;
 
@@ -40,14 +45,17 @@ export class TournamentDraw extends BaseEntity {
   // eventEntries?: EventEntry[];
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'varchar', nullable: true })
   declare visualCode?: string;
 
   @SortableField(() => Int)
+  @WhereField(() => Int)
   @Column({ type: 'int', default: 0 })
   declare risers: number;
 
   @SortableField(() => Int)
+  @WhereField(() => Int)
   @Column({ type: 'int', default: 0 })
   declare fallers: number;
 
@@ -56,7 +64,8 @@ export class TournamentDraw extends BaseEntity {
   @JoinColumn({ name: 'subeventId' })
   declare tournamentSubEvent?: TournamentSubEvent;
 
-  @Field(() => ID, { nullable: true })
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })
   declare subeventId?: string;
 }

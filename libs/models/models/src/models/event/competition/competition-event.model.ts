@@ -1,5 +1,5 @@
 import { LevelType } from '@app/model/enums';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -20,34 +20,42 @@ export class CompetitionEvent extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare name: string;
 
   @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
   @Column()
   declare season: number;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare lastSync: Date;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare openDate: Date;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare closeDate: Date;
 
   @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare changeOpenDate: Date;
 

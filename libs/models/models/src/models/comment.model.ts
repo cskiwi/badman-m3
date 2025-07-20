@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Comment', { description: 'A Comment' })
 @Entity('Comments')
@@ -18,27 +18,33 @@ export class Comment extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField()
   @Column('text')
   @Index({ fulltext: true })
   declare message: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare playerId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare linkId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare linkType?: string;
 }

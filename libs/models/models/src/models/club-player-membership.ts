@@ -9,7 +9,7 @@ import {
 import { ClubMembershipType } from '@app/model/enums';
 import { Club } from './club.model';
 import { Player } from './player.model';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('ClubPlayerMembership')
 @Entity('ClubPlayerMemberships')
@@ -19,37 +19,43 @@ export class ClubPlayerMembership extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @Column({ type: 'uuid' })
   declare playerId?: string;
 
   @SortableField()
+  @WhereField()
   @Column({ type: 'uuid' })
   declare clubId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column()
   declare end: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare start: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare confirmed: boolean;
 
   @SortableField(() => String)
+  @WhereField(() => String)
   @Column({
     type: 'simple-enum',
     enum: ClubMembershipType,
   })
   declare membershipType?: ClubMembershipType;
 
-  @SortableField({ nullable: true })
+  @Field(() => Player, { nullable: true })
   @ManyToOne(() => Player, (player) => player.clubPlayerMemberships)
   declare player: Player;
 
-  @SortableField({ nullable: true })
+  @Field(() => Club, { nullable: true })
   @ManyToOne(() => Club, (club) => club.clubPlayerMemberships)
   declare club: Club;
 

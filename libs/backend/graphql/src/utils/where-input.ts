@@ -4,7 +4,7 @@ import { Field, InputType } from '@nestjs/graphql';
 import 'reflect-metadata';
 
 // Define where operators
-@InputType('StringWhereOperators')
+@InputType('String')
 export class StringWhereOperators {
   @Field(() => String, { nullable: true })
   eq?: string;
@@ -31,7 +31,7 @@ export class StringWhereOperators {
   raw?: string;
 }
 
-@InputType('NumberWhereOperators')
+@InputType('Number')
 export class NumberWhereOperators {
   @Field(() => Number, { nullable: true })
   eq?: number;
@@ -67,7 +67,7 @@ export class NumberWhereOperators {
   raw?: string;
 }
 
-@InputType('BooleanWhereOperators')
+@InputType('Boolean')
 export class BooleanWhereOperators {
   @Field(() => Boolean, { nullable: true })
   eq?: boolean;
@@ -82,7 +82,7 @@ export class BooleanWhereOperators {
   raw?: string;
 }
 
-@InputType('DateWhereOperators')
+@InputType('Date')
 export class DateWhereOperators {
   @Field(() => Date, { nullable: true })
   eq?: Date;
@@ -140,7 +140,7 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
     const fieldType = Reflect.getMetadata('design:type', classRef.prototype, key);
     
     let operatorType: Type;
-    let directType: any;
+    let directType: Type;
     
     // Determine the appropriate operator type and direct type based on the field type
     if (fieldType === String) {
