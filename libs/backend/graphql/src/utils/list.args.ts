@@ -53,7 +53,7 @@ export function args<T>(name?: string) {
     }
 
     static getQuery<T>(args?: GraphQLWhereInput<T> | GraphQLWhereInput<T>[]): FindOptionsWhere<T>[] {
-      if (!args || args.length === 0) {
+      if (!args || (Array.isArray(args) && args.length === 0)) {
         return [];
       }
 

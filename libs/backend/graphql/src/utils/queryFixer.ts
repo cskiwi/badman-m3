@@ -1,8 +1,8 @@
 import { Between, FindOptionsWhere, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Raw } from 'typeorm';
 
 export interface GraphQLWhereInput<T> {
-  $or?: GraphQLWhereInput<T>[];
-  $and?: GraphQLWhereInput<T>[];
+  OR?: GraphQLWhereInput<T>[];
+  AND?: GraphQLWhereInput<T>[];
   [field: string]: any;
 }
 
@@ -20,19 +20,19 @@ export class GraphQLWhereConverter {
       return flattened.length === 1 ? flattened[0] : flattened;
     }
 
-    // Handle $or - returns array of conditions
-    if (where.$or && Array.isArray(where.$or)) {
-      const result = where.$or.map((condition) => {
+    // Handle OR logical operator
+    if (where.OR && Array.isArray(where.OR)) {
+      const result = where.OR.map((condition) => {
         const converted = this.convert<T>(condition);
         return Array.isArray(converted) ? converted[0] : converted;
       }) as FindOptionsWhere<T>[];
       return result;
     }
 
-    // Handle $and - merge all conditions into single object
-    if (where.$and && Array.isArray(where.$and)) {
+    // Handle AND logical operator
+    if (where.AND && Array.isArray(where.AND)) {
       const merged: Record<string, any> = {};
-      where.$and.forEach((condition) => {
+      where.AND.forEach((condition) => {
         const result = this.convert<T>(condition);
         const resultObj = Array.isArray(result) ? result[0] : result;
         Object.assign(merged, resultObj);
@@ -45,7 +45,7 @@ export class GraphQLWhereConverter {
 
     Object.entries(where).forEach(([field, value]) => {
       // Skip logical operators
-      if (field === '$or' || field === '$and') {
+      if (field === 'OR' || field === 'AND') {
         return;
       }
 
@@ -61,14 +61,16 @@ export class GraphQLWhereConverter {
       return value;
     }
 
-    // Check if it's an operator object
+    // Check if it's an operator object (contains typed operators)
     const keys = Object.keys(value);
-    if (keys.length === 1 && keys[0].startsWith('$')) {
+    const typedOperators = ['eq', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'between', 'isNull', 'raw'];
+    
+    if (keys.length === 1 && typedOperators.includes(keys[0])) {
       return this.convertOperator(keys[0], value[keys[0]]);
     }
 
-    // Multiple operators on same field - shouldn't happen in normal cases
-    if (keys.every((key) => key.startsWith('$'))) {
+    // Multiple operators on same field
+    if (keys.every((key) => typedOperators.includes(key))) {
       // For now, just take the first operator
       const firstKey = keys[0];
       return this.convertOperator(firstKey, value[firstKey]);
@@ -80,43 +82,43 @@ export class GraphQLWhereConverter {
 
   private static convertOperator(operator: string, operatorValue: any): any {
     switch (operator) {
-      case '$eq':
+      case 'eq':
         return operatorValue;
 
-      case '$ne':
+      case 'ne':
         return Not(operatorValue);
 
-      case '$in':
+      case 'in':
         return In(operatorValue);
 
-      case '$nin':
+      case 'nin':
         return Not(In(operatorValue));
 
-      case '$gt':
+      case 'gt':
         return MoreThan(operatorValue);
 
-      case '$gte':
+      case 'gte':
         return MoreThanOrEqual(operatorValue);
 
-      case '$lt':
+      case 'lt':
         return LessThan(operatorValue);
 
-      case '$lte':
+      case 'lte':
         return LessThanOrEqual(operatorValue);
 
-      case '$like':
+      case 'like':
         return Like(operatorValue);
 
-      case '$ilike':
+      case 'ilike':
         return ILike(operatorValue);
 
-      case '$between':
+      case 'between':
         return Between(operatorValue[0], operatorValue[1]);
 
-      case '$null':
+      case 'isNull':
         return operatorValue ? IsNull() : Not(IsNull());
 
-      case '$raw':
+      case 'raw':
         return Raw(operatorValue);
 
       default:

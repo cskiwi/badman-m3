@@ -29,7 +29,8 @@
       "Bash(nx lint:*)",
       "Bash(nx build:*)",
       "Bash(nx run-many:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

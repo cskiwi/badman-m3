@@ -8,115 +8,115 @@ import 'reflect-metadata';
 @InputType('StringWhereOperators')
 export class StringWhereOperators {
   @Field(() => String, { nullable: true })
-  $eq?: string;
+  eq?: string;
 
   @Field(() => String, { nullable: true })
-  $ne?: string;
+  ne?: string;
 
   @Field(() => [String], { nullable: true })
-  $in?: string[];
+  in?: string[];
 
   @Field(() => [String], { nullable: true })
-  $nin?: string[];
+  nin?: string[];
 
   @Field(() => String, { nullable: true })
-  $like?: string;
+  like?: string;
 
   @Field(() => String, { nullable: true })
-  $ilike?: string;
+  ilike?: string;
 
   @Field(() => Boolean, { nullable: true })
-  $null?: boolean;
+  isNull?: boolean;
 
   @Field(() => String, { nullable: true })
-  $raw?: string;
+  raw?: string;
 }
 
 @InputType('NumberWhereOperators')
 export class NumberWhereOperators {
   @Field(() => Number, { nullable: true })
-  $eq?: number;
+  eq?: number;
 
   @Field(() => Number, { nullable: true })
-  $ne?: number;
+  ne?: number;
 
   @Field(() => [Number], { nullable: true })
-  $in?: number[];
+  in?: number[];
 
   @Field(() => [Number], { nullable: true })
-  $nin?: number[];
+  nin?: number[];
 
   @Field(() => Number, { nullable: true })
-  $gt?: number;
+  gt?: number;
 
   @Field(() => Number, { nullable: true })
-  $gte?: number;
+  gte?: number;
 
   @Field(() => Number, { nullable: true })
-  $lt?: number;
+  lt?: number;
 
   @Field(() => Number, { nullable: true })
-  $lte?: number;
+  lte?: number;
 
   @Field(() => [Number], { nullable: true })
-  $between?: [number, number];
+  between?: [number, number];
 
   @Field(() => Boolean, { nullable: true })
-  $null?: boolean;
+  isNull?: boolean;
 
   @Field(() => String, { nullable: true })
-  $raw?: string;
+  raw?: string;
 }
 
 @InputType('BooleanWhereOperators')
 export class BooleanWhereOperators {
   @Field(() => Boolean, { nullable: true })
-  $eq?: boolean;
+  eq?: boolean;
 
   @Field(() => Boolean, { nullable: true })
-  $ne?: boolean;
+  ne?: boolean;
 
   @Field(() => Boolean, { nullable: true })
-  $null?: boolean;
+  isNull?: boolean;
 
   @Field(() => String, { nullable: true })
-  $raw?: string;
+  raw?: string;
 }
 
 @InputType('DateWhereOperators')
 export class DateWhereOperators {
   @Field(() => Date, { nullable: true })
-  $eq?: Date;
+  eq?: Date;
 
   @Field(() => Date, { nullable: true })
-  $ne?: Date;
+  ne?: Date;
 
   @Field(() => [Date], { nullable: true })
-  $in?: Date[];
+  in?: Date[];
 
   @Field(() => [Date], { nullable: true })
-  $nin?: Date[];
+  nin?: Date[];
 
   @Field(() => Date, { nullable: true })
-  $gt?: Date;
+  gt?: Date;
 
   @Field(() => Date, { nullable: true })
-  $gte?: Date;
+  gte?: Date;
 
   @Field(() => Date, { nullable: true })
-  $lt?: Date;
+  lt?: Date;
 
   @Field(() => Date, { nullable: true })
-  $lte?: Date;
+  lte?: Date;
 
   @Field(() => [Date], { nullable: true })
-  $between?: [Date, Date];
+  between?: [Date, Date];
 
   @Field(() => Boolean, { nullable: true })
-  $null?: boolean;
+  isNull?: boolean;
 
   @Field(() => String, { nullable: true })
-  $raw?: string;
+  raw?: string;
 }
 
 const whereCache = new Map<string, Type>();
@@ -128,10 +128,10 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
   @InputType(className)
   class WhereInput {
     @Field(() => [WhereInput], { nullable: true })
-    $or?: WhereInput[];
+    OR?: WhereInput[];
 
     @Field(() => [WhereInput], { nullable: true })
-    $and?: WhereInput[];
+    AND?: WhereInput[];
   }
 
   const fields = getWhereFields(classRef);
@@ -141,22 +141,28 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
     const fieldType = Reflect.getMetadata('design:type', classRef.prototype, key);
     
     let operatorType: Type;
+    let directType: any;
     
-    // Determine the appropriate operator type based on the field type
+    // Determine the appropriate operator type and direct type based on the field type
     if (fieldType === String) {
       operatorType = StringWhereOperators;
+      directType = String;
     } else if (fieldType === Number) {
       operatorType = NumberWhereOperators;
+      directType = Number;
     } else if (fieldType === Boolean) {
       operatorType = BooleanWhereOperators;
+      directType = Boolean;
     } else if (fieldType === Date) {
       operatorType = DateWhereOperators;
+      directType = Date;
     } else {
       // For unknown types, default to string operators
       operatorType = StringWhereOperators;
+      directType = String;
     }
 
-    // Dynamically add a decorated field to the WhereInput class
+    // Add field that accepts operators (e.g., firstName: { eq: "John", like: "%John%" })
     Object.defineProperty(WhereInput.prototype, key, {
       value: undefined,
       writable: true,
