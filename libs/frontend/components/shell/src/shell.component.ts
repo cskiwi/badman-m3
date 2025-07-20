@@ -4,11 +4,13 @@ import { Router, RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { ThemeService } from '@app/frontend-modules-theme';
-import { LanguageSelectionComponent } from '@app/frontend-modules-translation/selection';
+import { setLanguage } from '@app/frontend-modules-translation';
+import { AvaliableLanguages, languages } from '@app/frontend-modules-translation/languages';
 import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/model/enums';
 import { ClubPlayerMembership } from '@app/models';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import type { MenuItem } from 'primeng/api';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -28,8 +30,7 @@ import { SearchComponent } from './components';
     DividerModule,
     ToastModule,
     ToolbarModule,
-    SearchComponent,
-    LanguageSelectionComponent,
+    SearchComponent
   ],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
@@ -41,6 +42,7 @@ export class ShellComponent {
   readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly cookieService = inject(SsrCookieService);
 
   isMobile = inject(IS_MOBILE);
   auth = inject(AuthService);
@@ -49,6 +51,7 @@ export class ShellComponent {
   user = this.auth.user;
   sidebarVisible = false;
   isScrolled = signal(false);
+  currentLanguage = signal(this.translate.currentLang);
 
   // Theme computed properties
   isDarkMode = computed(() => this.themeService.currentTheme() === 'dark');
@@ -61,10 +64,14 @@ export class ShellComponent {
   });
 
   userMenuItems = computed<MenuItem[]>(() => {
+    const currentLang = this.currentLanguage();
+    const isDark = this.isDarkMode();
+    
     const baseItems: MenuItem[] = [
       {
         label: this.user()?.firstName || 'User',
         disabled: true,
+        icon: 'pi pi-user',
       },
       {
         separator: true,
@@ -76,18 +83,44 @@ export class ShellComponent {
       baseItems.push({
         label: 'Admin Panel',
         icon: 'pi pi-shield',
-        command: () => this.navigateToAdmin(),
+        command: (event) => {
+          this.navigateToAdmin();
+        },
       });
       baseItems.push({
         separator: true,
       });
     }
 
+    // Add language selection for both desktop and mobile - as individual items
+    baseItems.push({
+      label: this.translate.instant('all.settings.languages.title') || 'Language',
+      icon: 'pi pi-globe',
+      disabled: true,
+    });
+
+    Object.values(AvaliableLanguages).forEach(lang => {
+      baseItems.push({
+        label: this.translate.instant('all.settings.languages.' + lang),
+        icon: currentLang === lang ? 'pi pi-check' : 'pi pi-circle',
+        command: (event) => {
+          this.setLanguage(lang);
+        },
+        styleClass: 'ml-4' // Indent language options
+      });
+    });
+
+    baseItems.push({
+      separator: true,
+    });
+
     baseItems.push(
       {
-        label: `${this.isDarkMode() ? 'Light' : 'Dark'} Mode`,
-        icon: this.themeToggleIcon(),
-        command: () => this.toggleTheme(),
+        label: `${isDark ? 'Light' : 'Dark'} Mode`,
+        icon: isDark ? 'pi pi-sun' : 'pi pi-moon',
+        command: (event) => {
+          this.toggleTheme();
+        },
       },
       {
         separator: true,
@@ -95,7 +128,9 @@ export class ShellComponent {
       {
         label: 'Logout',
         icon: 'pi pi-sign-out',
-        command: () => this.logout(),
+        command: (event) => {
+          this.logout();
+        },
       },
     );
 
@@ -141,6 +176,17 @@ export class ShellComponent {
 
   toggleTheme() {
     this.themeService.toggleTheme();
+  }
+
+  async setLanguage(lang: AvaliableLanguages) {
+    const values = languages.get(lang);
+    if (!values) {
+      return;
+    }
+
+    await setLanguage(values.translate, this.translate, this.cookieService);
+    this.currentLanguage.set(lang);
+    localStorage.setItem('translation.language', lang);
   }
 
   get isDesktop() {

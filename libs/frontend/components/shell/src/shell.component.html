@@ -2,12 +2,12 @@
   <!-- Pinned Toolbar -->
   <div class="fixed top-0 left-0 right-0 !p-0 z-50 w-full pinned-toolbar" [class.scrolled]="isScrolled()">
     <div class="max-w-screen-2xl mx-auto px-6">
-      <p-toolbar class="modern-toolbar" [class.toolbar-scrolled]="isScrolled()">
-        <ng-template #start>
-          <div class="flex items-center space-x-4">
-            <h1 class="text-xl font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
-
-            @if (isDesktop) {
+      @if (isDesktop) {
+        <!-- Desktop Layout -->
+        <p-toolbar class="modern-toolbar" [class.toolbar-scrolled]="isScrolled()">
+          <ng-template #start>
+            <div class="flex items-center space-x-4">
+              <h1 class="text-xl font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
               <!-- Desktop Navigation Links -->
               <nav class="flex items-center space-x-2">
                 @if (user()?.slug) {
@@ -17,37 +17,55 @@
                   }
                 }
               </nav>
-            } @else {
-              <!-- Mobile Menu Button -->
-              <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
-            }
-          </div>
-        </ng-template>
+            </div>
+          </ng-template>
 
-        <ng-template #center>
-          <app-search />
-        </ng-template>
+          <ng-template #center>
+            <app-search />
+          </ng-template>
 
-        <ng-template #end>
-          <div class="flex items-center space-x-2">
-            <app-language-selection />
-            @if (user()?.firstName) {
-              <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
-              @if (isDesktop) {
+          <ng-template #end>
+            <div class="flex items-center space-x-2">
+              @if (user()?.firstName) {
+                <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
                 <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
               } @else {
-                <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+                <p-button label="Log in" [outlined]="true" (click)="login()" />
               }
-            } @else {
-              <p-button label="Log in" [outlined]="true" (click)="login()" />
-            }
+            </div>
+          </ng-template>
+        </p-toolbar>
+      } @else {
+        <!-- Mobile Layout -->
+        <div class="mobile-header-layout py-3">
+          <!-- Top Row: Brand + Menu + Profile -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-3">
+              <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
+              <h1 class="text-lg font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
+            </div>
+            <div class="flex items-center space-x-2">
+              @if (user()?.firstName) {
+                <span class="text-sm font-medium text-color">{{ user()?.firstName }}</span>
+                <p-menu #mobileMenu [model]="userMenuItems()" [popup]="true" appendTo="body" />
+                <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" size="small" (click)="mobileMenu.toggle($event)" aria-label="User menu" />
+              } @else {
+                <p-button label="Log in" [outlined]="true" size="small" (click)="login()" />
+              }
+            </div>
           </div>
-        </ng-template>
-      </p-toolbar>
+          <!-- Bottom Row: Search Only -->
+          <div class="flex items-center">
+            <div class="flex-1">
+              <app-search />
+            </div>
+          </div>
+        </div>
+      }
     </div>
   </div>
 
-  <div class="pt-20">
+  <div [class]="isDesktop ? 'pt-20' : 'pt-32'">
     <!-- Mobile Sidebar Overlay -->
     @if (sidebarVisible && !isDesktop) {
       <div class="fixed inset-0 z-40 mobile-overlay" (click)="sidebarVisible = false"></div>

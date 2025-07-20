@@ -1,4 +1,4 @@
-<div class="min-w-128">
+<div class="w-full max-w-md mx-auto">
   <p-autoComplete
     [(ngModel)]="searchValue"
     [suggestions]="results()"
@@ -9,6 +9,7 @@
     [dropdown]="false"
     [multiple]="false"
     [minLength]="2"
+    styleClass="w-full"
   >
     <ng-template let-item #item>
       <div class="flex items-center gap-3">
