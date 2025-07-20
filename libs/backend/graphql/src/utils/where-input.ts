@@ -1,10 +1,9 @@
 import { getWhereFields, getWhereObjects } from '@app/utils';
 import { Logger, Type } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
-import { GraphQLJSONObject } from 'graphql-type-json';
 import 'reflect-metadata';
 
-// Define where operators (without equals field)
+// Define where operators
 @InputType('StringWhereOperators')
 export class StringWhereOperators {
   @Field(() => String, { nullable: true })
@@ -162,14 +161,13 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
       directType = String;
     }
 
-    // Add unified field that supports both direct values and operators using JSONObject
-    // e.g., firstName: "John" OR firstName: { eq: "John", like: "%John%" }
+    // Add operator field access (e.g., firstName: { eq: "John", like: "%John%" })
     Object.defineProperty(WhereInput.prototype, key, {
       value: undefined,
       writable: true,
       enumerable: true,
     });
-    Field(() => GraphQLJSONObject, { nullable: true })(WhereInput.prototype, key);
+    Field(() => operatorType, { nullable: true })(WhereInput.prototype, key);
   }
 
   whereCache.set(name, WhereInput);

@@ -56,29 +56,27 @@ export class GraphQLWhereConverter {
   }
 
   private static convertValue(value: any): any {
-    // Simple value (string, number, boolean, null) - treat as implicit eq
+    // Simple value (string, number, boolean, null)
     if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-      return value; // Direct scalar value, TypeORM treats this as equality
+      return value;
     }
 
     // Check if it's an operator object (contains typed operators)
     const keys = Object.keys(value);
     const typedOperators = ['eq', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'between', 'isNull', 'raw'];
     
-    // If all keys are operators, process them
+    if (keys.length === 1 && typedOperators.includes(keys[0])) {
+      return this.convertOperator(keys[0], value[keys[0]]);
+    }
+
+    // Multiple operators on same field
     if (keys.every((key) => typedOperators.includes(key))) {
-      // Single operator
-      if (keys.length === 1) {
-        return this.convertOperator(keys[0], value[keys[0]]);
-      }
-      
-      // Multiple operators - this shouldn't normally happen but handle it
       // For now, just take the first operator
       const firstKey = keys[0];
       return this.convertOperator(firstKey, value[firstKey]);
     }
 
-    // Mixed object or unknown structure, return as-is
+    // Not an operator object, return as-is
     return value;
   }
 
