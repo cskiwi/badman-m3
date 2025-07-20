@@ -96,18 +96,23 @@
                 <div class="text-right space-y-1">
                   @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                     @if (membership?.team === 1) {
-                      <a
-                        [routerLink]="['/player', membership?.gamePlayer?.id]"
-                        class="text-base {{
-                          isCurrentPlayer(membership?.gamePlayer?.id || '') ? 'font-bold text-primary-600' : 'font-medium text-color'
-                        }} truncate hover:underline focus:outline-none"
-                        tabindex="0"
-                      >
-                        {{ membership?.gamePlayer?.fullName }}
-                        @if (isCurrentPlayer(membership?.gamePlayer?.id || '')) {
+                      @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
+                        <div
+                          [routerLink]="['/player', membership?.gamePlayer?.id]"
+                          class="text-base font-medium text-color cursor-pointer truncate hover:underline focus:outline-none"
+                          tabindex="0"
+                        >
+                          {{ membership?.gamePlayer?.fullName }}
+                        </div>
+                      } @else {
+                        <div
+                          class="text-base font-bold text-primary-600 truncate  focus:outline-none"
+                          tabindex="0"
+                        >
+                          {{ membership?.gamePlayer?.fullName }}
                           <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
-                        }
-                      </a>
+                        </div>
+                      }
                     }
                   }
                 </div>
@@ -147,18 +152,23 @@
                 <div class="text-left space-y-1">
                   @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                     @if (membership?.team === 2) {
-                      <a
-                        [routerLink]="['/player', membership?.gamePlayer?.id]"
-                        class="text-base {{
-                          isCurrentPlayer(membership?.gamePlayer?.id || '') ? 'font-bold text-primary-600' : 'font-medium text-color'
-                        }} truncate hover:underline focus:outline-none"
-                        tabindex="0"
-                      >
-                        {{ membership?.gamePlayer?.fullName }}
-                        @if (isCurrentPlayer(membership?.gamePlayer?.id || '')) {
+                      @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
+                        <div
+                          [routerLink]="['/player', membership?.gamePlayer?.id]"
+                          class="text-base font-medium text-color cursor-pointer truncate hover:underline focus:outline-none"
+                          tabindex="0"
+                        >
+                          {{ membership?.gamePlayer?.fullName }}
+                        </div>
+                      } @else {
+                        <div
+                          class="text-base font-bold text-primary-600 truncate  focus:outline-none"
+                          tabindex="0"
+                        >
+                          {{ membership?.gamePlayer?.fullName }}
                           <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
-                        }
-                      </a>
+                        </div>
+                      }
                     }
                   }
                 </div>

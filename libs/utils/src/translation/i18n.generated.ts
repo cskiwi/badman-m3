@@ -82,6 +82,12 @@ export type I18nTranslations = {
                 "points-won": string;
             };
         };
+        "ranking": {
+            "breakdown": {
+                "downgrade": string;
+                "upgrade": string;
+            };
+        };
         "settings": {
             "general": {
                 "title": string;

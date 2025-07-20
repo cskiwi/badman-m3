@@ -1,13 +1,13 @@
+import { AsyncPipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, PLATFORM_ID } from '@angular/core';
-import { AsyncPipe, DecimalPipe, isPlatformBrowser, JsonPipe } from '@angular/common';
 
-import { TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TableModule } from 'primeng/table';
 import { HeadToHeadGrid } from './sort.type';
 
 @Component({
   selector: 'app-head-to-head-grid',
-  imports: [TableModule, TranslateModule, AsyncPipe, DecimalPipe, JsonPipe],
+  imports: [TableModule, TranslateModule, AsyncPipe, DecimalPipe],
   templateUrl: './head-to-head-grid.component.html',
   styleUrl: './head-to-head-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +30,7 @@ export class HeadToHeadGridComponent {
         header: this.translate.stream('all.head-to-head.name'),
         field: 'player.fullName',
         sortable: true,
-      }
+      },
     ];
 
     // Add head-to-head column for opponent mode
@@ -44,9 +44,10 @@ export class HeadToHeadGridComponent {
 
     baseColumns.push(
       {
-        header: this.viewMode() === 'partners' 
-          ? this.translate.stream('all.head-to-head.win-rate')
-          : this.translate.stream('all.head-to-head.win-rate-against'),
+        header:
+          this.viewMode() === 'partners'
+            ? this.translate.stream('all.head-to-head.win-rate')
+            : this.translate.stream('all.head-to-head.win-rate-against'),
         field: 'winRate',
         sortable: true,
       },
@@ -54,7 +55,7 @@ export class HeadToHeadGridComponent {
         header: this.translate.stream('all.head-to-head.amount-of-games'),
         field: 'amountOfGames',
         sortable: true,
-      }
+      },
     );
 
     return baseColumns;

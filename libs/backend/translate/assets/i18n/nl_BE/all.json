@@ -75,6 +75,12 @@
       "points-won": "Punten gewonnen tegen dit niveau"
     }
   },
+  "ranking": {
+    "breakdown": {
+      "downgrade": "Degradatie",
+      "upgrade": "Promotie"
+    }
+  },
   "settings": {
     "general": {
       "title": "General"

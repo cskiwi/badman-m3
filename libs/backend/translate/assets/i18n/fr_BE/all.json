@@ -75,6 +75,12 @@
       "points-won": "Points en cas de victoire contre ce classement"
     }
   },
+  "ranking": {
+    "breakdown": {
+      "downgrade": "Dégradation",
+      "upgrade": "Promotion"
+    }
+  },
   "settings": {
     "general": {
       "title": "General"

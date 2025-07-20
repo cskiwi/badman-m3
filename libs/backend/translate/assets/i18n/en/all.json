@@ -75,6 +75,12 @@
       "points-won": "Points won against this level"
     }
   },
+  "ranking": {
+    "breakdown": {
+      "downgrade": "Degradation",
+      "upgrade": "Promotion"
+    }
+  },
   "settings": {
     "general": {
       "title": "General"
