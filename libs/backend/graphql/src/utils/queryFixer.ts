@@ -42,14 +42,39 @@ export class GraphQLWhereConverter {
 
     // Handle regular field conditions
     const result: Record<string, any> = {};
+    const operatorFields = new Map<string, any>();
 
+    // First pass: collect direct fields and operator fields
     Object.entries(where).forEach(([field, value]) => {
       // Skip logical operators
       if (field === 'OR' || field === 'AND') {
         return;
       }
 
-      result[field] = this.convertValue(value);
+      // Handle operator fields (e.g., firstNameOperators)
+      if (field.endsWith('Operators')) {
+        const baseField = field.replace('Operators', '');
+        operatorFields.set(baseField, value);
+        return;
+      }
+
+      // Handle direct field access (e.g., firstName: "John") - treat as eq operation
+      if (value !== undefined && value !== null) {
+        result[field] = value; // Direct value, no conversion needed
+      }
+    });
+
+    // Second pass: merge operator fields with direct fields
+    operatorFields.forEach((operatorValue, baseField) => {
+      if (operatorValue && typeof operatorValue === 'object') {
+        // If we already have a direct value for this field, prioritize the direct value
+        if (result[baseField] === undefined) {
+          // No direct value, use operators
+          result[baseField] = this.convertValue(operatorValue);
+        }
+        // If there's both a direct value and operators, the direct value takes precedence
+        // This is a design choice - you could also merge them or throw an error
+      }
     });
 
     return result as FindOptionsWhere<T>;

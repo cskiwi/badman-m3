@@ -1,7 +1,6 @@
 import { getWhereFields, getWhereObjects } from '@app/utils';
 import { Logger, Type } from '@nestjs/common';
-import { Field, InputType, registerEnumType } from '@nestjs/graphql';
-import { GraphQLString, GraphQLInt, GraphQLFloat, GraphQLBoolean } from 'graphql';
+import { Field, InputType } from '@nestjs/graphql';
 import 'reflect-metadata';
 
 // Define where operators
@@ -162,14 +161,22 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
       directType = String;
     }
 
-    // Add field that accepts operators (e.g., firstName: { eq: "John", like: "%John%" })
+    // Add direct field access (e.g., firstName: "John")
     Object.defineProperty(WhereInput.prototype, key, {
       value: undefined,
       writable: true,
       enumerable: true,
     });
+    Field(() => directType, { nullable: true })(WhereInput.prototype, key);
 
-    Field(() => operatorType, { nullable: true })(WhereInput.prototype, key);
+    // Add operator field access (e.g., firstNameOperators: { eq: "John", like: "%John%" })
+    const operatorKey = `${key}Operators`;
+    Object.defineProperty(WhereInput.prototype, operatorKey, {
+      value: undefined,
+      writable: true,
+      enumerable: true,
+    });
+    Field(() => operatorType, { nullable: true })(WhereInput.prototype, operatorKey);
   }
 
   whereCache.set(name, WhereInput);

@@ -30,7 +30,8 @@
       "Bash(nx build:*)",
       "Bash(nx run-many:*)",
       "Bash(git add:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
