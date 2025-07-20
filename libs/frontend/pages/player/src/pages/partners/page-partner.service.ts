@@ -263,7 +263,6 @@ export class DetailService {
 
         // Use the first opponent as the representative (could be either player)
         const representativeOpponent = opponentMemberships[0];
-        const playerId = representativeOpponent.gamePlayer.id;
 
         // Find active club of the representative
         let club: { id: string; name: string } | undefined = undefined;

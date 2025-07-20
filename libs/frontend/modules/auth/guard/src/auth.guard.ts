@@ -3,7 +3,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { AUTH_KEY, AuthService } from '@app/frontend-modules-auth/service';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
-import { map, of } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root',
@@ -15,32 +15,28 @@ export class AuthGuard {
   private readonly platform = inject(PLATFORM_ID);
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    // on the server we need to check if we have a token and fetch the user
+    // On the server, AuthService already fetches user if AUTH_KEY is present
     if (isPlatformServer(this.platform)) {
-      if (this.cookie.check(AUTH_KEY)) {
-        return this.auth.fetchUser().pipe(
-          map((user) => {
-            if (!user?.id) {
-              this.router.navigate(['/']);
-              return false;
-            }
-            return true;
-          }),
-        );
+      if (!this.cookie.check(AUTH_KEY)) {
+        return false;
       }
-      return of(false);
+      // User will be fetched by AuthService constructor; check signal
+      if (!this.auth.user()?.id) {
+        this.router.navigate(['/']);
+        return false;
+      }
+      return true;
     }
 
-    // on the client we can just check the state
-    if (!this.auth?.state.loggedIn()) {
-      this.auth.state.login({
+    // On the client, use signals for state
+    if (!this.auth.loggedIn()) {
+      this.auth.login({
         appState: { target: state.url },
       });
-
       return false;
     }
 
-    if (!this.auth?.state.user()?.id) {
+    if (!this.auth.user()?.id) {
       this.router.navigate(['/']);
       return false;
     }

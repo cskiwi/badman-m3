@@ -18,7 +18,9 @@
     "@angular/router": "20.1.0",
     "@angular/service-worker": "20.1.0",
     "@app/frontend-modules-theme": "0.0.1",
-    "@ngx-translate/core": "^16.0.4"
+    "@ngx-translate/core": "^16.0.4",
+    "@app/frontend-modules-translation": "0.0.1",
+    "ngx-cookie-service-ssr": "^20.0.1"
   },
   "sideEffects": false
 }

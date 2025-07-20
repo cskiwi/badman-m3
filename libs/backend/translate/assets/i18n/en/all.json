@@ -17,7 +17,7 @@
       "game-type": "Game Type",
       "opponent-filters": "Opponent Filters",
       "partner-filters": "Partner Filters",
-      "time-performance": "Period and Lower limit",
+      "time-performance": "Period and minimum matches",
       "view-mode": "Analysis"
     },
     "filters": {

@@ -17,7 +17,7 @@
       "game-type": "Speltype",
       "opponent-filters": "Tegenstander filters",
       "partner-filters": "Partner filters",
-      "time-performance": "Periode en Ondergrens",
+      "time-performance": "Periode en minimum wedstrijden",
       "view-mode": "Analyse"
     },
     "filters": {
