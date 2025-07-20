@@ -15,9 +15,9 @@ import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
 import { SortableField } from '@app/utils';
 
-@ObjectType('RankingPoint', { description: 'A RankingPoint' })
-@Entity('RankingPoints', { schema: 'ranking' })
-export class RankingPoint extends BaseEntity {
+@ObjectType('RankingPlace', { description: 'A RankingPlace' })
+@Entity('RankingPlaces', { schema: 'ranking' })
+export class RankingPlace extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
@@ -133,13 +133,13 @@ export class RankingPoint extends BaseEntity {
   @Column()
   declare systemId: string;
 
-  // @SortableField()
-  @OneToMany(() => Player, (player) => player.rankingLastPlaces)
+  @Field(() => Player, { nullable: true })
+  @ManyToOne(() => Player, (player) => player.rankingPlaces)
   @JoinColumn({ name: 'playerId' })
   declare player: Relation<Player>;
 
-  // @SortableField()
-  @ManyToOne(() => RankingSystem)
-  @JoinColumn()
+  @Field(() => RankingSystem, { nullable: true })
+  @ManyToOne(() => RankingSystem, (system) => system.rankingPlaces)
+  @JoinColumn({ name: 'systemId' })
   declare system: Relation<RankingSystem>;
 }

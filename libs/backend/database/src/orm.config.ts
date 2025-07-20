@@ -30,6 +30,8 @@ import {
   TournamentSubEvent,
   Team,
   TeamPlayerMembership,
+  RankingPoint,
+  RankingPlace,
 } from '@app/models';
 import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -39,6 +41,9 @@ const entities = [
   RankingSystem,
   RankingGroup,
   RankingSystemRankingGroupMembership,
+  RankingLastPlace,
+  RankingPoint,
+  RankingPlace,
   RankingLastPlace,
   Club,
   ClubPlayerMembership,

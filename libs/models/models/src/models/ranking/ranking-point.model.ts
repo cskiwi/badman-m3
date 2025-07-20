@@ -1,5 +1,5 @@
 import { SortableField } from '@app/utils';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -12,11 +12,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Player } from '../player.model';
+import { Game } from '../event/game.model';
 import { RankingSystem } from './ranking-system.model';
 
-@ObjectType('RankingPlace', { description: 'A RankingPlace' })
-@Entity('RankingPlaces', { schema: 'ranking' })
-export class RankingPlace extends BaseEntity {
+@ObjectType('RankingPoint', { description: 'A RankingPoint' })
+@Entity('RankingPoints', { schema: 'ranking' })
+export class RankingPoint extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
@@ -29,100 +30,17 @@ export class RankingPlace extends BaseEntity {
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @SortableField()
-  @Column()
-  declare rankingDate: Date;
-
-  @SortableField()
-  @Column({
-    type: 'simple-enum',
-    enum: ['M', 'F'],
-  })
-  declare gender: 'M' | 'F';
-
-  @SortableField()
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
-  declare singlePoints?: number;
+  declare points?: number;
 
-  @SortableField()
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
-  declare mixPoints?: number;
+  declare rankingDate?: Date;
 
-  @SortableField()
+  @SortableField({ nullable: true })
   @Column({ nullable: true })
-  declare doublePoints?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare singlePointsDowngrade?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare mixPointsDowngrade?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare doublePointsDowngrade?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare singleRank?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare mixRank?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare doubleRank?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare totalSingleRanking?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare totalMixRanking?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare totalDoubleRanking?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare totalWithinSingleLevel?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare totalWithinMixLevel?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare totalWithinDoubleLevel?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare single?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare mix?: number;
-
-  @SortableField()
-  @Column({ nullable: true })
-  declare double?: number;
-
-  @SortableField()
-  @Column({ default: false })
-  declare singleInactive: boolean;
-
-  @SortableField()
-  @Column({ default: false })
-  declare mixInactive: boolean;
-
-  @SortableField()
-  @Column({ default: false })
-  declare doubleInactive: boolean;
+  declare differenceInLevel?: number;
 
   @Field(() => ID)
   @Column()
@@ -130,15 +48,24 @@ export class RankingPlace extends BaseEntity {
 
   @Field(() => ID)
   @Column()
+  declare gameId: string;
+
+  @Field(() => ID)
+  @Column()
   declare systemId: string;
 
-  // @SortableField()
-  @ManyToOne(() => Player, (player) => player.rankingLastPlaces)
+  @Field(() => Player, { nullable: true })
+  @ManyToOne(() => Player, (player) => player.rankingPoints)
   @JoinColumn({ name: 'playerId' })
   declare player: Relation<Player>;
 
-  // @SortableField()
-  @ManyToOne(() => RankingSystem)
-  @JoinColumn()
+  @Field(() => Game, { nullable: true })
+  @ManyToOne(() => Game, (game) => game.rankingPoints)
+  @JoinColumn({ name: 'gameId' })
+  declare game: Relation<Game>;
+
+  @Field(() => RankingSystem, { nullable: true })
+  @ManyToOne(() => RankingSystem, (system) => system.rankingPoints)
+  @JoinColumn({ name: 'systemId' })
   declare system: Relation<RankingSystem>;
 }

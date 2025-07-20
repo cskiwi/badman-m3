@@ -1,10 +1,12 @@
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { RankingGroup } from './ranking-group.model';
 import { RankingSystem } from './ranking-system.model';
@@ -12,24 +14,31 @@ import { RankingSystem } from './ranking-system.model';
 @ObjectType('RankingSystemRankingGroupMembership', { description: 'A RankingSystemRankingGroupMembership' })
 @Entity('RankingSystemRankingGroupMemberships', { schema: 'ranking' })
 export class RankingSystemRankingGroupMembership extends BaseEntity {
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  declare rankingSystemRankingGroupMembershipId: number;
+  declare id: string;
 
+  @Field(() => ID)
   @Column({ type: 'uuid' })
-  declare systemId?: string;
+  declare systemId: string;
 
+  @Field(() => ID)
   @Column({ type: 'uuid' })
-  declare groupId?: string;
+  declare groupId: string;
 
+  @Field(() => RankingSystem, { nullable: true })
   @ManyToOne(
     () => RankingSystem,
-    (membership) => membership.rankingSystemRankingGroupMemberships,
+    (system) => system.rankingSystemRankingGroupMemberships,
   )
-  declare rankingSystem: RankingSystem;
+  @JoinColumn({ name: 'systemId' })
+  declare rankingSystem: Relation<RankingSystem>;
 
+  @Field(() => RankingGroup, { nullable: true })
   @ManyToOne(
     () => RankingGroup,
-    (membership) => membership.rankingSystemRankingGroupMemberships,
+    (group) => group.rankingSystemRankingGroupMemberships,
   )
-  declare rankingGroup: RankingGroup;
+  @JoinColumn({ name: 'groupId' })
+  declare rankingGroup: Relation<RankingGroup>;
 }

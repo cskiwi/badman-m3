@@ -1,10 +1,11 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
 import { GameStatus, GameType } from '@app/model/enums';
 import { SortableField } from '@app/utils';
 import { TournamentDraw } from './tournament/tournament-draw.model';
 import { CompetitionEncounter } from './competition/competition-encounter.model';
+import { RankingPoint } from '../ranking/ranking-point.model';
 
 @ObjectType('Game', { description: 'A Game' })
 @Entity('Games', { schema: 'event' })
@@ -85,9 +86,13 @@ export class Game extends BaseEntity {
   @Column()
   declare visualCode?: string;
 
-  // @SortableField()
-  @OneToMany(() => GamePlayerMembership, (gamePlayerMembership) => gamePlayerMembership.gamePlayer)
+  @Field(() => [GamePlayerMembership], { nullable: true })
+  @OneToMany(() => GamePlayerMembership, (gamePlayerMembership) => gamePlayerMembership.game)
   declare gamePlayerMemberships: GamePlayerMembership[];
+
+  @Field(() => [RankingPoint], { nullable: true })
+  @OneToMany(() => RankingPoint, (rankingPoint) => rankingPoint.game)
+  declare rankingPoints: Relation<RankingPoint[]>;
 
   @Field(() => TournamentDraw, { nullable: true })
   @ManyToOne(() => TournamentDraw, (tournamentDraw) => tournamentDraw.games, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })

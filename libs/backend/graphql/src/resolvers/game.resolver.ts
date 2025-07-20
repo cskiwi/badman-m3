@@ -1,5 +1,5 @@
 import { AllowAnonymous } from '@app/backend-authorization';
-import { TournamentDraw, Game, GamePlayerMembership, CompetitionEncounter } from '@app/models';
+import { TournamentDraw, Game, GamePlayerMembership, CompetitionEncounter, RankingPoint } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GameArgs, GamePlayerMembershipArgs } from '../args';
@@ -79,6 +79,13 @@ export class GameResolver {
 
     return CompetitionEncounter.findOne({
       where: { id: linkId },
+    });
+  }
+
+  @ResolveField(() => [RankingPoint], { nullable: true })
+  async rankingPoints(@Parent() { id }: Game): Promise<RankingPoint[] | null> {
+    return RankingPoint.find({
+      where: { gameId: id },
     });
   }
 }

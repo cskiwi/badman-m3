@@ -7,10 +7,14 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { Period, RankingSystems, StartingType } from '@app/model/enums';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
+import { RankingPoint } from './ranking-point.model';
+import { RankingPlace } from './ranking-place.model';
+import { RankingLastPlace } from './ranking-last-place.model';
 import { SortableField } from '@app/utils';
 
 @ObjectType('RankingSystem', { description: 'A RankingSystem' })
@@ -211,7 +215,16 @@ export class RankingSystem extends BaseEntity {
     () => RankingSystemRankingGroupMembership,
     (membership) => membership.rankingSystem,
   )
-  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership;
+  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership[];
+
+  @OneToMany(() => RankingPoint, (rankingPoint) => rankingPoint.system)
+  declare rankingPoints: Relation<RankingPoint[]>;
+
+  @OneToMany(() => RankingPlace, (rankingPlace) => rankingPlace.system)
+  declare rankingPlaces: Relation<RankingPlace[]>;
+
+  @OneToMany(() => RankingLastPlace, (rankingLastPlace) => rankingLastPlace.system)
+  declare rankingLastPlaces: Relation<RankingLastPlace[]>;
 
   @AfterLoad()
   setupValues() {

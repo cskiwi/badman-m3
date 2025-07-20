@@ -133,13 +133,13 @@ export class RankingLastPlace extends BaseEntity {
   @Column()
   declare systemId: string;
 
-  // @SortableField()
-  @OneToOne(() => Player, (player) => player.rankingLastPlaces)
+  @Field(() => Player, { nullable: true })
+  @ManyToOne(() => Player, (player) => player.rankingLastPlaces)
   @JoinColumn({ name: 'playerId' })
   declare player: Relation<Player>;
 
-  // @SortableField()
-  @ManyToOne(() => RankingSystem)
-  @JoinColumn()
+  @Field(() => RankingSystem, { nullable: true })
+  @ManyToOne(() => RankingSystem, (system) => system.rankingLastPlaces)
+  @JoinColumn({ name: 'systemId' })
   declare system: Relation<RankingSystem>;
 }

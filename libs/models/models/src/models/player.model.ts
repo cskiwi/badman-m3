@@ -15,7 +15,7 @@ import {
 } from 'typeorm';
 import { ClubPlayerMembership } from './club-player-membership';
 import { GamePlayerMembership } from './event/game-player-membership';
-import { RankingLastPlace } from './ranking';
+import { RankingLastPlace, RankingPlace, RankingPoint } from './ranking';
 import { TeamPlayerMembership } from './team-player-membership';
 import { Role } from './security/role.model';
 import { Claim } from './security/claim.model';
@@ -88,6 +88,14 @@ export class Player extends BaseEntity {
   @Field(() => [RankingLastPlace], { nullable: true })
   @OneToMany(() => RankingLastPlace, (membership) => membership.player)
   declare rankingLastPlaces: Relation<RankingLastPlace[]>;
+
+  @Field(() => [RankingPlace], { nullable: true })
+  @OneToMany(() => RankingPlace, (place) => place.player)
+  declare rankingPlaces: Relation<RankingPlace[]>;
+
+  @Field(() => [RankingPoint], { nullable: true })
+  @OneToMany(() => RankingPoint, (point) => point.player)
+  declare rankingPoints: Relation<RankingPoint[]>;
 
   @Field(() => [ClubPlayerMembership], { nullable: true })
   @OneToMany(() => ClubPlayerMembership, (membership) => membership.player)

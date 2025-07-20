@@ -34,5 +34,5 @@ export class RankingGroup extends BaseEntity {
     () => RankingSystemRankingGroupMembership,
     (membership) => membership.rankingGroup,
   )
-  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership;
+  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership[];
 }

@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 
-import { PlayerRecentGamesService } from './recent-games-player.service';
+import { IS_MOBILE } from '@app/frontend-utils';
+import { Game } from '@app/models';
 import { MomentModule } from 'ngx-moment';
 import { CardModule } from 'primeng/card';
-import { IS_MOBILE } from '@app/frontend-utils';
 import { ChipModule } from 'primeng/chip';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { Game } from '@app/models';
+import { PlayerRecentGamesService } from './recent-games-player.service';
+import { DividerModule } from 'primeng/divider';
 
 @Component({
   selector: 'app-recent-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule],
   templateUrl: './recent-games-player.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -99,5 +100,116 @@ export class RecentGamesPlayerComponent {
   isCurrentPlayer(playerId: string): boolean {
     const currentPlayerId = Array.isArray(this.for()) ? this.for()[0] : this.for();
     return playerId === currentPlayerId;
+  }
+
+  /**
+   * Calculates total points for a team using ranking points
+   * @param game The game object
+   * @param team Team number (1 or 2)
+   * @returns Total points for the team
+   */
+  getTeamPoints(game: Game, team: number): number {
+    if (!game?.gamePlayerMemberships) return 0;
+
+    // Get player IDs for the specified team
+    const teamPlayerIds = game.gamePlayerMemberships
+      .filter((membership) => membership.team === team)
+      .map((membership) => membership.gamePlayer?.id)
+      .filter((id) => id !== undefined);
+
+    // Sum ranking points for players in this team
+    return game.rankingPoints?.filter((rankingPoint) => teamPlayerIds.includes(rankingPoint.playerId))
+      .reduce((total, rankingPoint) => total + (rankingPoint.points || 0), 0) || 0;
+  }
+
+  /**
+   * Gets ranking points for a specific player in a game
+   * @param game The game object
+   * @param playerId The player ID
+   * @returns Ranking points for the player or 0 if not found
+   */
+  getPlayerPoints(game: Game, playerId: string): number {
+    if (!game?.rankingPoints) return 0;
+
+    const rankingPoint = game.rankingPoints.find((rp) => rp.playerId === playerId);
+    return rankingPoint?.points || 0;
+  }
+
+  /**
+   * Determines if a team gained or lost points
+   * @param game The game object
+   * @param team Team number (1 or 2)
+   * @returns 'gain' | 'loss' | 'neutral'
+   */
+  getPointsDirection(game: Game, team: number): 'gain' | 'loss' | 'neutral' {
+    const points = this.getTeamPoints(game, team);
+    if (points > 0) return 'gain';
+    if (points < 0) return 'loss';
+    return 'neutral';
+  }
+
+  /**
+   * Gets the appropriate icon for points change
+   * @param game The game object
+   * @param team Team number (1 or 2)
+   * @returns Icon class string
+   */
+  getPointsIcon(game: Game, team: number): string {
+    const direction = this.getPointsDirection(game, team);
+    switch (direction) {
+      case 'gain': return 'pi pi-arrow-up';
+      case 'loss': return 'pi pi-arrow-down';
+      default: return 'pi pi-minus';
+    }
+  }
+
+  /**
+   * Gets the appropriate color class for points
+   * @param game The game object
+   * @param team Team number (1 or 2)
+   * @returns Color class string
+   */
+  getPointsColorClass(game: Game, team: number): string {
+    const direction = this.getPointsDirection(game, team);
+    switch (direction) {
+      case 'gain': return 'text-green-600 dark:text-green-400';
+      case 'loss': return 'text-red-600 dark:text-red-400';
+      default: return 'text-color-secondary';
+    }
+  }
+
+  /**
+   * Formats points with appropriate prefix
+   * @param points The points value
+   * @returns Formatted string with + or - prefix
+   */
+  formatPoints(points: number): string {
+    if (points > 0) return `+${points}`;
+    if (points < 0) return `${points}`;
+    return `${points}`;
+  }
+
+  /**
+   * Gets the magnitude description for points change
+   * @param points The points value
+   * @returns Description of the points change magnitude
+   */
+  getPointsMagnitude(points: number): 'small' | 'medium' | 'large' {
+    const absPoints = Math.abs(points);
+    if (absPoints === 0) return 'small';
+    if (absPoints <= 10) return 'small';
+    if (absPoints <= 25) return 'medium';
+    return 'large';
+  }
+
+  /**
+   * Gets a simplified styling class for points badge
+   * @param game The game object
+   * @param team Team number (1 or 2)
+   * @returns CSS class for enhanced styling
+   */
+  getPointsEnhancedStyling(game: Game, team: number): string {
+    // This method is kept for backward compatibility but styling is now handled in CSS
+    return '';
   }
 }
