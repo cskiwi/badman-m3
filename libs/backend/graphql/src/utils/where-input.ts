@@ -1,15 +1,12 @@
 import { getWhereFields, getWhereObjects } from '@app/utils';
 import { Logger, Type } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
 import 'reflect-metadata';
 
-// Define where operators with direct value support
-@InputType('StringWhereInput')
+// Define where operators (without equals field)
+@InputType('StringWhereOperators')
 export class StringWhereOperators {
-  // Direct value support (treated as eq)
-  @Field(() => String, { nullable: true })
-  equals?: string;
-
   @Field(() => String, { nullable: true })
   eq?: string;
 
@@ -35,12 +32,8 @@ export class StringWhereOperators {
   raw?: string;
 }
 
-@InputType('NumberWhereInput')
+@InputType('NumberWhereOperators')
 export class NumberWhereOperators {
-  // Direct value support (treated as eq)
-  @Field(() => Number, { nullable: true })
-  equals?: number;
-
   @Field(() => Number, { nullable: true })
   eq?: number;
 
@@ -75,12 +68,8 @@ export class NumberWhereOperators {
   raw?: string;
 }
 
-@InputType('BooleanWhereInput')
+@InputType('BooleanWhereOperators')
 export class BooleanWhereOperators {
-  // Direct value support (treated as eq)
-  @Field(() => Boolean, { nullable: true })
-  equals?: boolean;
-
   @Field(() => Boolean, { nullable: true })
   eq?: boolean;
 
@@ -94,12 +83,8 @@ export class BooleanWhereOperators {
   raw?: string;
 }
 
-@InputType('DateWhereInput')
+@InputType('DateWhereOperators')
 export class DateWhereOperators {
-  // Direct value support (treated as eq)
-  @Field(() => Date, { nullable: true })
-  equals?: Date;
-
   @Field(() => Date, { nullable: true })
   eq?: Date;
 
@@ -177,14 +162,14 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
       directType = String;
     }
 
-    // Add unified field that supports both direct values and operators
+    // Add unified field that supports both direct values and operators using JSONObject
     // e.g., firstName: "John" OR firstName: { eq: "John", like: "%John%" }
     Object.defineProperty(WhereInput.prototype, key, {
       value: undefined,
       writable: true,
       enumerable: true,
     });
-    Field(() => operatorType, { nullable: true })(WhereInput.prototype, key);
+    Field(() => GraphQLJSONObject, { nullable: true })(WhereInput.prototype, key);
   }
 
   whereCache.set(name, WhereInput);
