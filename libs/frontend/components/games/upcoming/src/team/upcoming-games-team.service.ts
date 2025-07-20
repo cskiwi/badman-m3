@@ -9,7 +9,7 @@ import moment from 'moment';
 const UPCOMING_TEAM_GAMES_QUERY = gql`
   query UpcomingTeamGames($teamId: ID!) {
     competitionEncounters(where: { 
-      $or: [
+      OR: [
         { homeTeamId: $teamId },
         { awayTeamId: $teamId }
       ]

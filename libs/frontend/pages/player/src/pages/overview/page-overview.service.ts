@@ -77,15 +77,15 @@ export class OverviewService {
       .split(' ');
 
     if (!parts) {
-      return [{ memberId: '$nNull' }];
+      return [{ memberId: { ne: null } }];
     }
 
     const queries: unknown[] = [];
     for (const part of parts ?? []) {
       queries.push(
-        { firstName: { $iLike: `%${part}%` } },
-        { lastName: { $iLike: `%${part}%` } },
-        { memberId: { $iLike: `%${part}%` } },
+        { firstName: { ilike: `%${part}%` } },
+        { lastName: { ilike: `%${part}%` } },
+        { memberId: { ilike: `%${part}%` } },
       );
     }
 

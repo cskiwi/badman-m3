@@ -87,8 +87,8 @@ export class DetailService {
               where: {
                 game: {
                   linkType: params.linkType,
-                  gameType: params.gameType == null ? { $ne: 'S' } : params.gameType,
-                  playedAt: { $gte: params.date },
+                  gameType: params.gameType == null ? { ne: 'S' } : params.gameType,
+                  playedAt: { gte: params.date },
                 },
               },
             },

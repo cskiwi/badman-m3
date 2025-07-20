@@ -77,7 +77,7 @@ export class OverviewService {
 
     for (const part of parts ?? []) {
       if (part.length < 1) continue;
-      queries.push({ fullName: { $iLike: `%${part}%` } });
+      queries.push({ fullName: { ilike: `%${part}%` } });
     }
 
     if (queries.length === 0) {

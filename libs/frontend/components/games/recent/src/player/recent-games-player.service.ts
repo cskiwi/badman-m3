@@ -132,13 +132,13 @@ export class PlayerRecentGamesService {
           where: {
             game: {
               set1Team1: {
-                $gt: 0,
+                gt: 0,
               },
               set1Team2: {
-                $gt: 0,
+                gt: 0,
               },
               playedAt: {
-                $lte: moment().format('YYYY-MM-DD'),
+                lte: moment().format('YYYY-MM-DD'),
               },
             },
           },

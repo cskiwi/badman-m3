@@ -120,7 +120,7 @@ export class PlayerUpcommingGamesService {
 
       try {
         const where = {
-          $or: [{ homeTeamId: { $in: teamIds } }, { awayTeamId: { $in: teamIds } }],
+          OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }],
         };
 
         const result = await this.apollo

@@ -76,7 +76,7 @@ export class OverviewService {
       .map((part) => part.trim());
     const queries: unknown[] = [
       {
-        clubId: '$nNull',
+        clubId: { ne: null },
       },
     ];
 
@@ -88,7 +88,7 @@ export class OverviewService {
       if (!isNaN(possibleClubId)) {
         queries.push({ clubId: possibleClubId });
       }
-      queries.push({ fullName: { $iLike: `%${part}%` } });
+      queries.push({ fullName: { ilike: `%${part}%` } });
     }
 
     if (queries.length === 0) {
