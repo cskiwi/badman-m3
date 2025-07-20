@@ -3,9 +3,13 @@ import { Logger, Type } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
 import 'reflect-metadata';
 
-// Define where operators
-@InputType('String')
+// Define where operators with direct value support
+@InputType('StringWhereInput')
 export class StringWhereOperators {
+  // Direct value support (treated as eq)
+  @Field(() => String, { nullable: true })
+  equals?: string;
+
   @Field(() => String, { nullable: true })
   eq?: string;
 
@@ -31,8 +35,12 @@ export class StringWhereOperators {
   raw?: string;
 }
 
-@InputType('Number')
+@InputType('NumberWhereInput')
 export class NumberWhereOperators {
+  // Direct value support (treated as eq)
+  @Field(() => Number, { nullable: true })
+  equals?: number;
+
   @Field(() => Number, { nullable: true })
   eq?: number;
 
@@ -67,8 +75,12 @@ export class NumberWhereOperators {
   raw?: string;
 }
 
-@InputType('Boolean')
+@InputType('BooleanWhereInput')
 export class BooleanWhereOperators {
+  // Direct value support (treated as eq)
+  @Field(() => Boolean, { nullable: true })
+  equals?: boolean;
+
   @Field(() => Boolean, { nullable: true })
   eq?: boolean;
 
@@ -82,8 +94,12 @@ export class BooleanWhereOperators {
   raw?: string;
 }
 
-@InputType('Date')
+@InputType('DateWhereInput')
 export class DateWhereOperators {
+  // Direct value support (treated as eq)
+  @Field(() => Date, { nullable: true })
+  equals?: Date;
+
   @Field(() => Date, { nullable: true })
   eq?: Date;
 
@@ -161,22 +177,14 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
       directType = String;
     }
 
-    // Add direct field access (e.g., firstName: "John")
+    // Add unified field that supports both direct values and operators
+    // e.g., firstName: "John" OR firstName: { eq: "John", like: "%John%" }
     Object.defineProperty(WhereInput.prototype, key, {
       value: undefined,
       writable: true,
       enumerable: true,
     });
-    Field(() => directType, { nullable: true })(WhereInput.prototype, key);
-
-    // Add operator field access (e.g., firstNameOperators: { eq: "John", like: "%John%" })
-    const operatorKey = `${key}Operators`;
-    Object.defineProperty(WhereInput.prototype, operatorKey, {
-      value: undefined,
-      writable: true,
-      enumerable: true,
-    });
-    Field(() => operatorType, { nullable: true })(WhereInput.prototype, operatorKey);
+    Field(() => operatorType, { nullable: true })(WhereInput.prototype, key);
   }
 
   whereCache.set(name, WhereInput);

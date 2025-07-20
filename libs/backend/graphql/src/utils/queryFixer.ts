@@ -42,39 +42,14 @@ export class GraphQLWhereConverter {
 
     // Handle regular field conditions
     const result: Record<string, any> = {};
-    const operatorFields = new Map<string, any>();
 
-    // First pass: collect direct fields and operator fields
     Object.entries(where).forEach(([field, value]) => {
       // Skip logical operators
       if (field === 'OR' || field === 'AND') {
         return;
       }
 
-      // Handle operator fields (e.g., firstNameOperators)
-      if (field.endsWith('Operators')) {
-        const baseField = field.replace('Operators', '');
-        operatorFields.set(baseField, value);
-        return;
-      }
-
-      // Handle direct field access (e.g., firstName: "John") - treat as eq operation
-      if (value !== undefined && value !== null) {
-        result[field] = value; // Direct value, no conversion needed
-      }
-    });
-
-    // Second pass: merge operator fields with direct fields
-    operatorFields.forEach((operatorValue, baseField) => {
-      if (operatorValue && typeof operatorValue === 'object') {
-        // If we already have a direct value for this field, prioritize the direct value
-        if (result[baseField] === undefined) {
-          // No direct value, use operators
-          result[baseField] = this.convertValue(operatorValue);
-        }
-        // If there's both a direct value and operators, the direct value takes precedence
-        // This is a design choice - you could also merge them or throw an error
-      }
+      result[field] = this.convertValue(value);
     });
 
     return result as FindOptionsWhere<T>;
@@ -88,7 +63,7 @@ export class GraphQLWhereConverter {
 
     // Check if it's an operator object (contains typed operators)
     const keys = Object.keys(value);
-    const typedOperators = ['eq', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'between', 'isNull', 'raw'];
+    const typedOperators = ['equals', 'eq', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'between', 'isNull', 'raw'];
     
     if (keys.length === 1 && typedOperators.includes(keys[0])) {
       return this.convertOperator(keys[0], value[keys[0]]);
@@ -107,6 +82,7 @@ export class GraphQLWhereConverter {
 
   private static convertOperator(operator: string, operatorValue: any): any {
     switch (operator) {
+      case 'equals':
       case 'eq':
         return operatorValue;
 
