@@ -22,15 +22,15 @@
           }
         </div>
       </ng-content>
-      <ng-content actions> </ng-content>
+      <ng-content actions>
+        <p-button 
+          label="{{ 'all.head-to-head.title' | translate }}" 
+          [routerLink]="['head-to-head']"
+          styleClass="mb-4"
+        />
+      </ng-content>
     </app-page-header>
-    <section class="quick-links p-4">
-      <p-button 
-        label="{{ 'all.head-to-head.title' | translate }}" 
-        [routerLink]="['head-to-head']"
-        styleClass="mb-4"
-      />
-    </section>
+    <!-- quick-links section removed: head-to-head button moved to header actions -->
     <section class="games grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
       <section class="recent-games">
         <p-card>
