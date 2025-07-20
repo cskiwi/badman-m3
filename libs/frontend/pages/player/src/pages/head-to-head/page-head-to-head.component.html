@@ -40,15 +40,15 @@
             @if (isOpponentMode()) {
               <p-iftalabel>
                 <p-select
-                  formControlName="head-to-headFilter"
+                  formControlName="partnerFilter"
                   inputId="head-to-head-filter"
-                  [options]="partnerClubOptions()"
+                  [options]="partnerOptions()"
                   optionLabel="label"
                   optionValue="value"
                   [filter]="true"
-                  filterPlaceholder="Search head-to-heads..."
+                  filterPlaceholder="Search partners..."
                 />
-                <label for="head-to-head-filter">{{ 'all.head-to-head.filters.with-head-to-head' | translate }}</label>
+                <label for="head-to-head-filter">{{ 'all.head-to-head.filters.with-partner' | translate }}</label>
               </p-iftalabel>
               
               <p-iftalabel>

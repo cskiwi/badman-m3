@@ -96,16 +96,18 @@
                 <div class="text-right space-y-1">
                   @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                     @if (membership?.team === 1) {
-                      <div
+                      <a
+                        [routerLink]="['/player', membership?.gamePlayer?.id]"
                         class="text-base {{
                           isCurrentPlayer(membership?.gamePlayer?.id || '') ? 'font-bold text-primary-600' : 'font-medium text-color'
-                        }} truncate"
+                        }} truncate hover:underline focus:outline-none"
+                        tabindex="0"
                       >
                         {{ membership?.gamePlayer?.fullName }}
                         @if (isCurrentPlayer(membership?.gamePlayer?.id || '')) {
                           <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                         }
-                      </div>
+                      </a>
                     }
                   }
                 </div>
@@ -145,16 +147,18 @@
                 <div class="text-left space-y-1">
                   @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                     @if (membership?.team === 2) {
-                      <div
+                      <a
+                        [routerLink]="['/player', membership?.gamePlayer?.id]"
                         class="text-base {{
                           isCurrentPlayer(membership?.gamePlayer?.id || '') ? 'font-bold text-primary-600' : 'font-medium text-color'
-                        }} truncate"
+                        }} truncate hover:underline focus:outline-none"
+                        tabindex="0"
                       >
                         {{ membership?.gamePlayer?.fullName }}
                         @if (isCurrentPlayer(membership?.gamePlayer?.id || '')) {
                           <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                         }
-                      </div>
+                      </a>
                     }
                   }
                 </div>

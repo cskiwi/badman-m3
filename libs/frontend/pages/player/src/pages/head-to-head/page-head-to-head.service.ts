@@ -197,15 +197,18 @@ export class DetailService {
       >();
   
       if (viewMode === 'partners') {
-        // Partners mode: track individual partners
+        // Partners mode: track individual partners (other than the current player)
         memberships.forEach((membership: GamePlayerMembership) => {
-          const targetMemberships = membership.game.gamePlayerMemberships.filter(
-            (m: GamePlayerMembership) => m.team === membership.team && m.player !== membership.player,
+          // Find all teammates (including self)
+          const teamMemberships = membership.game.gamePlayerMemberships.filter(
+            (m: GamePlayerMembership) => m.team === membership.team
           );
-  
-          targetMemberships.forEach((m: GamePlayerMembership) => {
+
+          // For each teammate that is NOT the current player, treat as a partner
+          teamMemberships.forEach((m: GamePlayerMembership) => {
+            if (m.player === membership.player) return; // skip self
             const playerId = m.gamePlayer.id;
-  
+
             // Find active club
             let club: { id: string; name: string } | undefined = undefined;
             const clubMemberships = m.gamePlayer?.clubPlayerMemberships;
@@ -215,7 +218,7 @@ export class DetailService {
                 club = { id: found.club.id, name: found.club.name };
               }
             }
-  
+
             if (!playerStats.has(playerId)) {
               playerStats.set(playerId, {
                 player: m.gamePlayer,
@@ -223,13 +226,13 @@ export class DetailService {
                 amountOfGames: 0,
               });
             }
-  
+
             const stats = playerStats.get(playerId);
             if (!stats) return;
-  
+
             stats.amountOfGames += 1;
             const isWin = membership.game.winner == m.team;
-  
+
             stats.winRate = Math.round((((stats.winRate / 100) * (stats.amountOfGames - 1) + (isWin ? 1 : 0)) / stats.amountOfGames) * 100 * 100) / 100;
             stats.club = club;
           });
@@ -322,10 +325,15 @@ export class DetailService {
         }))
         .filter((p) => p.amountOfGames >= minGames)
         .filter((p) => {
-          // Filter by partner club (for partners mode) or opponent club (for opponents mode)
+          // Filter by partner (for partners mode)
+          if (viewMode === 'partners' && selectedPartner) {
+            return p.player && String(p.player.id) === String(selectedPartner);
+          }
+          // Filter by partner club (for partners mode)
           if (viewMode === 'partners' && selectedPartnerClub) {
             return p.club && String(p.club.id) === String(selectedPartnerClub);
           }
+          // Filter by opponent club (for opponents mode)
           if (viewMode === 'opponents' && selectedOpponentClub) {
             return p.club && String(p.club.id) === String(selectedOpponentClub);
           }

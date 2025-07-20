@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, PLATFORM_ID } from '@angular/core';
-import { AsyncPipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { AsyncPipe, DecimalPipe, isPlatformBrowser, JsonPipe } from '@angular/common';
 
 import { TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -7,7 +7,7 @@ import { HeadToHeadGrid } from './sort.type';
 
 @Component({
   selector: 'app-head-to-head-grid',
-  imports: [TableModule, TranslateModule, AsyncPipe, DecimalPipe],
+  imports: [TableModule, TranslateModule, AsyncPipe, DecimalPipe, JsonPipe],
   templateUrl: './head-to-head-grid.component.html',
   styleUrl: './head-to-head-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,8 +36,8 @@ export class HeadToHeadGridComponent {
     // Add head-to-head column for opponent mode
     if (this.viewMode() === 'opponents') {
       baseColumns.push({
-        header: this.translate.stream('all.head-to-head.head-to-head'),
-        field: 'headToHead',
+        header: this.translate.stream('all.head-to-head.partner'),
+        field: 'partner',
         sortable: true,
       });
     }

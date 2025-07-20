@@ -8,10 +8,11 @@ import { ChipModule } from 'primeng/chip';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { PlayerRecentGamesService } from './recent-games-player.service';
 import { DividerModule } from 'primeng/divider';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-recent-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink],
   templateUrl: './recent-games-player.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

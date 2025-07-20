@@ -62,6 +62,7 @@ export type I18nTranslations = {
             };
             "name": string;
             "partner": string;
+            "title": string;
             "win-rate": string;
             "win-rate-against": string;
         };
