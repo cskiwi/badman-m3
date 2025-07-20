@@ -1,9 +1,9 @@
-import { TeamMembershipType } from '@app/model/enums';
 import { SortableField, SortableObject } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.model';
 import { Team } from './team.model';
+import { TeamMembershipType } from '@app/model/enums';
 
 @ObjectType('TeamPlayerMembership', { description: 'A TeamPlayerMembership' })
 @Entity('TeamPlayerMemberships')
@@ -24,12 +24,13 @@ export class TeamPlayerMembership extends BaseEntity {
   @Column({
     type: 'simple-enum',
     enum: TeamMembershipType,
+    default: TeamMembershipType.REGULAR,
   })
-  declare membershipType?: TeamMembershipType;
+  declare membershipType: TeamMembershipType;
 
   @SortableField()
-  @Column()
-  declare end: Date;
+  @Column({ nullable: true })
+  declare end?: Date;
 
   @SortableField()
   @Column()

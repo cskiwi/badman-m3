@@ -1,4 +1,4 @@
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -29,10 +29,12 @@ export class Player extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
@@ -41,26 +43,31 @@ export class Player extends BaseEntity {
   declare sub: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   @Index({ fulltext: true })
   declare firstName: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   @Index({ fulltext: true })
   declare lastName: string;
 
   @Index({ unique: true })
   @SortableField()
+  @WhereField()
   @Column()
   declare slug: string;
 
   @Index({ unique: true })
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare memberId: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare email: string;
 
@@ -69,14 +76,17 @@ export class Player extends BaseEntity {
   declare phone: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare gender: 'M' | 'F';
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare birthDate: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare competitionPlayer: boolean;
 

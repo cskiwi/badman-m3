@@ -5,7 +5,7 @@ import { TeamArgs, PlayerArgs } from '../args';
 @Resolver(() => TeamPlayerMembership)
 export class TeamPlayerMembershipResolver {
   @ResolveField(() => Team, { nullable: true })
-  async Team(
+  async team(
     @Parent() { teamId }: TeamPlayerMembership,
     @Args('args', {
       type: () => TeamArgs,

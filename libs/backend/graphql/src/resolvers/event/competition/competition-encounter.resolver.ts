@@ -1,6 +1,8 @@
-import { CompetitionEncounter, CompetitionDraw, Game, CompetitionAssembly, Team } from '@app/models';
+import { CompetitionAssembly, CompetitionDraw, CompetitionEncounter, Game, Team } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { CompetitionEncounterArgs } from '../../../args';
+import { AllowAnonymous } from '@app/backend-authorization';
 
 @Resolver(() => CompetitionEncounter)
 export class CompetitionEncounterResolver {
@@ -20,8 +22,13 @@ export class CompetitionEncounterResolver {
   }
 
   @Query(() => [CompetitionEncounter])
-  async competitionEncounters(): Promise<CompetitionEncounter[]> {
-    return CompetitionEncounter.find();
+  @AllowAnonymous()
+  async competitionEncounters(
+    @Args('args', { type: () => CompetitionEncounterArgs, nullable: true })
+    inputArgs?: InstanceType<typeof CompetitionEncounterArgs>,
+  ): Promise<CompetitionEncounter[]> {
+    const args = CompetitionEncounterArgs.toFindManyOptions(inputArgs);
+    return CompetitionEncounter.find(args);
   }
 
   @ResolveField(() => CompetitionDraw, { nullable: true })

@@ -37,7 +37,7 @@ export class CompetitionEventResolver {
     @Args('args',  { type: () => CompetitionEventArgs, nullable: true  })
     inputArgs?: InstanceType<typeof CompetitionEventArgs>,
   ): Promise<CompetitionEvent[]> {
-    const args = CompetitionEventArgs.toFindOneOptions(inputArgs);
+    const args = CompetitionEventArgs.toFindManyOptions(inputArgs);
     return CompetitionEvent.find(args);
   }
 

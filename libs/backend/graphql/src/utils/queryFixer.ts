@@ -1,73 +1,128 @@
-import { And, Between, FindOperator, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Or } from 'typeorm';
+import { Between, FindOptionsWhere, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Raw } from 'typeorm';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const queryFixer: (input: any) => unknown = (input: any) => {
-  if (input === null || input === undefined) {
-    return input;
-  }
+export interface GraphQLWhereInput<T> {
+  $or?: GraphQLWhereInput<T>[];
+  $and?: GraphQLWhereInput<T>[];
+  [field: string]: any;
+}
 
-  if (Array.isArray(input)) {
-    return (input as unknown[]).map(queryFixer);
-  }
-
-  for (const key in input) {
-    if (input[key] === null || input[key] === undefined) {
-      delete input[key];
-      continue;
-    } else if (typeof input[key] === 'object' && key !== '$between' && !key.startsWith('$')) {
-      // For nested relationship objects, recursively apply queryFixer but preserve structure
-      input[key] = queryFixer(input[key]);
+export class GraphQLWhereConverter {
+  static convert<T>(where: GraphQLWhereInput<T> | GraphQLWhereInput<T>[]): FindOptionsWhere<T> | FindOptionsWhere<T>[] {
+    if (!where) {
+      return {} as FindOptionsWhere<T>;
     }
 
-    if (typeof input[key] === 'string' && input[key].startsWith('$')) {
-      if (input[key] === '$null') {
-        input[key] = IsNull();
-      } else if (input[key] === '$nNull') {
-        input[key] = Not(IsNull());
+    // Handle array input - convert each item and flatten
+    if (Array.isArray(where)) {
+      const results = where.map(item => this.convert<T>(item));
+      // If any result is an array, we need to flatten appropriately
+      const flattened = results.flatMap(result => Array.isArray(result) ? result : [result]);
+      return flattened.length === 1 ? flattened[0] : flattened;
+    }
+
+    // Handle $or - returns array of conditions
+    if (where.$or && Array.isArray(where.$or)) {
+      const result = where.$or.map((condition) => {
+        const converted = this.convert<T>(condition);
+        return Array.isArray(converted) ? converted[0] : converted;
+      }) as FindOptionsWhere<T>[];
+      return result;
+    }
+
+    // Handle $and - merge all conditions into single object
+    if (where.$and && Array.isArray(where.$and)) {
+      const merged: Record<string, any> = {};
+      where.$and.forEach((condition) => {
+        const result = this.convert<T>(condition);
+        const resultObj = Array.isArray(result) ? result[0] : result;
+        Object.assign(merged, resultObj);
+      });
+      return merged as FindOptionsWhere<T>;
+    }
+
+    // Handle regular field conditions
+    const result: Record<string, any> = {};
+
+    Object.entries(where).forEach(([field, value]) => {
+      // Skip logical operators
+      if (field === '$or' || field === '$and') {
+        return;
       }
-    }
 
-    if (!key.startsWith('$')) {
-      continue;
-    }
+      result[field] = this.convertValue(value);
+    });
 
-    // Handle logical operators
-    if (key === '$or' || key === '$and') {
-      if (Array.isArray(input[key])) {
-        const conditions = input[key].map((condition: any) => queryFixer(condition) as FindOperator<unknown>);
-        if (key === '$or') {
-          input = Or(...conditions);
-        } else if (key === '$and') {
-          input = And(...conditions);
-        }
-      } else {
-        console.warn(`${key} operator requires an array of conditions`);
-      }
-      continue;
-    }
-
-    const operatorMap = new Map<string, Record<string, unknown>>([
-      ['$eq', input[key]],
-      ['$ne', Not(input[key])],
-      ['$lt', LessThan(input[key])],
-      ['$lte', LessThanOrEqual(input[key])],
-      ['$gt', MoreThan(input[key])],
-      ['$gte', MoreThanOrEqual(input[key])],
-      ['$in', In(input[key])],
-      ['$nIn', Not(In(input[key]))],
-      ['$like', Like(input[key])],
-      ['$nLike', Not(Like(input[key]))],
-      ['$iLike', ILike(input[key])],
-      ['$nILike', Not(ILike(input[key]))],
-      ['$between', Between(input[key][0], input[key][1])],
-    ]);
-
-    if (operatorMap.has(key)) {
-      input = operatorMap.get(key);
-    } else {
-      console.warn(`Unknown key: ${key}, value: ${input[key]}`);
-    }
+    return result as FindOptionsWhere<T>;
   }
 
-  return input as unknown;
-};
+  private static convertValue(value: any): any {
+    // Simple value (string, number, boolean, null)
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+      return value;
+    }
+
+    // Check if it's an operator object
+    const keys = Object.keys(value);
+    if (keys.length === 1 && keys[0].startsWith('$')) {
+      return this.convertOperator(keys[0], value[keys[0]]);
+    }
+
+    // Multiple operators on same field - shouldn't happen in normal cases
+    if (keys.every((key) => key.startsWith('$'))) {
+      // For now, just take the first operator
+      const firstKey = keys[0];
+      return this.convertOperator(firstKey, value[firstKey]);
+    }
+
+    // Not an operator object, return as-is
+    return value;
+  }
+
+  private static convertOperator(operator: string, operatorValue: any): any {
+    switch (operator) {
+      case '$eq':
+        return operatorValue;
+
+      case '$ne':
+        return Not(operatorValue);
+
+      case '$in':
+        return In(operatorValue);
+
+      case '$nin':
+        return Not(In(operatorValue));
+
+      case '$gt':
+        return MoreThan(operatorValue);
+
+      case '$gte':
+        return MoreThanOrEqual(operatorValue);
+
+      case '$lt':
+        return LessThan(operatorValue);
+
+      case '$lte':
+        return LessThanOrEqual(operatorValue);
+
+      case '$like':
+        return Like(operatorValue);
+
+      case '$ilike':
+        return ILike(operatorValue);
+
+      case '$between':
+        return Between(operatorValue[0], operatorValue[1]);
+
+      case '$null':
+        return operatorValue ? IsNull() : Not(IsNull());
+
+      case '$raw':
+        return Raw(operatorValue);
+
+      default:
+        // Unknown operator, return the value as-is
+        return operatorValue;
+    }
+  }
+}
+

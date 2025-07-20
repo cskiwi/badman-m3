@@ -39,6 +39,7 @@ import {
 
 import { args } from '../utils';
 import { appendSortableObjects, SortOrderType } from '../utils/sort-order';
+import { appendWhereObjects, WhereInputType } from '../utils/where-input';
 
 // Register all SortOrderTypes
 SortOrderType(Club, 'Club');
@@ -78,6 +79,44 @@ SortOrderType(LogEntry, 'LogEntry');
 SortOrderType(Rule, 'Rule');
 SortOrderType(Service, 'Service');
 
+// Register all WhereInputTypes
+WhereInputType(Club, 'Club');
+WhereInputType(ClubPlayerMembership, 'ClubPlayerMembership');
+WhereInputType(CompetitionEvent, 'CompetitionEvent');
+WhereInputType(CompetitionSubEvent, 'CompetitionSubEvent');
+WhereInputType(Player, 'Player');
+WhereInputType(TournamentEvent, 'TournamentEvent');
+WhereInputType(TournamentSubEvent, 'TournamentSubEvent');
+WhereInputType(TournamentDraw, 'TournamentDraw');
+WhereInputType(Game, 'Game');
+WhereInputType(RankingGroup, 'RankingGroup');
+WhereInputType(Team, 'Team');
+WhereInputType(RankingLastPlace, 'RankingLastPlace');
+WhereInputType(RankingPlace, 'RankingPlace');
+WhereInputType(RankingPoint, 'RankingPoint');
+WhereInputType(RankingSystem, 'RankingSystem');
+WhereInputType(RankingSystemRankingGroupMembership, 'RankingSystemRankingGroupMembership');
+WhereInputType(TeamPlayerMembership, 'TeamPlayerMembership');
+WhereInputType(GamePlayerMembership, 'GamePlayerMembership');
+WhereInputType(Comment, 'Comment');
+WhereInputType(Faq, 'Faq');
+WhereInputType(RequestLink, 'RequestLink');
+WhereInputType(Availability, 'Availability');
+WhereInputType(Court, 'Court');
+WhereInputType(Entry, 'Entry');
+WhereInputType(Location, 'Location');
+WhereInputType(Standing, 'Standing');
+WhereInputType(CompetitionEncounter, 'CompetitionEncounter');
+WhereInputType(CompetitionEncounterChange, 'CompetitionEncounterChange');
+WhereInputType(CompetitionEncounterChangeDate, 'CompetitionEncounterChangeDate');
+WhereInputType(ImportFile, 'ImportFile');
+WhereInputType(Notification, 'Notification');
+WhereInputType(Setting, 'Setting');
+WhereInputType(CronJob, 'CronJob');
+WhereInputType(LogEntry, 'LogEntry');
+WhereInputType(Rule, 'Rule');
+WhereInputType(Service, 'Service');
+
 // Append nested objects to orders
 appendSortableObjects(Club, 'Club');
 appendSortableObjects(ClubPlayerMembership, 'ClubPlayerMembership');
@@ -115,6 +154,44 @@ appendSortableObjects(CronJob, 'CronJob');
 appendSortableObjects(LogEntry, 'LogEntry');
 appendSortableObjects(Rule, 'Rule');
 appendSortableObjects(Service, 'Service');
+
+// Append nested objects to where inputs
+appendWhereObjects(Club, 'Club');
+appendWhereObjects(ClubPlayerMembership, 'ClubPlayerMembership');
+appendWhereObjects(CompetitionEvent, 'CompetitionEvent');
+appendWhereObjects(CompetitionSubEvent, 'CompetitionSubEvent');
+appendWhereObjects(Player, 'Player');
+appendWhereObjects(Game, 'Game');
+appendWhereObjects(GamePlayerMembership, 'GamePlayerMembership');
+appendWhereObjects(RankingGroup, 'RankingGroup');
+appendWhereObjects(Team, 'Team');
+appendWhereObjects(TeamPlayerMembership, 'TeamPlayerMembership');
+appendWhereObjects(TournamentEvent, 'TournamentEvent');
+appendWhereObjects(TournamentSubEvent, 'TournamentSubEvent');
+appendWhereObjects(TournamentDraw, 'TournamentDraw');
+appendWhereObjects(RankingLastPlace, 'RankingLastPlace');
+appendWhereObjects(RankingPlace, 'RankingPlace');
+appendWhereObjects(RankingPoint, 'RankingPoint');
+appendWhereObjects(RankingSystem, 'RankingSystem');
+appendWhereObjects(RankingSystemRankingGroupMembership, 'RankingSystemRankingGroupMembership');
+appendWhereObjects(Comment, 'Comment');
+appendWhereObjects(Faq, 'Faq');
+appendWhereObjects(RequestLink, 'RequestLink');
+appendWhereObjects(Availability, 'Availability');
+appendWhereObjects(Court, 'Court');
+appendWhereObjects(Entry, 'Entry');
+appendWhereObjects(Location, 'Location');
+appendWhereObjects(Standing, 'Standing');
+appendWhereObjects(CompetitionEncounter, 'CompetitionEncounter');
+appendWhereObjects(CompetitionEncounterChange, 'CompetitionEncounterChange');
+appendWhereObjects(CompetitionEncounterChangeDate, 'CompetitionEncounterChangeDate');
+appendWhereObjects(ImportFile, 'ImportFile');
+appendWhereObjects(Notification, 'Notification');
+appendWhereObjects(Setting, 'Setting');
+appendWhereObjects(CronJob, 'CronJob');
+appendWhereObjects(LogEntry, 'LogEntry');
+appendWhereObjects(Rule, 'Rule');
+appendWhereObjects(Service, 'Service');
 
 export const ClubArgs = args<Club>('Club');
 export const ClubPlayerMembershipArgs = args<ClubPlayerMembership>('ClubPlayerMembership');
