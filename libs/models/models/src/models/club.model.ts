@@ -13,7 +13,7 @@ import {
 import { UseForTeamName } from '@app/model/enums';
 import { ClubPlayerMembership } from './club-player-membership';
 import { Team } from './team.model';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Club', { description: 'A Club' })
 @Entity('Clubs')
@@ -24,31 +24,38 @@ export class Club extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   @Index({ fulltext: true })
   declare name: string;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare teamName: string;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column({nullable: true})
   declare fullName?: string;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare contactCompetition: string;
 
   @SortableField(() => String)
+  @WhereField(() => String)
   @Column({
     type: 'simple-enum',
     enum: UseForTeamName,
@@ -57,22 +64,27 @@ export class Club extends BaseEntity {
   declare useForTeamName: UseForTeamName;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare abbreviation: string;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare clubId: number;
 
   @SortableField()
+  @WhereField()
   @Column()
   declare slug: string;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column()
   declare state?: string;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column()
   declare country?: string;
 

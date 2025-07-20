@@ -16,7 +16,7 @@ import { Player } from './player.model';
 import { TeamPlayerMembership } from './team-player-membership';
 import { Club } from './club.model';
 import { SubEventTypeEnum } from '@app/model/enums';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Team', { description: 'A Team' })
 @Entity('Teams')
@@ -26,26 +26,32 @@ export class Team extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   name?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   season?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   preferredTime?: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   preferredDay?: string;
 

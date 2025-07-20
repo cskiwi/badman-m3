@@ -2,7 +2,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
 import { GameStatus, GameType } from '@app/model/enums';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament/tournament-draw.model';
 import { CompetitionEncounter } from './competition/competition-encounter.model';
 import { RankingPoint } from '../ranking/ranking-point.model';
@@ -15,22 +15,27 @@ export class Game extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField()
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField({ nullable: true })
   @Column()
   declare playedAt?: Date;
 
   @SortableField(() => String)
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: GameType })
   declare gameType?: GameType;
 
   @SortableField(() => String)
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: GameType })
   declare status?: GameStatus;
 
