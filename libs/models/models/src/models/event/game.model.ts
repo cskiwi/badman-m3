@@ -75,26 +75,32 @@ export class Game extends BaseEntity {
   declare winner?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare order?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare round?: string;
 
   @SortableField()
+  @WhereField(() => String)
   @Column()
   declare linkId: string;
 
   @SortableField()
+  @WhereField(() => String)
   @Column()
   declare linkType: string;
 
   @SortableField({ nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column()
   declare courtId?: string;
 
   @Field({ nullable: true })
+  @SortableField({ nullable: true })
   @Column()
   declare visualCode?: string;
 

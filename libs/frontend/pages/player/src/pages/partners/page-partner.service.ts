@@ -60,7 +60,7 @@ export class DetailService {
     date: new FormControl<Date | null>(this.getLastSeasonStartDate()),
     minGames: new FormControl<number>(0),
     linkType: new FormControl<'tournament' | 'competition' | null>(null),
-    gameType: new FormControl<'D' | 'X' | null>(null),
+    gameType: new FormControl<'D' | 'MX' | 'S' | null>(null),
     partnerClub: new FormControl<string | null>(null),
     opponentClub: new FormControl<string | null>(null),
     viewMode: new FormControl<'partners' | 'opponents'>('partners'),
@@ -86,8 +86,8 @@ export class DetailService {
               take: null,
               where: {
                 game: {
-                  linkType: params.linkType,
-                  gameType: params.gameType == null ? { ne: 'S' } : params.gameType,
+                  linkType: { eq: params.linkType },
+                  gameType: { eq: params.gameType },
                   playedAt: { gte: params.date },
                 },
               },
@@ -198,8 +198,9 @@ export class DetailService {
     if (viewMode === 'partners') {
       // Partners mode: track individual partners
       memberships.forEach((membership: GamePlayerMembership) => {
-        const targetMemberships = membership.game.gamePlayerMemberships
-          .filter((m: GamePlayerMembership) => m.team === membership.team && m.player !== membership.player);
+        const targetMemberships = membership.game.gamePlayerMemberships.filter(
+          (m: GamePlayerMembership) => m.team === membership.team && m.player !== membership.player,
+        );
 
         targetMemberships.forEach((m: GamePlayerMembership) => {
           const playerId = m.gamePlayer.id;
@@ -215,10 +216,10 @@ export class DetailService {
           }
 
           if (!playerStats.has(playerId)) {
-            playerStats.set(playerId, { 
-              player: m.gamePlayer, 
-              winRate: 0, 
-              amountOfGames: 0
+            playerStats.set(playerId, {
+              player: m.gamePlayer,
+              winRate: 0,
+              amountOfGames: 0,
             });
           }
 
@@ -227,27 +228,21 @@ export class DetailService {
 
           stats.amountOfGames += 1;
           const isWin = membership.game.winner == m.team;
-          
-          stats.winRate =
-            Math.round(
-              (((stats.winRate / 100) * (stats.amountOfGames - 1) + (isWin ? 1 : 0)) / stats.amountOfGames) * 100 * 100,
-            ) / 100;
+
+          stats.winRate = Math.round((((stats.winRate / 100) * (stats.amountOfGames - 1) + (isWin ? 1 : 0)) / stats.amountOfGames) * 100 * 100) / 100;
           stats.club = club;
         });
       });
     } else {
       // Opponents mode: track opponent teams, not individual players
       const processedGames = new Set<string>();
-      
+
       memberships.forEach((membership: GamePlayerMembership) => {
         // If viewing opponents with a specific partner, filter games to only include those with that partner
         if (selectedPartner) {
-          const hasSelectedPartner = membership.game.gamePlayerMemberships
-            .some((gpm: GamePlayerMembership) => 
-              gpm.team === membership.team && 
-              gpm.player !== membership.player && 
-              gpm.gamePlayer.id === selectedPartner
-            );
+          const hasSelectedPartner = membership.game.gamePlayerMemberships.some(
+            (gpm: GamePlayerMembership) => gpm.team === membership.team && gpm.player !== membership.player && gpm.gamePlayer.id === selectedPartner,
+          );
           if (!hasSelectedPartner) return;
         }
 
@@ -256,14 +251,13 @@ export class DetailService {
         processedGames.add(membership.game.id);
 
         // Get opponent team members
-        const opponentMemberships = membership.game.gamePlayerMemberships
-          .filter((m: GamePlayerMembership) => m.team !== membership.team);
+        const opponentMemberships = membership.game.gamePlayerMemberships.filter((m: GamePlayerMembership) => m.team !== membership.team);
 
         if (opponentMemberships.length === 0) return;
 
         // Create a unique key for this opponent team (sorted player IDs)
         const opponentTeamKey = opponentMemberships
-          .map(m => m.gamePlayer.id)
+          .map((m) => m.gamePlayer.id)
           .sort()
           .join('-');
 
@@ -282,10 +276,10 @@ export class DetailService {
         }
 
         if (!playerStats.has(opponentTeamKey)) {
-          playerStats.set(opponentTeamKey, { 
-            player: representativeOpponent.gamePlayer, 
-            winRate: 0, 
-            amountOfGames: 0
+          playerStats.set(opponentTeamKey, {
+            player: representativeOpponent.gamePlayer,
+            winRate: 0,
+            amountOfGames: 0,
           });
         }
 
@@ -294,19 +288,16 @@ export class DetailService {
 
         stats.amountOfGames += 1;
         const isWin = membership.game.winner == membership.team;
-        
-        stats.winRate =
-          Math.round(
-            (((stats.winRate / 100) * (stats.amountOfGames - 1) + (isWin ? 1 : 0)) / stats.amountOfGames) * 100 * 100,
-          ) / 100;
+
+        stats.winRate = Math.round((((stats.winRate / 100) * (stats.amountOfGames - 1) + (isWin ? 1 : 0)) / stats.amountOfGames) * 100 * 100) / 100;
         stats.club = club;
 
         // Track their partner (the other player on the opponent team)
         if (!stats.partner && opponentMemberships.length > 1) {
-          const partnerOpponent = opponentMemberships.find(m => m.gamePlayer.id !== representativeOpponent.gamePlayer.id);
+          const partnerOpponent = opponentMemberships.find((m) => m.gamePlayer.id !== representativeOpponent.gamePlayer.id);
           if (partnerOpponent) {
             stats.partner = partnerOpponent.gamePlayer;
-            
+
             // Find partner's active club
             const partnerClubMemberships = partnerOpponent.gamePlayer?.clubPlayerMemberships;
             if (Array.isArray(partnerClubMemberships)) {
@@ -327,7 +318,7 @@ export class DetailService {
         amountOfGames: stats.amountOfGames,
         club: stats.club,
         partner: viewMode === 'opponents' ? stats.partner : undefined,
-        partnerClub: viewMode === 'opponents' ? stats.partnerClub : undefined
+        partnerClub: viewMode === 'opponents' ? stats.partnerClub : undefined,
       }))
       .filter((p) => p.amountOfGames >= minGames)
       .filter((p) => {

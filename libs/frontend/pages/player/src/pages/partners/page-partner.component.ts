@@ -60,6 +60,7 @@ export class PagePartnerComponent {
     { value: null, label: this.translateService.instant('all.partner.filters.all') },
     { value: 'MX', label: this.translateService.instant('all.partner.filters.mix') },
     { value: 'D', label: this.translateService.instant('all.partner.filters.double') },
+    { value: 'S', label: this.translateService.instant('all.partner.filters.single') },
   ];
 
   viewModeOptions = [
