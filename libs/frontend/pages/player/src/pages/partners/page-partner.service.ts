@@ -70,13 +70,13 @@ export class DetailService {
   // Convert form to signal for resource
   private filterSignal = toSignal(this.filter.valueChanges);
 
-  private gamePlayerMembershipsResource = resource({
+
+  private gamePlayerResource = resource({
     params: this.filterSignal,
     loader: ({ params, abortSignal }) => {
       if (!params.playerId || !moment(params.date).isValid()) {
-        return Promise.resolve([]);
+        return Promise.resolve(null);
       }
-
       return this.apollo
         .query<{ player: Player }>({
           query: PLAYER_QUERY,
@@ -100,7 +100,7 @@ export class DetailService {
           if (!result?.data?.player) {
             throw new Error('No player found');
           }
-          return result.data.player.gamePlayerMemberships;
+          return result.data.player;
         })
         .catch((err) => {
           this.handleError(err);
@@ -110,9 +110,10 @@ export class DetailService {
   });
 
   // Public selectors
-  memberships = computed(() => this.gamePlayerMembershipsResource.value() ?? []);
-  loading = computed(() => this.gamePlayerMembershipsResource.isLoading());
-  error = computed(() => this.gamePlayerMembershipsResource.error()?.message || null);
+  player = computed(() => this.gamePlayerResource.value() ?? null);
+  memberships = computed(() => this.player()?.gamePlayerMemberships ?? []);
+  loading = computed(() => this.gamePlayerResource.isLoading());
+  error = computed(() => this.gamePlayerResource.error()?.message || null);
 
   // Partner club options (clubs of players you played WITH)
   partnerClubOptions = computed(() => {

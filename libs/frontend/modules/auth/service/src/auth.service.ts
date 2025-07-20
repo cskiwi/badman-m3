@@ -4,7 +4,7 @@ import { Player } from '@app/models';
 import { AppState, AuthService as Auth0Service, RedirectLoginOptions } from '@auth0/auth0-angular';
 import { Apollo, gql } from 'apollo-angular';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, withLatestFrom } from 'rxjs';
 import { AUTH_KEY } from './auth.key';
 
 @Injectable({
@@ -108,7 +108,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await this.authService?.logout();
+      await withLatestFrom(this.authService!.logout());
       this.userSignal.set(null);
       this.loggedInSignal.set(false);
       this.loadedSignal.set(false);
@@ -154,12 +154,6 @@ export class AuthService {
         this.fetchUser();
       }
     }
-
-    effect(async () => {
-      if (this.loggedIn()) {
-        await this.getToken();
-      }
-    });
 
     effect(async () => {
       const token = this.token();

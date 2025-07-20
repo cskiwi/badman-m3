@@ -46,6 +46,7 @@ export class PagePartnerComponent {
   error = this.dataService.error;
   loading = this.dataService.loading;
   partners = this.dataService.partners;
+  player = this.dataService.player;
 
   auth = inject(AuthService);
 
