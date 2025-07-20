@@ -173,6 +173,7 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
   }
 
   whereCache.set(name, WhereInput);
+  whereInputs.set(className, WhereInput);
 
   return WhereInput;
 }
