@@ -1,4 +1,4 @@
-import { getWhereFields, getWhereObjects } from '@app/utils';
+import { getWhereFields, getWhereObjects, getWhereFieldTypes } from '@app/utils';
 import { Logger, Type } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
 import 'reflect-metadata';
@@ -124,6 +124,14 @@ export const whereInputs = new Map<string, Type>();
 export function WhereInputType<T>(classRef: Type<T>, name: string) {
   const className = `${name}WhereInput`;
 
+  // Clear existing cache entries to force regeneration
+  if (whereCache.has(name)) {
+    whereCache.delete(name);
+  }
+  if (whereInputs.has(className)) {
+    whereInputs.delete(className);
+  }
+
   @InputType(className)
   class WhereInput {
     @Field(() => [WhereInput], { nullable: true })
@@ -134,10 +142,21 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
   }
 
   const fields = getWhereFields(classRef);
+  const fieldTypes = getWhereFieldTypes(classRef);
 
   for (const key of fields) {
-    // Get the field type from the model
-    const fieldType = Reflect.getMetadata('design:type', classRef.prototype, key);
+    // Get the field type from the model - first try explicit type info, then reflection
+    let fieldType = Reflect.getMetadata('design:type', classRef.prototype, key);
+    
+    // Check if we have explicit type information from WhereField decorator
+    if (fieldTypes[key]) {
+      const returnTypeFunc = fieldTypes[key];
+      const explicitType = returnTypeFunc();
+      if (explicitType === Number) fieldType = Number;
+      else if (explicitType === String) fieldType = String;
+      else if (explicitType === Boolean) fieldType = Boolean;
+      else if (explicitType === Date) fieldType = Date;
+    }
     
     let operatorType: Type;
     let directType: Type;

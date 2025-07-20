@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { Game } from '../game.model';
 import { CompetitionDraw } from './competition-draw.model';
 import { CompetitionAssembly as Assembly } from './assembly.model';
@@ -24,18 +24,22 @@ export class CompetitionEncounter extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField(() => Date)
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column({ nullable: true })
   declare date?: Date;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column({ nullable: true })
   declare originalDate?: Date;
 
@@ -44,22 +48,27 @@ export class CompetitionEncounter extends BaseEntity {
   declare visualCode?: string;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column({ nullable: true })
   declare homeScore?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column({ nullable: true })
   declare awayScore?: number;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare drawId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare locationId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare originalLocationId?: string;
 
@@ -76,14 +85,17 @@ export class CompetitionEncounter extends BaseEntity {
   declare endHour?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare homeTeamId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare awayTeamId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare gameLeaderId?: string;
 

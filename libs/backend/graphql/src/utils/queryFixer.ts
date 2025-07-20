@@ -76,8 +76,13 @@ export class GraphQLWhereConverter {
       return this.convertOperator(firstKey, value[firstKey]);
     }
 
-    // Not an operator object, return as-is
-    return value;
+    // Check if it's a nested object (relation fields)
+    // Convert each field recursively
+    const converted: Record<string, any> = {};
+    Object.entries(value).forEach(([key, val]) => {
+      converted[key] = this.convertValue(val);
+    });
+    return converted;
   }
 
   private static convertOperator(operator: string, operatorValue: any): any {

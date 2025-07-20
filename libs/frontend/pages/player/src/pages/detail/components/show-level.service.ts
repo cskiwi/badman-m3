@@ -41,7 +41,9 @@ export class ShowLevelService {
           id,
           args: {
             where: {
-              systemId: systemId || null,
+              systemId: {
+                eq: systemId || null,
+              }
             },
           },
         },

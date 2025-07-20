@@ -151,10 +151,12 @@ export class RankingLastPlace extends BaseEntity {
   declare doubleInactive: boolean;
 
   @Field(() => ID)
+  @WhereField()
   @Column()
   declare playerId: string;
 
   @Field(() => ID)
+  @WhereField()
   @Column()
   declare systemId: string;
 

@@ -10,7 +10,7 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { CompetitionEncounterChange } from './encounter-change.model';
 
 @ObjectType('CompetitionEncounterChangeDate', { description: 'Date changes for a competition encounter' })
@@ -21,39 +21,48 @@ export class CompetitionEncounterChangeDate extends BaseEntity {
   declare id: string;
 
   @SortableField()
+  @WhereField(() => Date)
   @CreateDateColumn()
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
   @SortableField()
+  @WhereField()
   @Column()
   @Index()
   declare encounterChangeId: string;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column({ nullable: true })
   declare originalDate?: Date;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column({ nullable: true })
   declare newDate?: Date;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare originalTime?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare newTime?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare originalLocationId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   declare newLocationId?: string;
 

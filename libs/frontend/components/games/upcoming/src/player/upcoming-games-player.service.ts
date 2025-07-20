@@ -14,6 +14,7 @@ const UPCOMING_GAMES_QUERY = gql`
       date
       drawCompetition {
         id
+        name
       }
       homeTeam {
         id
@@ -119,8 +120,10 @@ export class PlayerUpcommingGamesService {
       }
 
       try {
+        const today = moment().startOf('day');
+
         const where = {
-          OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }],
+          AND: [{ date: { gte: today.toISOString() } }, { OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }] }],
         };
 
         const result = await this.apollo
@@ -129,7 +132,7 @@ export class PlayerUpcommingGamesService {
             variables: {
               args: {
                 where,
-                take: 10 // Limit to 10 items per page temporarily
+                take: 10, // Limit to 10 items per page temporarily
               },
             },
             context: { signal: abortSignal },
@@ -140,14 +143,7 @@ export class PlayerUpcommingGamesService {
           return { games: [], endReached: true };
         }
 
-        let encounters = result.data.competitionEncounters;
-
-        // Filter for upcoming encounters (date >= today)
-        const today = moment().startOf('day');
-        encounters = encounters.filter((encounter) => encounter.date && moment(encounter.date).isSameOrAfter(today));
-
-        // Sort by date ascending
-        encounters = encounters.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+        const encounters = result.data.competitionEncounters;//.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
 
         // Apply pagination
         const currentPage = page || 1;
@@ -160,7 +156,9 @@ export class PlayerUpcommingGamesService {
           endReached: paginatedGames.length < this.itemsPerPage,
         };
       } catch (err) {
-        throw new Error(this._handleError(err as HttpErrorResponse));
+        console.error('Error in upcomingGamesResource:', err);
+        const errorMessage = this._handleError(err as HttpErrorResponse);
+        throw new Error(errorMessage);
       }
     },
   });
@@ -177,13 +175,39 @@ export class PlayerUpcommingGamesService {
     return games.some((game) => game.homeTeam);
   });
 
-  private _handleError(err: HttpErrorResponse): string {
-    // Handle specific error cases
-    if (err.status === 404 && err.url) {
-      return 'Failed to load upcoming encounters';
+  private _handleError(err: HttpErrorResponse | Error | any): string {
+    console.error('Detailed error:', err);
+
+    // Handle HttpErrorResponse
+    if (err instanceof HttpErrorResponse) {
+      if (err.status === 404) {
+        return 'Failed to load upcoming encounters';
+      }
+      if (err.status === 0) {
+        return 'Network error - please check your connection';
+      }
+      if (err.status >= 500) {
+        return 'Server error - please try again later';
+      }
+      return `Error ${err.status}: ${err.statusText || err.message || 'Unknown error'}`;
     }
 
-    // Generic error if no cases match
-    return err.statusText || 'An error occurred';
+    // Handle GraphQL errors
+    if (err?.graphQLErrors?.length > 0) {
+      return `GraphQL error: ${err.graphQLErrors[0].message}`;
+    }
+
+    // Handle network errors
+    if (err?.networkError) {
+      return `Network error: ${err.networkError.message}`;
+    }
+
+    // Handle generic errors
+    if (err instanceof Error) {
+      return err.message;
+    }
+
+    // Fallback
+    return 'An unexpected error occurred';
   }
 }

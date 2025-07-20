@@ -7,11 +7,14 @@ import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
 
 const UPCOMING_TEAM_GAMES_QUERY = gql`
-  query UpcomingTeamGames($teamId: ID!) {
+  query UpcomingTeamGames($teamId: ID!, $today: String!) {
     competitionEncounters(where: { 
-      OR: [
-        { homeTeamId: $teamId },
-        { awayTeamId: $teamId }
+      AND: [
+        { date: { gte: $today } },
+        { OR: [
+          { homeTeamId: $teamId },
+          { awayTeamId: $teamId }
+        ]}
       ]
     }) {
       id
@@ -59,10 +62,16 @@ export class UpcomingGamesTeamService {
       }
 
       try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+        
         const result = await this.apollo
           .query<{ competitionEncounters: CompetitionEncounter[] }>({
             query: UPCOMING_TEAM_GAMES_QUERY,
-            variables: { teamId: params.teamId },
+            variables: { 
+              teamId: params.teamId,
+              today: today.toISOString()
+            },
             context: { signal: abortSignal },
           })
           .toPromise();
@@ -72,10 +81,6 @@ export class UpcomingGamesTeamService {
         }
 
         let encounters = result.data.competitionEncounters;
-
-        // Filter for upcoming encounters (date >= today)
-        const today = moment().startOf('day');
-        encounters = encounters.filter((encounter) => encounter.date && moment(encounter.date).isSameOrAfter(today));
 
         // Sort by date ascending
         encounters = encounters.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());

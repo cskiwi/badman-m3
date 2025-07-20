@@ -1,4 +1,4 @@
-import { SortableField, SortableObject } from '@app/utils';
+import { SortableField, SortableObject, WhereField, WhereObject } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -18,9 +18,11 @@ export class GamePlayerMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
+  @WhereField()
   @Column({ type: 'uuid' })
   declare playerId?: string;
 
+  @WhereField()
   @Column({ type: 'uuid' })
   declare gameId?: string;
 
@@ -44,6 +46,7 @@ export class GamePlayerMembership extends BaseEntity {
   @Column()
   declare mix?: number;
 
+  @WhereField()
   @Column({ type: 'uuid' })
   declare systemId: string;
 
@@ -53,6 +56,7 @@ export class GamePlayerMembership extends BaseEntity {
   declare gamePlayer: Player;
 
   @SortableObject('Game')
+  @WhereObject('Game')
   @ManyToOne(() => Game, (game) => game.gamePlayerMemberships)
   declare game: Game;
 }

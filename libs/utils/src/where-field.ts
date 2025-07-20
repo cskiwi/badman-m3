@@ -5,6 +5,7 @@ import 'reflect-metadata';
 // Metadata key for storing where fields
 const WHERE_FIELD_TRACKER_METADATA_KEY = 'custom:whereTrackedFields';
 const WHERE_OBJECT_TRACKER_METADATA_KEY = 'custom:whereTrackedObject';
+const WHERE_FIELD_TYPE_METADATA_KEY = 'custom:whereFieldTypes';
 
 // Custom Field decorator that tracks fields for where conditions
 export function WhereField(): PropertyDecorator & MethodDecorator;
@@ -26,6 +27,14 @@ export function WhereField(
     const existingFields = Reflect.getMetadata(WHERE_FIELD_TRACKER_METADATA_KEY, target.constructor) || [];
     // Add the current field to the tracked fields list
     Reflect.defineMetadata(WHERE_FIELD_TRACKER_METADATA_KEY, [...existingFields, propertyKey], target.constructor);
+
+    // Store explicit type information if provided
+    const existingTypes = Reflect.getMetadata(WHERE_FIELD_TYPE_METADATA_KEY, target.constructor) || {};
+    if (typeof returnTypeFunction === 'function') {
+      // Store the return type function for later use
+      existingTypes[propertyKey as string] = returnTypeFunction;
+      Reflect.defineMetadata(WHERE_FIELD_TYPE_METADATA_KEY, existingTypes, target.constructor);
+    }
   };
 }
 
@@ -48,4 +57,9 @@ export function getWhereFields(target: Type): string[] {
 // Helper function to retrieve tracked where objects
 export function getWhereObjects(target: Type): { propertyKey: string; propertyName: string }[] {
   return Reflect.getMetadata(WHERE_OBJECT_TRACKER_METADATA_KEY, target) || [];
+}
+
+// Helper function to retrieve field type information
+export function getWhereFieldTypes(target: Type): Record<string, ReturnTypeFunc<ReturnTypeFuncValue>> {
+  return Reflect.getMetadata(WHERE_FIELD_TYPE_METADATA_KEY, target) || {};
 }

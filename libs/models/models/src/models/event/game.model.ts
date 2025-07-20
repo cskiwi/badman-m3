@@ -25,7 +25,7 @@ export class Game extends BaseEntity {
   declare updatedAt: Date;
 
   @SortableField()
-  @WhereField({ nullable: true })
+  @WhereField(() => Date)
   @Column()
   declare playedAt?: Date;
 
@@ -40,30 +40,37 @@ export class Game extends BaseEntity {
   declare status?: GameStatus;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare set1Team1?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare set1Team2?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare set2Team1?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare set2Team2?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare set3Team1?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare set3Team2?: number;
 
   @SortableField({ nullable: true })
+  @WhereField(() => Number, { nullable: true })
   @Column()
   declare winner?: number;
 
