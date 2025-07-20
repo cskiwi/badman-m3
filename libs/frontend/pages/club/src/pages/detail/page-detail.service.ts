@@ -1,22 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject } from '@angular/core';
+import { computed, inject, resource } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Club } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, Subject, merge } from 'rxjs';
-import {
-  catchError,
-  distinctUntilChanged,
-  map,
-  switchMap,
-} from 'rxjs/operators';
-
-interface DetailState {
-  club: Club | null;
-  loading: boolean;
-  error: string | null;
-}
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
@@ -25,95 +12,62 @@ export class DetailService {
     clubId: new FormControl<string | null>(null),
   });
 
-  // state
-  private initialState: DetailState = {
-    club: null,
-    error: null,
-    loading: true,
-  };
+  // Convert form to signal for resource
+  private filterSignal = toSignal(this.filter.valueChanges);
 
-  // selectors
-  club = computed(() => this.state().club);
-  error = computed(() => this.state().error);
-  loading = computed(() => this.state().loading);
+  private clubResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.clubId) {
+        return null;
+      }
 
-  //sources
-  private error$ = new Subject<string | null>();
-  private filterChanged$ = this.filter.valueChanges.pipe(
-    distinctUntilChanged((a, b) => a.clubId === b.clubId),
-  );
+      try {
+        const result = await this.apollo
+          .query<{ club: Club }>({
+            query: gql`
+              query Club($id: ID!) {
+                club(id: $id) {
+                  id
+                  fullName
+                  slug
+                  clubId
+                  teams {
+                    id
+                    name
+                  }
+                }
+              }
+            `,
+            variables: {
+              id: params.clubId,
+            },
+            context: { signal: abortSignal },
+          })
+          .toPromise();
 
-  private data$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadData(filter)),
-    catchError((err) => {
-      this.error$.next(err);
-      return EMPTY;
-    }),
-  );
-
-  sources$ = merge(
-    this.data$.pipe(
-      map((club) => ({
-        club,
-        loading: false,
-      })),
-    ),
-    this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
-  );
-
-  state = signalSlice({
-    initialState: this.initialState,
-    sources: [this.sources$],
+        if (!result?.data.club) {
+          throw new Error('No club found');
+        }
+        return result.data.club;
+      } catch (err) {
+        throw new Error(this.handleError(err as HttpErrorResponse));
+      }
+    },
   });
 
-  private _loadData(
-    filter: Partial<{
-      clubId: string | null;
-    }>,
-  ) {
-    return this.apollo
-      .query<{ club: Club }>({
-        query: gql`
-          query Club($id: ID!) {
-            club(id: $id) {
-              id
-              fullName
-              slug
-              clubId
-              teams {
-                id
-                name
-              }
-            }
-          }
-        `,
-        variables: {
-          id: filter?.clubId,
-        },
-      })
-      .pipe(
-        catchError((err) => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        map((result) => {
-          if (!result?.data.club) {
-            throw new Error('No club found');
-          }
-          return result.data.club;
-        }),
-      );
-  }
+  // Public selectors
+  club = computed(() => this.clubResource.value());
+  error = computed(() => this.clubResource.error()?.message || null);
+  loading = computed(() => this.clubResource.isLoading());
 
-  private handleError(err: HttpErrorResponse) {
+  private handleError(err: HttpErrorResponse): string {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load club`);
-      return;
+      return 'Failed to load club';
     }
 
     // Generic error if no cases match
-    this.error$.next(err.statusText);
+    return err.statusText || 'An error occurred';
   }
 }

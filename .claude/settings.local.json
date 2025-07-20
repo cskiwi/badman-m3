@@ -23,7 +23,10 @@
       "Bash(sed:*)",
       "Bash(ls:*)",
       "Bash(dir)",
-      "WebFetch(domain:primeng.org)"
+      "WebFetch(domain:primeng.org)",
+      "Bash(nx build:*)",
+      "Bash(nx show:*)",
+      "Bash(nx lint:*)"
     ],
     "deny": []
   }

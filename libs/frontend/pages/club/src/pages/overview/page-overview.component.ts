@@ -31,7 +31,7 @@ export class PageOverviewComponent {
   private readonly dataService = new OverviewService();
 
   // selectors
-  clubs = this.dataService.state.clubs;
+  clubs = this.dataService.clubs;
   
   error = this.dataService.error;
   loading = this.dataService.loading;

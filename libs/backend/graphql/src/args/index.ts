@@ -6,6 +6,7 @@ import {
   Court,
   CronJob,
   TournamentDraw,
+  CompetitionEncounter,
   CompetitionEncounterChange,
   CompetitionEncounterChangeDate,
   Entry,
@@ -66,6 +67,7 @@ SortOrderType(Court, 'Court');
 SortOrderType(Entry, 'Entry');
 SortOrderType(Location, 'Location');
 SortOrderType(Standing, 'Standing');
+SortOrderType(CompetitionEncounter, 'CompetitionEncounter');
 SortOrderType(CompetitionEncounterChange, 'CompetitionEncounterChange');
 SortOrderType(CompetitionEncounterChangeDate, 'CompetitionEncounterChangeDate');
 SortOrderType(ImportFile, 'ImportFile');
@@ -103,6 +105,7 @@ appendSortableObjects(Court, 'Court');
 appendSortableObjects(Entry, 'Entry');
 appendSortableObjects(Location, 'Location');
 appendSortableObjects(Standing, 'Standing');
+appendSortableObjects(CompetitionEncounter, 'CompetitionEncounter');
 appendSortableObjects(CompetitionEncounterChange, 'CompetitionEncounterChange');
 appendSortableObjects(CompetitionEncounterChangeDate, 'CompetitionEncounterChangeDate');
 appendSortableObjects(ImportFile, 'ImportFile');
@@ -142,6 +145,7 @@ export const CourtArgs = args<Court>('Court');
 export const EntryArgs = args<Entry>('Entry');
 export const LocationArgs = args<Location>('Location');
 export const StandingArgs = args<Standing>('Standing');
+export const CompetitionEncounterArgs = args<CompetitionEncounter>('CompetitionEncounter');
 export const CompetitionEncounterChangeArgs = args<CompetitionEncounterChange>('CompetitionEncounterChange');
 export const CompetitionEncounterChangeDateArgs = args<CompetitionEncounterChangeDate>('CompetitionEncounterChangeDate');
 export const ImportFileArgs = args<ImportFile>('ImportFile');

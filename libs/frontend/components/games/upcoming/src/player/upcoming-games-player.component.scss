@@ -1,3 +1,85 @@
 :host {
   display: block;
 }
+
+.upcoming-games-container {
+  .game-content {
+    background: var(--surface-card);
+  }
+}
+
+// Game card styling enhancements
+.game-content {
+  .team-section {
+    .text-base {
+      @apply font-medium;
+      color: var(--text-color);
+    }
+  }
+}
+
+// Enhanced player layout for upcoming games
+.players-section {
+  .team-section {
+    > div {
+      // Player names maintain consistent spacing
+      @apply space-y-1;
+    }
+  }
+}
+
+// Upcoming game status indicators
+.w-4.h-4 {
+  &.bg-blue-300 {
+    background: var(--blue-300);
+    box-shadow: 0 0 6px var(--blue-100);
+    
+    .dark & {
+      background: var(--blue-400);
+      box-shadow: 0 0 6px rgba(59, 130, 246, 0.3);
+    }
+  }
+}
+
+// Empty state styling
+.empty-state {
+  color: var(--text-color-secondary);
+  
+  .rounded-full {
+    background: var(--surface-100);
+    border: 1px solid var(--surface-200);
+    
+    .dark & {
+      background: var(--surface-800);
+      border-color: var(--surface-600);
+    }
+    
+    i {
+      color: var(--text-color-secondary);
+    }
+  }
+  
+  h3 {
+    color: var(--text-color);
+  }
+}
+
+// Upcoming status badge styling
+.bg-blue-50 {
+  .dark & {
+    background: var(--blue-900) !important;
+    opacity: 0.2;
+  }
+}
+
+.text-blue-700 {
+  .dark & {
+    color: var(--blue-300) !important;
+  }
+}
+
+.text-blue-600 {
+  .dark & {
+    color: var(--blue-400) !important;
+  }
+}

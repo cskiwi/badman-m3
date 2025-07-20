@@ -45,9 +45,9 @@ export class PageHomeComponent {
     },
   ];
 
-  dataSource = this.dataService.state.table;
+  dataSource = this.dataService.table;
   loading = this.dataService.loading;
-  error = this.dataService.state.error;
+  error = this.dataService.error;
 
   constructor() {
     effect(() => {

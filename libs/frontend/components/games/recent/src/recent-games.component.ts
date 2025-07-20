@@ -7,7 +7,8 @@ import { RecentGamesPlayerComponent } from './player/recent-games-player.compone
     imports: [RecentGamesPlayerComponent, RecentGamesTeamComponent],
     templateUrl: './recent-games.component.html',
     styleUrl: './recent-games.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    
 })
 export class RecentGamesComponent {
   for = input.required<string | string[]>();

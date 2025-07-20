@@ -1,22 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject } from '@angular/core';
+import { computed, inject, resource } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, Subject, merge } from 'rxjs';
-import {
-  catchError,
-  distinctUntilChanged,
-  map,
-  switchMap,
-} from 'rxjs/operators';
-
-interface DetailState {
-  player: Player | null;
-  loading: boolean;
-  error: string | null;
-}
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
@@ -25,106 +12,73 @@ export class DetailService {
     playerId: new FormControl<string | null>(null),
   });
 
-  // state
-  private initialState: DetailState = {
-    player: null,
-    error: null,
-    loading: true,
-  };
+  // Convert form to signal for resource
+  private filterSignal = toSignal(this.filter.valueChanges);
 
-  // selectors
-  player = computed(() => this.state().player);
-  club = computed(
-    () =>
-      this.state().player?.clubPlayerMemberships?.find((cpm) => cpm.active)
-        ?.club,
-  );
-  error = computed(() => this.state().error);
-  loading = computed(() => this.state().loading);
+  private playerResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.playerId) {
+        return null;
+      }
 
-  //sources
-  private error$ = new Subject<string | null>();
-  private filterChanged$ = this.filter.valueChanges.pipe(
-    distinctUntilChanged((a, b) => a.playerId === b.playerId),
-  );
-
-  private data$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadData(filter)),
-    catchError((err) => {
-      this.error$.next(err);
-      return EMPTY;
-    }),
-  );
-
-  sources$ = merge(
-    this.data$.pipe(
-      map((player) => ({
-        player,
-        loading: false,
-      })),
-    ),
-    this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
-  );
-
-  state = signalSlice({
-    initialState: this.initialState,
-    sources: [this.sources$],
-  });
-
-  private _loadData(
-    filter: Partial<{
-      playerId: string | null;
-    }>,
-  ) {
-    return this.apollo
-      .query<{ player: Player }>({
-        query: gql`
-          query Player($id: ID!) {
-            player(id: $id) {
-              id
-              fullName
-              memberId
-              slug
-              clubPlayerMemberships {
-                end
-                start
-                active
-                club {
+      try {
+        const result = await this.apollo
+          .query<{ player: Player }>({
+            query: gql`
+              query Player($id: ID!) {
+                player(id: $id) {
                   id
-                  name
+                  fullName
+                  memberId
                   slug
+                  clubPlayerMemberships {
+                    end
+                    start
+                    active
+                    club {
+                      id
+                      name
+                      slug
+                    }
+                  }
                 }
               }
-            }
-          }
-        `,
-        variables: {
-          id: filter?.playerId,
-        },
-      })
-      .pipe(
-        catchError((err) => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        map((result) => {
-          if (!result?.data.player) {
-            throw new Error('No player found');
-          }
-          return result.data.player;
-        }),
-      );
-  }
+            `,
+            variables: {
+              id: params.playerId,
+            },
+            context: { signal: abortSignal },
+          })
+          .toPromise();
 
-  private handleError(err: HttpErrorResponse) {
+        if (!result?.data.player) {
+          throw new Error('No player found');
+        }
+        return result.data.player;
+      } catch (err) {
+        throw new Error(this.handleError(err as HttpErrorResponse));
+      }
+    },
+  });
+
+  // Public selectors
+  player = computed(() => this.playerResource.value());
+  club = computed(
+    () =>
+      this.player()?.clubPlayerMemberships?.find((cpm) => cpm.active)
+        ?.club,
+  );
+  error = computed(() => this.playerResource.error()?.message || null);
+  loading = computed(() => this.playerResource.isLoading());
+
+  private handleError(err: HttpErrorResponse): string {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load player`);
-      return;
+      return 'Failed to load player';
     }
 
     // Generic error if no cases match
-    this.error$.next(err.statusText);
+    return err.statusText || 'An error occurred';
   }
 }

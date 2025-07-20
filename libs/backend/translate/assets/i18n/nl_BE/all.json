@@ -83,5 +83,12 @@
       "nl_BE": "Nederlands",
       "title": "Taal"
     }
+  },
+  "system": {
+    "update": {
+      "available": "Update beschikbaar",
+      "description": "Nieuwe versie beschikbaar.",
+      "refresh": "Nu vernieuwen"
+    }
   }
 }

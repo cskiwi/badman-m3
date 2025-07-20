@@ -1,24 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject } from '@angular/core';
+import { computed, inject, resource } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CompetitionEvent } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, Subject, merge } from 'rxjs';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  startWith,
-  switchMap
-} from 'rxjs/operators';
-
-interface OverviewState {
-  competitions: CompetitionEvent[];
-  loading: boolean;
-  error: string | null;
-}
+import { debounceTime } from 'rxjs/operators';
 
 export class OverviewService {
   private readonly apollo = inject(Apollo);
@@ -27,95 +13,58 @@ export class OverviewService {
     query: new FormControl(undefined),
   });
 
-  // state
-  private initialState: OverviewState = {
-    competitions: [],
-    error: null,
-    loading: true,
-  };
+  // Convert form to signal for resource with debounce
+  private filterSignal = toSignal(this.filter.valueChanges.pipe(debounceTime(300)));
 
-  // selectors
-  competitions = computed(() => this.state().competitions);
-  error = computed(() => this.state().error);
-  loading = computed(() => this.state().loading);
+  private competitionsResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params) {
+        return [];
+      }
 
-  //sources
-  private error$ = new Subject<string | null>();
-  private filterChanged$ = this.filter.valueChanges.pipe(
-    startWith(this.filter.value),
-    distinctUntilChanged(),
-  );
+      try {
+        const result = await this.apollo
+          .query<{ competitionEvents: CompetitionEvent[] }>({
+            query: gql`
+              query Competitions($args: CompetitionEventArgs) {
+                competitionEvents(args: $args) {
+                  id
+                  name
+                  slug
+                }
+              }
+            `,
+            variables: {
+              args: { where: this._competitionSearchWhere(params.query) },
+            },
+            context: { signal: abortSignal },
+          })
+          .toPromise();
 
-  private data$ = this.filterChanged$.pipe(
-    debounceTime(300), // Queries are better when debounced
-    switchMap((filter) => this._loadData(filter)),
-    catchError((err) => {
-      this.error$.next(err);
-      return EMPTY;
-    }),
-  );
-
-  sources$ = merge(
-    this.data$.pipe(
-      map((competitions) => ({
-        competitions,
-        loading: false,
-      })),
-    ),
-    this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
-  );
-
-  state = signalSlice({
-    initialState: this.initialState,
-    sources: [this.sources$],
+        if (!result?.data.competitionEvents) {
+          throw new Error('No competitions found');
+        }
+        return result.data.competitionEvents;
+      } catch (err) {
+        throw new Error(this.handleError(err as HttpErrorResponse));
+      }
+    },
   });
 
-  private _loadData(
-    filter: Partial<{
-      query: string | null;
-      where: { [key: string]: unknown } | null;
-      emtpyWhere: { [key: string]: unknown };
-    }>,
-  ) {
-    return this.apollo
-      .query<{ competitionEvents: CompetitionEvent[] }>({
-        query: gql`
-          query Competitions($args: CompetitionEventArgs) {
-            competitionEvents(args: $args) {
-              id
-              name
-              slug
-            }
-          }
-        `,
-        variables: {
-          args: { where: this._competitionSearchWhere(filter.query) },
-        },
-      })
-      .pipe(
-        catchError((err) => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        map((result) => {
-          if (!result?.data.competitionEvents) {
-            throw new Error('No competitions found');
-          }
-          return result.data.competitionEvents;
-        }),
-      );
-  }
+  // Public selectors
+  competitions = computed(() => this.competitionsResource.value() ?? []);
+  error = computed(() => this.competitionsResource.error()?.message || null);
+  loading = computed(() => this.competitionsResource.isLoading());
 
-  private handleError(err: HttpErrorResponse) {
+  private handleError(err: HttpErrorResponse): string {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load competitions`);
-      return;
+      return 'Failed to load competitions';
     }
 
     // Generic error if no cases match
-    this.error$.next(err.statusText);
+    return err.statusText || 'An error occurred';
   }
 
   private _competitionSearchWhere(query: string | null | undefined) {

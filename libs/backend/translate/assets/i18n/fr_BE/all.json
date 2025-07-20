@@ -83,5 +83,12 @@
       "nl_BE": "Nederlands",
       "title": "Language"
     }
+  },
+  "system": {
+    "update": {
+      "available": "Mise à jour disponible",
+      "description": "Nouvelle version disponible.",
+      "refresh": "Actualiser maintenant"
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Between, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
+import { And, Between, FindOperator, ILike, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Or } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const queryFixer: (input: any) => unknown = (input: any) => {
@@ -14,8 +14,8 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
     if (input[key] === null || input[key] === undefined) {
       delete input[key];
       continue;
-    } else if (typeof input[key] === 'object' && key !== '$between') {
-      // Recursively apply queryFixer to nested objects
+    } else if (typeof input[key] === 'object' && key !== '$between' && !key.startsWith('$')) {
+      // For nested relationship objects, recursively apply queryFixer but preserve structure
       input[key] = queryFixer(input[key]);
     }
 
@@ -28,6 +28,21 @@ export const queryFixer: (input: any) => unknown = (input: any) => {
     }
 
     if (!key.startsWith('$')) {
+      continue;
+    }
+
+    // Handle logical operators
+    if (key === '$or' || key === '$and') {
+      if (Array.isArray(input[key])) {
+        const conditions = input[key].map((condition: any) => queryFixer(condition) as FindOperator<unknown>);
+        if (key === '$or') {
+          input = Or(...conditions);
+        } else if (key === '$and') {
+          input = And(...conditions);
+        }
+      } else {
+        console.warn(`${key} operator requires an array of conditions`);
+      }
       continue;
     }
 

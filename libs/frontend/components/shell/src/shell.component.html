@@ -1,50 +1,48 @@
 <div class="flex flex-col min-h-screen bg-emphasis text-color">
   <!-- Pinned Toolbar -->
-  <div class="fixed top-0 left-0 right-0 z-50 w-full pinned-toolbar" 
-       [class.scrolled]="isScrolled">
+  <div class="fixed top-0 left-0 right-0 z-50 w-full pinned-toolbar" [class.scrolled]="isScrolled()">
     <div class="max-w-screen-2xl mx-auto px-6">
-      <p-toolbar class="modern-toolbar"
-                 [class.toolbar-scrolled]="isScrolled">
-      <ng-template #start>
-        <div class="flex items-center space-x-4">
-          <h1 class="text-xl font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
+      <p-toolbar class="modern-toolbar" [class.toolbar-scrolled]="isScrolled()">
+        <ng-template #start>
+          <div class="flex items-center space-x-4">
+            <h1 class="text-xl font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
 
-          @if (isDesktop) {
-            <!-- Desktop Navigation Links -->
-            <nav class="flex items-center space-x-2">
-              @if (user()?.slug) {
-                <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/player', user()?.slug]" [text]="true" size="small" />
-                @if (clubs().length === 1) {
-                  <p-button [label]="'all.players.my-club' | translate" [routerLink]="['/club', clubs()[0].club.slug]" [text]="true" size="small" />
-                }
-              }
-            </nav>
-          } @else {
-            <!-- Mobile Menu Button -->
-            <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
-          }
-        </div>
-      </ng-template>
-
-      <ng-template #center>
-          <app-search />
-      </ng-template>
-
-      <ng-template #end>
-        <div class="flex items-center space-x-2">
-          <app-language-selection />
-          @if (user()?.firstName) {
-            <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
             @if (isDesktop) {
-              <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+              <!-- Desktop Navigation Links -->
+              <nav class="flex items-center space-x-2">
+                @if (user()?.slug) {
+                  <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/player', user()?.slug]" [text]="true" size="small" />
+                  @if (clubs().length === 1) {
+                    <p-button [label]="'all.players.my-club' | translate" [routerLink]="['/club', clubs()[0].club.slug]" [text]="true" size="small" />
+                  }
+                }
+              </nav>
             } @else {
-              <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+              <!-- Mobile Menu Button -->
+              <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
             }
-          } @else {
-            <p-button label="Log in" [outlined]="true" (click)="login()" />
-          }
-        </div>
-      </ng-template>
+          </div>
+        </ng-template>
+
+        <ng-template #center>
+          <app-search />
+        </ng-template>
+
+        <ng-template #end>
+          <div class="flex items-center space-x-2">
+            <app-language-selection />
+            @if (user()?.firstName) {
+              <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
+              @if (isDesktop) {
+                <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+              } @else {
+                <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" (click)="menu.toggle($event)" aria-label="User menu" />
+              }
+            } @else {
+              <p-button label="Log in" [outlined]="true" (click)="login()" />
+            }
+          </div>
+        </ng-template>
       </p-toolbar>
     </div>
   </div>
@@ -115,23 +113,18 @@
           <span class="text-sm">{{ message.detail }}</span>
           @if (message.data?.showRefreshButton) {
             <div class="mt-2">
-              <p-button 
-                [label]="'system.update.refresh' | translate" 
+              <p-button
+                [label]="'system.update.refresh' | translate"
                 [size]="'small'"
                 [outlined]="true"
-                (click)="refreshApp()" 
-                class="update-refresh-button" />
+                (click)="refreshApp()"
+                class="update-refresh-button"
+              />
             </div>
           }
         </div>
         @if (message.closable !== false) {
-          <p-button 
-            icon="pi pi-times" 
-            [text]="true" 
-            [rounded]="true" 
-            [size]="'small'"
-            class="p-button-text" 
-            (click)="messageService.clear()" />
+          <p-button icon="pi pi-times" [text]="true" [rounded]="true" [size]="'small'" class="p-button-text" (click)="messageService.clear()" />
         }
       </div>
     </ng-template>

@@ -1,58 +1,56 @@
-import { ApolloDriver } from '@nestjs/apollo';
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
-import { ConfigModule } from '@nestjs/config';
-import {
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault,
-} from '@apollo/server/plugin/landingPage/default';
+import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
 import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaReporting';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { AuthorizationModule } from '@app/backend-authorization';
+import { ApolloDriver } from '@nestjs/apollo';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
 import {
-  TournamentEventResolver,
-  TournamentSubEventResolver,
-  TournamentDrawResolver,
-  GroupSubeventMembershipResolver,
-  LocationEventMembershipResolver,
+  AvailabilityResolver,
   ClubPlayerMembershipResolver,
   ClubResolver,
-  CompetitionEventResolver,
-  CompetitionSubEventResolver,
-  CompetitionDrawResolver,
-  CompetitionEncounterResolver,
+  CommentResolver,
   CompetitionAssemblyResolver,
+  CompetitionDrawResolver,
+  CompetitionEncounterChangeDateResolver,
+  CompetitionEncounterChangeResolver,
+  CompetitionEncounterResolver,
+  CompetitionEventResolver,
   CompetitionGroupSubEventMembershipResolver,
+  CompetitionSubEventResolver,
+  CourtResolver,
+  CronJobResolver,
+  EntryResolver,
+  FaqResolver,
   GamePlayerMembershipResolver,
   GameResolver,
-  IndexResolver,
-  PlayerResolver,
-  RankingSystemResolver,
-  RankingPointResolver,
-  RankingPlaceResolver,
-  RankingLastPlaceResolver,
-  RankingGroupResolver,
-  UserResolver,
-  PlayerPermissionsResolver,
-  CommentResolver,
-  FaqResolver,
-  RequestLinkResolver,
-  SearchResolver,
-  AvailabilityResolver,
-  CourtResolver,
-  EntryResolver,
-  LocationResolver,
-  StandingResolver,
-  CompetitionEncounterChangeResolver,
-  CompetitionEncounterChangeDateResolver,
+  GroupSubeventMembershipResolver,
   ImportFileResolver,
-  NotificationResolver,
-  SettingResolver,
-  CronJobResolver,
+  IndexResolver,
+  LocationEventMembershipResolver,
+  LocationResolver,
   LogEntryResolver,
+  NotificationResolver,
+  PlayerPermissionsResolver,
+  PlayerResolver,
+  RankingGroupResolver,
+  RankingLastPlaceResolver,
+  RankingPlaceResolver,
+  RankingPointResolver,
+  RankingSystemResolver,
+  RequestLinkResolver,
   RuleResolver,
+  SearchResolver,
   ServiceResolver,
+  SettingResolver,
+  StandingResolver,
+  TeamPlayerMembershipResolver,
+  TeamResolver,
+  TournamentDrawResolver,
+  TournamentEventResolver,
+  TournamentSubEventResolver,
+  UserResolver,
 } from './resolvers';
 
 @Module({
@@ -68,9 +66,7 @@ import {
         const env = config.get<string>('NODE_ENV');
 
         if (env !== 'production') {
-          plugins.push(
-            ApolloServerPluginLandingPageLocalDefault({ footer: false }),
-          );
+          plugins.push(ApolloServerPluginLandingPageLocalDefault({ footer: false }));
         } else if (env === 'production') {
           plugins.push(
             ApolloServerPluginLandingPageProductionDefault({
@@ -141,6 +137,8 @@ import {
     LogEntryResolver,
     RuleResolver,
     ServiceResolver,
+    TeamResolver,
+    TeamPlayerMembershipResolver,
   ],
 })
 export class GraphQLModule {}

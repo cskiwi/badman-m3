@@ -1,20 +1,11 @@
-import { Injectable, PLATFORM_ID, computed, effect, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { Observable, merge, of } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
-
-import { signalSlice } from 'ngxtension/signal-slice';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 // import { RankingSystem } from '@app/models';
 import { isPlatformBrowser } from '@angular/common';
 
 type RankingSystem = any;
-
-export interface RankingState {
-  rankingSystem: RankingSystem | null;
-  loaded: boolean;
-}
 
 const SYSTEM_QUERY = gql`
   query GetRankingSystem($id: ID) {
@@ -63,10 +54,17 @@ export class RankingSystemService {
 
   watchId = computed(() => this.queryParams()?.get('watch'));
 
+  // Signals for state management
+  private rankingSystemSignal = signal<RankingSystem | null>(null);
+  private loadedSignal = signal<boolean>(false);
+
   constructor(){
+    // Load initial system from sessionStorage
+    this.loadInitialSystem();
+
     effect(() => {
       if (this.watchId()) {
-        this.state.watchSystem(this.watchId() as string);
+        this.watchSystem(this.watchId() as string);
 
         const queryParams: { [key: string]: string | undefined } = {
           ...this.route.snapshot.queryParams,
@@ -82,86 +80,85 @@ export class RankingSystemService {
     });
   }
 
-  // state
-  initialState: RankingState = {
-    rankingSystem: null,
-    loaded: false,
-  };
+  // Public selectors
+  system = computed(() => this.rankingSystemSignal());
+  systemId = computed(() => this.rankingSystemSignal()?.id);
+  primary = computed(() => this.rankingSystemSignal()?.primary);
+  loaded = computed(() => this.loadedSignal());
 
-  // selectors
-  system = computed(() => this.state().rankingSystem);
-  systemId = computed(() => this.state().rankingSystem?.id);
-  primary = computed(() => this.state().rankingSystem?.primary);
-
-  // sources
-  private servicesLoaded$ = of(
-    this.isBrowser
+  private async loadInitialSystem() {
+    const savedId = this.isBrowser
       ? sessionStorage?.getItem(WATCH_SYSTEM_ID_KEY) ?? null
-      : null,
-  ).pipe(switchMap((saved) => this._loadSystem(saved)));
-
-  sources$ = merge(
-    this.servicesLoaded$.pipe(
-      map((rankingSystem) => ({
-        rankingSystem,
-        loaded: true,
-      })),
-    ),
-  );
-
-  state = signalSlice({
-    initialState: this.initialState,
-    sources: [this.sources$],
-    actionSources: {
-      watchSystem: (_state, action$: Observable<string>) =>
-        action$.pipe(
-          filter(() => this.isBrowser),
-          tap((id) => sessionStorage.setItem(WATCH_SYSTEM_ID_KEY, id)),
-          switchMap((id) =>
-            this._loadSystem(id).pipe(
-              map((system) => ({ rankingSystem: system, loaded: true })),
-            ),
-          ),
-        ),
-      clearWatchSystem: (_state, action$: Observable<void>) =>
-        action$.pipe(
-          filter(() => this.isBrowser),
-          tap(() => sessionStorage.removeItem(WATCH_SYSTEM_ID_KEY)),
-          switchMap(() =>
-            this._loadSystem(null).pipe(
-              map((system) => ({ rankingSystem: system, loaded: true })),
-            ),
-          ),
-        ),
-      deleteSystem: (_state, action$: Observable<string>) =>
-        action$.pipe(
-          // delete system
-          switchMap((id) => this._deleteSystem(id)),
-          // load the default system
-          switchMap(() =>
-            this._loadSystem(null).pipe(
-              map((system) => ({ rankingSystem: system, loaded: true })),
-            ),
-          ),
-        ),
-    },
-  
-  });
-
-  private _loadSystem(id?: string | null) {
-    return this.apollo
-      .query<{
-        rankingSystem: RankingSystem;
-      }>({
-        query: SYSTEM_QUERY,
-        variables: {
-          id: id ?? null,
-        },
-      })
-      .pipe(map((res) => res.data?.rankingSystem));
+      : null;
+    
+    try {
+      const system = await this._loadSystem(savedId);
+      this.rankingSystemSignal.set(system);
+      this.loadedSignal.set(true);
+    } catch (error) {
+      this.loadedSignal.set(true);
+    }
   }
 
-  private _deleteSystem(id?: string | null) {
+  async watchSystem(id: string) {
+    if (!this.isBrowser) return;
+    
+    sessionStorage.setItem(WATCH_SYSTEM_ID_KEY, id);
+    
+    try {
+      const system = await this._loadSystem(id);
+      this.rankingSystemSignal.set(system);
+      this.loadedSignal.set(true);
+    } catch (error) {
+      this.loadedSignal.set(true);
+    }
+  }
+
+  async clearWatchSystem() {
+    if (!this.isBrowser) return;
+    
+    sessionStorage.removeItem(WATCH_SYSTEM_ID_KEY);
+    
+    try {
+      const system = await this._loadSystem(null);
+      this.rankingSystemSignal.set(system);
+      this.loadedSignal.set(true);
+    } catch (error) {
+      this.loadedSignal.set(true);
+    }
+  }
+
+  async deleteSystem(id: string) {
+    try {
+      await this._deleteSystem(id);
+      const system = await this._loadSystem(null);
+      this.rankingSystemSignal.set(system);
+      this.loadedSignal.set(true);
+    } catch (error) {
+      this.loadedSignal.set(true);
+    }
+  }
+
+  private async _loadSystem(id?: string | null): Promise<RankingSystem | null> {
+    try {
+      const result = await this.apollo
+        .query<{
+          rankingSystem: RankingSystem;
+        }>({
+          query: SYSTEM_QUERY,
+          variables: {
+            id: id ?? null,
+          },
+        })
+        .toPromise();
+      
+      return result?.data?.rankingSystem || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  private async _deleteSystem(id?: string | null) {
     return this.apollo.mutate({
       mutation: gql`
         mutation RemoveRankingSystem($id: ID!) {
@@ -171,6 +168,6 @@ export class RankingSystemService {
       variables: {
         id: id,
       },
-    });
+    }).toPromise();
   }
 }

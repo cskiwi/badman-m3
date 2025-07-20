@@ -91,6 +91,13 @@ export type I18nTranslations = {
                 "title": string;
             };
         };
+        "system": {
+            "update": {
+                "available": string;
+                "description": string;
+                "refresh": string;
+            };
+        };
     };
 };
 /* prettier-ignore */

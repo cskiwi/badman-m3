@@ -1,78 +1,115 @@
-import { Injectable, inject } from '@angular/core';
-import { Player } from '@app/models';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable, computed, inject, resource } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CompetitionEncounter } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import { signalSlice } from 'ngxtension/signal-slice';
-import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import moment from 'moment';
 
-export interface UpcomingGameTeamState {
-  encounters: unknown;
-  loaded: boolean;
-}
+const UPCOMING_TEAM_GAMES_QUERY = gql`
+  query UpcomingTeamGames($teamId: ID!) {
+    competitionEncounters(where: { 
+      $or: [
+        { homeTeamId: $teamId },
+        { awayTeamId: $teamId }
+      ]
+    }) {
+      id
+      date
+      drawCompetition {
+        id
+      }
+      homeTeam {
+        id
+        name
+        abbreviation
+        slug
+      }
+      awayTeam {
+        id
+        name
+        abbreviation
+        slug
+      }
+    }
+  }
+`;
 
 @Injectable({
   providedIn: 'root',
 })
-export class ShowLevelService {
-  apollo = inject(Apollo);
+export class UpcomingGamesTeamService {
+  private readonly apollo = inject(Apollo);
 
-  initialState: UpcomingGameTeamState = {
-    encounters: null,
-    loaded: false,
-  };
+  itemsPerPage = 10;
 
-  // sources
-  state = signalSlice({
-    initialState: this.initialState,
-    actionSources: {
-      getRanking: (
-        _state,
-        action$: Observable<{
-          id: string;
-          systemId: string;
-        }>,
-      ) =>
-        action$.pipe(
-          switchMap(({ id, systemId }) =>
-            this.apollo.query<{
-              player: Player;
-            }>({
-              query: gql`
-                query GetPlayerLevel($id: ID!, $args: RankingLastPlaceArgs) {
-                  player(id: $id) {
-                    id
-                    rankingLastPlaces(args: $args) {
-                      id
-                      single
-                      singlePoints
-                      singlePointsDowngrade
-                      double
-                      doublePoints
-                      doublePointsDowngrade
-                      mix
-                      mixPoints
-                      mixPointsDowngrade
-                      systemId
-                    }
-                  }
-                }
-              `,
-              variables: {
-                id,
-                args: {
-                  where: {
-                    systemId: systemId || null,
-                  },
-                },
-              },
-            }),
-          ),
-          map((res) => res.data?.player),
-          map((player) => ({
-            rankingPlace: player?.rankingLastPlaces?.[0],
-            loaded: true,
-          })),
-        ),
+  filter = new FormGroup({
+    teamId: new FormControl<string | null>(null),
+    page: new FormControl<number>(1),
+  });
+
+  // Convert form to signal for resource
+  private filterSignal = toSignal(this.filter.valueChanges);
+
+  private upcomingGamesResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.teamId) {
+        return { games: [], endReached: true };
+      }
+
+      try {
+        const result = await this.apollo
+          .query<{ competitionEncounters: CompetitionEncounter[] }>({
+            query: UPCOMING_TEAM_GAMES_QUERY,
+            variables: { teamId: params.teamId },
+            context: { signal: abortSignal },
+          })
+          .toPromise();
+
+        if (!result?.data?.competitionEncounters) {
+          return { games: [], endReached: true };
+        }
+
+        let encounters = result.data.competitionEncounters;
+
+        // Filter for upcoming encounters (date >= today)
+        const today = moment().startOf('day');
+        encounters = encounters.filter((encounter) => encounter.date && moment(encounter.date).isSameOrAfter(today));
+
+        // Sort by date ascending
+        encounters = encounters.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+
+        // Apply pagination
+        const page = params.page || 1;
+        const startIndex = (page - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        const paginatedGames = encounters.slice(startIndex, endIndex);
+
+        return { 
+          games: paginatedGames, 
+          endReached: paginatedGames.length < this.itemsPerPage 
+        };
+      } catch (err) {
+        throw new Error(this.handleError(err as HttpErrorResponse));
+      }
     },
   });
+
+  // Public selectors
+  games = computed(() => this.upcomingGamesResource.value()?.games ?? []);
+  loading = computed(() => this.upcomingGamesResource.isLoading());
+  error = computed(() => this.upcomingGamesResource.error()?.message || null);
+  endReached = computed(() => this.upcomingGamesResource.value()?.endReached ?? true);
+  page = computed(() => this.filter.get('page')?.value ?? 1);
+
+  private handleError(err: HttpErrorResponse): string {
+    // Handle specific error cases
+    if (err.status === 404 && err.url) {
+      return 'Failed to load upcoming encounters';
+    }
+
+    // Generic error if no cases match
+    return err.statusText || 'An error occurred';
+  }
 }

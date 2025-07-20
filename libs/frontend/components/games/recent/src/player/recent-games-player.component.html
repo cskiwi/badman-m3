@@ -5,9 +5,9 @@
     </div>
   } @else {
     @for (game of games(); track game.id) {
-      <div class="rounded-border border overflow-hidden mb-6 transition-all duration-200 hover:shadow-lg">
+      <div class="rounded-border overflow-hidden mb-6 transition-all duration-200 hover:shadow-lg">
         <!-- Game Header -->
-        <div class="bg-highlight px-6 py-4 border-b border-surface-border">
+        <div class="bg-highlight px-6 py-4">
           <div class="flex justify-between items-center">
             <!-- Left: Date and Time -->
             <div class="flex items-center gap-3 text-sm min-w-0">
@@ -53,7 +53,7 @@
         </div>
 
         <!-- Game Content -->
-        <div class="game-content p-6">
+        <div class="game-content pt-6">
           <!-- Players/Teams Section -->
           <div class="players-section">
             <!-- Team Labels for Competition Games -->
@@ -177,8 +177,7 @@
                 <div class="w-4 h-4"></div>
               </div>
               <div class="flex items-center">
-                <div class="px-6 py-1">
-                </div>
+                <div class="px-6 py-1"></div>
               </div>
               <div class="flex items-center">
                 <div class="w-4 h-4"></div>
@@ -195,8 +194,6 @@
               </div>
             </div>
           </div>
-
-          <p-divider class="my-6" />
 
           <!-- Score Section -->
           <div class="score-section">

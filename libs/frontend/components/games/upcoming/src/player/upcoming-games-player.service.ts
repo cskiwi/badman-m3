@@ -1,154 +1,166 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject } from '@angular/core';
+import { Injectable, computed, inject, resource } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Game, Player } from '@app/models';
+import { CompetitionEncounter } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
-import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, merge, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
-interface PlayerUpcommingGamesState {
-  games: Game[];
-  loading: boolean;
-  error: string | null;
-}
+const UPCOMING_GAMES_QUERY = gql`
+  query UpcomingGames {
+    competitionEncounters {
+      id
+      date
+      drawCompetition {
+        id
+      }
+      homeTeam {
+        id
+        name
+        abbreviation
+        slug
+      }
+      awayTeam {
+        id
+        name
+        abbreviation
+        slug
+      }
+    }
+  }
+`;
 
-const PLAYER_UPCOMING_GAMES_QUERY = gql`
-  query PlayerUpcommingGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
+const PLAYER_TEAMS_QUERY = gql`
+  query PlayerTeams($playerId: ID!) {
     player(id: $playerId) {
       id
-      gamePlayerMemberships(args: $args) {
+      teamPlayerMemberships {
         id
-        game {
+        team {
           id
-          playedAt
-          gameType
-          gamePlayerMemberships {
-            id
-            player
-            single
-            team
-            mix
-            double
-            gamePlayer {
-              id
-              fullName
-            }
-          }
         }
       }
     }
   }
 `;
 
+
+@Injectable({
+  providedIn: 'root',
+})
 export class PlayerUpcommingGamesService {
   private readonly apollo = inject(Apollo);
 
+  itemsPerPage = 10;
+
   filter = new FormGroup({
+    teamIds: new FormControl<string[]>([]),
+    clubId: new FormControl<string>(''),
     playerId: new FormControl<string | null>(null),
-    skip: new FormControl<number>(0),
-    take: new FormControl<number>(10),
+    page: new FormControl<number>(1),
   });
 
-  // state
-  private initialState: PlayerUpcommingGamesState = {
-    games: [],
-    error: null,
-    loading: true,
-  };
+  // Convert form to signal for resource
+  private filterSignal = toSignal(this.filter.valueChanges);
 
-  // selectors
-  games = computed(() => this.state().games);
+  private upcomingGamesResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.playerId) {
+        return { games: [], endReached: true };
+      }
 
-  loading = computed(() => this.state().loading);
+      try {
+        // First fetch player team IDs if needed
+        let teamIds = params.teamIds || [];
+        if (params.playerId && teamIds.length === 0) {
+          teamIds = await this._fetchPlayerTeamIds(params.playerId);
+          // Update filter with fetched team IDs without emitting
+          this.filter.patchValue({ teamIds }, { emitEvent: false });
+        }
 
-  //sources
-  private error$ = new Subject<string | null>();
-  private filterChanged$ = this.filter.valueChanges.pipe(distinctUntilChanged((a, b) => a.playerId === b.playerId));
+        const result = await this.apollo
+          .query<{ competitionEncounters: CompetitionEncounter[] }>({
+            query: UPCOMING_GAMES_QUERY,
+            context: { signal: abortSignal },
+          })
+          .toPromise();
 
-  private data$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadData(filter)),
-    catchError((err) => {
-      this.error$.next(err);
-      return EMPTY;
-    }),
-  );
+        if (!result?.data?.competitionEncounters) {
+          return { games: [], endReached: true };
+        }
 
-  sources$ = merge(
-    this.data$.pipe(
-      map((games) => ({
-        games,
-        loading: false,
-      })),
-    ),
-    this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
-  );
+        let encounters = result.data.competitionEncounters;
 
-  state = signalSlice({
-    initialState: this.initialState,
-    sources: [this.sources$],
-    selectors: (state) => ({
-      loadedAndError: () => {
-        return !state().loading && state().error;
-      },
-    }),
+        // Filter for upcoming encounters (date >= today)
+        const today = moment().startOf('day');
+        encounters = encounters.filter((encounter) => encounter.date && moment(encounter.date).isSameOrAfter(today));
+
+        // Filter by team IDs if provided
+        if (teamIds && teamIds.length > 0) {
+          encounters = encounters.filter(
+            (encounter) =>
+              (encounter.homeTeamId && teamIds.includes(encounter.homeTeamId)) ||
+              (encounter.awayTeamId && teamIds.includes(encounter.awayTeamId)),
+          );
+        }
+
+        // Sort by date ascending
+        encounters = encounters.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+
+        // Apply pagination
+        const page = params.page || 1;
+        const startIndex = (page - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        const paginatedGames = encounters.slice(startIndex, endIndex);
+
+        return { 
+          games: paginatedGames, 
+          endReached: paginatedGames.length < this.itemsPerPage 
+        };
+      } catch (err) {
+        throw new Error(this._handleError(err as HttpErrorResponse));
+      }
+    },
   });
 
-  private _loadData(
-    filter: Partial<{
-      playerId: string | null;
-      skip: number | null;
-      take: number | null;
-    }>,
-  ) {
-    return this.apollo
-      .query<{ player: Player }>({
-        query: PLAYER_UPCOMING_GAMES_QUERY,
-        variables: {
-          playerId: filter?.playerId,
-          args: {
-            skip: filter?.skip,
-            take: filter?.take,
-            where: {
-              game: {
-                playedAt: {
-                  $gt: moment().format('YYYY-MM-DD'),
-                },
-              },
-            },
-            order: {
-              game: {
-                playedAt: 'DESC',
-              },
-            },
-          },
-        },
-      })
-      .pipe(
-        catchError((err) => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        map((result) => {
-          if (!result?.data.player?.gamePlayerMemberships) {
-            throw new Error('No rankingSystem found');
-          }
-          return result.data.player.gamePlayerMemberships;
-        }),
-        map((games) => games.map((game) => game.game).flat()),
-      );
+  // Public selectors
+  games = computed(() => this.upcomingGamesResource.value()?.games ?? []);
+  loading = computed(() => this.upcomingGamesResource.isLoading());
+  error = computed(() => this.upcomingGamesResource.error()?.message || null);
+  endReached = computed(() => this.upcomingGamesResource.value()?.endReached ?? true);
+  page = computed(() => this.filter.get('page')?.value ?? 1);
+  hasHomeTeam = computed(() => {
+    const games = this.games();
+    return games.some(game => game.homeTeam);
+  });
+
+  private async _fetchPlayerTeamIds(playerId: string): Promise<string[]> {
+    try {
+      const result = await this.apollo
+        .query<{ player: { id: string; teamPlayerMemberships: { id: string; team: { id: string } }[] } }>({
+          query: PLAYER_TEAMS_QUERY,
+          variables: { playerId },
+        })
+        .toPromise();
+
+      if (!result?.data.player?.teamPlayerMemberships) {
+        return [];
+      }
+      return result.data.player.teamPlayerMemberships.map((membership) => membership.team.id);
+    } catch {
+      return []; // Return empty array on error
+    }
   }
 
-  private handleError(err: HttpErrorResponse) {
+
+  private _handleError(err: HttpErrorResponse): string {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load rankingSystem`);
-      return;
+      return 'Failed to load upcoming encounters';
     }
 
     // Generic error if no cases match
-    this.error$.next(err.statusText);
+    return err.statusText || 'An error occurred';
   }
 }

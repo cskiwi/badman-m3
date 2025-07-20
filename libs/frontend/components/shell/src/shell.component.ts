@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, PLATFORM_ID, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, computed, HostListener, inject, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -7,25 +7,36 @@ import { ThemeService } from '@app/frontend-modules-theme';
 import { LanguageSelectionComponent } from '@app/frontend-modules-translation/selection';
 import { IS_MOBILE } from '@app/frontend-utils';
 import { ClubMembershipType } from '@app/model/enums';
+import { ClubPlayerMembership } from '@app/models';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { filter, map } from 'rxjs/operators';
-import { SearchComponent } from './components';
+import type { MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
 import { DividerModule } from 'primeng/divider';
+import { MenuModule } from 'primeng/menu';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { MessageService } from 'primeng/api';
-import type { MenuItem } from 'primeng/api';
+import { filter, map } from 'rxjs/operators';
+import { SearchComponent } from './components';
 
 @Component({
-  imports: [RouterModule, TranslateModule, ButtonModule, MenuModule, DividerModule, ToastModule, ToolbarModule, SearchComponent, LanguageSelectionComponent],
+  imports: [
+    RouterModule,
+    TranslateModule,
+    ButtonModule,
+    MenuModule,
+    DividerModule,
+    ToastModule,
+    ToolbarModule,
+    SearchComponent,
+    LanguageSelectionComponent,
+  ],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   providers: [MessageService],
 })
-export class ShellComponent implements OnInit {
+export class ShellComponent {
   private readonly platformId = inject<string>(PLATFORM_ID);
   readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
@@ -35,9 +46,9 @@ export class ShellComponent implements OnInit {
   auth = inject(AuthService);
   readonly themeService = inject(ThemeService);
 
-  user = this.auth.state.user;
+  user = this.auth.user;
   sidebarVisible = false;
-  isScrolled = false;
+  isScrolled = signal(false);
 
   // Theme computed properties
   isDarkMode = computed(() => this.themeService.currentTheme() === 'dark');
@@ -93,8 +104,8 @@ export class ShellComponent implements OnInit {
 
   clubs = computed(() => {
     return (this.user()?.clubPlayerMemberships ?? [])
-      .filter((membership) => membership?.active)
-      .sort((a, b) => {
+      .filter((membership: ClubPlayerMembership) => membership?.active)
+      .sort((a: ClubPlayerMembership, b: ClubPlayerMembership) => {
         // sort by membership type, first normal then loan
         if (a?.membershipType === b?.membershipType) {
           return 0;
@@ -113,7 +124,7 @@ export class ShellComponent implements OnInit {
   });
 
   login() {
-    this.auth.state.login({
+    this.auth.login({
       appState: {
         target: window.location.pathname,
       },
@@ -121,7 +132,7 @@ export class ShellComponent implements OnInit {
   }
 
   logout() {
-    this.auth.state.logout();
+    this.auth.logout();
   }
 
   toggleSidebar() {
@@ -149,13 +160,7 @@ export class ShellComponent implements OnInit {
   @HostListener('window:scroll', ['$event'])
   onWindowScroll() {
     if (isPlatformBrowser(this.platformId)) {
-      this.isScrolled = window.scrollY > 10;
-    }
-  }
-
-  ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isScrolled = window.scrollY > 10;
+      this.isScrolled.set(window.scrollY > 10);
     }
   }
 

@@ -10,7 +10,7 @@ import {
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+import { provideClientHydration, withHttpTransferCacheOptions, withIncrementalHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -21,12 +21,12 @@ import { langulageInitializer, provideTranslation } from '@app/frontend-modules-
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import Aura from '@primeuix/themes/aura';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { MomentModule } from 'ngx-moment';
+import { providePrimeNG } from 'primeng/config';
 import { environment } from '../src/environments/environment';
 import { appRoutes } from './app.routes';
-import Aura from '@primeuix/themes/aura';
-import { providePrimeNG } from 'primeng/config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -61,6 +61,7 @@ export const appConfig: ApplicationConfig = {
       ),
     ),
     provideClientHydration(
+      withIncrementalHydration(),
       withHttpTransferCacheOptions({
         includePostRequests: true,
       }),

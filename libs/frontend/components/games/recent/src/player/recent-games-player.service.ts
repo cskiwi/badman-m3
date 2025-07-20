@@ -1,12 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { computed, inject } from '@angular/core';
+import { computed, inject, resource } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Game, GamePlayerMembership, Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
-import { signalSlice } from 'ngxtension/signal-slice';
-import { EMPTY, merge, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
 const PLAYER_RECENT_GAMES_QUERY = gql`
   query PlayerRecentGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
@@ -107,12 +105,6 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
   }
 `;
 
-interface PlayerRecentGamesState {
-  games: Game[];
-  loading: boolean;
-  error: string | null;
-}
-
 export class PlayerRecentGamesService {
   private readonly apollo = inject(Apollo);
 
@@ -122,112 +114,78 @@ export class PlayerRecentGamesService {
     take: new FormControl<number>(10),
   });
 
-  // state
-  private initialState: PlayerRecentGamesState = {
-    games: [],
-    error: null,
-    loading: true,
-  };
+  // Convert form to signal for resource
+  private filterSignal = toSignal(this.filter.valueChanges);
 
-  // selectors
-  games = computed(() => this.state().games);
+  private recentGamesResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.playerId) {
+        return [];
+      }
 
-  loading = computed(() => this.state().loading);
+      const variables = {
+        playerId: params.playerId,
+        args: {
+          skip: params.skip,
+          take: params.take,
+          where: {
+            game: {
+              set1Team1: {
+                $gt: 0,
+              },
+              set1Team2: {
+                $gt: 0,
+              },
+              playedAt: {
+                $lte: moment().format('YYYY-MM-DD'),
+              },
+            },
+          },
+          order: {
+            game: {
+              playedAt: 'DESC',
+            },
+          },
+        },
+      };
 
-  //sources
-  private error$ = new Subject<string | null>();
-  private filterChanged$ = this.filter.valueChanges.pipe(distinctUntilChanged((a, b) => a.playerId === b.playerId));
+      try {
+        const result = await this.apollo
+          .query<{ player: Player }>({
+            query: PLAYER_RECENT_GAMES_QUERY,
+            variables,
+            context: { signal: abortSignal },
+          })
+          .toPromise();
 
-  private data$ = this.filterChanged$.pipe(
-    switchMap((filter) => this._loadData(filter)),
-    catchError((err) => {
-      this.error$.next(err);
-      return EMPTY;
-    }),
-  );
+        if (!result?.data.player?.gamePlayerMemberships) {
+          throw new Error('No player found');
+        }
 
-  sources$ = merge(
-    this.data$.pipe(
-      map((games) => ({
-        games,
-        loading: false,
-      })),
-    ),
-    this.error$.pipe(map((error) => ({ error }))),
-    this.filterChanged$.pipe(map(() => ({ loading: true }))),
-  );
-
-  state = signalSlice({
-    initialState: this.initialState,
-    sources: [this.sources$],
-    selectors: (state) => ({
-      loadedAndError: () => {
-        return !state().loading && state().error;
-      },
-    }),
+        const games = result.data.player.gamePlayerMemberships.map((gpm) => gpm.game);
+        return games;
+      } catch (err) {
+        throw new Error(this.handleError(err as HttpErrorResponse));
+      }
+    },
   });
 
-  private _loadData(
-    filter: Partial<{
-      playerId: string | null;
-      skip: number | null;
-      take: number | null;
-    }>,
-  ) {
-    const variables = {
-      playerId: filter?.playerId,
-      args: {
-        skip: filter?.skip,
-        take: filter?.take,
-        where: {
-          game: {
-            set1Team1: {
-              $gt: 0,
-            },
-            set1Team2: {
-              $gt: 0,
-            },
-            playedAt: {
-              $lte: moment().format('YYYY-MM-DD'),
-            },
-          },
-        },
-        order: {
-          game: {
-            playedAt: 'DESC',
-          },
-        },
-      },
-    };
+  // Public selectors
+  games = computed(() => this.recentGamesResource.value() ?? []);
+  loading = computed(() => this.recentGamesResource.isLoading());
+  error = computed(() => this.recentGamesResource.error()?.message || null);
+  loadedAndError = computed(() => {
+    return !this.loading() && this.error();
+  });
 
-    return this.apollo
-      .query<{ player: Player }>({
-        query: PLAYER_RECENT_GAMES_QUERY,
-        variables,
-      })
-      .pipe(
-        catchError((err) => {
-          this.handleError(err);
-          return EMPTY;
-        }),
-        map((result) => {
-          if (!result?.data.player?.gamePlayerMemberships) {
-            throw new Error('No rankingSystem found');
-          }
-          return result.data.player.gamePlayerMemberships as GamePlayerMembership[];
-        }),
-        map((games) => games.map((game) => game.game).flat()),
-      );
-  }
-
-  private handleError(err: HttpErrorResponse) {
+  private handleError(err: HttpErrorResponse): string {
     // Handle specific error cases
     if (err.status === 404 && err.url) {
-      this.error$.next(`Failed to load rankingSystem`);
-      return;
+      return 'Failed to load recent games';
     }
 
     // Generic error if no cases match
-    this.error$.next(err.statusText);
+    return err.statusText || 'An error occurred';
   }
 }

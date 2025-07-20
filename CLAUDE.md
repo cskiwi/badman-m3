@@ -138,6 +138,36 @@ Generated types available in `libs/utils/src/translation/i18n.generated.ts`.
 - Maintain JSDoc comments during refactoring
 - Write tests using Jest framework
 
+### State Management and Data Fetching Patterns (libs/frontend)
+- **Preferred**: Use Angular's `resource()` API for data fetching with reactive forms
+- **Pattern**: Convert FormControl valueChanges to signals with `toSignal()`, use as resource params
+- **Structure**: 
+  ```typescript
+  // Convert form to signal for resource
+  private filterSignal = toSignal(this.filter.valueChanges);
+  
+  private dataResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      // Apollo GraphQL query with abort signal support
+      const result = await this.apollo.query({
+        query: MY_QUERY,
+        variables: params,
+        context: { signal: abortSignal }
+      }).toPromise();
+      return result?.data;
+    }
+  });
+  
+  // Public computed selectors
+  data = computed(() => this.dataResource.value() ?? []);
+  loading = computed(() => this.dataResource.isLoading());
+  error = computed(() => this.dataResource.error()?.message || null);
+  ```
+- **Benefits**: Built-in loading states, error handling, automatic cancellation, better performance
+- **Avoid**: `signalSlice`, `connect` patterns except for complex authentication or action-based state management
+- **Exception**: Use simple signals with async methods for imperative actions (e.g., `getRanking()` calls)
+
 ### Code Quality Standards
 - **Naming**: PascalCase for classes, camelCase for variables/functions, kebab-case for files
 - **Functions**: Start with verbs, use is/has/can for booleans, early returns for validation
