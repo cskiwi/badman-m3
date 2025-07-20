@@ -40,6 +40,7 @@ export type I18nTranslations = {
                 "opponents": string;
                 "partner-club": string;
                 "partners": string;
+                "single": string;
                 "start-date": string;
                 "title": string;
                 "tournament": string;

@@ -13,23 +13,11 @@
 .game-content {
   .team-section {
     .text-base {
-      @apply font-medium;
       color: var(--text-color);
     }
   }
 }
 
-// Enhanced player and points layout
-.players-section {
-  // Two-row layout: names row + points row
-  .team-section {
-    // Team sections in both rows maintain equal width
-    > div {
-      // Player names maintain consistent spacing
-      @apply space-y-1;
-    }
-  }
-}
 
 // Score section enhancements
 .score-section {
