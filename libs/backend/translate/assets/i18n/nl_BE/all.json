@@ -10,7 +10,7 @@
       "title": "Komende ontmoetingen"
     }
   },
-  "partner": {
+  "head-to-head": {
     "amount-of-games": "Aantal wedstrijden",
     "club": "Club",
     "filter-groups": {
@@ -55,6 +55,7 @@
     },
     "name": "Naam",
     "partner": "Partner",
+    "title": "Head to head",
     "win-rate": "Win percentage",
     "win-rate-against": "Winpercentage tegen"
   },

@@ -5,7 +5,7 @@
 <p-card class="filters-card mb-3">
   <ng-template pTemplate="header">
     <div class="px-3 py-1 flex justify-between items-center cursor-pointer" (click)="toggleFilters()">
-      <h3 class="text-base font-medium m-0">{{ 'all.partner.filters.title' | translate }}</h3>
+      <h3 class="text-base font-medium m-0">{{ 'all.head-to-head.filters.title' | translate }}</h3>
       <div class="flex items-center justify-center w-8 h-8">
         <i class="pi transition-transform duration-200 text-gray-400" 
            [class.pi-chevron-down]="filtersExpanded()"
@@ -21,34 +21,34 @@
         <!-- Analysis Mode Column -->
         <div class="filter-group">
           <span class="block text-base font-medium text-blue-600 mb-2 border-b border-blue-200 pb-1">
-            {{ 'all.partner.filter-groups.view-mode' | translate }}
+            {{ 'all.head-to-head.filter-groups.view-mode' | translate }}
           </span>
           <div class="space-y-2">
             <p-iftalabel>
               <p-select formControlName="viewMode" inputId="view-mode-filter" [options]="viewModeOptions" optionLabel="label" optionValue="value" />
-              <label for="view-mode-filter">{{ 'all.partner.filters.view-mode' | translate }}</label>
+              <label for="view-mode-filter">{{ 'all.head-to-head.filters.view-mode' | translate }}</label>
             </p-iftalabel>
           </div>
         </div>
 
-        <!-- Partner/Opponent Filters Column -->
+        <!-- head-to-head/Opponent Filters Column -->
         <div class="filter-group">
           <span class="block text-base font-medium text-orange-600 mb-2 border-b border-orange-200 pb-1">
-            {{ isOpponentMode() ? ('all.partner.filter-groups.opponent-filters' | translate) : ('all.partner.filter-groups.partner-filters' | translate) }}
+            {{ isOpponentMode() ? ('all.head-to-head.filter-groups.opponent-filters' | translate) : ('all.head-to-head.filter-groups.partner-filters' | translate) }}
           </span>
           <div class="space-y-2">
             @if (isOpponentMode()) {
               <p-iftalabel>
                 <p-select
-                  formControlName="partnerFilter"
-                  inputId="partner-filter"
-                  [options]="partnerOptions()"
+                  formControlName="head-to-headFilter"
+                  inputId="head-to-head-filter"
+                  [options]="partnerClubOptions()"
                   optionLabel="label"
                   optionValue="value"
                   [filter]="true"
-                  filterPlaceholder="Search partners..."
+                  filterPlaceholder="Search head-to-heads..."
                 />
-                <label for="partner-filter">{{ 'all.partner.filters.with-partner' | translate }}</label>
+                <label for="head-to-head-filter">{{ 'all.head-to-head.filters.with-head-to-head' | translate }}</label>
               </p-iftalabel>
               
               <p-iftalabel>
@@ -61,20 +61,20 @@
                   [filter]="true"
                   filterPlaceholder="Search clubs..."
                 />
-                <label for="opponent-club-filter">{{ 'all.partner.filters.opponent-club' | translate }}</label>
+                <label for="opponent-club-filter">{{ 'all.head-to-head.filters.opponent-club' | translate }}</label>
               </p-iftalabel>
             } @else {
               <p-iftalabel>
                 <p-select
                   formControlName="partnerClub"
-                  inputId="partner-club-filter"
+                  inputId="head-to-head-club-filter"
                   [options]="partnerClubOptions()"
                   optionLabel="label"
                   optionValue="value"
                   [filter]="true"
                   filterPlaceholder="Search clubs..."
                 />
-                <label for="partner-club-filter">{{ 'all.partner.filters.partner-club' | translate }}</label>
+                <label for="head-to-head-club-filter">{{ 'all.head-to-head.filters.opponent-club' | translate }}</label>
               </p-iftalabel>
             }
           </div>
@@ -83,17 +83,17 @@
         <!-- Time & Performance Column -->
         <div class="filter-group">
           <span class="block text-base font-medium text-green-600 mb-2 border-b border-green-200 pb-1">
-            {{ 'all.partner.filter-groups.time-performance' | translate }}
+            {{ 'all.head-to-head.filter-groups.time-performance' | translate }}
           </span>
           <div class="space-y-2">
             <p-iftalabel>
               <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
-              <label for="date-filter">{{ 'all.partner.filters.start-date' | translate }}</label>
+              <label for="date-filter">{{ 'all.head-to-head.filters.start-date' | translate }}</label>
             </p-iftalabel>
 
             <p-iftalabel>
               <input type="number" formControlName="minGames" id="min-games-filter" pInputText />
-              <label for="min-games-filter">{{ 'all.partner.filters.games' | translate }}</label>
+              <label for="min-games-filter">{{ 'all.head-to-head.filters.games' | translate }}</label>
             </p-iftalabel>
           </div>
         </div>
@@ -101,17 +101,17 @@
         <!-- Game Type Column -->
         <div class="filter-group">
           <span class="block text-base font-medium text-purple-600 mb-2 border-b border-purple-200 pb-1">
-            {{ 'all.partner.filter-groups.game-type' | translate }}
+            {{ 'all.head-to-head.filter-groups.game-type' | translate }}
           </span>
           <div class="space-y-2">
             <p-iftalabel>
               <p-select formControlName="linkType" inputId="link-type-filter" [options]="linkTypeOptions" optionLabel="label" optionValue="value" />
-              <label for="link-type-filter">{{ 'all.partner.filters.linktype' | translate }}</label>
+              <label for="link-type-filter">{{ 'all.head-to-head.filters.linktype' | translate }}</label>
             </p-iftalabel>
 
             <p-iftalabel>
               <p-select formControlName="gameType" inputId="game-type-filter" [options]="gameTypeOptions" optionLabel="label" optionValue="value" />
-              <label for="game-type-filter">{{ 'all.partner.filters.gameType' | translate }}</label>
+              <label for="game-type-filter">{{ 'all.head-to-head.filters.gameType' | translate }}</label>
             </p-iftalabel>
           </div>
         </div>
@@ -126,7 +126,7 @@
     <p-card>
       <ng-template pTemplate="header">
         <div class="px-3 py-1 flex justify-between items-center">
-          <h3 class="text-base font-medium m-0">{{ 'all.partner.info.title' | translate }}</h3>
+          <h3 class="text-base font-medium m-0">{{ 'all.head-to-head.info.title' | translate }}</h3>
           <p-button 
             [text]="true" 
             [rounded]="true" 
@@ -139,21 +139,21 @@
         </div>
       </ng-template>
       <div class="px-3 pb-3 -mt-1 text-gray-600 space-y-2">
-        <p class="text-sm">{{ 'all.partner.info.description' | translate }}</p>
+        <p class="text-sm">{{ 'all.head-to-head.info.description' | translate }}</p>
         <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
-          <li>{{ 'all.partner.info.partners-mode' | translate }}</li>
-          <li>{{ 'all.partner.info.opponents-mode' | translate }}</li>
-          <li>{{ 'all.partner.info.partner-filter' | translate }}</li>
-          <li>{{ 'all.partner.info.club-display' | translate }}</li>
+          <li>{{ 'all.head-to-head.info.head-to-heads-mode' | translate }}</li>
+          <li>{{ 'all.head-to-head.info.opponents-mode' | translate }}</li>
+          <li>{{ 'all.head-to-head.info.head-to-head-filter' | translate }}</li>
+          <li>{{ 'all.head-to-head.info.club-display' | translate }}</li>
         </ul>
       </div>
     </p-card>
   </div>
 }
 
-<div class="partners">
+<div class="head-to-heads">
   <p-card>
-    <app-partner-grid [dataSource]="partners()" [loading]="loading()" [viewMode]="filter.get('viewMode')?.value || 'partners'"></app-partner-grid>
+    <app-head-to-head-grid [dataSource]="data()" [loading]="loading()" [viewMode]="filter.get('viewMode')?.value ?? 'partners'"></app-head-to-head-grid>
   </p-card>
 </div>
 
@@ -163,3 +163,4 @@
     {{ error() }}
   </div>
 }
+ 

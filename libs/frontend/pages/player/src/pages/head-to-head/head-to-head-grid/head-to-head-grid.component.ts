@@ -3,21 +3,21 @@ import { AsyncPipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 
 import { TableModule } from 'primeng/table';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { PlayerGrid } from './sort.type';
+import { HeadToHeadGrid } from './sort.type';
 
 @Component({
-  selector: 'app-partner-grid',
+  selector: 'app-head-to-head-grid',
   imports: [TableModule, TranslateModule, AsyncPipe, DecimalPipe],
-  templateUrl: './partner-grid.component.html',
-  styleUrl: './partner-grid.component.scss',
+  templateUrl: './head-to-head-grid.component.html',
+  styleUrl: './head-to-head-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PartnerGridComponent {
+export class HeadToHeadGridComponent {
   private readonly translate = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
 
   loading = input<boolean>(false);
-  dataSource = input<PlayerGrid[]>([]);
+  dataSource = input<HeadToHeadGrid[]>([]);
   viewMode = input<'partners' | 'opponents'>('partners');
 
   isBrowser(): boolean {
@@ -27,17 +27,17 @@ export class PartnerGridComponent {
   columns = computed(() => {
     const baseColumns = [
       {
-        header: this.translate.stream('all.partner.name'),
+        header: this.translate.stream('all.head-to-head.name'),
         field: 'player.fullName',
         sortable: true,
       }
     ];
 
-    // Add partner column for opponent mode
+    // Add head-to-head column for opponent mode
     if (this.viewMode() === 'opponents') {
       baseColumns.push({
-        header: this.translate.stream('all.partner.partner'),
-        field: 'partner',
+        header: this.translate.stream('all.head-to-head.head-to-head'),
+        field: 'headToHead',
         sortable: true,
       });
     }
@@ -45,13 +45,13 @@ export class PartnerGridComponent {
     baseColumns.push(
       {
         header: this.viewMode() === 'partners' 
-          ? this.translate.stream('all.partner.win-rate')
-          : this.translate.stream('all.partner.win-rate-against'),
+          ? this.translate.stream('all.head-to-head.win-rate')
+          : this.translate.stream('all.head-to-head.win-rate-against'),
         field: 'winRate',
         sortable: true,
       },
       {
-        header: this.translate.stream('all.partner.amount-of-games'),
+        header: this.translate.stream('all.head-to-head.amount-of-games'),
         field: 'amountOfGames',
         sortable: true,
       }

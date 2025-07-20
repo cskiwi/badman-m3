@@ -10,7 +10,7 @@
       "title": "Upcoming games"
     }
   },
-  "partner": {
+  "head-to-head": {
     "amount-of-games": "Number of contests",
     "club": "Club",
     "filter-groups": {
@@ -55,6 +55,7 @@
     },
     "name": "Name",
     "partner": "Partner",
+    "title": "Head to head",
     "win-rate": "Win percentage",
     "win-rate-against": "Win rate against"
   },

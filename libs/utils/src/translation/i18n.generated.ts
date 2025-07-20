@@ -17,7 +17,7 @@ export type I18nTranslations = {
                 "title": string;
             };
         };
-        "partner": {
+        "head-to-head": {
             "amount-of-games": string;
             "club": string;
             "filter-groups": {

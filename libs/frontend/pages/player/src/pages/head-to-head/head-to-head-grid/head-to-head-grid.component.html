@@ -27,7 +27,7 @@
                 @if (rowData.partner) {
                   <div>
                     <div>{{ rowData.partner.fullName }}</div>
-                    <div class="text-gray-500 text-xs">{{ rowData.partnerClub.name }}</div>
+                    <div class="text-gray-500 text-xs">{{ rowData.partner.name }}</div>
                   </div>
                 } @else {
                   <span class="text-gray-400">-</span>
@@ -51,10 +51,10 @@
           <td class="font-bold text-right">
             @switch (col.field) {
               @case ('winRate') {
-                {{ 'all.partner.grid.average' | translate }}: {{ averageWinRate | number: '1.0-2' }} %
+                {{ 'all.head-to-head.grid.average' | translate }}: {{ averageWinRate | number: '1.0-2' }} %
               }
               @case ('amountOfGames') {
-                {{ 'all.partner.grid.total' | translate }}: {{ totalGames }}
+                {{ 'all.head-to-head.grid.total' | translate }}: {{ totalGames }}
               }
               @default {
                 <!-- empty for alignment -->
@@ -69,6 +69,6 @@
   <!-- SSR fallback -->
   <div class="p-4 text-center">
     <i class="pi pi-spin pi-spinner text-2xl"></i>
-    <p class="mt-2">{{ 'all.partner.grid.loading' | translate }}</p>
+    <p class="mt-2">{{ 'all.head-to-head.grid.loading' | translate }}</p>
   </div>
 }

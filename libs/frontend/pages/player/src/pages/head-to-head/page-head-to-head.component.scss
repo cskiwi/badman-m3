@@ -1,3 +1,5 @@
+/* ...existing code from page-partner.component.scss, but all 'partner' references are now 'head-to-head' as appropriate... */
+
 :host {
   display: flex;
   padding: 1rem 1rem 0;
@@ -8,7 +10,6 @@
     padding: 0.5rem 0.5rem 0;
   }
 }
-
 
 .filters{
   display: flex;

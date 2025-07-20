@@ -17,8 +17,8 @@ export const routes: Route[] = [
             component: PageDetailComponent,
           },
           {
-            path: 'partners',
-            loadComponent: () => import('./pages/partners/page-partner.component').then((m) => m.PagePartnerComponent),
+            path: 'head-to-head',
+            loadComponent: () => import('./pages/head-to-head/page-head-to-head.component').then((m) => m.PageHeadToHeadComponent),
           },
         ],
       },

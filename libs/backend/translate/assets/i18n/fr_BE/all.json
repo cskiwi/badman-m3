@@ -10,7 +10,7 @@
       "title": "Prochains matches"
     }
   },
-  "partner": {
+  "head-to-head": {
     "amount-of-games": "Nombre de correspondances",
     "club": "Club",
     "filter-groups": {
@@ -55,6 +55,7 @@
     },
     "name": "Nom",
     "partner": "Partenaire",
+    "title": "Tête à tête",
     "win-rate": "Pourcentage de victoire",
     "win-rate-against": "Taux de victoire contre"
   },

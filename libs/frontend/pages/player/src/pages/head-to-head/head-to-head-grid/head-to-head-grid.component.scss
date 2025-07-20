@@ -1,3 +1,5 @@
+/* ...existing code from partner-grid.component.scss, but all 'partner' references are now 'head-to-head' as appropriate... */
+
 :host {
   display: flex;
   flex-direction: column;
@@ -7,4 +9,3 @@
     padding: 0.5rem 0.5rem 0;
   }
 }
-
