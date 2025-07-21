@@ -1,8 +1,51 @@
 <div class="upcoming-games-container space-y-6">
   @if (loading()) {
-    <div class="flex justify-center py-6">
-      <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
-    </div>
+    @for (i of [1,2,3,4,5]; track i) {
+      <div class="rounded-border overflow-hidden mb-6">
+        <!-- Game Header Skeleton -->
+        <div class="bg-highlight px-6 py-4">
+          <div class="flex justify-between items-center">
+            <!-- Left: Date and Time Skeletons -->
+            <div class="flex items-center justify-center gap-3 text-sm min-w-0">
+              <div class="flex flex-col items-center sm:flex-row sm:gap-2">
+                <p-skeleton width="4rem" height="1rem"></p-skeleton>
+                <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
+              </div>
+            </div>
+
+            <!-- Right: Draw name skeleton -->
+            <div class="min-w-0">
+              <p-skeleton width="8rem" height="1rem"></p-skeleton>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Content Skeleton -->
+        <div class="game-content p-6">
+          <!-- Teams Section Skeleton -->
+          <div class="teams-section">
+            <!-- Team Names Row Skeleton -->
+            <div class="flex items-center justify-between gap-6">
+              <!-- Home Team Skeleton -->
+              <div class="team-section flex-1 min-w-0">
+                <div class="text-right space-y-1">
+                  <p-skeleton width="5rem" height="0.75rem" class="ml-auto"></p-skeleton>
+                  <p-skeleton width="8rem" height="1.25rem" class="ml-auto"></p-skeleton>
+                </div>
+              </div>
+
+              <!-- Away Team Skeleton -->
+              <div class="team-section flex-1 min-w-0">
+                <div class="text-left space-y-1">
+                  <p-skeleton width="5rem" height="0.75rem"></p-skeleton>
+                  <p-skeleton width="7rem" height="1.25rem"></p-skeleton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   } @else {
     @for (game of games(); track game.id) {
       <div class="rounded-border overflow-hidden mb-6 transition-all duration-200 hover:shadow-lg">

@@ -137,6 +137,7 @@ Generated types available in `libs/utils/src/translation/i18n.generated.ts`.
 - Use `forNext` function from utils instead of traditional loops
 - Maintain JSDoc comments during refactoring
 - Write tests using Jest framework
+- **Loading States**: Always implement PrimeNG skeletons for data loading instead of simple progress bars
 
 ### State Management and Data Fetching Patterns (libs/frontend)
 - **Preferred**: Use Angular's `resource()` API for data fetching with reactive forms
@@ -196,6 +197,46 @@ Generated types available in `libs/utils/src/translation/i18n.generated.ts`.
 - **Building**: `npm run build` or `nx build <project-name>`
 - **Type Checking**: `nx run <project-name>:lint` (not tsc directly)
 - **Testing**: Follow Arrange-Act-Assert and Given-When-Then conventions
+
+### PrimeNG Skeleton Implementation Guidelines
+
+When implementing loading states, ALWAYS use PrimeNG skeletons instead of simple progress bars or spinners:
+
+#### **Required Setup:**
+1. Import `SkeletonModule` from `primeng/skeleton` in component
+2. Add `SkeletonModule` to component imports array
+3. Use `@if (loading())` conditional with skeleton structure
+
+#### **Skeleton Implementation Patterns:**
+- **Match Real Layout**: Skeleton structure must exactly mirror the actual content layout
+- **Multiple Items**: Show 4-6 skeleton items using `@for (i of [1,2,3,4,5]; track i)`
+- **Varied Widths**: Use different widths (`4rem`, `6rem`, `8rem`) to simulate content variety
+- **Appropriate Heights**: Use relative heights (`1rem`, `1.25rem`, `1.5rem`) matching real content
+- **Shape Variants**: 
+  - Regular rectangles for text: `<p-skeleton width="6rem" height="1rem">`
+  - Rounded for chips: `<p-skeleton borderRadius="1rem">`
+  - Circles for avatars: `<p-skeleton borderRadius="50%">`
+- **Maintain CSS Classes**: Keep all layout classes (`space-y-2`, `gap-4`, `ml-auto`, etc.)
+- **Alignment**: Use `class="ml-auto"` for right-aligned skeletons
+
+#### **Example Pattern:**
+```html
+@if (loading()) {
+  @for (i of [1,2,3,4,5]; track i) {
+    <div class="rounded-border bg-highlight p-4">
+      <!-- Header skeletons -->
+      <p-skeleton width="4rem" height="1rem"></p-skeleton>
+      <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
+      
+      <!-- Content skeletons -->
+      <div class="flex justify-between">
+        <p-skeleton width="6rem" height="1.25rem" class="ml-auto"></p-skeleton>
+        <p-skeleton width="7rem" height="1.25rem"></p-skeleton>
+      </div>
+    </div>
+  }
+}
+```
 
 ## Development Notes
 

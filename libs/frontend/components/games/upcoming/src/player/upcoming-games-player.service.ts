@@ -132,7 +132,8 @@ export class PlayerUpcommingGamesService {
             variables: {
               args: {
                 where,
-                take: 10, // Limit to 10 items per page temporarily
+                take: 10, 
+                order: { date: 'ASC' },
               },
             },
             context: { signal: abortSignal },
