@@ -9,10 +9,11 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { PlayerRecentGamesService } from './recent-games-player.service';
 import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-recent-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule],
   templateUrl: './recent-games-player.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
