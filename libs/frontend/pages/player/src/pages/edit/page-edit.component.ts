@@ -2,7 +2,6 @@ import { Component, computed, inject, signal, effect, resource } from '@angular/
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 
@@ -17,6 +16,7 @@ import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { Claim, Player } from '@app/models';
 import { MessageService } from 'primeng/api';
 import { injectParams } from 'ngxtension/inject-params';
+import { TranslateModule } from '@ngx-translate/core';
 
 const GET_PLAYER_WITH_CLAIMS = gql`
   query GetPlayerWithClaims($id: ID!) {
@@ -72,6 +72,7 @@ const UPDATE_PLAYER_CLAIMS = gql`
     ProgressBarModule,
     ToastModule,
     PageHeaderComponent,
+    TranslateModule,
   ],
   providers: [MessageService],
   templateUrl: './page-edit.component.html',
@@ -148,21 +149,21 @@ export class PageEditComponent {
   readonly claimsByCategory = computed(() => {
     const claims = this.globalClaims();
     const grouped = new Map<string, Claim[]>();
-    
-    claims.forEach(claim => {
+
+    claims.forEach((claim) => {
       const category = claim.category || 'Other';
       if (!grouped.has(category)) {
         grouped.set(category, []);
       }
       grouped.get(category)!.push(claim);
     });
-    
+
     // Convert to array and sort categories
     return Array.from(grouped.entries())
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([category, claims]) => ({
         category,
-        claims: claims.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+        claims: claims.sort((a, b) => (a.name || '').localeCompare(b.name || '')),
       }));
   });
   readonly loading = computed(() => this.loadingPlayer() || this.loadingClaims());
@@ -226,9 +227,9 @@ export class PageEditComponent {
   }
 
   selectAllInCategory(categoryName: string): void {
-    const categoryGroup = this.claimsByCategory().find(group => group.category === categoryName);
+    const categoryGroup = this.claimsByCategory().find((group) => group.category === categoryName);
     if (categoryGroup) {
-      categoryGroup.claims.forEach(claim => {
+      categoryGroup.claims.forEach((claim) => {
         if (claim.id) {
           this.claimsForm.get(claim.id)?.setValue(true);
         }
@@ -237,9 +238,9 @@ export class PageEditComponent {
   }
 
   selectNoneInCategory(categoryName: string): void {
-    const categoryGroup = this.claimsByCategory().find(group => group.category === categoryName);
+    const categoryGroup = this.claimsByCategory().find((group) => group.category === categoryName);
     if (categoryGroup) {
-      categoryGroup.claims.forEach(claim => {
+      categoryGroup.claims.forEach((claim) => {
         if (claim.id) {
           this.claimsForm.get(claim.id)?.setValue(false);
         }

@@ -106,6 +106,26 @@ export type I18nTranslations = {
                 "refresh": string;
             };
         };
+        "player": {
+            "edit": {
+                "claims": {
+                    "title": string;
+                    "subtitle": string;
+                    "description": string;
+                    "actions": {
+                        "select-all": string;
+                        "select-none": string;
+                        "save": string;
+                        "cancel": string;
+                    };
+                    "messages": {
+                        "no-claims": string;
+                        "saving": string;
+                        "loading": string;
+                    };
+                };
+            };
+        };
     };
 };
 /* prettier-ignore */

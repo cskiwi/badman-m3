@@ -1,17 +1,17 @@
 @if (!loading()) {
   @if (this.player(); as player) {
     <app-page-header>
-      <ng-content title>{{ 'player.edit.claims.title' | translate }} - {{ player.fullName }}</ng-content>
+      <ng-content title>{{ 'all.player.edit.claims.title' | translate }} - {{ player.fullName }}</ng-content>
       <ng-content subTitle>
         <div class="info">
-          <div class="sub-text">{{ 'player.edit.claims.subtitle' | translate }}</div>
+          <div class="sub-text">{{ 'all.player.edit.claims.subtitle' | translate }}</div>
         </div>
       </ng-content>
     </app-page-header>
 
     <div class="p-4">
       <p class="text-surface-500 mb-6">
-        {{ 'player.edit.claims.description' | translate }}
+        {{ 'all.player.edit.claims.description' | translate }}
       </p>
 
       <form [formGroup]="claimsForm" (ngSubmit)="onSubmit()" class="space-y-6">
@@ -19,20 +19,20 @@
         @if (globalClaims().length > 0) {
           <div class="flex flex-col sm:flex-row justify-between gap-4 pb-6 border-b border-surface-border">
             <div class="flex gap-2">
-              <p-button [label]="'player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAll()"> </p-button>
-              <p-button [label]="'player.edit.claims.actions.select-none' | translate" [outlined]="true" size="small" type="button" (click)="selectNone()"> </p-button>
+              <p-button [label]="'all.player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAll()"> </p-button>
+              <p-button [label]="'all.player.edit.claims.actions.select-none' | translate" [outlined]="true" size="small" type="button" (click)="selectNone()"> </p-button>
             </div>
             <div class="flex gap-3">
-              <p-button [label]="'player.edit.claims.actions.save' | translate" icon="pi pi-save" type="submit" [loading]="saving()" [disabled]="saving() || globalClaims().length === 0">
+              <p-button [label]="'all.player.edit.claims.actions.save' | translate" icon="pi pi-save" type="submit" [loading]="saving()" [disabled]="saving() || globalClaims().length === 0">
               </p-button>
-              <p-button [label]="'player.edit.claims.actions.cancel' | translate" icon="pi pi-times" [outlined]="true" type="button" (click)="cancel()" [disabled]="saving()"> </p-button>
+              <p-button [label]="'all.player.edit.claims.actions.cancel' | translate" icon="pi pi-times" [outlined]="true" type="button" (click)="cancel()" [disabled]="saving()"> </p-button>
             </div>
           </div>
         }
         <!-- Claims Selection -->
         <div class="space-y-6">
           @if (globalClaims().length === 0) {
-            <p class="text-surface-500">{{ 'player.edit.claims.messages.no-claims' | translate }}</p>
+            <p class="text-surface-500">{{ 'all.player.edit.claims.messages.no-claims' | translate }}</p>
           } @else {
             @for (categoryGroup of claimsByCategory(); track categoryGroup.category) {
               <p-card>
@@ -40,10 +40,10 @@
                   <div class="flex items-center justify-between w-full">
                     <span class="text-lg font-medium">{{ categoryGroup.category }}</span>
                     <div class="flex gap-2">
-                      <p-button [label]="'player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAllInCategory(categoryGroup.category)">
+                      <p-button [label]="'all.player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAllInCategory(categoryGroup.category)">
                       </p-button>
                       <p-button
-                        [label]="'player.edit.claims.actions.select-none' | translate"
+                        [label]="'all.player.edit.claims.actions.select-none' | translate"
                         [outlined]="true"
                         size="small"
                         type="button"
@@ -79,7 +79,7 @@
         @if (saving()) {
           <div class="pt-4">
             <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
-            <p class="text-sm text-surface-500 mt-2">{{ 'player.edit.claims.messages.saving' | translate }}</p>
+            <p class="text-sm text-surface-500 mt-2">{{ 'all.player.edit.claims.messages.saving' | translate }}</p>
           </div>
         }
 
@@ -93,7 +93,7 @@
 } @else {
   <div class="p-4">
     <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
-    <p class="text-center text-surface-500 mt-4">{{ 'player.edit.claims.messages.loading' | translate }}</p>
+    <p class="text-center text-surface-500 mt-4">{{ 'all.player.edit.claims.messages.loading' | translate }}</p>
   </div>
 }
 
