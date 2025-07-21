@@ -1,4 +1,16 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  afterRenderEffect,
+  signal,
+} from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';
 import { Game } from '@app/models';
@@ -10,21 +22,30 @@ import { PlayerRecentGamesService } from './recent-games-player.service';
 import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-recent-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule],
   templateUrl: './recent-games-player.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecentGamesPlayerComponent {
+export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
+
+  @ViewChild('scrollSentinel', { static: false }) scrollSentinel?: ElementRef;
+  private intersectionObserver?: IntersectionObserver;
+
+  // Track when we should scroll and animate new games
+  private pendingScrollToIndex = signal<number | null>(null);
 
   private readonly _playerGamesService = new PlayerRecentGamesService();
 
   games = this._playerGamesService.games;
   loading = this._playerGamesService.loading;
+  loadingMore = this._playerGamesService.loadingMore;
+  hasMore = this._playerGamesService.hasMore;
 
   constructor() {
     effect(() => {
@@ -34,8 +55,80 @@ export class RecentGamesPlayerComponent {
         id = id[0];
       }
 
+      // Set page size and reset pagination when player changes
+      this._playerGamesService.setPageSize(this.isMobile() ? 5 : 10);
       this._playerGamesService.filter.patchValue({ playerId: id, take: this.isMobile() ? 5 : 10 });
     });
+
+    // Effect to handle scrolling after render
+    afterRenderEffect(() => {
+      const scrollToIndex = this.pendingScrollToIndex();
+      if (scrollToIndex !== null && this.isMobile()) {
+        const gameElements = document.querySelectorAll('.game-card');
+        const totalGames = this.games().length;
+
+        if (gameElements.length >= totalGames && totalGames > scrollToIndex) {
+          // Scroll to the first newly added game
+          const firstNewGame = gameElements[scrollToIndex];
+          if (firstNewGame) {
+            firstNewGame.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
+
+          // Clear the pending scroll
+          this.pendingScrollToIndex.set(null);
+        }
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Set up intersection observer for infinite scroll on large screens
+    setTimeout(() => {
+      if (!this.isMobile() && this.scrollSentinel) {
+        this.setupIntersectionObserver();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.intersectionObserver?.disconnect();
+  }
+
+  private setupIntersectionObserver(): void {
+    if (!this.scrollSentinel) return;
+
+    this.intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && this.hasMore() && !this.loading() && !this.loadingMore()) {
+            this.loadMore();
+          }
+        });
+      },
+      {
+        rootMargin: '100px', // Load more when sentinel is 100px from viewport
+      },
+    );
+
+    this.intersectionObserver.observe(this.scrollSentinel.nativeElement);
+  }
+
+  /**
+   * Load more games (for both infinite scroll and load more button)
+   */
+  async loadMore(): Promise<void> {
+    const currentGameCount = this.games().length;
+
+    // Wait for the service to load more games
+    await this._playerGamesService.loadMore();
+
+    // On mobile, scroll to the newly loaded games
+    if (this.isMobile() && this.games().length > currentGameCount) {
+      this.pendingScrollToIndex.set(currentGameCount);
+    }
   }
 
   /**
@@ -120,8 +213,11 @@ export class RecentGamesPlayerComponent {
       .filter((id) => id !== undefined);
 
     // Sum ranking points for players in this team
-    return game.rankingPoints?.filter((rankingPoint) => teamPlayerIds.includes(rankingPoint.playerId))
-      .reduce((total, rankingPoint) => total + (rankingPoint.points || 0), 0) || 0;
+    return (
+      game.rankingPoints
+        ?.filter((rankingPoint) => teamPlayerIds.includes(rankingPoint.playerId))
+        .reduce((total, rankingPoint) => total + (rankingPoint.points || 0), 0) || 0
+    );
   }
 
   /**
@@ -159,9 +255,12 @@ export class RecentGamesPlayerComponent {
   getPointsIcon(game: Game, team: number): string {
     const direction = this.getPointsDirection(game, team);
     switch (direction) {
-      case 'gain': return 'pi pi-arrow-up';
-      case 'loss': return 'pi pi-arrow-down';
-      default: return 'pi pi-minus';
+      case 'gain':
+        return 'pi pi-arrow-up';
+      case 'loss':
+        return 'pi pi-arrow-down';
+      default:
+        return 'pi pi-minus';
     }
   }
 
@@ -174,9 +273,12 @@ export class RecentGamesPlayerComponent {
   getPointsColorClass(game: Game, team: number): string {
     const direction = this.getPointsDirection(game, team);
     switch (direction) {
-      case 'gain': return 'text-green-600 dark:text-green-400';
-      case 'loss': return 'text-red-600 dark:text-red-400';
-      default: return 'text-color-secondary';
+      case 'gain':
+        return 'text-green-600 dark:text-green-400';
+      case 'loss':
+        return 'text-red-600 dark:text-red-400';
+      default:
+        return 'text-color-secondary';
     }
   }
 
@@ -252,7 +354,7 @@ export class RecentGamesPlayerComponent {
    */
   getTeamName(game: Game, team: number): string {
     if (!this.isCompetitionGame(game)) return '';
-    
+
     // For competitions, we need to determine which team (1 or 2) corresponds to home/away
     // This is a simplified approach - in practice, this mapping might need more logic
     // based on how the game data is structured in your system
