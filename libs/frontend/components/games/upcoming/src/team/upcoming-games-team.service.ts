@@ -9,15 +9,7 @@ import { lastValueFrom } from 'rxjs';
 
 const UPCOMING_TEAM_GAMES_QUERY = gql`
   query UpcomingTeamGames($teamId: ID!, $today: String!) {
-    competitionEncounters(where: { 
-      AND: [
-        { date: { gte: $today } },
-        { OR: [
-          { homeTeamId: $teamId },
-          { awayTeamId: $teamId }
-        ]}
-      ]
-    }) {
+    competitionEncounters(where: { AND: [{ date: { gte: $today } }, { OR: [{ homeTeamId: $teamId }, { awayTeamId: $teamId }] }] }) {
       id
       date
       drawCompetition {
@@ -65,25 +57,24 @@ export class UpcomingGamesTeamService {
       try {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Start of today
-        
-        const result = await lastValueFrom(this.apollo
-          .query<{ competitionEncounters: CompetitionEncounter[] }>({
+
+        const result = await lastValueFrom(
+          this.apollo.query<{ competitionEncounters: CompetitionEncounter[] }>({
             query: UPCOMING_TEAM_GAMES_QUERY,
-            variables: { 
+            variables: {
               teamId: params.teamId,
-              today: today.toISOString()
+              today: today.toISOString(),
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.competitionEncounters) {
           return { games: [], endReached: true };
         }
 
-        let encounters = result.data.competitionEncounters;
-
         // Sort by date ascending
-        encounters = encounters.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+        const encounters = [...result.data.competitionEncounters].sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
 
         // Apply pagination
         const page = params.page || 1;
@@ -91,9 +82,9 @@ export class UpcomingGamesTeamService {
         const endIndex = startIndex + this.itemsPerPage;
         const paginatedGames = encounters.slice(startIndex, endIndex);
 
-        return { 
-          games: paginatedGames, 
-          endReached: paginatedGames.length < this.itemsPerPage 
+        return {
+          games: paginatedGames,
+          endReached: paginatedGames.length < this.itemsPerPage,
         };
       } catch (err) {
         throw new Error(this.handleError(err as HttpErrorResponse));

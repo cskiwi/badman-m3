@@ -143,7 +143,7 @@ export class DetailService {
     
     // If we have seasons from database, use them, otherwise fallback to default range
     if (dbSeasons.length > 0) {
-      return dbSeasons
+      return [...dbSeasons]
         .sort((a, b) => b - a) // Sort descending (newest first)
         .map(season => ({ label: `${season}`, value: season }));
     }

@@ -93,6 +93,11 @@ export type I18nTranslations = {
                     "player": string;
                     "type": string;
                     "actions": string;
+                    "noPlayersFound": string;
+                };
+                "membershipType": {
+                    "regular": string;
+                    "backup": string;
                 };
                 "captain": {
                     "label": string;
@@ -106,6 +111,10 @@ export type I18nTranslations = {
                 };
             };
             "type": {
+                "m": string;
+                "f": string;
+                "mx": string;
+                "national": string;
                 "mix": string;
                 "men": string;
                 "women": string;
@@ -120,6 +129,10 @@ export type I18nTranslations = {
         };
         "clubs": {
             "search": string;
+            "membershipType": {
+                "normal": string;
+                "loan": string;
+            };
         };
         "game": {
             "recent": {

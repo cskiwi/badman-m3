@@ -138,7 +138,7 @@ export class ShellComponent {
   });
 
   clubs = computed(() => {
-    return (this.user()?.clubPlayerMemberships ?? [])
+    return [...(this.user()?.clubPlayerMemberships ?? [])]
       .filter((membership: ClubPlayerMembership) => membership?.active)
       .sort((a: ClubPlayerMembership, b: ClubPlayerMembership) => {
         // sort by membership type, first normal then loan

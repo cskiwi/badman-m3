@@ -85,7 +85,12 @@
         "add": "Add Member",
         "player": "Player",
         "type": "Type",
-        "actions": "Actions"
+        "actions": "Actions",
+        "noPlayersFound": "No players found"
+      },
+      "membershipType": {
+        "regular": "Regular",
+        "backup": "Backup"
       },
       "captain": {
         "label": "Team Captain",
@@ -93,7 +98,7 @@
           "text": "Select team captain"
         }
       },
-      "basePlayers": "Base Players",
+      "basePlayers": "Players",
       "errors": {
         "loadPlayers": "Failed to load available players"
       }
@@ -116,7 +121,11 @@
     "noTeams": "No teams found for this season"
   },
   "clubs": {
-    "search": "Find a club"
+    "search": "Find a club",
+    "membershipType": {
+      "normal": "Normal",
+      "loan": "Loan"
+    }
   },
   "game": {
     "recent": {

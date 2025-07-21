@@ -21,7 +21,7 @@ import { ToastModule } from 'primeng/toast';
 
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { Player, Team, TeamPlayerMembership } from '@app/models';
-import { SubEventTypeEnum } from '@app/model/enums';
+import { SubEventTypeEnum, TeamMembershipType } from '@app/model/enums';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, computed, inject, signal } from '@angular/core';
 
@@ -37,6 +37,30 @@ const UPDATE_TEAM = gql`
       preferredTime
       preferredDay
       type
+    }
+  }
+`;
+
+const UPDATE_TEAM_MEMBERSHIP = gql`
+  mutation UpdateTeamMembership($id: ID!, $membershipType: String!) {
+    updateTeamPlayerMembership(id: $id, membershipType: $membershipType) {
+      id
+      membershipType
+    }
+  }
+`;
+
+const ADD_TEAM_MEMBERSHIP = gql`
+  mutation AddTeamMembership($teamId: ID!, $playerId: ID!, $membershipType: String!) {
+    addTeamPlayerMembership(teamId: $teamId, playerId: $playerId, membershipType: $membershipType) {
+      id
+      membershipType
+      player {
+        id
+        fullName
+        slug
+        memberId
+      }
     }
   }
 `;
@@ -102,9 +126,38 @@ export class TeamEditComponent {
     label: this.translateService.instant(`all.team.type.${value.toLowerCase()}`),
   }));
 
+  membershipTypeOptions = Object.values(TeamMembershipType).map((value) => ({
+    value,
+    label: this.translateService.instant(`all.team.membershipType.${value.toLowerCase()}`),
+  }));
+
   captainSuggestions = signal<Player[]>([]);
   selectedCaptain = signal<Player | null>(null);
   teamPlayerMemberships = signal<TeamPlayerMembership[]>([]);
+  sortedTeamPlayerMemberships = computed(() => 
+    [...this.teamPlayerMemberships()].sort((a, b) => {
+      // Sort by membership type: REGULAR first, then BACKUP
+      const typeOrder = { REGULAR: 0, BACKUP: 1 };
+      const aOrder = typeOrder[a.membershipType] ?? 2;
+      const bOrder = typeOrder[b.membershipType] ?? 2;
+      
+      if (aOrder !== bOrder) {
+        return aOrder - bOrder;
+      }
+      
+      // If same type, sort by player name
+      const aName = a.player?.fullName || '';
+      const bName = b.player?.fullName || '';
+      return aName.localeCompare(bName);
+    })
+  );
+  changedMemberships = new Set<string>();
+  
+  // Add member dialog state
+  showAddPlayerDialog = signal<boolean>(false);
+  playerSuggestions = signal<Player[]>([]);
+  selectedPlayerToAdd = signal<Player | null>(null);
+  selectedMembershipType = signal<TeamMembershipType>(TeamMembershipType.REGULAR);
 
   constructor() {
     const team = this.config.data?.team as Team;
@@ -142,21 +195,19 @@ export class TeamEditComponent {
       return;
     }
 
-    this.http.get<Array<{ hit: Player; score: number }>>(`/api/v1/search?types=players&query=${encodeURIComponent(event.query)}`)
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
+    this.http
+      .get<Array<{ hit: Player; score: number }>>(`/api/v1/search?types=players&query=${encodeURIComponent(event.query)}`)
+      .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe({
         next: (result) => {
           // Extract player data from hit objects
-          const players = result.map(item => item.hit);
+          const players = result.map((item) => item.hit);
           this.captainSuggestions.set(players);
         },
         error: (err) => {
           console.error('Failed to search players:', err);
           this.captainSuggestions.set([]);
-        }
+        },
       });
   }
 
@@ -192,7 +243,7 @@ export class TeamEditComponent {
       const [hours, minutes] = team.preferredTime.split(':').map(Number);
       preferredTimeDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
     }
-    
+
     this.teamForm.patchValue({
       name: team.name || '',
       abbreviation: team.abbreviation || '',
@@ -209,11 +260,90 @@ export class TeamEditComponent {
   }
 
   showAddMemberDialog(): void {
-    // TODO: Implement add member dialog
+    this.selectedPlayerToAdd.set(null);
+    this.selectedMembershipType.set(TeamMembershipType.REGULAR);
+    this.showAddPlayerDialog.set(true);
+  }
+
+  searchPlayer(event: { query: string }): void {
+    if (event.query.length < 2) {
+      this.playerSuggestions.set([]);
+      return;
+    }
+
+    this.http
+      .get<Array<{ hit: Player; score: number }>>(`/api/v1/search?types=players&query=${encodeURIComponent(event.query)}`)
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe({
+        next: (result) => {
+          // Extract player data from hit objects and exclude already added players
+          const existingPlayerIds = this.teamPlayerMemberships().map(m => m.playerId);
+          const players = result
+            .map((item) => item.hit)
+            .filter(player => !existingPlayerIds.includes(player.id));
+          this.playerSuggestions.set(players);
+        },
+        error: (err) => {
+          console.error('Error searching players:', err);
+          this.playerSuggestions.set([]);
+        },
+      });
+  }
+
+  addMember(): void {
+    const player = this.selectedPlayerToAdd();
+    const membershipType = this.selectedMembershipType();
+    const teamId = this.config.data?.team?.id;
+
+    if (!player || !teamId) {
+      return;
+    }
+
+    this.apollo.mutate<{ addTeamPlayerMembership: TeamPlayerMembership }>({
+      mutation: ADD_TEAM_MEMBERSHIP,
+      variables: {
+        teamId,
+        playerId: player.id,
+        membershipType,
+      },
+    }).subscribe({
+      next: (result) => {
+        if (result.data && result.data.addTeamPlayerMembership) {
+          const membership = result.data.addTeamPlayerMembership;
+          // Add the new membership to the list
+          this.teamPlayerMemberships.update(members => [
+            ...members,
+            membership
+          ]);
+          this.teamForm.markAsDirty();
+          this.showAddPlayerDialog.set(false);
+        }
+      },
+      error: (err) => {
+        console.error('Error adding team member:', err);
+        // TODO: Show error message to user
+      },
+    });
+  }
+
+  cancelAddMember(): void {
+    this.showAddPlayerDialog.set(false);
+    this.selectedPlayerToAdd.set(null);
   }
 
   removeMembership(membership: TeamPlayerMembership): void {
     this.teamPlayerMemberships.update((members) => members.filter((m) => m.id !== membership.id));
+    this.teamForm.markAsDirty();
+  }
+
+  updateMembershipType(membership: TeamPlayerMembership, newType: TeamMembershipType): void {
+    this.teamPlayerMemberships.update((members) => members.map((m) => {
+      if (m.id === membership.id) {
+        m.membershipType = newType;
+      }
+      return m;
+    }));
+    this.changedMemberships.add(membership.id);
     this.teamForm.markAsDirty();
   }
 
@@ -257,6 +387,30 @@ export class TeamEditComponent {
           },
         }),
       );
+
+      // Save changed memberships
+      const membershipUpdates = [];
+      const currentMemberships = this.teamPlayerMemberships();
+      for (const membershipId of this.changedMemberships) {
+        const membership = currentMemberships.find((m) => m.id === membershipId);
+        if (membership) {
+          membershipUpdates.push(
+            lastValueFrom(
+              this.apollo.mutate({
+                mutation: UPDATE_TEAM_MEMBERSHIP,
+                variables: {
+                  id: membership.id,
+                  membershipType: membership.membershipType,
+                },
+              }),
+            ),
+          );
+        }
+      }
+
+      if (membershipUpdates.length > 0) {
+        await Promise.all(membershipUpdates);
+      }
 
       this.messageService.add({
         severity: 'success',

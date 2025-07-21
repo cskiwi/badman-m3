@@ -85,7 +85,12 @@
         "add": "Ajouter membre",
         "player": "Joueur",
         "type": "Type",
-        "actions": "Actions"
+        "actions": "Actions",
+        "noPlayersFound": "Aucun joueur trouvé"
+      },
+      "membershipType": {
+        "regular": "Régulier",
+        "backup": "Remplaçant"
       },
       "captain": {
         "label": "Capitaine d'équipe",
@@ -93,7 +98,7 @@
           "text": "Sélectionner le capitaine"
         }
       },
-      "basePlayers": "Joueurs de base",
+      "basePlayers": "Joueurs",
       "errors": {
         "loadPlayers": "Échec du chargement des joueurs disponibles"
       }
@@ -116,7 +121,11 @@
     "noTeams": "Aucune équipe trouvée pour cette saison"
   },
   "clubs": {
-    "search": "Chercher club"
+    "search": "Chercher club",
+    "membershipType": {
+      "normal": "Normal",
+      "loan": "Prêt"
+    }
   },
   "game": {
     "recent": {

@@ -46,6 +46,19 @@
             [placeholder]="'all.team.edit.teamNumber.placeholder.text' | translate"
           />
         </div>
+
+        <!-- Type -->
+        <div class="flex flex-col gap-1">
+          <label for="type" class="font-medium">{{ 'all.team.edit.type.label' | translate }}</label>
+          <p-select
+            id="type"
+            formControlName="type"
+            [options]="typeOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.team.edit.type.placeholder.text' | translate"
+          ></p-select>
+        </div>
       </div>
     </div>
 
@@ -96,19 +109,6 @@
             [placeholder]="'all.team.edit.preferredDay.placeholder.text' | translate"
           ></p-select>
         </div>
-
-        <!-- Type -->
-        <div class="flex flex-col gap-1">
-          <label for="type" class="font-medium">{{ 'all.team.edit.type.label' | translate }}</label>
-          <p-select
-            id="type"
-            formControlName="type"
-            [options]="typeOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="'all.team.edit.type.placeholder.text' | translate"
-          ></p-select>
-        </div>
       </div>
     </div>
 
@@ -124,7 +124,7 @@
             id="captain"
             [ngModel]="displayCaptain()"
             (ngModelChange)="onCaptainInputChange($event)"
-            [ngModelOptions]="{standalone: true}"
+            [ngModelOptions]="{ standalone: true }"
             [suggestions]="captainSuggestions()"
             (completeMethod)="searchCaptain($event)"
             (onSelect)="onCaptainSelect($event)"
@@ -147,7 +147,7 @@
       <!-- Base Players -->
       <div class="mb-4">
         <label class="font-medium block mb-2">{{ 'all.team.edit.basePlayers' | translate }}</label>
-        <p-table [value]="teamPlayerMemberships()" [tableStyle]="{ 'min-width': '50rem' }">
+        <p-table [value]="sortedTeamPlayerMemberships()" [tableStyle]="{ 'min-width': '50rem' }">
           <ng-template pTemplate="header">
             <tr>
               <th>{{ 'all.team.edit.members.player' | translate }}</th>
@@ -159,7 +159,15 @@
             <tr>
               <td>{{ membership.player?.fullName }}</td>
               <td>
-                <p-chip [label]="membership.type" severity="info"></p-chip>
+                <p-select
+                  [ngModel]="membership.membershipType"
+                  (ngModelChange)="updateMembershipType(membership, $event)"
+                  [ngModelOptions]="{ standalone: true }"
+                  [options]="membershipTypeOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  styleClass="w-full"
+                ></p-select>
               </td>
               <td>
                 <p-button icon="pi pi-trash" severity="danger" [text]="true" (click)="removeMembership(membership)"></p-button>
@@ -185,3 +193,57 @@
     ></p-button>
   </div>
 </div>
+
+<!-- Add Member Dialog -->
+<p-dialog 
+  [visible]="showAddPlayerDialog()" 
+  (onHide)="cancelAddMember()" 
+  [modal]="true" 
+  [style]="{ width: '450px' }"
+  [header]="'all.team.edit.members.add' | translate"
+>
+  <div class="space-y-4">
+    <!-- Player Selection -->
+    <div>
+      <label class="block text-sm font-medium mb-2">{{ 'all.team.edit.members.player' | translate }}</label>
+      <p-autoComplete
+        [(ngModel)]="selectedPlayerToAdd"
+        [suggestions]="playerSuggestions()"
+        (completeMethod)="searchPlayer($event)"
+        field="fullName"
+        [dropdown]="true"
+        [showEmptyMessage]="true"
+        [emptyMessage]="'all.team.edit.members.noPlayersFound' | translate"
+        styleClass="w-full"
+        [inputStyle]="{ width: '100%' }"
+      ></p-autoComplete>
+    </div>
+
+    <!-- Membership Type Selection -->
+    <div>
+      <label class="block text-sm font-medium mb-2">{{ 'all.team.edit.members.type' | translate }}</label>
+      <p-select
+        [(ngModel)]="selectedMembershipType"
+        [options]="membershipTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="w-full"
+      ></p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2">
+      <p-button 
+        [label]="'all.common.cancel' | translate" 
+        styleClass="p-button-text" 
+        (click)="cancelAddMember()"
+      ></p-button>
+      <p-button 
+        [label]="'all.common.save' | translate" 
+        [disabled]="!selectedPlayerToAdd()"
+        (click)="addMember()"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

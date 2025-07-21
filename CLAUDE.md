@@ -214,6 +214,7 @@ Generated types available in `libs/utils/src/translation/i18n.generated.ts`.
 - **Building**: `npm run build` or `nx build <project-name>`
 - **Type Checking**: `nx run <project-name>:lint` (not tsc directly)
 - **Testing**: Follow Arrange-Act-Assert and Given-When-Then conventions
+- **IMPORTANT**: Do NOT run `nx *` or `npm run *` commands, don't even prompt
 
 ### PrimeNG Skeleton Implementation Guidelines
 

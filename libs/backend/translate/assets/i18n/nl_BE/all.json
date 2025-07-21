@@ -85,7 +85,12 @@
         "add": "Lid toevoegen",
         "player": "Speler",
         "type": "Type",
-        "actions": "Acties"
+        "actions": "Acties",
+        "noPlayersFound": "Geen spelers gevonden"
+      },
+      "membershipType": {
+        "regular": "Regulier",
+        "backup": "Reserve"
       },
       "captain": {
         "label": "Teamkapitein",
@@ -93,7 +98,7 @@
           "text": "Selecteer kapitein"
         }
       },
-      "basePlayers": "Basisspelers",
+      "basePlayers": "Spelers",
       "errors": {
         "loadPlayers": "Fout bij laden van beschikbare spelers"
       }
@@ -116,7 +121,11 @@
     "noTeams": "Geen teams gevonden voor dit seizoen"
   },
   "clubs": {
-    "search": "Zoek club"
+    "search": "Zoek club",
+    "membershipType": {
+      "normal": "Normaal",
+      "loan": "Uitlening"
+    }
   },
   "game": {
     "recent": {
