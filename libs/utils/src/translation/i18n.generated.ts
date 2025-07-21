@@ -181,6 +181,18 @@ export type I18nTranslations = {
                 };
             };
         };
+        "common": {
+            "season": string;
+            "selectSeason": string;
+        };
+        "team": {
+            "overview": {
+                "title": string;
+            };
+            "captain": string;
+            "players": string;
+            "noTeams": string;
+        };
     };
 };
 /* prettier-ignore */

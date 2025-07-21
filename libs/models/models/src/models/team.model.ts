@@ -64,14 +64,17 @@ export class Team extends BaseEntity {
   // entry?: Relation<EventEntry>;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   clubId?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   slug?: string;
 
   @SortableField(() => String)
+  @WhereField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: SubEventTypeEnum,
@@ -79,6 +82,7 @@ export class Team extends BaseEntity {
   type?: SubEventTypeEnum;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   captainId?: string;
 
@@ -87,6 +91,7 @@ export class Team extends BaseEntity {
   // prefferedLocation?: Relation<Location>;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   prefferedLocationId?: string;
 
@@ -95,14 +100,17 @@ export class Team extends BaseEntity {
   // prefferedLocation2?: Relation<Location>;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   prefferedLocation2Id?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   email?: string;
 
   @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
   @Column({ nullable: true })
   phone?: string;
 
@@ -111,11 +119,8 @@ export class Team extends BaseEntity {
   @JoinColumn({ name: 'captainId' })
   declare captain: Relation<Player>;
 
-  @SortableField(() => [Player], { nullable: true })
-  @OneToMany(
-    () => TeamPlayerMembership,
-    (teamPlayerMembership) => teamPlayerMembership.player,
-  )
+  @SortableField(() => [TeamPlayerMembership], { nullable: true })
+  @OneToMany(() => TeamPlayerMembership, (teamPlayerMembership) => teamPlayerMembership.team)
   declare teamPlayerMemberships: Relation<TeamPlayerMembership[]>;
 
   // belongs to club

@@ -51,9 +51,8 @@ import {
   TournamentDrawResolver,
   TournamentEventResolver,
   TournamentSubEventResolver,
-  UserResolver,
+  UserResolver
 } from './resolvers';
-
 @Module({
   imports: [
     ConfigModule,

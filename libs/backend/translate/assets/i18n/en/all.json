@@ -173,5 +173,17 @@
         }
       }
     }
+  },
+  "common": {
+    "season": "Season",
+    "selectSeason": "Select season"
+  },
+  "team": {
+    "overview": {
+      "title": "Teams Overview"
+    },
+    "captain": "Captain",
+    "players": "players",
+    "noTeams": "No teams found for this season"
   }
 }

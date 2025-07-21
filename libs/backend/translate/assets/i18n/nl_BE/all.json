@@ -173,5 +173,17 @@
         }
       }
     }
+  },
+  "common": {
+    "season": "Seizoen",
+    "selectSeason": "Selecteer seizoen"
+  },
+  "team": {
+    "overview": {
+      "title": "Teams Overzicht"
+    },
+    "captain": "Kapitein",
+    "players": "spelers",
+    "noTeams": "Geen teams gevonden voor dit seizoen"
   }
 }

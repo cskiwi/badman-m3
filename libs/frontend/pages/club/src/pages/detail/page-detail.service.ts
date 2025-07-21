@@ -2,19 +2,26 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Club } from '@app/models';
+import { Club, Team } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
+import { getSeason } from '@app/utils/comp';
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
     clubId: new FormControl<string | null>(null),
+    season: new FormControl<number>(getSeason()),
   });
 
   // Convert form to signal for resource
-  private filterSignal = toSignal(this.filter.valueChanges);
+  private filterSignal = toSignal(this.filter.valueChanges, {
+    initialValue: {
+      clubId: null,
+      season: getSeason(),
+    },
+  });
 
   private clubResource = resource({
     params: this.filterSignal,
@@ -24,8 +31,8 @@ export class DetailService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ club: Club }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ club: Club }>({
             query: gql`
               query Club($id: ID!) {
                 club(id: $id) {
@@ -44,7 +51,8 @@ export class DetailService {
               id: params.clubId,
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data.club) {
           throw new Error('No club found');
@@ -56,10 +64,79 @@ export class DetailService {
     },
   });
 
+  private teamsResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.clubId || !params.season) {
+        return [];
+      }
+
+      try {
+        const result = await lastValueFrom(
+          this.apollo.query<{ club: { teams: Team[] } }>({
+            query: gql`
+              query ClubTeams($clubId: ID!, $season: Float!) {
+                club(id: $clubId) {
+                  id
+                  teams(args: { where: [{ season: { eq: $season } }], take: 50, order: { name: ASC } }) {
+                    id
+                    name
+                    season
+                    type
+                    abbreviation
+                    email
+                    phone
+                    captain {
+                      id
+                      fullName
+                    }
+                    teamPlayerMemberships {
+                      id
+                      membershipType
+                      playerId
+                      player {
+                        id
+                        fullName
+                      }
+                    }
+                  }
+                }
+              }
+            `,
+            variables: {
+              clubId: params.clubId,
+              season: params.season,
+            },
+            context: { signal: abortSignal },
+          }),
+        );
+
+        return result?.data?.club?.teams || [];
+      } catch (err) {
+        throw new Error(this.handleError(err as HttpErrorResponse));
+      }
+    },
+  });
+
   // Public selectors
   club = computed(() => this.clubResource.value());
-  error = computed(() => this.clubResource.error()?.message || null);
+  teams = computed(() => this.teamsResource.value() || []);
+
+  error = computed(() => this.clubResource.error()?.message || this.teamsResource.error()?.message || null);
   loading = computed(() => this.clubResource.isLoading());
+  teamsLoading = computed(() => this.teamsResource.isLoading());
+
+  // Season management
+  currentSeason = computed(() => this.filter.get('season')?.value || getSeason());
+  availableSeasons = computed(() => {
+    const current = getSeason();
+    return [
+      { label: `${current - 2}`, value: current - 2 },
+      { label: `${current - 1}`, value: current - 1 },
+      { label: `${current}`, value: current },
+      { label: `${current + 1}`, value: current + 1 },
+    ];
+  });
 
   private handleError(err: HttpErrorResponse): string {
     // Handle specific error cases

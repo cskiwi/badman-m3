@@ -60,3 +60,25 @@ h3 {
   align-items: center;
   gap: 0.5rem;
 }
+
+.teams-overview {
+  margin-bottom: 2rem;
+  
+  .grid {
+    margin-top: 1rem;
+  }
+
+  .rounded-border {
+    border: 1px solid;
+    border-radius: 0.5rem;
+  }
+
+  .bg-highlight {
+    background-color: var(--surface-50);
+    border-color: var(--surface-200);
+  }
+
+  .hover\\:bg-surface-100:hover {
+    background-color: var(--surface-100);
+  }
+}

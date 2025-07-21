@@ -110,6 +110,16 @@ Translation files located in `libs/backend/translate/assets/i18n/`:
 
 Generated types available in `libs/utils/src/translation/i18n.generated.ts`.
 
+### Translation Requirements
+**IMPORTANT**: When adding new UI text or features that display text to users, ALWAYS add translations to ALL three language files:
+1. Add English translations to `libs/backend/translate/assets/i18n/en/all.json`
+2. Add French Belgian translations to `libs/backend/translate/assets/i18n/fr_BE/all.json`
+3. Add Dutch Belgian translations to `libs/backend/translate/assets/i18n/nl_BE/all.json`
+
+**Translation Key Structure**: Use nested objects following the pattern `all.[section].[subsection].[key]`
+- Example: `all.team.overview.title`, `all.common.season`
+- Maintain consistent structure across all language files
+
 ## Environment Requirements
 
 - **Node.js**: Version 24 (specified in engines and Volta)
@@ -138,6 +148,12 @@ Generated types available in `libs/utils/src/translation/i18n.generated.ts`.
 - Maintain JSDoc comments during refactoring
 - Write tests using Jest framework
 - **Loading States**: Always implement PrimeNG skeletons for data loading instead of simple progress bars
+
+### Import Guidelines
+- **Utility Functions**: Use specific imports from `@app/utils/[module]` to prevent unnecessary client bundle bloat
+  - ✅ Correct: `import { getSeason } from '@app/utils/comp';`
+  - ❌ Avoid: `import { getSeason } from '@app/utils';` (imports entire utils package)
+- **Reason**: Direct module imports reduce client bundle size by avoiding barrel exports that include unused code
 
 ### State Management and Data Fetching Patterns (libs/frontend)
 - **Preferred**: Use Angular's `resource()` API for data fetching with reactive forms

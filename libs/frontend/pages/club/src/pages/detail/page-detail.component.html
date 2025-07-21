@@ -14,27 +14,113 @@
             }
             {{ club.clubId }}
           </div>
-          <!-- <div class="click-for-breakdown">
-          {{ 'all.ranking.breakdown.hint' | translate }}
-        </div> -->
         </div>
       </ng-content>
-      <ng-content actions>
-        <!-- Menu functionality can be re-implemented with PrimeNG Menu component when needed -->
-      </ng-content>
+      <ng-content actions> </ng-content>
     </app-page-header>
+
+    <!-- Teams overview section -->
+    <section class="teams-overview">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h3 class="flex items-center gap-2 text-xl font-semibold">
+          <i class="pi pi-users text-primary-500"></i>
+          {{ 'all.team.overview.title' | translate }}
+        </h3>
+
+        <!-- Season selector -->
+        <div class="flex items-center gap-2">
+          <label for="season-select" class="text-sm font-medium text-surface-600"> {{ 'all.common.season' | translate }}: </label>
+          <p-select
+            id="season-select"
+            [formControl]="seasonControl"
+            [options]="availableSeasons()"
+            optionLabel="label"
+            optionValue="value"
+            [style]="{ 'min-width': '120px' }"
+            placeholder="{{ 'all.common.selectSeason' | translate }}"
+          />
+        </div>
+      </div>
+
+      @if (teamsLoading()) {
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <div class="rounded-border bg-highlight p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <p-skeleton width="8rem" height="1.25rem"></p-skeleton>
+                <p-skeleton width="3rem" height="1rem" borderRadius="1rem"></p-skeleton>
+              </div>
+              <div class="space-y-2">
+                <p-skeleton width="6rem" height="1rem"></p-skeleton>
+                <p-skeleton width="7rem" height="1rem"></p-skeleton>
+                <p-skeleton width="5rem" height="1rem"></p-skeleton>
+              </div>
+              <div class="flex gap-2">
+                <p-skeleton width="4rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
+                <p-skeleton width="3rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (teams().length > 0) {
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          @for (team of teams(); track team.id) {
+            <div class="rounded-border bg-highlight p-4">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-primary my-2">{{ team.name }}</span>
+                @if (team.abbreviation) {
+                  <p-badge [value]="team.abbreviation" />
+                }
+              </div>
+
+              <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
+                @if (team.captain) {
+                  <div class="flex items-center gap-1">
+                    <i class="pi pi-user text-xs"></i>
+                    <span>{{ 'all.team.captain' | translate }}: {{ team.captain.fullName }}</span>
+                  </div>
+                }
+                @if (team.email) {
+                  <div class="flex items-center gap-1">
+                    <i class="pi pi-envelope text-xs"></i>
+                    <span>{{ team.email }}</span>
+                  </div>
+                }
+                @if (team.phone) {
+                  <div class="flex items-center gap-1">
+                    <i class="pi pi-phone text-xs"></i>
+                    <span>{{ team.phone }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="flex flex-wrap gap-1">
+                @if (team.teamPlayerMemberships && team.teamPlayerMemberships.length > 0) {
+                  <p-badge [value]="team.teamPlayerMemberships.length + ' ' + ('all.team.players' | translate)" severity="contrast" />
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-8 text-surface-500">
+          <i class="pi pi-users text-4xl mb-2 block"></i>
+          <p>{{ 'all.team.noTeams' | translate }}</p>
+        </div>
+      }
+    </section>
 
     @if (teamIds(); as teamIds) {
       <section class="games">
         <section class="recent-games">
-          <h3 class="flex items-center gap-2 text-xl font-semibold text-surface-700">
+          <h3 class="flex items-center gap-2 text-xl font-semibold">
             <i class="pi pi-history text-primary-500"></i>
             {{ 'all.game.recent.title' | translate }}
           </h3>
           <app-recent-games [for]="teamIds" [type]="'team'" />
         </section>
         <section class="upcoming-games">
-          <h3 class="flex items-center gap-2 text-xl font-semibold text-surface-700">
+          <h3 class="flex items-center gap-2 text-xl font-semibold">
             <i class="pi pi-calendar text-primary-500"></i>
             {{ 'all.game.upcoming.title' | translate }}
           </h3>
@@ -45,7 +131,7 @@
     }
   }
 } @else {
-  <p-progressbar mode="indeterminate" [style]="{'height': '6px'}" />
+  <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
 }
 
 @if (error()) {
