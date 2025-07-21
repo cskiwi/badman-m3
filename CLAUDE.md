@@ -262,3 +262,6 @@ When implementing loading states, ALWAYS use PrimeNG skeletons instead of simple
 - Nx Cloud integration for distributed builds and caching
 - Docker support via `docker-compose.yaml`
 - Production builds use cross-env for Node.js environment handling
+
+## Type and Model Guidelines
+- Prefer to use the PartialType and OmitType like @libs\models\models\src\models\security\claim.model.ts for all input models in the project

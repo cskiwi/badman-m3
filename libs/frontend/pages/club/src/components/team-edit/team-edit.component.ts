@@ -457,6 +457,10 @@ export class TeamEditComponent {
 
   canEdit(): boolean {
     const team = this.config.data?.team as Team;
-    return team ? this.authService.hasAnyPermission(['edit-any:club', `${team.id}_edit:team`]) : false;
+    return team ? this.authService.hasAnyPermission(['edit-any:team', 'edit-any:club', `${team.id}_edit:team`]) : false;
+  }
+
+  canEditBasicInfo(): boolean {
+    return this.authService.hasAnyPermission(['edit-any:team', 'edit-any:club']);
   }
 }

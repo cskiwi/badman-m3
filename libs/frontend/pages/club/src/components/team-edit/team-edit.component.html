@@ -2,65 +2,67 @@
   <h2 class="text-xl mb-4">{{ 'all.team.edit.title' | translate }}</h2>
   <form [formGroup]="teamForm" class="space-y-4">
     <!-- Basic Info -->
-    <div class="mb-4">
-      <h3 class="text-lg font-medium mb-2 text-primary-700">{{ 'all.team.edit.basic.title' | translate }}</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Team Name -->
-        <div class="flex flex-col gap-1">
-          <label for="name" class="font-medium">{{ 'all.team.edit.name.label' | translate }}</label>
-          <input pInputText id="name" formControlName="name" [placeholder]="'all.team.edit.name.placeholder.text' | translate" />
-        </div>
+    @if (canEditBasicInfo()) {
+      <div class="mb-4">
+        <h3 class="text-lg font-medium mb-2 text-primary-700">{{ 'all.team.edit.basic.title' | translate }}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Team Name -->
+          <div class="flex flex-col gap-1">
+            <label for="name" class="font-medium">{{ 'all.team.edit.name.label' | translate }}</label>
+            <input pInputText id="name" formControlName="name" [placeholder]="'all.team.edit.name.placeholder.text' | translate" />
+          </div>
 
-        <!-- Abbreviation -->
-        <div class="flex flex-col gap-1">
-          <label for="abbreviation" class="font-medium">{{ 'all.team.edit.abbreviation.label' | translate }}</label>
-          <input
-            pInputText
-            id="abbreviation"
-            formControlName="abbreviation"
-            [placeholder]="'all.team.edit.abbreviation.placeholder.text' | translate"
-          />
-        </div>
+          <!-- Abbreviation -->
+          <div class="flex flex-col gap-1">
+            <label for="abbreviation" class="font-medium">{{ 'all.team.edit.abbreviation.label' | translate }}</label>
+            <input
+              pInputText
+              id="abbreviation"
+              formControlName="abbreviation"
+              [placeholder]="'all.team.edit.abbreviation.placeholder.text' | translate"
+            />
+          </div>
 
-        <!-- Season -->
-        <div class="flex flex-col gap-1">
-          <label for="season" class="font-medium">{{ 'all.team.edit.season.label' | translate }}</label>
-          <p-select
-            id="season"
-            formControlName="season"
-            [options]="seasonOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="'all.team.edit.season.placeholder.text' | translate"
-          ></p-select>
-        </div>
+          <!-- Season -->
+          <div class="flex flex-col gap-1">
+            <label for="season" class="font-medium">{{ 'all.team.edit.season.label' | translate }}</label>
+            <p-select
+              id="season"
+              formControlName="season"
+              [options]="seasonOptions"
+              optionLabel="label"
+              optionValue="value"
+              [placeholder]="'all.team.edit.season.placeholder.text' | translate"
+            ></p-select>
+          </div>
 
-        <!-- Team Number -->
-        <div class="flex flex-col gap-1">
-          <label for="teamNumber" class="font-medium">{{ 'all.team.edit.teamNumber.label' | translate }}</label>
-          <input
-            pInputText
-            type="number"
-            id="teamNumber"
-            formControlName="teamNumber"
-            [placeholder]="'all.team.edit.teamNumber.placeholder.text' | translate"
-          />
-        </div>
+          <!-- Team Number -->
+          <div class="flex flex-col gap-1">
+            <label for="teamNumber" class="font-medium">{{ 'all.team.edit.teamNumber.label' | translate }}</label>
+            <input
+              pInputText
+              type="number"
+              id="teamNumber"
+              formControlName="teamNumber"
+              [placeholder]="'all.team.edit.teamNumber.placeholder.text' | translate"
+            />
+          </div>
 
-        <!-- Type -->
-        <div class="flex flex-col gap-1">
-          <label for="type" class="font-medium">{{ 'all.team.edit.type.label' | translate }}</label>
-          <p-select
-            id="type"
-            formControlName="type"
-            [options]="typeOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="'all.team.edit.type.placeholder.text' | translate"
-          ></p-select>
+          <!-- Type -->
+          <div class="flex flex-col gap-1">
+            <label for="type" class="font-medium">{{ 'all.team.edit.type.label' | translate }}</label>
+            <p-select
+              id="type"
+              formControlName="type"
+              [options]="typeOptions"
+              optionLabel="label"
+              optionValue="value"
+              [placeholder]="'all.team.edit.type.placeholder.text' | translate"
+            ></p-select>
+          </div>
         </div>
       </div>
-    </div>
+    }
 
     <!-- Contact Info -->
     <div class="mb-4">

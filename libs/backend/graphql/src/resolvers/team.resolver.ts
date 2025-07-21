@@ -1,10 +1,10 @@
-import { AllowAnonymous } from '@app/backend-authorization';
-import { Player, Team, TeamPlayerMembership } from '@app/models';
+import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
+import { Player, Team, TeamPlayerMembership, TeamUpdateInput } from '@app/models';
 import { TeamMembershipType } from '@app/model/enums';
 import { IsUUID } from '@app/utils';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation, Field, InputType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsUUID as IsUUIDValidator } from 'class-validator';
+import { IsEnum, IsUUID as IsUUIDValidator, IsOptional } from 'class-validator';
 import { TeamArgs } from '../args';
 
 // Register the enum for GraphQL
@@ -91,10 +91,69 @@ export class TeamResolver {
     });
   }
 
+  @Mutation(() => Team)
+  @UseGuards(PermGuard)
+  async updateTeam(@User() user: Player, @Args('teamId', { type: () => ID }) teamId: string, @Args('input') input: TeamUpdateInput): Promise<Team> {
+    // Find the team
+    const team = await Team.findOne({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Team with ID ${teamId} not found`);
+    }
+
+    // Define basic info fields that require edit-any:team claim
+    const basicInfoFields = ['name', 'abbreviation', 'type', 'season', 'teamNumber'];
+
+    // Check if any basic info fields are being updated
+    const updatingBasicInfo = Object.keys(input).some(
+      (field) => basicInfoFields.includes(field) && input[field as keyof TeamUpdateInput] !== undefined,
+    );
+
+    if (updatingBasicInfo) {
+      const canEditBasicInfo = user.hasAnyPermission(['edit-any:team', 'edit-any:club']);
+      if (!canEditBasicInfo) {
+        throw new UnauthorizedException('You do not have permission to edit basic team information');
+      }
+    }
+
+    // For other fields, check if user can edit this specific team or has global edit permissions
+    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club', `${teamId}_edit:team`]);
+    if (!canEditTeam) {
+      throw new UnauthorizedException('You do not have permission to edit this team');
+    }
+
+    // Validate captain if provided
+    if (input.captainId) {
+      const captain = await Player.findOne({ where: { id: input.captainId } });
+      if (!captain) {
+        throw new NotFoundException(`Player with ID ${input.captainId} not found`);
+      }
+    }
+
+    // Update team fields
+    if (input.name !== undefined) team.name = input.name;
+    if (input.abbreviation !== undefined) team.abbreviation = input.abbreviation;
+    if (input.email !== undefined) team.email = input.email;
+    if (input.phone !== undefined) team.phone = input.phone;
+    if (input.captainId !== undefined) team.captainId = input.captainId;
+    if (input.preferredTime !== undefined) team.preferredTime = input.preferredTime;
+    if (input.preferredDay !== undefined) team.preferredDay = input.preferredDay;
+    if (input.type !== undefined) team.type = input.type;
+    if (input.season !== undefined) team.season = input.season;
+    if (input.teamNumber !== undefined) team.teamNumber = input.teamNumber;
+
+    await team.save();
+    return team;
+  }
+
   @Mutation(() => TeamPlayerMembership)
+  @UseGuards(PermGuard)
   async updateTeamPlayerMembership(
+    @User() user: Player,
     @Args('id', { type: () => ID }) id: string,
-    @Args('membershipType') membershipType: string
+    @Args('membershipType') membershipType: string,
   ): Promise<TeamPlayerMembership> {
     // Validate membership type
     const validMembershipTypes = Object.values(TeamMembershipType);
@@ -105,10 +164,17 @@ export class TeamResolver {
     // Find the team player membership
     const membership = await TeamPlayerMembership.findOne({
       where: { id },
+      relations: ['team'],
     });
 
     if (!membership) {
       throw new NotFoundException(`Team player membership with ID ${id} not found`);
+    }
+
+    // Check authorization - only users with edit-any:team claim can modify team memberships
+    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club']);
+    if (!canEditTeam) {
+      throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
 
     // Update the membership type
@@ -119,15 +185,23 @@ export class TeamResolver {
   }
 
   @Mutation(() => TeamPlayerMembership)
+  @UseGuards(PermGuard)
   async addTeamPlayerMembership(
+    @User() user: Player,
     @Args('teamId', { type: () => ID }) teamId: string,
     @Args('playerId', { type: () => ID }) playerId: string,
-    @Args('membershipType', { type: () => String, defaultValue: TeamMembershipType.REGULAR }) membershipType: string
+    @Args('membershipType', { type: () => String, defaultValue: TeamMembershipType.REGULAR }) membershipType: string,
   ): Promise<TeamPlayerMembership> {
     // Validate membership type
     const validMembershipTypes = Object.values(TeamMembershipType);
     if (!validMembershipTypes.includes(membershipType as TeamMembershipType)) {
       throw new BadRequestException(`Invalid membership type. Must be one of: ${validMembershipTypes.join(', ')}`);
+    }
+
+    // Check authorization - only users with edit-any:team claim can add team memberships
+    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club']);
+    if (!canEditTeam) {
+      throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
 
     // Check if team exists
@@ -162,7 +236,7 @@ export class TeamResolver {
     membership.teamId = teamId;
     membership.playerId = playerId;
     membership.membershipType = membershipType as TeamMembershipType;
-    
+
     await membership.save();
 
     return membership;

@@ -81,7 +81,7 @@ export class PageDetailComponent {
   private readonly dialogService = inject(DialogService);
 
   canEditTeam(team: Team): boolean {
-    return this.auth.hasAnyPermission(['edit-any:club', `${team.id}_edit:team`]);
+    return this.auth.hasAnyPermission(['edit-any:team', 'edit-any:club', `${team.id}_edit:team`]);
   }
 
   editTeam(team: Team): void {
