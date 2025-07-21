@@ -1,7 +1,7 @@
-import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { TeamPlayerMembership, Team, Player } from '@app/models';
+import { AllowAnonymous } from '@app/backend-authorization';
+import { Player, Team, TeamPlayerMembership } from '@app/models';
 import { IsUUID } from '@app/utils';
-import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TeamArgs } from '../args';
 
@@ -40,11 +40,7 @@ export class TeamResolver {
   }
 
   @ResolveField(() => [TeamPlayerMembership], { nullable: true })
-  @UseGuards(PermGuard)
-  async teamPlayerMemberships(@User() user: Player, @Parent() { id }: Team) {
-    if (!(await user.hasAnyPermission(['membership:team', `${id}_membership:team`]))) {
-      throw new ForbiddenException('Insufficient permissions to access team memberships');
-    }
+  async teamPlayerMemberships(@Parent() { id }: Team) {
     return TeamPlayerMembership.find({
       where: {
         teamId: id,
