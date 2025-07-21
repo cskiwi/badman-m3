@@ -64,6 +64,47 @@
   }
 }
 
+// Mobile layout optimizations
+.players-row {
+  // Mobile-specific spacing adjustments
+  @media (max-width: 640px) {
+    .flex-shrink-0 {
+      flex-shrink: 0;
+    }
+    
+    // Ensure proper text truncation on mobile
+    .truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    // Mobile circles styling
+    .w-3.h-3 {
+      &.bg-green-500 {
+        background: var(--green-500);
+        box-shadow: 0 0 4px rgba(34, 197, 94, 0.4);
+      }
+      
+      &.bg-red-500 {
+        background: var(--red-500);
+        box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
+      }
+    }
+  }
+}
+
+// Score section mobile optimizations
+.score-section {
+  @media (max-width: 640px) {
+    .sets-container > div {
+      // More compact mobile styling
+      min-width: 4rem;
+      padding: 0.5rem;
+    }
+  }
+}
+
 // Empty state styling
 .empty-state {
   color: var(--text-color-secondary);
