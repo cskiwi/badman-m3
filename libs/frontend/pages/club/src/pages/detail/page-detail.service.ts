@@ -97,6 +97,8 @@ export class DetailService {
                       player {
                         id
                         fullName
+                        firstName
+                        lastName
                       }
                     }
                   }

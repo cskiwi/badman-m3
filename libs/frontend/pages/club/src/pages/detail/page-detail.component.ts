@@ -49,9 +49,24 @@ export class PageDetailComponent {
   error = this.dataService.error;
   loading = this.dataService.loading;
 
+  // Track expanded teams
+  expandedTeams = new Set<string>();
+
   // Form control getters
   get seasonControl() {
     return this.dataService.filter.get('season') as FormControl<number>;
+  }
+
+  toggleTeamPlayers(teamId: string) {
+    if (this.expandedTeams.has(teamId)) {
+      this.expandedTeams.delete(teamId);
+    } else {
+      this.expandedTeams.add(teamId);
+    }
+  }
+
+  isTeamExpanded(teamId: string): boolean {
+    return this.expandedTeams.has(teamId);
   }
 
   constructor() {

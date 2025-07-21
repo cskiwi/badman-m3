@@ -98,9 +98,38 @@
                 }
               </div>
 
-              <div class="flex flex-wrap gap-1">
+              <!-- Players List -->
+              <div>
                 @if (team.teamPlayerMemberships && team.teamPlayerMemberships.length > 0) {
-                  <p-badge [value]="team.teamPlayerMemberships.length + ' ' + ('all.team.players' | translate)" severity="contrast" />
+                  <div class="text-sm text-muted-color-emphasis">
+                    <!-- Clickable header -->
+                    <div (click)="toggleTeamPlayers(team.id)" class="w-full flex items-center gap-2 rounded-lg cursor-pointer">
+                      <i class="pi" [class.pi-chevron-right]="!isTeamExpanded(team.id)" [class.pi-chevron-down]="isTeamExpanded(team.id)"></i>
+                      {{ 'all.team.players' | translate }} ({{ team.teamPlayerMemberships.length }})
+                    </div>
+
+                    <!-- Expandable content -->
+                    <div
+                      class="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-300"
+                      [class.h-0]="!isTeamExpanded(team.id)"
+                      [class.opacity-0]="!isTeamExpanded(team.id)"
+                      [class.h-auto]="isTeamExpanded(team.id)"
+                      [class.opacity-100]="isTeamExpanded(team.id)"
+                      [class.mt-2]="isTeamExpanded(team.id)"
+                    >
+                      @for (membership of team.teamPlayerMemberships; track membership.id) {
+                        @if (membership.player) {
+                          <a
+                            [routerLink]="['/player', membership.player.id]"
+                            class="flex items-center gap-2 p-1 rounded-lg hover:bg-highlight-emphasis text-color transition-colors cursor-pointer"
+                          >
+                            <i class="pi pi-user text-xs text-muted-color"></i>
+                            <span class="truncate">{{ membership.player.firstName }} {{ membership.player.lastName[0] }}.</span>
+                          </a>
+                        }
+                      }
+                    </div>
+                  </div>
                 }
               </div>
             </div>
