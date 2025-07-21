@@ -6,10 +6,7 @@
     "@angular/core": "*",
     "@ngx-translate/core": "*",
     "ngx-cookie-service-ssr": "*",
-    "primeng": "*",
-    "rxjs": "~7.8.2",
-    "@angular/common": "20.1.0",
-    "@ngx-translate/http-loader": "^16.0.1"
+    "primeng": "*"
   },
   "sideEffects": false
 }

@@ -6,7 +6,6 @@
     "@app/utils": "0.0.1",
     "@nestjs/graphql": "*",
     "typeorm": "*",
-    "tslib": "^2.0.0",
-    "graphql-type-json": "^0.3.2"
+    "tslib": "^2.0.0"
   }
 }

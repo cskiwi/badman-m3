@@ -13,7 +13,9 @@
     "primeng": "*",
     "@angular/common": "20.1.0",
     "apollo-angular": "^11.0.0",
-    "rxjs": "~7.8.2"
+    "rxjs": "~7.8.2",
+    "@app/frontend-utils": "0.0.1",
+    "@app/utils": "0.0.1"
   },
   "sideEffects": false
 }

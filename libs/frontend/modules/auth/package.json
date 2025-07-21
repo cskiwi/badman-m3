@@ -2,14 +2,7 @@
   "name": "@app/frontend-modules-auth",
   "version": "0.0.1",
   "peerDependencies": {
-    "@app/models": "0.0.1",
-    "@angular/common": "20.1.0",
-    "@angular/core": "20.1.0",
-    "@angular/router": "20.1.0",
-    "ngx-cookie-service-ssr": "^20.0.1",
-    "rxjs": "~7.8.2",
-    "@auth0/auth0-angular": "^2.2.3",
-    "apollo-angular": "^11.0.0"
+    "@app/models": "0.0.1"
   },
   "sideEffects": false
 }

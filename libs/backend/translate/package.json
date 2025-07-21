@@ -2,13 +2,9 @@
   "name": "@app/backend-translate",
   "version": "0.0.1",
   "dependencies": {
-    "@nestjs/config": "4.0.2",
     "tslib": "^2.3.0",
     "@app/backend-authorization": "0.0.1",
-    "@app/utils": "0.0.1",
-    "@nestjs/common": "^11.1.3",
-    "nestjs-i18n": "^10.5.1",
-    "express": "5.1.0"
+    "@app/utils": "0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

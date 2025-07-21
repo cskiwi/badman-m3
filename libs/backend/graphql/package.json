@@ -11,12 +11,8 @@
     "@nestjs/config": "4.0.2",
     "@nestjs/graphql": "^13.1.0",
     "@apollo/server": "^4.12.2",
-    "class-validator": "^0.14.2",
     "@app/backend-search": "0.0.1",
-    "typeorm": "^0.3.25",
-    "graphql": "^16.11.0",
-    "graphql-type-json": "^0.3.2",
-    "reflect-metadata": "^0.2.2"
+    "@app/model/enums": "0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",
