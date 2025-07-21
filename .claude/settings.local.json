@@ -32,7 +32,9 @@
       "Bash(git add:*)",
       "Bash(rm:*)",
       "Bash(git commit:*)",
-      "Bash(git revert:*)"
+      "Bash(git revert:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:www.npmjs.com)"
     ],
     "deny": []
   }
