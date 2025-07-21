@@ -75,21 +75,25 @@
 
               <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
                 @if (team.captain) {
-                  <div class="flex items-center gap-1">
+                  <div class="flex items-center font-semibold gap-1">
                     <i class="pi pi-user text-xs"></i>
-                    <span>{{ 'all.team.captain' | translate }}: {{ team.captain.fullName }}</span>
+                    <span> {{ team.captain.fullName }}</span>
                   </div>
                 }
                 @if (team.email) {
                   <div class="flex items-center gap-1">
                     <i class="pi pi-envelope text-xs"></i>
-                    <a [href]="'mailto:' + team.email" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{ team.email }}</a>
+                    <a [href]="'mailto:' + team.email" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{
+                      team.email
+                    }}</a>
                   </div>
                 }
                 @if (team.phone) {
                   <div class="flex items-center gap-1">
                     <i class="pi pi-phone text-xs"></i>
-                    <a [href]="'tel:' + team.phone" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{ team.phone | phoneNumber }}</a>
+                    <a [href]="'tel:' + team.phone" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{
+                      team.phone | phoneNumber
+                    }}</a>
                   </div>
                 }
               </div>
