@@ -5,6 +5,7 @@ import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SeoService } from '@app/frontend-modules-seo/service';
+import { PhoneNumberPipe } from '@app/frontend-utils';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { SelectModule } from 'primeng/select';
@@ -26,6 +27,7 @@ import { BadgeModule } from 'primeng/badge';
     RecentGamesComponent,
     UpcomingGamesComponent,
     BadgeModule,
+    PhoneNumberPipe,
   ],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',

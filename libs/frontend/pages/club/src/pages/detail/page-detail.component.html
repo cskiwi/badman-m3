@@ -83,13 +83,13 @@
                 @if (team.email) {
                   <div class="flex items-center gap-1">
                     <i class="pi pi-envelope text-xs"></i>
-                    <span>{{ team.email }}</span>
+                    <a [href]="'mailto:' + team.email" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{ team.email }}</a>
                   </div>
                 }
                 @if (team.phone) {
                   <div class="flex items-center gap-1">
                     <i class="pi pi-phone text-xs"></i>
-                    <span>{{ team.phone }}</span>
+                    <a [href]="'tel:' + team.phone" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{ team.phone | phoneNumber }}</a>
                   </div>
                 }
               </div>
