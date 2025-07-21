@@ -9,12 +9,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Relation,
 } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 import { Game } from '../game.model';
 import { CompetitionDraw } from './competition-draw.model';
-import { CompetitionAssembly as Assembly } from './assembly.model';
 import { Team } from '../../team.model';
+import { CompetitionAssembly } from './competition-assembly.model';
 
 @ObjectType('CompetitionEncounter', { description: 'A Competition Encounter' })
 @Entity('EncounterCompetitions', { schema: 'event' })
@@ -102,22 +103,22 @@ export class CompetitionEncounter extends BaseEntity {
   @Field(() => CompetitionDraw, { nullable: true })
   @ManyToOne(() => CompetitionDraw, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'drawId' })
-  declare drawCompetition?: CompetitionDraw;
+  declare drawCompetition?: Relation<CompetitionDraw>;
 
   @Field(() => [Game], { nullable: true })
   @OneToMany(() => Game, (game) => game.competitionEncounter)
-  declare games?: Game[];
+  declare games?: Relation<Game[]>;
 
-  @OneToMany(() => Assembly, (assembly) => assembly.encounterCompetition)
-  declare assemblies?: Assembly[];
+  @OneToMany(() => CompetitionAssembly, (assembly) => assembly.encounterCompetition)
+  declare assemblies?: Relation<CompetitionAssembly[]>;
 
   @Field(() => Team, { nullable: true })
   @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'homeTeamId' })
-  declare homeTeam?: Team;
+  declare homeTeam?: Relation<Team>;
 
   @Field(() => Team, { nullable: true })
   @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'awayTeamId' })
-  declare awayTeam?: Team;
+  declare awayTeam?: Relation<Team>;
 }

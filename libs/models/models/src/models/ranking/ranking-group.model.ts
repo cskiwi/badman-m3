@@ -1,13 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { SortableField, WhereField } from '@app/utils';
 
@@ -33,9 +25,6 @@ export class RankingGroup extends BaseEntity {
   @Column()
   declare name: string;
 
-  @OneToMany(
-    () => RankingSystemRankingGroupMembership,
-    (membership) => membership.rankingGroup,
-  )
-  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership[];
+  @OneToMany(() => RankingSystemRankingGroupMembership, (membership) => membership.rankingGroup)
+  declare rankingSystemRankingGroupMemberships: Relation<RankingSystemRankingGroupMembership[]>;
 }

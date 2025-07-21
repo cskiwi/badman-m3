@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { Player } from '../player.model';
 import { Game } from './game.model';
@@ -53,10 +54,10 @@ export class GamePlayerMembership extends BaseEntity {
   @SortableObject('Player')
   @ManyToOne(() => Player, (player) => player.gamePlayerMemberships)
   @JoinColumn({ name: 'playerId' })
-  declare gamePlayer: Player;
+  declare gamePlayer: Relation<Player>;
 
   @SortableObject('Game')
   @WhereObject('Game')
   @ManyToOne(() => Game, (game) => game.gamePlayerMemberships)
-  declare game: Game;
+  declare game: Relation<Game>;
 }

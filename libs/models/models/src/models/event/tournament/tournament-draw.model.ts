@@ -1,6 +1,6 @@
 import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
 import { Game } from '../game.model';
 
@@ -38,7 +38,7 @@ export class TournamentDraw extends BaseEntity {
 
   @Field(() => [Game], { nullable: true })
   @OneToMany(() => Game, (game) => game.tournamentDraw, { cascade: true })
-  declare games?: Game[];
+  declare games?: Relation<Game[]>;
 
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, eventEntry => eventEntry.drawTournament, { cascade: true, onDelete: 'CASCADE' })
@@ -62,7 +62,7 @@ export class TournamentDraw extends BaseEntity {
   @Field(() => TournamentSubEvent, { nullable: true })
   @ManyToOne(() => TournamentSubEvent, (tournamentSubEvent) => tournamentSubEvent.drawTournaments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'subeventId' })
-  declare tournamentSubEvent?: TournamentSubEvent;
+  declare tournamentSubEvent?: Relation<TournamentSubEvent>;
 
   @SortableField(() => ID, { nullable: true })
   @WhereField(() => ID, { nullable: true })

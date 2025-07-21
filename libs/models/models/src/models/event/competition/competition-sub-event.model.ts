@@ -1,3 +1,5 @@
+import { SubEventTypeEnum } from '@app/model/enums';
+import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -8,11 +10,10 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Relation,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
-import { SortableField, WhereField } from '@app/utils';
-import { SubEventTypeEnum, LevelType } from '@app/model/enums';
 import { CompetitionDraw } from './competition-draw.model';
 import { CompetitionEvent } from './competition-event.model';
 
@@ -49,10 +50,6 @@ export class CompetitionSubEvent extends BaseEntity {
   @Column({ nullable: true })
   declare level?: number;
 
-  // @SortableField(() => String, { nullable: true })
-  // @Column({ type: 'simple-enum', enum: LevelType, nullable: true })
-  // declare levelType?: LevelType;
-
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ nullable: true })
@@ -75,9 +72,9 @@ export class CompetitionSubEvent extends BaseEntity {
   @Field(() => CompetitionEvent, { nullable: true })
   @ManyToOne(() => CompetitionEvent, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })
-  declare competitionEvent?: CompetitionEvent;
+  declare competitionEvent?: Relation<CompetitionEvent>;
 
   @Field(() => [CompetitionDraw], { nullable: true })
   @OneToMany(() => CompetitionDraw, (draw) => draw.competitionSubEvent)
-  declare competitionDraws?: CompetitionDraw[];
+  declare competitionDraws?: Relation<CompetitionDraw[]>;
 }

@@ -254,7 +254,7 @@ export class RankingSystem extends BaseEntity {
     () => RankingSystemRankingGroupMembership,
     (membership) => membership.rankingSystem,
   )
-  declare rankingSystemRankingGroupMemberships: RankingSystemRankingGroupMembership[];
+  declare rankingSystemRankingGroupMemberships: Relation<RankingSystemRankingGroupMembership[]>;
 
   @OneToMany(() => RankingPoint, (rankingPoint) => rankingPoint.system)
   declare rankingPoints: Relation<RankingPoint[]>;

@@ -8,6 +8,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { CompetitionSubEvent } from './competition-sub-event.model';
@@ -125,5 +126,5 @@ export class CompetitionEvent extends BaseEntity {
 
   @Field(() => [CompetitionSubEvent], { nullable: true })
   @OneToMany(() => CompetitionSubEvent, (subEvent) => subEvent.competitionEvent)
-  declare competitionSubEvents?: CompetitionSubEvent[];
+  declare competitionSubEvents?: Relation<CompetitionSubEvent[]>;
 }

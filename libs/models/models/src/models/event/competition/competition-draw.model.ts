@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { SortableField } from '@app/utils';
@@ -61,8 +62,8 @@ export class CompetitionDraw extends BaseEntity {
   @Field(() => CompetitionSubEvent, { nullable: true })
   @ManyToOne(() => CompetitionSubEvent, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'subeventId' })
-  declare competitionSubEvent?: CompetitionSubEvent;
+  declare competitionSubEvent?: Relation<CompetitionSubEvent>;
 
   @OneToMany(() => CompetitionEncounter, (encounter) => encounter.drawCompetition)
-  declare competitionEncounters?: CompetitionEncounter[];
+  declare competitionEncounters?: Relation<CompetitionEncounter[]>;
 }

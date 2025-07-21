@@ -1,5 +1,5 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament-draw.model';
 import { TournamentEvent } from './tournament-event.model';
@@ -50,12 +50,12 @@ export class TournamentSubEvent extends BaseEntity {
 
   @Field(() => [TournamentDraw], { nullable: true })
   @OneToMany(() => TournamentDraw, (tournamentDraw) => tournamentDraw.tournamentSubEvent, { cascade: true, onDelete: 'CASCADE' })
-  declare drawTournaments?: TournamentDraw[];
+  declare drawTournaments?: Relation<TournamentDraw[]>;
 
   @Field(() => TournamentEvent, { nullable: true })
   @ManyToOne(() => TournamentEvent, (tournamentEvent) => tournamentEvent.tournamentSubEvents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })
-  declare tournamentEvent?: TournamentEvent;
+  declare tournamentEvent?: Relation<TournamentEvent>;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })

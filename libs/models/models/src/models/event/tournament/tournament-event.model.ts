@@ -1,6 +1,6 @@
 import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Entity, BaseEntity, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, Column, OneToMany } from 'typeorm';
+import { Entity, BaseEntity, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, Column, OneToMany, Relation } from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
 
 @Entity('EventTournaments', { schema: 'event' })
@@ -81,5 +81,5 @@ export class TournamentEvent extends BaseEntity {
   declare country: string;
 
   @OneToMany(() => TournamentSubEvent, (tournamentSubEvent) => tournamentSubEvent.tournamentEvent, { cascade: true, onDelete: 'CASCADE' })
-  declare tournamentSubEvents?: TournamentSubEvent[];
+  declare tournamentSubEvents?: Relation<TournamentSubEvent[]>;
 }

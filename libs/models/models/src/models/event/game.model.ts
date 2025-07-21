@@ -106,7 +106,7 @@ export class Game extends BaseEntity {
 
   @Field(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(() => GamePlayerMembership, (gamePlayerMembership) => gamePlayerMembership.game)
-  declare gamePlayerMemberships: GamePlayerMembership[];
+  declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
 
   @Field(() => [RankingPoint], { nullable: true })
   @OneToMany(() => RankingPoint, (rankingPoint) => rankingPoint.game)
@@ -115,10 +115,10 @@ export class Game extends BaseEntity {
   @Field(() => TournamentDraw, { nullable: true })
   @ManyToOne(() => TournamentDraw, (tournamentDraw) => tournamentDraw.games, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'linkId' })
-  declare tournamentDraw?: TournamentDraw;
+  declare tournamentDraw?: Relation<TournamentDraw>;
 
   @Field(() => CompetitionEncounter, { nullable: true })
   @ManyToOne(() => CompetitionEncounter, (competitionEncounter) => competitionEncounter.games, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'linkId' })
-  declare competitionEncounter?: CompetitionEncounter;
+  declare competitionEncounter?: Relation<CompetitionEncounter>;
 }

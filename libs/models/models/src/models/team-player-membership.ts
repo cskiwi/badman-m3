@@ -1,6 +1,6 @@
 import { SortableField, SortableObject, WhereField } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { Player } from './player.model';
 import { Team } from './team.model';
 import { TeamMembershipType } from '@app/model/enums';
@@ -43,9 +43,9 @@ export class TeamPlayerMembership extends BaseEntity {
 
   @SortableObject('Player')
   @ManyToOne(() => Player, (player) => player.teamPlayerMemberships)
-  declare player: Player;
+  declare player: Relation<Player>;
 
   @SortableObject('Team')
   @ManyToOne(() => Team, (team) => team.teamPlayerMemberships)
-  declare team: Team;
+  declare team: Relation<Team>;
 }

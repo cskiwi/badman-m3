@@ -5,6 +5,7 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import { ClubMembershipType } from '@app/model/enums';
 import { Club } from './club.model';
@@ -53,11 +54,11 @@ export class ClubPlayerMembership extends BaseEntity {
 
   @Field(() => Player, { nullable: true })
   @ManyToOne(() => Player, (player) => player.clubPlayerMemberships)
-  declare player: Player;
+  declare player: Relation<Player>;
 
   @Field(() => Club, { nullable: true })
   @ManyToOne(() => Club, (club) => club.clubPlayerMemberships)
-  declare club: Club;
+  declare club: Relation<Club>;
 
   @SortableField(() => Boolean)
   get active() {

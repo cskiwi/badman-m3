@@ -116,12 +116,12 @@ export class Team extends BaseEntity {
     () => TeamPlayerMembership,
     (teamPlayerMembership) => teamPlayerMembership.player,
   )
-  declare teamPlayerMemberships: TeamPlayerMembership[];
+  declare teamPlayerMemberships: Relation<TeamPlayerMembership[]>;
 
   // belongs to club
   @SortableField(() => Club, { nullable: true })
   @ManyToOne(() => Club, (club) => club.teams)
-  declare club?: Club;
+  declare club?: Relation<Club>;
 
   // @SortableField({ nullable: true })
   // @Column({ nullable: true })

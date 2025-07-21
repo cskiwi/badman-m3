@@ -7,6 +7,7 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
@@ -93,9 +94,9 @@ export class Club extends BaseEntity {
     () => ClubPlayerMembership,
     (clubPlayerMembership) => clubPlayerMembership.player,
   )
-  declare clubPlayerMemberships: ClubPlayerMembership[];
+  declare clubPlayerMemberships: Relation<ClubPlayerMembership[]>;
 
   @SortableField(() => [Team])
   @OneToMany(() => Team, (team) => team.club)
-  declare teams?: Team[];
+  declare teams?: Relation<Team[]>;
 }
