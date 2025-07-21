@@ -51,4 +51,13 @@ export class TeamResolver {
       },
     });
   }
+
+  @ResolveField(() => Player, { nullable: true })
+  async captain(@Parent() { captainId }: Team) {
+    return Player.findOne({
+      where: {
+        id: captainId,
+      },
+    });
+  }
 }
