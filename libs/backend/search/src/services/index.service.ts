@@ -52,7 +52,7 @@ export class IndexService implements OnModuleInit {
 
   async indexPlayers() {
     const playerQry = Player.createQueryBuilder('player')
-      .select(['player.id', 'player.slug', 'player.memberId', 'player.firstName', 'player.lastName', 'club.id'])
+      .select(['player.id', 'player.slug', 'player.memberId', 'player.firstName', 'player.lastName', 'player.gender', 'club.id'])
       .leftJoinAndSelect('player.clubPlayerMemberships', 'clubPlayerMemberships')
       .leftJoinAndSelect('clubPlayerMemberships.club', 'club')
       .where('player.competitionPlayer = true');
@@ -71,6 +71,7 @@ export class IndexService implements OnModuleInit {
         firstName: player.firstName,
         lastName: player.lastName,
         fullName: player.fullName,
+        gender: player.gender,
         slug: player.slug,
         memberId: player.memberId,
 

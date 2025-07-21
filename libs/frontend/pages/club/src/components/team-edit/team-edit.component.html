@@ -138,7 +138,17 @@
             styleClass="w-full"
           >
             <ng-template #item let-player>
-              {{ player.fullName }}
+              <div class="flex items-center gap-3">
+                <i class="pi pi-user text-lg text-blue-500"></i>
+                <div class="flex flex-col flex-1">
+                  <div class="font-medium text-color">
+                    {{ player.fullName }}
+                  </div>
+                  <div class="text-sm text-muted-color">
+                    {{ player.club?.name || 'Player' }}
+                  </div>
+                </div>
+              </div>
             </ng-template>
           </p-autoComplete>
         </div>
@@ -163,7 +173,7 @@
                   [ngModel]="membership.membershipType"
                   (ngModelChange)="updateMembershipType(membership, $event)"
                   [ngModelOptions]="{ standalone: true }"
-                  [options]="membershipTypeOptions"
+                  [options]="membershipTypeOptions()"
                   optionLabel="label"
                   optionValue="value"
                   styleClass="w-full"
@@ -195,10 +205,10 @@
 </div>
 
 <!-- Add Member Dialog -->
-<p-dialog 
-  [visible]="showAddPlayerDialog()" 
-  (onHide)="cancelAddMember()" 
-  [modal]="true" 
+<p-dialog
+  [visible]="showAddPlayerDialog()"
+  (onHide)="cancelAddMember()"
+  [modal]="true"
   [style]="{ width: '450px' }"
   [header]="'all.team.edit.members.add' | translate"
 >
@@ -215,8 +225,23 @@
         [showEmptyMessage]="true"
         [emptyMessage]="'all.team.edit.members.noPlayersFound' | translate"
         styleClass="w-full"
+        appendTo="body"
         [inputStyle]="{ width: '100%' }"
-      ></p-autoComplete>
+      >
+        <ng-template #item let-player>
+          <div class="flex items-center gap-3">
+            <i class="pi pi-user text-lg text-blue-500"></i>
+            <div class="flex flex-col flex-1">
+              <div class="font-medium text-color">
+                {{ player.fullName }}
+              </div>
+              <div class="text-sm text-muted-color">
+                {{ player.club?.name || 'Player' }}
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-autoComplete>
     </div>
 
     <!-- Membership Type Selection -->
@@ -224,7 +249,7 @@
       <label class="block text-sm font-medium mb-2">{{ 'all.team.edit.members.type' | translate }}</label>
       <p-select
         [(ngModel)]="selectedMembershipType"
-        [options]="membershipTypeOptions"
+        [options]="membershipTypeOptions()"
         optionLabel="label"
         optionValue="value"
         styleClass="w-full"
@@ -234,16 +259,8 @@
 
   <ng-template pTemplate="footer">
     <div class="flex gap-2">
-      <p-button 
-        [label]="'all.common.cancel' | translate" 
-        styleClass="p-button-text" 
-        (click)="cancelAddMember()"
-      ></p-button>
-      <p-button 
-        [label]="'all.common.save' | translate" 
-        [disabled]="!selectedPlayerToAdd()"
-        (click)="addMember()"
-      ></p-button>
+      <p-button [label]="'all.common.cancel' | translate" styleClass="p-button-text" (click)="cancelAddMember()"></p-button>
+      <p-button [label]="'all.common.save' | translate" [disabled]="!selectedPlayerToAdd()" (click)="addMember()"></p-button>
     </div>
   </ng-template>
 </p-dialog>

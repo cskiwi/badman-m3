@@ -8,6 +8,7 @@ export const PlayerDocument: CollectionCreateSchema = {
     { name: 'firstName', type: 'string' },
     { name: 'lastName', type: 'string' },
     { name: 'fullName', type: 'string' },
+    { name: 'gender', type: 'string' },
     { name: 'slug', type: 'string' },
     { name: 'memberId', type: 'string', optional: true },
     { name: 'club', type: 'object', optional: true },

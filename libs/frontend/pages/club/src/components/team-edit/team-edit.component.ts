@@ -126,10 +126,12 @@ export class TeamEditComponent {
     label: this.translateService.instant(`all.team.type.${value.toLowerCase()}`),
   }));
 
-  membershipTypeOptions = Object.values(TeamMembershipType).map((value) => ({
-    value,
-    label: this.translateService.instant(`all.team.membershipType.${value.toLowerCase()}`),
-  }));
+  membershipTypeOptions = computed(() => 
+    Object.values(TeamMembershipType).map((value) => ({
+      value,
+      label: this.translateService.instant(`all.team.edit.membershipType.${value.toLowerCase()}`),
+    }))
+  );
 
   captainSuggestions = signal<Player[]>([]);
   selectedCaptain = signal<Player | null>(null);
@@ -201,7 +203,17 @@ export class TeamEditComponent {
       .subscribe({
         next: (result) => {
           // Extract player data from hit objects
-          const players = result.map((item) => item.hit);
+          let players = result.map((item) => item.hit);
+          
+          // Apply gender filter for gender-specific team types
+          const teamType = this.teamForm.value.type;
+          if (teamType === 'M' || teamType === 'F') {
+            const requiredGender = teamType === 'M' ? 'M' : 'F';
+            players = players.filter(player => player.gender === requiredGender);
+          }
+
+          console.log('Captain search results:', players);
+          
           this.captainSuggestions.set(players);
         },
         error: (err) => {
@@ -278,9 +290,17 @@ export class TeamEditComponent {
         next: (result) => {
           // Extract player data from hit objects and exclude already added players
           const existingPlayerIds = this.teamPlayerMemberships().map(m => m.playerId);
-          const players = result
+          let players = result
             .map((item) => item.hit)
             .filter(player => !existingPlayerIds.includes(player.id));
+          
+          // Apply gender filter for gender-specific team types
+          const teamType = this.teamForm.value.type;
+          if (teamType === 'M' || teamType === 'F') {
+            const requiredGender = teamType === 'M' ? 'M' : 'F';
+            players = players.filter(player => player.gender === requiredGender);
+          }
+          
           this.playerSuggestions.set(players);
         },
         error: (err) => {
