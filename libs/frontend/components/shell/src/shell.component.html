@@ -37,9 +37,9 @@
         </p-toolbar>
       } @else {
         <!-- Mobile Layout -->
-        <div class="mobile-header-layout py-3">
+        <div class="mobile-header-layout py-3 mb-3">
           <!-- Top Row: Brand + Menu + Profile -->
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
               <h1 class="text-lg font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <div [class]="isDesktop ? 'pt-20' : 'pt-32'">
+  <div [class]="isDesktop ? 'pt-20' : 'pt-26'">
     <!-- Mobile Sidebar Overlay -->
     @if (sidebarVisible && !isDesktop) {
       <div class="fixed inset-0 z-40 mobile-overlay" (click)="sidebarVisible = false"></div>
@@ -117,7 +117,7 @@
     }
 
     <!-- Main Content -->
-    <main class="flex-1 p-6 max-w-8xl mx-auto">
+    <main class="flex-1 max-w-8xl mx-auto p-1 md:p-6">
       <router-outlet />
     </main>
   </div>
