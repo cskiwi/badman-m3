@@ -98,5 +98,25 @@
       "description": "Nouvelle version disponible.",
       "refresh": "Actualiser maintenant"
     }
+  },
+  "player": {
+    "edit": {
+      "claims": {
+        "title": "Modifier les droits",
+        "subtitle": "Gérer les permissions globales pour ce joueur",
+        "description": "Sélectionnez les droits globaux que vous souhaitez attribuer à ce joueur. Ces permissions s'appliquent à l'ensemble du système.",
+        "actions": {
+          "select-all": "Tout sélectionner",
+          "select-none": "Ne rien sélectionner",
+          "save": "Enregistrer les modifications",
+          "cancel": "Annuler"
+        },
+        "messages": {
+          "no-claims": "Aucun droit global disponible",
+          "saving": "Enregistrement des modifications...",
+          "loading": "Chargement des données du joueur et des droits..."
+        }
+      }
+    }
   }
 }

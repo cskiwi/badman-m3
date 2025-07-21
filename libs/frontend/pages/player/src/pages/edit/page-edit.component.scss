@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+.claims-section {
+  .claim-item {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: var(--surface-50);
+    }
+  }
+}

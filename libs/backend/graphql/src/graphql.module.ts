@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
 import {
   AvailabilityResolver,
+  ClaimResolver,
   ClubPlayerMembershipResolver,
   ClubResolver,
   CommentResolver,
@@ -97,6 +98,7 @@ import {
   providers: [
     UserResolver,
     PlayerResolver,
+    ClaimResolver,
     ClubPlayerMembershipResolver,
     ClubResolver,
     GamePlayerMembershipResolver,

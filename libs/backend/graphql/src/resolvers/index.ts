@@ -1,3 +1,4 @@
+export * from './claim.resolver';
 export * from './club.resolver';
 export * from './comment.resolver';
 export * from './event';

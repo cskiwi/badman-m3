@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { RankingSystem } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
+import { lastValueFrom } from 'rxjs';
 
 export class HomeService {
   private readonly apollo = inject(Apollo);
@@ -23,7 +24,7 @@ export class HomeService {
       }
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ rankingSystem: RankingSystem }>({
             query: gql`
               query RankingSystem($rankingSystemId: ID) {
@@ -43,8 +44,7 @@ export class HomeService {
               id: params.rankingSystemId,
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.rankingSystem) {
           throw new Error('No rankingSystem found');

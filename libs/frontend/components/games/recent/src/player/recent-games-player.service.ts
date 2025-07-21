@@ -5,6 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Game, GamePlayerMembership, Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
+import { lastValueFrom } from 'rxjs';
 
 const PLAYER_RECENT_GAMES_QUERY = gql`
   query PlayerRecentGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
@@ -151,13 +152,12 @@ export class PlayerRecentGamesService {
       };
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ player: Player }>({
             query: PLAYER_RECENT_GAMES_QUERY,
             variables,
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.player?.gamePlayerMemberships) {
           throw new Error('No player found');

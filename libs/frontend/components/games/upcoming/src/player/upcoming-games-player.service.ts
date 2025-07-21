@@ -6,6 +6,7 @@ import { CompetitionEncounter } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
 import { map } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 
 const UPCOMING_GAMES_QUERY = gql`
   query UpcomingGames($args: CompetitionEncounterArgs) {
@@ -82,13 +83,12 @@ export class PlayerUpcommingGamesService {
       }
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ player: { id: string; teamPlayerMemberships: { id: string; team: { id: string } }[] } }>({
             query: PLAYER_TEAMS_QUERY,
             variables: { playerId },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.player?.teamPlayerMemberships) {
           return [];
@@ -126,7 +126,7 @@ export class PlayerUpcommingGamesService {
           AND: [{ date: { gte: today.toISOString() } }, { OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }] }],
         };
 
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ competitionEncounters: CompetitionEncounter[] }>({
             query: UPCOMING_GAMES_QUERY,
             variables: {
@@ -136,8 +136,7 @@ export class PlayerUpcommingGamesService {
               },
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data?.competitionEncounters) {
           return { games: [], endReached: true };

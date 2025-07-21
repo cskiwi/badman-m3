@@ -5,6 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { CompetitionEncounter } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
+import { lastValueFrom } from 'rxjs';
 
 const UPCOMING_TEAM_GAMES_QUERY = gql`
   query UpcomingTeamGames($teamId: ID!, $today: String!) {
@@ -65,7 +66,7 @@ export class UpcomingGamesTeamService {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Start of today
         
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ competitionEncounters: CompetitionEncounter[] }>({
             query: UPCOMING_TEAM_GAMES_QUERY,
             variables: { 
@@ -73,8 +74,7 @@ export class UpcomingGamesTeamService {
               today: today.toISOString()
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data?.competitionEncounters) {
           return { games: [], endReached: true };

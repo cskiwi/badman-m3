@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Club } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
+import { lastValueFrom } from 'rxjs';
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
@@ -23,7 +24,7 @@ export class DetailService {
       }
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ club: Club }>({
             query: gql`
               query Club($id: ID!) {
@@ -43,8 +44,7 @@ export class DetailService {
               id: params.clubId,
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.club) {
           throw new Error('No club found');

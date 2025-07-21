@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CompetitionEvent } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
+import { lastValueFrom } from 'rxjs';
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
@@ -23,7 +24,7 @@ export class DetailService {
       }
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ competitionEvent: CompetitionEvent }>({
             query: gql`
               query Competition($id: ID!) {
@@ -38,8 +39,7 @@ export class DetailService {
               id: params.competitionId,
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.competitionEvent) {
           throw new Error('No competition found');

@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Player, RankingPlace } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class ShowLevelService {
 
   async getRanking(id: string, systemId: string) {
     try {
-      const result = await this.apollo.query<{ player: Player }>({
+      const result = await lastValueFrom(this.apollo.query<{ player: Player }>({
         query: gql`
           query GetPlayerLevel($id: ID!, $args: RankingLastPlaceArgs) {
             player(id: $id) {
@@ -47,7 +48,7 @@ export class ShowLevelService {
             },
           },
         },
-      }).toPromise();
+      }));
 
       const player = result?.data?.player;
       const rankingPlace = player?.rankingLastPlaces?.[0] || null;

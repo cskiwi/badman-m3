@@ -50,7 +50,7 @@ export class AuthService {
   // Public methods for actions
   async fetchUser(): Promise<void> {
     try {
-      const result = await this.apollo
+      const result = await lastValueFrom(this.apollo
         .query<{ me: Player }>({
           query: gql`
             query {
@@ -74,14 +74,13 @@ export class AuthService {
               }
             }
           `,
-        })
-        .toPromise();
+        }));
 
       let user = result?.data?.me || null;
 
       // If user is null, try to get info from Auth0
       if (!user?.id && this.authService?.user$) {
-        const auth0User = await this.authService.user$.pipe().toPromise();
+        const auth0User = await lastValueFrom(this.authService.user$.pipe());
         if (auth0User) {
           user = {
             fullName: auth0User.nickname,

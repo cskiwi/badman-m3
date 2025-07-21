@@ -5,6 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Club } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { debounceTime } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 
 export class OverviewService {
   private readonly apollo = inject(Apollo);
@@ -24,7 +25,7 @@ export class OverviewService {
       }
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ clubs: Club[] }>({
             query: gql`
               query Clubs($args: ClubArgs) {
@@ -40,8 +41,7 @@ export class OverviewService {
               args: { where: this._clubSearchWhere(params.query) },
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.clubs) {
           throw new Error('No clubs found');

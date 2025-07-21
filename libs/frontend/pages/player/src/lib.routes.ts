@@ -20,6 +20,10 @@ export const routes: Route[] = [
             path: 'head-to-head',
             loadComponent: () => import('./pages/head-to-head/page-head-to-head.component').then((m) => m.PageHeadToHeadComponent),
           },
+          {
+            path: 'edit',
+            loadComponent: () => import('./pages/edit/page-edit.component').then((m) => m.PageEditComponent),
+          },
         ],
       },
     ],

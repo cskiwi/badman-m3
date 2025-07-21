@@ -6,6 +6,7 @@ import { ClubPlayerMembership, GamePlayerMembership, Player } from '@app/models'
 import { getSeason, startOfSeason } from '@app/utils/comp';
 import { Apollo, gql } from 'apollo-angular';
 import moment from 'moment';
+import { lastValueFrom } from 'rxjs';
 
 const PLAYER_QUERY = gql`
   query Player($id: ID!, $args: GamePlayerMembershipArgs, $clubPlayerMembershipsArgs: ClubPlayerMembershipArgs) {
@@ -77,7 +78,7 @@ export class DetailService {
         if (!params.playerId || !moment(params.date).isValid()) {
           return Promise.resolve(null);
         }
-        return this.apollo
+        return lastValueFrom(this.apollo
           .query<{ player: Player }>({
             query: PLAYER_QUERY,
             variables: {
@@ -94,8 +95,7 @@ export class DetailService {
               },
             },
             context: { signal: abortSignal },
-          })
-          .toPromise()
+          }))
           .then((result) => {
             if (!result?.data?.player) {
               throw new Error('No player found');

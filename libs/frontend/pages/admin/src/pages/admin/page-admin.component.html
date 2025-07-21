@@ -29,7 +29,7 @@
       <form [formGroup]="indexForm" (ngSubmit)="onSubmit()" class="space-y-4">
         <!-- Type Selection -->
         <div class="space-y-3">
-          <h3 class="text-lg font-medium text-surface-900">Select Types to Index</h3>
+          <h3 class="text-lg font-medium">Select Types to Index</h3>
 
           @for (indexType of indexTypes; track indexType.key) {
             <div class="flex items-center space-x-2">
@@ -68,31 +68,16 @@
     </p-card>
 
     <!-- Information Card -->
-    <p-card header="Information" class="h-fit">
+    <p-card header="Information" >
       <div class="space-y-4">
         <div>
-          <h4 class="font-medium text-surface-900 mb-2">What is indexing?</h4>
-          <p class="text-muted-color text-sm">
-            Indexing rebuilds the search database with the latest data from your application. This ensures that search results are up-to-date and
-            accurate.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="font-medium text-surface-900 mb-2">Available Types</h4>
+          <h4 class="font-medium mb-2">Available Types</h4>
           <ul class="text-muted-color text-sm space-y-1">
             <li><strong>Players:</strong> All competitive players in the system</li>
             <li><strong>Clubs:</strong> All registered clubs and organizations</li>
             <li><strong>Competition Events:</strong> Official competition events</li>
             <li><strong>Tournament Events:</strong> Tournament and championship events</li>
           </ul>
-        </div>
-
-        <div>
-          <h4 class="font-medium text-surface-900 mb-2">Performance Impact</h4>
-          <p class="text-muted-color text-sm">
-            Indexing operations may temporarily impact search performance. It's recommended to perform indexing during low-traffic periods.
-          </p>
         </div>
       </div>
     </p-card>

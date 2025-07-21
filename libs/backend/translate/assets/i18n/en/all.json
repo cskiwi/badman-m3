@@ -98,5 +98,25 @@
       "description": "New version available.",
       "refresh": "Refresh Now"
     }
+  },
+  "player": {
+    "edit": {
+      "claims": {
+        "title": "Edit Claims",
+        "subtitle": "Manage global permissions for this player",
+        "description": "Select the global claims you want to assign to this player. These permissions apply across the entire system.",
+        "actions": {
+          "select-all": "Select All",
+          "select-none": "Select None",
+          "save": "Save Changes",
+          "cancel": "Cancel"
+        },
+        "messages": {
+          "no-claims": "No global claims available",
+          "saving": "Saving changes...",
+          "loading": "Loading player and claims data..."
+        }
+      }
+    }
   }
 }

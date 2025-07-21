@@ -1,9 +1,9 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace, TeamPlayerMembership } from '@app/models';
+import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace, TeamPlayerMembership, Claim } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs, TeamPlayerMembershipArgs } from '../args';
+import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs, TeamPlayerMembershipArgs, ClaimArgs } from '../args';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -106,7 +106,7 @@ export class PlayerResolver {
   ) {
     const args = TeamPlayerMembershipArgs.toFindManyOptions(inputArgs);
 
-    if (args.where?.length > 0) { 
+    if (args.where?.length > 0) {
       args.where = args.where.map((where) => ({
         ...where,
         playerId: id,
@@ -171,5 +171,54 @@ export class PlayerResolver {
     }
 
     return RankingLastPlace.find(args);
+  }
+
+  @ResolveField(() => [Claim], { nullable: true })
+  async claims(
+    @Parent() { id }: Player,
+    @Args('args', { type: () => ClaimArgs, nullable: true })
+    inputArgs?: InstanceType<typeof ClaimArgs>,
+  ) {
+    const args = ClaimArgs.toFindManyOptions(inputArgs);
+
+    // Get claims through the many-to-many relationship
+    const player = await Player.findOne({
+      where: { id },
+      relations: ['claims'],
+    });
+
+    if (!player) {
+      return [];
+    }
+
+    let claims = player.claims || [];
+
+    // Apply filtering if provided
+    if (args.where && args.where.length > 0) {
+      claims = claims.filter(claim => {
+        return args.where!.some(whereCondition => {
+          // Simple filtering logic - can be extended as needed
+          if (whereCondition.type && claim.type !== whereCondition.type) {
+            return false;
+          }
+          if (whereCondition.category && claim.category !== whereCondition.category) {
+            return false;
+          }
+          return true;
+        });
+      });
+    }
+
+    // Apply ordering if specified
+    if (args.order) {
+      claims.sort((a, b) => {
+        // Simple name-based sorting - can be extended
+        const nameA = a.name || '';
+        const nameB = b.name || '';
+        return nameA.localeCompare(nameB);
+      });
+    }
+
+    return claims;
   }
 }

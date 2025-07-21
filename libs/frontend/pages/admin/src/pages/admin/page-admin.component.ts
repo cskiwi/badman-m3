@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { lastValueFrom } from 'rxjs';
 
 export enum IndexType {
   PLAYERS = 'PLAYERS',
@@ -125,7 +126,7 @@ export class PageAdminComponent {
     this.error.set(null);
 
     try {
-      const result = await this.apollo
+      const result = await lastValueFrom(this.apollo
         .mutate({
           mutation: INDEX_ALL_MUTATION,
           variables: {
@@ -133,8 +134,7 @@ export class PageAdminComponent {
               types: selectedTypes,
             },
           },
-        })
-        .toPromise();
+        }));
 
       const data = result?.data as { indexAll?: { message?: string } };
       if (data?.indexAll?.message) {

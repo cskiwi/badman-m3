@@ -25,7 +25,10 @@
         </div>
       </ng-content>
       <ng-content actions>
-        <p-button label="{{ 'all.head-to-head.title' | translate }}" [routerLink]="['head-to-head']" styleClass="mb-4" />
+        <div class="flex flex-col gap-2">
+          <p-button label="{{ 'all.head-to-head.title' | translate }}" [routerLink]="['head-to-head']" />
+          <p-button label="Edit Claims" [routerLink]="['edit']" [outlined]="true" icon="pi pi-user-edit" />
+        </div>
       </ng-content>
     </app-page-header>
 

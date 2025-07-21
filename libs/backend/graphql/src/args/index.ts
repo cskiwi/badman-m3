@@ -1,5 +1,6 @@
 import {
   Availability,
+  Claim,
   Club,
   ClubPlayerMembership,
   Comment,
@@ -42,6 +43,7 @@ import { appendSortableObjects, SortOrderType } from '../utils/sort-order';
 import { appendWhereObjects, WhereInputType } from '../utils/where-input';
 
 // Register all SortOrderTypes
+SortOrderType(Claim, 'Claim');
 SortOrderType(Club, 'Club');
 SortOrderType(ClubPlayerMembership, 'ClubPlayerMembership');
 SortOrderType(CompetitionEvent, 'CompetitionEvent');
@@ -80,6 +82,7 @@ SortOrderType(Rule, 'Rule');
 SortOrderType(Service, 'Service');
 
 // Register all WhereInputTypes
+WhereInputType(Claim, 'Claim');
 WhereInputType(Club, 'Club');
 WhereInputType(ClubPlayerMembership, 'ClubPlayerMembership');
 WhereInputType(CompetitionEvent, 'CompetitionEvent');
@@ -118,6 +121,7 @@ WhereInputType(Rule, 'Rule');
 WhereInputType(Service, 'Service');
 
 // Append nested objects to orders
+appendSortableObjects(Claim, 'Claim');
 appendSortableObjects(Club, 'Club');
 appendSortableObjects(ClubPlayerMembership, 'ClubPlayerMembership');
 appendSortableObjects(CompetitionEvent, 'CompetitionEvent');
@@ -156,6 +160,7 @@ appendSortableObjects(Rule, 'Rule');
 appendSortableObjects(Service, 'Service');
 
 // Append nested objects to where inputs
+appendWhereObjects(Claim, 'Claim');
 appendWhereObjects(Club, 'Club');
 appendWhereObjects(ClubPlayerMembership, 'ClubPlayerMembership');
 appendWhereObjects(CompetitionEvent, 'CompetitionEvent');
@@ -193,6 +198,7 @@ appendWhereObjects(LogEntry, 'LogEntry');
 appendWhereObjects(Rule, 'Rule');
 appendWhereObjects(Service, 'Service');
 
+export const ClaimArgs = args<Claim>('Claim');
 export const ClubArgs = args<Club>('Club');
 export const ClubPlayerMembershipArgs = args<ClubPlayerMembership>('ClubPlayerMembership');
 export const CompetitionEventArgs = args<CompetitionEvent>('CompetitionEvent');

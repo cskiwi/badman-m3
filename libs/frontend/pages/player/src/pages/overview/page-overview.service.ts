@@ -5,6 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { debounceTime } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 
 export class OverviewService {
   private readonly apollo = inject(Apollo);
@@ -24,7 +25,7 @@ export class OverviewService {
       }
 
       try {
-        const result = await this.apollo
+        const result = await lastValueFrom(this.apollo
           .query<{ players: Player[] }>({
             query: gql`
               query Players($args: PlayerArgs) {
@@ -42,8 +43,7 @@ export class OverviewService {
               },
             },
             context: { signal: abortSignal },
-          })
-          .toPromise();
+          }));
 
         if (!result?.data.players) {
           throw new Error('No players found');

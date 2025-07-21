@@ -98,5 +98,25 @@
       "description": "Nieuwe versie beschikbaar.",
       "refresh": "Nu vernieuwen"
     }
+  },
+  "player": {
+    "edit": {
+      "claims": {
+        "title": "Rechten bewerken",
+        "subtitle": "Beheer globale rechten voor deze speler",
+        "description": "Selecteer de globale rechten die je aan deze speler wilt toekennen. Deze rechten gelden voor het hele systeem.",
+        "actions": {
+          "select-all": "Alles selecteren",
+          "select-none": "Niets selecteren",
+          "save": "Wijzigingen opslaan",
+          "cancel": "Annuleren"
+        },
+        "messages": {
+          "no-claims": "Geen globale rechten beschikbaar",
+          "saving": "Wijzigingen opslaan...",
+          "loading": "Speler- en rechtengegevens laden..."
+        }
+      }
+    }
   }
 }

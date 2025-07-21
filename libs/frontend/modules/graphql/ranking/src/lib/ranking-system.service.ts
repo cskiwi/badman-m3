@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 // import { RankingSystem } from '@app/models';
 import { isPlatformBrowser } from '@angular/common';
+import { lastValueFrom } from 'rxjs';
 
 type RankingSystem = any;
 
@@ -141,7 +142,7 @@ export class RankingSystemService {
 
   private async _loadSystem(id?: string | null): Promise<RankingSystem | null> {
     try {
-      const result = await this.apollo
+      const result = await lastValueFrom(this.apollo
         .query<{
           rankingSystem: RankingSystem;
         }>({
@@ -149,8 +150,7 @@ export class RankingSystemService {
           variables: {
             id: id ?? null,
           },
-        })
-        .toPromise();
+        }));
       
       return result?.data?.rankingSystem || null;
     } catch (error) {
@@ -159,7 +159,7 @@ export class RankingSystemService {
   }
 
   private async _deleteSystem(id?: string | null) {
-    return this.apollo.mutate({
+    return lastValueFrom(this.apollo.mutate({
       mutation: gql`
         mutation RemoveRankingSystem($id: ID!) {
           removeRankingSystem(id: $id)
@@ -168,6 +168,6 @@ export class RankingSystemService {
       variables: {
         id: id,
       },
-    }).toPromise();
+    }));
   }
 }
