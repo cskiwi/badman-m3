@@ -99,6 +99,10 @@
       }
     },
     "type": {
+      "m": "Heren",
+      "f": "Dames",
+      "mx": "Gemengd",
+      "national": "Nationaal",
       "mix": "Gemengd",
       "men": "Heren",
       "women": "Dames",

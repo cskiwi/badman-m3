@@ -99,6 +99,10 @@
       }
     },
     "type": {
+      "m": "Men's",
+      "f": "Women's", 
+      "mx": "Mixed",
+      "national": "National",
       "mix": "Mixed",
       "men": "Men's", 
       "women": "Women's",
