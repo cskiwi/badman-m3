@@ -48,6 +48,11 @@ export class Team extends BaseEntity {
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ nullable: true })
+  teamNumber?: number;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true })
   preferredTime?: Date;
 
   @SortableField({ nullable: true })
