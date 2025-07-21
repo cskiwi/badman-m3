@@ -6,6 +6,7 @@ import { Club, Team } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { getSeason } from '@app/utils/comp';
+import { sortTeams } from '@app/utils/sorts';
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
@@ -86,6 +87,7 @@ export class DetailService {
                     abbreviation
                     email
                     phone
+                    teamNumber
                     captain {
                       id
                       fullName
@@ -113,8 +115,9 @@ export class DetailService {
           }),
         );
 
-        return result?.data?.club?.teams || [];
+        return [...(result.data.club?.teams || [])].sort(sortTeams);
       } catch (err) {
+        console.error(err);
         throw new Error(this.handleError(err as HttpErrorResponse));
       }
     },
