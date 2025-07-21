@@ -90,7 +90,7 @@ export class PageDetailComponent {
       data: { team },
       width: '90%',
       maximizable: true,
-      style: { maxWidth: '500px' }
+      style: { maxWidth: '800px' }
     });
 
     ref.onClose.subscribe((updatedTeam: Team | undefined) => {

@@ -99,4 +99,7 @@ export class Club extends BaseEntity {
   @SortableField(() => [Team])
   @OneToMany(() => Team, (team) => team.club)
   declare teams?: Relation<Team[]>;
+
+  @Field(() => [Number], { nullable: true })
+  declare distinctSeasons?: number[];
 }

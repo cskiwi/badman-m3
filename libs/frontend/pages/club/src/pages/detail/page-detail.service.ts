@@ -41,6 +41,7 @@ export class DetailService {
                   fullName
                   slug
                   clubId
+                  distinctSeasons
                   teams {
                     id
                     name
@@ -88,6 +89,8 @@ export class DetailService {
                     email
                     phone
                     teamNumber
+                    preferredTime
+                    preferredDay
                     captain {
                       id
                       fullName
@@ -134,12 +137,23 @@ export class DetailService {
   // Season management
   currentSeason = computed(() => this.filter.get('season')?.value || getSeason());
   availableSeasons = computed(() => {
-    const current = getSeason();
+    const club = this.club();
+    const dbSeasons = [...club?.distinctSeasons || []];
+    const currentSeason = getSeason();
+    
+    // If we have seasons from database, use them, otherwise fallback to default range
+    if (dbSeasons.length > 0) {
+      return dbSeasons
+        .sort((a, b) => b - a) // Sort descending (newest first)
+        .map(season => ({ label: `${season}`, value: season }));
+    }
+    
+    // Fallback to hardcoded range if no seasons in database
     return [
-      { label: `${current - 2}`, value: current - 2 },
-      { label: `${current - 1}`, value: current - 1 },
-      { label: `${current}`, value: current },
-      { label: `${current + 1}`, value: current + 1 },
+      { label: `${currentSeason - 2}`, value: currentSeason - 2 },
+      { label: `${currentSeason - 1}`, value: currentSeason - 1 },
+      { label: `${currentSeason}`, value: currentSeason },
+      { label: `${currentSeason + 1}`, value: currentSeason + 1 },
     ];
   });
 

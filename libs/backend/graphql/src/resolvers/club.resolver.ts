@@ -62,4 +62,16 @@ export class ClubResolver {
 
     return Team.find(args);
   }
+
+  @ResolveField(() => [Number], { nullable: true })
+  async distinctSeasons(@Parent() { id }: Club): Promise<number[]> {
+    const result = await Team.createQueryBuilder('team')
+      .select('DISTINCT team.season', 'season')
+      .where('team.clubId = :clubId', { clubId: id })
+      .andWhere('team.season IS NOT NULL')
+      .orderBy('team.season', 'DESC')
+      .getRawMany();
+
+    return result.map(row => row.season);
+  }
 }
