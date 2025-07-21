@@ -1,0 +1,166 @@
+<div class="space-y-6">
+  <p class="text-surface-500 mb-6">
+    {{ 'all.player.edit.profile.description' | translate }}
+  </p>
+
+  <form [formGroup]="profileForm" class="space-y-6">
+    <!-- Personal Information -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">{{ 'all.player.edit.profile.personal.title' | translate }}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- First Name -->
+        <div class="flex flex-col gap-1">
+          <label for="firstName" class="font-medium">{{ 'all.player.edit.profile.firstName' | translate }}</label>
+          <input 
+            pInputText 
+            id="firstName" 
+            formControlName="firstName"
+            [placeholder]="'all.player.edit.profile.firstName.placeholder' | translate"
+          />
+          @if (profileForm.get('firstName')?.errors?.['required'] && profileForm.get('firstName')?.touched) {
+            <small class="text-red-500">{{ 'all.player.edit.profile.firstName.required' | translate }}</small>
+          }
+        </div>
+
+        <!-- Last Name -->
+        <div class="flex flex-col gap-1">
+          <label for="lastName" class="font-medium">{{ 'all.player.edit.profile.lastName' | translate }}</label>
+          <input 
+            pInputText 
+            id="lastName" 
+            formControlName="lastName"
+            [placeholder]="'all.player.edit.profile.lastName.placeholder' | translate"
+          />
+          @if (profileForm.get('lastName')?.errors?.['required'] && profileForm.get('lastName')?.touched) {
+            <small class="text-red-500">{{ 'all.player.edit.profile.lastName.required' | translate }}</small>
+          }
+        </div>
+
+        <!-- Gender -->
+        <div class="flex flex-col gap-1">
+          <label for="gender" class="font-medium">{{ 'all.player.edit.profile.gender' | translate }}</label>
+          <p-select
+            id="gender"
+            formControlName="gender"
+            [options]="genderOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.player.edit.profile.gender.placeholder' | translate"
+          />
+        </div>
+
+        <!-- Birth Date -->
+        <div class="flex flex-col gap-1">
+          <label for="birthDate" class="font-medium">{{ 'all.player.edit.profile.birthDate' | translate }}</label>
+          <p-datepicker
+            id="birthDate"
+            formControlName="birthDate"
+            [maxDate]="maxBirthDate"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            [placeholder]="'all.player.edit.profile.birthDate.placeholder' | translate"
+          />
+        </div>
+
+        <!-- sub and memberId at the bottom, side by side if canViewAdminFields -->
+        @if (canViewAdminFields) {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 col-span-2">
+            <div class="flex flex-col gap-1">
+              <label for="sub" class="font-medium">Sub</label>
+              <input 
+                pInputText 
+                id="sub" 
+                formControlName="sub"
+                [placeholder]="'Sub'"
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label for="memberId" class="font-medium">Member ID</label>
+              <input 
+                pInputText 
+                id="memberId" 
+                formControlName="memberId"
+                [placeholder]="'Member ID'"
+              />
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">{{ 'all.player.edit.profile.contact.title' | translate }}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Email -->
+        <div class="flex flex-col gap-2">
+          <label for="email" class="font-medium">
+            {{ 'all.player.edit.profile.email' | translate }}
+            @if (canEditContactFields()) {
+              <span class="text-green-600 text-sm">({{ 'all.player.edit.profile.editable' | translate }})</span>
+            }
+          </label>
+          <input 
+            pInputText 
+            id="email" 
+            formControlName="email"
+            type="email"
+            [placeholder]="'all.player.edit.profile.email.placeholder' | translate"
+          />
+          @if (profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched) {
+            <small class="text-red-500">{{ 'all.player.edit.profile.email.invalid' | translate }}</small>
+          }
+        </div>
+
+        <!-- Phone -->
+        <div class="flex flex-col gap-2">
+          <label for="phone" class="font-medium">
+            {{ 'all.player.edit.profile.phone' | translate }}
+            @if (canEditContactFields()) {
+              <span class="text-green-600 text-sm">({{ 'all.player.edit.profile.editable' | translate }})</span>
+            }
+          </label>
+          <input 
+            pInputText 
+            id="phone" 
+            formControlName="phone"
+            [placeholder]="'all.player.edit.profile.phone.placeholder' | translate"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Competition Settings -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">{{ 'all.player.edit.profile.competition.title' | translate }}</h2>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-3">
+          <p-checkbox
+            id="competitionPlayer"
+            formControlName="competitionPlayer"
+            [binary]="true"
+          />
+          <label for="competitionPlayer" class="font-medium cursor-pointer">
+            {{ 'all.player.edit.profile.competitionPlayer' | translate }}
+          </label>
+        </div>
+        <p class="text-sm text-surface-500">
+          {{ 'all.player.edit.profile.competitionPlayer.description' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    @if (saving()) {
+      <div class="pt-4">
+        <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+        <p class="text-sm text-surface-500 mt-2">{{ 'all.player.edit.profile.messages.saving' | translate }}</p>
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (error(); as errorMessage) {
+      <p-message severity="error" [text]="errorMessage"></p-message>
+    }
+  </form>
+</div>

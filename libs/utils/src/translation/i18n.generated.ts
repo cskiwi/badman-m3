@@ -108,6 +108,21 @@ export type I18nTranslations = {
         };
         "player": {
             "edit": {
+                "title": string;
+                "subtitle": string;
+                "actions": {
+                    "save-all": string;
+                    "save-current": string;
+                    "cancel": string;
+                };
+                "tabs": {
+                    "profile": string;
+                    "claims": string;
+                };
+                "messages": {
+                    "loading": string;
+                    "unsaved-changes": string;
+                };
                 "claims": {
                     "title": string;
                     "subtitle": string;
@@ -120,8 +135,48 @@ export type I18nTranslations = {
                     };
                     "messages": {
                         "no-claims": string;
+                        "no-permission": string;
                         "saving": string;
                         "loading": string;
+                    };
+                };
+                "profile": {
+                    "description": string;
+                    "personal": {
+                        "title": string;
+                    };
+                    "firstName": string;
+                    "firstName.placeholder": string;
+                    "firstName.required": string;
+                    "lastName": string;
+                    "lastName.placeholder": string;
+                    "lastName.required": string;
+                    "gender": string;
+                    "gender.placeholder": string;
+                    "birthDate": string;
+                    "birthDate.placeholder": string;
+                    "contact": {
+                        "title": string;
+                    };
+                    "email": string;
+                    "email.placeholder": string;
+                    "email.invalid": string;
+                    "phone": string;
+                    "phone.placeholder": string;
+                    "editable": string;
+                    "competition": {
+                        "title": string;
+                    };
+                    "competitionPlayer": string;
+                    "competitionPlayer.description": string;
+                    "permissions": {
+                        "title": string;
+                        "description": string;
+                        "canEditContact": string;
+                        "canEditAdmin": string;
+                    };
+                    "messages": {
+                        "saving": string;
                     };
                 };
             };

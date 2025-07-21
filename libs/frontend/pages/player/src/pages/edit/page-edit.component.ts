@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal, effect, resource } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, inject, signal, resource, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import { CommonModule } from '@angular/common';
@@ -7,48 +6,34 @@ import { lastValueFrom } from 'rxjs';
 
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
 import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
+import { TabsModule } from 'primeng/tabs';
 
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
-import { Claim, Player } from '@app/models';
+import { Player } from '@app/models';
 import { MessageService } from 'primeng/api';
 import { injectParams } from 'ngxtension/inject-params';
 import { TranslateModule } from '@ngx-translate/core';
 
-const GET_PLAYER_WITH_CLAIMS = gql`
-  query GetPlayerWithClaims($id: ID!) {
+import { PlayerProfileComponent } from './components/player-profile/player-profile.component';
+import { PlayerClaimsComponent } from './components/player-claims/player-claims.component';
+
+const GET_PLAYER_WITH_DETAILS = gql`
+  query GetPlayerWithDetails($id: ID!) {
     player(id: $id) {
       id
       fullName
-      claims {
-        id
-        name
-        description
-        type
-      }
-    }
-  }
-`;
-
-const GET_GLOBAL_CLAIMS = gql`
-  query GetGlobalClaims {
-    claims(args: { where: { type: { eq: "global" } } }) {
-      id
-      name
-      description
-      type
-      category
-    }
-  }
-`;
-
-const UPDATE_PLAYER_CLAIMS = gql`
-  mutation UpdatePlayerClaims($playerId: ID!, $claimIds: [ID!]!) {
-    updatePlayerClaims(playerId: $playerId, claimIds: $claimIds) {
-      id
+      firstName
+      lastName
+      email
+      phone
+      gender
+      birthDate
+      competitionPlayer
+      sub
+      memberId
       claims {
         id
         name
@@ -64,15 +49,16 @@ const UPDATE_PLAYER_CLAIMS = gql`
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     CardModule,
     ButtonModule,
-    CheckboxModule,
     MessageModule,
     ProgressBarModule,
     ToastModule,
+    TabsModule,
     PageHeaderComponent,
     TranslateModule,
+    PlayerProfileComponent,
+    PlayerClaimsComponent,
   ],
   providers: [MessageService],
   templateUrl: './page-edit.component.html',
@@ -82,17 +68,21 @@ export class PageEditComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly apollo = inject(Apollo);
-  private readonly fb = inject(FormBuilder);
   private readonly messageService = inject(MessageService);
 
   // Get player ID from route
   private readonly playerId = injectParams('playerId');
 
+  // View children
+  private readonly profileComponent = viewChild(PlayerProfileComponent);
+  private readonly claimsComponent = viewChild(PlayerClaimsComponent);
+
   // Loading and error states
   readonly loadingPlayer = signal(false);
-  readonly loadingClaims = signal(false);
-  readonly savingClaims = signal(false);
   readonly error = signal<string | null>(null);
+
+  // Current tab index
+  readonly activeTabIndex = signal('0');
 
   // Player data resource
   private readonly playerResource = resource({
@@ -106,7 +96,7 @@ export class PageEditComponent {
       try {
         const result = await lastValueFrom(
           this.apollo.query<{ player: Player }>({
-            query: GET_PLAYER_WITH_CLAIMS,
+            query: GET_PLAYER_WITH_DETAILS,
             variables: { id: params.playerId },
           }),
         );
@@ -121,181 +111,94 @@ export class PageEditComponent {
     },
   });
 
-  // Global claims resource
-  private readonly globalClaimsResource = resource({
-    loader: async () => {
-      this.loadingClaims.set(true);
-
-      try {
-        const result = await lastValueFrom(
-          this.apollo.query<{ claims: Claim[] }>({
-            query: GET_GLOBAL_CLAIMS,
-          }),
-        );
-
-        return result?.data?.claims || [];
-      } catch (err) {
-        this.error.set('Failed to load claims data');
-        return [];
-      } finally {
-        this.loadingClaims.set(false);
-      }
-    },
-  });
-
   // Public computed properties
   readonly player = computed(() => this.playerResource.value());
-  readonly globalClaims = computed(() => this.globalClaimsResource.value() || []);
-  readonly claimsByCategory = computed(() => {
-    const claims = this.globalClaims();
-    const grouped = new Map<string, Claim[]>();
+  readonly loading = computed(() => this.loadingPlayer());
 
-    claims.forEach((claim) => {
-      const category = claim.category || 'Other';
-      if (!grouped.has(category)) {
-        grouped.set(category, []);
-      }
-      grouped.get(category)!.push(claim);
-    });
+  // Removed: currentUser and userPermissions, now handled by child components via AuthService
 
-    // Convert to array and sort categories
-    return Array.from(grouped.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([category, claims]) => ({
-        category,
-        claims: claims.sort((a, b) => (a.name || '').localeCompare(b.name || '')),
-      }));
-  });
-  readonly loading = computed(() => this.loadingPlayer() || this.loadingClaims());
-  readonly saving = computed(() => this.savingClaims());
+  async saveCurrentTab(): Promise<void> {
+    const activeTab = this.activeTabIndex();
 
-  // Form setup
-  readonly claimsForm: FormGroup;
-
-  constructor() {
-    this.claimsForm = this.fb.group({});
-
-    // Set up form controls when claims are loaded
-    effect(() => {
-      const claims = this.globalClaims();
-      if (claims.length > 0) {
-        this.setupFormControls(claims);
-      }
-    });
-
-    // Update form values when player data is loaded
-    effect(() => {
-      const player = this.player();
-      if (player?.claims) {
-        this.updateFormValues(player.claims);
-      }
-    });
-  }
-
-  private setupFormControls(claims: Claim[]): void {
-    claims.forEach((claim) => {
-      if (claim.id) {
-        this.claimsForm.addControl(claim.id, this.fb.control(false));
-      }
-    });
-  }
-
-  private updateFormValues(playerClaims: Claim[]): void {
-    // Reset all controls to false first
-    Object.keys(this.claimsForm.controls).forEach((claimId) => {
-      this.claimsForm.get(claimId)?.setValue(false);
-    });
-
-    // Set true for claims the player has
-    playerClaims.forEach((claim) => {
-      if (claim.id && this.claimsForm.get(claim.id)) {
-        this.claimsForm.get(claim.id)?.setValue(true);
-      }
-    });
-  }
-
-  selectAll(): void {
-    Object.keys(this.claimsForm.controls).forEach((claimId) => {
-      this.claimsForm.get(claimId)?.setValue(true);
-    });
-  }
-
-  selectNone(): void {
-    Object.keys(this.claimsForm.controls).forEach((claimId) => {
-      this.claimsForm.get(claimId)?.setValue(false);
-    });
-  }
-
-  selectAllInCategory(categoryName: string): void {
-    const categoryGroup = this.claimsByCategory().find((group) => group.category === categoryName);
-    if (categoryGroup) {
-      categoryGroup.claims.forEach((claim) => {
-        if (claim.id) {
-          this.claimsForm.get(claim.id)?.setValue(true);
+    try {
+      switch (activeTab) {
+        case '0': {
+          // Profile tab
+          const profileComponent = this.profileComponent();
+          if (profileComponent?.isDirty) {
+            await profileComponent.saveProfile();
+          }
+          break;
         }
-      });
+
+        case '1': { // Claims tab
+          const claimsComponent = this.claimsComponent();
+          if (claimsComponent?.isDirty) {
+            await claimsComponent.saveClaims();
+          }
+          break;
+        }
+      }
+    } catch (err) {
+      // Error handling is done in the individual components
     }
   }
 
-  selectNoneInCategory(categoryName: string): void {
-    const categoryGroup = this.claimsByCategory().find((group) => group.category === categoryName);
-    if (categoryGroup) {
-      categoryGroup.claims.forEach((claim) => {
-        if (claim.id) {
-          this.claimsForm.get(claim.id)?.setValue(false);
-        }
-      });
-    }
-  }
+  async saveAll(): Promise<void> {
+    const promises: Promise<void>[] = [];
 
-  async onSubmit(): Promise<void> {
-    const player = this.player();
-    if (!player?.id) {
-      this.error.set('No player selected');
+    const profileComponent = this.profileComponent();
+    const claimsComponent = this.claimsComponent();
+
+    if (profileComponent?.isDirty) {
+      promises.push(profileComponent.saveProfile());
+    }
+
+    if (claimsComponent?.isDirty) {
+      promises.push(claimsComponent.saveClaims());
+    }
+
+    if (promises.length === 0) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'No Changes',
+        detail: 'No changes to save',
+      });
       return;
     }
 
-    this.savingClaims.set(true);
-    this.error.set(null);
-
     try {
-      // Get selected claim IDs
-      const selectedClaimIds = Object.entries(this.claimsForm.value)
-        .filter(([_, selected]) => selected)
-        .map(([claimId]) => claimId);
-
-      await lastValueFrom(
-        this.apollo.mutate({
-          mutation: UPDATE_PLAYER_CLAIMS,
-          variables: {
-            playerId: player.id,
-            claimIds: selectedClaimIds,
-          },
-          refetchQueries: [
-            {
-              query: GET_PLAYER_WITH_CLAIMS,
-              variables: { id: player.id },
-            },
-          ],
-        }),
-      );
+      await Promise.all(promises);
 
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
-        detail: 'Player claims updated successfully',
+        detail: 'All changes saved successfully',
       });
 
       // Navigate back to player detail page
       this.router.navigate(['..'], { relativeTo: this.route });
     } catch (err) {
-      this.error.set('Failed to update player claims');
-    } finally {
-      this.savingClaims.set(false);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Some changes could not be saved',
+      });
     }
   }
 
   cancel(): void {
     this.router.navigate(['..'], { relativeTo: this.route });
+  }
+
+  get hasUnsavedChanges(): boolean {
+    const profileComponent = this.profileComponent();
+    const claimsComponent = this.claimsComponent();
+
+    return (profileComponent?.isDirty ?? false) || (claimsComponent?.isDirty ?? false);
+  }
+
+  onActiveIndexChange(event: any): void {
+    this.activeTabIndex.set(event.index?.toString() || '0');
   }
 }

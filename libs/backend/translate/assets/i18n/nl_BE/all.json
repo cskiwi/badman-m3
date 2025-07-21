@@ -101,6 +101,21 @@
   },
   "player": {
     "edit": {
+      "title": "Speler bewerken",
+      "subtitle": "Spelerinformatie en rechten bijwerken",
+      "actions": {
+        "save-all": "Alle wijzigingen opslaan",
+        "save-current": "Huidige tabblad opslaan",
+        "cancel": "Annuleren"
+      },
+      "tabs": {
+        "profile": "Profiel",
+        "claims": "Rechten"
+      },
+      "messages": {
+        "loading": "Spelergegevens laden...",
+        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen"
+      },
       "claims": {
         "title": "Rechten bewerken",
         "subtitle": "Beheer globale rechten voor deze speler",
@@ -113,8 +128,48 @@
         },
         "messages": {
           "no-claims": "Geen globale rechten beschikbaar",
+          "no-permission": "Je hebt geen toestemming om spelerrechten te bewerken",
           "saving": "Wijzigingen opslaan...",
           "loading": "Speler- en rechtengegevens laden..."
+        }
+      },
+      "profile": {
+        "description": "Spelerprofiel informatie en instellingen bijwerken.",
+        "personal": {
+          "title": "Persoonlijke informatie"
+        },
+        "firstName": "Voornaam",
+        "firstName.placeholder": "Voer voornaam in",
+        "firstName.required": "Voornaam is verplicht",
+        "lastName": "Achternaam",
+        "lastName.placeholder": "Voer achternaam in",
+        "lastName.required": "Achternaam is verplicht",
+        "gender": "Geslacht",
+        "gender.placeholder": "Selecteer geslacht",
+        "birthDate": "Geboortedatum",
+        "birthDate.placeholder": "Selecteer geboortedatum",
+        "contact": {
+          "title": "Contactgegevens"
+        },
+        "email": "E-mail",
+        "email.placeholder": "Voer e-mailadres in",
+        "email.invalid": "Voer een geldig e-mailadres in",
+        "phone": "Telefoon",
+        "phone.placeholder": "Voer telefoonnummer in",
+        "editable": "bewerkbaar",
+        "competition": {
+          "title": "Competitie-instellingen"
+        },
+        "competitionPlayer": "Competitiespeler",
+        "competitionPlayer.description": "Schakel deze speler in om deel te nemen aan competities en toernooien.",
+        "permissions": {
+          "title": "Bewerkingsrechten",
+          "description": "Je kunt bepaalde velden bewerken op basis van je rechten:",
+          "canEditContact": "Je kunt contactgegevens bewerken (e-mail, telefoon)",
+          "canEditAdmin": "Je kunt administratieve velden bewerken (competitie-instellingen)"
+        },
+        "messages": {
+          "saving": "Profielwijzigingen opslaan..."
         }
       }
     }

@@ -101,6 +101,21 @@
   },
   "player": {
     "edit": {
+      "title": "Modifier le joueur",
+      "subtitle": "Mettre à jour les informations et permissions du joueur",
+      "actions": {
+        "save-all": "Enregistrer toutes les modifications",
+        "save-current": "Enregistrer l'onglet actuel",
+        "cancel": "Annuler"
+      },
+      "tabs": {
+        "profile": "Profil",
+        "claims": "Permissions"
+      },
+      "messages": {
+        "loading": "Chargement des données du joueur...",
+        "unsaved-changes": "Vous avez des modifications non enregistrées"
+      },
       "claims": {
         "title": "Modifier les droits",
         "subtitle": "Gérer les permissions globales pour ce joueur",
@@ -113,8 +128,48 @@
         },
         "messages": {
           "no-claims": "Aucun droit global disponible",
+          "no-permission": "Vous n'avez pas la permission de modifier les droits du joueur",
           "saving": "Enregistrement des modifications...",
           "loading": "Chargement des données du joueur et des droits..."
+        }
+      },
+      "profile": {
+        "description": "Mettre à jour les informations et paramètres du profil du joueur.",
+        "personal": {
+          "title": "Informations personnelles"
+        },
+        "firstName": "Prénom",
+        "firstName.placeholder": "Entrer le prénom",
+        "firstName.required": "Le prénom est requis",
+        "lastName": "Nom de famille",
+        "lastName.placeholder": "Entrer le nom de famille",
+        "lastName.required": "Le nom de famille est requis",
+        "gender": "Genre",
+        "gender.placeholder": "Sélectionner le genre",
+        "birthDate": "Date de naissance",
+        "birthDate.placeholder": "Sélectionner la date de naissance",
+        "contact": {
+          "title": "Informations de contact"
+        },
+        "email": "E-mail",
+        "email.placeholder": "Entrer l'adresse e-mail",
+        "email.invalid": "Veuillez entrer une adresse e-mail valide",
+        "phone": "Téléphone",
+        "phone.placeholder": "Entrer le numéro de téléphone",
+        "editable": "modifiable",
+        "competition": {
+          "title": "Paramètres de compétition"
+        },
+        "competitionPlayer": "Joueur de compétition",
+        "competitionPlayer.description": "Permettre à ce joueur de participer aux compétitions et tournois.",
+        "permissions": {
+          "title": "Permissions de modification",
+          "description": "Vous pouvez modifier certains champs selon vos permissions :",
+          "canEditContact": "Vous pouvez modifier les informations de contact (e-mail, téléphone)",
+          "canEditAdmin": "Vous pouvez modifier les champs administratifs (paramètres de compétition)"
+        },
+        "messages": {
+          "saving": "Enregistrement des modifications du profil..."
         }
       }
     }

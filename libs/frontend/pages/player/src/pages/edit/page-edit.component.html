@@ -1,99 +1,82 @@
 @if (!loading()) {
   @if (this.player(); as player) {
     <app-page-header>
-      <ng-content title>{{ 'all.player.edit.claims.title' | translate }} - {{ player.fullName }}</ng-content>
+      <ng-content title>{{ 'all.player.edit.title' | translate }} - {{ player.fullName }}</ng-content>
       <ng-content subTitle>
         <div class="info">
-          <div class="sub-text">{{ 'all.player.edit.claims.subtitle' | translate }}</div>
+          <div class="sub-text">{{ 'all.player.edit.subtitle' | translate }}</div>
+        </div>
+      </ng-content>
+
+      <!-- Action buttons in header -->
+      <ng-content actions>
+        <div class="flex gap-3">
+          <p-button
+            [label]="'all.player.edit.actions.save-all' | translate"
+            icon="pi pi-save"
+            (click)="saveAll()"
+            [disabled]="!hasUnsavedChanges"
+            [loading]="false"
+          />
+          <p-button
+            [label]="'all.player.edit.actions.save-current' | translate"
+            icon="pi pi-check"
+            [outlined]="true"
+            (click)="saveCurrentTab()"
+            [disabled]="false"
+            [loading]="false"
+          />
+          <p-button
+            [label]="'all.player.edit.actions.cancel' | translate"
+            icon="pi pi-times"
+            severity="secondary"
+            [outlined]="true"
+            (click)="cancel()"
+          />
         </div>
       </ng-content>
     </app-page-header>
 
     <div class="p-4">
-      <p class="text-surface-500 mb-6">
-        {{ 'all.player.edit.claims.description' | translate }}
-      </p>
-
-      <form [formGroup]="claimsForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <!-- Actions Header -->
-        @if (globalClaims().length > 0) {
-          <div class="flex flex-col sm:flex-row justify-between gap-4 pb-6 border-b border-surface-border">
-            <div class="flex gap-2">
-              <p-button [label]="'all.player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAll()"> </p-button>
-              <p-button [label]="'all.player.edit.claims.actions.select-none' | translate" [outlined]="true" size="small" type="button" (click)="selectNone()"> </p-button>
-            </div>
-            <div class="flex gap-3">
-              <p-button [label]="'all.player.edit.claims.actions.save' | translate" icon="pi pi-save" type="submit" [loading]="saving()" [disabled]="saving() || globalClaims().length === 0">
-              </p-button>
-              <p-button [label]="'all.player.edit.claims.actions.cancel' | translate" icon="pi pi-times" [outlined]="true" type="button" (click)="cancel()" [disabled]="saving()"> </p-button>
-            </div>
+      <!-- Unsaved changes indicator -->
+      @if (hasUnsavedChanges) {
+        <div class="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+          <div class="flex items-center gap-2 text-orange-800">
+            <i class="pi pi-exclamation-triangle"></i>
+            <span class="font-medium">{{ 'all.player.edit.messages.unsaved-changes' | translate }}</span>
           </div>
-        }
-        <!-- Claims Selection -->
-        <div class="space-y-6">
-          @if (globalClaims().length === 0) {
-            <p class="text-surface-500">{{ 'all.player.edit.claims.messages.no-claims' | translate }}</p>
-          } @else {
-            @for (categoryGroup of claimsByCategory(); track categoryGroup.category) {
-              <p-card>
-                <ng-template #title>
-                  <div class="flex items-center justify-between w-full">
-                    <span class="text-lg font-medium">{{ categoryGroup.category }}</span>
-                    <div class="flex gap-2">
-                      <p-button [label]="'all.player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAllInCategory(categoryGroup.category)">
-                      </p-button>
-                      <p-button
-                        [label]="'all.player.edit.claims.actions.select-none' | translate"
-                        [outlined]="true"
-                        size="small"
-                        type="button"
-                        (click)="selectNoneInCategory(categoryGroup.category)"
-                      >
-                      </p-button>
-                    </div>
-                  </div>
-                </ng-template>
-
-                <!-- Claims Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  @for (claim of categoryGroup.claims; track claim.id) {
-                    <div class="flex items-start space-x-3 p-3 border border-surface-border rounded-md transition-colors hover:bg-surface-hover">
-                      <p-checkbox [formControlName]="claim.id!" [inputId]="claim.id!" [binary]="true"> </p-checkbox>
-                      <div class="flex-1 min-w-0">
-                        <label [for]="claim.id!" class="font-medium cursor-pointer block leading-tight">
-                          {{ claim.name }}
-                        </label>
-                        @if (claim.description) {
-                          <p class="text-xs text-surface-500 mt-1 mb-0 leading-tight">{{ claim.description }}</p>
-                        }
-                      </div>
-                    </div>
-                  }
-                </div>
-              </p-card>
-            }
-          }
         </div>
+      }
 
-        <!-- Loading Indicator -->
-        @if (saving()) {
-          <div class="pt-4">
-            <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
-            <p class="text-sm text-surface-500 mt-2">{{ 'all.player.edit.claims.messages.saving' | translate }}</p>
-          </div>
-        }
+      <!-- Tabbed Interface -->
+      <p-tabs [value]="activeTabIndex()" (activeIndexChange)="onActiveIndexChange($event)">
+        <p-tablist>
+          <p-tab value="0">
+            <i class="pi pi-user mr-2"></i>
+            {{ 'all.player.edit.tabs.profile' | translate }}
+          </p-tab>
+          <p-tab value="1">
+            <i class="pi pi-shield mr-2"></i>
+            {{ 'all.player.edit.tabs.claims' | translate }}
+          </p-tab>
+        </p-tablist>
 
-        <!-- Error Message -->
-        @if (error(); as errorMessage) {
-          <p-message severity="error" [text]="errorMessage"></p-message>
-        }
-      </form>
+        <p-tabpanels>
+          <p-tabpanel value="0">
+            <app-player-profile [player]="player" />
+          </p-tabpanel>
+
+          <p-tabpanel value="1">
+            <app-player-claims [player]="player" />
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
     </div>
   }
 } @else {
   <div class="p-4">
     <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
-    <p class="text-center text-surface-500 mt-4">{{ 'all.player.edit.claims.messages.loading' | translate }}</p>
+    <p class="text-center text-surface-500 mt-4">{{ 'all.player.edit.messages.loading' | translate }}</p>
   </div>
 }
 

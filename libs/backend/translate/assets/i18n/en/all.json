@@ -101,6 +101,21 @@
   },
   "player": {
     "edit": {
+      "title": "Edit Player",
+      "subtitle": "Update player information and permissions",
+      "actions": {
+        "save-all": "Save All Changes",
+        "save-current": "Save Current Tab",
+        "cancel": "Cancel"
+      },
+      "tabs": {
+        "profile": "Profile",
+        "claims": "Permissions"
+      },
+      "messages": {
+        "loading": "Loading player data...",
+        "unsaved-changes": "You have unsaved changes"
+      },
       "claims": {
         "title": "Edit Claims",
         "subtitle": "Manage global permissions for this player",
@@ -113,8 +128,48 @@
         },
         "messages": {
           "no-claims": "No global claims available",
+          "no-permission": "You do not have permission to edit player claims",
           "saving": "Saving changes...",
           "loading": "Loading player and claims data..."
+        }
+      },
+      "profile": {
+        "description": "Update player profile information and settings.",
+        "personal": {
+          "title": "Personal Information"
+        },
+        "firstName": "First Name",
+        "firstName.placeholder": "Enter first name",
+        "firstName.required": "First name is required",
+        "lastName": "Last Name",
+        "lastName.placeholder": "Enter last name",
+        "lastName.required": "Last name is required",
+        "gender": "Gender",
+        "gender.placeholder": "Select gender",
+        "birthDate": "Birth Date",
+        "birthDate.placeholder": "Select birth date",
+        "contact": {
+          "title": "Contact Information"
+        },
+        "email": "Email",
+        "email.placeholder": "Enter email address",
+        "email.invalid": "Please enter a valid email address",
+        "phone": "Phone",
+        "phone.placeholder": "Enter phone number",
+        "editable": "editable",
+        "competition": {
+          "title": "Competition Settings"
+        },
+        "competitionPlayer": "Competition Player",
+        "competitionPlayer.description": "Enable this player to participate in competitions and tournaments.",
+        "permissions": {
+          "title": "Edit Permissions",
+          "description": "You can edit certain fields based on your permissions:",
+          "canEditContact": "You can edit contact information (email, phone)",
+          "canEditAdmin": "You can edit administrative fields (competition settings)"
+        },
+        "messages": {
+          "saving": "Saving profile changes..."
         }
       }
     }

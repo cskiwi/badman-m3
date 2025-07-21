@@ -39,6 +39,7 @@ export class Player extends BaseEntity {
   declare updatedAt: Date;
 
   @Index({ unique: true })
+  @WhereField({ nullable: true })
   @Column({ unique: true })
   declare sub: string;
 
