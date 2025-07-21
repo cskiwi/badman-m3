@@ -7,7 +7,7 @@
     <!-- Personal Information -->
     <div class="mb-8">
       <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">{{ 'all.player.edit.profile.personal.title' | translate }}</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- First Name -->
         <div class="flex flex-col gap-1">
           <label for="firstName" class="font-medium">{{ 'all.player.edit.profile.firstName' | translate }}</label>
@@ -62,27 +62,25 @@
           />
         </div>
 
-        <!-- sub and memberId at the bottom, side by side if canViewAdminFields -->
+        <!-- sub and memberId in the same row for admin users -->
         @if (canViewAdminFields) {
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 col-span-2">
-            <div class="flex flex-col gap-1">
-              <label for="sub" class="font-medium">Sub</label>
-              <input 
-                pInputText 
-                id="sub" 
-                formControlName="sub"
-                [placeholder]="'Sub'"
-              />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label for="memberId" class="font-medium">Member ID</label>
-              <input 
-                pInputText 
-                id="memberId" 
-                formControlName="memberId"
-                [placeholder]="'Member ID'"
-              />
-            </div>
+          <div class="flex flex-col gap-1 lg:col-start-1">
+            <label for="sub" class="font-medium">Sub</label>
+            <input 
+              pInputText 
+              id="sub" 
+              formControlName="sub"
+              [placeholder]="'Sub'"
+            />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="memberId" class="font-medium">Member ID</label>
+            <input 
+              pInputText 
+              id="memberId" 
+              formControlName="memberId"
+              [placeholder]="'Member ID'"
+            />
           </div>
         }
       </div>
@@ -91,9 +89,9 @@
     <!-- Contact Information -->
     <div class="mb-8">
       <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">{{ 'all.player.edit.profile.contact.title' | translate }}</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <!-- Email -->
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-1">
           <label for="email" class="font-medium">
             {{ 'all.player.edit.profile.email' | translate }}
             @if (canEditContactFields()) {
@@ -113,7 +111,7 @@
         </div>
 
         <!-- Phone -->
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-1">
           <label for="phone" class="font-medium">
             {{ 'all.player.edit.profile.phone' | translate }}
             @if (canEditContactFields()) {
