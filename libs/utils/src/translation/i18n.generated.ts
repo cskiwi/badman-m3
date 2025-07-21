@@ -6,6 +6,118 @@ import { Path } from "nestjs-i18n";
 /* prettier-ignore */
 export type I18nTranslations = {
     "all": {
+        "common": {
+            "save": string;
+            "cancel": string;
+            "season": string;
+            "selectSeason": string;
+        };
+        "days": {
+            "monday": string;
+            "tuesday": string;
+            "wednesday": string;
+            "thursday": string;
+            "friday": string;
+            "saturday": string;
+            "sunday": string;
+        };
+        "team": {
+            "edit": {
+                "title": string;
+                "basic": {
+                    "title": string;
+                };
+                "name": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "abbreviation": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "season": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "teamNumber": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "contact": {
+                    "title": string;
+                };
+                "email": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "phone": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "preferences": {
+                    "title": string;
+                };
+                "preferredTime": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "preferredDay": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "type": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "members": {
+                    "title": string;
+                    "add": string;
+                    "player": string;
+                    "type": string;
+                    "actions": string;
+                };
+                "captain": {
+                    "label": string;
+                    "placeholder": {
+                        "text": string;
+                    };
+                };
+                "basePlayers": string;
+                "errors": {
+                    "loadPlayers": string;
+                };
+            };
+            "type": {
+                "mix": string;
+                "men": string;
+                "women": string;
+                "youth": string;
+            };
+            "overview": {
+                "title": string;
+            };
+            "captain": string;
+            "players": string;
+            "noTeams": string;
+        };
         "clubs": {
             "search": string;
         };
@@ -180,18 +292,6 @@ export type I18nTranslations = {
                     };
                 };
             };
-        };
-        "common": {
-            "season": string;
-            "selectSeason": string;
-        };
-        "team": {
-            "overview": {
-                "title": string;
-            };
-            "captain": string;
-            "players": string;
-            "noTeams": string;
         };
     };
 };

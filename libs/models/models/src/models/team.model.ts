@@ -52,8 +52,8 @@ export class Team extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  preferredTime?: Date;
+  @Column({ type: 'time', nullable: true })
+  preferredTime?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })

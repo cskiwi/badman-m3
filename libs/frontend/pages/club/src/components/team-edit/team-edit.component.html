@@ -1,0 +1,187 @@
+<div class="p-4">
+  <h2 class="text-xl mb-4">{{ 'all.team.edit.title' | translate }}</h2>
+  <form [formGroup]="teamForm" class="space-y-4">
+    <!-- Basic Info -->
+    <div class="mb-4">
+      <h3 class="text-lg font-medium mb-2 text-primary-700">{{ 'all.team.edit.basic.title' | translate }}</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Team Name -->
+        <div class="flex flex-col gap-1">
+          <label for="name" class="font-medium">{{ 'all.team.edit.name.label' | translate }}</label>
+          <input pInputText id="name" formControlName="name" [placeholder]="'all.team.edit.name.placeholder.text' | translate" />
+        </div>
+
+        <!-- Abbreviation -->
+        <div class="flex flex-col gap-1">
+          <label for="abbreviation" class="font-medium">{{ 'all.team.edit.abbreviation.label' | translate }}</label>
+          <input
+            pInputText
+            id="abbreviation"
+            formControlName="abbreviation"
+            [placeholder]="'all.team.edit.abbreviation.placeholder.text' | translate"
+          />
+        </div>
+
+        <!-- Season -->
+        <div class="flex flex-col gap-1">
+          <label for="season" class="font-medium">{{ 'all.team.edit.season.label' | translate }}</label>
+          <p-select
+            id="season"
+            formControlName="season"
+            [options]="seasonOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.team.edit.season.placeholder.text' | translate"
+          ></p-select>
+        </div>
+
+        <!-- Team Number -->
+        <div class="flex flex-col gap-1">
+          <label for="teamNumber" class="font-medium">{{ 'all.team.edit.teamNumber.label' | translate }}</label>
+          <input
+            pInputText
+            type="number"
+            id="teamNumber"
+            formControlName="teamNumber"
+            [placeholder]="'all.team.edit.teamNumber.placeholder.text' | translate"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="mb-4">
+      <h3 class="text-lg font-medium mb-2 text-primary-700">{{ 'all.team.edit.contact.title' | translate }}</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Email -->
+        <div class="flex flex-col gap-1">
+          <label for="email" class="font-medium">{{ 'all.team.edit.email.label' | translate }}</label>
+          <input pInputText id="email" type="email" formControlName="email" [placeholder]="'all.team.edit.email.placeholder.text' | translate" />
+        </div>
+
+        <!-- Phone -->
+        <div class="flex flex-col gap-1">
+          <label for="phone" class="font-medium">{{ 'all.team.edit.phone.label' | translate }}</label>
+          <input pInputText id="phone" formControlName="phone" [placeholder]="'all.team.edit.phone.placeholder.text' | translate" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="mb-4">
+      <h3 class="text-lg font-medium mb-2 text-primary-700">{{ 'all.team.edit.preferences.title' | translate }}</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Preferred Time -->
+        <div class="flex flex-col gap-1">
+          <label for="preferredTime" class="font-medium">{{ 'all.team.edit.preferredTime.label' | translate }}</label>
+          <p-datepicker
+            id="preferredTime"
+            formControlName="preferredTime"
+            [timeOnly]="true"
+            showIcon
+            hourFormat="24"
+            [placeholder]="'all.team.edit.preferredTime.placeholder.text' | translate"
+          ></p-datepicker>
+        </div>
+
+        <!-- Preferred Day -->
+        <div class="flex flex-col gap-1">
+          <label for="preferredDay" class="font-medium">{{ 'all.team.edit.preferredDay.label' | translate }}</label>
+          <p-select
+            id="preferredDay"
+            formControlName="preferredDay"
+            [options]="dayOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.team.edit.preferredDay.placeholder.text' | translate"
+          ></p-select>
+        </div>
+
+        <!-- Type -->
+        <div class="flex flex-col gap-1">
+          <label for="type" class="font-medium">{{ 'all.team.edit.type.label' | translate }}</label>
+          <p-select
+            id="type"
+            formControlName="type"
+            [options]="typeOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.team.edit.type.placeholder.text' | translate"
+          ></p-select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Members -->
+    <div class="mb-4">
+      <h3 class="text-lg font-medium mb-2 text-primary-700">{{ 'all.team.edit.members.title' | translate }}</h3>
+
+      <!-- Captain -->
+      <div class="mb-4">
+        <div class="flex flex-col gap-1">
+          <label for="captain" class="font-medium">{{ 'all.team.edit.captain.label' | translate }}</label>
+          <p-autoComplete
+            id="captain"
+            [ngModel]="displayCaptain()"
+            (ngModelChange)="onCaptainInputChange($event)"
+            [ngModelOptions]="{standalone: true}"
+            [suggestions]="captainSuggestions()"
+            (completeMethod)="searchCaptain($event)"
+            (onSelect)="onCaptainSelect($event)"
+            (onClear)="onCaptainClear()"
+            field="fullName"
+            [placeholder]="'all.team.edit.captain.placeholder.text' | translate"
+            [dropdown]="false"
+            [showClear]="true"
+            [delay]="300"
+            [minLength]="2"
+            styleClass="w-full"
+          >
+            <ng-template #item let-player>
+              {{ player.fullName }}
+            </ng-template>
+          </p-autoComplete>
+        </div>
+      </div>
+
+      <!-- Base Players -->
+      <div class="mb-4">
+        <label class="font-medium block mb-2">{{ 'all.team.edit.basePlayers' | translate }}</label>
+        <p-table [value]="teamPlayerMemberships()" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>{{ 'all.team.edit.members.player' | translate }}</th>
+              <th>{{ 'all.team.edit.members.type' | translate }}</th>
+              <th style="width: 100px">{{ 'all.team.edit.members.actions' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-membership>
+            <tr>
+              <td>{{ membership.player?.fullName }}</td>
+              <td>
+                <p-chip [label]="membership.type" severity="info"></p-chip>
+              </td>
+              <td>
+                <p-button icon="pi pi-trash" severity="danger" [text]="true" (click)="removeMembership(membership)"></p-button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <div class="mt-2">
+          <p-button [label]="'all.team.edit.members.add' | translate" icon="pi pi-plus" [outlined]="true" (click)="showAddMemberDialog()"></p-button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="flex justify-end gap-2 mt-4">
+    <p-button [label]="'all.common.cancel' | translate" styleClass="p-button-text" (click)="onHide()"></p-button>
+    <p-button
+      [label]="'all.common.save' | translate"
+      [loading]="saving()"
+      [disabled]="!teamForm.valid || !teamForm.dirty"
+      (click)="onSave()"
+    ></p-button>
+  </div>
+</div>

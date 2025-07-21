@@ -1,4 +1,116 @@
 {
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "season": "Seizoen",
+    "selectSeason": "Selecteer seizoen"
+  },
+  "days": {
+    "monday": "Maandag",
+    "tuesday": "Dinsdag",
+    "wednesday": "Woensdag",
+    "thursday": "Donderdag",
+    "friday": "Vrijdag",
+    "saturday": "Zaterdag",
+    "sunday": "Zondag"
+  },
+  "team": {
+    "edit": {
+      "title": "Team bewerken",
+      "basic": {
+        "title": "Basisinformatie"
+      },
+      "name": {
+        "label": "Teamnaam",
+        "placeholder": {
+          "text": "Voer teamnaam in"
+        }
+      },
+      "abbreviation": {
+        "label": "Afkorting",
+        "placeholder": {
+          "text": "Voer afkorting in"
+        }
+      },
+      "season": {
+        "label": "Seizoen",
+        "placeholder": {
+          "text": "Selecteer seizoen"
+        }
+      },
+      "teamNumber": {
+        "label": "Teamnummer",
+        "placeholder": {
+          "text": "Voer teamnummer in"
+        }
+      },
+      "contact": {
+        "title": "Contactgegevens"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": {
+          "text": "Voer team e-mail in"
+        }
+      },
+      "phone": {
+        "label": "Telefoon",
+        "placeholder": {
+          "text": "Voer telefoonnummer in"
+        }
+      },
+      "preferences": {
+        "title": "Teamvoorkeuren"
+      },
+      "preferredTime": {
+        "label": "Voorkeur speeltijd",
+        "placeholder": {
+          "text": "Selecteer voorkeurstijd"
+        }
+      },
+      "preferredDay": {
+        "label": "Voorkeur speeldag",
+        "placeholder": {
+          "text": "Selecteer voorkeursdag"
+        }
+      },
+      "type": {
+        "label": "Teamtype",
+        "placeholder": {
+          "text": "Selecteer teamtype"
+        }
+      },
+      "members": {
+        "title": "Teamleden",
+        "add": "Lid toevoegen",
+        "player": "Speler",
+        "type": "Type",
+        "actions": "Acties"
+      },
+      "captain": {
+        "label": "Teamkapitein",
+        "placeholder": {
+          "text": "Selecteer kapitein"
+        }
+      },
+      "basePlayers": "Basisspelers",
+      "errors": {
+        "loadPlayers": "Fout bij laden van beschikbare spelers"
+      }
+    },
+    "type": {
+      "mix": "Gemengd",
+      "men": "Heren",
+      "women": "Dames",
+      "youth": "Jeugd"
+    },
+    "overview": {
+      "title": "Teams Overzicht"
+    },
+    "captain": "Kapitein",
+    "players": "spelers",
+    "noTeams": "Geen teams gevonden voor dit seizoen"
+  },
   "clubs": {
     "search": "Zoek club"
   },
@@ -83,7 +195,7 @@
   },
   "settings": {
     "general": {
-      "title": "General"
+      "title": "Algemeen"
     },
     "languages": {
       "en": "English",
@@ -173,17 +285,5 @@
         }
       }
     }
-  },
-  "common": {
-    "season": "Seizoen",
-    "selectSeason": "Selecteer seizoen"
-  },
-  "team": {
-    "overview": {
-      "title": "Teams Overzicht"
-    },
-    "captain": "Kapitein",
-    "players": "spelers",
-    "noTeams": "Geen teams gevonden voor dit seizoen"
   }
 }

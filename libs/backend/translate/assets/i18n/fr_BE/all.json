@@ -1,4 +1,116 @@
 {
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "season": "Saison",
+    "selectSeason": "Sélectionner la saison"
+  },
+  "days": {
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi", 
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche"
+  },
+  "team": {
+    "edit": {
+      "title": "Modifier l'équipe",
+      "basic": {
+        "title": "Informations de base"
+      },
+      "name": {
+        "label": "Nom de l'équipe",
+        "placeholder": {
+          "text": "Entrer le nom de l'équipe"
+        }
+      },
+      "abbreviation": {
+        "label": "Abréviation",
+        "placeholder": {
+          "text": "Entrer l'abréviation"
+        }
+      },
+      "season": {
+        "label": "Saison",
+        "placeholder": {
+          "text": "Sélectionner la saison"
+        }
+      },
+      "teamNumber": {
+        "label": "Numéro d'équipe",
+        "placeholder": {
+          "text": "Entrer le numéro d'équipe"
+        }
+      },
+      "contact": {
+        "title": "Informations de contact"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": {
+          "text": "Entrer l'e-mail de l'équipe"
+        }
+      },
+      "phone": {
+        "label": "Téléphone",
+        "placeholder": {
+          "text": "Entrer le numéro de téléphone"
+        }
+      },
+      "preferences": {
+        "title": "Préférences de l'équipe"
+      },
+      "preferredTime": {
+        "label": "Heure de jeu préférée",
+        "placeholder": {
+          "text": "Sélectionner l'heure préférée"
+        }
+      },
+      "preferredDay": {
+        "label": "Jour de jeu préféré",
+        "placeholder": {
+          "text": "Sélectionner le jour préféré"
+        }
+      },
+      "type": {
+        "label": "Type d'équipe",
+        "placeholder": {
+          "text": "Sélectionner le type d'équipe"
+        }
+      },
+      "members": {
+        "title": "Membres de l'équipe",
+        "add": "Ajouter membre",
+        "player": "Joueur",
+        "type": "Type",
+        "actions": "Actions"
+      },
+      "captain": {
+        "label": "Capitaine d'équipe",
+        "placeholder": {
+          "text": "Sélectionner le capitaine"
+        }
+      },
+      "basePlayers": "Joueurs de base",
+      "errors": {
+        "loadPlayers": "Échec du chargement des joueurs disponibles"
+      }
+    },
+    "type": {
+      "mix": "Mixte",
+      "men": "Hommes",
+      "women": "Femmes",
+      "youth": "Jeunes"
+    },
+    "overview": {
+      "title": "Aperçu des équipes"
+    },
+    "captain": "Capitaine",
+    "players": "joueurs",
+    "noTeams": "Aucune équipe trouvée pour cette saison"
+  },
   "clubs": {
     "search": "Chercher club"
   },
@@ -83,13 +195,13 @@
   },
   "settings": {
     "general": {
-      "title": "General"
+      "title": "Général"
     },
     "languages": {
       "en": "English",
       "fr_BE": "Français",
       "nl_BE": "Nederlands",
-      "title": "Language"
+      "title": "Langue"
     }
   },
   "system": {
@@ -173,17 +285,5 @@
         }
       }
     }
-  },
-  "common": {
-    "season": "Saison",
-    "selectSeason": "Sélectionner la saison"
-  },
-  "team": {
-    "overview": {
-      "title": "Aperçu des équipes"
-    },
-    "captain": "Capitaine",
-    "players": "joueurs",
-    "noTeams": "Aucune équipe trouvée pour cette saison"
   }
 }

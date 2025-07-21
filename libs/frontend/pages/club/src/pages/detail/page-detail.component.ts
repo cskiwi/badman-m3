@@ -13,6 +13,11 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DetailService } from './page-detail.service';
 import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+import { DialogService } from 'primeng/dynamicdialog';
+import { AuthService } from '@app/frontend-modules-auth/service';
+import { Team } from '@app/models';
+import { TeamEditComponent } from '../../components/team-edit/team-edit.component';
 
 @Component({
   selector: 'app-page-detail',
@@ -28,7 +33,9 @@ import { BadgeModule } from 'primeng/badge';
     UpcomingGamesComponent,
     BadgeModule,
     PhoneNumberPipe,
+    ButtonModule,
   ],
+  providers: [DialogService],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +47,7 @@ export class PageDetailComponent {
 
   // selectors
   club = this.dataService.club;
-  teamIds = computed(() => this.club()?.teams?.map((team) => team.id));
+  teamIds = computed(() => this.teams()?.map((team) => team.id));
   teams = this.dataService.teams;
   teamsLoading = this.dataService.teamsLoading;
   currentSeason = this.dataService.currentSeason;
@@ -48,6 +55,8 @@ export class PageDetailComponent {
 
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  private readonly auth = inject(AuthService);
 
   // Track expanded teams
   expandedTeams = new Set<string>();
@@ -67,6 +76,29 @@ export class PageDetailComponent {
 
   isTeamExpanded(teamId: string): boolean {
     return this.expandedTeams.has(teamId);
+  }
+
+  private readonly dialogService = inject(DialogService);
+
+  canEditTeam(team: Team): boolean {
+    return this.auth.hasAnyPermission(['edit-any:club', `${team.id}_edit:team`]);
+  }
+
+  editTeam(team: Team): void {
+    const ref = this.dialogService.open(TeamEditComponent, {
+      header: 'Edit Team',
+      data: { team },
+      width: '90%',
+      maximizable: true,
+      style: { maxWidth: '500px' }
+    });
+
+    ref.onClose.subscribe((updatedTeam: Team | undefined) => {
+      if (updatedTeam) {
+        // Optionally refresh the data or update local state
+        this.dataService.filter.get('clubId')?.setValue(this.clubId());
+      }
+    });
   }
 
   constructor() {

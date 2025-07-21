@@ -68,9 +68,14 @@
             <div class="rounded-border bg-highlight p-4">
               <div class="flex items-center justify-between">
                 <span class="font-semibold text-primary my-2">{{ team.name }}</span>
-                @if (team.abbreviation) {
-                  <p-badge [value]="team.abbreviation" />
-                }
+                <div class="flex items-center gap-2">
+                  @if (team.abbreviation) {
+                    <p-badge [value]="team.abbreviation" />
+                  }
+                  @if (canEditTeam(team)) {
+                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-sm" (click)="editTeam(team)"></button>
+                  }
+                </div>
               </div>
 
               <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
@@ -173,3 +178,4 @@
     {{ error() }}
   </div>
 }
+

@@ -55,7 +55,8 @@ This is a badminton management system built as an Nx monorepo combining Angular 
   - `utils` - Utilities and pipes
 
 ### Models and Utilities
-- `libs/models/` - Shared TypeScript models and enums
+- `libs/models/` - Shared TypeScript models (use `@app/models` for imports)
+- `libs/model/` - Shared enums (use `@app/model/enums` for imports)
 - `libs/utils/` - Shared utilities and translation types
 
 ## Database Schema

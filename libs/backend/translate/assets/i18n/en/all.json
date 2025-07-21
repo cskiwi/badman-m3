@@ -1,4 +1,116 @@
 {
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "season": "Season",
+    "selectSeason": "Select season"
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday", 
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "team": {
+    "edit": {
+      "title": "Edit Team",
+      "basic": {
+        "title": "Basic Information"
+      },
+      "name": {
+        "label": "Team Name",
+        "placeholder": {
+          "text": "Enter team name"
+        }
+      },
+      "abbreviation": {
+        "label": "Abbreviation", 
+        "placeholder": {
+          "text": "Enter abbreviation"
+        }
+      },
+      "season": {
+        "label": "Season",
+        "placeholder": {
+          "text": "Select season"
+        }
+      },
+      "teamNumber": {
+        "label": "Team Number",
+        "placeholder": {
+          "text": "Enter team number"
+        }
+      },
+      "contact": {
+        "title": "Contact Information"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": {
+          "text": "Enter team email"
+        }
+      },
+      "phone": {
+        "label": "Phone",
+        "placeholder": {
+          "text": "Enter phone number"
+        }
+      },
+      "preferences": {
+        "title": "Team Preferences"
+      },
+      "preferredTime": {
+        "label": "Preferred Play Time",
+        "placeholder": {
+          "text": "Select preferred time"
+        }
+      },
+      "preferredDay": {
+        "label": "Preferred Play Day",
+        "placeholder": {
+          "text": "Select preferred day"
+        }
+      },
+      "type": {
+        "label": "Team Type",
+        "placeholder": {
+          "text": "Select team type"
+        }
+      },
+      "members": {
+        "title": "Team Members",
+        "add": "Add Member",
+        "player": "Player",
+        "type": "Type",
+        "actions": "Actions"
+      },
+      "captain": {
+        "label": "Team Captain",
+        "placeholder": {
+          "text": "Select team captain"
+        }
+      },
+      "basePlayers": "Base Players",
+      "errors": {
+        "loadPlayers": "Failed to load available players"
+      }
+    },
+    "type": {
+      "mix": "Mixed",
+      "men": "Men's", 
+      "women": "Women's",
+      "youth": "Youth"
+    },
+    "overview": {
+      "title": "Teams Overview"
+    },
+    "captain": "Captain",
+    "players": "players",
+    "noTeams": "No teams found for this season"
+  },
   "clubs": {
     "search": "Find a club"
   },
@@ -22,7 +134,7 @@
     },
     "filters": {
       "all": "All",
-      "club": "Club",
+      "club": "Club", 
       "competition": "Competition",
       "double": "Double",
       "games": "Min matches",
@@ -62,7 +174,7 @@
   "players": {
     "my-club": "My club",
     "my-clubs": "My clubs",
-    "my-profile": "My profile",
+    "my-profile": "My profile", 
     "search": "Search player"
   },
   "points": {
@@ -105,7 +217,7 @@
       "subtitle": "Update player information and permissions",
       "actions": {
         "save-all": "Save All Changes",
-        "save-current": "Save Current Tab",
+        "save-current": "Save Current Tab", 
         "cancel": "Cancel"
       },
       "tabs": {
@@ -143,7 +255,7 @@
         "firstName.required": "First name is required",
         "lastName": "Last Name",
         "lastName.placeholder": "Enter last name",
-        "lastName.required": "Last name is required",
+        "lastName.required": "Last name is required", 
         "gender": "Gender",
         "gender.placeholder": "Select gender",
         "birthDate": "Birth Date",
@@ -173,17 +285,5 @@
         }
       }
     }
-  },
-  "common": {
-    "season": "Season",
-    "selectSeason": "Select season"
-  },
-  "team": {
-    "overview": {
-      "title": "Teams Overview"
-    },
-    "captain": "Captain",
-    "players": "players",
-    "noTeams": "No teams found for this season"
   }
 }
