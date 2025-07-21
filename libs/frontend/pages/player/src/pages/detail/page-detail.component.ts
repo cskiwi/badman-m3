@@ -19,6 +19,8 @@ import { DetailService } from './page-detail.service';
 import { ButtonModule } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { CardModule } from 'primeng/card';
+import { MenuModule } from 'primeng/menu';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
     selector: 'app-page-detail',
@@ -26,6 +28,8 @@ import { CardModule } from 'primeng/card';
     ProgressBarModule,
     ButtonModule,
     CardModule,
+    MenuModule,
+    TooltipModule,
     RouterModule,
     TranslateModule,
     PageHeaderComponent,
@@ -57,6 +61,15 @@ export class PageDetailComponent {
       (membership) => membership?.active,
     ),
   );
+
+  editMenuItems = [
+    {
+      label: 'Edit',
+      icon: 'pi pi-user-edit',
+      routerLink: ['edit']
+    }
+    // Additional edit options can be added here in the future
+  ];
 
   constructor() {
     effect(() => {

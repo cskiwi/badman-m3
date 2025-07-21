@@ -25,9 +25,20 @@
         </div>
       </ng-content>
       <ng-content actions>
-        <div class="flex flex-col gap-2">
-          <p-button label="{{ 'all.head-to-head.title' | translate }}" [routerLink]="['head-to-head']" />
-          <p-button label="Edit Claims" [routerLink]="['edit']" [outlined]="true" icon="pi pi-user-edit" />
+        <div class="flex items-center gap-2">
+          <p-button 
+            icon="pi pi-users" 
+            [outlined]="true" 
+            [routerLink]="['head-to-head']" 
+            pTooltip="{{ 'all.head-to-head.title' | translate }}" 
+            tooltipPosition="bottom" />
+          <p-menu #menu [model]="editMenuItems" [popup]="true" />
+          <p-button 
+            icon="pi pi-ellipsis-v" 
+            [outlined]="true"
+            (click)="menu.toggle($event)" 
+            pTooltip="Edit" 
+            tooltipPosition="bottom" />
         </div>
       </ng-content>
     </app-page-header>
