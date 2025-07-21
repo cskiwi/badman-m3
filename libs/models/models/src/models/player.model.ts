@@ -138,9 +138,9 @@ export class Player extends BaseEntity {
    * Permissions for the player, exposed via GraphQL.
    */
   @Field(() => [String], { nullable: true })
-  get permissions(): string[] {
+  get permissions() {
     // This should be resolved via a resolver, not directly here.
-    return [];
+    return this.claims?.map((claim) => claim.name) ?? [];
   }
 
   //  only run these on the server side

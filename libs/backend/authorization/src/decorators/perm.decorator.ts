@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JwksClient } from 'jwks-rsa';
 import { getRequest } from '../utils';
+import { UserService } from '../services';
 import { ALLOW_ANONYMOUS_META_KEY } from './anonymous.decorator';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class PermGuard implements CanActivate {
     private jwtService: JwtService,
     private reflector: Reflector,
     private configService: ConfigService,
+    private userService: UserService,
   ) {
     this.jwksClient = new JwksClient({
       cache: true,
@@ -52,7 +54,7 @@ export class PermGuard implements CanActivate {
 
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = await this.validateUser(payload);
+      request['user'] = await this.userService.validateUser(payload);
     } catch (e) {
       this._logger.error('Invalid token', e);
       throw new UnauthorizedException();
@@ -65,21 +67,6 @@ export class PermGuard implements CanActivate {
     return type === 'Bearer' ? token : undefined;
   }
 
-  async validateUser(payload: { sub?: string }) {
-    if (payload.sub) {
-      try {
-        const user = await Player.findOne({
-          where: { sub: payload.sub },
-        });
-        if (user) {
-          return user;
-        }
-      } catch (e) {
-        this._logger.error(e);
-      }
-    }
-    return payload;
-  }
 
   async validateToken(token: string) {
     try {

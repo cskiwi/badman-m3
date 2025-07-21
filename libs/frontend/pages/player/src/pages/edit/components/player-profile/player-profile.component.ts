@@ -18,10 +18,10 @@ import { MessageService } from 'primeng/api';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '@app/frontend-modules-auth/service';
 
-// Note: This mutation doesn't exist yet - it would need to be implemented in the backend
+// UpdatePlayer mutation for updating player profile information
 const UPDATE_PLAYER_PROFILE = gql`
-  mutation UpdatePlayerProfile($playerId: ID!, $input: UpdatePlayerProfileInput!) {
-    updatePlayerProfile(playerId: $playerId, input: $input) {
+  mutation UpdatePlayer($playerId: ID!, $input: UpdatePlayerInput!) {
+    updatePlayer(playerId: $playerId, input: $input) {
       id
       firstName
       lastName
@@ -69,11 +69,11 @@ export class PlayerProfileComponent {
 
   // Form setup
   readonly profileForm: FormGroup;
-  
+
   // Gender options
   readonly genderOptions = [
     { label: 'Male', value: 'M' },
-    { label: 'Female', value: 'F' }
+    { label: 'Female', value: 'F' },
   ];
 
   readonly maxBirthDate = new Date(); // Today
@@ -88,7 +88,7 @@ export class PlayerProfileComponent {
       birthDate: [null],
       competitionPlayer: [false],
       sub: [''],
-      memberId: ['']
+      memberId: [''],
     });
 
     // Update form values when player data changes
@@ -104,12 +104,12 @@ export class PlayerProfileComponent {
       const canEditAdmin = this.canEditAdminFields();
       const canEditContact = this.canEditContactFields();
 
-      // Admin fields
-      const adminControls = ['firstName', 'lastName', 'gender', 'birthDate', 'competitionPlayer'];
-      adminControls.forEach(controlName => {
+      // Contact and personal fields can be edited by the player themselves or users with edit permissions
+      const contactAndPersonalControls = ['email', 'phone', 'birthDate'];
+      contactAndPersonalControls.forEach((controlName) => {
         const control = this.profileForm.get(controlName);
         if (control) {
-          if (canEditAdmin) {
+          if (canEditContact) {
             control.enable();
           } else {
             control.disable();
@@ -117,12 +117,12 @@ export class PlayerProfileComponent {
         }
       });
 
-      // Contact fields
-      const contactControls = ['email', 'phone'];
-      contactControls.forEach(controlName => {
+      // Admin-only fields require admin permissions
+      const adminOnlyControls = ['competitionPlayer', 'firstName', 'lastName', 'gender'];
+      adminOnlyControls.forEach((controlName) => {
         const control = this.profileForm.get(controlName);
         if (control) {
-          if (canEditContact) {
+          if (canEditAdmin) {
             control.enable();
           } else {
             control.disable();
@@ -142,7 +142,7 @@ export class PlayerProfileComponent {
       birthDate: player.birthDate ? new Date(player.birthDate) : null,
       competitionPlayer: player.competitionPlayer || false,
       sub: player.sub || '',
-      memberId: player.memberId || ''
+      memberId: player.memberId || '',
     });
 
     // Mark form as pristine after loading data
@@ -163,19 +163,17 @@ export class PlayerProfileComponent {
       return true;
     }
     // Use AuthService for permission check
-    return this.authService.hasAnyPermission([
-      'edit-any:player',
-      `${player?.id}_edit:player`
-    ]);
+    return this.authService.hasAnyPermission(['edit-any:player', `${player?.id}_edit:player`]);
   }
 
   canEditAdminFields(): boolean {
     const player = this.player();
-    // Use AuthService for permission check
-    return this.authService.hasAnyPermission([
-      'edit-any:player',
-      `${player?.id}_edit:player`
-    ]);
+    // Global admin permission
+    if (this.authService.hasAnyPermission(['edit-any:player', `${player?.id}_edit:player`])) {
+      return true;
+    }
+
+    return false;
   }
 
   async saveProfile(): Promise<void> {
@@ -196,8 +194,8 @@ export class PlayerProfileComponent {
 
     try {
       const formValue = this.profileForm.value;
-      
-      // Note: This mutation would need to be implemented in the backend
+
+      // Call the updatePlayer mutation
       await lastValueFrom(
         this.apollo.mutate({
           mutation: UPDATE_PLAYER_PROFILE,
@@ -210,9 +208,9 @@ export class PlayerProfileComponent {
               phone: formValue.phone,
               gender: formValue.gender,
               birthDate: formValue.birthDate,
-              competitionPlayer: formValue.competitionPlayer
-            }
-          }
+              competitionPlayer: formValue.competitionPlayer,
+            },
+          },
         }),
       );
 
@@ -225,7 +223,7 @@ export class PlayerProfileComponent {
       this.profileForm.markAsPristine();
       return Promise.resolve();
     } catch (err) {
-      this.error.set('Failed to update player profile. This feature may not be implemented yet.');
+      this.error.set('Failed to update player profile. Please try again.');
       return Promise.reject(err);
     } finally {
       this.savingProfile.set(false);
