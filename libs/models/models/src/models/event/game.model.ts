@@ -24,12 +24,12 @@ export class Game extends BaseEntity {
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @SortableField()
-  @WhereField(() => Date)
+  @SortableField({ nullable: true })
+  @WhereField(() => Date, { nullable: true })
   @Column()
   declare playedAt?: Date;
 
-  @SortableField(() => String)
+  @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: GameType })
   declare gameType?: GameType;

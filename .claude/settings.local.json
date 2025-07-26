@@ -36,7 +36,15 @@
       "Bash(npx tsc:*)",
       "WebFetch(domain:www.npmjs.com)",
       "Bash(mkdir:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(nx test:*)",
+      "Bash(export BASH_DISABLE_JOB_CONTROL=1)",
+      "Bash(mcp restart:*)",
+      "Bash(cat:*)",
+      "Bash(bash:*)",
+      "mcp__postgres-badman__query",
+      "mcp__postgres-badman__list_schemas",
+      "mcp__postgres-badman__list_tables"
     ],
     "deny": []
   }

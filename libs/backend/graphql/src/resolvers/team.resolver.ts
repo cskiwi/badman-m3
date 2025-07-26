@@ -91,6 +91,7 @@ export class TeamResolver {
     });
   }
 
+
   @Mutation(() => Team)
   @UseGuards(PermGuard)
   async updateTeam(@User() user: Player, @Args('teamId', { type: () => ID }) teamId: string, @Args('input') input: TeamUpdateInput): Promise<Team> {

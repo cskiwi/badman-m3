@@ -22,6 +22,7 @@ import { SortableField, WhereField } from '@app/utils';
 @Entity('Teams')
 export class Team extends BaseEntity {
   @Field(() => ID)
+  @WhereField(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
