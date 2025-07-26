@@ -100,6 +100,30 @@ export class CompetitionEncounter extends BaseEntity {
   @Column({ nullable: true })
   declare gameLeaderId?: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare homeCaptainPresent?: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare awayCaptainPresent?: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare gameLeaderPresent?: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare homeCaptainAccepted?: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare awayCaptainAccepted?: boolean;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare gameLeaderAccepted?: boolean;
+
   @Field(() => CompetitionDraw, { nullable: true })
   @ManyToOne(() => CompetitionDraw, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'drawId' })
