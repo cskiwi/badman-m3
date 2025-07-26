@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { SearchHit, SearchService } from './search.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-search',
-  imports: [FormsModule, AutoCompleteModule],
+  imports: [FormsModule, AutoCompleteModule, TranslateModule],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

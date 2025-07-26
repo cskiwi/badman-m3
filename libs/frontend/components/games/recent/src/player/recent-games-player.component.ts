@@ -23,10 +23,11 @@ import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-recent-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, TranslateModule],
   templateUrl: './recent-games-player.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

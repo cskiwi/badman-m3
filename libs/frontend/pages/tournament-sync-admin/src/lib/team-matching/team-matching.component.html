@@ -74,7 +74,7 @@
             />
           </span>
           <p-select
-            [options]="tournamentOptions"
+            [options]="tournamentOptions()"
             [(ngModel)]="selectedTournament"
             placeholder="All Tournaments"
             (onChange)="onFilterChange()"

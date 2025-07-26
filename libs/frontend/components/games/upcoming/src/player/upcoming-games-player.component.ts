@@ -8,10 +8,11 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PlayerUpcommingGamesService } from './upcoming-games-player.service';
 import { ButtonModule } from 'primeng/button';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-upcoming-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, ButtonModule, SkeletonModule],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, ButtonModule, SkeletonModule, TranslateModule],
   templateUrl: './upcoming-games-player.component.html',
   styleUrls: ['./upcoming-games-player.component.scss'],
 })

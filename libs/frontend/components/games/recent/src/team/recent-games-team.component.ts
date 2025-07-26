@@ -24,10 +24,11 @@ import { RouterLink } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { BadgeModule } from 'primeng/badge';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-recent-games-team',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, BadgeModule],
+  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, BadgeModule, TranslateModule],
   templateUrl: './recent-games-team.component.html',
   styleUrl: './recent-games-team.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

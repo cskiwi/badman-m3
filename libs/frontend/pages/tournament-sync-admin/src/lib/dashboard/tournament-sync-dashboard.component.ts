@@ -15,6 +15,7 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { MessageService, ConfirmationService } from 'primeng/api';
 
@@ -67,6 +68,7 @@ interface Tournament {
     DatePickerModule,
     ToastModule,
     ConfirmDialogModule,
+    TranslateModule,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './tournament-sync-dashboard.component.html',
