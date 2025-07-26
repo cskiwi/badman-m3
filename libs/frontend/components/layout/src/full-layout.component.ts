@@ -3,6 +3,6 @@ import { LayoutComponent } from './layout.component';
 
 @Component({
     imports: [LayoutComponent],
-    template: ` <app-layout [fullWidth]="true"></app-layout>`
+    templateUrl: './full-layout.component.html'
 })
 export class FullWidthLayoutComponent {}

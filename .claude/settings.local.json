@@ -44,7 +44,15 @@
       "Bash(bash:*)",
       "mcp__postgres-badman__query",
       "mcp__postgres-badman__list_schemas",
-      "mcp__postgres-badman__list_tables"
+      "mcp__postgres-badman__list_tables",
+      "WebFetch(domain:api.tournamentsoftware.com)",
+      "Bash(curl:*)",
+      "Bash(nx g:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(diff:*)",
+      "Bash(git mv:*)",
+      "Bash(npx webpack-cli build:*)"
     ],
     "deny": []
   }

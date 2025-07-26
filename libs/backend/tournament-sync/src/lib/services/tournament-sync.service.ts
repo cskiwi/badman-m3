@@ -1,0 +1,228 @@
+import { Injectable } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import {
+  TOURNAMENT_SYNC_QUEUE,
+  TournamentSyncJobType,
+  TournamentDiscoveryJobData,
+  StructureSyncJobData,
+  GameSyncJobData,
+  TeamMatchingJobData,
+} from '../queues/tournament-sync.queue';
+
+@Injectable()
+export class TournamentSyncService {
+  constructor(
+    @InjectQueue(TOURNAMENT_SYNC_QUEUE)
+    private readonly tournamentSyncQueue: Queue,
+  ) {}
+
+  /**
+   * Daily tournament discovery - runs at 6 AM
+   */
+  @Cron('0 6 * * *')
+  async scheduleTournamentDiscovery(): Promise<void> {
+    await this.queueTournamentDiscovery();
+  }
+
+  /**
+   * Competition structure sync - runs every 12 hours during May-August
+   */
+  @Cron('0 */12 * 5-8 *')
+  async scheduleCompetitionStructureSync(): Promise<void> {
+    await this.queueCompetitionStructureSync();
+  }
+
+  /**
+   * Tournament structure sync - runs every 12 hours
+   */
+  @Cron('0 */12 * * *')
+  async scheduleTournamentStructureSync(): Promise<void> {
+    await this.queueTournamentStructureSync();
+  }
+
+  /**
+   * Queue tournament discovery job
+   */
+  async queueTournamentDiscovery(data?: TournamentDiscoveryJobData): Promise<void> {
+    await this.tournamentSyncQueue.add(
+      TournamentSyncJobType.TOURNAMENT_DISCOVERY,
+      data || {},
+      {
+        priority: 1,
+      },
+    );
+  }
+
+  /**
+   * Queue competition structure sync
+   */
+  async queueCompetitionStructureSync(data?: StructureSyncJobData): Promise<void> {
+    await this.tournamentSyncQueue.add(
+      TournamentSyncJobType.COMPETITION_STRUCTURE_SYNC,
+      data || {},
+      {
+        priority: 3,
+      },
+    );
+  }
+
+  /**
+   * Queue tournament structure sync
+   */
+  async queueTournamentStructureSync(data?: StructureSyncJobData): Promise<void> {
+    await this.tournamentSyncQueue.add(
+      TournamentSyncJobType.TOURNAMENT_STRUCTURE_SYNC,
+      data || {},
+      {
+        priority: 3,
+      },
+    );
+  }
+
+  /**
+   * Queue competition game sync
+   */
+  async queueCompetitionGameSync(data: GameSyncJobData): Promise<void> {
+    await this.tournamentSyncQueue.add(
+      TournamentSyncJobType.COMPETITION_GAME_SYNC,
+      data,
+      {
+        priority: 5,
+      },
+    );
+  }
+
+  /**
+   * Queue tournament game sync
+   */
+  async queueTournamentGameSync(data: GameSyncJobData): Promise<void> {
+    await this.tournamentSyncQueue.add(
+      TournamentSyncJobType.TOURNAMENT_GAME_SYNC,
+      data,
+      {
+        priority: 10,
+      },
+    );
+  }
+
+  /**
+   * Queue team matching job
+   */
+  async queueTeamMatching(data: TeamMatchingJobData): Promise<void> {
+    await this.tournamentSyncQueue.add(
+      TournamentSyncJobType.TEAM_MATCHING,
+      data,
+      {
+        priority: 2,
+      },
+    );
+  }
+
+  /**
+   * Schedule dynamic game sync based on event dates and type
+   */
+  async scheduleDynamicGameSync(tournamentCode: string, tournamentType: number, startDate: Date, endDate: Date): Promise<void> {
+    const now = new Date();
+    
+    if (tournamentType === 1) {
+      // Competition (TypeID 1) - Every 4 hours after played, then daily for 1 week, then weekly for 1 month
+      if (startDate <= now && now <= endDate) {
+        // During competition - every 4 hours
+        for (let i = 0; i < 6; i++) {
+          await this.tournamentSyncQueue.add(
+            TournamentSyncJobType.COMPETITION_GAME_SYNC,
+            { tournamentCode },
+            {
+              delay: i * 4 * 60 * 60 * 1000, // 4 hours in milliseconds
+              priority: 5,
+            },
+          );
+        }
+      } else if (now > endDate) {
+        // After competition - daily for 1 week, then weekly for 1 month
+        const daysSinceEnd = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysSinceEnd <= 7) {
+          // Daily sync for first week
+          await this.tournamentSyncQueue.add(
+            TournamentSyncJobType.COMPETITION_GAME_SYNC,
+            { tournamentCode },
+            {
+              delay: 24 * 60 * 60 * 1000, // 24 hours
+              priority: 3,
+            },
+          );
+        } else if (daysSinceEnd <= 30) {
+          // Weekly sync for first month
+          await this.tournamentSyncQueue.add(
+            TournamentSyncJobType.COMPETITION_GAME_SYNC,
+            { tournamentCode },
+            {
+              delay: 7 * 24 * 60 * 60 * 1000, // 7 days
+              priority: 2,
+            },
+          );
+        }
+      }
+    } else if (tournamentType === 0) {
+      // Tournament (TypeID 0) - Hourly until event end, then daily for 1 week, then weekly for 1 month
+      if (now < endDate) {
+        // Before/during tournament - hourly
+        const hoursUntilEnd = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60));
+        
+        for (let i = 0; i < Math.min(hoursUntilEnd, 48); i++) {
+          await this.tournamentSyncQueue.add(
+            TournamentSyncJobType.TOURNAMENT_GAME_SYNC,
+            { tournamentCode },
+            {
+              delay: i * 60 * 60 * 1000, // 1 hour in milliseconds
+              priority: 10,
+            },
+          );
+        }
+      } else {
+        // After tournament - same logic as competitions
+        const daysSinceEnd = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysSinceEnd <= 7) {
+          await this.tournamentSyncQueue.add(
+            TournamentSyncJobType.TOURNAMENT_GAME_SYNC,
+            { tournamentCode },
+            {
+              delay: 24 * 60 * 60 * 1000,
+              priority: 3,
+            },
+          );
+        } else if (daysSinceEnd <= 30) {
+          await this.tournamentSyncQueue.add(
+            TournamentSyncJobType.TOURNAMENT_GAME_SYNC,
+            { tournamentCode },
+            {
+              delay: 7 * 24 * 60 * 60 * 1000,
+              priority: 2,
+            },
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Get queue statistics
+   */
+  async getQueueStats() {
+    const waiting = await this.tournamentSyncQueue.getWaiting();
+    const active = await this.tournamentSyncQueue.getActive();
+    const completed = await this.tournamentSyncQueue.getCompleted();
+    const failed = await this.tournamentSyncQueue.getFailed();
+
+    return {
+      waiting: waiting.length,
+      active: active.length,
+      completed: completed.length,
+      failed: failed.length,
+    };
+  }
+}

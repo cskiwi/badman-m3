@@ -3,6 +3,6 @@ import { LayoutComponent } from './layout.component';
 
 @Component({
     imports: [LayoutComponent],
-    template: ` <app-layout [fullWidth]="false"></app-layout>`
+    templateUrl: './centered-layout.component.html'
 })
 export class CenterLayoutComponent {}

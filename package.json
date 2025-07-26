@@ -32,6 +32,7 @@
     "@auth0/auth0-angular": "^2.2.3",
     "@nestjs/apollo": "^13.1.0",
     "@nestjs/axios": "^4.0.1",
+    "@nestjs/bull": "^11.0.3",
     "@nestjs/common": "^11.1.5",
     "@nestjs/config": "4.0.2",
     "@nestjs/core": "^11.1.5",
@@ -47,8 +48,10 @@
     "@nx/angular": "21.3.2",
     "@nx/nest": "21.3.2",
     "@primeuix/themes": "^1.2.1",
+    "@types/xml2js": "^0.4.14",
     "apollo-angular": "^11.0.0",
     "axios": "^1.10.0",
+    "bull": "^4.16.5",
     "canvas": "3.1.2",
     "class-validator": "^0.14.2",
     "cross-env": "^7.0.3",
@@ -76,6 +79,7 @@
     "typeorm": "^0.3.25",
     "typesense": "^1.8.2",
     "util": "^0.12.5",
+    "xml2js": "^0.6.2",
     "zone.js": "0.15.1"
   },
   "devDependencies": {

@@ -7,3 +7,38 @@ services:
     volumes:
       - ./typesense-data:/data
     command: '--data-dir /data --api-key=SZs*s^y7CUiUq54wVKiaX3qZn --enable-cors'
+    networks:
+      - api
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - api
+    restart: unless-stopped
+
+  # Redis Commander for development (queue monitoring)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - api
+    depends_on:
+      - redis
+    profiles:
+      - development
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  api:
+    driver: bridge
