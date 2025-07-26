@@ -137,9 +137,21 @@ export type I18nTranslations = {
         "game": {
             "recent": {
                 "title": string;
+                "noGamesFound": string;
+                "noGamesDescription": string;
+                "noPlayerGamesDescription": string;
             };
             "upcoming": {
                 "title": string;
+                "homeTeam": string;
+                "awayTeam": string;
+                "noGamesFound": string;
+                "noGamesDescription": string;
+            };
+            "common": {
+                "pts": string;
+                "set": string;
+                "loadMore": string;
             };
         };
         "head-to-head": {
@@ -302,6 +314,114 @@ export type I18nTranslations = {
                     };
                     "messages": {
                         "saving": string;
+                    };
+                };
+            };
+        };
+        "navigation": {
+            "home": string;
+            "players": string;
+            "clubs": string;
+            "competitions": string;
+            "login": string;
+        };
+        "search": {
+            "results": string;
+            "noResults": string;
+        };
+        "admin": {
+            "accessRequired": string;
+            "noPermission": string;
+            "panel": {
+                "title": string;
+                "searchIndex": {
+                    "title": string;
+                    "description": string;
+                    "selectTypes": string;
+                    "selectAll": string;
+                    "selectNone": string;
+                    "startIndexing": string;
+                };
+                "information": {
+                    "title": string;
+                    "availableTypes": string;
+                };
+            };
+        };
+        "tournamentSync": {
+            "title": string;
+            "dashboard": {
+                "title": string;
+                "actions": {
+                    "discoverySync": string;
+                    "manualSync": string;
+                };
+                "queue": {
+                    "title": string;
+                    "status": {
+                        "waiting": string;
+                        "active": string;
+                        "completed": string;
+                        "failed": string;
+                    };
+                };
+                "recentJobs": {
+                    "title": string;
+                    "headers": {
+                        "jobId": string;
+                        "type": string;
+                        "status": string;
+                        "progress": string;
+                        "created": string;
+                        "duration": string;
+                        "actions": string;
+                    };
+                    "noJobs": string;
+                };
+                "tournaments": {
+                    "title": string;
+                    "search": string;
+                    "allTypes": string;
+                    "allStatuses": string;
+                    "headers": {
+                        "name": string;
+                        "type": string;
+                        "status": string;
+                        "dates": string;
+                        "lastSync": string;
+                        "syncStatus": string;
+                        "actions": string;
+                    };
+                    "noTournaments": string;
+                    "never": string;
+                    "tooltips": {
+                        "syncStructure": string;
+                        "syncGames": string;
+                        "manage": string;
+                    };
+                };
+            };
+            "teamMatching": {
+                "title": string;
+                "refresh": string;
+                "statistics": {
+                    "title": string;
+                    "pendingReview": string;
+                    "highConfidence": string;
+                    "mediumConfidence": string;
+                    "lowConfidence": string;
+                    "matched": string;
+                    "rejected": string;
+                };
+                "unmatchedTeams": {
+                    "title": string;
+                    "headers": {
+                        "teamInfo": string;
+                        "tournament": string;
+                        "bestMatch": string;
+                        "confidence": string;
+                        "status": string;
+                        "actions": string;
                     };
                 };
             };

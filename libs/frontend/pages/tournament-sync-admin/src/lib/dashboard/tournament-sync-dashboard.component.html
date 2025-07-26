@@ -75,7 +75,7 @@
           <ng-template pTemplate="body" let-job>
             <tr>
               <td>{{ job.id }}</td>
-              <td>{{ job.type }}</td>
+              <td>{{ getJobType(job) }}</td>
               <td>
                 <p-tag 
                   [value]="job.status" 
@@ -97,12 +97,12 @@
                   <span class="text-sm text-gray-500">-</span>
                 }
               </td>
-              <td>{{ job.createdAt | date:'short' }}</td>
+              <td>{{ getJobCreatedAt(job) | date:'short' }}</td>
               <td>
-                @if (job.finishedAt) {
-                  {{ getDuration(job.createdAt, job.finishedAt) }}
-                } @else if (job.processedAt) {
-                  {{ getDuration(job.createdAt, getCurrentTime()) }}
+                @if (getJobFinishedAt(job)) {
+                  {{ getDuration(job.timestamp, job.finishedOn!) }}
+                } @else if (getJobProcessedAt(job)) {
+                  {{ getDuration(job.timestamp, getCurrentTime().getTime()) }}
                 } @else {
                   <span class="text-sm text-gray-500">-</span>
                 }

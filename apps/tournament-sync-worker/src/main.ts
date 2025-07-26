@@ -26,6 +26,7 @@ async function bootstrap() {
   Logger.log('📊 Available endpoints:');
   Logger.log(`   GET  http://localhost:${port}/${globalPrefix}/status - Service status`);
   Logger.log(`   GET  http://localhost:${port}/${globalPrefix}/health - Health check`);
+  Logger.log(`   GET  http://localhost:${port}/${globalPrefix}/jobs - Get recent jobs`);
   Logger.log(`   POST http://localhost:${port}/${globalPrefix}/sync/discovery - Trigger discovery sync`);
   Logger.log(`   POST http://localhost:${port}/${globalPrefix}/sync/competitions - Trigger competition sync`);
   Logger.log(`   POST http://localhost:${port}/${globalPrefix}/sync/tournaments - Trigger tournament sync`);

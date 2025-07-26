@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { TournamentSyncService } from '@app/tournament-sync';
 
 import { AppService } from './app.service';
@@ -36,5 +36,11 @@ export class AppController {
   async triggerTournamentSync() {
     await this.tournamentSyncService.queueTournamentStructureSync();
     return { message: 'Tournament structure sync queued' };
+  }
+
+  @Get('jobs')
+  async getJobs(@Query('limit') limit?: string, @Query('status') status?: string) {
+    const jobLimit = limit ? parseInt(limit, 10) : 20;
+    return this.tournamentSyncService.getRecentJobs(jobLimit, status);
   }
 }

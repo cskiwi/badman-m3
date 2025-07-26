@@ -27,4 +27,9 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import('@app/frontend-pages-admin').then((m) => m.adminRoutes),
   },
+  {
+    path: 'tournament-sync-admin',
+    loadChildren: () =>
+      import('@app/tournament-sync-admin').then((m) => m.tournamentSyncAdminRoutes),
+  },
 ];

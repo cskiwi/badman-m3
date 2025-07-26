@@ -88,6 +88,13 @@ export class ShellComponent {
         },
       });
       baseItems.push({
+        label: 'Tournament Sync Admin',
+        icon: 'pi pi-sync',
+        command: (event) => {
+          this.navigateToTournamentSyncAdmin();
+        },
+      });
+      baseItems.push({
         separator: true,
       });
     }
@@ -195,6 +202,10 @@ export class ShellComponent {
 
   navigateToAdmin() {
     this.router.navigate(['/admin']);
+  }
+
+  navigateToTournamentSyncAdmin() {
+    this.router.navigate(['/tournament-sync-admin']);
   }
 
   refreshApp() {

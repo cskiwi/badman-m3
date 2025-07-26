@@ -225,4 +225,58 @@ export class TournamentSyncService {
       failed: failed.length,
     };
   }
+
+  /**
+   * Get recent jobs from the queue
+   */
+  async getRecentJobs(limit: number = 20, status?: string) {
+    const jobs = [];
+
+    if (!status || status === 'active') {
+      const activeJobs = await this.tournamentSyncQueue.getActive();
+      jobs.push(...activeJobs.slice(0, limit));
+    }
+
+    if (!status || status === 'waiting') {
+      const waitingJobs = await this.tournamentSyncQueue.getWaiting();
+      jobs.push(...waitingJobs.slice(0, limit));
+    }
+
+    if (!status || status === 'completed') {
+      const completedJobs = await this.tournamentSyncQueue.getCompleted();
+      jobs.push(...completedJobs.slice(0, limit));
+    }
+
+    if (!status || status === 'failed') {
+      const failedJobs = await this.tournamentSyncQueue.getFailed();
+      jobs.push(...failedJobs.slice(0, limit));
+    }
+
+    // Sort by timestamp (most recent first)
+    jobs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    return jobs.slice(0, limit).map(job => ({
+      id: job.id,
+      name: job.name,
+      data: job.data,
+      opts: job.opts,
+      progress: job.progress || 0,
+      processedOn: job.processedOn,
+      finishedOn: job.finishedOn,
+      failedReason: job.failedReason,
+      returnvalue: job.returnvalue,
+      timestamp: job.timestamp,
+      status: this.getJobStatus(job),
+    }));
+  }
+
+  /**
+   * Determine job status based on job properties
+   */
+  private getJobStatus(job: any): 'waiting' | 'active' | 'completed' | 'failed' {
+    if (job.failedReason) return 'failed';
+    if (job.finishedOn) return 'completed';
+    if (job.processedOn) return 'active';
+    return 'waiting';
+  }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 // PrimeNG Components
 import { CardModule } from 'primeng/card';
@@ -18,25 +19,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { TournamentSyncApiService, QueueStats, TournamentSyncJob } from '../services/tournament-sync.service';
 
-interface QueueStats {
-  waiting: number;
-  active: number;
-  completed: number;
-  failed: number;
-}
-
-interface TournamentSyncJob {
-  id: string;
-  type: string;
-  status: 'waiting' | 'active' | 'completed' | 'failed';
-  data: any;
-  progress: number;
-  createdAt: Date;
-  processedAt?: Date;
-  finishedAt?: Date;
-  error?: string;
-}
 
 interface Tournament {
   id: string;
@@ -57,6 +41,7 @@ interface Tournament {
     CommonModule,
     RouterModule,
     FormsModule,
+    HttpClientModule,
     CardModule,
     ButtonModule,
     TableModule,
@@ -77,6 +62,7 @@ interface Tournament {
 export class TournamentSyncDashboardComponent implements OnInit {
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
+  private tournamentSyncApi = inject(TournamentSyncApiService);
 
   // State signals
   loading = signal(false);
@@ -146,14 +132,10 @@ export class TournamentSyncDashboardComponent implements OnInit {
   private async loadQueueStats(): Promise<void> {
     this.loadingStats.set(true);
     try {
-      // TODO: Replace with actual API call
-      const stats: QueueStats = {
-        waiting: 5,
-        active: 2,
-        completed: 150,
-        failed: 3
-      };
-      this.queueStats.set(stats);
+      const statusResponse = await this.tournamentSyncApi.getStatus().toPromise();
+      if (statusResponse?.queue) {
+        this.queueStats.set(statusResponse.queue);
+      }
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -168,29 +150,10 @@ export class TournamentSyncDashboardComponent implements OnInit {
   private async loadRecentJobs(): Promise<void> {
     this.loadingJobs.set(true);
     try {
-      // TODO: Replace with actual API call
-      const jobs: TournamentSyncJob[] = [
-        {
-          id: 'job-001',
-          type: 'tournament-discovery',
-          status: 'completed',
-          data: {},
-          progress: 100,
-          createdAt: new Date(Date.now() - 3600000),
-          processedAt: new Date(Date.now() - 3500000),
-          finishedAt: new Date(Date.now() - 3400000)
-        },
-        {
-          id: 'job-002',
-          type: 'competition-structure-sync',
-          status: 'active',
-          data: { tournamentCode: 'ABC123' },
-          progress: 65,
-          createdAt: new Date(Date.now() - 1800000),
-          processedAt: new Date(Date.now() - 1700000)
-        }
-      ];
-      this.recentJobs.set(jobs);
+      const jobs = await this.tournamentSyncApi.getRecentJobs(10).toPromise();
+      if (jobs) {
+        this.recentJobs.set(jobs);
+      }
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -257,14 +220,16 @@ export class TournamentSyncDashboardComponent implements OnInit {
   async triggerDiscoverySync(): Promise<void> {
     this.loading.set(true);
     try {
-      // TODO: Call tournament sync service
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      const response = await this.tournamentSyncApi.triggerDiscoverySync().toPromise();
       
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
-        detail: 'Tournament discovery sync started'
+        detail: response?.message || 'Tournament discovery sync started'
       });
+      
+      // Refresh data after triggering
+      this.loadRecentJobs();
     } catch (error) {
       this.messageService.add({
         severity: 'error',
@@ -284,14 +249,20 @@ export class TournamentSyncDashboardComponent implements OnInit {
       accept: async () => {
         this.loading.set(true);
         try {
-          // TODO: Call tournament sync service
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+          // Trigger both competition and tournament sync
+          await Promise.all([
+            this.tournamentSyncApi.triggerCompetitionSync().toPromise(),
+            this.tournamentSyncApi.triggerTournamentSync().toPromise()
+          ]);
           
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
             detail: 'Manual sync started for all tournaments'
           });
+          
+          // Refresh data after triggering
+          this.loadRecentJobs();
         } catch (error) {
           this.messageService.add({
             severity: 'error',
@@ -415,8 +386,8 @@ export class TournamentSyncDashboardComponent implements OnInit {
     }
   }
 
-  getDuration(start: Date, end: Date): string {
-    const diffMs = end.getTime() - start.getTime();
+  getDuration(startMs: number, endMs: number): string {
+    const diffMs = endMs - startMs;
     const diffSecs = Math.floor(diffMs / 1000);
     const diffMins = Math.floor(diffSecs / 60);
     
@@ -424,6 +395,26 @@ export class TournamentSyncDashboardComponent implements OnInit {
       return `${diffMins}m ${diffSecs % 60}s`;
     }
     return `${diffSecs}s`;
+  }
+
+  getJobCreatedAt(job: TournamentSyncJob): Date {
+    return new Date(job.timestamp);
+  }
+
+  getJobProcessedAt(job: TournamentSyncJob): Date | undefined {
+    return job.processedOn ? new Date(job.processedOn) : undefined;
+  }
+
+  getJobFinishedAt(job: TournamentSyncJob): Date | undefined {
+    return job.finishedOn ? new Date(job.finishedOn) : undefined;
+  }
+
+  getJobType(job: TournamentSyncJob): string {
+    return job.name || 'Unknown';
+  }
+
+  getJobError(job: TournamentSyncJob): string | undefined {
+    return job.failedReason;
   }
 
   getCurrentTime(): Date {
