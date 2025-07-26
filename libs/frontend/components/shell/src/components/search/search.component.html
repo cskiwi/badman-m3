@@ -32,7 +32,7 @@
     <ng-template #header>
       <div class="font-medium px-3 py-2">
         <div class="flex items-center gap-2">
-          <span>Search Results</span>
+          <span>{{ 'all.search.results' | translate }}</span>
           @if (loading()) {
             <i class="pi pi-spin pi-spinner text-sm"></i>
           }
@@ -48,7 +48,7 @@
             <span>Searching...</span>
           </div>
         } @else {
-          <span>No results found</span>
+          <span>{{ 'all.search.noResults' | translate }}</span>
         }
       </div>
     </ng-template>

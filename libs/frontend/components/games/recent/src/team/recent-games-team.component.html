@@ -140,7 +140,7 @@
                   </div>
                 </div>
                 @if (getTeamPoints(game, 1) !== 0) {
-                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 1)) }}pts</div>
+                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 1)) }}{{ 'all.game.common.pts' | translate }}</div>
                 }
               </div>
 
@@ -173,7 +173,7 @@
                   </div>
                 </div>
                 @if (getTeamPoints(game, 2) !== 0) {
-                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 2)) }}pts</div>
+                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 2)) }}{{ 'all.game.common.pts' | translate }}</div>
                 }
               </div>
             </div>
@@ -185,7 +185,7 @@
                 @if (getTeamPoints(game, 1) !== 0) {
                   <div class="text-xs font-light text-muted-color">
                     <span>{{ formatPoints(getTeamPoints(game, 1)) }}</span>
-                    <span class="text-xs ml-0.5">pts</span>
+                    <span class="text-xs ml-0.5">{{ 'all.game.common.pts' | translate }}</span>
                   </div>
                 }
               </div>
@@ -201,7 +201,7 @@
                 @if (getTeamPoints(game, 2) !== 0) {
                   <div class="text-xs font-light text-muted-color">
                     <span>{{ formatPoints(getTeamPoints(game, 2)) }}</span>
-                    <span class="text-xs ml-0.5">pts</span>
+                    <span class="text-xs ml-0.5">{{ 'all.game.common.pts' | translate }}</span>
                   </div>
                 }
               </div>
@@ -213,7 +213,7 @@
             <!-- Set 1 -->
             @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
               <div class="bg-surface-50 dark:bg-surface-800 rounded-lg px-3 py-2 text-center min-w-16 transition-all duration-200 hover:scale-105">
-                <div class="text-xs mb-1 text-muted-color font-semibold uppercase tracking-wide">Set 1</div>
+                <div class="text-xs mb-1 text-muted-color font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 1</div>
                 <div class="text-lg font-semibold">
                   <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                     game?.set1Team1
@@ -229,7 +229,7 @@
             <!-- Set 2 -->
             @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
               <div class="bg-surface-50 dark:bg-surface-800 rounded-lg px-3 py-2 text-center min-w-16 transition-all duration-200 hover:scale-105">
-                <div class="text-xs mb-1 text-muted-color font-semibold uppercase tracking-wide">Set 2</div>
+                <div class="text-xs mb-1 text-muted-color font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 2</div>
                 <div class="text-lg font-semibold">
                   <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                     game?.set2Team1
@@ -245,7 +245,7 @@
             <!-- Set 3 (only if exists) -->
             @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
               <div class="bg-surface-50 dark:bg-surface-800 rounded-lg px-3 py-2 text-center min-w-16 transition-all duration-200 hover:scale-105">
-                <div class="text-xs mb-1 text-muted-color font-semibold uppercase tracking-wide">Set 3</div>
+                <div class="text-xs mb-1 text-muted-color font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 3</div>
                 <div class="text-lg font-semibold">
                   <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                     game?.set3Team1
@@ -267,8 +267,8 @@
         >
           <i class="pi pi-search text-2xl text-muted-color"></i>
         </div>
-        <h3 class="text-lg font-medium mb-2">No recent games found</h3>
-        <p class="text-muted-color">This team hasn't played any games recently.</p>
+        <h3 class="text-lg font-medium mb-2">{{ 'all.game.recent.noGamesFound' | translate }}</h3>
+        <p class="text-muted-color">{{ 'all.game.recent.noGamesDescription' | translate }}</p>
       </div>
     }
 
@@ -280,7 +280,7 @@
     <!-- Load more button for mobile -->
     @if (isMobile() && hasMore() && games().length > 0) {
       <div class="flex justify-center mt-6">
-        <p-button label="Load More Games" [loading]="loadingMore()" (onClick)="loadMore()" styleClass="p-button-outlined" icon="pi pi-plus" />
+        <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" styleClass="p-button-outlined" icon="pi pi-plus" />
       </div>
     }
 

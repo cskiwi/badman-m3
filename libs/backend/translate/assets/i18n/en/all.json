@@ -129,10 +129,22 @@
   },
   "game": {
     "recent": {
-      "title": "Recent games"
+      "title": "Recent games",
+      "noGamesFound": "No recent games found",
+      "noGamesDescription": "This team hasn't played any games recently.",
+      "noPlayerGamesDescription": "This player hasn't played any games recently."
     },
     "upcoming": {
-      "title": "Upcoming games"
+      "title": "Upcoming games",
+      "homeTeam": "Home Team",
+      "awayTeam": "Away Team",
+      "noGamesFound": "No upcoming games found",
+      "noGamesDescription": "This player has no scheduled games."
+    },
+    "common": {
+      "pts": "pts",
+      "set": "Set",
+      "loadMore": "Load More Games"
     }
   },
   "head-to-head": {
@@ -295,6 +307,114 @@
         },
         "messages": {
           "saving": "Saving profile changes..."
+        }
+      }
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "players": "Players",
+    "clubs": "Clubs",
+    "competitions": "Competitions",
+    "login": "Log in"
+  },
+  "search": {
+    "results": "Search Results",
+    "noResults": "No results found"
+  },
+  "admin": {
+    "accessRequired": "Admin Access Required",
+    "noPermission": "You do not have permission to access this page.",
+    "panel": {
+      "title": "Admin Panel",
+      "searchIndex": {
+        "title": "Search Index Management",
+        "description": "Manage search indexing operations",
+        "selectTypes": "Select Types to Index",
+        "selectAll": "Select All",
+        "selectNone": "Select None",
+        "startIndexing": "Start Indexing"
+      },
+      "information": {
+        "title": "Information",
+        "availableTypes": "Available Types"
+      }
+    }
+  },
+  "tournamentSync": {
+    "title": "TournamentSyncAdmin works!",
+    "dashboard": {
+      "title": "Tournament Sync Dashboard",
+      "actions": {
+        "discoverySync": "Discovery Sync",
+        "manualSync": "Manual Sync"
+      },
+      "queue": {
+        "title": "Queue Statistics",
+        "status": {
+          "waiting": "Waiting",
+          "active": "Active",
+          "completed": "Completed",
+          "failed": "Failed"
+        }
+      },
+      "recentJobs": {
+        "title": "Recent Sync Jobs",
+        "headers": {
+          "jobId": "Job ID",
+          "type": "Type",
+          "status": "Status",
+          "progress": "Progress",
+          "created": "Created",
+          "duration": "Duration",
+          "actions": "Actions"
+        },
+        "noJobs": "No recent jobs found"
+      },
+      "tournaments": {
+        "title": "Tournaments & Competitions",
+        "search": "Search tournaments...",
+        "allTypes": "All Types",
+        "allStatuses": "All Statuses",
+        "headers": {
+          "name": "Name",
+          "type": "Type",
+          "status": "Status",
+          "dates": "Dates",
+          "lastSync": "Last Sync",
+          "syncStatus": "Sync Status",
+          "actions": "Actions"
+        },
+        "noTournaments": "No tournaments found",
+        "never": "Never",
+        "tooltips": {
+          "syncStructure": "Sync Structure",
+          "syncGames": "Sync Games",
+          "manage": "Manage"
+        }
+      }
+    },
+    "teamMatching": {
+      "title": "Team Matching",
+      "refresh": "Refresh",
+      "statistics": {
+        "title": "Matching Statistics",
+        "pendingReview": "Pending Review",
+        "highConfidence": "High Confidence",
+        "mediumConfidence": "Medium Confidence",
+        "lowConfidence": "Low Confidence",
+        "matched": "Matched",
+        "rejected": "Rejected"
+      },
+      "unmatchedTeams": {
+        "title": "Unmatched Teams",
+        "headers": {
+          "teamInfo": "Team Info",
+          "tournament": "Tournament",
+          "bestMatch": "Best Match",
+          "confidence": "Confidence",
+          "status": "Status",
+          "actions": "Actions"
         }
       }
     }

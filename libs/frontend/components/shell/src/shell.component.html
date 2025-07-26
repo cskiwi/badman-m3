@@ -30,7 +30,7 @@
                 <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
                 <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
               } @else {
-                <p-button label="Log in" [outlined]="true" (click)="login()" />
+                <p-button [label]="'all.navigation.login' | translate" [outlined]="true" (click)="login()" />
               }
             </div>
           </ng-template>
@@ -50,7 +50,7 @@
                 <p-menu #mobileMenu [model]="userMenuItems()" [popup]="true" appendTo="body" />
                 <p-button icon="pi pi-user" [outlined]="true" [rounded]="true" size="small" (click)="mobileMenu.toggle($event)" aria-label="User menu" />
               } @else {
-                <p-button label="Log in" [outlined]="true" size="small" (click)="login()" />
+                <p-button [label]="'all.navigation.login' | translate" [outlined]="true" size="small" (click)="login()" />
               }
             </div>
           </div>
@@ -97,20 +97,20 @@
           }
 
           <a routerLink="." class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
-            Home
+            {{ 'all.navigation.home' | translate }}
           </a>
           <a routerLink="player" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
-            Players
+            {{ 'all.navigation.players' | translate }}
           </a>
           <a routerLink="club" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
-            Clubs
+            {{ 'all.navigation.clubs' | translate }}
           </a>
           <a
             routerLink="competition"
             class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
             (click)="sidebarVisible = false"
           >
-            Competition
+            {{ 'all.navigation.competitions' | translate }}
           </a>
         </nav>
       </aside>

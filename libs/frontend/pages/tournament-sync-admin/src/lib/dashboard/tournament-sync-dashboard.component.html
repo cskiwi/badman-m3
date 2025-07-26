@@ -1,17 +1,17 @@
     <div class="tournament-sync-dashboard p-4 space-y-6">
       <!-- Header -->
       <div class="flex justify-between items-center">
-        <h1 class="text-3xl font-bold">Tournament Sync Dashboard</h1>
+        <h1 class="text-3xl font-bold">{{ 'all.tournamentSync.dashboard.title' | translate }}</h1>
         <div class="flex gap-2">
           <p-button
-            label="Discovery Sync"
+            [label]="'all.tournamentSync.dashboard.actions.discoverySync' | translate"
             icon="pi pi-search"
             [loading]="loading()"
             (onClick)="triggerDiscoverySync()"
             severity="secondary"
           />
           <p-button
-            label="Manual Sync"
+            [label]="'all.tournamentSync.dashboard.actions.manualSync' | translate"
             icon="pi pi-refresh"
             [loading]="loading()"
             (onClick)="triggerManualSync()"
@@ -20,7 +20,7 @@
       </div>
 
       <!-- Queue Statistics -->
-      <p-card header="Queue Statistics">
+      <p-card [header]="'all.tournamentSync.dashboard.queue.title' | translate">
         @if (loadingStats()) {
           <div class="grid grid-cols-4 gap-4">
             @for (i of [1,2,3,4]; track i) {
@@ -34,19 +34,19 @@
           <div class="grid grid-cols-4 gap-4">
             <div class="text-center">
               <div class="text-2xl font-bold text-orange-600">{{ queueStats()?.waiting || 0 }}</div>
-              <div class="text-sm text-gray-600">Waiting</div>
+              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.waiting' | translate }}</div>
             </div>
             <div class="text-center">
               <div class="text-2xl font-bold text-blue-600">{{ queueStats()?.active || 0 }}</div>
-              <div class="text-sm text-gray-600">Active</div>
+              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.active' | translate }}</div>
             </div>
             <div class="text-center">
               <div class="text-2xl font-bold text-green-600">{{ queueStats()?.completed || 0 }}</div>
-              <div class="text-sm text-gray-600">Completed</div>
+              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.completed' | translate }}</div>
             </div>
             <div class="text-center">
               <div class="text-2xl font-bold text-red-600">{{ queueStats()?.failed || 0 }}</div>
-              <div class="text-sm text-gray-600">Failed</div>
+              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.failed' | translate }}</div>
             </div>
           </div>
         }

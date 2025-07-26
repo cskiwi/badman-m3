@@ -78,7 +78,7 @@
               <!-- Home Team -->
               <div class="team-section flex-1 min-w-0">
                 <div class="text-right space-y-1">
-                  <div class="text-xs font-semibold text-muted-color uppercase tracking-wide mb-2">Home Team</div>
+                  <div class="text-xs font-semibold text-muted-color uppercase tracking-wide mb-2">{{ 'all.game.upcoming.homeTeam' | translate }}</div>
                   <div class="text-lg font-semibold text-color">
                     {{ game?.homeTeam?.name || game?.homeTeam?.abbreviation }}
                   </div>
@@ -88,7 +88,7 @@
               <!-- Away Team -->
               <div class="team-section flex-1 min-w-0">
                 <div class="text-left space-y-1">
-                  <div class="text-xs font-semibold text-muted-color uppercase tracking-wide mb-2">Away Team</div>
+                  <div class="text-xs font-semibold text-muted-color uppercase tracking-wide mb-2">{{ 'all.game.upcoming.awayTeam' | translate }}</div>
                   <div class="text-lg font-semibold text-color">
                     {{ game?.awayTeam?.name || game?.awayTeam?.abbreviation }}
                   </div>
@@ -103,8 +103,8 @@
         <div class="rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-all duration-200 hover:scale-105">
           <i class="pi pi-calendar text-2xl"></i>
         </div>
-        <h3 class="text-lg font-medium mb-2">No upcoming games found</h3>
-        <p class="">This player has no scheduled games.</p>
+        <h3 class="text-lg font-medium mb-2">{{ 'all.game.upcoming.noGamesFound' | translate }}</h3>
+        <p class="">{{ 'all.game.upcoming.noGamesDescription' | translate }}</p>
       </div>
     }
   }

@@ -129,10 +129,22 @@
   },
   "game": {
     "recent": {
-      "title": "Matchs récents"
+      "title": "Matchs récents",
+      "noGamesFound": "Aucun match récent trouvé",
+      "noGamesDescription": "Cette équipe n'a pas encore joué de matchs.",
+      "noPlayerGamesDescription": "Ce joueur n'a pas encore joué de matchs."
     },
     "upcoming": {
-      "title": "Prochains matches"
+      "title": "Prochains matches",
+      "homeTeam": "Équipe à domicile",
+      "awayTeam": "Équipe visiteur",
+      "noGamesFound": "Aucun match à venir trouvé",
+      "noGamesDescription": "Ce joueur n'a aucun match planifié."
+    },
+    "common": {
+      "pts": "pts",
+      "set": "Set",
+      "loadMore": "Charger plus de matchs"
     }
   },
   "head-to-head": {
@@ -295,6 +307,114 @@
         },
         "messages": {
           "saving": "Enregistrement des modifications du profil..."
+        }
+      }
+    }
+  },
+  "navigation": {
+    "home": "Accueil",
+    "players": "Joueurs",
+    "clubs": "Clubs",
+    "competitions": "Compétitions",
+    "login": "Se connecter"
+  },
+  "search": {
+    "results": "Résultats de recherche",
+    "noResults": "Aucun résultat trouvé"
+  },
+  "admin": {
+    "accessRequired": "Accès administrateur requis",
+    "noPermission": "Vous n'avez pas la permission d'accéder à cette page.",
+    "panel": {
+      "title": "Panneau d'administration",
+      "searchIndex": {
+        "title": "Gestion de l'index de recherche",
+        "description": "Gérer les opérations d'indexation de recherche",
+        "selectTypes": "Sélectionner les types à indexer",
+        "selectAll": "Tout sélectionner",
+        "selectNone": "Ne rien sélectionner",
+        "startIndexing": "Démarrer l'indexation"
+      },
+      "information": {
+        "title": "Information",
+        "availableTypes": "Types disponibles"
+      }
+    }
+  },
+  "tournamentSync": {
+    "title": "TournamentSyncAdmin fonctionne!",
+    "dashboard": {
+      "title": "Tableau de bord de synchronisation de tournoi",
+      "actions": {
+        "discoverySync": "Sync de découverte",
+        "manualSync": "Sync manuelle"
+      },
+      "queue": {
+        "title": "Statistiques de la file",
+        "status": {
+          "waiting": "En attente",
+          "active": "Actif",
+          "completed": "Terminé",
+          "failed": "Échoué"
+        }
+      },
+      "recentJobs": {
+        "title": "Tâches de synchronisation récentes",
+        "headers": {
+          "jobId": "ID de tâche",
+          "type": "Type",
+          "status": "Statut",
+          "progress": "Progression",
+          "created": "Créé",
+          "duration": "Durée",
+          "actions": "Actions"
+        },
+        "noJobs": "Aucune tâche récente trouvée"
+      },
+      "tournaments": {
+        "title": "Tournois et compétitions",
+        "search": "Rechercher des tournois...",
+        "allTypes": "Tous les types",
+        "allStatuses": "Tous les statuts",
+        "headers": {
+          "name": "Nom",
+          "type": "Type",
+          "status": "Statut",
+          "dates": "Dates",
+          "lastSync": "Dernière sync",
+          "syncStatus": "Statut de sync",
+          "actions": "Actions"
+        },
+        "noTournaments": "Aucun tournoi trouvé",
+        "never": "Jamais",
+        "tooltips": {
+          "syncStructure": "Synchroniser la structure",
+          "syncGames": "Synchroniser les matchs",
+          "manage": "Gérer"
+        }
+      }
+    },
+    "teamMatching": {
+      "title": "Correspondance d'équipe",
+      "refresh": "Actualiser",
+      "statistics": {
+        "title": "Statistiques de correspondance",
+        "pendingReview": "En attente de révision",
+        "highConfidence": "Haute confiance",
+        "mediumConfidence": "Confiance moyenne",
+        "lowConfidence": "Faible confiance",
+        "matched": "Correspondant",
+        "rejected": "Rejeté"
+      },
+      "unmatchedTeams": {
+        "title": "Équipes non appariées",
+        "headers": {
+          "teamInfo": "Info équipe",
+          "tournament": "Tournoi",
+          "bestMatch": "Meilleure correspondance",
+          "confidence": "Confiance",
+          "status": "Statut",
+          "actions": "Actions"
         }
       }
     }

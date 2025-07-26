@@ -263,7 +263,7 @@
                 @if (getTeamPoints(game, 1) !== 0) {
                   <div class="text-sm font-extralight text-muted-color">
                     <span>{{ formatPoints(getTeamPoints(game, 1)) }}</span>
-                    <span class="text-xs ml-0.5">pts</span>
+                    <span class="text-xs ml-0.5">{{ 'all.game.common.pts' | translate }}</span>
                   </div>
                 }
               </div>
@@ -283,7 +283,7 @@
                 @if (getTeamPoints(game, 2) !== 0) {
                   <div class="text-sm font-extralight text-muted-color">
                     <span>{{ formatPoints(getTeamPoints(game, 2)) }}</span>
-                    <span class="text-xs ml-0.5">pts</span>
+                    <span class="text-xs ml-0.5">{{ 'all.game.common.pts' | translate }}</span>
                   </div>
                 }
               </div>
@@ -296,7 +296,7 @@
               <!-- Set 1 -->
               @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
                 <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">Set 1</div>
+                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 1</div>
                   <div class="text-lg sm:text-2xl font-semibold">
                     <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                       game?.set1Team1
@@ -312,7 +312,7 @@
               <!-- Set 2 -->
               @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
                 <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">Set 2</div>
+                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 2</div>
                   <div class="text-lg sm:text-2xl font-semibold">
                     <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                       game?.set2Team1
@@ -328,7 +328,7 @@
               <!-- Set 3 (only if exists) -->
               @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
                 <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">Set 3</div>
+                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 3</div>
                   <div class="text-lg sm:text-2xl font-semibold">
                     <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                       game?.set3Team1
@@ -349,8 +349,8 @@
         <div class="rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-all duration-200 hover:scale-105">
           <i class="pi pi-search text-2xl"></i>
         </div>
-        <h3 class="text-lg font-medium mb-2">No recent games found</h3>
-        <p class="">This player hasn't played any games recently.</p>
+        <h3 class="text-lg font-medium mb-2">{{ 'all.game.recent.noGamesFound' | translate }}</h3>
+        <p class="">{{ 'all.game.recent.noPlayerGamesDescription' | translate }}</p>
       </div>
     }
     
@@ -363,7 +363,7 @@
     @if (isMobile() && hasMore() && games().length > 0) {
       <div class="flex justify-center mt-6">
         <p-button
-          label="Load More Games"
+          [label]="'all.game.common.loadMore' | translate"
           [loading]="loadingMore()"
           (onClick)="loadMore()"
           styleClass="p-button-outlined"

@@ -129,10 +129,22 @@
   },
   "game": {
     "recent": {
-      "title": "Recente ontmoetingen"
+      "title": "Recente ontmoetingen",
+      "noGamesFound": "Geen recente wedstrijden gevonden",
+      "noGamesDescription": "Dit team heeft nog geen wedstrijden gespeeld.",
+      "noPlayerGamesDescription": "Deze speler heeft nog geen wedstrijden gespeeld."
     },
     "upcoming": {
-      "title": "Komende ontmoetingen"
+      "title": "Komende ontmoetingen",
+      "homeTeam": "Thuisteam",
+      "awayTeam": "Uitteam",
+      "noGamesFound": "Geen komende wedstrijden gevonden",
+      "noGamesDescription": "Deze speler heeft geen geplande wedstrijden."
+    },
+    "common": {
+      "pts": "pnt",
+      "set": "Set",
+      "loadMore": "Meer wedstrijden laden"
     }
   },
   "head-to-head": {
@@ -295,6 +307,114 @@
         },
         "messages": {
           "saving": "Profielwijzigingen opslaan..."
+        }
+      }
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "players": "Spelers",
+    "clubs": "Clubs",
+    "competitions": "Competities",
+    "login": "Inloggen"
+  },
+  "search": {
+    "results": "Zoekresultaten",
+    "noResults": "Geen resultaten gevonden"
+  },
+  "admin": {
+    "accessRequired": "Admin toegang vereist",
+    "noPermission": "Je hebt geen toestemming om deze pagina te bekijken.",
+    "panel": {
+      "title": "Admin Paneel",
+      "searchIndex": {
+        "title": "Zoekindex beheer",
+        "description": "Beheer zoekindexering operaties",
+        "selectTypes": "Selecteer types om te indexeren",
+        "selectAll": "Alles selecteren",
+        "selectNone": "Niets selecteren",
+        "startIndexing": "Indexering starten"
+      },
+      "information": {
+        "title": "Informatie",
+        "availableTypes": "Beschikbare types"
+      }
+    }
+  },
+  "tournamentSync": {
+    "title": "TournamentSyncAdmin werkt!",
+    "dashboard": {
+      "title": "Toernooi Sync Dashboard",
+      "actions": {
+        "discoverySync": "Discovery Sync",
+        "manualSync": "Handmatige Sync"
+      },
+      "queue": {
+        "title": "Wachtrij Statistieken",
+        "status": {
+          "waiting": "Wachtend",
+          "active": "Actief",
+          "completed": "Voltooid",
+          "failed": "Mislukt"
+        }
+      },
+      "recentJobs": {
+        "title": "Recente Sync Jobs",
+        "headers": {
+          "jobId": "Job ID",
+          "type": "Type",
+          "status": "Status",
+          "progress": "Voortgang",
+          "created": "Aangemaakt",
+          "duration": "Duur",
+          "actions": "Acties"
+        },
+        "noJobs": "Geen recente jobs gevonden"
+      },
+      "tournaments": {
+        "title": "Toernooien & Competities",
+        "search": "Zoek toernooien...",
+        "allTypes": "Alle Types",
+        "allStatuses": "Alle Statussen",
+        "headers": {
+          "name": "Naam",
+          "type": "Type",
+          "status": "Status",
+          "dates": "Data",
+          "lastSync": "Laatste Sync",
+          "syncStatus": "Sync Status",
+          "actions": "Acties"
+        },
+        "noTournaments": "Geen toernooien gevonden",
+        "never": "Nooit",
+        "tooltips": {
+          "syncStructure": "Sync Structuur",
+          "syncGames": "Sync Wedstrijden",
+          "manage": "Beheren"
+        }
+      }
+    },
+    "teamMatching": {
+      "title": "Team Matching",
+      "refresh": "Vernieuwen",
+      "statistics": {
+        "title": "Matching Statistieken",
+        "pendingReview": "Wachten op beoordeling",
+        "highConfidence": "Hoog vertrouwen",
+        "mediumConfidence": "Gemiddeld vertrouwen",
+        "lowConfidence": "Laag vertrouwen",
+        "matched": "Gematcht",
+        "rejected": "Afgewezen"
+      },
+      "unmatchedTeams": {
+        "title": "Ongematched Teams",
+        "headers": {
+          "teamInfo": "Team Info",
+          "tournament": "Toernooi",
+          "bestMatch": "Beste Match",
+          "confidence": "Vertrouwen",
+          "status": "Status",
+          "actions": "Acties"
         }
       }
     }
