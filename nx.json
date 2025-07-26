@@ -75,6 +75,45 @@
         "buildTargetName": "build",
         "serveTargetName": "serve"
       }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      },
+      "include": [
+        "libs/frontend/pages/tournament-sync-admin/**/*",
+        "libs/frontend/modules/translation/**/*",
+        "libs/frontend/pages/competition/**/*",
+        "libs/frontend/modules/graphql/**/*",
+        "libs/frontend/modules/theme/**/*",
+        "libs/backend/authorization/**/*",
+        "libs/frontend/modules/auth/**/*",
+        "libs/frontend/pages/player/**/*",
+        "libs/frontend/modules/seo/**/*",
+        "libs/frontend/pages/admin/**/*",
+        "libs/frontend/pages/club/**/*",
+        "libs/frontend/pages/home/**/*",
+        "libs/backend/translate/**/*",
+        "libs/backend/database/**/*",
+        "libs/backend/graphql/**/*",
+        "libs/backend/_shared/**/*",
+        "libs/backend/health/**/*",
+        "libs/backend/search/**/*",
+        "libs/frontend/utils/**/*",
+        "libs/models/models/**/*",
+        "libs/backend/seo/**/*",
+        "libs/set-env/**/*",
+        "libs/utils/**/*",
+        "apps/app/**/*"
+      ]
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "e2e"
+      },
+      "include": ["apps/tournament-sync-worker-e2e/**/*"]
     }
   ],
   "generators": {
