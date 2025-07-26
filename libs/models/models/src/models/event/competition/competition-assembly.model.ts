@@ -65,6 +65,10 @@ export class CompetitionAssembly extends BaseEntity {
   @Column({ nullable: true })
   declare playerId?: string;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true, default: false })
+  declare isComplete?: boolean;
+
   @Field(() => CompetitionEncounter, { nullable: true })
   @ManyToOne(() => CompetitionEncounter, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'encounterId' })
