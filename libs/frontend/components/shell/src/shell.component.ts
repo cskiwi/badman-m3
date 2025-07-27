@@ -205,7 +205,7 @@ export class ShellComponent {
   }
 
   navigateToTournamentSyncAdmin() {
-    this.router.navigate(['/tournament-sync-admin']);
+    this.router.navigate(['/sync']);
   }
 
   refreshApp() {

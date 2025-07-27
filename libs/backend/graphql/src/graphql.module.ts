@@ -2,7 +2,7 @@ import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPag
 import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaReporting';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { AuthorizationModule } from '@app/backend-authorization';
-import { TournamentSyncModule } from '@app/tournament-sync';
+import { SyncModule } from '@app/sync';
 import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -47,6 +47,7 @@ import {
   ServiceResolver,
   SettingResolver,
   StandingResolver,
+  SyncResolver,
   TeamPlayerMembershipResolver,
   TeamResolver,
   TournamentDrawResolver,
@@ -58,7 +59,7 @@ import {
   imports: [
     ConfigModule,
     AuthorizationModule,
-    TournamentSyncModule,
+    SyncModule,
     NestJsGql.forRootAsync({
       driver: ApolloDriver,
       imports: [ConfigModule],
@@ -140,6 +141,7 @@ import {
     LogEntryResolver,
     RuleResolver,
     ServiceResolver,
+    SyncResolver,
     TeamResolver,
     TeamPlayerMembershipResolver,
   ],

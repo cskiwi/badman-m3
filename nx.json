@@ -82,7 +82,7 @@
         "targetName": "test"
       },
       "include": [
-        "libs/frontend/pages/tournament-sync-admin/**/*",
+        "libs/frontend/pages/sync-admin/**/*",
         "libs/frontend/modules/translation/**/*",
         "libs/frontend/pages/competition/**/*",
         "libs/frontend/modules/graphql/**/*",
@@ -113,7 +113,7 @@
       "options": {
         "targetName": "e2e"
       },
-      "include": ["apps/tournament-sync-worker-e2e/**/*"]
+      "include": ["apps/sync-worker-e2e/**/*"]
     }
   ],
   "generators": {

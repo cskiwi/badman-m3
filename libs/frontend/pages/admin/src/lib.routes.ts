@@ -11,6 +11,24 @@ export const adminRoutes: Route[] = [
         path: '',
         component: PageAdminComponent,
       },
+      {
+        path: 'sync',
+        children: [
+          {
+            path: '',
+            redirectTo: 'dashboard',
+            pathMatch: 'full',
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () => import('@app/sync-admin').then((m) => m.SyncDashboardComponent),
+          },
+          {
+            path: 'team-matching',
+            loadComponent: () => import('@app/sync-admin').then((m) => m.TeamMatchingDashboardComponent),
+          },
+        ],
+      },
     ],
   },
 ];

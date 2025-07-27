@@ -5,20 +5,20 @@ import { Like, IsNull } from 'typeorm';
 import { TournamentApiClient, TournamentEvent, Team, TournamentDraw, Match } from '@app/tournament-api';
 import { CompetitionSubEvent, Team as TeamModel, Game, Player } from '@app/models';
 import { SubEventTypeEnum, GameType, GameStatus } from '@app/model/enums';
-import { TOURNAMENT_SYNC_QUEUE, TournamentSyncJobType, StructureSyncJobData, GameSyncJobData } from '../queues/sync.queue';
-import { TournamentSyncService } from '../services/sync.service';
+import { SYNC_QUEUE, SyncJobType, StructureSyncJobData, GameSyncJobData } from '../queues/sync.queue';
+import { SyncService } from '../services/sync.service';
 
 @Injectable()
-@Processor(TOURNAMENT_SYNC_QUEUE)
+@Processor(SYNC_QUEUE)
 export class CompetitionEventProcessor {
   private readonly logger = new Logger(CompetitionEventProcessor.name);
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
-    private readonly tournamentSyncService: TournamentSyncService,
+    private readonly syncService: SyncService,
   ) {}
 
-  @Process(TournamentSyncJobType.COMPETITION_STRUCTURE_SYNC)
+  @Process(SyncJobType.COMPETITION_STRUCTURE_SYNC)
   async processCompetitionStructureSync(job: Job<StructureSyncJobData>): Promise<void> {
     this.logger.log(`Processing competition structure sync job: ${job.id}`);
 
@@ -47,7 +47,7 @@ export class CompetitionEventProcessor {
     }
   }
 
-  @Process(TournamentSyncJobType.COMPETITION_GAME_SYNC)
+  @Process(SyncJobType.COMPETITION_GAME_SYNC)
   async processCompetitionGameSync(job: Job<GameSyncJobData>): Promise<void> {
     this.logger.log(`Processing competition game sync job: ${job.id}`);
 
@@ -226,7 +226,7 @@ export class CompetitionEventProcessor {
 
     if (!existingTeam) {
       // Queue for team matching process
-      await this.tournamentSyncService.queueTeamMatching({
+      await this.syncService.queueTeamMatching({
         tournamentCode,
         unmatchedTeams: [
           {

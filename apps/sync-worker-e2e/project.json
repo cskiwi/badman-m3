@@ -1,0 +1,29 @@
+{
+  "name": "sync-worker-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["sync-worker"],
+  "targets": {
+    "e2e": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}", "{workspaceRoot}\\apps\\coverage\\sync-worker-e2e"],
+      "options": {
+        "passWithNoTests": true
+      },
+      "dependsOn": ["sync-worker:build", "sync-worker:serve"],
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "coverage": true
+        }
+      }
+    }
+  }
+}

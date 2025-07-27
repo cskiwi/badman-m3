@@ -1,11 +1,11 @@
 {
   "graph": {
     "nodes": {
-      "tournament-sync-admin": {
-        "name": "tournament-sync-admin",
+      "sync-admin": {
+        "name": "sync-admin",
         "type": "lib",
         "data": {
-          "root": "libs/frontend/pages/tournament-sync-admin",
+          "root": "libs/frontend/pages/sync-admin",
           "targets": {
             "lint": {
               "executor": "@nx/eslint:lint",
@@ -35,14 +35,14 @@
                 "{workspaceRoot}/dist/{projectRoot}"
               ],
               "options": {
-                "project": "libs/frontend/pages/tournament-sync-admin/ng-package.json"
+                "project": "libs/frontend/pages/sync-admin/ng-package.json"
               },
               "configurations": {
                 "production": {
-                  "tsConfig": "libs/frontend/pages/tournament-sync-admin/tsconfig.lib.prod.json"
+                  "tsConfig": "libs/frontend/pages/sync-admin/tsconfig.lib.prod.json"
                 },
                 "development": {
-                  "tsConfig": "libs/frontend/pages/tournament-sync-admin/tsconfig.lib.json"
+                  "tsConfig": "libs/frontend/pages/sync-admin/tsconfig.lib.json"
                 }
               },
               "defaultConfiguration": "production",
@@ -62,7 +62,7 @@
                 "{workspaceRoot}/coverage/{projectRoot}"
               ],
               "options": {
-                "jestConfig": "libs/frontend/pages/tournament-sync-admin/jest.config.ts",
+                "jestConfig": "libs/frontend/pages/sync-admin/jest.config.ts",
                 "passWithNoTests": true
               },
               "configurations": {
@@ -80,19 +80,19 @@
               ]
             }
           },
-          "name": "tournament-sync-admin",
+          "name": "sync-admin",
           "tags": [
             "npm:public"
           ],
           "metadata": {
             "targetGroups": {},
             "js": {
-              "packageName": "@app/tournament-sync-admin",
+              "packageName": "@app/sync-admin",
               "isInPackageManagerWorkspaces": false
             }
           },
           "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/frontend/pages/tournament-sync-admin/src",
+          "sourceRoot": "libs/frontend/pages/sync-admin/src",
           "prefix": "app",
           "projectType": "library",
           "implicitDependencies": []
@@ -346,11 +346,11 @@
           "implicitDependencies": []
         }
       },
-      "tournament-sync-worker-e2e": {
-        "name": "tournament-sync-worker-e2e",
+      "sync-worker-e2e": {
+        "name": "sync-worker-e2e",
         "type": "e2e",
         "data": {
-          "root": "apps/tournament-sync-worker-e2e",
+          "root": "apps/sync-worker-e2e",
           "targets": {
             "lint": {
               "cache": true,
@@ -386,7 +386,7 @@
               },
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/tournament-sync-worker-e2e",
+                "cwd": "apps/sync-worker-e2e",
                 "command": "eslint ."
               },
               "configurations": {},
@@ -398,12 +398,12 @@
                 "{workspaceRoot}/coverage/{e2eProjectRoot}"
               ],
               "options": {
-                "jestConfig": "apps/tournament-sync-worker-e2e/jest.config.ts",
+                "jestConfig": "apps/sync-worker-e2e/jest.config.ts",
                 "passWithNoTests": true
               },
               "dependsOn": [
-                "tournament-sync-worker:build",
-                "tournament-sync-worker:serve"
+                "sync-worker:build",
+                "sync-worker:serve"
               ],
               "configurations": {
                 "ci": {
@@ -420,11 +420,11 @@
               ]
             }
           },
-          "name": "tournament-sync-worker-e2e",
+          "name": "sync-worker-e2e",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
           "projectType": "application",
           "implicitDependencies": [
-            "tournament-sync-worker"
+            "sync-worker"
           ],
           "tags": []
         }
@@ -767,11 +767,11 @@
           "implicitDependencies": []
         }
       },
-      "tournament-sync-worker": {
-        "name": "tournament-sync-worker",
+      "sync-worker": {
+        "name": "sync-worker",
         "type": "app",
         "data": {
-          "root": "apps/tournament-sync-worker",
+          "root": "apps/sync-worker",
           "targets": {
             "lint": {
               "cache": true,
@@ -807,7 +807,7 @@
               },
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/tournament-sync-worker",
+                "cwd": "apps/sync-worker",
                 "command": "eslint ."
               },
               "configurations": {},
@@ -828,7 +828,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}/dist\\tournament-sync-worker"
+                "{workspaceRoot}/dist\\sync-worker"
               ],
               "metadata": {
                 "technologies": [
@@ -849,7 +849,7 @@
               },
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "apps/tournament-sync-worker",
+                "cwd": "apps/sync-worker",
                 "args": [
                   "--node-env=production"
                 ],
@@ -872,15 +872,15 @@
                 "build"
               ],
               "options": {
-                "buildTarget": "tournament-sync-worker:build",
+                "buildTarget": "sync-worker:build",
                 "runBuildTargetDependencies": false
               },
               "configurations": {
                 "development": {
-                  "buildTarget": "tournament-sync-worker:build:development"
+                  "buildTarget": "sync-worker:build:development"
                 },
                 "production": {
-                  "buildTarget": "tournament-sync-worker:build:production"
+                  "buildTarget": "sync-worker:build:production"
                 }
               },
               "parallelism": true
@@ -888,7 +888,7 @@
             "preview": {
               "continuous": true,
               "options": {
-                "cwd": "apps/tournament-sync-worker",
+                "cwd": "apps/sync-worker",
                 "args": [
                   "--node-env=production"
                 ],
@@ -944,7 +944,7 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "npx nx watch --projects tournament-sync-worker --includeDependentProjects -- npx nx build-deps tournament-sync-worker"
+                "command": "npx nx watch --projects sync-worker --includeDependentProjects -- npx nx build-deps sync-worker"
               },
               "configurations": {},
               "parallelism": true
@@ -952,9 +952,9 @@
           },
           "projectType": "application",
           "metadata": {},
-          "name": "tournament-sync-worker",
+          "name": "sync-worker",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "apps/tournament-sync-worker/src",
+          "sourceRoot": "apps/sync-worker/src",
           "tags": [],
           "implicitDependencies": []
         }
@@ -1916,11 +1916,11 @@
           "implicitDependencies": []
         }
       },
-      "tournament-sync": {
-        "name": "tournament-sync",
+      "sync": {
+        "name": "sync",
         "type": "lib",
         "data": {
-          "root": "backend/tournament-sync",
+          "root": "backend/sync",
           "targets": {
             "lint": {
               "cache": true,
@@ -1956,7 +1956,7 @@
               },
               "executor": "nx:run-commands",
               "options": {
-                "cwd": "backend/tournament-sync",
+                "cwd": "backend/sync",
                 "command": "eslint ."
               },
               "configurations": {},
@@ -1968,12 +1968,12 @@
                 "{options.outputPath}"
               ],
               "options": {
-                "outputPath": "dist/backend/tournament-sync",
-                "tsConfig": "backend/tournament-sync/tsconfig.lib.json",
-                "packageJson": "backend/tournament-sync/package.json",
-                "main": "backend/tournament-sync/src/index.ts",
+                "outputPath": "dist/backend/sync",
+                "tsConfig": "backend/sync/tsconfig.lib.json",
+                "packageJson": "backend/sync/package.json",
+                "main": "backend/sync/src/index.ts",
                 "assets": [
-                  "backend/tournament-sync/*.md"
+                  "backend/sync/*.md"
                 ]
               },
               "configurations": {},
@@ -1988,20 +1988,20 @@
               ]
             }
           },
-          "name": "tournament-sync",
+          "name": "sync",
           "tags": [
             "npm:private"
           ],
           "metadata": {
             "targetGroups": {},
             "js": {
-              "packageName": "@app/tournament-sync",
+              "packageName": "@app/sync",
               "packageMain": "./src/index.js",
               "isInPackageManagerWorkspaces": false
             }
           },
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "backend/tournament-sync/src",
+          "sourceRoot": "backend/sync/src",
           "projectType": "library",
           "implicitDependencies": []
         }
@@ -4111,7 +4111,7 @@
       }
     },
     "dependencies": {
-      "tournament-sync-admin": [],
+      "sync-admin": [],
       "frontend-modules-translation": [
         {
           "source": "frontend-modules-translation",
@@ -4136,10 +4136,10 @@
           "type": "static"
         }
       ],
-      "tournament-sync-worker-e2e": [
+      "sync-worker-e2e": [
         {
-          "source": "tournament-sync-worker-e2e",
-          "target": "tournament-sync-worker",
+          "source": "sync-worker-e2e",
+          "target": "sync-worker",
           "type": "implicit"
         }
       ],
@@ -4152,14 +4152,14 @@
       ],
       "backend-tournament-api": [],
       "frontend-modules-theme": [],
-      "tournament-sync-worker": [
+      "sync-worker": [
         {
-          "source": "tournament-sync-worker",
-          "target": "tournament-sync",
+          "source": "sync-worker",
+          "target": "sync",
           "type": "static"
         },
         {
-          "source": "tournament-sync-worker",
+          "source": "sync-worker",
           "target": "backend-tournament-api",
           "type": "static"
         }
@@ -4315,14 +4315,14 @@
           "type": "static"
         }
       ],
-      "tournament-sync": [
+      "sync": [
         {
-          "source": "tournament-sync",
+          "source": "sync",
           "target": "root-tournament-api",
           "type": "static"
         },
         {
-          "source": "tournament-sync",
+          "source": "sync",
           "target": "backend-tournament-api",
           "type": "static"
         }

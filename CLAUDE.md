@@ -31,10 +31,10 @@ This is a badminton management system built as an Nx monorepo combining Angular 
 - `nx test [project-name]` - Test specific project
 - `nx lint [project-name]` - Lint specific project
 
-### Tournament Sync Worker Commands
-- `nx serve tournament-sync-worker` - Start tournament sync worker service
-- `nx build tournament-sync-worker` - Build tournament sync worker
-- `nx test tournament-sync-worker` - Test tournament sync worker
+### Sync Worker Commands
+- `nx serve sync-worker` - Start sync worker service
+- `nx build sync-worker` - Build sync worker
+- `nx test sync-worker` - Test sync worker
 
 ## Architecture Overview
 
@@ -51,10 +51,10 @@ This is a badminton management system built as an Nx monorepo combining Angular 
   - `seo` - Dynamic image generation for SEO
   - `translate` - i18n support (en, fr_BE, nl_BE)
   - `tournament-api` - Tournament Software API client integration
-  - `tournament-sync` - Tournament synchronization logic
+  - `sync` - Tournament synchronization logic
 
-### Tournament Sync Worker
-- **Location**: `apps/tournament-sync-worker/`
+### Sync Worker
+- **Location**: `apps/sync-worker/`
 - **Technology Stack**: NestJS, Bull/BullMQ, Redis
 - **Purpose**: Standalone service for syncing tournaments from Tournament Software API
 - **Key Features**:
@@ -69,7 +69,7 @@ This is a badminton management system built as an Nx monorepo combining Angular 
 - **Structure**:
   - `components` - Reusable UI components (games, layout, shell, page-header)
   - `modules` - Feature modules (auth, graphql, seo, theme, translation)
-  - `pages` - Route-specific page components (admin, club, competition, home, player, tournament-sync-admin)
+  - `pages` - Route-specific page components (admin, club, competition, home, player, sync-admin)
   - `utils` - Utilities and pipes
 
 ### Models and Utilities
@@ -291,7 +291,7 @@ When implementing loading states, ALWAYS use PrimeNG skeletons instead of simple
 - **Environment Variables**: Tournament Software API credentials must be configured in `.env`
   - `TOURNAMENT_API_USERNAME`: API username
   - `TOURNAMENT_API_PASSWORD`: API password
-  - `REDIS_HOST`, `REDIS_PORT`: Redis connection for Bull queues
+  - `CACHE_HOST`, `CACHE_PORT`: Redis connection for Bull queues
 - **Services**: Redis must be running for queue management
 
 ### Sync Architecture
@@ -301,6 +301,6 @@ When implementing loading states, ALWAYS use PrimeNG skeletons instead of simple
 - **Scheduling**: Dynamic scheduling based on event types and dates
 
 ### Admin Interface
-- Tournament sync admin interface available at `/tournament-sync-admin` route
+- Sync admin interface available at `/sync-admin` route
 - Provides manual sync triggers, team matching tools, and sync monitoring dashboard
 - Real-time queue status and error handling interface

@@ -44,7 +44,7 @@ Tournament Sync Worker
 ### Architecture Structure
 
 ```
-apps/tournament-sync-worker/               # Standalone Worker Service
+apps/sync-worker/               # Standalone Worker Service
 ├── src/
 │   ├── app/
 │   │   ├── app.module.ts                 # Main module with Redis/Queue config
@@ -61,16 +61,16 @@ libs/backend/
 │   │   ├── types/tournament.types.ts
 │   │   └── tournament-api.module.ts
 │   └── project.json
-└── tournament-sync/                      # Sync Logic (Shared)
+└── sync/                      # Sync Logic (Shared)
     ├── src/
     │   ├── processors/                   # Queue processors
     │   ├── services/                     # Sync services
     │   ├── queues/                       # Queue definitions
-    │   └── tournament-sync.module.ts
+    │   └── sync.module.ts
     └── project.json
 
 libs/frontend/pages/
-└── tournament-sync-admin/                # Admin Interface
+└── sync-admin/                # Admin Interface
     ├── src/
     │   ├── dashboard/
     │   ├── team-matching/
@@ -86,13 +86,13 @@ libs/frontend/pages/
 ```bash
 # Shared libraries
 nx g @nx/nest:library libs/backend/tournament-api --buildable
-nx g @nx/nest:library backend/tournament-sync --buildable
+nx g @nx/nest:library backend/sync --buildable
 
 # Standalone worker service
-nx g @nx/nest:application tournament-sync-worker
+nx g @nx/nest:application sync-worker
 
 # Frontend admin interface
-nx g @nx/angular:library libs/frontend/pages/tournament-sync-admin --routing
+nx g @nx/angular:library libs/frontend/pages/sync-admin --routing
 ```
 
 #### 1.2 Tournament API Client
@@ -167,7 +167,7 @@ nx g @nx/angular:library libs/frontend/pages/tournament-sync-admin --routing
 
 #### 4.1 Generate Frontend Pages
 ```bash
-nx g @nx/angular:library frontend/pages/tournament-sync --routing
+nx g @nx/angular:library frontend/pages/sync --routing
 ```
 
 #### 4.2 Competition Management Pages
@@ -380,10 +380,10 @@ TOURNAMENT_API_USERNAME=your_username
 TOURNAMENT_API_PASSWORD=your_password
 
 # Redis (for Bull queues)
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-REDIS_DB=0
+CACHE_HOST=localhost
+CACHE_PORT=6379
+CACHE_PASSWORD=
+CACHE_DB=0
 
 # Worker Service
 TOURNAMENT_SYNC_WORKER_PORT=3000
@@ -410,11 +410,11 @@ TOURNAMENT_SYNC_WORKER_PORT=3000
 4. **Start the worker service**:
    ```bash
    # Development mode (with hot reload)
-   nx serve tournament-sync-worker
+   nx serve sync-worker
 
    # Production mode
-   nx build tournament-sync-worker
-   node dist/tournament-sync-worker/main.js
+   nx build sync-worker
+   node dist/sync-worker/main.js
    ```
 
 5. **Verify the service is running**:
@@ -439,10 +439,10 @@ docker-compose up -d redis
 #### Application Deployment
 ```bash
 # Build the worker application
-nx build tournament-sync-worker
+nx build sync-worker
 
 # Start the worker service
-node dist/tournament-sync-worker/main.js
+node dist/sync-worker/main.js
 ```
 
 #### Production Considerations

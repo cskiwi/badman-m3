@@ -1,0 +1,8 @@
+.sync-dashboard {
+  min-height: 100vh;
+  background-color: var(--surface-ground);
+  
+  :host {
+    display: block;
+  }
+}

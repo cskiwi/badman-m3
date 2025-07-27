@@ -33,8 +33,8 @@ export const appRoutes: Route[] = [
       import('@app/frontend-pages-admin').then((m) => m.adminRoutes),
   },
   {
-    path: 'tournament-sync-admin',
+    path: 'sync',
     loadChildren: () =>
-      import('@app/tournament-sync-admin').then((m) => m.tournamentSyncAdminRoutes),
+      import('@app/sync-admin').then((m) => m.syncRoutes),
   },
 ];
