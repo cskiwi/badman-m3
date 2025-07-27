@@ -1,4 +1,4 @@
-import { TournamentDraw, TournamentSubEvent, Game } from '@app/models';
+import { TournamentDraw, TournamentSubEvent, Game, Entry } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 
@@ -44,4 +44,16 @@ export class TournamentDrawResolver {
       },
     });
   }
+
+  @ResolveField(() => [Entry], { nullable: true })
+  async entries(@Parent() { id }: TournamentDraw): Promise<Entry[]> {
+    return Entry.find({
+      where: {
+        drawId: id,
+      },
+      relations: ['standings'],
+    });
+  }
+
+ 
 }

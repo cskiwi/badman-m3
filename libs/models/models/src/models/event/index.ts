@@ -2,6 +2,7 @@ export * from './availability.model';
 export * from './competition';
 export * from './court.model';
 export * from './entry.model';
+export * from './entry-meta.type';
 export * from './game-player-membership';
 export * from './game.model';
 export * from './location.model';

@@ -2,11 +2,13 @@ import { Process, Processor } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { TournamentApiClient, Tournament, TournamentType } from '@app/tournament-api';
+import { TournamentEvent, CompetitionEvent } from '@app/models';
 import {
   TOURNAMENT_SYNC_QUEUE,
   TournamentSyncJobType,
   TournamentDiscoveryJobData,
 } from '../queues/tournament-sync.queue';
+import { TournamentSyncService } from '../services/tournament-sync.service';
 
 @Injectable()
 @Processor(TOURNAMENT_SYNC_QUEUE)
@@ -15,6 +17,7 @@ export class TournamentDiscoveryProcessor {
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
+    private readonly tournamentSyncService: TournamentSyncService,
   ) {}
 
   @Process(TournamentSyncJobType.TOURNAMENT_DISCOVERY)
@@ -69,14 +72,18 @@ export class TournamentDiscoveryProcessor {
         const month = now.getMonth() + 1; // JavaScript months are 0-based
         
         if (month >= 5 && month <= 8) {
-          // TODO: Queue competition structure sync
-          this.logger.log(`Scheduling competition structure sync for ${tournament.Code}`);
+          await this.tournamentSyncService.queueCompetitionStructureSync({
+            tournamentCode: tournament.Code,
+          });
+          this.logger.log(`Scheduled competition structure sync for ${tournament.Code}`);
         }
       } else if (tournament.TypeID === TournamentType.Individual) {
         // Tournament - schedule structure sync immediately if not finished
         if (tournament.TournamentStatus !== 101) { // 101 = Tournament Finished
-          // TODO: Queue tournament structure sync
-          this.logger.log(`Scheduling tournament structure sync for ${tournament.Code}`);
+          await this.tournamentSyncService.queueTournamentStructureSync({
+            tournamentCode: tournament.Code,
+          });
+          this.logger.log(`Scheduled tournament structure sync for ${tournament.Code}`);
         }
       }
     } catch (error: unknown) {
@@ -85,62 +92,59 @@ export class TournamentDiscoveryProcessor {
     }
   }
 
-  private async findExistingTournament(tournamentCode: string): Promise<any> {
-    // TODO: Implement database lookup
-    // This should query the database to check if a tournament with this visualCode already exists
-    // For now, return null to create all tournaments
-    return null;
+  private async findExistingTournament(tournamentCode: string): Promise<TournamentEvent | CompetitionEvent | null> {
+    // Check both tournament and competition tables for existing record
+    const existingTournament = await TournamentEvent.findOne({
+      where: { visualCode: tournamentCode },
+    });
+    
+    if (existingTournament) {
+      return existingTournament;
+    }
+    
+    const existingCompetition = await CompetitionEvent.findOne({
+      where: { visualCode: tournamentCode },
+    });
+    
+    return existingCompetition;
   }
 
   private async createTournament(tournament: Tournament): Promise<void> {
-    // TODO: Implement database creation
-    // This should create a new tournament record in the database
-    // Map Tournament Software fields to our database schema
-    
-    const tournamentData = {
-      visualCode: tournament.Code,
-      name: tournament.Name,
-      type: tournament.TypeID === TournamentType.Team ? 'competition' : 'tournament',
-      status: this.mapTournamentStatus(tournament.TournamentStatus),
-      startDate: new Date(tournament.StartDate),
-      endDate: new Date(tournament.EndDate),
-      lastUpdated: new Date(tournament.LastUpdated),
-      livescore: tournament.Livescore,
-      timezone: tournament.TournamentTimezone,
-      
-      // Organization info
-      organizationId: tournament.Organization?.ID,
-      organizationName: tournament.Organization?.Name,
-      
-      // Contact info
-      contactName: tournament.Contact?.Name,
-      contactPhone: tournament.Contact?.Phone,
-      contactEmail: tournament.Contact?.Email,
-      
-      // Venue info
-      venueName: tournament.Venue?.Name,
-      venueAddress: tournament.Venue?.Address,
-      venuePostalCode: tournament.Venue?.PostalCode,
-      venueCity: tournament.Venue?.City,
-      venueState: tournament.Venue?.State,
-      venueCountryCode: tournament.Venue?.CountryCode,
-      venuePhone: tournament.Venue?.Phone,
-      venueWebsite: tournament.Venue?.Website,
-      
-      // Entry dates for tournaments
-      onlineEntryStartDate: tournament.OnlineEntryStartDate ? new Date(tournament.OnlineEntryStartDate) : null,
-      onlineEntryEndDate: tournament.OnlineEntryEndDate ? new Date(tournament.OnlineEntryEndDate) : null,
-      onlineEntryWithdrawalDeadline: tournament.OnlineEntryWithdrawalDeadline ? new Date(tournament.OnlineEntryWithdrawalDeadline) : null,
-      
-      // Prize money for tournaments
-      prizeMoney: tournament.PrizeMoney,
-    };
+    if (tournament.TypeID === TournamentType.Team) {
+      // Create competition event
+      const competition = new CompetitionEvent();
+      competition.visualCode = tournament.Code;
+      competition.name = tournament.Name;
+      competition.season = new Date(tournament.StartDate).getFullYear();
+      competition.lastSync = new Date();
+      competition.openDate = tournament.OnlineEntryStartDate ? new Date(tournament.OnlineEntryStartDate) : new Date(tournament.StartDate);
+      competition.closeDate = tournament.OnlineEntryEndDate ? new Date(tournament.OnlineEntryEndDate) : new Date(tournament.EndDate);
+      competition.official = true;
+      competition.state = this.mapTournamentStatus(tournament.TournamentStatus);
+      competition.country = tournament.CountryCode || 'BEL';
+      competition.slug = this.createSlug(tournament.Name);
 
-    this.logger.debug(`Creating tournament with data:`, tournamentData);
-    
-    // TODO: Insert into database using TypeORM or your ORM of choice
-    // Example:
-    // await this.tournamentRepository.create(tournamentData);
+      this.logger.debug(`Creating competition: ${competition.name}`);
+      await competition.save();
+    } else {
+      // Create tournament event
+      const tournamentEvent = new TournamentEvent();
+      tournamentEvent.visualCode = tournament.Code;
+      tournamentEvent.name = tournament.Name;
+      tournamentEvent.tournamentNumber = tournament.HistoricCode || tournament.Code;
+      tournamentEvent.firstDay = new Date(tournament.StartDate);
+      tournamentEvent.lastSync = new Date();
+      tournamentEvent.openDate = tournament.OnlineEntryStartDate ? new Date(tournament.OnlineEntryStartDate) : new Date(tournament.StartDate);
+      tournamentEvent.closeDate = tournament.OnlineEntryEndDate ? new Date(tournament.OnlineEntryEndDate) : new Date(tournament.EndDate);
+      tournamentEvent.dates = `${tournament.StartDate} - ${tournament.EndDate}`;
+      tournamentEvent.official = true;
+      tournamentEvent.state = this.mapTournamentStatus(tournament.TournamentStatus);
+      tournamentEvent.country = tournament.CountryCode || 'BEL';
+      tournamentEvent.slug = this.createSlug(tournament.Name);
+
+      this.logger.debug(`Creating tournament: ${tournamentEvent.name}`);
+      await tournamentEvent.save();
+    }
   }
 
   private mapTournamentStatus(status: number): string {
@@ -155,5 +159,14 @@ export class TournamentDiscoveryProcessor {
       case 204: return 'league_finished';
       default: return 'unknown';
     }
+  }
+  
+  private createSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
   }
 }

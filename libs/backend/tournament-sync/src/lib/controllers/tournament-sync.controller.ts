@@ -1,23 +1,26 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
-import { TournamentSyncService } from '@app/tournament-sync';
+import { TournamentSyncService } from '../services/tournament-sync.service';
 
-import { AppService } from './app.service';
-
-@Controller()
-export class AppController {
+@Controller('api/v1')
+export class TournamentSyncController {
   constructor(
-    private readonly appService: AppService,
     private readonly tournamentSyncService: TournamentSyncService,
   ) {}
 
   @Get('status')
   async getStatus() {
-    return this.appService.getStatus();
+    // Return tournament sync worker status
+    return {
+      status: 'running',
+      timestamp: new Date().toISOString(),
+      queues: await this.tournamentSyncService.getQueueStats(),
+    };
   }
 
-  @Get('health')
-  async getHealth() {
-    return this.appService.getHealth();
+  @Get('jobs')
+  async getJobs(@Query('limit') limit?: string, @Query('status') status?: string) {
+    const jobLimit = limit ? parseInt(limit, 10) : 20;
+    return this.tournamentSyncService.getRecentJobs(jobLimit, status);
   }
 
   @Post('sync/discovery')
@@ -36,11 +39,5 @@ export class AppController {
   async triggerTournamentSync() {
     await this.tournamentSyncService.queueTournamentStructureSync();
     return { message: 'Tournament structure sync queued' };
-  }
-
-  @Get('jobs')
-  async getJobs(@Query('limit') limit?: string, @Query('status') status?: string) {
-    const jobLimit = limit ? parseInt(limit, 10) : 20;
-    return this.tournamentSyncService.getRecentJobs(jobLimit, status);
   }
 }

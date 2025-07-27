@@ -1,0 +1,155 @@
+@if (!loading()) {
+  @if (this.competition(); as competition) {
+    <app-page-header>
+      <ng-content title>{{ competition.name }} - {{ 'all.competition.subEvents' | translate }}</ng-content>
+      <ng-content subTitle>
+        <div class="info">
+          <div class="sub-text">
+            <ng-container>
+              <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
+            </ng-container>
+            @if (competition.season) {
+              - {{ 'all.competition.season' | translate }} {{ competition.season }}
+            }
+          </div>
+        </div>
+      </ng-content>
+      <ng-content actions> </ng-content>
+    </app-page-header>
+
+    <!-- Sub Events Section -->
+    @if (subEvents().length > 0) {
+      <section class="sub-events">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          @for (subEvent of subEvents(); track subEvent.id) {
+            <div class="rounded-border bg-highlight p-6">
+              <div class="flex items-start justify-between mb-4">
+                <h3 class="font-semibold text-lg text-primary">{{ subEvent.name }}</h3>
+              </div>
+              
+              <div class="space-y-3 text-sm text-muted-color-emphasis mb-4">
+                @if (subEvent.eventType) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-tag text-xs"></i>
+                    <span class="font-medium">{{ 'all.competition.eventType' | translate }}:</span>
+                    <span>{{ subEvent.eventType }}</span>
+                  </div>
+                }
+                
+                @if (subEvent.level) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-chart-line text-xs"></i>
+                    <span class="font-medium">{{ 'all.competition.level' | translate }}:</span>
+                    <span>{{ subEvent.level }}
+                      @if (subEvent.maxLevel && subEvent.maxLevel !== subEvent.level) {
+                        - {{ subEvent.maxLevel }}
+                      }
+                    </span>
+                  </div>
+                }
+                
+                @if (subEvent.minBaseIndex || subEvent.maxBaseIndex) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-calculator text-xs"></i>
+                    <span class="font-medium">Base Index:</span>
+                    <span>
+                      @if (subEvent.minBaseIndex) {
+                        {{ subEvent.minBaseIndex }}
+                      }
+                      @if (subEvent.minBaseIndex && subEvent.maxBaseIndex) {
+                        - 
+                      }
+                      @if (subEvent.maxBaseIndex) {
+                        {{ subEvent.maxBaseIndex }}
+                      }
+                    </span>
+                  </div>
+                }
+              </div>
+
+              <!-- Draws Information -->
+              @if (subEvent.competitionDraws && subEvent.competitionDraws.length > 0) {
+                <div class="border-t pt-4">
+                  <h4 class="font-medium mb-2 flex items-center gap-2">
+                    <i class="pi pi-sitemap text-primary-500"></i>
+                    {{ 'all.competition.draws' | translate }} ({{ subEvent.competitionDraws.length }})
+                  </h4>
+                  
+                  <div class="space-y-2">
+                    @for (draw of subEvent.competitionDraws; track draw.id) {
+                      <a [routerLink]="['/', 'competition', competition.slug, 'sub-events', subEvent.id, 'draws']"
+                         class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline">
+                        <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice:0:8) }}</div>
+                        <div class="text-muted-color-emphasis text-xs flex gap-4">
+                          @if (draw.type) {
+                            <span>{{ draw.type }}</span>
+                          }
+                          @if (draw.size) {
+                            <span>Size: {{ draw.size }}</span>
+                          }
+                          @if (draw.risers) {
+                            <span>↑{{ draw.risers }}</span>
+                          }
+                          @if (draw.fallers) {
+                            <span>↓{{ draw.fallers }}</span>
+                          }
+                        </div>
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (!subEvent.competitionDraws || subEvent.competitionDraws.length === 0) {
+                <div class="mt-4 pt-4 border-t text-center text-sm text-muted-color-emphasis">
+                  <i class="pi pi-info-circle mr-2"></i>
+                  No draws configured for this event yet
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    } @else {
+      <div class="text-center py-12 text-surface-500">
+        <i class="pi pi-list text-4xl mb-4 block"></i>
+        <h3 class="text-lg font-medium mb-2">No Sub Events</h3>
+        <p>This competition doesn't have any sub events configured yet.</p>
+      </div>
+    }
+  }
+} @else {
+  <!-- Loading Skeletons -->
+  <div class="space-y-6">
+    <!-- Header skeleton -->
+    <div class="space-y-2">
+      <p-skeleton width="20rem" height="2rem"></p-skeleton>
+      <p-skeleton width="15rem" height="1rem"></p-skeleton>
+    </div>
+    
+    <!-- Sub events skeletons -->
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="rounded-border bg-highlight p-6 space-y-4">
+          <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+          <div class="space-y-2">
+            <p-skeleton width="8rem" height="1rem"></p-skeleton>
+            <p-skeleton width="6rem" height="1rem"></p-skeleton>
+            <p-skeleton width="10rem" height="1rem"></p-skeleton>
+          </div>
+          <div class="border-t pt-4 space-y-2">
+            <p-skeleton width="6rem" height="1rem"></p-skeleton>
+            <p-skeleton width="100%" height="2rem"></p-skeleton>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}

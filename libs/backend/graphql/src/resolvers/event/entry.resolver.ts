@@ -1,6 +1,6 @@
-import { Entry } from '@app/models';
+import { Entry, Player } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Query, Resolver, ResolveField, Parent } from '@nestjs/graphql';
 import { EntryArgs } from '../../args';
 
 @Resolver(() => Entry)
@@ -27,5 +27,27 @@ export class EntryResolver {
   ): Promise<Entry[]> {
     const args = EntryArgs.toFindManyOptions(inputArgs);
     return Entry.find(args);
+  }
+
+  @ResolveField(() => Player, { nullable: true })
+  async player1(@Parent() entry: Entry): Promise<Player | null> {
+    if (!entry.player1Id) {
+      return null;
+    }
+
+    return Player.findOne({
+      where: { id: entry.player1Id },
+    });
+  }
+
+  @ResolveField(() => Player, { nullable: true })
+  async player2(@Parent() entry: Entry): Promise<Player | null> {
+    if (!entry.player2Id) {
+      return null;
+    }
+
+    return Player.findOne({
+      where: { id: entry.player2Id },
+    });
   }
 }

@@ -1,17 +1,10 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
+import { Entry } from './entry.model';
 
 @ObjectType('Standing', { description: 'Standing position in a competition' })
-@Entity('Standings')
+@Entity('Standings', { schema: 'event' })
 export class Standing extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -27,29 +20,16 @@ export class Standing extends BaseEntity {
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index()
-  declare eventId: string;
-
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index()
-  declare subEventId: string;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ nullable: true })
   @Index()
-  declare playerId?: string;
+  declare entryId?: string;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare teamId?: string;
+  @Field(() => Entry, { nullable: true })
+  @ManyToOne(() => Entry, entry => entry.standings)
+  @JoinColumn({ name: 'entryId' })
+  declare entry?: Relation<Entry>;
 
   @SortableField()
   @WhereField()
@@ -95,4 +75,34 @@ export class Standing extends BaseEntity {
   @WhereField({ nullable: true })
   @Column({ type: 'int', nullable: true })
   declare points?: number;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'int', nullable: true })
+  declare totalPointsWon?: number;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'int', nullable: true })
+  declare totalPointsLost?: number;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'int', nullable: true })
+  declare tied?: number;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'boolean', default: false })
+  declare riser?: boolean;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'boolean', default: false })
+  declare faller?: boolean;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'int', nullable: true })
+  declare size?: number;
 }

@@ -133,8 +133,8 @@ export class TournamentSyncDashboardComponent implements OnInit {
     this.loadingStats.set(true);
     try {
       const statusResponse = await this.tournamentSyncApi.getStatus().toPromise();
-      if (statusResponse?.queue) {
-        this.queueStats.set(statusResponse.queue);
+      if (statusResponse?.queues) {
+        this.queueStats.set(statusResponse.queues);
       }
     } catch (error) {
       this.messageService.add({

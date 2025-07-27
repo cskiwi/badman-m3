@@ -1,11 +1,9 @@
-import { Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { ActivatedRoute, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-// import { RankingSystem } from '@app/models';
 import { isPlatformBrowser } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 
+// TODO: Replace 'any' with the actual RankingSystem type if available
 type RankingSystem = any;
 
 const SYSTEM_QUERY = gql`
@@ -47,13 +45,10 @@ const WATCH_SYSTEM_ID_KEY = 'watch.system.id';
 })
 export class RankingSystemService {
   private readonly apollo = inject(Apollo);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  // NOTE: This service is now fully decoupled from routing context.
+  // If you need to use route/query params, inject ActivatedRoute in your component and pass the required data to the service methods as arguments.
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private queryParams = toSignal(this.route.queryParamMap);
-
-  watchId = computed(() => this.queryParams()?.get('watch'));
 
   // Signals for state management
   private rankingSystemSignal = signal<RankingSystem | null>(null);
@@ -62,23 +57,7 @@ export class RankingSystemService {
   constructor(){
     // Load initial system from sessionStorage
     this.loadInitialSystem();
-
-    effect(() => {
-      if (this.watchId()) {
-        this.watchSystem(this.watchId() as string);
-
-        const queryParams: { [key: string]: string | undefined } = {
-          ...this.route.snapshot.queryParams,
-          watch: undefined,
-        };
-
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams,
-          queryParamsHandling: 'merge',
-        });
-      }
-    });
+    // NOTE: Any effects or navigation logic should be handled in the component, not here.
   }
 
   // Public selectors

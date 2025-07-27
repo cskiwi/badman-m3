@@ -1,0 +1,216 @@
+@if (!loading()) {
+  @if (this.tournament(); as tournament) {
+    @if (this.subEvent(); as subEvent) {
+      @if (this.draw(); as draw) {
+        <app-page-header>
+          <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }} - Standings</ng-content>
+          <ng-content subTitle>
+            <div class="info">
+              <div class="sub-text">
+                <ng-container>
+                  <a [routerLink]="['/', 'tournament', tournament.slug]">{{ tournament.name }}</a>
+                  <span class="mx-2">></span>
+                  <span>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
+                </ng-container>
+              </div>
+            </div>
+          </ng-content>
+          <ng-content actions>
+            <a [routerLink]="['/', 'tournament', tournament.slug]" class="p-button p-button-outlined p-button-sm no-underline">
+              <i class="pi pi-arrow-left mr-2"></i>
+              Back
+            </a>
+          </ng-content>
+        </app-page-header>
+
+        <!-- Draw Information -->
+        <section class="draw-info mb-8">
+          <div class="rounded-border bg-highlight p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="font-semibold text-xl text-primary">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</h3>
+              </div>
+
+              <div class="flex gap-2 text-sm">
+                @if (draw.type) {
+                  <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded">{{ draw.type }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Draw Details -->
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-sm">
+              @if (draw.size) {
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-users text-xs text-muted-color"></i>
+                  <span class="font-medium">Size:</span>
+                  <span>{{ draw.size }}</span>
+                </div>
+              }
+
+              @if (draw.type) {
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-cog text-xs text-muted-color"></i>
+                  <span class="font-medium">Type:</span>
+                  <span>{{ draw.type }}</span>
+                </div>
+              }
+
+              <div class="flex items-center gap-2 text-muted-color-emphasis">
+                <i class="pi pi-calendar text-xs"></i>
+                <span class="text-xs">Match details coming soon</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Standings Section -->
+        @if (standings().length > 0) {
+          <section class="standings">
+            <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
+              <i class="pi pi-chart-bar text-primary-500"></i>
+              Standings
+            </h3>
+
+            <div class="overflow-x-auto">
+              <table class="w-full border-collapse rounded-border bg-highlight overflow-hidden">
+                <thead class="bg-primary text-primary-contrast">
+                  <tr>
+                    <th class="p-3 text-left font-semibold">Position</th>
+                    <th class="p-3 text-left font-semibold">Player/Team</th>
+                    <th class="p-3 text-center font-semibold">Played</th>
+                    <th class="p-3 text-center font-semibold">Won</th>
+                    <th class="p-3 text-center font-semibold">Lost</th>
+                    <th class="p-3 text-center font-semibold">Games</th>
+                    <th class="p-3 text-center font-semibold">Sets</th>
+                    <th class="p-3 text-center font-semibold">Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (standing of standings(); track standing.id) {
+                    <tr class="border-b border-surface-200 hover:bg-highlight-emphasis">
+                      <td class="p-3 font-semibold text-primary">{{ standing.position }}</td>
+                      <td class="p-3">
+                        @if (standing.teamId) {
+                          <span>Team {{ standing.teamId | slice: 0 : 8 }}</span>
+                        } @else if (standing.player1 || standing.player2) {
+                          <div class="flex flex-col gap-1">
+                            @if (standing.player1) {
+                              <span class="font-medium">{{ standing.player1.fullName }}</span>
+                            }
+                            @if (standing.player2) {
+                              <span class="font-medium">{{ standing.player2.fullName }}</span>
+                            }
+                          </div>
+                        } @else if (standing.player1Id || standing.player2Id) {
+                          <div class="flex flex-col gap-1">
+                            @if (standing.player1Id) {
+                              <span class="text-xs text-muted-color">Player 1: {{ standing.player1Id | slice: 0 : 8 }}</span>
+                            }
+                            @if (standing.player2Id) {
+                              <span class="text-xs text-muted-color">Player 2: {{ standing.player2Id | slice: 0 : 8 }}</span>
+                            }
+                          </div>
+                        } @else {
+                          <span>-</span>
+                        }
+                      </td>
+                      <td class="p-3 text-center">{{ standing.played || '-' }}</td>
+                      <td class="p-3 text-center text-green-600 font-medium">{{ standing.won || '-' }}</td>
+                      <td class="p-3 text-center text-red-600 font-medium">{{ standing.lost || '-' }}</td>
+                      <td class="p-3 text-center text-sm">
+                        @if (standing.gamesWon !== null && standing.gamesLost !== null) {
+                          <span>{{ standing.gamesWon }} - {{ standing.gamesLost }}</span>
+                        } @else {
+                          <span>-</span>
+                        }
+                      </td>
+                      <td class="p-3 text-center text-sm">
+                        @if (standing.setsWon !== null && standing.setsLost !== null) {
+                          <span>{{ standing.setsWon }} - {{ standing.setsLost }}</span>
+                        } @else {
+                          <span>-</span>
+                        }
+                      </td>
+                      <td class="p-3 text-center font-semibold">{{ standing.points || '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        } @else {
+          <div class="text-center py-12 text-surface-500">
+            <i class="pi pi-chart-bar text-4xl mb-4 block"></i>
+            <h3 class="text-lg font-medium mb-2">No Standings</h3>
+            <p>This draw doesn't have any standings data yet.</p>
+          </div>
+        }
+      }
+    }
+  }
+} @else {
+  <!-- Loading Skeletons -->
+  <div class="space-y-6">
+    <!-- Header skeleton -->
+    <div class="space-y-2">
+      <p-skeleton width="25rem" height="2rem"></p-skeleton>
+      <p-skeleton width="20rem" height="1rem"></p-skeleton>
+    </div>
+
+    <!-- Draw info skeleton -->
+    <div class="rounded-border bg-highlight p-6 space-y-4">
+      <div class="flex justify-between">
+        <p-skeleton width="15rem" height="1.5rem"></p-skeleton>
+        <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 space-y-2">
+        <p-skeleton width="8rem" height="1rem"></p-skeleton>
+        <p-skeleton width="6rem" height="1rem"></p-skeleton>
+        <p-skeleton width="10rem" height="1rem"></p-skeleton>
+      </div>
+    </div>
+
+    <!-- Standings skeleton -->
+    <div class="space-y-4">
+      <p-skeleton width="8rem" height="1.5rem"></p-skeleton>
+      <div class="rounded-border bg-highlight overflow-hidden">
+        <!-- Table header skeleton -->
+        <div class="bg-primary p-3 flex gap-4">
+          <p-skeleton width="6rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="8rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="5rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+          <p-skeleton width="5rem" height="1rem" class="bg-primary-200"></p-skeleton>
+        </div>
+        <!-- Table rows skeleton -->
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="p-3 border-b border-surface-200 flex gap-4">
+            <p-skeleton width="2rem" height="1rem"></p-skeleton>
+            <div class="flex flex-col gap-1">
+              <p-skeleton width="8rem" height="0.75rem"></p-skeleton>
+              <p-skeleton width="8rem" height="0.75rem"></p-skeleton>
+            </div>
+            <p-skeleton width="3rem" height="1rem"></p-skeleton>
+            <p-skeleton width="3rem" height="1rem"></p-skeleton>
+            <p-skeleton width="3rem" height="1rem"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem"></p-skeleton>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}

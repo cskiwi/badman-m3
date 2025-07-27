@@ -1,0 +1,237 @@
+@if (!loading()) {
+  @if (this.tournament(); as tournament) {
+    <app-page-header>
+      <ng-content title>{{ tournament.name }}</ng-content>
+      <ng-content subTitle>
+        <div class="info">
+          <div class="sub-text">
+            <ng-container>
+              <a [routerLink]="['/', 'tournament', tournament.slug]">{{ tournament.name }}</a>
+            </ng-container>
+            @if (tournament.tournamentNumber) {
+              - {{ tournament.tournamentNumber }}
+            }
+          </div>
+        </div>
+      </ng-content>
+      <ng-content actions> </ng-content>
+    </app-page-header>
+
+    <!-- Tournament Information Section -->
+    <section class="tournament-info">
+      <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+        <i class="pi pi-info-circle text-primary-500"></i>
+        {{ 'all.tournament.information' | translate }}
+      </h3>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- Basic Information -->
+        <div class="rounded-border bg-highlight p-4">
+          <h4 class="font-semibold mb-3 text-lg">{{ 'all.tournament.details' | translate }}</h4>
+          <div class="space-y-2 text-sm">
+            @if (tournament.tournamentNumber) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-hashtag text-muted-color"></i>
+                <span class="font-medium">{{ 'all.tournament.number' | translate }}:</span>
+                <span>{{ tournament.tournamentNumber }}</span>
+              </div>
+            }
+
+            @if (tournament.dates) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-clock text-muted-color"></i>
+                <span class="font-medium">{{ 'all.tournament.dates' | translate }}:</span>
+                <span>
+                  @for (dateStr of tournament.dates.split(','); track $index; let isLast = $last) {
+                    <span>{{ dateStr.trim() | date: 'mediumDate' }}</span>
+                    @if (!isLast) {
+                      <span>, </span>
+                    }
+                  }
+                </span>
+              </div>
+            }
+
+            @if (tournament.state || tournament.country) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-map-marker text-muted-color"></i>
+                <span class="font-medium">{{ 'all.tournament.location' | translate }}:</span>
+                <span>
+                  @if (tournament.state) {
+                    {{ tournament.state }}
+                  }
+                  @if (tournament.state && tournament.country) {
+                    ,
+                  }
+                  @if (tournament.country) {
+                    {{ tournament.country }}
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Registration Information -->
+        <div class="rounded-border bg-highlight p-4">
+          <h4 class="font-semibold mb-3 text-lg">{{ 'all.tournament.registration' | translate }}</h4>
+          <div class="space-y-2 text-sm">
+            @if (tournament.openDate) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-calendar-plus text-muted-color"></i>
+                <span class="font-medium">{{ 'all.tournament.openDate' | translate }}:</span>
+                <span>{{ tournament.openDate | date: 'medium' }}</span>
+              </div>
+            }
+
+            @if (tournament.closeDate) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-calendar-minus text-muted-color"></i>
+                <span class="font-medium">{{ 'all.tournament.closeDate' | translate }}:</span>
+                <span>{{ tournament.closeDate | date: 'medium' }}</span>
+              </div>
+            }
+
+            <div class="flex items-center gap-2">
+              <i class="pi pi-shield text-muted-color"></i>
+              <span class="font-medium">{{ 'all.tournament.official' | translate }}:</span>
+              <span [class]="tournament.official ? 'text-green-600' : 'text-orange-600'">
+                {{ (tournament.official ? 'all.common.yes' : 'all.common.no') | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tournament Events Section (Grouped by type) -->
+    @if (groupedSubEvents().length > 0) {
+      <section class="tournament-events">
+        <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+          <i class="pi pi-list text-primary-500"></i>
+          {{ 'all.tournament.events' | translate }}
+        </h3>
+
+        <!-- Quick Scroll Buttons -->
+        <div class="flex flex-wrap gap-2 mb-6">
+          @for (group of groupedSubEvents(); track group.type) {
+            <a
+              (click)="scrollToGroup(group.type)"
+              class="px-3 py-1 rounded bg-primary-100 text-primary-700 hover:bg-primary-200 transition-colors text-sm font-medium cursor-pointer no-underline"
+              [attr.aria-label]="group.label | translate"
+              style="user-select: none;"
+            >
+              {{ group.label | translate }}
+            </a>
+          }
+        </div>
+
+        @for (group of groupedSubEvents(); track group.type) {
+          <div class="mb-8" [attr.id]="'group-' + group.type">
+            <!-- Group Header -->
+            <div class="flex items-center gap-3 mb-4">
+              <h4 class="text-lg font-semibold text-color">{{ group.label | translate }}</h4>
+              <div class="flex-1 h-px bg-surface-200"></div>
+            </div>
+
+            <!-- SubEvents Grid -->
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              @for (subEvent of group.events; track subEvent.id) {
+                <div class="rounded-border bg-highlight p-6">
+                  <div class="flex items-start justify-between">
+                    <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
+                  </div>
+
+                  <!-- Draws Information -->
+                  @if (subEvent.drawTournaments && subEvent.drawTournaments.length > 0) {
+                    <h5 class="font-medium mb-2 flex items-center gap-2">
+                      <i class="pi pi-sitemap text-primary-500"></i>
+                      {{ 'all.tournament.draws' | translate }} ({{ subEvent.drawTournaments.length }})
+                    </h5>
+
+                    <div class="space-y-2">
+                      @for (draw of subEvent.drawTournaments; track draw.id) {
+                        <a
+                          [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
+                          class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
+                        >
+                          <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
+                          <div class="text-muted-color-emphasis text-xs flex gap-4">
+                            @if (draw.type) {
+                              <span>{{ draw.type }}</span>
+                            }
+                            @if (draw.size) {
+                              <span>Size: {{ draw.size }}</span>
+                            }
+                          </div>
+                        </a>
+                      }
+                    </div>
+                  }
+
+                  @if (!subEvent.drawTournaments || subEvent.drawTournaments.length === 0) {
+                    <div class="mt-4 pt-4 text-center text-sm text-muted-color-emphasis">
+                      <i class="pi pi-info-circle mr-2"></i>
+                      No draws configured for this event yet
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </section>
+    }
+  }
+} @else {
+  <!-- Loading Skeletons -->
+  <div class="space-y-6">
+    <!-- Header skeleton -->
+    <div class="space-y-2">
+      <p-skeleton width="20rem" height="2rem"></p-skeleton>
+      <p-skeleton width="15rem" height="1rem"></p-skeleton>
+    </div>
+
+    <!-- Tournament info skeletons -->
+    <div class="grid gap-6 md:grid-cols-2">
+      @for (i of [1, 2]; track i) {
+        <div class="rounded-border bg-highlight p-4 space-y-3">
+          <p-skeleton width="8rem" height="1.5rem"></p-skeleton>
+          <div class="space-y-2">
+            <p-skeleton width="100%" height="1rem"></p-skeleton>
+            <p-skeleton width="80%" height="1rem"></p-skeleton>
+            <p-skeleton width="60%" height="1rem"></p-skeleton>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Events skeletons -->
+    <div class="space-y-4">
+      <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="rounded-border bg-highlight p-6 space-y-4">
+            <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+            <div class="space-y-2">
+              <p-skeleton width="8rem" height="1rem"></p-skeleton>
+              <p-skeleton width="6rem" height="1rem"></p-skeleton>
+              <p-skeleton width="10rem" height="1rem"></p-skeleton>
+            </div>
+            <div class="border-t pt-4 space-y-2">
+              <p-skeleton width="6rem" height="1rem"></p-skeleton>
+              <p-skeleton width="100%" height="2rem"></p-skeleton>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}

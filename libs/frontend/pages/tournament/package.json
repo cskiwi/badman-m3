@@ -1,0 +1,16 @@
+{
+  "name": "@app/frontend-pages-tournament",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@app/frontend-modules-seo": "0.0.1",
+    "@app/frontend-components": "0.0.1",
+    "@app/models": "0.0.1",
+    "@angular/core": "20.1.0",
+    "@angular/router": "20.1.0",
+    "@ngx-translate/core": "^16.0.4",
+    "ngxtension": "^5.1.0",
+    "primeng": "^20.0.0-rc.3",
+    "@angular/forms": "20.1.0"
+  },
+  "sideEffects": false
+}

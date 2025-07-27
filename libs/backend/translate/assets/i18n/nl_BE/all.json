@@ -1,150 +1,97 @@
 {
-  "common": {
-    "save": "Opslaan",
-    "cancel": "Annuleren",
-    "season": "Seizoen",
-    "selectSeason": "Selecteer seizoen"
-  },
-  "days": {
-    "monday": "Maandag",
-    "tuesday": "Dinsdag",
-    "wednesday": "Woensdag",
-    "thursday": "Donderdag",
-    "friday": "Vrijdag",
-    "saturday": "Zaterdag",
-    "sunday": "Zondag"
-  },
-  "team": {
-    "edit": {
-      "title": "Team bewerken",
-      "basic": {
-        "title": "Basisinformatie"
+  "admin": {
+    "accessRequired": "Admin toegang vereist",
+    "noPermission": "Je hebt geen toestemming om deze pagina te bekijken.",
+    "panel": {
+      "information": {
+        "availableTypes": "Beschikbare types",
+        "title": "Informatie"
       },
-      "name": {
-        "label": "Teamnaam",
-        "placeholder": {
-          "text": "Voer teamnaam in"
-        }
+      "searchIndex": {
+        "description": "Beheer zoekindexering operaties",
+        "selectAll": "Alles selecteren",
+        "selectNone": "Niets selecteren",
+        "selectTypes": "Selecteer types om te indexeren",
+        "startIndexing": "Indexering starten",
+        "title": "Zoekindex beheer"
       },
-      "abbreviation": {
-        "label": "Afkorting",
-        "placeholder": {
-          "text": "Voer afkorting in"
-        }
-      },
-      "season": {
-        "label": "Seizoen",
-        "placeholder": {
-          "text": "Selecteer seizoen"
-        }
-      },
-      "teamNumber": {
-        "label": "Teamnummer",
-        "placeholder": {
-          "text": "Voer teamnummer in"
-        }
-      },
-      "contact": {
-        "title": "Contactgegevens"
-      },
-      "email": {
-        "label": "E-mail",
-        "placeholder": {
-          "text": "Voer team e-mail in"
-        }
-      },
-      "phone": {
-        "label": "Telefoon",
-        "placeholder": {
-          "text": "Voer telefoonnummer in"
-        }
-      },
-      "preferences": {
-        "title": "Teamvoorkeuren"
-      },
-      "preferredTime": {
-        "label": "Voorkeur speeltijd",
-        "placeholder": {
-          "text": "Selecteer voorkeurstijd"
-        }
-      },
-      "preferredDay": {
-        "label": "Voorkeur speeldag",
-        "placeholder": {
-          "text": "Selecteer voorkeursdag"
-        }
-      },
-      "type": {
-        "label": "Teamtype",
-        "placeholder": {
-          "text": "Selecteer teamtype"
-        }
-      },
-      "members": {
-        "title": "Teamleden",
-        "add": "Lid toevoegen",
-        "player": "Speler",
-        "type": "Type",
-        "actions": "Acties",
-        "noPlayersFound": "Geen spelers gevonden"
-      },
-      "membershipType": {
-        "regular": "Regulier",
-        "backup": "Reserve"
-      },
-      "captain": {
-        "label": "Teamkapitein",
-        "placeholder": {
-          "text": "Selecteer kapitein"
-        }
-      },
-      "basePlayers": "Spelers",
-      "errors": {
-        "loadPlayers": "Fout bij laden van beschikbare spelers"
-      }
-    },
-    "type": {
-      "m": "Heren",
-      "f": "Dames",
-      "mx": "Gemengd",
-      "national": "Nationaal",
-      "mix": "Gemengd",
-      "men": "Heren",
-      "women": "Dames",
-      "youth": "Jeugd"
-    },
-    "overview": {
-      "title": "Teams Overzicht"
-    },
-    "captain": "Kapitein",
-    "players": "spelers",
-    "noTeams": "Geen teams gevonden voor dit seizoen"
-  },
-  "clubs": {
-    "search": "Zoek club",
-    "membershipType": {
-      "normal": "Normaal",
-      "loan": "Uitlening"
+      "title": "Admin Paneel"
     }
   },
+  "clubs": {
+    "membershipType": {
+      "loan": "Uitlening",
+      "normal": "Normaal"
+    },
+    "search": "Zoek club"
+  },
+  "common": {
+    "cancel": "Annuleren",
+    "no": "Nee",
+    "save": "Opslaan",
+    "season": "Seizoen",
+    "selectSeason": "Selecteer seizoen",
+    "viewAll": "Bekijk Alle",
+    "yes": "Ja"
+  },
+  "competition": {
+    "changeClosePeriod1": "Wijzigingen Sluiten (Periode 1)",
+    "changeClosePeriod2": "Wijzigingen Sluiten (Periode 2)",
+    "changeOpenDate": "Team Wijzigingen Open",
+    "closeDate": "Inschrijvingen Sluiten",
+    "dates": "Belangrijke Data",
+    "details": "Competitie Details",
+    "draws": "Reeks",
+    "encounters": "Ontmoetingen",
+    "eventType": "Event Type",
+    "information": "Competitie Informatie",
+    "level": "Niveau",
+    "location": "Locatie",
+    "official": "Officiële Competitie",
+    "openDate": "Inschrijvingen Open",
+    "season": "Seizoen",
+    "subEvents": "Reeksen",
+    "teams": "Teams",
+    "type": "Type",
+    "types": {
+      "F": "",
+      "M": "",
+      "men": "Mannen competitie",
+      "mix": "Gemengde competitie",
+      "MX": "",
+      "other": "Andere",
+      "Other": "",
+      "women": "Vrouwen competitie"
+    },
+    "visualCode": "Visuele Code"
+  },
+  "days": {
+    "friday": "Vrijdag",
+    "monday": "Maandag",
+    "saturday": "Zaterdag",
+    "sunday": "Zondag",
+    "thursday": "Donderdag",
+    "tuesday": "Dinsdag",
+    "wednesday": "Woensdag"
+  },
   "game": {
+    "common": {
+      "loadMore": "Meer wedstrijden laden",
+      "pts": "pnt",
+      "set": "Set"
+    },
     "recent": {
-      "title": "Recente ontmoetingen",
-      "noGamesFound": "Geen recente wedstrijden gevonden",
       "noGamesDescription": "Dit team heeft nog geen wedstrijden gespeeld.",
-      "noPlayerGamesDescription": "Deze speler heeft nog geen wedstrijden gespeeld."
+      "noGamesFound": "Geen recente wedstrijden gevonden",
+      "noPlayerGamesDescription": "Deze speler heeft nog geen wedstrijden gespeeld.",
+      "title": "Recente ontmoetingen"
     },
     "upcoming": {
-      "title": "Komende ontmoetingen",
-      "homeTeam": "Thuisteam",
       "awayTeam": "Uitteam",
+      "homeTeam": "Thuisteam",
+      "noGamesDescription": "Deze speler heeft geen geplande wedstrijden.",
       "noGamesFound": "Geen komende wedstrijden gevonden",
-      "noGamesDescription": "Deze speler heeft geen geplande wedstrijden."
-    },
-    "common": {
-      "pts": "pnt",
-      "set": "Set",
-      "loadMore": "Meer wedstrijden laden"
+      "title": "Komende ontmoetingen"
     }
   },
   "head-to-head": {
@@ -196,6 +143,88 @@
     "win-rate": "Win percentage",
     "win-rate-against": "Winpercentage tegen"
   },
+  "navigation": {
+    "clubs": "Clubs",
+    "competitions": "Competities",
+    "home": "Home",
+    "login": "Inloggen",
+    "players": "Spelers"
+  },
+  "player": {
+    "edit": {
+      "actions": {
+        "cancel": "Annuleren",
+        "save-all": "Alle wijzigingen opslaan",
+        "save-current": "Huidige tabblad opslaan"
+      },
+      "claims": {
+        "actions": {
+          "cancel": "Annuleren",
+          "save": "Wijzigingen opslaan",
+          "select-all": "Alles selecteren",
+          "select-none": "Niets selecteren"
+        },
+        "description": "Selecteer de globale rechten die je aan deze speler wilt toekennen. Deze rechten gelden voor het hele systeem.",
+        "messages": {
+          "loading": "Speler- en rechtengegevens laden...",
+          "no-claims": "Geen globale rechten beschikbaar",
+          "no-permission": "Je hebt geen toestemming om spelerrechten te bewerken",
+          "saving": "Wijzigingen opslaan..."
+        },
+        "subtitle": "Beheer globale rechten voor deze speler",
+        "title": "Rechten bewerken"
+      },
+      "messages": {
+        "loading": "Spelergegevens laden...",
+        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen"
+      },
+      "profile": {
+        "birthDate": "Geboortedatum",
+        "birthDate.placeholder": "Selecteer geboortedatum",
+        "competition": {
+          "title": "Competitie-instellingen"
+        },
+        "competitionPlayer": "Competitiespeler",
+        "competitionPlayer.description": "Schakel deze speler in om deel te nemen aan competities en toernooien.",
+        "contact": {
+          "title": "Contactgegevens"
+        },
+        "description": "Spelerprofiel informatie en instellingen bijwerken.",
+        "editable": "bewerkbaar",
+        "email": "E-mail",
+        "email.invalid": "Voer een geldig e-mailadres in",
+        "email.placeholder": "Voer e-mailadres in",
+        "firstName": "Voornaam",
+        "firstName.placeholder": "Voer voornaam in",
+        "firstName.required": "Voornaam is verplicht",
+        "gender": "Geslacht",
+        "gender.placeholder": "Selecteer geslacht",
+        "lastName": "Achternaam",
+        "lastName.placeholder": "Voer achternaam in",
+        "lastName.required": "Achternaam is verplicht",
+        "messages": {
+          "saving": "Profielwijzigingen opslaan..."
+        },
+        "permissions": {
+          "canEditAdmin": "Je kunt administratieve velden bewerken (competitie-instellingen)",
+          "canEditContact": "Je kunt contactgegevens bewerken (e-mail, telefoon)",
+          "description": "Je kunt bepaalde velden bewerken op basis van je rechten:",
+          "title": "Bewerkingsrechten"
+        },
+        "personal": {
+          "title": "Persoonlijke informatie"
+        },
+        "phone": "Telefoon",
+        "phone.placeholder": "Voer telefoonnummer in"
+      },
+      "subtitle": "Spelerinformatie en rechten bijwerken",
+      "tabs": {
+        "claims": "Rechten",
+        "profile": "Profiel"
+      },
+      "title": "Speler bewerken"
+    }
+  },
   "players": {
     "my-club": "Mijn club",
     "my-clubs": "Mijn clubs",
@@ -218,6 +247,10 @@
       "upgrade": "Promotie"
     }
   },
+  "search": {
+    "noResults": "Geen resultaten gevonden",
+    "results": "Zoekresultaten"
+  },
   "settings": {
     "general": {
       "title": "Algemeen"
@@ -236,187 +269,214 @@
       "refresh": "Nu vernieuwen"
     }
   },
-  "player": {
+  "team": {
+    "captain": "Kapitein",
     "edit": {
-      "title": "Speler bewerken",
-      "subtitle": "Spelerinformatie en rechten bijwerken",
-      "actions": {
-        "save-all": "Alle wijzigingen opslaan",
-        "save-current": "Huidige tabblad opslaan",
-        "cancel": "Annuleren"
-      },
-      "tabs": {
-        "profile": "Profiel",
-        "claims": "Rechten"
-      },
-      "messages": {
-        "loading": "Spelergegevens laden...",
-        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen"
-      },
-      "claims": {
-        "title": "Rechten bewerken",
-        "subtitle": "Beheer globale rechten voor deze speler",
-        "description": "Selecteer de globale rechten die je aan deze speler wilt toekennen. Deze rechten gelden voor het hele systeem.",
-        "actions": {
-          "select-all": "Alles selecteren",
-          "select-none": "Niets selecteren",
-          "save": "Wijzigingen opslaan",
-          "cancel": "Annuleren"
-        },
-        "messages": {
-          "no-claims": "Geen globale rechten beschikbaar",
-          "no-permission": "Je hebt geen toestemming om spelerrechten te bewerken",
-          "saving": "Wijzigingen opslaan...",
-          "loading": "Speler- en rechtengegevens laden..."
+      "abbreviation": {
+        "label": "Afkorting",
+        "placeholder": {
+          "text": "Voer afkorting in"
         }
       },
-      "profile": {
-        "description": "Spelerprofiel informatie en instellingen bijwerken.",
-        "personal": {
-          "title": "Persoonlijke informatie"
-        },
-        "firstName": "Voornaam",
-        "firstName.placeholder": "Voer voornaam in",
-        "firstName.required": "Voornaam is verplicht",
-        "lastName": "Achternaam",
-        "lastName.placeholder": "Voer achternaam in",
-        "lastName.required": "Achternaam is verplicht",
-        "gender": "Geslacht",
-        "gender.placeholder": "Selecteer geslacht",
-        "birthDate": "Geboortedatum",
-        "birthDate.placeholder": "Selecteer geboortedatum",
-        "contact": {
-          "title": "Contactgegevens"
-        },
-        "email": "E-mail",
-        "email.placeholder": "Voer e-mailadres in",
-        "email.invalid": "Voer een geldig e-mailadres in",
-        "phone": "Telefoon",
-        "phone.placeholder": "Voer telefoonnummer in",
-        "editable": "bewerkbaar",
-        "competition": {
-          "title": "Competitie-instellingen"
-        },
-        "competitionPlayer": "Competitiespeler",
-        "competitionPlayer.description": "Schakel deze speler in om deel te nemen aan competities en toernooien.",
-        "permissions": {
-          "title": "Bewerkingsrechten",
-          "description": "Je kunt bepaalde velden bewerken op basis van je rechten:",
-          "canEditContact": "Je kunt contactgegevens bewerken (e-mail, telefoon)",
-          "canEditAdmin": "Je kunt administratieve velden bewerken (competitie-instellingen)"
-        },
-        "messages": {
-          "saving": "Profielwijzigingen opslaan..."
+      "basePlayers": "Spelers",
+      "basic": {
+        "title": "Basisinformatie"
+      },
+      "captain": {
+        "label": "Teamkapitein",
+        "placeholder": {
+          "text": "Selecteer kapitein"
+        }
+      },
+      "contact": {
+        "title": "Contactgegevens"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": {
+          "text": "Voer team e-mail in"
+        }
+      },
+      "errors": {
+        "loadPlayers": "Fout bij laden van beschikbare spelers"
+      },
+      "members": {
+        "actions": "Acties",
+        "add": "Lid toevoegen",
+        "noPlayersFound": "Geen spelers gevonden",
+        "player": "Speler",
+        "title": "Teamleden",
+        "type": "Type"
+      },
+      "membershipType": {
+        "backup": "Reserve",
+        "regular": "Regulier"
+      },
+      "name": {
+        "label": "Teamnaam",
+        "placeholder": {
+          "text": "Voer teamnaam in"
+        }
+      },
+      "phone": {
+        "label": "Telefoon",
+        "placeholder": {
+          "text": "Voer telefoonnummer in"
+        }
+      },
+      "preferences": {
+        "title": "Teamvoorkeuren"
+      },
+      "preferredDay": {
+        "label": "Voorkeur speeldag",
+        "placeholder": {
+          "text": "Selecteer voorkeursdag"
+        }
+      },
+      "preferredTime": {
+        "label": "Voorkeur speeltijd",
+        "placeholder": {
+          "text": "Selecteer voorkeurstijd"
+        }
+      },
+      "season": {
+        "label": "Seizoen",
+        "placeholder": {
+          "text": "Selecteer seizoen"
+        }
+      },
+      "teamNumber": {
+        "label": "Teamnummer",
+        "placeholder": {
+          "text": "Voer teamnummer in"
+        }
+      },
+      "title": "Team bewerken",
+      "type": {
+        "label": "Teamtype",
+        "placeholder": {
+          "text": "Selecteer teamtype"
         }
       }
+    },
+    "noTeams": "Geen teams gevonden voor dit seizoen",
+    "overview": {
+      "title": "Teams Overzicht"
+    },
+    "players": "spelers",
+    "type": {
+      "f": "Dames",
+      "m": "Heren",
+      "men": "Heren",
+      "mix": "Gemengd",
+      "mx": "Gemengd",
+      "national": "Nationaal",
+      "women": "Dames",
+      "youth": "Jeugd"
     }
   },
-  "navigation": {
-    "home": "Home",
-    "players": "Spelers",
-    "clubs": "Clubs",
-    "competitions": "Competities",
-    "login": "Inloggen"
-  },
-  "search": {
-    "results": "Zoekresultaten",
-    "noResults": "Geen resultaten gevonden"
-  },
-  "admin": {
-    "accessRequired": "Admin toegang vereist",
-    "noPermission": "Je hebt geen toestemming om deze pagina te bekijken.",
-    "panel": {
-      "title": "Admin Paneel",
-      "searchIndex": {
-        "title": "Zoekindex beheer",
-        "description": "Beheer zoekindexering operaties",
-        "selectTypes": "Selecteer types om te indexeren",
-        "selectAll": "Alles selecteren",
-        "selectNone": "Niets selecteren",
-        "startIndexing": "Indexering starten"
-      },
-      "information": {
-        "title": "Informatie",
-        "availableTypes": "Beschikbare types"
-      }
-    }
+  "tournament": {
+    "closeDate": "Inschrijvingen Sluiten",
+    "dates": "Toernooi Data",
+    "details": "Toernooi Details",
+    "draws": "Reeks",
+    "entries": "Inschrijvingen",
+    "events": "Toernooi Events",
+    "eventType": "Event Type",
+    "firstDay": "Eerste Dag",
+    "gameType": "Spel Type",
+    "information": "Toernooi Informatie",
+    "level": "Niveau",
+    "location": "Locatie",
+    "matches": "Wedstrijden",
+    "number": "Toernooi Nummer",
+    "official": "Officieel Toernooi",
+    "openDate": "Inschrijvingen Open",
+    "registration": "Inschrijving Informatie",
+    "types": {
+      "men": "Heren",
+      "mix": "Gemengd",
+      "other": "Andere",
+      "women": "Dames"
+    },
+    "visualCode": "Visuele Code"
   },
   "tournamentSync": {
-    "title": "TournamentSyncAdmin werkt!",
     "dashboard": {
-      "title": "Toernooi Sync Dashboard",
       "actions": {
         "discoverySync": "Discovery Sync",
         "manualSync": "Handmatige Sync"
       },
       "queue": {
-        "title": "Wachtrij Statistieken",
         "status": {
-          "waiting": "Wachtend",
           "active": "Actief",
           "completed": "Voltooid",
-          "failed": "Mislukt"
-        }
+          "failed": "Mislukt",
+          "waiting": "Wachtend"
+        },
+        "title": "Wachtrij Statistieken"
       },
       "recentJobs": {
-        "title": "Recente Sync Jobs",
         "headers": {
-          "jobId": "Job ID",
-          "type": "Type",
-          "status": "Status",
-          "progress": "Voortgang",
+          "actions": "Acties",
           "created": "Aangemaakt",
           "duration": "Duur",
-          "actions": "Acties"
-        },
-        "noJobs": "Geen recente jobs gevonden"
-      },
-      "tournaments": {
-        "title": "Toernooien & Competities",
-        "search": "Zoek toernooien...",
-        "allTypes": "Alle Types",
-        "allStatuses": "Alle Statussen",
-        "headers": {
-          "name": "Naam",
-          "type": "Type",
+          "jobId": "Job ID",
+          "progress": "Voortgang",
           "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "Geen recente jobs gevonden",
+        "title": "Recente Sync Jobs"
+      },
+      "title": "Toernooi Sync Dashboard",
+      "tournaments": {
+        "allStatuses": "Alle Statussen",
+        "allTypes": "Alle Types",
+        "headers": {
+          "actions": "Acties",
           "dates": "Data",
           "lastSync": "Laatste Sync",
+          "name": "Naam",
+          "status": "Status",
           "syncStatus": "Sync Status",
-          "actions": "Acties"
+          "type": "Type"
         },
-        "noTournaments": "Geen toernooien gevonden",
         "never": "Nooit",
+        "noTournaments": "Geen toernooien gevonden",
+        "search": "Zoek toernooien...",
+        "title": "Toernooien & Competities",
         "tooltips": {
-          "syncStructure": "Sync Structuur",
+          "manage": "Beheren",
           "syncGames": "Sync Wedstrijden",
-          "manage": "Beheren"
+          "syncStructure": "Sync Structuur"
         }
       }
     },
     "teamMatching": {
-      "title": "Team Matching",
       "refresh": "Vernieuwen",
       "statistics": {
-        "title": "Matching Statistieken",
-        "pendingReview": "Wachten op beoordeling",
         "highConfidence": "Hoog vertrouwen",
-        "mediumConfidence": "Gemiddeld vertrouwen",
         "lowConfidence": "Laag vertrouwen",
         "matched": "Gematcht",
-        "rejected": "Afgewezen"
+        "mediumConfidence": "Gemiddeld vertrouwen",
+        "pendingReview": "Wachten op beoordeling",
+        "rejected": "Afgewezen",
+        "title": "Matching Statistieken"
       },
+      "title": "Team Matching",
       "unmatchedTeams": {
-        "title": "Ongematched Teams",
         "headers": {
-          "teamInfo": "Team Info",
-          "tournament": "Toernooi",
+          "actions": "Acties",
           "bestMatch": "Beste Match",
           "confidence": "Vertrouwen",
           "status": "Status",
-          "actions": "Acties"
-        }
+          "teamInfo": "Team Info",
+          "tournament": "Toernooi"
+        },
+        "title": "Ongematched Teams"
       }
-    }
+    },
+    "title": "TournamentSyncAdmin werkt!"
   }
 }

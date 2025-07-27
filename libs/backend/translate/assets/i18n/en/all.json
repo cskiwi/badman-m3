@@ -1,150 +1,97 @@
 {
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "season": "Season",
-    "selectSeason": "Select season"
-  },
-  "days": {
-    "monday": "Monday",
-    "tuesday": "Tuesday", 
-    "wednesday": "Wednesday",
-    "thursday": "Thursday",
-    "friday": "Friday",
-    "saturday": "Saturday",
-    "sunday": "Sunday"
-  },
-  "team": {
-    "edit": {
-      "title": "Edit Team",
-      "basic": {
-        "title": "Basic Information"
+  "admin": {
+    "accessRequired": "Admin Access Required",
+    "noPermission": "You do not have permission to access this page.",
+    "panel": {
+      "information": {
+        "availableTypes": "Available Types",
+        "title": "Information"
       },
-      "name": {
-        "label": "Team Name",
-        "placeholder": {
-          "text": "Enter team name"
-        }
+      "searchIndex": {
+        "description": "Manage search indexing operations",
+        "selectAll": "Select All",
+        "selectNone": "Select None",
+        "selectTypes": "Select Types to Index",
+        "startIndexing": "Start Indexing",
+        "title": "Search Index Management"
       },
-      "abbreviation": {
-        "label": "Abbreviation", 
-        "placeholder": {
-          "text": "Enter abbreviation"
-        }
-      },
-      "season": {
-        "label": "Season",
-        "placeholder": {
-          "text": "Select season"
-        }
-      },
-      "teamNumber": {
-        "label": "Team Number",
-        "placeholder": {
-          "text": "Enter team number"
-        }
-      },
-      "contact": {
-        "title": "Contact Information"
-      },
-      "email": {
-        "label": "Email",
-        "placeholder": {
-          "text": "Enter team email"
-        }
-      },
-      "phone": {
-        "label": "Phone",
-        "placeholder": {
-          "text": "Enter phone number"
-        }
-      },
-      "preferences": {
-        "title": "Team Preferences"
-      },
-      "preferredTime": {
-        "label": "Preferred Play Time",
-        "placeholder": {
-          "text": "Select preferred time"
-        }
-      },
-      "preferredDay": {
-        "label": "Preferred Play Day",
-        "placeholder": {
-          "text": "Select preferred day"
-        }
-      },
-      "type": {
-        "label": "Team Type",
-        "placeholder": {
-          "text": "Select team type"
-        }
-      },
-      "members": {
-        "title": "Team Members",
-        "add": "Add Member",
-        "player": "Player",
-        "type": "Type",
-        "actions": "Actions",
-        "noPlayersFound": "No players found"
-      },
-      "membershipType": {
-        "regular": "Regular",
-        "backup": "Backup"
-      },
-      "captain": {
-        "label": "Team Captain",
-        "placeholder": {
-          "text": "Select team captain"
-        }
-      },
-      "basePlayers": "Players",
-      "errors": {
-        "loadPlayers": "Failed to load available players"
-      }
-    },
-    "type": {
-      "m": "Men's",
-      "f": "Women's", 
-      "mx": "Mixed",
-      "national": "National",
-      "mix": "Mixed",
-      "men": "Men's", 
-      "women": "Women's",
-      "youth": "Youth"
-    },
-    "overview": {
-      "title": "Teams Overview"
-    },
-    "captain": "Captain",
-    "players": "players",
-    "noTeams": "No teams found for this season"
-  },
-  "clubs": {
-    "search": "Find a club",
-    "membershipType": {
-      "normal": "Normal",
-      "loan": "Loan"
+      "title": "Admin Panel"
     }
   },
+  "clubs": {
+    "membershipType": {
+      "loan": "Loan",
+      "normal": "Normal"
+    },
+    "search": "Find a club"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "no": "No",
+    "save": "Save",
+    "season": "Season",
+    "selectSeason": "Select season",
+    "viewAll": "View All",
+    "yes": "Yes"
+  },
+  "competition": {
+    "changeClosePeriod1": "Changes Close (Period 1)",
+    "changeClosePeriod2": "Changes Close (Period 2)",
+    "changeOpenDate": "Team Changes Open",
+    "closeDate": "Registration Closes",
+    "dates": "Important Dates",
+    "details": "Competition Details",
+    "draws": "Draws",
+    "encounters": "Encounters",
+    "eventType": "Event Type",
+    "information": "Competition Information",
+    "level": "Level",
+    "location": "Location",
+    "official": "Official Competition",
+    "openDate": "Registration Opens",
+    "season": "Season",
+    "subEvents": "Series",
+    "teams": "Teams",
+    "type": "Type",
+    "types": {
+      "F": "Women's singles or doubles",
+      "M": "Men's singles or doubles",
+      "men": "Men's competition",
+      "mix": "Mixed competition",
+      "MX": "Mixed doubles",
+      "other": "Other",
+      "Other": "Other type",
+      "women": "Women's competition"
+    },
+    "visualCode": "Visual Code"
+  },
+  "days": {
+    "friday": "Friday",
+    "monday": "Monday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "thursday": "Thursday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday"
+  },
   "game": {
+    "common": {
+      "loadMore": "Load More Games",
+      "pts": "pts",
+      "set": "Set"
+    },
     "recent": {
-      "title": "Recent games",
-      "noGamesFound": "No recent games found",
       "noGamesDescription": "This team hasn't played any games recently.",
-      "noPlayerGamesDescription": "This player hasn't played any games recently."
+      "noGamesFound": "No recent games found",
+      "noPlayerGamesDescription": "This player hasn't played any games recently.",
+      "title": "Recent games"
     },
     "upcoming": {
-      "title": "Upcoming games",
-      "homeTeam": "Home Team",
       "awayTeam": "Away Team",
+      "homeTeam": "Home Team",
+      "noGamesDescription": "This player has no scheduled games.",
       "noGamesFound": "No upcoming games found",
-      "noGamesDescription": "This player has no scheduled games."
-    },
-    "common": {
-      "pts": "pts",
-      "set": "Set",
-      "loadMore": "Load More Games"
+      "title": "Upcoming games"
     }
   },
   "head-to-head": {
@@ -159,7 +106,7 @@
     },
     "filters": {
       "all": "All",
-      "club": "Club", 
+      "club": "Club",
       "competition": "Competition",
       "double": "Double",
       "games": "Min matches",
@@ -196,10 +143,92 @@
     "win-rate": "Win percentage",
     "win-rate-against": "Win rate against"
   },
+  "navigation": {
+    "clubs": "Clubs",
+    "competitions": "Competitions",
+    "home": "Home",
+    "login": "Log in",
+    "players": "Players"
+  },
+  "player": {
+    "edit": {
+      "actions": {
+        "cancel": "Cancel",
+        "save-all": "Save All Changes",
+        "save-current": "Save Current Tab"
+      },
+      "claims": {
+        "actions": {
+          "cancel": "Cancel",
+          "save": "Save Changes",
+          "select-all": "Select All",
+          "select-none": "Select None"
+        },
+        "description": "Select the global claims you want to assign to this player. These permissions apply across the entire system.",
+        "messages": {
+          "loading": "Loading player and claims data...",
+          "no-claims": "No global claims available",
+          "no-permission": "You do not have permission to edit player claims",
+          "saving": "Saving changes..."
+        },
+        "subtitle": "Manage global permissions for this player",
+        "title": "Edit Claims"
+      },
+      "messages": {
+        "loading": "Loading player data...",
+        "unsaved-changes": "You have unsaved changes"
+      },
+      "profile": {
+        "birthDate": "Birth Date",
+        "birthDate.placeholder": "Select birth date",
+        "competition": {
+          "title": "Competition Settings"
+        },
+        "competitionPlayer": "Competition Player",
+        "competitionPlayer.description": "Enable this player to participate in competitions and tournaments.",
+        "contact": {
+          "title": "Contact Information"
+        },
+        "description": "Update player profile information and settings.",
+        "editable": "editable",
+        "email": "Email",
+        "email.invalid": "Please enter a valid email address",
+        "email.placeholder": "Enter email address",
+        "firstName": "First Name",
+        "firstName.placeholder": "Enter first name",
+        "firstName.required": "First name is required",
+        "gender": "Gender",
+        "gender.placeholder": "Select gender",
+        "lastName": "Last Name",
+        "lastName.placeholder": "Enter last name",
+        "lastName.required": "Last name is required",
+        "messages": {
+          "saving": "Saving profile changes..."
+        },
+        "permissions": {
+          "canEditAdmin": "You can edit administrative fields (competition settings)",
+          "canEditContact": "You can edit contact information (email, phone)",
+          "description": "You can edit certain fields based on your permissions:",
+          "title": "Edit Permissions"
+        },
+        "personal": {
+          "title": "Personal Information"
+        },
+        "phone": "Phone",
+        "phone.placeholder": "Enter phone number"
+      },
+      "subtitle": "Update player information and permissions",
+      "tabs": {
+        "claims": "Permissions",
+        "profile": "Profile"
+      },
+      "title": "Edit Player"
+    }
+  },
   "players": {
     "my-club": "My club",
     "my-clubs": "My clubs",
-    "my-profile": "My profile", 
+    "my-profile": "My profile",
     "search": "Search player"
   },
   "points": {
@@ -217,6 +246,10 @@
       "downgrade": "Degradation",
       "upgrade": "Promotion"
     }
+  },
+  "search": {
+    "noResults": "No results found",
+    "results": "Search Results"
   },
   "settings": {
     "general": {
@@ -236,187 +269,214 @@
       "refresh": "Refresh Now"
     }
   },
-  "player": {
+  "team": {
+    "captain": "Captain",
     "edit": {
-      "title": "Edit Player",
-      "subtitle": "Update player information and permissions",
-      "actions": {
-        "save-all": "Save All Changes",
-        "save-current": "Save Current Tab", 
-        "cancel": "Cancel"
-      },
-      "tabs": {
-        "profile": "Profile",
-        "claims": "Permissions"
-      },
-      "messages": {
-        "loading": "Loading player data...",
-        "unsaved-changes": "You have unsaved changes"
-      },
-      "claims": {
-        "title": "Edit Claims",
-        "subtitle": "Manage global permissions for this player",
-        "description": "Select the global claims you want to assign to this player. These permissions apply across the entire system.",
-        "actions": {
-          "select-all": "Select All",
-          "select-none": "Select None",
-          "save": "Save Changes",
-          "cancel": "Cancel"
-        },
-        "messages": {
-          "no-claims": "No global claims available",
-          "no-permission": "You do not have permission to edit player claims",
-          "saving": "Saving changes...",
-          "loading": "Loading player and claims data..."
+      "abbreviation": {
+        "label": "Abbreviation",
+        "placeholder": {
+          "text": "Enter abbreviation"
         }
       },
-      "profile": {
-        "description": "Update player profile information and settings.",
-        "personal": {
-          "title": "Personal Information"
-        },
-        "firstName": "First Name",
-        "firstName.placeholder": "Enter first name",
-        "firstName.required": "First name is required",
-        "lastName": "Last Name",
-        "lastName.placeholder": "Enter last name",
-        "lastName.required": "Last name is required", 
-        "gender": "Gender",
-        "gender.placeholder": "Select gender",
-        "birthDate": "Birth Date",
-        "birthDate.placeholder": "Select birth date",
-        "contact": {
-          "title": "Contact Information"
-        },
-        "email": "Email",
-        "email.placeholder": "Enter email address",
-        "email.invalid": "Please enter a valid email address",
-        "phone": "Phone",
-        "phone.placeholder": "Enter phone number",
-        "editable": "editable",
-        "competition": {
-          "title": "Competition Settings"
-        },
-        "competitionPlayer": "Competition Player",
-        "competitionPlayer.description": "Enable this player to participate in competitions and tournaments.",
-        "permissions": {
-          "title": "Edit Permissions",
-          "description": "You can edit certain fields based on your permissions:",
-          "canEditContact": "You can edit contact information (email, phone)",
-          "canEditAdmin": "You can edit administrative fields (competition settings)"
-        },
-        "messages": {
-          "saving": "Saving profile changes..."
+      "basePlayers": "Players",
+      "basic": {
+        "title": "Basic Information"
+      },
+      "captain": {
+        "label": "Team Captain",
+        "placeholder": {
+          "text": "Select team captain"
+        }
+      },
+      "contact": {
+        "title": "Contact Information"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": {
+          "text": "Enter team email"
+        }
+      },
+      "errors": {
+        "loadPlayers": "Failed to load available players"
+      },
+      "members": {
+        "actions": "Actions",
+        "add": "Add Member",
+        "noPlayersFound": "No players found",
+        "player": "Player",
+        "title": "Team Members",
+        "type": "Type"
+      },
+      "membershipType": {
+        "backup": "Backup",
+        "regular": "Regular"
+      },
+      "name": {
+        "label": "Team Name",
+        "placeholder": {
+          "text": "Enter team name"
+        }
+      },
+      "phone": {
+        "label": "Phone",
+        "placeholder": {
+          "text": "Enter phone number"
+        }
+      },
+      "preferences": {
+        "title": "Team Preferences"
+      },
+      "preferredDay": {
+        "label": "Preferred Play Day",
+        "placeholder": {
+          "text": "Select preferred day"
+        }
+      },
+      "preferredTime": {
+        "label": "Preferred Play Time",
+        "placeholder": {
+          "text": "Select preferred time"
+        }
+      },
+      "season": {
+        "label": "Season",
+        "placeholder": {
+          "text": "Select season"
+        }
+      },
+      "teamNumber": {
+        "label": "Team Number",
+        "placeholder": {
+          "text": "Enter team number"
+        }
+      },
+      "title": "Edit Team",
+      "type": {
+        "label": "Team Type",
+        "placeholder": {
+          "text": "Select team type"
         }
       }
+    },
+    "noTeams": "No teams found for this season",
+    "overview": {
+      "title": "Teams Overview"
+    },
+    "players": "players",
+    "type": {
+      "f": "Women's",
+      "m": "Men's",
+      "men": "Men's",
+      "mix": "Mixed",
+      "mx": "Mixed",
+      "national": "National",
+      "women": "Women's",
+      "youth": "Youth"
     }
   },
-  "navigation": {
-    "home": "Home",
-    "players": "Players",
-    "clubs": "Clubs",
-    "competitions": "Competitions",
-    "login": "Log in"
-  },
-  "search": {
-    "results": "Search Results",
-    "noResults": "No results found"
-  },
-  "admin": {
-    "accessRequired": "Admin Access Required",
-    "noPermission": "You do not have permission to access this page.",
-    "panel": {
-      "title": "Admin Panel",
-      "searchIndex": {
-        "title": "Search Index Management",
-        "description": "Manage search indexing operations",
-        "selectTypes": "Select Types to Index",
-        "selectAll": "Select All",
-        "selectNone": "Select None",
-        "startIndexing": "Start Indexing"
-      },
-      "information": {
-        "title": "Information",
-        "availableTypes": "Available Types"
-      }
-    }
+  "tournament": {
+    "closeDate": "Registration Closes",
+    "dates": "Tournament Dates",
+    "details": "Tournament Details",
+    "draws": "Draws",
+    "entries": "Entries",
+    "events": "Tournament Events",
+    "eventType": "Event Type",
+    "firstDay": "First Day",
+    "gameType": "Game Type",
+    "information": "Tournament Information",
+    "level": "Level",
+    "location": "Location",
+    "matches": "Matches",
+    "number": "Tournament Number",
+    "official": "Official Tournament",
+    "openDate": "Registration Opens",
+    "registration": "Registration Information",
+    "types": {
+      "men": "Men's",
+      "mix": "Mixed",
+      "other": "Other",
+      "women": "Ladies"
+    },
+    "visualCode": "Visual Code"
   },
   "tournamentSync": {
-    "title": "TournamentSyncAdmin works!",
     "dashboard": {
-      "title": "Tournament Sync Dashboard",
       "actions": {
         "discoverySync": "Discovery Sync",
         "manualSync": "Manual Sync"
       },
       "queue": {
-        "title": "Queue Statistics",
         "status": {
-          "waiting": "Waiting",
           "active": "Active",
           "completed": "Completed",
-          "failed": "Failed"
-        }
+          "failed": "Failed",
+          "waiting": "Waiting"
+        },
+        "title": "Queue Statistics"
       },
       "recentJobs": {
-        "title": "Recent Sync Jobs",
         "headers": {
-          "jobId": "Job ID",
-          "type": "Type",
-          "status": "Status",
-          "progress": "Progress",
+          "actions": "Actions",
           "created": "Created",
           "duration": "Duration",
-          "actions": "Actions"
-        },
-        "noJobs": "No recent jobs found"
-      },
-      "tournaments": {
-        "title": "Tournaments & Competitions",
-        "search": "Search tournaments...",
-        "allTypes": "All Types",
-        "allStatuses": "All Statuses",
-        "headers": {
-          "name": "Name",
-          "type": "Type",
+          "jobId": "Job ID",
+          "progress": "Progress",
           "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "No recent jobs found",
+        "title": "Recent Sync Jobs"
+      },
+      "title": "Tournament Sync Dashboard",
+      "tournaments": {
+        "allStatuses": "All Statuses",
+        "allTypes": "All Types",
+        "headers": {
+          "actions": "Actions",
           "dates": "Dates",
           "lastSync": "Last Sync",
+          "name": "Name",
+          "status": "Status",
           "syncStatus": "Sync Status",
-          "actions": "Actions"
+          "type": "Type"
         },
-        "noTournaments": "No tournaments found",
         "never": "Never",
+        "noTournaments": "No tournaments found",
+        "search": "Search tournaments...",
+        "title": "Tournaments & Competitions",
         "tooltips": {
-          "syncStructure": "Sync Structure",
+          "manage": "Manage",
           "syncGames": "Sync Games",
-          "manage": "Manage"
+          "syncStructure": "Sync Structure"
         }
       }
     },
     "teamMatching": {
-      "title": "Team Matching",
       "refresh": "Refresh",
       "statistics": {
-        "title": "Matching Statistics",
-        "pendingReview": "Pending Review",
         "highConfidence": "High Confidence",
-        "mediumConfidence": "Medium Confidence",
         "lowConfidence": "Low Confidence",
         "matched": "Matched",
-        "rejected": "Rejected"
+        "mediumConfidence": "Medium Confidence",
+        "pendingReview": "Pending Review",
+        "rejected": "Rejected",
+        "title": "Matching Statistics"
       },
+      "title": "Team Matching",
       "unmatchedTeams": {
-        "title": "Unmatched Teams",
         "headers": {
-          "teamInfo": "Team Info",
-          "tournament": "Tournament",
+          "actions": "Actions",
           "bestMatch": "Best Match",
           "confidence": "Confidence",
           "status": "Status",
-          "actions": "Actions"
-        }
+          "teamInfo": "Team Info",
+          "tournament": "Tournament"
+        },
+        "title": "Unmatched Teams"
       }
-    }
+    },
+    "title": "TournamentSyncAdmin works!"
   }
 }

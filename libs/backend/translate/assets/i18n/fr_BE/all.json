@@ -1,150 +1,97 @@
 {
-  "common": {
-    "save": "Enregistrer",
-    "cancel": "Annuler",
-    "season": "Saison",
-    "selectSeason": "Sélectionner la saison"
-  },
-  "days": {
-    "monday": "Lundi",
-    "tuesday": "Mardi",
-    "wednesday": "Mercredi", 
-    "thursday": "Jeudi",
-    "friday": "Vendredi",
-    "saturday": "Samedi",
-    "sunday": "Dimanche"
-  },
-  "team": {
-    "edit": {
-      "title": "Modifier l'équipe",
-      "basic": {
-        "title": "Informations de base"
+  "admin": {
+    "accessRequired": "Accès administrateur requis",
+    "noPermission": "Vous n'avez pas la permission d'accéder à cette page.",
+    "panel": {
+      "information": {
+        "availableTypes": "Types disponibles",
+        "title": "Information"
       },
-      "name": {
-        "label": "Nom de l'équipe",
-        "placeholder": {
-          "text": "Entrer le nom de l'équipe"
-        }
+      "searchIndex": {
+        "description": "Gérer les opérations d'indexation de recherche",
+        "selectAll": "Tout sélectionner",
+        "selectNone": "Ne rien sélectionner",
+        "selectTypes": "Sélectionner les types à indexer",
+        "startIndexing": "Démarrer l'indexation",
+        "title": "Gestion de l'index de recherche"
       },
-      "abbreviation": {
-        "label": "Abréviation",
-        "placeholder": {
-          "text": "Entrer l'abréviation"
-        }
-      },
-      "season": {
-        "label": "Saison",
-        "placeholder": {
-          "text": "Sélectionner la saison"
-        }
-      },
-      "teamNumber": {
-        "label": "Numéro d'équipe",
-        "placeholder": {
-          "text": "Entrer le numéro d'équipe"
-        }
-      },
-      "contact": {
-        "title": "Informations de contact"
-      },
-      "email": {
-        "label": "E-mail",
-        "placeholder": {
-          "text": "Entrer l'e-mail de l'équipe"
-        }
-      },
-      "phone": {
-        "label": "Téléphone",
-        "placeholder": {
-          "text": "Entrer le numéro de téléphone"
-        }
-      },
-      "preferences": {
-        "title": "Préférences de l'équipe"
-      },
-      "preferredTime": {
-        "label": "Heure de jeu préférée",
-        "placeholder": {
-          "text": "Sélectionner l'heure préférée"
-        }
-      },
-      "preferredDay": {
-        "label": "Jour de jeu préféré",
-        "placeholder": {
-          "text": "Sélectionner le jour préféré"
-        }
-      },
-      "type": {
-        "label": "Type d'équipe",
-        "placeholder": {
-          "text": "Sélectionner le type d'équipe"
-        }
-      },
-      "members": {
-        "title": "Membres de l'équipe",
-        "add": "Ajouter membre",
-        "player": "Joueur",
-        "type": "Type",
-        "actions": "Actions",
-        "noPlayersFound": "Aucun joueur trouvé"
-      },
-      "membershipType": {
-        "regular": "Régulier",
-        "backup": "Remplaçant"
-      },
-      "captain": {
-        "label": "Capitaine d'équipe",
-        "placeholder": {
-          "text": "Sélectionner le capitaine"
-        }
-      },
-      "basePlayers": "Joueurs",
-      "errors": {
-        "loadPlayers": "Échec du chargement des joueurs disponibles"
-      }
-    },
-    "type": {
-      "m": "Hommes",
-      "f": "Femmes",
-      "mx": "Mixte",
-      "national": "National",
-      "mix": "Mixte",
-      "men": "Hommes",
-      "women": "Femmes",
-      "youth": "Jeunes"
-    },
-    "overview": {
-      "title": "Aperçu des équipes"
-    },
-    "captain": "Capitaine",
-    "players": "joueurs",
-    "noTeams": "Aucune équipe trouvée pour cette saison"
-  },
-  "clubs": {
-    "search": "Chercher club",
-    "membershipType": {
-      "normal": "Normal",
-      "loan": "Prêt"
+      "title": "Panneau d'administration"
     }
   },
+  "clubs": {
+    "membershipType": {
+      "loan": "Prêt",
+      "normal": "Normal"
+    },
+    "search": "Chercher club"
+  },
+  "common": {
+    "cancel": "Annuler",
+    "no": "Non",
+    "save": "Enregistrer",
+    "season": "Saison",
+    "selectSeason": "Sélectionner la saison",
+    "viewAll": "Voir Tout",
+    "yes": "Oui"
+  },
+  "competition": {
+    "changeClosePeriod1": "Clôture des changements (Période 1)",
+    "changeClosePeriod2": "Clôture des changements (Période 2)",
+    "changeOpenDate": "Ouverture des changements d'équipe",
+    "closeDate": "Clôture des inscriptions",
+    "dates": "Dates importantes",
+    "details": "Détails de la compétition",
+    "draws": "Série",
+    "encounters": "Rencontres",
+    "eventType": "Type d'épreuve",
+    "information": "Informations sur la compétition",
+    "level": "Niveau",
+    "location": "Lieu",
+    "official": "Compétition officielle",
+    "openDate": "Ouverture des inscriptions",
+    "season": "Saison",
+    "subEvents": "Série",
+    "teams": "Équipes",
+    "type": "Type",
+    "types": {
+      "F": "",
+      "M": "",
+      "men": "Compétition masculine",
+      "mix": "Compétition mixte",
+      "MX": "",
+      "other": "Autres",
+      "Other": "",
+      "women": "Compétition féminine"
+    },
+    "visualCode": "Code visuel"
+  },
+  "days": {
+    "friday": "Vendredi",
+    "monday": "Lundi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche",
+    "thursday": "Jeudi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi"
+  },
   "game": {
+    "common": {
+      "loadMore": "Charger plus de matchs",
+      "pts": "pts",
+      "set": "Set"
+    },
     "recent": {
-      "title": "Matchs récents",
-      "noGamesFound": "Aucun match récent trouvé",
       "noGamesDescription": "Cette équipe n'a pas encore joué de matchs.",
-      "noPlayerGamesDescription": "Ce joueur n'a pas encore joué de matchs."
+      "noGamesFound": "Aucun match récent trouvé",
+      "noPlayerGamesDescription": "Ce joueur n'a pas encore joué de matchs.",
+      "title": "Matchs récents"
     },
     "upcoming": {
-      "title": "Prochains matches",
-      "homeTeam": "Équipe à domicile",
       "awayTeam": "Équipe visiteur",
+      "homeTeam": "Équipe à domicile",
+      "noGamesDescription": "Ce joueur n'a aucun match planifié.",
       "noGamesFound": "Aucun match à venir trouvé",
-      "noGamesDescription": "Ce joueur n'a aucun match planifié."
-    },
-    "common": {
-      "pts": "pts",
-      "set": "Set",
-      "loadMore": "Charger plus de matchs"
+      "title": "Prochains matches"
     }
   },
   "head-to-head": {
@@ -196,6 +143,88 @@
     "win-rate": "Pourcentage de victoire",
     "win-rate-against": "Taux de victoire contre"
   },
+  "navigation": {
+    "clubs": "Clubs",
+    "competitions": "Compétitions",
+    "home": "Accueil",
+    "login": "Se connecter",
+    "players": "Joueurs"
+  },
+  "player": {
+    "edit": {
+      "actions": {
+        "cancel": "Annuler",
+        "save-all": "Enregistrer toutes les modifications",
+        "save-current": "Enregistrer l'onglet actuel"
+      },
+      "claims": {
+        "actions": {
+          "cancel": "Annuler",
+          "save": "Enregistrer les modifications",
+          "select-all": "Tout sélectionner",
+          "select-none": "Ne rien sélectionner"
+        },
+        "description": "Sélectionnez les droits globaux que vous souhaitez attribuer à ce joueur. Ces permissions s'appliquent à l'ensemble du système.",
+        "messages": {
+          "loading": "Chargement des données du joueur et des droits...",
+          "no-claims": "Aucun droit global disponible",
+          "no-permission": "Vous n'avez pas la permission de modifier les droits du joueur",
+          "saving": "Enregistrement des modifications..."
+        },
+        "subtitle": "Gérer les permissions globales pour ce joueur",
+        "title": "Modifier les droits"
+      },
+      "messages": {
+        "loading": "Chargement des données du joueur...",
+        "unsaved-changes": "Vous avez des modifications non enregistrées"
+      },
+      "profile": {
+        "birthDate": "Date de naissance",
+        "birthDate.placeholder": "Sélectionner la date de naissance",
+        "competition": {
+          "title": "Paramètres de compétition"
+        },
+        "competitionPlayer": "Joueur de compétition",
+        "competitionPlayer.description": "Permettre à ce joueur de participer aux compétitions et tournois.",
+        "contact": {
+          "title": "Informations de contact"
+        },
+        "description": "Mettre à jour les informations et paramètres du profil du joueur.",
+        "editable": "modifiable",
+        "email": "E-mail",
+        "email.invalid": "Veuillez entrer une adresse e-mail valide",
+        "email.placeholder": "Entrer l'adresse e-mail",
+        "firstName": "Prénom",
+        "firstName.placeholder": "Entrer le prénom",
+        "firstName.required": "Le prénom est requis",
+        "gender": "Genre",
+        "gender.placeholder": "Sélectionner le genre",
+        "lastName": "Nom de famille",
+        "lastName.placeholder": "Entrer le nom de famille",
+        "lastName.required": "Le nom de famille est requis",
+        "messages": {
+          "saving": "Enregistrement des modifications du profil..."
+        },
+        "permissions": {
+          "canEditAdmin": "Vous pouvez modifier les champs administratifs (paramètres de compétition)",
+          "canEditContact": "Vous pouvez modifier les informations de contact (e-mail, téléphone)",
+          "description": "Vous pouvez modifier certains champs selon vos permissions :",
+          "title": "Permissions de modification"
+        },
+        "personal": {
+          "title": "Informations personnelles"
+        },
+        "phone": "Téléphone",
+        "phone.placeholder": "Entrer le numéro de téléphone"
+      },
+      "subtitle": "Mettre à jour les informations et permissions du joueur",
+      "tabs": {
+        "claims": "Permissions",
+        "profile": "Profil"
+      },
+      "title": "Modifier le joueur"
+    }
+  },
   "players": {
     "my-club": "Mon club",
     "my-clubs": "Mes clubs",
@@ -218,6 +247,10 @@
       "upgrade": "Promotion"
     }
   },
+  "search": {
+    "noResults": "Aucun résultat trouvé",
+    "results": "Résultats de recherche"
+  },
   "settings": {
     "general": {
       "title": "Général"
@@ -236,187 +269,214 @@
       "refresh": "Actualiser maintenant"
     }
   },
-  "player": {
+  "team": {
+    "captain": "Capitaine",
     "edit": {
-      "title": "Modifier le joueur",
-      "subtitle": "Mettre à jour les informations et permissions du joueur",
-      "actions": {
-        "save-all": "Enregistrer toutes les modifications",
-        "save-current": "Enregistrer l'onglet actuel",
-        "cancel": "Annuler"
-      },
-      "tabs": {
-        "profile": "Profil",
-        "claims": "Permissions"
-      },
-      "messages": {
-        "loading": "Chargement des données du joueur...",
-        "unsaved-changes": "Vous avez des modifications non enregistrées"
-      },
-      "claims": {
-        "title": "Modifier les droits",
-        "subtitle": "Gérer les permissions globales pour ce joueur",
-        "description": "Sélectionnez les droits globaux que vous souhaitez attribuer à ce joueur. Ces permissions s'appliquent à l'ensemble du système.",
-        "actions": {
-          "select-all": "Tout sélectionner",
-          "select-none": "Ne rien sélectionner",
-          "save": "Enregistrer les modifications",
-          "cancel": "Annuler"
-        },
-        "messages": {
-          "no-claims": "Aucun droit global disponible",
-          "no-permission": "Vous n'avez pas la permission de modifier les droits du joueur",
-          "saving": "Enregistrement des modifications...",
-          "loading": "Chargement des données du joueur et des droits..."
+      "abbreviation": {
+        "label": "Abréviation",
+        "placeholder": {
+          "text": "Entrer l'abréviation"
         }
       },
-      "profile": {
-        "description": "Mettre à jour les informations et paramètres du profil du joueur.",
-        "personal": {
-          "title": "Informations personnelles"
-        },
-        "firstName": "Prénom",
-        "firstName.placeholder": "Entrer le prénom",
-        "firstName.required": "Le prénom est requis",
-        "lastName": "Nom de famille",
-        "lastName.placeholder": "Entrer le nom de famille",
-        "lastName.required": "Le nom de famille est requis",
-        "gender": "Genre",
-        "gender.placeholder": "Sélectionner le genre",
-        "birthDate": "Date de naissance",
-        "birthDate.placeholder": "Sélectionner la date de naissance",
-        "contact": {
-          "title": "Informations de contact"
-        },
-        "email": "E-mail",
-        "email.placeholder": "Entrer l'adresse e-mail",
-        "email.invalid": "Veuillez entrer une adresse e-mail valide",
-        "phone": "Téléphone",
-        "phone.placeholder": "Entrer le numéro de téléphone",
-        "editable": "modifiable",
-        "competition": {
-          "title": "Paramètres de compétition"
-        },
-        "competitionPlayer": "Joueur de compétition",
-        "competitionPlayer.description": "Permettre à ce joueur de participer aux compétitions et tournois.",
-        "permissions": {
-          "title": "Permissions de modification",
-          "description": "Vous pouvez modifier certains champs selon vos permissions :",
-          "canEditContact": "Vous pouvez modifier les informations de contact (e-mail, téléphone)",
-          "canEditAdmin": "Vous pouvez modifier les champs administratifs (paramètres de compétition)"
-        },
-        "messages": {
-          "saving": "Enregistrement des modifications du profil..."
+      "basePlayers": "Joueurs",
+      "basic": {
+        "title": "Informations de base"
+      },
+      "captain": {
+        "label": "Capitaine d'équipe",
+        "placeholder": {
+          "text": "Sélectionner le capitaine"
+        }
+      },
+      "contact": {
+        "title": "Informations de contact"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": {
+          "text": "Entrer l'e-mail de l'équipe"
+        }
+      },
+      "errors": {
+        "loadPlayers": "Échec du chargement des joueurs disponibles"
+      },
+      "members": {
+        "actions": "Actions",
+        "add": "Ajouter membre",
+        "noPlayersFound": "Aucun joueur trouvé",
+        "player": "Joueur",
+        "title": "Membres de l'équipe",
+        "type": "Type"
+      },
+      "membershipType": {
+        "backup": "Remplaçant",
+        "regular": "Régulier"
+      },
+      "name": {
+        "label": "Nom de l'équipe",
+        "placeholder": {
+          "text": "Entrer le nom de l'équipe"
+        }
+      },
+      "phone": {
+        "label": "Téléphone",
+        "placeholder": {
+          "text": "Entrer le numéro de téléphone"
+        }
+      },
+      "preferences": {
+        "title": "Préférences de l'équipe"
+      },
+      "preferredDay": {
+        "label": "Jour de jeu préféré",
+        "placeholder": {
+          "text": "Sélectionner le jour préféré"
+        }
+      },
+      "preferredTime": {
+        "label": "Heure de jeu préférée",
+        "placeholder": {
+          "text": "Sélectionner l'heure préférée"
+        }
+      },
+      "season": {
+        "label": "Saison",
+        "placeholder": {
+          "text": "Sélectionner la saison"
+        }
+      },
+      "teamNumber": {
+        "label": "Numéro d'équipe",
+        "placeholder": {
+          "text": "Entrer le numéro d'équipe"
+        }
+      },
+      "title": "Modifier l'équipe",
+      "type": {
+        "label": "Type d'équipe",
+        "placeholder": {
+          "text": "Sélectionner le type d'équipe"
         }
       }
+    },
+    "noTeams": "Aucune équipe trouvée pour cette saison",
+    "overview": {
+      "title": "Aperçu des équipes"
+    },
+    "players": "joueurs",
+    "type": {
+      "f": "Femmes",
+      "m": "Hommes",
+      "men": "Hommes",
+      "mix": "Mixte",
+      "mx": "Mixte",
+      "national": "National",
+      "women": "Femmes",
+      "youth": "Jeunes"
     }
   },
-  "navigation": {
-    "home": "Accueil",
-    "players": "Joueurs",
-    "clubs": "Clubs",
-    "competitions": "Compétitions",
-    "login": "Se connecter"
-  },
-  "search": {
-    "results": "Résultats de recherche",
-    "noResults": "Aucun résultat trouvé"
-  },
-  "admin": {
-    "accessRequired": "Accès administrateur requis",
-    "noPermission": "Vous n'avez pas la permission d'accéder à cette page.",
-    "panel": {
-      "title": "Panneau d'administration",
-      "searchIndex": {
-        "title": "Gestion de l'index de recherche",
-        "description": "Gérer les opérations d'indexation de recherche",
-        "selectTypes": "Sélectionner les types à indexer",
-        "selectAll": "Tout sélectionner",
-        "selectNone": "Ne rien sélectionner",
-        "startIndexing": "Démarrer l'indexation"
-      },
-      "information": {
-        "title": "Information",
-        "availableTypes": "Types disponibles"
-      }
-    }
+  "tournament": {
+    "closeDate": "Clôture des inscriptions",
+    "dates": "Dates du tournoi",
+    "details": "Détails du tournoi",
+    "draws": "Série",
+    "entries": "Inscriptions",
+    "events": "Épreuves du tournoi",
+    "eventType": "Type d'épreuve",
+    "firstDay": "Premier jour",
+    "gameType": "Type de jeu",
+    "information": "Informations sur le tournoi",
+    "level": "Niveau",
+    "location": "Lieu",
+    "matches": "Matchs",
+    "number": "Numéro de tournoi",
+    "official": "Tournoi officiel",
+    "openDate": "Ouverture des inscriptions",
+    "registration": "Informations d'inscription",
+    "types": {
+      "men": "Hommes",
+      "mix": "Mixte",
+      "other": "Autres",
+      "women": "Femmes"
+    },
+    "visualCode": "Code visuel"
   },
   "tournamentSync": {
-    "title": "TournamentSyncAdmin fonctionne!",
     "dashboard": {
-      "title": "Tableau de bord de synchronisation de tournoi",
       "actions": {
         "discoverySync": "Sync de découverte",
         "manualSync": "Sync manuelle"
       },
       "queue": {
-        "title": "Statistiques de la file",
         "status": {
-          "waiting": "En attente",
           "active": "Actif",
           "completed": "Terminé",
-          "failed": "Échoué"
-        }
+          "failed": "Échoué",
+          "waiting": "En attente"
+        },
+        "title": "Statistiques de la file"
       },
       "recentJobs": {
-        "title": "Tâches de synchronisation récentes",
         "headers": {
-          "jobId": "ID de tâche",
-          "type": "Type",
-          "status": "Statut",
-          "progress": "Progression",
+          "actions": "Actions",
           "created": "Créé",
           "duration": "Durée",
-          "actions": "Actions"
-        },
-        "noJobs": "Aucune tâche récente trouvée"
-      },
-      "tournaments": {
-        "title": "Tournois et compétitions",
-        "search": "Rechercher des tournois...",
-        "allTypes": "Tous les types",
-        "allStatuses": "Tous les statuts",
-        "headers": {
-          "name": "Nom",
-          "type": "Type",
+          "jobId": "ID de tâche",
+          "progress": "Progression",
           "status": "Statut",
+          "type": "Type"
+        },
+        "noJobs": "Aucune tâche récente trouvée",
+        "title": "Tâches de synchronisation récentes"
+      },
+      "title": "Tableau de bord de synchronisation de tournoi",
+      "tournaments": {
+        "allStatuses": "Tous les statuts",
+        "allTypes": "Tous les types",
+        "headers": {
+          "actions": "Actions",
           "dates": "Dates",
           "lastSync": "Dernière sync",
+          "name": "Nom",
+          "status": "Statut",
           "syncStatus": "Statut de sync",
-          "actions": "Actions"
+          "type": "Type"
         },
-        "noTournaments": "Aucun tournoi trouvé",
         "never": "Jamais",
+        "noTournaments": "Aucun tournoi trouvé",
+        "search": "Rechercher des tournois...",
+        "title": "Tournois et compétitions",
         "tooltips": {
-          "syncStructure": "Synchroniser la structure",
+          "manage": "Gérer",
           "syncGames": "Synchroniser les matchs",
-          "manage": "Gérer"
+          "syncStructure": "Synchroniser la structure"
         }
       }
     },
     "teamMatching": {
-      "title": "Correspondance d'équipe",
       "refresh": "Actualiser",
       "statistics": {
-        "title": "Statistiques de correspondance",
-        "pendingReview": "En attente de révision",
         "highConfidence": "Haute confiance",
-        "mediumConfidence": "Confiance moyenne",
         "lowConfidence": "Faible confiance",
         "matched": "Correspondant",
-        "rejected": "Rejeté"
+        "mediumConfidence": "Confiance moyenne",
+        "pendingReview": "En attente de révision",
+        "rejected": "Rejeté",
+        "title": "Statistiques de correspondance"
       },
+      "title": "Correspondance d'équipe",
       "unmatchedTeams": {
-        "title": "Équipes non appariées",
         "headers": {
-          "teamInfo": "Info équipe",
-          "tournament": "Tournoi",
+          "actions": "Actions",
           "bestMatch": "Meilleure correspondance",
           "confidence": "Confiance",
           "status": "Statut",
-          "actions": "Actions"
-        }
+          "teamInfo": "Info équipe",
+          "tournament": "Tournoi"
+        },
+        "title": "Équipes non appariées"
       }
-    }
+    },
+    "title": "TournamentSyncAdmin fonctionne!"
   }
 }

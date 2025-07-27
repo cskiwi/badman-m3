@@ -1,0 +1,30 @@
+@if (!loading()) {
+  <app-page-header>
+    <ng-content title>{{ 'all.navigation.competitions' | translate }}</ng-content>
+  </app-page-header>
+  <section class="competitions p-4">
+    <p-floatlabel class="mb-6">
+      <input type="text" [formControl]="this.query" id="competition-search" pInputText class="w-full" />
+      <label for="competition-search">{{ 'all.competitions.search' | translate }}</label>
+    </p-floatlabel>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (competition of competitions(); track competition.id) {
+        <p-card [routerLink]="competition.slug" class="cursor-pointer hover:shadow-lg transition-shadow">
+          <ng-template pTemplate="title">
+            <h3 class="text-lg font-semibold">{{ competition.name }}</h3>
+          </ng-template>
+        </p-card>
+      }
+    </div>
+  </section>
+} @else {
+  <p-progressbar mode="indeterminate" [style]="{'height': '6px'}" />
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}

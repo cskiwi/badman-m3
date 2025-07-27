@@ -1,6 +1,6 @@
 import { getWhereFields, getWhereObjects, getWhereFieldTypes } from '@app/utils';
 import { Logger, Type } from '@nestjs/common';
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, ID } from '@nestjs/graphql';
 import 'reflect-metadata';
 
 // Define where operators
@@ -118,6 +118,27 @@ export class DateWhereOperators {
   raw?: string;
 }
 
+@InputType('IdWhereOperators')
+export class IdWhereOperators {
+  @Field(() => ID, { nullable: true })
+  eq?: string;
+
+  @Field(() => ID, { nullable: true })
+  ne?: string;
+
+  @Field(() => [ID], { nullable: true })
+  in?: string[];
+
+  @Field(() => [ID], { nullable: true })
+  nin?: string[];
+
+  @Field(() => Boolean, { nullable: true })
+  isNull?: boolean;
+
+  @Field(() => ID, { nullable: true })
+  raw?: string;
+}
+
 const whereCache = new Map<string, Type>();
 export const whereInputs = new Map<string, Type>();
 
@@ -156,6 +177,7 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
       else if (explicitType === String) fieldType = String;
       else if (explicitType === Boolean) fieldType = Boolean;
       else if (explicitType === Date) fieldType = Date;
+      else if (explicitType === ID) fieldType = ID;
     }
     
     let operatorType: Type;
@@ -174,6 +196,9 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
     } else if (fieldType === Date) {
       operatorType = DateWhereOperators;
       directType = Date;
+    } else if (fieldType === ID) {
+      operatorType = IdWhereOperators;
+      directType = String;
     } else {
       // For unknown types, default to string operators
       operatorType = StringWhereOperators;

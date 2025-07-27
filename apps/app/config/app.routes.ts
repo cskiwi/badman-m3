@@ -23,6 +23,11 @@ export const appRoutes: Route[] = [
       import('@app/frontend-pages-competition').then((m) => m.routes),
   },
   {
+    path: 'tournament',
+    loadChildren: () =>
+      import('@app/frontend-pages-tournament').then((m) => m.routes),
+  },
+  {
     path: 'admin',
     loadChildren: () =>
       import('@app/frontend-pages-admin').then((m) => m.adminRoutes),

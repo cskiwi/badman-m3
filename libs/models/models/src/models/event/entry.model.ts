@@ -5,13 +5,20 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Relation,
 } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
+import { Standing } from './standing.model';
+import { EntryMeta } from './entry-meta.type';
+import { Player } from '../player.model';
 
 @ObjectType('Entry', { description: 'Player or team entry in an event' })
-@Entity('Entries')
+@Entity('Entries', { schema: 'event' })
 export class Entry extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -27,23 +34,30 @@ export class Entry extends BaseEntity {
   @UpdateDateColumn({ nullable: true })
   declare updatedAt: Date;
 
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index()
-  declare eventId: string;
-
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index()
-  declare subEventId: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ nullable: true })
   @Index()
-  declare playerId?: string;
+  declare subEventId?: string;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ nullable: true })
+  @Index()
+  declare drawId?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true })
+  @Index()
+  declare player1Id?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true })
+  @Index()
+  declare player2Id?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
@@ -53,33 +67,42 @@ export class Entry extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare doublePartner?: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  declare entryType?: string;
+
+  @SortableField(() => EntryMeta, { nullable: true })
+  @WhereField(() => EntryMeta, { nullable: true })
+  @Field(() => EntryMeta, { nullable: true })
+  @Column({ type: 'json', nullable: true })
+  declare meta?: EntryMeta;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare mixedPartner?: string;
-
-  @SortableField()
-  @WhereField()
-  @Column({ default: 'pending' })
-  declare status: string;
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  declare date?: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ type: 'int', nullable: true })
-  declare ranking?: number;
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  declare sendOn?: Date;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'text', nullable: true })
-  declare comment?: string;
+  @Field(() => [Standing], { nullable: true })
+  @OneToMany(() => Standing, standing => standing.entry)
+  declare standings?: Relation<Standing[]>;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare entryDate?: Date;
+  @Field(() => Player, { nullable: true })
+  @ManyToOne(() => Player, { nullable: true })
+  @JoinColumn({ name: 'player1Id' })
+  declare player1?: Relation<Player>;
+
+  @Field(() => Player, { nullable: true })
+  @ManyToOne(() => Player, { nullable: true })
+  @JoinColumn({ name: 'player2Id' })
+  declare player2?: Relation<Player>;
+
+  // Note: TournamentDraw relationship - avoiding circular import
+  // @Field(() => TournamentDraw, { nullable: true })
+  // @ManyToOne(() => TournamentDraw, draw => draw.entries)
+  // @JoinColumn({ name: 'drawId' })
+  // declare drawTournament?: Relation<TournamentDraw>;
 }

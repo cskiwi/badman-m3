@@ -5,8 +5,6 @@ import { BullModule } from '@nestjs/bull';
 import { TournamentApiModule } from '@app/tournament-api';
 import { TournamentSyncModule } from '@app/tournament-sync';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -26,7 +24,5 @@ import { AppService } from './app.service';
     TournamentApiModule,
     TournamentSyncModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

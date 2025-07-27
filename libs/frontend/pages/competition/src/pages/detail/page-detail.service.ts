@@ -32,6 +32,38 @@ export class DetailService {
                   id
                   name
                   slug
+                  season
+                  openDate
+                  closeDate
+                  changeOpenDate
+                  changeCloseDatePeriod1
+                  changeCloseRequestDatePeriod1
+                  changeCloseDatePeriod2
+                  changeCloseRequestDatePeriod2
+                  visualCode
+                  teamMatcher
+                  official
+                  type
+                  state
+                  country
+                  checkEncounterForFilledIn
+                  competitionSubEvents {
+                    id
+                    name
+                    eventType
+                    level
+                    maxLevel
+                    minBaseIndex
+                    maxBaseIndex
+                    competitionDraws {
+                      id
+                      name
+                      type
+                      size
+                      risers
+                      fallers
+                    }
+                  }
                 }
               }
             `,

@@ -10,6 +10,7 @@ import { TournamentDiscoveryProcessor } from './processors/tournament-discovery.
 import { CompetitionEventProcessor } from './processors/competition-event.processor';
 import { TournamentEventProcessor } from './processors/tournament-event.processor';
 import { TeamMatchingProcessor } from './processors/team-matching.processor';
+import { TournamentSyncController } from './controllers/tournament-sync.controller';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TeamMatchingProcessor } from './processors/team-matching.processor';
     TournamentSyncQueueModule,
     TournamentApiModule,
   ],
+  controllers: [TournamentSyncController],
   providers: [
     TournamentSyncService,
     TournamentDiscoveryProcessor,

@@ -386,7 +386,7 @@ REDIS_PASSWORD=
 REDIS_DB=0
 
 # Worker Service
-TOURNAMENT_SYNC_WORKER_PORT=3001
+TOURNAMENT_SYNC_WORKER_PORT=3000
 ```
 
 ### Quick Start
@@ -418,8 +418,8 @@ TOURNAMENT_SYNC_WORKER_PORT=3001
    ```
 
 5. **Verify the service is running**:
-   - Health check: `GET http://localhost:3001/api/health`
-   - Service status: `GET http://localhost:3001/api/status`
+   - Health check: `GET http://localhost:3000/api/health`
+   - Service status: `GET http://localhost:3000/api/status`
 
 ### Development Tools
 ```bash

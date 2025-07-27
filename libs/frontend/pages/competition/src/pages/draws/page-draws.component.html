@@ -1,0 +1,242 @@
+@if (!loading()) {
+  @if (this.competition(); as competition) {
+    @if (this.subEvent(); as subEvent) {
+      @if (this.draw(); as draw) {
+        <app-page-header>
+          <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</ng-content>
+          <ng-content subTitle>
+            <div class="info">
+              <div class="sub-text">
+                <ng-container>
+                  <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
+                  <span class="mx-2">></span>
+                  <span>{{ subEvent.name }}</span>
+                  <span class="mx-2">></span>
+                  <span>{{ draw.name || 'Draw' }}</span>
+                </ng-container>
+              </div>
+            </div>
+          </ng-content>
+          <ng-content actions> </ng-content>
+        </app-page-header>
+
+        <!-- Draw Information Section -->
+        <section class="draw-info">
+          <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+            <i class="pi pi-sitemap text-primary-500"></i>
+            {{ 'all.competition.draw' | translate }} {{ 'all.competition.information' | translate }}
+          </h3>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <!-- Draw Details -->
+            <div class="rounded-border bg-highlight p-4">
+              <h4 class="font-semibold mb-3 text-lg">{{ 'all.competition.details' | translate }}</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-info-circle text-muted-color"></i>
+                  <span class="font-medium">{{ 'all.common.name' | translate }}:</span>
+                  <span>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
+                </div>
+
+                @if (draw.type) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-tag text-muted-color"></i>
+                    <span class="font-medium">{{ 'all.competition.type' | translate }}:</span>
+                    <span>{{ draw.type }}</span>
+                  </div>
+                }
+
+                @if (draw.size) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-users text-muted-color"></i>
+                    <span class="font-medium">Size:</span>
+                    <span>{{ draw.size }}</span>
+                  </div>
+                }             
+              </div>
+            </div>
+
+            <!-- Sub Event Context -->
+            <div class="rounded-border bg-highlight p-4">
+              <h4 class="font-semibold mb-3 text-lg">{{ 'all.competition.subEvent' | translate }}</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-info-circle text-muted-color"></i>
+                  <span class="font-medium">{{ 'all.common.name' | translate }}:</span>
+                  <span>{{ subEvent.name }}</span>
+                </div>
+
+                @if (subEvent.eventType) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-tag text-muted-color"></i>
+                    <span class="font-medium">{{ 'all.competition.eventType' | translate }}:</span>
+                    <span>{{ subEvent.eventType }}</span>
+                  </div>
+                }
+
+                @if (subEvent.level) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-chart-line text-muted-color"></i>
+                    <span class="font-medium">{{ 'all.competition.level' | translate }}:</span>
+                    <span
+                      >{{ subEvent.level }}
+                      @if (subEvent.maxLevel && subEvent.maxLevel !== subEvent.level) {
+                        - {{ subEvent.maxLevel }}
+                      }
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Draw Statistics -->
+        @if (draw.size || draw.risers || draw.fallers || encounters().length > 0) {
+          <section class="draw-statistics">
+            <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+              <i class="pi pi-chart-bar text-primary-500"></i>
+              {{ 'all.competition.statistics' | translate }}
+            </h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              @if (draw.size) {
+                <div class="rounded-border bg-highlight p-4 text-center">
+                  <div class="text-2xl font-bold text-primary">{{ draw.size }}</div>
+                  <div class="text-sm text-muted-color-emphasis">Size</div>
+                </div>
+              }
+              
+              @if (draw.risers) {
+                <div class="rounded-border bg-highlight p-4 text-center">
+                  <div class="text-2xl font-bold text-green-600">↑{{ draw.risers }}</div>
+                  <div class="text-sm text-muted-color-emphasis">Risers</div>
+                </div>
+              }
+              
+              @if (draw.fallers) {
+                <div class="rounded-border bg-highlight p-4 text-center">
+                  <div class="text-2xl font-bold text-red-600">↓{{ draw.fallers }}</div>
+                  <div class="text-sm text-muted-color-emphasis">Fallers</div>
+                </div>
+              }
+              
+              @if (encounters().length > 0) {
+                <div class="rounded-border bg-highlight p-4 text-center">
+                  <div class="text-2xl font-bold text-surface-600">{{ encounters().length }}</div>
+                  <div class="text-sm text-muted-color-emphasis">{{ 'all.competition.encounters' | translate }}</div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Encounters Section -->
+        @if (encounters().length > 0) {
+          <section class="encounters">
+            <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+              <i class="pi pi-calendar text-primary-500"></i>
+              {{ 'all.competition.encounters' | translate }}
+            </h3>
+            
+            <div class="space-y-3">
+              @for (encounter of encounters(); track encounter.id) {
+                <div class="rounded-border bg-highlight p-4">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                      <!-- Home Team -->
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ encounter.homeTeam?.name || 'TBD' }}</span>
+                        @if (encounter.homeTeam?.abbreviation) {
+                          <span class="text-xs text-muted-color-emphasis">({{ encounter.homeTeam?.abbreviation }})</span>
+                        }
+                      </div>
+                      
+                      <!-- Score -->
+                      @if (encounter.homeScore !== null && encounter.awayScore !== null) {
+                        <span class="font-bold px-3 py-1 bg-primary-100 text-primary-800 rounded">
+                          {{ encounter.homeScore }} - {{ encounter.awayScore }}
+                        </span>
+                      } @else {
+                        <span class="text-muted-color-emphasis">vs</span>
+                      }
+                      
+                      <!-- Away Team -->
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ encounter.awayTeam?.name || 'TBD' }}</span>
+                        @if (encounter.awayTeam?.abbreviation) {
+                          <span class="text-xs text-muted-color-emphasis">({{ encounter.awayTeam?.abbreviation }})</span>
+                        }
+                      </div>
+                    </div>
+                    
+                    <!-- Date -->
+                    @if (encounter.date) {
+                      <span class="text-sm text-muted-color-emphasis">{{ encounter.date | date:'medium' }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        } @else {
+          <div class="text-center py-12 text-surface-500">
+            <i class="pi pi-calendar text-4xl mb-4 block"></i>
+            <h3 class="text-lg font-medium mb-2">No Encounters</h3>
+            <p>This draw doesn't have any encounters scheduled yet.</p>
+          </div>
+        }
+      }
+    }
+  }
+} @else {
+  <!-- Loading Skeletons -->
+  <div class="space-y-6">
+    <!-- Header skeleton -->
+    <div class="space-y-2">
+      <p-skeleton width="25rem" height="2rem"></p-skeleton>
+      <p-skeleton width="20rem" height="1rem"></p-skeleton>
+    </div>
+
+    <!-- Sub event info skeleton -->
+    <div class="rounded-border bg-highlight p-4 space-y-2">
+      <p-skeleton width="15rem" height="1.5rem"></p-skeleton>
+      <p-skeleton width="20rem" height="1rem"></p-skeleton>
+    </div>
+
+    <!-- Draws skeletons -->
+    @for (i of [1, 2, 3]; track i) {
+      <div class="rounded-border bg-highlight p-6 space-y-4">
+        <div class="flex justify-between">
+          <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+          <div class="flex gap-2">
+            <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
+            <p-skeleton width="5rem" height="1.5rem"></p-skeleton>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4">
+          @for (j of [1, 2, 3, 4]; track j) {
+            <div class="text-center space-y-1">
+              <p-skeleton width="3rem" height="2rem" class="mx-auto"></p-skeleton>
+              <p-skeleton width="4rem" height="1rem" class="mx-auto"></p-skeleton>
+            </div>
+          }
+        </div>
+
+        <div class="border-t pt-4 space-y-2">
+          @for (k of [1, 2, 3]; track k) {
+            <p-skeleton width="100%" height="3rem"></p-skeleton>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}

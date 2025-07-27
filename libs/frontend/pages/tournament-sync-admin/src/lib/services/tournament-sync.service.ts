@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { BASE_URL } from '@app/frontend-utils';
 
 export interface QueueStats {
   waiting: number;
@@ -24,11 +25,9 @@ export interface TournamentSyncJob {
 }
 
 export interface TournamentSyncStatus {
-  service: string;
   status: string;
   timestamp: string;
-  version: string;
-  queue: QueueStats;
+  queues: QueueStats;
 }
 
 export interface TournamentSyncHealth {
@@ -42,47 +41,45 @@ export interface TournamentSyncHealth {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TournamentSyncApiService {
   private http = inject(HttpClient);
-  
-  // Tournament sync worker runs on port 3001
-  private readonly baseUrl = 'http://localhost:3001/api';
+  private readonly baseUrl = inject(BASE_URL);
 
   /**
    * Get tournament sync worker status and queue statistics
    */
   getStatus(): Observable<TournamentSyncStatus> {
-    return this.http.get<TournamentSyncStatus>(`${this.baseUrl}/status`);
+    return this.http.get<TournamentSyncStatus>(`${this.baseUrl}/api/v1/status`);
   }
 
   /**
    * Get tournament sync worker health check
    */
   getHealth(): Observable<TournamentSyncHealth> {
-    return this.http.get<TournamentSyncHealth>(`${this.baseUrl}/health`);
+    return this.http.get<TournamentSyncHealth>(`${this.baseUrl}/api/v1/health`);
   }
 
   /**
    * Trigger tournament discovery sync
    */
   triggerDiscoverySync(): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/sync/discovery`, {});
+    return this.http.post<{ message: string }>(`${this.baseUrl}/api/v1/sync/discovery`, {});
   }
 
   /**
    * Trigger competition structure sync
    */
   triggerCompetitionSync(): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/sync/competitions`, {});
+    return this.http.post<{ message: string }>(`${this.baseUrl}/api/v1/sync/competitions`, {});
   }
 
   /**
    * Trigger tournament structure sync
    */
   triggerTournamentSync(): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/sync/tournaments`, {});
+    return this.http.post<{ message: string }>(`${this.baseUrl}/api/v1/sync/tournaments`, {});
   }
 
   /**
@@ -93,6 +90,6 @@ export class TournamentSyncApiService {
     if (status) {
       params += `&status=${status}`;
     }
-    return this.http.get<TournamentSyncJob[]>(`${this.baseUrl}/jobs${params}`);
+    return this.http.get<TournamentSyncJob[]>(`${this.baseUrl}/api/v1/jobs${params}`);
   }
 }

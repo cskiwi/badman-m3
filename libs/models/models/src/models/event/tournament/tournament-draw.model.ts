@@ -3,6 +3,7 @@ import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
 import { Game } from '../game.model';
+import { Entry } from '../entry.model';
 
 @Entity('DrawTournaments', { schema: 'event' })
 @ObjectType('TournamentDraw', { description: 'A TournamentDraw' })
@@ -39,6 +40,9 @@ export class TournamentDraw extends BaseEntity {
   @Field(() => [Game], { nullable: true })
   @OneToMany(() => Game, (game) => game.tournamentDraw, { cascade: true })
   declare games?: Relation<Game[]>;
+
+  @Field(() => [Entry], { nullable: true })
+  declare entries?: Entry[];
 
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, eventEntry => eventEntry.drawTournament, { cascade: true, onDelete: 'CASCADE' })

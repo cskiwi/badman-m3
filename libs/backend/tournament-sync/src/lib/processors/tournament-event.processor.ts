@@ -1,40 +1,35 @@
+import { GameStatus, GameType } from '@app/model/enums';
+import { Game, Player, TournamentDraw as TournamentDrawModel, TournamentSubEvent } from '@app/models';
+import { Entry, Match, TournamentApiClient, TournamentDraw, TournamentEvent } from '@app/tournament-api';
 import { Process, Processor } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { TournamentApiClient, TournamentEvent, Entry, TournamentDraw, Match } from '@app/tournament-api';
-import {
-  TOURNAMENT_SYNC_QUEUE,
-  TournamentSyncJobType,
-  StructureSyncJobData,
-  GameSyncJobData,
-} from '../queues/tournament-sync.queue';
+import { GameSyncJobData, StructureSyncJobData, TOURNAMENT_SYNC_QUEUE, TournamentSyncJobType } from '../queues/tournament-sync.queue';
 
 @Injectable()
 @Processor(TOURNAMENT_SYNC_QUEUE)
 export class TournamentEventProcessor {
   private readonly logger = new Logger(TournamentEventProcessor.name);
 
-  constructor(
-    private readonly tournamentApiClient: TournamentApiClient,
-  ) {}
+  constructor(private readonly tournamentApiClient: TournamentApiClient) {}
 
   @Process(TournamentSyncJobType.TOURNAMENT_STRUCTURE_SYNC)
   async processTournamentStructureSync(job: Job<StructureSyncJobData>): Promise<void> {
     this.logger.log(`Processing tournament structure sync job: ${job.id}`);
-    
+
     try {
       const { tournamentCode, eventCodes, forceUpdate } = job.data;
-      
+
       // Get tournament details first
       const tournament = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
       this.logger.log(`Syncing tournament structure for: ${tournament.Name}`);
 
       // Sync events
       await this.syncEvents(tournamentCode, eventCodes);
-      
+
       // Sync entries (players)
       await this.syncEntries(tournamentCode, eventCodes);
-      
+
       // Sync draws
       await this.syncDraws(tournamentCode, eventCodes);
 
@@ -50,12 +45,12 @@ export class TournamentEventProcessor {
   @Process(TournamentSyncJobType.TOURNAMENT_GAME_SYNC)
   async processTournamentGameSync(job: Job<GameSyncJobData>): Promise<void> {
     this.logger.log(`Processing tournament game sync job: ${job.id}`);
-    
+
     try {
       const { tournamentCode, eventCode, drawCode, matchCodes, date } = job.data;
-      
+
       let matches: Match[] = [];
-      
+
       if (matchCodes && matchCodes.length > 0) {
         // Sync specific matches
         for (const matchCode of matchCodes) {
@@ -79,7 +74,7 @@ export class TournamentEventProcessor {
         const startDate = new Date(tournament.StartDate);
         const endDate = new Date(tournament.EndDate);
         endDate.setDate(endDate.getDate() + 1); // Add one day buffer
-        
+
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
           const dateStr = d.toISOString().split('T')[0];
           try {
@@ -107,10 +102,10 @@ export class TournamentEventProcessor {
 
   private async syncEvents(tournamentCode: string, eventCodes?: string[]): Promise<void> {
     this.logger.log(`Syncing events for tournament ${tournamentCode}`);
-    
+
     try {
       let events: TournamentEvent[] = [];
-      
+
       if (eventCodes && eventCodes.length > 0) {
         // Sync specific events
         for (const eventCode of eventCodes) {
@@ -136,19 +131,19 @@ export class TournamentEventProcessor {
 
   private async syncEntries(tournamentCode: string, eventCodes?: string[]): Promise<void> {
     this.logger.log(`Syncing entries for tournament ${tournamentCode}`);
-    
+
     try {
       // Get events to sync entries for
-      const events = eventCodes 
-        ? await Promise.all(eventCodes.map(code => this.tournamentApiClient.getTournamentEvents(tournamentCode, code)))
+      const events = eventCodes
+        ? await Promise.all(eventCodes.map((code) => this.tournamentApiClient.getTournamentEvents(tournamentCode, code)))
         : [await this.tournamentApiClient.getTournamentEvents(tournamentCode)];
-      
+
       const flatEvents = events.flat();
-      
+
       for (const event of flatEvents) {
         try {
           const entries = await this.tournamentApiClient.getEventEntries(tournamentCode, event.Code);
-          
+
           for (const entry of entries) {
             await this.createOrUpdateEntry(tournamentCode, event.Code, entry);
           }
@@ -168,19 +163,19 @@ export class TournamentEventProcessor {
 
   private async syncDraws(tournamentCode: string, eventCodes?: string[]): Promise<void> {
     this.logger.log(`Syncing draws for tournament ${tournamentCode}`);
-    
+
     try {
       // Get events to sync draws for
-      const events = eventCodes 
-        ? await Promise.all(eventCodes.map(code => this.tournamentApiClient.getTournamentEvents(tournamentCode, code)))
+      const events = eventCodes
+        ? await Promise.all(eventCodes.map((code) => this.tournamentApiClient.getTournamentEvents(tournamentCode, code)))
         : [await this.tournamentApiClient.getTournamentEvents(tournamentCode)];
-      
+
       const flatEvents = events.flat();
-      
+
       for (const event of flatEvents) {
         try {
           const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
-          
+
           for (const draw of draws) {
             await this.createOrUpdateDraw(tournamentCode, event.Code, draw);
           }
@@ -199,119 +194,135 @@ export class TournamentEventProcessor {
   }
 
   private async createOrUpdateEvent(tournamentCode: string, event: TournamentEvent): Promise<void> {
-    // TODO: Implement database upsert for tournament event
-    const eventData = {
-      tournamentCode,
-      externalCode: event.Code,
-      name: event.Name,
-      genderType: this.mapGenderType(event.GenderID),
-      gameType: this.mapGameType(event.GameTypeID),
-      level: event.LevelID,
-      paraClass: event.ParaClassID,
-    };
+    this.logger.debug(`Creating/updating tournament sub-event: ${event.Name} (${event.Code})`);
 
-    this.logger.debug(`Creating/updating event: ${event.Name} (${event.Code})`);
-    // await this.eventRepository.upsert(eventData, ['tournamentCode', 'externalCode']);
+    // Check if event already exists
+    const existingEvent = await TournamentSubEvent.findOne({
+      where: { visualCode: event.Code },
+    });
+
+    if (existingEvent) {
+      existingEvent.name = event.Name;
+      existingEvent.eventType = this.mapGenderType(event.GenderID);
+      existingEvent.gameType = this.mapGameType(event.GameTypeID);
+      existingEvent.level = event.LevelID;
+      await existingEvent.save();
+    } else {
+      const newEvent = new TournamentSubEvent();
+      newEvent.name = event.Name;
+      newEvent.eventType = this.mapGenderType(event.GenderID);
+      newEvent.gameType = this.mapGameType(event.GameTypeID);
+      newEvent.level = event.LevelID;
+      newEvent.visualCode = event.Code;
+      await newEvent.save();
+    }
   }
 
   private async createOrUpdateEntry(tournamentCode: string, eventCode: string, entry: Entry): Promise<void> {
-    // TODO: Implement database upsert for tournament entry
-    const entryData = {
-      tournamentCode,
-      eventCode,
-      stageCode: entry.StageEntries?.StageEntry?.StageCode,
-      seed: entry.StageEntries?.StageEntry?.Seed,
-      
-      // Player 1 (always present)
-      player1MemberId: entry.Player1.MemberID,
-      player1Firstname: entry.Player1.Firstname,
-      player1Lastname: entry.Player1.Lastname,
-      player1GenderType: this.mapGenderType(entry.Player1.GenderID),
-      player1CountryCode: entry.Player1.CountryCode,
-      
-      // Player 2 (for doubles)
-      player2MemberId: entry.Player2?.MemberID,
-      player2Firstname: entry.Player2?.Firstname,
-      player2Lastname: entry.Player2?.Lastname,
-      player2GenderType: entry.Player2 ? this.mapGenderType(entry.Player2.GenderID) : null,
-      player2CountryCode: entry.Player2?.CountryCode,
-    };
+    this.logger.debug(
+      `Processing entry: ${entry.Player1.Firstname} ${entry.Player1.Lastname}${entry.Player2 ? ` / ${entry.Player2.Firstname} ${entry.Player2.Lastname}` : ''}`,
+    );
 
-    this.logger.debug(`Creating/updating entry: ${entry.Player1.Firstname} ${entry.Player1.Lastname}${entry.Player2 ? ` / ${entry.Player2.Firstname} ${entry.Player2.Lastname}` : ''}`);
-    // await this.entryRepository.upsert(entryData, ['tournamentCode', 'eventCode', 'player1MemberId', 'player2MemberId']);
-    
-    // Also ensure players exist in our system
+    // Ensure players exist in our system first
     await this.createOrUpdatePlayer(entry.Player1);
     if (entry.Player2) {
       await this.createOrUpdatePlayer(entry.Player2);
     }
+
+    // For tournament entries, we may not need to store them separately
+    // as they are mainly for tournament structure information
+    // The actual player participation is captured through games/matches
   }
 
   private async createOrUpdatePlayer(player: any): Promise<void> {
-    // TODO: Implement player upsert - check if player exists by MemberID and update if needed
-    const playerData = {
-      memberId: player.MemberID,
-      firstname: player.Firstname,
-      lastname: player.Lastname,
-      genderType: this.mapGenderType(player.GenderID),
-      countryCode: player.CountryCode,
-    };
-
     this.logger.debug(`Creating/updating player: ${player.Firstname} ${player.Lastname} (${player.MemberID})`);
-    // await this.playerRepository.upsert(playerData, ['memberId']);
+
+    // Check if player already exists
+    const existingPlayer = await Player.findOne({
+      where: { memberId: player.MemberID },
+    });
+
+    if (existingPlayer) {
+      existingPlayer.firstName = player.Firstname;
+      existingPlayer.lastName = player.Lastname;
+      existingPlayer.gender = this.mapGenderType(player.GenderID) === 'M' ? 'M' : this.mapGenderType(player.GenderID) === 'F' ? 'F' : 'M';
+      existingPlayer.competitionPlayer = true;
+      await existingPlayer.save();
+    } else {
+      const newPlayer = new Player();
+      newPlayer.memberId = player.MemberID;
+      newPlayer.firstName = player.Firstname;
+      newPlayer.lastName = player.Lastname;
+      newPlayer.gender = this.mapGenderType(player.GenderID) === 'M' ? 'M' : this.mapGenderType(player.GenderID) === 'F' ? 'F' : 'M';
+      newPlayer.competitionPlayer = true;
+      await newPlayer.save();
+    }
   }
 
   private async createOrUpdateDraw(tournamentCode: string, eventCode: string, draw: TournamentDraw): Promise<void> {
-    // TODO: Implement database upsert for tournament draw
-    const drawData = {
-      tournamentCode,
-      eventCode,
-      externalCode: draw.Code,
-      name: draw.Name,
-      type: this.mapDrawType(draw.TypeID),
-      size: draw.Size,
-      qualification: draw.Qualification,
-      stageCode: draw.StageCode,
-      position: draw.Position,
-    };
+    this.logger.debug(`Creating/updating tournament draw: ${draw.Name} (${draw.Code})`);
 
-    this.logger.debug(`Creating/updating draw: ${draw.Name} (${draw.Code})`);
-    // await this.drawRepository.upsert(drawData, ['tournamentCode', 'eventCode', 'externalCode']);
+    // Check if draw already exists
+    const existingDraw = await TournamentDrawModel.findOne({
+      where: { visualCode: draw.Code },
+    });
+
+    if (existingDraw) {
+      existingDraw.name = draw.Name;
+      existingDraw.type = this.mapDrawType(draw.TypeID);
+      existingDraw.size = draw.Size;
+      await existingDraw.save();
+    } else {
+      const newDraw = new TournamentDrawModel();
+      newDraw.name = draw.Name;
+      newDraw.type = this.mapDrawType(draw.TypeID);
+      newDraw.size = draw.Size;
+      newDraw.visualCode = draw.Code;
+      newDraw.risers = 0;
+      newDraw.fallers = 0;
+      await newDraw.save();
+    }
   }
 
   private async processMatch(tournamentCode: string, match: Match, isCompetition: boolean): Promise<void> {
-    // TODO: Implement match processing and database upsert
-    const matchData = {
-      tournamentCode,
-      externalCode: match.Code,
-      eventCode: match.EventCode,
-      eventName: match.EventName,
-      drawCode: match.DrawCode,
-      drawName: match.DrawName,
-      roundName: match.RoundName,
-      winner: match.Winner,
-      scoreStatus: match.ScoreStatus,
-      matchTime: match.MatchTime ? new Date(match.MatchTime) : null,
-      courtCode: match.CourtCode,
-      courtName: match.CourtName,
-      locationCode: match.LocationCode,
-      locationName: match.LocationName,
-      duration: match.Duration,
-      isCompetition,
-      
-      // Team/Player info
-      team1Player1Id: match.Team1?.Player1?.MemberID,
-      team1Player2Id: match.Team1?.Player2?.MemberID,
-      team2Player1Id: match.Team2?.Player1?.MemberID,
-      team2Player2Id: match.Team2?.Player2?.MemberID,
-      
-      // Sets/scores
-      sets: match.Sets?.Set || [],
-    };
+    this.logger.debug(`Processing tournament match: ${match.Code} - ${match.EventName}`);
 
-    this.logger.debug(`Processing match: ${match.Code} - ${match.EventName}`);
-    // await this.matchRepository.upsert(matchData, ['tournamentCode', 'externalCode']);
-    
+    // Check if game already exists
+    const existingGame = await Game.findOne({
+      where: { visualCode: match.Code },
+    });
+
+    if (existingGame) {
+      existingGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
+      existingGame.gameType = this.mapGameTypeToEnum(match.EventName);
+      existingGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
+      existingGame.winner = match.Winner;
+      existingGame.round = match.RoundName;
+      existingGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
+      existingGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
+      existingGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
+      existingGame.set2Team2 = match.Sets?.Set?.[1]?.Team2;
+      existingGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
+      existingGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
+      await existingGame.save();
+    } else {
+      const newGame = new Game();
+      newGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
+      newGame.gameType = this.mapGameTypeToEnum(match.EventName);
+      newGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
+      newGame.winner = match.Winner;
+      newGame.round = match.RoundName;
+      newGame.linkType = isCompetition ? 'competition' : 'tournament';
+      newGame.visualCode = match.Code;
+      newGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
+      newGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
+      newGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
+      newGame.set2Team2 = match.Sets?.Set?.[1]?.Team2;
+      newGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
+      newGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
+      await newGame.save();
+    }
+
     // Ensure players exist in our system
     if (match.Team1?.Player1) {
       await this.createOrUpdatePlayer(match.Team1.Player1);
@@ -330,26 +341,66 @@ export class TournamentEventProcessor {
   // Helper methods for mapping
   private mapGenderType(genderId: number): string {
     switch (genderId) {
-      case 1: return 'men';
-      case 2: return 'women';
-      case 3: return 'mixed';
-      default: return 'unknown';
+      case 1:
+        return 'M';
+      case 2:
+        return 'F';
+      case 3:
+        return 'MX';
+      default:
+        return 'M';
     }
   }
 
   private mapGameType(gameTypeId: number): string {
     switch (gameTypeId) {
-      case 1: return 'singles';
-      case 2: return 'doubles';
-      default: return 'unknown';
+      case 1:
+        return 'S';
+      case 2:
+        return 'D';
+      default:
+        return 'S';
     }
   }
 
   private mapDrawType(drawTypeId: number): string {
     switch (drawTypeId) {
-      case 0: return 'knockout';
-      case 3: return 'round_robin';
-      default: return 'unknown';
+      case 0:
+        return 'KO'; // Knockout elimination
+      case 1:
+        return 'QUALIFICATION'; // Qualification rounds
+      case 2:
+        return 'QUALIFICATION'; // Pre-qualification
+      case 3:
+        return 'POULE'; // Round-robin groups
+      case 4:
+        return 'KO'; // Playoff/championship
+      case 5:
+        return 'QUALIFICATION'; // Qualifying tournament
+      default:
+        return 'KO'; // Default to knockout
+    }
+  }
+
+  private mapGameTypeToEnum(eventName: string): GameType {
+    if (eventName?.toLowerCase().includes('single')) return GameType.S;
+    if (eventName?.toLowerCase().includes('double')) return GameType.D;
+    if (eventName?.toLowerCase().includes('mixed')) return GameType.MX;
+    return GameType.S; // Default to singles
+  }
+
+  private mapMatchStatus(scoreStatus: string): GameStatus {
+    switch (scoreStatus?.toLowerCase()) {
+      case 'played':
+        return GameStatus.NORMAL;
+      case 'scheduled':
+        return GameStatus.NORMAL;
+      case 'postponed':
+        return GameStatus.NORMAL;
+      case 'cancelled':
+        return GameStatus.NO_MATCH;
+      default:
+        return GameStatus.NORMAL;
     }
   }
 }
