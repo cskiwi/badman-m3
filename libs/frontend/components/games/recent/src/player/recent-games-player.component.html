@@ -20,17 +20,75 @@
                 game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name
               ) {
                 @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
-                  <span class="text-base font-semibold text-color"
-                    >{{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                  <span class="text-base font-semibold">
+                    @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id) {
+                      <a
+                        [routerLink]="['/tournament', game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id]"
+                        class="text-color no-underline"
+                      >
+                        {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                      </a>
+                    } @else {
+                      {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                    }
                     @if (game?.tournamentDraw?.name) {
-                      <span class="text-sm font-medium text-color-secondary">({{ game?.tournamentDraw?.name }})</span>
+                      <span class="text-sm font-medium"
+                        >(
+                        @if (game?.tournamentDraw?.id) {
+                          <a
+                            [routerLink]="[
+                              '/tournament',
+                              game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
+                              'sub-events',
+                              game?.tournamentDraw?.tournamentSubEvent?.id,
+                              'draws',
+                              game?.tournamentDraw?.id,
+                            ]"
+                            class="text-muted-color no-underline"
+                          >
+                            {{ game?.tournamentDraw?.name }}
+                          </a>
+                        } @else {
+                          <span class="text-muted-color">{{ game?.tournamentDraw?.name }}</span>
+                        }
+                        )</span
+                      >
                     }
                   </span>
                 } @else if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
-                  <span class="text-base font-semibold text-color">
-                    {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                  <span class="text-base font-semibold">
+                    @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id) {
+                      <a
+                        [routerLink]="['/competition', game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id]"
+                        class="text-color no-underline"
+                      >
+                        {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                      </a>
+                    } @else {
+                      {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                    }
                     @if (game?.competitionEncounter?.drawCompetition?.name) {
-                      <span class="text-sm font-medium text-color-secondary">({{ game?.competitionEncounter?.drawCompetition?.name }})</span>
+                      <span class="text-sm font-medium"
+                        >(
+                        @if (game?.competitionEncounter?.drawCompetition?.id) {
+                          <a
+                            [routerLink]="[
+                              '/competition',
+                              game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
+                              'sub-events',
+                              game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id,
+                              'draws',
+                              game?.competitionEncounter?.drawCompetition?.id,
+                            ]"
+                            class="text-muted-color no-underline"
+                          >
+                            {{ game?.competitionEncounter?.drawCompetition?.name }}
+                          </a>
+                        } @else {
+                          <span class="text-muted-color">{{ game?.competitionEncounter?.drawCompetition?.name }}</span>
+                        }
+                        )</span
+                      >
                     }
                   </span>
                 }
@@ -103,10 +161,7 @@
                             {{ membership?.gamePlayer?.fullName }}
                           </div>
                         } @else {
-                          <div
-                            class="text-base font-bold text-primary-600 truncate  focus:outline-none"
-                            tabindex="0"
-                          >
+                          <div class="text-base font-bold text-primary-600 truncate focus:outline-none" tabindex="0">
                             {{ membership?.gamePlayer?.fullName }}
                             <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                           </div>
@@ -129,7 +184,7 @@
 
                 <!-- VS Divider -->
                 <div class="flex items-center">
-                  <div class="bg-surface-200 dark:bg-surface-700 px-3 py-1 rounded-full">
+                  <div class="px-3 py-1 rounded-full">
                     <span class="text-sm font-bold text-color-secondary uppercase tracking-wide">vs</span>
                   </div>
                 </div>
@@ -159,10 +214,7 @@
                             {{ membership?.gamePlayer?.fullName }}
                           </div>
                         } @else {
-                          <div
-                            class="text-base font-bold text-primary-600 truncate  focus:outline-none"
-                            tabindex="0"
-                          >
+                          <div class="text-base font-bold text-primary-600 truncate focus:outline-none" tabindex="0">
                             {{ membership?.gamePlayer?.fullName }}
                             <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                           </div>
@@ -206,9 +258,7 @@
                     </div>
                   </div>
                   @if (getTeamPoints(game, 1) !== 0) {
-                    <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">
-                      {{ formatPoints(getTeamPoints(game, 1)) }}pts
-                    </div>
+                    <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 1)) }}pts</div>
                   }
                 </div>
 
@@ -248,9 +298,7 @@
                     </div>
                   </div>
                   @if (getTeamPoints(game, 2) !== 0) {
-                    <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">
-                      {{ formatPoints(getTeamPoints(game, 2)) }}pts
-                    </div>
+                    <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 2)) }}pts</div>
                   }
                 </div>
               </div>
@@ -296,7 +344,9 @@
               <!-- Set 1 -->
               @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
                 <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 1</div>
+                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">
+                    {{ 'all.game.common.set' | translate }} 1
+                  </div>
                   <div class="text-lg sm:text-2xl font-semibold">
                     <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                       game?.set1Team1
@@ -312,7 +362,9 @@
               <!-- Set 2 -->
               @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
                 <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 2</div>
+                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">
+                    {{ 'all.game.common.set' | translate }} 2
+                  </div>
                   <div class="text-lg sm:text-2xl font-semibold">
                     <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                       game?.set2Team1
@@ -328,7 +380,9 @@
               <!-- Set 3 (only if exists) -->
               @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
                 <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">{{ 'all.game.common.set' | translate }} 3</div>
+                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">
+                    {{ 'all.game.common.set' | translate }} 3
+                  </div>
                   <div class="text-lg sm:text-2xl font-semibold">
                     <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
                       game?.set3Team1
@@ -353,12 +407,12 @@
         <p class="">{{ 'all.game.recent.noPlayerGamesDescription' | translate }}</p>
       </div>
     }
-    
+
     <!-- Infinite scroll sentinel for large screens -->
     @if (!isMobile() && hasMore() && games().length > 0) {
       <div #scrollSentinel class="scroll-sentinel h-1"></div>
     }
-    
+
     <!-- Load more button for mobile -->
     @if (isMobile() && hasMore() && games().length > 0) {
       <div class="flex justify-center mt-6">
@@ -371,10 +425,10 @@
         />
       </div>
     }
-    
+
     <!-- Loading more skeletons -->
     @if (loadingMore()) {
-      @for (i of [1,2,3]; track i) {
+      @for (i of [1, 2, 3]; track i) {
         <div class="rounded-border overflow-hidden mb-6">
           <!-- Skeleton Header -->
           <div class="bg-highlight px-6 py-4">
@@ -386,12 +440,12 @@
                   <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
                 </div>
               </div>
-              
+
               <!-- Center: Tournament skeleton -->
               <div class="flex-1 text-center px-4">
                 <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
               </div>
-              
+
               <!-- Right: Game type skeleton -->
               <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
             </div>
@@ -406,7 +460,7 @@
                 <p-skeleton width="6rem" height="1rem" class="ml-auto"></p-skeleton>
                 <p-skeleton width="5rem" height="1rem" class="ml-auto"></p-skeleton>
               </div>
-              
+
               <!-- VS section -->
               <div class="flex items-center gap-4">
                 <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
@@ -415,7 +469,7 @@
                 </div>
                 <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
               </div>
-              
+
               <!-- Team 2 -->
               <div class="flex-1 text-left space-y-2">
                 <p-skeleton width="6rem" height="1rem"></p-skeleton>
@@ -425,7 +479,7 @@
 
             <!-- Score skeleton -->
             <div class="flex justify-center gap-4">
-              @for (set of [1,2]; track set) {
+              @for (set of [1, 2]; track set) {
                 <div class="rounded-lg px-4 py-3 text-center min-w-20">
                   <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3"></p-skeleton>
                   <p-skeleton width="3rem" height="1.5rem" class="mx-auto"></p-skeleton>
@@ -437,7 +491,7 @@
       }
     }
   } @else {
-     @for (i of [1,2,3,5,6,7]; track i) {
+    @for (i of [1, 2, 3, 5, 6, 7]; track i) {
       <div class="rounded-border overflow-hidden mb-6">
         <!-- Skeleton Header -->
         <div class="bg-highlight px-6 py-4">
@@ -449,12 +503,12 @@
                 <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
               </div>
             </div>
-            
+
             <!-- Center: Tournament skeleton -->
             <div class="flex-1 text-center px-4">
               <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
             </div>
-            
+
             <!-- Right: Game type skeleton -->
             <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
           </div>
@@ -469,7 +523,7 @@
               <p-skeleton width="6rem" height="1rem" class="ml-auto"></p-skeleton>
               <p-skeleton width="5rem" height="1rem" class="ml-auto"></p-skeleton>
             </div>
-            
+
             <!-- VS section -->
             <div class="flex items-center gap-4">
               <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
@@ -478,7 +532,7 @@
               </div>
               <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
             </div>
-            
+
             <!-- Team 2 -->
             <div class="flex-1 text-left space-y-2">
               <p-skeleton width="6rem" height="1rem"></p-skeleton>
@@ -488,7 +542,7 @@
 
           <!-- Score skeleton -->
           <div class="flex justify-center gap-4">
-            @for (set of [1,2]; track set) {
+            @for (set of [1, 2]; track set) {
               <div class="rounded-lg px-4 py-3 text-center min-w-20">
                 <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3"></p-skeleton>
                 <p-skeleton width="3rem" height="1.5rem" class="mx-auto"></p-skeleton>

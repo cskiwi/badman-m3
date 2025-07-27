@@ -19,14 +19,112 @@
                 ) {
                   <div class="text-xs text-muted-color truncate">
                     @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
-                      {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                      @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id) {
+                        <a
+                          [routerLink]="['/tournament', game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id]"
+                          class="text-color no-underline"
+                        >
+                          {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                        </a>
+                      } @else {
+                        {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+                      }
+                      <!-- Subevent -->
+                      @if (game?.tournamentDraw?.tournamentSubEvent?.name) {
+                        <span class="text-sm font-medium">
+                          ,
+                          @if (game?.tournamentDraw?.tournamentSubEvent?.id) {
+                            <a
+                              [routerLink]="[
+                                '/tournament',
+                                game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
+                                'subevent',
+                                game?.tournamentDraw?.tournamentSubEvent?.id
+                              ]"
+                              class="text-muted-color no-underline"
+                            >
+                              {{ game?.tournamentDraw?.tournamentSubEvent?.name }}
+                            </a>
+                          } @else {
+                            <span class="text-muted-color">{{ game?.tournamentDraw?.tournamentSubEvent?.name }}</span>
+                          }
+                        </span>
+                      }
+                      <!-- Draw -->
                       @if (game?.tournamentDraw?.name) {
-                        <span class="text-muted-color-emphasis">({{ game?.tournamentDraw?.name }})</span>
+                        <span class="text-sm font-medium">
+                          (
+                          @if (game?.tournamentDraw?.id) {
+                            <a
+                              [routerLink]="[
+                                '/tournament',
+                                game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
+                                'draws',
+                                game?.tournamentDraw?.id
+                              ]"
+                              class="text-muted-color no-underline"
+                            >
+                              {{ game?.tournamentDraw?.name }}
+                            </a>
+                          } @else {
+                            <span class="text-muted-color">{{ game?.tournamentDraw?.name }}</span>
+                          }
+                          )
+                        </span>
                       }
                     } @else if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
-                      {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                      @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id) {
+                        <a
+                          [routerLink]="['/competition', game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id]"
+                          class="text-color no-underline"
+                        >
+                          {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                        </a>
+                      } @else {
+                        {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+                      }
+                      <!-- Subevent -->
+                      @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.name) {
+                        <span class="text-sm font-medium">
+                          ,
+                          @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id) {
+                            <a
+                              [routerLink]="[
+                                '/competition',
+                                game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
+                                'subevent',
+                                game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id
+                              ]"
+                              class="text-muted-color no-underline"
+                            >
+                              {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.name }}
+                            </a>
+                          } @else {
+                            <span class="text-muted-color">{{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.name }}</span>
+                          }
+                        </span>
+                      }
+                      <!-- Draw -->
                       @if (game?.competitionEncounter?.drawCompetition?.name) {
-                        <span class="text-muted-color-emphasis">({{ game?.competitionEncounter?.drawCompetition?.name }})</span>
+                        <span class="text-sm font-medium">
+                          (
+                          @if (game?.competitionEncounter?.drawCompetition?.id) {
+                            <a
+                              [routerLink]="[
+                                '/competition',
+                                game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
+                                'draws',
+                                game?.competitionEncounter?.drawCompetition?.id
+                              ]"
+                              class="text-muted-color no-underline"
+                            >
+                              {{ game?.competitionEncounter?.drawCompetition?.name }}
+                            </a>
+                          } @else {
+                            <span class="text-muted-color">{{ game?.competitionEncounter?.drawCompetition?.name }}</span>
+                          }
+                          )
+                        </span>
                       }
                     }
                   </div>
@@ -83,9 +181,9 @@
                 } @else {
                   <div class="w-3 h-3 bg-surface-300 rounded-full"></div>
                 }
-
+ 
                 <!-- VS Divider -->
-                <div class="bg-surface-200 dark:bg-surface-700 px-2 py-1 rounded-full">
+                <div class="px-2 py-1 rounded-full">
                   <span class="text-xs font-bold text-muted-color uppercase tracking-wide">vs</span>
                 </div>
 
@@ -140,7 +238,9 @@
                   </div>
                 </div>
                 @if (getTeamPoints(game, 1) !== 0) {
-                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 1)) }}{{ 'all.game.common.pts' | translate }}</div>
+                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">
+                    {{ formatPoints(getTeamPoints(game, 1)) }}{{ 'all.game.common.pts' | translate }}
+                  </div>
                 }
               </div>
 
@@ -173,7 +273,9 @@
                   </div>
                 </div>
                 @if (getTeamPoints(game, 2) !== 0) {
-                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 2)) }}{{ 'all.game.common.pts' | translate }}</div>
+                  <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">
+                    {{ formatPoints(getTeamPoints(game, 2)) }}{{ 'all.game.common.pts' | translate }}
+                  </div>
                 }
               </div>
             </div>
@@ -280,7 +382,13 @@
     <!-- Load more button for mobile -->
     @if (isMobile() && hasMore() && games().length > 0) {
       <div class="flex justify-center mt-6">
-        <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" styleClass="p-button-outlined" icon="pi pi-plus" />
+        <p-button
+          [label]="'all.game.common.loadMore' | translate"
+          [loading]="loadingMore()"
+          (onClick)="loadMore()"
+          styleClass="p-button-outlined"
+          icon="pi pi-plus"
+        />
       </div>
     }
 
