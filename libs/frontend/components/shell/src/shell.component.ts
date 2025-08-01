@@ -22,16 +22,7 @@ import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
 
 @Component({
-  imports: [
-    RouterModule,
-    TranslateModule,
-    ButtonModule,
-    MenuModule,
-    DividerModule,
-    ToastModule,
-    ToolbarModule,
-    SearchComponent
-  ],
+  imports: [RouterModule, TranslateModule, ButtonModule, MenuModule, DividerModule, ToastModule, ToolbarModule, SearchComponent],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -66,7 +57,7 @@ export class ShellComponent {
   userMenuItems = computed<MenuItem[]>(() => {
     const currentLang = this.currentLanguage();
     const isDark = this.isDarkMode();
-    
+
     const baseItems: MenuItem[] = [
       {
         label: this.user()?.firstName || 'User',
@@ -106,14 +97,14 @@ export class ShellComponent {
       disabled: true,
     });
 
-    Object.values(AvaliableLanguages).forEach(lang => {
+    Object.values(AvaliableLanguages).forEach((lang) => {
       baseItems.push({
         label: this.translate.instant('all.settings.languages.' + lang),
         icon: currentLang === lang ? 'pi pi-check' : 'pi pi-circle',
         command: (event) => {
           this.setLanguage(lang);
         },
-        styleClass: 'ml-4' // Indent language options
+        styleClass: 'ml-4', // Indent language options
       });
     });
 
@@ -237,11 +228,8 @@ export class ShellComponent {
         .subscribe(() => {
           this.messageService.add({
             severity: 'info',
-            summary: this.translate.instant('system.update.available'),
-            detail: this.translate.instant('system.update.description'),
-            life: 0,
-            closable: true,
-            sticky: true,
+            summary: 'all.system.update.available',
+            detail: 'all.system.update.description',
             data: {
               showRefreshButton: true,
             },
