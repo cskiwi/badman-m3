@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
+import { AUTH_KEY, AuthService } from '@app/frontend-modules-auth/service';
 
 export interface QueueStats {
   waiting: number;
@@ -43,6 +44,7 @@ export interface Tournament {
 
 export class SyncDashboardService {
   private readonly apollo = inject(Apollo);
+  private readonly auth = inject(AuthService);
 
   // Filter form for reactive updates
   filter = new FormGroup({
@@ -59,9 +61,14 @@ export class SyncDashboardService {
 
   // Queue Stats Resource
   private queueStatsResource = resource({
-    params: computed(() => ({ refresh: this.refreshTrigger() })),
-    loader: async ({ abortSignal }) => {
+    params: computed(() => ({ refresh: this.refreshTrigger(), user: this.auth.loggedIn() })),
+    loader: async ({ abortSignal, params: { user } }) => {
       try {
+        // we need to skip the user check for SSR
+        if (!user) {
+          return null;
+        }
+
         const result = await lastValueFrom(
           this.apollo.query<{ syncStatus: SyncStatus }>({
             query: gql`
@@ -80,12 +87,15 @@ export class SyncDashboardService {
             `,
             context: { signal: abortSignal },
             fetchPolicy: 'network-only', // Always fetch fresh data
+            // errorPolicy: 'all', // Continue even with GraphQL errors
           }),
         );
 
         return result?.data?.syncStatus || null;
       } catch (err) {
-        throw new Error(this.handleError(err as HttpErrorResponse));
+        console.warn('Failed to load sync status:', err);
+        // Return null instead of throwing to prevent SSR crashes
+        return null;
       }
     },
   });
@@ -94,7 +104,7 @@ export class SyncDashboardService {
   private recentJobsResource = resource({
     params: computed(() => ({
       ...this.filterSignal(),
-      refresh: this.refreshTrigger()
+      refresh: this.refreshTrigger(),
     })),
     loader: async ({ params, abortSignal }) => {
       try {
@@ -120,12 +130,15 @@ export class SyncDashboardService {
             },
             context: { signal: abortSignal },
             fetchPolicy: 'network-only', // Always fetch fresh data
+            errorPolicy: 'all', // Continue even with GraphQL errors
           }),
         );
 
         return result?.data?.syncJobs || [];
       } catch (err) {
-        throw new Error(this.handleError(err as HttpErrorResponse));
+        console.warn('Failed to load sync jobs:', err);
+        // Return empty array instead of throwing to prevent SSR crashes
+        return [];
       }
     },
   });
@@ -136,8 +149,8 @@ export class SyncDashboardService {
     loader: async ({ abortSignal }) => {
       try {
         // TODO: Replace with actual GraphQL query when tournaments API is ready
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-        
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+
         const tournaments: Tournament[] = [
           {
             id: '1',
@@ -148,7 +161,7 @@ export class SyncDashboardService {
             startDate: new Date('2025-09-01'),
             endDate: new Date('2026-04-30'),
             lastSyncAt: new Date(Date.now() - 86400000),
-            syncStatus: 'success'
+            syncStatus: 'success',
           },
           {
             id: '2',
@@ -159,13 +172,15 @@ export class SyncDashboardService {
             startDate: new Date('2025-04-26'),
             endDate: new Date('2025-04-27'),
             lastSyncAt: new Date(Date.now() - 7200000),
-            syncStatus: 'success'
-          }
+            syncStatus: 'success',
+          },
         ];
 
         return tournaments;
       } catch (err) {
-        throw new Error(this.handleError(err as HttpErrorResponse));
+        console.warn('Failed to load tournaments:', err);
+        // Return empty array instead of throwing to prevent SSR crashes
+        return [];
       }
     },
   });
@@ -185,11 +200,7 @@ export class SyncDashboardService {
   tournamentsError = computed(() => this.tournamentsResource.error()?.message || null);
 
   // Combined loading state
-  loading = computed(() => 
-    this.queueStatsLoading() || 
-    this.recentJobsLoading() || 
-    this.tournamentsLoading()
-  );
+  loading = computed(() => this.queueStatsLoading() || this.recentJobsLoading() || this.tournamentsLoading());
 
   // Action methods
   async triggerDiscoverySync(): Promise<{ message: string; success: boolean }> {
@@ -204,12 +215,12 @@ export class SyncDashboardService {
               }
             }
           `,
-        })
+        }),
       );
 
       // Refresh data after successful trigger
       this.refresh();
-      
+
       return result.data!.triggerDiscoverySync;
     } catch (err) {
       throw new Error(this.handleError(err as HttpErrorResponse));
@@ -228,12 +239,12 @@ export class SyncDashboardService {
               }
             }
           `,
-        })
+        }),
       );
 
       // Refresh data after successful trigger
       this.refresh();
-      
+
       return result.data!.triggerCompetitionSync;
     } catch (err) {
       throw new Error(this.handleError(err as HttpErrorResponse));
@@ -252,12 +263,12 @@ export class SyncDashboardService {
               }
             }
           `,
-        })
+        }),
       );
 
       // Refresh data after successful trigger
       this.refresh();
-      
+
       return result.data!.triggerTournamentSync;
     } catch (err) {
       throw new Error(this.handleError(err as HttpErrorResponse));
@@ -266,7 +277,7 @@ export class SyncDashboardService {
 
   // Manual refresh method
   refresh(): void {
-    this.refreshTrigger.update(val => val + 1);
+    this.refreshTrigger.update((val) => val + 1);
   }
 
   // Update filter settings

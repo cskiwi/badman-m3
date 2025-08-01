@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, OnDestroy } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +20,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { SyncDashboardService, Tournament, SyncJob } from './sync-dashboard.service';
-
 
 @Component({
   selector: 'app-sync-dashboard',
@@ -45,9 +44,9 @@ import { SyncDashboardService, Tournament, SyncJob } from './sync-dashboard.serv
   ],
   providers: [MessageService, ConfirmationService, SyncDashboardService],
   templateUrl: './sync-dashboard.component.html',
-  styleUrl: './sync-dashboard.component.scss'
+  styleUrl: './sync-dashboard.component.scss',
 })
-export class SyncDashboardComponent implements OnInit, OnDestroy {
+export class SyncDashboardComponent {
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private syncService = inject(SyncDashboardService);
@@ -56,7 +55,7 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
   queueStats = this.syncService.queueStats;
   recentJobs = this.syncService.recentJobs;
   tournaments = this.syncService.tournaments;
-  
+
   loading = this.syncService.loading;
   loadingStats = this.syncService.queueStatsLoading;
   loadingJobs = this.syncService.recentJobsLoading;
@@ -74,14 +73,14 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
   typeOptions = [
     { label: 'All Types', value: null },
     { label: 'Competition', value: 'competition' },
-    { label: 'Tournament', value: 'tournament' }
+    { label: 'Tournament', value: 'tournament' },
   ];
 
   statusOptions = [
     { label: 'All Statuses', value: null },
     { label: 'Active', value: 'active' },
     { label: 'Finished', value: 'finished' },
-    { label: 'Cancelled', value: 'cancelled' }
+    { label: 'Cancelled', value: 'cancelled' },
   ];
 
   // Computed filtered tournaments
@@ -90,38 +89,23 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
 
     if (this.searchTerm) {
       const search = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(t => 
-        t.name.toLowerCase().includes(search) ||
-        t.visualCode.toLowerCase().includes(search)
-      );
+      filtered = filtered.filter((t) => t.name.toLowerCase().includes(search) || t.visualCode.toLowerCase().includes(search));
     }
 
     if (this.selectedType) {
-      filtered = filtered.filter(t => t.type === this.selectedType);
+      filtered = filtered.filter((t) => t.type === this.selectedType);
     }
 
     if (this.selectedStatus) {
-      filtered = filtered.filter(t => t.status === this.selectedStatus);
+      filtered = filtered.filter((t) => t.status === this.selectedStatus);
     }
 
     return filtered;
   });
 
-  private pollingInterval?: number;
-
-  ngOnInit(): void {
-    this.startPolling();
-  }
-
-  ngOnDestroy(): void {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
-    }
-  }
-
-  private startPolling(): void {
+  constructor() {
     // Poll data every 30 seconds using service refresh
-    this.pollingInterval = window.setInterval(() => {
+    setInterval(() => {
       this.syncService.refresh();
     }, 30000);
   }
@@ -130,17 +114,17 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
     this.actionLoading.set(true);
     try {
       const response = await this.syncService.triggerDiscoverySync();
-      
+
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
-        detail: response.message || 'Tournament discovery sync started'
+        detail: response.message || 'Tournament discovery sync started',
       });
     } catch (error) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Failed to start discovery sync'
+        detail: 'Failed to start discovery sync',
       });
     } finally {
       this.actionLoading.set(false);
@@ -156,44 +140,41 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
         this.actionLoading.set(true);
         try {
           // Trigger both competition and tournament sync
-          await Promise.all([
-            this.syncService.triggerCompetitionSync(),
-            this.syncService.triggerTournamentSync()
-          ]);
-          
+          await Promise.all([this.syncService.triggerCompetitionSync(), this.syncService.triggerTournamentSync()]);
+
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Manual sync started for all tournaments'
+            detail: 'Manual sync started for all tournaments',
           });
         } catch (error) {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to start manual sync'
+            detail: 'Failed to start manual sync',
           });
         } finally {
           this.actionLoading.set(false);
         }
-      }
+      },
     });
   }
 
   async syncTournament(tournament: Tournament): Promise<void> {
     try {
       // TODO: Call tournament sync service for specific tournament
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
-        detail: `Structure sync started for ${tournament.name}`
+        detail: `Structure sync started for ${tournament.name}`,
       });
     } catch (error) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: `Failed to sync ${tournament.name}`
+        detail: `Failed to sync ${tournament.name}`,
       });
     }
   }
@@ -201,18 +182,18 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
   async syncTournamentGames(tournament: Tournament): Promise<void> {
     try {
       // TODO: Call tournament sync service for game sync
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+
       this.messageService.add({
         severity: 'success',
         summary: 'Success',
-        detail: `Game sync started for ${tournament.name}`
+        detail: `Game sync started for ${tournament.name}`,
       });
     } catch (error) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: `Failed to sync games for ${tournament.name}`
+        detail: `Failed to sync games for ${tournament.name}`,
       });
     }
   }
@@ -238,54 +219,69 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
       accept: async () => {
         try {
           // TODO: Call retry API
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: `Job ${job.id} queued for retry`
+            detail: `Job ${job.id} queued for retry`,
           });
-          
+
           // Refresh jobs
           this.syncService.refresh();
         } catch (error) {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: `Failed to retry job ${job.id}`
+            detail: `Failed to retry job ${job.id}`,
           });
         }
-      }
+      },
     });
   }
 
   getJobStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
     switch (status) {
-      case 'completed': return 'success';
-      case 'active': return 'info';
-      case 'waiting': return 'warning';
-      case 'failed': return 'danger';
-      default: return 'info';
+      case 'completed':
+        return 'success';
+      case 'active':
+        return 'info';
+      case 'waiting':
+        return 'warning';
+      case 'failed':
+        return 'danger';
+      default:
+        return 'info';
     }
   }
 
   getTournamentStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
     switch (status) {
-      case 'active': return 'success';
-      case 'finished': return 'info';
-      case 'cancelled': return 'danger';
-      case 'postponed': return 'warning';
-      default: return 'info';
+      case 'active':
+        return 'success';
+      case 'finished':
+        return 'info';
+      case 'cancelled':
+        return 'danger';
+      case 'postponed':
+        return 'warning';
+      default:
+        return 'info';
     }
   }
 
   getSyncStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
     switch (status) {
-      case 'success': return 'success';
-      case 'syncing': return 'info';
-      case 'error': return 'danger';
-      case 'never': return 'warning';
-      default: return 'info';
+      case 'success':
+        return 'success';
+      case 'syncing':
+        return 'info';
+      case 'error':
+        return 'danger';
+      case 'never':
+        return 'warning';
+      default:
+        return 'info';
     }
   }
 
@@ -293,7 +289,7 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
     const diffMs = endMs - startMs;
     const diffSecs = Math.floor(diffMs / 1000);
     const diffMins = Math.floor(diffSecs / 60);
-    
+
     if (diffMins > 0) {
       return `${diffMins}m ${diffSecs % 60}s`;
     }
@@ -301,7 +297,7 @@ export class SyncDashboardComponent implements OnInit, OnDestroy {
   }
 
   getJobCreatedAt(job: SyncJob): Date {
-    return new Date();  // Since we don't have timestamp in new interface
+    return new Date(); // Since we don't have timestamp in new interface
   }
 
   getJobProcessedAt(job: SyncJob): Date | undefined {
