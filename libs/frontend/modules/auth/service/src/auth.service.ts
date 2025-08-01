@@ -149,6 +149,8 @@ export class AuthService {
     } else {
       // Server-side: check for existing auth cookie
       if (this.cookie.check(AUTH_KEY)) {
+        const storedToken = this.cookie.get(AUTH_KEY);
+        this.tokenSignal.set(storedToken);
         this.loggedInSignal.set(true);
         this.fetchUser();
       }

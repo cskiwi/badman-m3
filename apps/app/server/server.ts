@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
 import { ConfigService } from '@nestjs/config';
 import { NAVIGATOR } from '@app/frontend-utils';
+import cookieParser from 'cookie-parser';
+import { REQUEST } from '@angular/core';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export async function app() {
@@ -20,6 +22,9 @@ export async function app() {
 
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
+
+  // Add cookie parser middleware
+  server.use(cookieParser());
 
   // Serve static files from /browser
   server.get(
@@ -48,7 +53,19 @@ export async function app() {
           publicPath: browserDistFolder,
           providers: [
             { provide: APP_BASE_HREF, useValue: baseUrl },
-            { provide: 'REQUEST', useValue: req },
+            {
+              provide: REQUEST,
+              useValue: {
+                headers: {
+                  get: (name: string) => {
+                    if (name.toLowerCase() === 'cookie') {
+                      return req.headers.cookie || '';
+                    }
+                    return req.headers[name.toLowerCase()];
+                  },
+                },
+              },
+            },
             { provide: 'RESPONSE', useValue: res },
             { provide: NAVIGATOR, useValue: userAgent },
           ],
@@ -74,7 +91,7 @@ async function run(): Promise<void> {
 }
 
 function shouldSkip(url: string) {
-  if (url.startsWith('/api') || url.startsWith('/graphql')) {
+  if (url.startsWith('/api') || url.startsWith('/graphql') || url.startsWith('/.well-known')) {
     return true;
   }
   return false;

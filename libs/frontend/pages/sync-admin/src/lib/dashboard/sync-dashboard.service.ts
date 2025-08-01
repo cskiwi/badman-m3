@@ -2,9 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
-import { AUTH_KEY, AuthService } from '@app/frontend-modules-auth/service';
 
 export interface QueueStats {
   waiting: number;
