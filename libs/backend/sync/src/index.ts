@@ -1,5 +1,7 @@
 export * from './lib/sync.module';
 export { SyncModule } from './lib/sync.module';
+export * from './lib/sync-processors.module';
+export { SyncProcessorsModule } from './lib/sync-processors.module';
 export { SyncService } from './lib/services/sync.service';
 export * from './lib/services/sync.service';
 export * from './lib/queues/sync.queue';

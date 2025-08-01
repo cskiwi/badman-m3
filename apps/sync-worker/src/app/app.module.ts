@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { TournamentApiModule } from '@app/backend-tournament-api';
-import { SyncModule } from '@app/backend-sync';
+import { SyncModule, SyncProcessorsModule } from '@app/backend-sync';
 
 
 @Module({
@@ -23,6 +23,7 @@ import { SyncModule } from '@app/backend-sync';
     }),
     TournamentApiModule,
     SyncModule,
+    SyncProcessorsModule, // Add processors for background job processing
   ],
 })
 export class AppModule {}
