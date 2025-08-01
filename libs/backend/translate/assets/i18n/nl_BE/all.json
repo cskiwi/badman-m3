@@ -132,6 +132,8 @@
     "info": {
       "club-display": "Clubnamen worden onder spelernamen getoond (partnerclubs alleen als ze verschillen)",
       "description": "Analyseer je prestaties met partners en tegen tegenstanders met behulp van onderstaande filters:",
+      "head-to-head-filter": "",
+      "head-to-heads-mode": "",
       "opponents-mode": "Tegenstanders Modus: Toont spelers tegen wie je hebt gespeeld en je winpercentage tegen hen",
       "partner-filter": "Partner Filter: In tegenstanders modus, selecteer een specifieke partner om teamprestaties te bekijken",
       "partners-mode": "Partners Modus: Toont spelers met wie je hebt gespeeld en jullie gecombineerde winpercentage",

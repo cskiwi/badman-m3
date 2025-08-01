@@ -132,6 +132,8 @@
     "info": {
       "club-display": "Club names are shown below player names (partner clubs only shown if different)",
       "description": "Analyze your performance with partners and against opponents using the filters below:",
+      "head-to-head-filter": "",
+      "head-to-heads-mode": "",
       "opponents-mode": "Opponents Mode: Shows players you played AGAINST and your win rate against them",
       "partner-filter": "Partner Filter: In opponents mode, select a specific partner to see performance as a team",
       "partners-mode": "Partners Mode: Shows players you played WITH and your combined win rate",

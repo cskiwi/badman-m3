@@ -132,6 +132,8 @@
     "info": {
       "club-display": "Les noms des clubs sont affichés sous les noms des joueurs (clubs des partenaires uniquement si différents)",
       "description": "Analysez vos performances avec vos partenaires et contre vos adversaires en utilisant les filtres ci-dessous :",
+      "head-to-head-filter": "",
+      "head-to-heads-mode": "",
       "opponents-mode": "Mode Adversaires : Affiche les joueurs contre qui vous avez joué et votre taux de victoire contre eux",
       "partner-filter": "Filtre Partenaire : En mode adversaires, sélectionnez un partenaire spécifique pour voir les performances en équipe",
       "partners-mode": "Mode Partenaires : Affiche les joueurs avec qui vous avez joué et votre taux de victoire combiné",
