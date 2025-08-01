@@ -79,8 +79,7 @@
     "typeorm": "^0.3.25",
     "typesense": "^1.8.2",
     "util": "^0.12.5",
-    "xml2js": "^0.6.2",
-    "zone.js": "0.15.1"
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "20.1.0",

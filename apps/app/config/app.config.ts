@@ -8,7 +8,7 @@ import {
   inject,
   isDevMode,
   provideAppInitializer,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideClientHydration, withHttpTransferCacheOptions, withIncrementalHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -30,6 +30,7 @@ import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZonelessChangeDetection(),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideGraphQL(),
     importProvidersFrom(
@@ -66,7 +67,6 @@ export const appConfig: ApplicationConfig = {
         includePostRequests: true,
       }),
     ),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
     providePrimeNG({

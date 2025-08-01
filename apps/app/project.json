@@ -15,7 +15,6 @@
         "index": "apps/app/src/index.html",
         "browser": "apps/app/src/main.ts",
         "server": "apps/app/src/main.server.ts",
-        "polyfills": ["zone.js"],
         "tsConfig": "apps/app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [

@@ -486,13 +486,6 @@ export type I18nTranslations = {
             };
             "title": string;
         };
-        "all": {
-            "system": {
-                "update": {
-                    "refresh": string;
-                };
-            };
-        };
     };
 };
 /* prettier-ignore */
