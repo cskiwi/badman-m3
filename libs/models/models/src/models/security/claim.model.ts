@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { Role } from './role.model';
-import { SecurityType } from '@app/model/enums';
+import { SecurityType } from '@app/models-enum';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Claim', { description: 'A Claim' })

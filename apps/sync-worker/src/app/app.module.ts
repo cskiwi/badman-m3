@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
-import { TournamentApiModule } from '@app/tournament-api';
-import { SyncModule } from '@app/sync';
+import { TournamentApiModule } from '@app/backend-tournament-api';
+import { SyncModule } from '@app/backend-sync';
 
 
 @Module({

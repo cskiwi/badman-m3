@@ -21,7 +21,7 @@ import { ToastModule } from 'primeng/toast';
 
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { Player, Team, TeamPlayerMembership } from '@app/models';
-import { SubEventTypeEnum, TeamMembershipType } from '@app/model/enums';
+import { SubEventTypeEnum, TeamMembershipType } from '@app/models-enum';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, computed, inject, signal } from '@angular/core';
 

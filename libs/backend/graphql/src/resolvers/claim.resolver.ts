@@ -1,6 +1,6 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { Claim, Player } from '@app/models';
-import { SecurityType } from '@app/model/enums';
+import { SecurityType } from '@app/models-enum';
 import { BadRequestException, ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ClaimArgs } from '../args';

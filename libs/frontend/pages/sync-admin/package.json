@@ -1,9 +1,16 @@
 {
-  "name": "@app/sync-admin",
+  "name": "@app/frontend-pages-sync-admin",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^20.1.0",
-    "@angular/core": "^20.1.0"
+    "@angular/core": "^20.1.0",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.31.0",
+    "jsonc-eslint-parser": "^2.4.0",
+    "@angular/router": "20.1.0",
+    "@angular/forms": "20.1.0",
+    "apollo-angular": "^11.0.0",
+    "rxjs": "~7.8.2"
   },
   "sideEffects": false
 }

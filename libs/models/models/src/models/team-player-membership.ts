@@ -3,7 +3,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { Player } from './player.model';
 import { Team } from './team.model';
-import { TeamMembershipType } from '@app/model/enums';
+import { TeamMembershipType } from '@app/models-enum';
 
 @ObjectType('TeamPlayerMembership', { description: 'A TeamPlayerMembership' })
 @Entity('TeamPlayerMemberships')

@@ -1,6 +1,9 @@
 {
   "name": "@app/frontend-modules-theme",
   "version": "0.0.1",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/core": "20.1.0",
+    "ngx-cookie-service-ssr": "^20.0.1"
+  },
   "sideEffects": false
 }

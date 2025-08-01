@@ -143,7 +143,7 @@ export class SyncApiService {
   /**
    * Get recent jobs from the queue
    */
-  getRecentJobs(limit: number = 20, status?: string): Observable<SyncJob[]> {
+  getRecentJobs(limit = 20, status?: string): Observable<SyncJob[]> {
     return this.apollo.watchQuery<{ syncJobs: SyncJob[] }>({
       query: GET_SYNC_JOBS,
       variables: { limit, status },

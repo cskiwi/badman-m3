@@ -15,7 +15,9 @@
     "apollo-angular": "^11.0.0",
     "rxjs": "~7.8.2",
     "@app/frontend-utils": "0.0.1",
-    "@app/utils": "0.0.1"
+    "@app/utils": "0.0.1",
+    "@app/frontend-modules-auth": "0.0.1",
+    "@app/models-enum": "0.0.1"
   },
   "sideEffects": false
 }

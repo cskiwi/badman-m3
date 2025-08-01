@@ -7,7 +7,7 @@ import { ThemeService } from '@app/frontend-modules-theme';
 import { setLanguage } from '@app/frontend-modules-translation';
 import { AvaliableLanguages, languages } from '@app/frontend-modules-translation/languages';
 import { IS_MOBILE } from '@app/frontend-utils';
-import { ClubMembershipType } from '@app/model/enums';
+import { ClubMembershipType } from '@app/models-enum';
 import { ClubPlayerMembership } from '@app/models';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';

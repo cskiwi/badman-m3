@@ -3,7 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@app/models": "0.0.1",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "@nestjs/common": "^11.1.5",
+    "@nestjs/config": "4.0.2",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/core": "^11.1.5",
+    "express": "5.1.0",
+    "jwks-rsa": "^3.2.0",
+    "@nestjs/graphql": "^13.1.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

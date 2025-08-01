@@ -1,6 +1,6 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { Player, Team, TeamPlayerMembership, TeamUpdateInput } from '@app/models';
-import { TeamMembershipType } from '@app/model/enums';
+import { TeamMembershipType } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation, Field, InputType, registerEnumType } from '@nestjs/graphql';

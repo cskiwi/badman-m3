@@ -1,4 +1,4 @@
-import { GameType } from '@app/model/enums';
+import { GameType } from '@app/models-enum';
 
 export const sortGames = (
   a: Partial<{

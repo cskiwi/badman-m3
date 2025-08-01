@@ -4,7 +4,11 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@app/backend-authorization": "0.0.1",
-    "@app/utils": "0.0.1"
+    "@app/utils": "0.0.1",
+    "@nestjs/common": "^11.1.5",
+    "nestjs-i18n": "^10.5.1",
+    "express": "5.1.0",
+    "@nestjs/config": "4.0.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",

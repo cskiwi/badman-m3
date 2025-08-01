@@ -2,10 +2,11 @@
   "name": "@app/models",
   "version": "0.0.1",
   "dependencies": {
-    "@app/model/enums": "0.0.1",
+    "@app/models-enum": "0.0.1",
     "@app/utils": "0.0.1",
     "@nestjs/graphql": "*",
     "typeorm": "*",
-    "tslib": "^2.0.0"
+    "tslib": "^2.0.0",
+    "graphql-type-json": "^0.3.2"
   }
 }

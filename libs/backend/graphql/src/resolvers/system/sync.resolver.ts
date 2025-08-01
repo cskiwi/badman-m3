@@ -2,7 +2,7 @@ import { PermGuard, User } from '@app/backend-authorization';
 import { Player } from '@app/models';
 import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { Args, Field, Int, Mutation, ObjectType, Query, Resolver } from '@nestjs/graphql';
-import { SyncService } from '@app/sync';
+import { SyncService } from '@app/backend-sync';
 
 // GraphQL types
 @ObjectType()

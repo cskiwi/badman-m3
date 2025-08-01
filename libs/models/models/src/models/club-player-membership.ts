@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { ClubMembershipType } from '@app/model/enums';
+import { ClubMembershipType } from '@app/models-enum';
 import { Club } from './club.model';
 import { Player } from './player.model';
 import { SortableField, WhereField } from '@app/utils';

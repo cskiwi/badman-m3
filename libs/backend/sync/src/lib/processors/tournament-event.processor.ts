@@ -1,6 +1,6 @@
-import { GameStatus, GameType } from '@app/model/enums';
+import { GameStatus, GameType } from '@app/models-enum';
 import { Game, Player, TournamentDraw as TournamentDrawModel, TournamentSubEvent } from '@app/models';
-import { Entry, Match, TournamentApiClient, TournamentDraw, TournamentEvent } from '@app/tournament-api';
+import { Entry, Match, TournamentApiClient, TournamentDraw, TournamentEvent } from '@app/backend-tournament-api';
 import { Process, Processor } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';

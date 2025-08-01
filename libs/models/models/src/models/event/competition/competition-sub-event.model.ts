@@ -1,4 +1,4 @@
-import { SubEventTypeEnum } from '@app/model/enums';
+import { SubEventTypeEnum } from '@app/models-enum';
 import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {

@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.0.0",
-    "nestjs-i18n": "^10.5.1"
+    "nestjs-i18n": "^10.5.1",
+    "@nestjs/common": "^11.1.5",
+    "@nestjs/graphql": "^13.1.0",
+    "reflect-metadata": "^0.2.2",
+    "moment": "^2.30.1",
+    "@app/models-enum": "0.0.1"
   }
 }

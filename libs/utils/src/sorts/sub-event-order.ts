@@ -1,4 +1,4 @@
-import { LevelType } from '@app/model/enums';
+import { LevelType } from '@app/models-enum';
 
 const typeOrder = {
   NATIONAL: 1,

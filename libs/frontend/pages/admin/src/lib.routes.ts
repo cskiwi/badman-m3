@@ -21,11 +21,11 @@ export const adminRoutes: Route[] = [
           },
           {
             path: 'dashboard',
-            loadComponent: () => import('@app/sync-admin').then((m) => m.SyncDashboardComponent),
+            loadComponent: () => import('@app/frontend-pages-sync-admin').then((m) => m.SyncDashboardComponent),
           },
           {
             path: 'team-matching',
-            loadComponent: () => import('@app/sync-admin').then((m) => m.TeamMatchingDashboardComponent),
+            loadComponent: () => import('@app/frontend-pages-sync-admin').then((m) => m.TeamMatchingDashboardComponent),
           },
         ],
       },

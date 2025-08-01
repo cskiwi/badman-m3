@@ -12,4 +12,4 @@ This library contains tournament synchronization components that can be used acr
 
 ## Usage
 
-Import the components you need from `@app/frontend/components/sync`.
+Import the components you need from `@app/frontend-components/sync`.

@@ -12,7 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { SortableField } from '@app/utils';
-import { DrawType } from '@app/model/enums';
+import { DrawType } from '@app/models-enum';
 import { CompetitionEncounter } from './competition-encounter.model';
 import { CompetitionSubEvent } from './competition-sub-event.model';
 

@@ -1,7 +1,7 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { TournamentApiClient, Tournament, TournamentType } from '@app/tournament-api';
+import { TournamentApiClient, Tournament, TournamentType } from '@app/backend-tournament-api';
 import { TournamentEvent, CompetitionEvent } from '@app/models';
 import {
   SYNC_QUEUE,

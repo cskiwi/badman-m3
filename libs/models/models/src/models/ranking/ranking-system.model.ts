@@ -10,7 +10,7 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { Period, RankingSystems, StartingType } from '@app/model/enums';
+import { Period, RankingSystems, StartingType } from '@app/models-enum';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { RankingPoint } from './ranking-point.model';
 import { RankingPlace } from './ranking-place.model';

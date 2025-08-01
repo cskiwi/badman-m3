@@ -15,7 +15,7 @@ import {
 import { Player } from './player.model';
 import { TeamPlayerMembership } from './team-player-membership';
 import { Club } from './club.model';
-import { SubEventTypeEnum } from '@app/model/enums';
+import { SubEventTypeEnum } from '@app/models-enum';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Team', { description: 'A Team' })

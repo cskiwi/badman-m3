@@ -1,12 +1,7 @@
 {
-  "name": "@app/frontend/components/sync",
+  "name": "@app/frontend-components/sync",
   "version": "0.0.1",
-  "peerDependencies": {
-    "@angular/common": "^20.0.0",
-    "@angular/core": "^20.0.0"
-  },
-  "dependencies": {
-    "tslib": "^2.3.0"
-  },
+  "peerDependencies": {},
+  "dependencies": {},
   "sideEffects": false
 }

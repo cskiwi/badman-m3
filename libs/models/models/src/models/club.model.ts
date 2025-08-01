@@ -11,7 +11,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { UseForTeamName } from '@app/model/enums';
+import { UseForTeamName } from '@app/models-enum';
 import { ClubPlayerMembership } from './club-player-membership';
 import { Team } from './team.model';
 import { SortableField, WhereField } from '@app/utils';

@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
-import { GameStatus, GameType } from '@app/model/enums';
+import { GameStatus, GameType } from '@app/models-enum';
 import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament/tournament-draw.model';
 import { CompetitionEncounter } from './competition/competition-encounter.model';

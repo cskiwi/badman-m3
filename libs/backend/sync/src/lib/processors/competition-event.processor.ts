@@ -2,9 +2,9 @@ import { Process, Processor } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { Like, IsNull } from 'typeorm';
-import { TournamentApiClient, TournamentEvent, Team, TournamentDraw, Match } from '@app/tournament-api';
+import { TournamentApiClient, TournamentEvent, Team, TournamentDraw, Match } from '@app/backend-tournament-api';
 import { CompetitionSubEvent, Team as TeamModel, Game, Player } from '@app/models';
-import { SubEventTypeEnum, GameType, GameStatus } from '@app/model/enums';
+import { SubEventTypeEnum, GameType, GameStatus } from '@app/models-enum';
 import { SYNC_QUEUE, SyncJobType, StructureSyncJobData, GameSyncJobData } from '../queues/sync.queue';
 import { SyncService } from '../services/sync.service';
 

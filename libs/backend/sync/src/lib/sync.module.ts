@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
-import { TournamentApiModule } from '@app/tournament-api';
+import { TournamentApiModule } from '@app/backend-tournament-api';
 
 import { SyncQueueModule } from './queues/sync.queue';
 import { SyncService } from './services/sync.service';

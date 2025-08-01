@@ -16,7 +16,7 @@ import { Club } from '../club.model';
 import { Player } from '../player.model';
 import { Team } from '../team.model';
 import { Claim, ClaimUpdateInput } from './claim.model';
-import { SecurityType } from '@app/model/enums';
+import { SecurityType } from '@app/models-enum';
 import { CompetitionEvent, TournamentEvent } from '../event';
 import { SortableField, WhereField } from '@app/utils';
 

@@ -1,5 +1,5 @@
 import { Club, Team } from '@app/models';
-import { SubEventTypeEnum } from '@app/model/enums';
+import { SubEventTypeEnum } from '@app/models-enum';
 import { createCanvas } from 'canvas';
 import sharp from 'sharp';
 
