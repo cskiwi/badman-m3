@@ -15,7 +15,11 @@
         "startIndexing": "Démarrer l'indexation",
         "title": "Gestion de l'index de recherche"
       },
-      "title": "Panneau d'administration"
+      "sync": {
+        "title": "Synchronisation des tournois"
+      },
+      "title": "Panneau d'administration",
+      "description": "Gérer les fonctionnalités et paramètres d'administration du système"
     }
   },
   "clubs": {
@@ -431,7 +435,7 @@
         "noJobs": "Aucune tâche récente trouvée",
         "title": "Tâches de synchronisation récentes"
       },
-      "title": "Tableau de bord de synchronisation de tournoi",
+      "title": "Synchronisation d'événements",
       "tournaments": {
         "allStatuses": "Tous les statuts",
         "allTypes": "Tous les types",
@@ -479,6 +483,6 @@
         "title": "Équipes non appariées"
       }
     },
-    "title": "TournamentSyncAdmin fonctionne!"
+    "title": "Synchronisation d'événements fonctionne!"
   }
 }

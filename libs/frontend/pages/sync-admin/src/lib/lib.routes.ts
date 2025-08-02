@@ -8,11 +8,11 @@ export const syncRoutes: Route[] = [
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./dashboard/sync-dashboard.component').then((m) => m.SyncDashboardComponent),
+    loadComponent: () => import('./components/dashboard/sync-dashboard.component').then((m) => m.SyncDashboardComponent),
   },
 
   {
     path: 'team-matching',
-    loadComponent: () => import('./team-matching/team-matching-dashboard.component').then((m) => m.TeamMatchingDashboardComponent),
+    loadComponent: () => import('./components/team-matching/team-matching-dashboard.component').then((m) => m.TeamMatchingDashboardComponent),
   },
 ];

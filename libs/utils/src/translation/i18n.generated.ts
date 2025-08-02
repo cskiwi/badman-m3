@@ -22,6 +22,9 @@ export type I18nTranslations = {
                     "startIndexing": string;
                     "title": string;
                 };
+                "sync": {
+                    "title": string;
+                };
                 "title": string;
             };
         };

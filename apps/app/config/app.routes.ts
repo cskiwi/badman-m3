@@ -32,9 +32,4 @@ export const appRoutes: Route[] = [
     loadChildren: () =>
       import('@app/frontend-pages-admin').then((m) => m.adminRoutes),
   },
-  {
-    path: 'sync',
-    loadChildren: () =>
-      import('@app/frontend-pages-sync-admin').then((m) => m.syncRoutes),
-  },
 ];

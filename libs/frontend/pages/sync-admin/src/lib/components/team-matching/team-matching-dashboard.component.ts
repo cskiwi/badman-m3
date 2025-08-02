@@ -19,73 +19,14 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 
-interface TeamMatchingStats {
-  totalUnmatchedTeams: number;
-  totalMatchedTeams: number;
-  pendingReviews: number;
-  autoMatchedHighConfidence: number;
-  autoMatchedMediumConfidence: number;
-  manuallyMatched: number;
-}
-
-interface GetTeamMatchingStatsResponse {
-  teamMatchingStats: TeamMatchingStats;
-}
-
-interface UnmatchedTeamsResult {
-  items: UnmatchedTeam[];
-  total: number;
-}
-
-interface GetUnmatchedTeamsResponse {
-  unmatchedTeams: UnmatchedTeamsResult;
-}
-
-interface MatchedTeamsResult {
-  items: MatchedTeam[];
-  total: number;
-}
-
-interface GetMatchedTeamsResponse {
-  matchedTeams: MatchedTeamsResult;
-}
-
-interface UnmatchedTeam {
-  id: string;
-  externalCode: string;
-  externalName: string;
-  tournamentCode: string;
-  tournamentName: string;
-  normalizedName: string;
-  clubName: string;
-  teamNumber: number;
-  gender: string;
-  strength: number;
-  suggestions: TeamSuggestion[];
-  lastReviewedAt: Date;
-}
-
-interface TeamSuggestion {
-  teamId: string;
-  teamName: string;
-  clubName: string;
-  score: number;
-  teamNumber: number;
-  gender: string;
-}
-
-interface MatchedTeam {
-  id: string;
-  externalCode: string;
-  externalName: string;
-  matchedTeamId: string;
-  matchedTeamName: string;
-  matchedClubName: string;
-  matchScore: number;
-  matchType: string;
-  matchedAt: Date;
-  tournamentName: string;
-}
+import {
+  GetMatchedTeamsResponse,
+  GetTeamMatchingStatsResponse,
+  GetUnmatchedTeamsResponse,
+  MatchedTeam,
+  TeamSuggestion,
+  UnmatchedTeam,
+} from '../../models/team-matching.models';
 
 const GET_TEAM_MATCHING_STATS = gql`
   query GetTeamMatchingStats {

@@ -15,7 +15,11 @@
         "startIndexing": "Start Indexing",
         "title": "Search Index Management"
       },
-      "title": "Admin Panel"
+      "sync": {
+        "title": "Tournament Sync"
+      },
+      "title": "Admin Panel",
+      "description": "Manage system administration features and settings"
     }
   },
   "clubs": {
@@ -431,7 +435,7 @@
         "noJobs": "No recent jobs found",
         "title": "Recent Sync Jobs"
       },
-      "title": "Tournament Sync Dashboard",
+      "title": "Sync Events",
       "tournaments": {
         "allStatuses": "All Statuses",
         "allTypes": "All Types",
@@ -479,6 +483,6 @@
         "title": "Unmatched Teams"
       }
     },
-    "title": "TournamentSyncAdmin works!"
+    "title": "Sync Events works!"
   }
 }

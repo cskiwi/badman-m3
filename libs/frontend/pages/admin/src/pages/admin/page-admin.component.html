@@ -14,74 +14,116 @@
     <ng-content title>{{ 'all.admin.panel.title' | translate }}</ng-content>
     <ng-content subTitle>
       <div class="info">
-        <div class="sub-text">{{ 'all.admin.panel.searchIndex.description' | translate }}</div>
+        <div class="sub-text">{{ 'all.admin.panel.description' | translate }}</div>
       </div>
     </ng-content>
   </app-page-header>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Index Management Card -->
-    <p-card [header]="'all.admin.panel.searchIndex.title' | translate" class="h-fit">
-      <p class="text-muted-color mb-4">
-        Select the types of data you want to index for search functionality. This operation will rebuild the search index for the selected types.
-      </p>
+  <p-tabs [value]="activeTabIndex()" (activeIndexChange)="onActiveIndexChange($event)">
+    <p-tablist>
+      <p-tab value="0">{{ 'all.admin.panel.searchIndex.title' | translate }}</p-tab>
+      <p-tab value="1">{{ 'all.admin.panel.sync.title' | translate }}</p-tab>
+    </p-tablist>
+    
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Index Management Card -->
+          <p-card class="h-fit">
+            <ng-template pTemplate="header">
+              {{ 'all.admin.panel.searchIndex.title' | translate }}
+            </ng-template>
+            <p class="text-muted-color mb-4">
+              Select the types of data you want to index for search functionality. This operation will rebuild the search index for the selected types.
+            </p>
 
-      <form [formGroup]="indexForm" (ngSubmit)="onSubmit()" class="space-y-4">
-        <!-- Type Selection -->
-        <div class="space-y-3">
-          <h3 class="text-lg font-medium">{{ 'all.admin.panel.searchIndex.selectTypes' | translate }}</h3>
+            <form [formGroup]="indexForm" (ngSubmit)="onSubmit()" class="space-y-4">
+              <!-- Type Selection -->
+              <div class="space-y-3">
+                <h3 class="text-lg font-medium">{{ 'all.admin.panel.searchIndex.selectTypes' | translate }}</h3>
 
-          @for (indexType of indexTypes; track indexType.key) {
-            <div class="flex items-center space-x-2">
-              <p-checkbox [formControlName]="indexType.key" [inputId]="indexType.key" [binary]="true"> </p-checkbox>
-              <label [for]="indexType.key" class="text-color cursor-pointer">
-                {{ indexType.label }}
-              </label>
+                @for (indexType of indexTypes; track indexType.key) {
+                  <div class="flex items-center space-x-2">
+                    <p-checkbox [formControlName]="indexType.key" [inputId]="indexType.key" [binary]="true"> </p-checkbox>
+                    <label [for]="indexType.key" class="text-color cursor-pointer">
+                      {{ indexType.label }}
+                    </label>
+                  </div>
+                }
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="flex gap-2 pt-2">
+                <p-button
+                  [label]="'all.admin.panel.searchIndex.selectAll' | translate"
+                  [outlined]="true"
+                  size="small"
+                  type="button"
+                  (click)="selectAll()"
+                >
+                </p-button>
+                <p-button
+                  [label]="'all.admin.panel.searchIndex.selectNone' | translate"
+                  [outlined]="true"
+                  size="small"
+                  type="button"
+                  (click)="selectNone()"
+                >
+                </p-button>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="pt-4 border-t border-surface-200">
+                <p-button
+                  [label]="'all.admin.panel.searchIndex.startIndexing' | translate"
+                  icon="pi pi-refresh"
+                  type="submit"
+                  [loading]="loading()"
+                  [disabled]="loading()"
+                >
+                </p-button>
+              </div>
+
+              <!-- Loading Indicator -->
+              @if (loading()) {
+                <div class="pt-4">
+                  <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+                  <p class="text-sm text-muted-color mt-2">Indexing in progress... This may take a few minutes.</p>
+                </div>
+              }
+
+              <!-- Error Message -->
+              @if (error(); as errorMessage) {
+                <p-message severity="error" [text]="errorMessage"></p-message>
+              }
+            </form>
+          </p-card>
+
+          <!-- Information Card -->
+          <p-card>
+            <ng-template pTemplate="header">
+              {{ 'all.admin.panel.information.title' | translate }}
+            </ng-template>
+            <div class="space-y-4">
+              <div>
+                <h4 class="font-medium mb-2">{{ 'all.admin.panel.information.availableTypes' | translate }}</h4>
+                <ul class="text-muted-color text-sm space-y-1">
+                  <li><strong>Players:</strong> All competitive players in the system</li>
+                  <li><strong>Clubs:</strong> All registered clubs and organizations</li>
+                  <li><strong>Competition Events:</strong> Official competition events</li>
+                  <li><strong>Tournament Events:</strong> Tournament and championship events</li>
+                </ul>
+              </div>
             </div>
-          }
+          </p-card>
         </div>
+      </p-tabpanel>
 
-        <!-- Quick Actions -->
-        <div class="flex gap-2 pt-2">
-          <p-button [label]="'all.admin.panel.searchIndex.selectAll' | translate" [outlined]="true" size="small" type="button" (click)="selectAll()"> </p-button>
-          <p-button [label]="'all.admin.panel.searchIndex.selectNone' | translate" [outlined]="true" size="small" type="button" (click)="selectNone()"> </p-button>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="pt-4 border-t border-surface-200">
-          <p-button [label]="'all.admin.panel.searchIndex.startIndexing' | translate" icon="pi pi-refresh" type="submit" [loading]="loading()" [disabled]="loading()"> </p-button>
-        </div>
-
-        <!-- Loading Indicator -->
-        @if (loading()) {
-          <div class="pt-4">
-            <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
-            <p class="text-sm text-muted-color mt-2">Indexing in progress... This may take a few minutes.</p>
-          </div>
-        }
-
-        <!-- Error Message -->
-        @if (error(); as errorMessage) {
-          <p-message severity="error" [text]="errorMessage"></p-message>
-        }
-      </form>
-    </p-card>
-
-    <!-- Information Card -->
-    <p-card [header]="'all.admin.panel.information.title' | translate" >
-      <div class="space-y-4">
-        <div>
-          <h4 class="font-medium mb-2">{{ 'all.admin.panel.information.availableTypes' | translate }}</h4>
-          <ul class="text-muted-color text-sm space-y-1">
-            <li><strong>Players:</strong> All competitive players in the system</li>
-            <li><strong>Clubs:</strong> All registered clubs and organizations</li>
-            <li><strong>Competition Events:</strong> Official competition events</li>
-            <li><strong>Tournament Events:</strong> Tournament and championship events</li>
-          </ul>
-        </div>
-      </div>
-    </p-card>
-  </div>
+      <p-tabpanel value="1">
+        <app-sync-dashboard></app-sync-dashboard>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 
   <!-- Toast Messages -->
   <p-toast position="top-right"></p-toast>

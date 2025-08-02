@@ -1,17 +1,4 @@
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/workflow-coordinator.sh"
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "WebFetch(domain:www.toernooi.nl)",
@@ -70,8 +57,27 @@
       "mcp__kubernetes__pods_list",
       "mcp__kubernetes__pods_log",
       "mcp__kubernetes__resources_get",
-      "mcp__kubernetes__pods_exec"
+      "mcp__kubernetes__pods_exec",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_press_key"
     ],
     "deny": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/workflow-coordinator.sh"
+          }
+        ]
+      }
+    ]
   }
 }

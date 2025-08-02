@@ -275,6 +275,69 @@ When implementing loading states, ALWAYS use PrimeNG skeletons instead of simple
 }
 ```
 
+### PrimeNG Tabs Implementation (v20)
+
+PrimeNG v20 uses a specific syntax for tabs that differs from earlier versions. Always use this exact pattern:
+
+#### **Required TypeScript Setup:**
+```typescript
+// Import TabsModule
+import { TabsModule } from 'primeng/tabs';
+
+// In component imports array
+imports: [
+  TabsModule,
+  // ... other imports
+]
+
+// Tab state management
+activeTabIndex = signal('0'); // String values: '0', '1', '2', etc.
+
+// Event handler for tab changes
+onActiveIndexChange(event: any): void {
+  this.activeTabIndex.set(event.index?.toString() || '0');
+}
+```
+
+#### **Required HTML Template:**
+```html
+<p-tabs [value]="activeTabIndex()" (activeIndexChange)="onActiveIndexChange($event)">
+  <p-tablist>
+    <p-tab value="0">First Tab Title</p-tab>
+    <p-tab value="1">Second Tab Title</p-tab>
+    <p-tab value="2">Third Tab Title</p-tab>
+  </p-tablist>
+  
+  <p-tabpanels>
+    <p-tabpanel value="0">
+      <!-- Content for first tab -->
+    </p-tabpanel>
+    
+    <p-tabpanel value="1">
+      <!-- Content for second tab -->
+    </p-tabpanel>
+    
+    <p-tabpanel value="2">
+      <!-- Content for third tab -->
+    </p-tabpanel>
+  </p-tabpanels>
+</p-tabs>
+```
+
+#### **Key Requirements:**
+- Use `signal()` for `activeTabIndex` with string values ('0', '1', '2', etc.)
+- Tab `value` attributes must match between `p-tab` and `p-tabpanel`
+- Use `[value]="activeTabIndex()"` binding (with parentheses for signal)
+- Event handler receives an object with `index` property, not direct string
+- Import only `TabsModule` from `'primeng/tabs'` - all tab components are included
+
+#### **Common Mistakes to Avoid:**
+- ❌ Using `[(activeIndex)]` (old syntax)
+- ❌ Using `[header]` property on `p-tabpanel` (deprecated)
+- ❌ Using `<ng-template pTemplate="header">` for tab titles (old syntax)
+- ❌ Number values for tab indices (use strings: '0', '1', '2')
+- ❌ Missing `TabsModule` import or trying to import individual tab components
+
 ## Development Notes
 
 - The application supports both SSR and SSG modes

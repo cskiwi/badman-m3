@@ -5,42 +5,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
-
-export interface QueueStats {
-  waiting: number;
-  active: number;
-  completed: number;
-  failed: number;
-}
-
-export interface SyncJob {
-  id: string;
-  name: string;
-  data: string;
-  progress: number;
-  processedOn?: Date;
-  finishedOn?: Date;
-  failedReason?: string;
-  status: string;
-}
-
-export interface SyncStatus {
-  status: string;
-  timestamp: string;
-  queues: QueueStats;
-}
-
-export interface Tournament {
-  id: string;
-  visualCode: string;
-  name: string;
-  type: 'competition' | 'tournament';
-  status: string;
-  startDate: Date;
-  endDate: Date;
-  lastSyncAt?: Date;
-  syncStatus: 'never' | 'syncing' | 'success' | 'error';
-}
+import { Tournament } from '../../models/sync-dashboard.models';
+import { SyncJob, SyncStatus } from '../../models/sync.models';
 
 export class SyncDashboardService {
   private readonly apollo = inject(Apollo);

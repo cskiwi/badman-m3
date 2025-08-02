@@ -15,7 +15,11 @@
         "startIndexing": "Indexering starten",
         "title": "Zoekindex beheer"
       },
-      "title": "Admin Paneel"
+      "sync": {
+        "title": "Toernooi Synchronisatie"
+      },
+      "title": "Admin Paneel",
+      "description": "Beheer systeemadministratie functies en instellingen"
     }
   },
   "clubs": {
@@ -431,7 +435,7 @@
         "noJobs": "Geen recente jobs gevonden",
         "title": "Recente Sync Jobs"
       },
-      "title": "Toernooi Sync Dashboard",
+      "title": "Synchronisatie Evenementen",
       "tournaments": {
         "allStatuses": "Alle Statussen",
         "allTypes": "Alle Types",
@@ -479,6 +483,6 @@
         "title": "Ongematched Teams"
       }
     },
-    "title": "TournamentSyncAdmin werkt!"
+    "title": "Synchronisatie Evenementen werkt!"
   }
 }

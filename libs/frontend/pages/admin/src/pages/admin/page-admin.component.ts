@@ -8,9 +8,11 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
+import { TabsModule } from 'primeng/tabs';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { SyncDashboardComponent } from '@app/frontend-pages-sync-admin';
 import { lastValueFrom } from 'rxjs';
 
 export enum IndexType {
@@ -40,6 +42,8 @@ const INDEX_ALL_MUTATION = gql`
     MessageModule,
     ProgressBarModule,
     ToastModule,
+    TabsModule,
+    SyncDashboardComponent,
   ],
   templateUrl: './page-admin.component.html',
   styleUrl: './page-admin.component.scss',
@@ -68,6 +72,13 @@ export class PageAdminComponent {
   hasAdminAccess = computed(() => {
     return this.auth.hasAnyPermission?.(['change:job']) ?? false;
   });
+
+  // Tab management
+  activeTabIndex = signal('0');
+
+  onActiveIndexChange(event: any): void {
+    this.activeTabIndex.set(event.index?.toString() || '0');
+  }
 
   // Available index types with labels
   indexTypes = [
