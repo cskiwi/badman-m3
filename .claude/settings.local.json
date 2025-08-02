@@ -1,4 +1,17 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/workflow-coordinator.sh"
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "WebFetch(domain:www.toernooi.nl)",
