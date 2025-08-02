@@ -43,13 +43,31 @@ export class TeamMatchingProcessor {
     try {
       const { tournamentCode, eventCode, unmatchedTeams } = job.data;
       
+      // Initialize progress
+      await job.progress(0);
+      
       // Get unmatched teams from database if not provided
       const teamsToMatch = unmatchedTeams || await this.getUnmatchedTeams(tournamentCode, eventCode);
       
       this.logger.log(`Processing ${teamsToMatch.length} unmatched teams`);
       
-      for (const externalTeam of teamsToMatch) {
+      // Update progress after collecting teams to match
+      if (teamsToMatch.length === 0) {
+        await job.progress(100);
+        this.logger.log(`No teams to match for job: ${job.id}`);
+        return;
+      }
+      
+      // Process teams with progress tracking
+      for (let i = 0; i < teamsToMatch.length; i++) {
+        const externalTeam = teamsToMatch[i];
         await this.matchTeam(tournamentCode, externalTeam);
+        
+        // Update progress: calculate percentage completed
+        const progressPercentage = Math.round(((i + 1) / teamsToMatch.length) * 100);
+        await job.progress(progressPercentage);
+        
+        this.logger.debug(`Processed team ${i + 1}/${teamsToMatch.length} (${progressPercentage}%): ${externalTeam.externalName}`);
       }
 
       this.logger.log(`Completed team matching job: ${job.id}`);

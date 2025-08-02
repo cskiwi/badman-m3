@@ -26,6 +26,7 @@ export type I18nTranslations = {
                     "title": string;
                 };
                 "title": string;
+                "description": string;
             };
         };
         "clubs": {

@@ -25,18 +25,34 @@ export class CompetitionEventProcessor {
     try {
       const { tournamentCode, eventCodes, forceUpdate } = job.data;
 
+      // Initialize progress
+      await job.progress(0);
+
       // Get tournament details first
       const tournament = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
       this.logger.log(`Syncing competition structure for: ${tournament.Name}`);
 
+      // Calculate total work units (3 main operations: events, teams, draws)
+      const totalSteps = 3;
+      let currentStep = 0;
+
       // Sync events
       await this.syncEvents(tournamentCode, eventCodes);
+      currentStep++;
+      await job.progress(Math.round((currentStep / totalSteps) * 100));
+      this.logger.debug(`Completed events sync (${currentStep}/${totalSteps})`);
 
       // Sync teams
       await this.syncTeams(tournamentCode);
+      currentStep++;
+      await job.progress(Math.round((currentStep / totalSteps) * 100));
+      this.logger.debug(`Completed teams sync (${currentStep}/${totalSteps})`);
 
       // Sync draws/poules
       await this.syncDraws(tournamentCode, eventCodes);
+      currentStep++;
+      await job.progress(100);
+      this.logger.debug(`Completed draws sync (${currentStep}/${totalSteps})`);
 
       this.logger.log(`Completed competition structure sync job: ${job.id}`);
     } catch (error: unknown) {
@@ -53,6 +69,9 @@ export class CompetitionEventProcessor {
 
     try {
       const { tournamentCode, eventCode, drawCode, matchCodes, date } = job.data;
+
+      // Initialize progress
+      await job.progress(0);
 
       let matches: Match[] = [];
 
@@ -90,9 +109,25 @@ export class CompetitionEventProcessor {
         }
       }
 
-      // Process matches
-      for (const match of matches) {
+      this.logger.log(`Found ${matches.length} matches to process`);
+
+      // Update progress after collecting all matches
+      if (matches.length === 0) {
+        await job.progress(100);
+        this.logger.log(`No matches to process for job: ${job.id}`);
+        return;
+      }
+
+      // Process matches with progress tracking
+      for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
         await this.processMatch(tournamentCode, match, true); // true = isCompetition
+        
+        // Update progress: calculate percentage completed
+        const progressPercentage = Math.round(((i + 1) / matches.length) * 100);
+        await job.progress(progressPercentage);
+        
+        this.logger.debug(`Processed match ${i + 1}/${matches.length} (${progressPercentage}%): ${match.Code}`);
       }
 
       this.logger.log(`Completed competition game sync job: ${job.id} - processed ${matches.length} matches`);

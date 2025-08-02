@@ -27,6 +27,9 @@ export class TournamentDiscoveryProcessor {
     try {
       const { refDate, pageSize, searchTerm } = job.data;
       
+      // Initialize progress
+      await job.progress(0);
+      
       // Discover tournaments from API
       const tournaments = await this.tournamentApiClient.discoverTournaments({
         refDate: refDate || '2024-01-01',
@@ -35,10 +38,25 @@ export class TournamentDiscoveryProcessor {
       });
 
       this.logger.log(`Discovered ${tournaments.length} tournaments`);
+      
+      // Calculate total work units
+      const totalTournaments = tournaments.length;
+      if (totalTournaments === 0) {
+        await job.progress(100);
+        this.logger.log(`No tournaments to process for job: ${job.id}`);
+        return;
+      }
 
-      // Process each tournament
-      for (const tournament of tournaments) {
+      // Process each tournament with progress tracking
+      for (let i = 0; i < tournaments.length; i++) {
+        const tournament = tournaments[i];
         await this.processTournament(tournament);
+        
+        // Update progress: calculate percentage completed
+        const progressPercentage = Math.round(((i + 1) / totalTournaments) * 100);
+        await job.progress(progressPercentage);
+        
+        this.logger.debug(`Processed tournament ${i + 1}/${totalTournaments} (${progressPercentage}%): ${tournament.Name}`);
       }
 
       this.logger.log(`Completed tournament discovery job: ${job.id}`);
@@ -65,27 +83,27 @@ export class TournamentDiscoveryProcessor {
       
       this.logger.log(`Created new tournament: ${tournament.Name} (${tournament.Code})`);
       
-      // Schedule initial structure sync based on tournament type
-      if (tournament.TypeID === TournamentType.Team) {
-        // Competition - schedule structure sync only during May-August
-        const now = new Date();
-        const month = now.getMonth() + 1; // JavaScript months are 0-based
+      // // Schedule initial structure sync based on tournament type
+      // if (tournament.TypeID === TournamentType.Team) {
+      //   // Competition - schedule structure sync only during May-August
+      //   const now = new Date();
+      //   const month = now.getMonth() + 1; // JavaScript months are 0-based
         
-        if (month >= 5 && month <= 8) {
-          await this.syncService.queueCompetitionStructureSync({
-            tournamentCode: tournament.Code,
-          });
-          this.logger.log(`Scheduled competition structure sync for ${tournament.Code}`);
-        }
-      } else if (tournament.TypeID === TournamentType.Individual) {
-        // Tournament - schedule structure sync immediately if not finished
-        if (tournament.TournamentStatus !== 101) { // 101 = Tournament Finished
-          await this.syncService.queueTournamentStructureSync({
-            tournamentCode: tournament.Code,
-          });
-          this.logger.log(`Scheduled tournament structure sync for ${tournament.Code}`);
-        }
-      }
+      //   if (month >= 5 && month <= 8) {
+      //     await this.syncService.queueCompetitionStructureSync({
+      //       tournamentCode: tournament.Code,
+      //     });
+      //     this.logger.log(`Scheduled competition structure sync for ${tournament.Code}`);
+      //   }
+      // } else if (tournament.TypeID === TournamentType.Individual) {
+      //   // Tournament - schedule structure sync immediately if not finished
+      //   if (tournament.TournamentStatus !== 101) { // 101 = Tournament Finished
+      //     await this.syncService.queueTournamentStructureSync({
+      //       tournamentCode: tournament.Code,
+      //     });
+      //     this.logger.log(`Scheduled tournament structure sync for ${tournament.Code}`);
+      //   }
+      // }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process tournament ${tournament.Code}: ${errorMessage}`);
