@@ -2,10 +2,15 @@ import { Logger, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AbstractHttpAdapter, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { AppModule } from './app.module';
 
 export const getServer = async (adapter?: AbstractHttpAdapter) => {
   const app = adapter ? await NestFactory.create(AppModule, adapter) : await NestFactory.create(AppModule);
+
+  // Enable WebSocket support with Socket.IO
+  app.useWebSocketAdapter(new IoAdapter(app));
+
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   app.enableShutdownHooks();

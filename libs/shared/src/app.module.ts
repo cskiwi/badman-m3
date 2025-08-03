@@ -4,6 +4,7 @@ import { GraphQLModule } from '@app/backend-graphql';
 import { HealthModule } from '@app/backend-health';
 import { SeoModule } from '@app/backend-seo';
 import { ISearchConfig, SearchModule } from '@app/backend-search';
+import { SyncModule } from '@app/backend-sync';
 import { TranslateModule } from '@app/backend-translate';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -19,6 +20,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     GraphQLModule,
     SeoModule,
     HealthModule,
+    SyncModule,
     TranslateModule,
     ScheduleModule.forRoot(),
     SearchModule.forRootAsync({

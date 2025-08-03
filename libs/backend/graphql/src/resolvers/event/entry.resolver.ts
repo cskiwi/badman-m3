@@ -1,4 +1,4 @@
-import { Entry, Player } from '@app/models';
+import { Entry, Player, Standing } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Query, Resolver, ResolveField, Parent } from '@nestjs/graphql';
 import { EntryArgs } from '../../args';
@@ -48,6 +48,13 @@ export class EntryResolver {
 
     return Player.findOne({
       where: { id: entry.player2Id },
+    });
+  }
+
+  @ResolveField(() => Player, { nullable: true })
+  async standing(@Parent() entry: Entry): Promise<Standing | null> {
+    return Standing.findOne({
+      where: { entryId: entry.id },
     });
   }
 }

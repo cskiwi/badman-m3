@@ -1,13 +1,9 @@
-import { Process, Processor } from '@nestjs/bull';
+import { Club, Team } from '@app/models';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job } from 'bullmq';
 import { Like } from 'typeorm';
-import { Job } from 'bull';
-import { Team, Club } from '@app/models';
-import {
-  SYNC_QUEUE,
-  SyncJobType,
-  TeamMatchingJobData,
-} from '../queues/sync.queue';
+import { TEAM_MATCHING_QUEUE, TeamMatchingJobData } from '../queues/sync.queue';
 
 interface TeamMatchCandidate {
   id: string;
@@ -30,43 +26,42 @@ interface ExternalTeam {
 }
 
 @Injectable()
-@Processor(SYNC_QUEUE)
-export class TeamMatchingProcessor {
+@Processor(TEAM_MATCHING_QUEUE)
+export class TeamMatchingProcessor extends WorkerHost {
   private readonly logger = new Logger(TeamMatchingProcessor.name);
   private readonly MATCH_THRESHOLD = 0.7; // Minimum score for automatic matching
   private readonly HIGH_CONFIDENCE_THRESHOLD = 0.9; // Score for high-confidence matches
 
-  @Process(SyncJobType.TEAM_MATCHING)
-  async processTeamMatching(job: Job<TeamMatchingJobData>): Promise<void> {
+  async process(job: Job<TeamMatchingJobData, void, string>): Promise<void> {
     this.logger.log(`Processing team matching job: ${job.id}`);
-    
+
     try {
       const { tournamentCode, eventCode, unmatchedTeams } = job.data;
-      
+
       // Initialize progress
-      await job.progress(0);
-      
+      await job.updateProgress(0);
+
       // Get unmatched teams from database if not provided
-      const teamsToMatch = unmatchedTeams || await this.getUnmatchedTeams(tournamentCode, eventCode);
-      
+      const teamsToMatch = unmatchedTeams || (await this.getUnmatchedTeams(tournamentCode, eventCode));
+
       this.logger.log(`Processing ${teamsToMatch.length} unmatched teams`);
-      
+
       // Update progress after collecting teams to match
       if (teamsToMatch.length === 0) {
-        await job.progress(100);
+        await job.updateProgress(100);
         this.logger.log(`No teams to match for job: ${job.id}`);
         return;
       }
-      
+
       // Process teams with progress tracking
       for (let i = 0; i < teamsToMatch.length; i++) {
         const externalTeam = teamsToMatch[i];
         await this.matchTeam(tournamentCode, externalTeam);
-        
+
         // Update progress: calculate percentage completed
         const progressPercentage = Math.round(((i + 1) / teamsToMatch.length) * 100);
-        await job.progress(progressPercentage);
-        
+        await job.updateProgress(progressPercentage);
+
         this.logger.debug(`Processed team ${i + 1}/${teamsToMatch.length} (${progressPercentage}%): ${externalTeam.externalName}`);
       }
 
@@ -81,7 +76,7 @@ export class TeamMatchingProcessor {
 
   private async getUnmatchedTeams(tournamentCode: string, eventCode?: string): Promise<ExternalTeam[]> {
     this.logger.debug(`Getting unmatched teams for tournament ${tournamentCode}, event ${eventCode}`);
-    
+
     // For now, return empty array as we would need to create a separate mapping table
     // to track external teams and their match status. This would be implemented
     // once we have the tournament sync mapping entities created.
@@ -90,11 +85,11 @@ export class TeamMatchingProcessor {
 
   private async matchTeam(tournamentCode: string, externalTeam: ExternalTeam): Promise<void> {
     this.logger.debug(`Matching team: ${externalTeam.externalName}`);
-    
+
     try {
       // Get potential matches from our database
       const candidates = await this.findMatchingCandidates(externalTeam);
-      
+
       if (candidates.length === 0) {
         this.logger.debug(`No candidates found for team: ${externalTeam.externalName}`);
         await this.queueForManualReview(tournamentCode, externalTeam, []);
@@ -127,7 +122,7 @@ export class TeamMatchingProcessor {
 
   private async findMatchingCandidates(externalTeam: ExternalTeam): Promise<TeamMatchCandidate[]> {
     const candidates: TeamMatchCandidate[] = [];
-    
+
     try {
       // First, try to find teams by club name similarity
       const clubs = await Club.find({
@@ -136,7 +131,7 @@ export class TeamMatchingProcessor {
         },
         relations: ['teams'],
       });
-      
+
       for (const club of clubs) {
         if (club.teams) {
           for (const team of club.teams) {
@@ -147,8 +142,9 @@ export class TeamMatchingProcessor {
               teamNumber: team.teamNumber,
               gender: this.mapTeamTypeToGender(team.type),
             });
-            
-            if (score > 0.3) { // Only include reasonable matches
+
+            if (score > 0.3) {
+              // Only include reasonable matches
               candidates.push({
                 id: team.id,
                 name: team.name || '',
@@ -161,7 +157,7 @@ export class TeamMatchingProcessor {
           }
         }
       }
-      
+
       // Also try direct team name matching
       const directMatches = await Team.find({
         where: {
@@ -169,7 +165,7 @@ export class TeamMatchingProcessor {
         },
         relations: ['club'],
       });
-      
+
       for (const team of directMatches) {
         const score = this.calculateMatchScore(externalTeam, {
           id: team.id,
@@ -178,9 +174,9 @@ export class TeamMatchingProcessor {
           teamNumber: team.teamNumber,
           gender: this.mapTeamTypeToGender(team.type),
         });
-        
+
         // Add if not already in candidates
-        if (!candidates.find(c => c.id === team.id) && score > 0.3) {
+        if (!candidates.find((c) => c.id === team.id) && score > 0.3) {
           candidates.push({
             id: team.id,
             name: team.name || '',
@@ -191,7 +187,7 @@ export class TeamMatchingProcessor {
           });
         }
       }
-      
+
       this.logger.debug(`Found ${candidates.length} matching candidates for ${externalTeam.externalName}`);
       return candidates;
     } catch (error: unknown) {
@@ -206,18 +202,12 @@ export class TeamMatchingProcessor {
     let weights = 0;
 
     // Club name similarity (40% weight)
-    const clubSimilarity = this.calculateStringSimilarity(
-      this.normalizeString(externalTeam.clubName),
-      this.normalizeString(candidate.clubName)
-    );
+    const clubSimilarity = this.calculateStringSimilarity(this.normalizeString(externalTeam.clubName), this.normalizeString(candidate.clubName));
     score += clubSimilarity * 0.4;
     weights += 0.4;
 
     // Team name similarity (30% weight)
-    const nameSimilarity = this.calculateStringSimilarity(
-      externalTeam.normalizedName,
-      this.normalizeString(candidate.name)
-    );
+    const nameSimilarity = this.calculateStringSimilarity(externalTeam.normalizedName, this.normalizeString(candidate.name));
     score += nameSimilarity * 0.3;
     weights += 0.3;
 
@@ -251,7 +241,7 @@ export class TeamMatchingProcessor {
     // Implement Levenshtein distance-based similarity
     const distance = this.levenshteinDistance(str1, str2);
     const maxLength = Math.max(str1.length, str2.length);
-    
+
     if (maxLength === 0) return 1;
     return 1 - distance / maxLength;
   }
@@ -278,8 +268,8 @@ export class TeamMatchingProcessor {
         } else {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1, // substitution
-            matrix[i][j - 1] + 1,     // insertion
-            matrix[i - 1][j] + 1      // deletion
+            matrix[i][j - 1] + 1, // insertion
+            matrix[i - 1][j] + 1, // deletion
           );
         }
       }
@@ -289,7 +279,8 @@ export class TeamMatchingProcessor {
   }
 
   private normalizeString(str: string): string {
-    return str.toLowerCase()
+    return str
+      .toLowerCase()
       .replace(/[^\w\s]/g, '') // Remove special characters
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim();
@@ -299,14 +290,14 @@ export class TeamMatchingProcessor {
     tournamentCode: string,
     externalTeam: ExternalTeam,
     matchedTeam: TeamMatchCandidate,
-    matchType: string
+    matchType: string,
   ): Promise<void> {
     this.logger.debug(`Creating team match: ${externalTeam.externalName} -> ${matchedTeam.name} (${matchType})`);
-    
+
     // For now, we'll log the successful match. In a full implementation,
     // this would update a tournament_software_teams mapping table
     // to link external tournament teams with internal team records.
-    
+
     // This would typically involve:
     // 1. Creating/updating a TournamentSoftwareTeam entity
     // 2. Linking it to the matched Team entity
@@ -317,40 +308,36 @@ export class TeamMatchingProcessor {
     tournamentCode: string,
     externalTeam: ExternalTeam,
     suggestions: TeamMatchCandidate[],
-    errorMessage?: string
+    errorMessage?: string,
   ): Promise<void> {
     this.logger.debug(`Queueing for manual review: ${externalTeam.externalName} with ${suggestions.length} suggestions`);
-    
+
     // For now, we'll log the review item. In a full implementation,
     // this would create a ManualTeamReview entity for admin interface
     // to allow manual team matching and conflict resolution.
-    
+
     const reviewSummary = {
       tournamentCode,
       externalTeam: externalTeam.externalName,
-      topSuggestions: suggestions.slice(0, 3).map(s => `${s.name} (${s.score.toFixed(3)})`),
+      topSuggestions: suggestions.slice(0, 3).map((s) => `${s.name} (${s.score.toFixed(3)})`),
       errorMessage,
     };
-    
+
     this.logger.log(`Manual review needed:`, reviewSummary);
   }
 
   /**
    * Manual matching interface methods
    */
-  async approveTeamMatch(
-    tournamentCode: string,
-    externalTeamCode: string,
-    teamId: string
-  ): Promise<void> {
+  async approveTeamMatch(tournamentCode: string, externalTeamCode: string, teamId: string): Promise<void> {
     this.logger.log(`Manually approved team match: ${externalTeamCode} -> ${teamId}`);
-    
+
     // In a full implementation, this would:
     // 1. Validate the team exists
     // 2. Create the team match with 'manual' type
     // 3. Remove from manual review queue
     // 4. Update any related tournament data
-    
+
     const team = await Team.findOne({ where: { id: teamId } });
     if (team) {
       this.logger.log(`Successfully linked external team ${externalTeamCode} to ${team.name}`);
@@ -359,39 +346,31 @@ export class TeamMatchingProcessor {
     }
   }
 
-  async rejectTeamMatch(
-    tournamentCode: string,
-    externalTeamCode: string,
-    reason?: string
-  ): Promise<void> {
+  async rejectTeamMatch(tournamentCode: string, externalTeamCode: string, reason?: string): Promise<void> {
     this.logger.log(`Manually rejected team match: ${externalTeamCode}, reason: ${reason}`);
-    
+
     // In a full implementation, this would:
     // 1. Mark the review item as rejected
     // 2. Optionally queue for new team creation
     // 3. Log the rejection reason for analysis
   }
 
-  async createNewTeamFromExternal(
-    tournamentCode: string,
-    externalTeamCode: string,
-    newTeamData: any
-  ): Promise<void> {
+  async createNewTeamFromExternal(tournamentCode: string, externalTeamCode: string, newTeamData: any): Promise<void> {
     this.logger.log(`Creating new team from external: ${externalTeamCode}`);
-    
+
     // In a full implementation, this would:
     // 1. Extract team and club information from external data
     // 2. Create or find the club record
     // 3. Create a new team record linked to the club
     // 4. Link the external team to the new internal team
-    
+
     try {
       const newTeam = new Team();
       newTeam.name = newTeamData.name;
       newTeam.teamNumber = newTeamData.teamNumber;
       newTeam.type = newTeamData.type;
       newTeam.season = newTeamData.season || new Date().getFullYear();
-      
+
       await newTeam.save();
       this.logger.log(`Created new team: ${newTeam.name} (${newTeam.id})`);
     } catch (error: unknown) {
@@ -422,16 +401,20 @@ export class TeamMatchingProcessor {
     // For now, return empty array
     return [];
   }
-  
+
   /**
    * Helper method to map team type enum to gender string
    */
   private mapTeamTypeToGender(teamType?: string): string | undefined {
     switch (teamType) {
-      case 'MEN': return 'men';
-      case 'WOMEN': return 'women';
-      case 'MIXED': return 'mixed';
-      default: return undefined;
+      case 'MEN':
+        return 'men';
+      case 'WOMEN':
+        return 'women';
+      case 'MIXED':
+        return 'mixed';
+      default:
+        return undefined;
     }
   }
 }

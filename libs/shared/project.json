@@ -1,7 +1,7 @@
 {
-  "name": "backend-shared",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/backend/_shared/src",
+  "name": "shared",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -9,10 +9,10 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "{workspaceRoot}/dist/libs/backend/_shared",
-        "tsConfig": "libs/backend/_shared/tsconfig.lib.json",
-        "packageJson": "libs/backend/_shared/package.json",
-        "main": "libs/backend/_shared/src/index.ts",
+        "outputPath": "{workspaceRoot}/dist/libs/shared",
+        "tsConfig": "libs/shared/tsconfig.lib.json",
+        "packageJson": "libs/shared/package.json",
+        "main": "libs/shared/src/index.ts",
         "assets": ["{projectRoot}/*.md"]
       }
     },
@@ -25,7 +25,7 @@
           "externalDependencies": ["jest"]
         }
       ],
-      "outputs": ["{workspaceRoot}/coverage/libs/backend/_shared", "{workspaceRoot}\\coverage\\libs\\backend\\_shared"],
+      "outputs": ["{workspaceRoot}/coverage/libs/shared", "{workspaceRoot}\\coverage\\libs\\backend\\_shared"],
       "options": {
         "passWithNoTests": true
       },

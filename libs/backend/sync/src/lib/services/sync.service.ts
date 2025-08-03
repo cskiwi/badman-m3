@@ -1,14 +1,19 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
+import { Queue } from 'bullmq';
+import { extractParentId } from '../utils/job.utils';
 import {
-  SYNC_QUEUE,
-  SyncJobType,
-  TournamentDiscoveryJobData,
-  StructureSyncJobData,
   GameSyncJobData,
+  StructureSyncJobData,
+  SYNC_QUEUE,
+  TOURNAMENT_DISCOVERY_QUEUE,
+  COMPETITION_EVENT_QUEUE,
+  TOURNAMENT_EVENT_QUEUE,
+  TEAM_MATCHING_QUEUE,
+  SyncJobType,
   TeamMatchingJobData,
+  TournamentDiscoveryJobData,
 } from '../queues/sync.queue';
 
 @Injectable()
@@ -16,7 +21,65 @@ export class SyncService {
   constructor(
     @InjectQueue(SYNC_QUEUE)
     private readonly syncQueue: Queue,
+
+    @InjectQueue(TOURNAMENT_DISCOVERY_QUEUE)
+    private readonly tournamentDiscoveryQueue: Queue,
+
+    @InjectQueue(COMPETITION_EVENT_QUEUE)
+    private readonly competitionEventQueue: Queue,
+
+    @InjectQueue(TOURNAMENT_EVENT_QUEUE)
+    private readonly tournamentEventQueue: Queue,
+
+    @InjectQueue(TEAM_MATCHING_QUEUE)
+    private readonly teamMatchingQueue: Queue,
   ) {}
+
+  /**
+   * Get all queue instances as an array for easy iteration
+   */
+  private getAllQueues(): Queue[] {
+    return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue];
+  }
+
+  /**
+   * Get queue names mapped to their instances
+   */
+  getQueueMap(): Record<string, Queue> {
+    return {
+      [SYNC_QUEUE]: this.syncQueue,
+      [TOURNAMENT_DISCOVERY_QUEUE]: this.tournamentDiscoveryQueue,
+      [COMPETITION_EVENT_QUEUE]: this.competitionEventQueue,
+      [TOURNAMENT_EVENT_QUEUE]: this.tournamentEventQueue,
+      [TEAM_MATCHING_QUEUE]: this.teamMatchingQueue,
+    };
+  }
+
+  /**
+   * Get individual queue statistics by name
+   */
+  async getQueueStatsByName() {
+    const queueMap = this.getQueueMap();
+    const stats: Record<string, { waiting: number; active: number; completed: number; failed: number }> = {};
+
+    for (const [queueName, queue] of Object.entries(queueMap)) {
+      const waiting = await queue.getWaiting();
+      const prioritized = await queue.getPrioritized();
+      const active = await queue.getActive();
+      // Use getCompletedCount() and getFailedCount() to get actual counts
+      const completedCount = await queue.getCompletedCount();
+      const failedCount = await queue.getFailedCount();
+
+      stats[queueName] = {
+        waiting: waiting.length + prioritized.length, // Include prioritized jobs in waiting count
+        active: active.length,
+        completed: completedCount,
+        failed: failedCount,
+      };
+    }
+
+    return stats;
+  }
 
   /**
    * Daily tournament discovery - runs at 6 AM
@@ -46,7 +109,7 @@ export class SyncService {
    * Queue tournament discovery job
    */
   async queueTournamentDiscovery(data?: TournamentDiscoveryJobData): Promise<void> {
-    await this.syncQueue.add(SyncJobType.TOURNAMENT_DISCOVERY, data || {}, {
+    await this.tournamentDiscoveryQueue.add(SyncJobType.TOURNAMENT_DISCOVERY, data || {}, {
       priority: 1,
     });
   }
@@ -55,7 +118,7 @@ export class SyncService {
    * Queue competition structure sync
    */
   async queueCompetitionStructureSync(data?: StructureSyncJobData): Promise<void> {
-    await this.syncQueue.add(SyncJobType.COMPETITION_STRUCTURE_SYNC, data || {}, {
+    await this.competitionEventQueue.add(SyncJobType.COMPETITION_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });
   }
@@ -64,7 +127,7 @@ export class SyncService {
    * Queue tournament structure sync
    */
   async queueTournamentStructureSync(data?: StructureSyncJobData): Promise<void> {
-    await this.syncQueue.add(SyncJobType.TOURNAMENT_STRUCTURE_SYNC, data || {}, {
+    await this.tournamentEventQueue.add(SyncJobType.TOURNAMENT_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });
   }
@@ -73,7 +136,7 @@ export class SyncService {
    * Queue competition game sync
    */
   async queueCompetitionGameSync(data: GameSyncJobData): Promise<void> {
-    await this.syncQueue.add(SyncJobType.COMPETITION_GAME_SYNC, data, {
+    await this.competitionEventQueue.add(SyncJobType.COMPETITION_GAME_SYNC, data, {
       priority: 5,
     });
   }
@@ -82,7 +145,7 @@ export class SyncService {
    * Queue tournament game sync
    */
   async queueTournamentGameSync(data: GameSyncJobData): Promise<void> {
-    await this.syncQueue.add(SyncJobType.TOURNAMENT_GAME_SYNC, data, {
+    await this.tournamentEventQueue.add(SyncJobType.TOURNAMENT_GAME_SYNC, data, {
       priority: 10,
     });
   }
@@ -91,9 +154,115 @@ export class SyncService {
    * Queue team matching job
    */
   async queueTeamMatching(data: TeamMatchingJobData): Promise<void> {
-    await this.syncQueue.add(SyncJobType.TEAM_MATCHING, data, {
+    await this.teamMatchingQueue.add(SyncJobType.TEAM_MATCHING, data, {
       priority: 2,
     });
+  }
+
+  /**
+   * Queue sync for a specific event with granular control
+   */
+  async queueEventSync(tournamentCode: string, eventCode: string, includeSubComponents = false): Promise<void> {
+    const data = { tournamentCode, eventCodes: [eventCode], includeSubComponents };
+
+    // Determine if it's a tournament or competition based on tournament code pattern
+    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+
+    if (isCompetition) {
+      await this.competitionEventQueue.add('competition-event-sync', data, {
+        priority: 4,
+      });
+    } else {
+      await this.tournamentEventQueue.add('tournament-event-sync', data, {
+        priority: 4,
+      });
+    }
+  }
+
+  /**
+   * Queue sync for a specific sub-event with granular control
+   */
+  async queueSubEventSync(tournamentCode: string, eventCode: string, subEventCode?: string, includeSubComponents = false): Promise<void> {
+    const data = {
+      tournamentCode,
+      eventCodes: [eventCode],
+      subEventCodes: subEventCode ? [subEventCode] : undefined,
+      includeSubComponents,
+    };
+
+    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+
+    if (isCompetition) {
+      await this.competitionEventQueue.add('competition-subevent-sync', data, {
+        priority: 5,
+      });
+    } else {
+      await this.tournamentEventQueue.add('tournament-subevent-sync', data, {
+        priority: 5,
+      });
+    }
+  }
+
+  /**
+   * Queue sync for a specific draw with its games
+   */
+  async queueDrawSync(tournamentCode: string, drawCode: string, includeSubComponents = false): Promise<void> {
+    const data = { tournamentCode, drawCode, includeSubComponents };
+    const jobId = `draw-sync-${tournamentCode}-${drawCode}-${Date.now()}`;
+
+    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+
+    if (isCompetition) {
+      await this.competitionEventQueue.add('competition-draw-sync', data, {
+        jobId,
+        priority: 6,
+      });
+    } else {
+      await this.tournamentEventQueue.add('tournament-draw-sync', data, {
+        jobId,
+        priority: 6,
+      });
+    }
+  }
+
+  /**
+   * Queue sync for specific games
+   */
+  async queueGameSync(tournamentCode: string, eventCodeOrDrawCode?: string, drawCode?: string, matchCodes?: string[]): Promise<void> {
+    // Handle both signatures: (tournamentCode, drawCode, matchCodes) and (tournamentCode, eventCode, drawCode, matchCodes)
+    let eventCode: string | undefined;
+    let finalDrawCode: string | undefined;
+    let finalMatchCodes: string[] | undefined;
+
+    if (typeof drawCode === 'string') {
+      // Full signature: (tournamentCode, eventCode, drawCode, matchCodes)
+      eventCode = eventCodeOrDrawCode;
+      finalDrawCode = drawCode;
+      finalMatchCodes = matchCodes;
+    } else {
+      // Short signature: (tournamentCode, drawCode, matchCodes)
+      finalDrawCode = eventCodeOrDrawCode;
+      finalMatchCodes = drawCode as string[] | undefined;
+    }
+    const data: GameSyncJobData = {
+      tournamentCode,
+      eventCode,
+      drawCode: finalDrawCode,
+      matchCodes: finalMatchCodes,
+    };
+
+    // Determine if it's a tournament or competition
+    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+
+    if (isCompetition) {
+      await this.competitionEventQueue.add(SyncJobType.COMPETITION_GAME_SYNC, data, {
+        priority: 8,
+      });
+    } else {
+      await this.tournamentEventQueue.add(SyncJobType.TOURNAMENT_GAME_SYNC, data, {
+        priority: 8,
+      });
+    }
   }
 
   /**
@@ -107,7 +276,7 @@ export class SyncService {
       if (startDate <= now && now <= endDate) {
         // During competition - every 4 hours
         for (let i = 0; i < 6; i++) {
-          await this.syncQueue.add(
+          await this.competitionEventQueue.add(
             SyncJobType.COMPETITION_GAME_SYNC,
             { tournamentCode },
             {
@@ -122,7 +291,7 @@ export class SyncService {
 
         if (daysSinceEnd <= 7) {
           // Daily sync for first week
-          await this.syncQueue.add(
+          await this.competitionEventQueue.add(
             SyncJobType.COMPETITION_GAME_SYNC,
             { tournamentCode },
             {
@@ -132,7 +301,7 @@ export class SyncService {
           );
         } else if (daysSinceEnd <= 30) {
           // Weekly sync for first month
-          await this.syncQueue.add(
+          await this.competitionEventQueue.add(
             SyncJobType.COMPETITION_GAME_SYNC,
             { tournamentCode },
             {
@@ -149,7 +318,7 @@ export class SyncService {
         const hoursUntilEnd = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60));
 
         for (let i = 0; i < Math.min(hoursUntilEnd, 48); i++) {
-          await this.syncQueue.add(
+          await this.tournamentEventQueue.add(
             SyncJobType.TOURNAMENT_GAME_SYNC,
             { tournamentCode },
             {
@@ -163,7 +332,7 @@ export class SyncService {
         const daysSinceEnd = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
 
         if (daysSinceEnd <= 7) {
-          await this.syncQueue.add(
+          await this.tournamentEventQueue.add(
             SyncJobType.TOURNAMENT_GAME_SYNC,
             { tournamentCode },
             {
@@ -172,7 +341,7 @@ export class SyncService {
             },
           );
         } else if (daysSinceEnd <= 30) {
-          await this.syncQueue.add(
+          await this.tournamentEventQueue.add(
             SyncJobType.TOURNAMENT_GAME_SYNC,
             { tournamentCode },
             {
@@ -189,16 +358,33 @@ export class SyncService {
    * Get queue statistics
    */
   async getQueueStats() {
-    const waiting = await this.syncQueue.getWaiting();
-    const active = await this.syncQueue.getActive();
-    const completed = await this.syncQueue.getCompleted();
-    const failed = await this.syncQueue.getFailed();
+    // Get stats from all queues and aggregate them
+    const queues = this.getAllQueues();
+
+    let totalWaiting = 0;
+    let totalActive = 0;
+    let totalCompleted = 0;
+    let totalFailed = 0;
+
+    for (const queue of queues) {
+      const waiting = await queue.getWaiting();
+      const prioritized = await queue.getPrioritized();
+      const active = await queue.getActive();
+      // Use getCompletedCount() to get the actual count instead of length of limited array
+      const completedCount = await queue.getCompletedCount();
+      const failedCount = await queue.getFailedCount();
+
+      totalWaiting += waiting.length + prioritized.length; // Include prioritized jobs in waiting count
+      totalActive += active.length;
+      totalCompleted += completedCount;
+      totalFailed += failedCount;
+    }
 
     return {
-      waiting: waiting.length,
-      active: active.length,
-      completed: completed.length,
-      failed: failed.length,
+      waiting: totalWaiting,
+      active: totalActive,
+      completed: totalCompleted,
+      failed: totalFailed,
     };
   }
 
@@ -207,31 +393,39 @@ export class SyncService {
    */
   async getRecentJobs(limit = 20, status?: string) {
     const jobs = [];
+    const queues = this.getAllQueues();
 
-    if (!status || status === 'active') {
-      const activeJobs = await this.syncQueue.getActive();
-      jobs.push(...activeJobs.slice(0, limit));
-    }
+    for (const queue of queues) {
+      if (!status || status === 'active') {
+        const activeJobs = await queue.getActive();
+        jobs.push(...activeJobs.slice(0, limit));
+      }
 
-    if (!status || status === 'waiting') {
-      const waitingJobs = await this.syncQueue.getWaiting();
-      jobs.push(...waitingJobs.slice(0, limit));
-    }
+      if (!status || status === 'waiting') {
+        // Get regular waiting jobs
+        const waitingJobs = await queue.getWaiting();
+        jobs.push(...waitingJobs.slice(0, limit));
 
-    if (!status || status === 'completed') {
-      const completedJobs = await this.syncQueue.getCompleted();
-      jobs.push(...completedJobs.slice(0, limit));
-    }
+        // Also get prioritized jobs (these are jobs with priority > 0)
+        const prioritizedJobs = await queue.getPrioritized();
+        jobs.push(...prioritizedJobs.slice(0, limit));
+      }
 
-    if (!status || status === 'failed') {
-      const failedJobs = await this.syncQueue.getFailed();
-      jobs.push(...failedJobs.slice(0, limit));
+      if (!status || status === 'completed') {
+        const completedJobs = await queue.getCompleted();
+        jobs.push(...completedJobs.slice(0, limit));
+      }
+
+      if (!status || status === 'failed') {
+        const failedJobs = await queue.getFailed();
+        jobs.push(...failedJobs.slice(0, limit));
+      }
     }
 
     // Sort by timestamp (most recent first)
     jobs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-    return jobs.slice(0, limit).map((job) => ({
+    const result = jobs.slice(0, limit).map((job) => ({
       id: job.id,
       name: job.name,
       data: job.data,
@@ -243,16 +437,20 @@ export class SyncService {
       returnvalue: job.returnvalue,
       timestamp: job.timestamp,
       status: this.getJobStatus(job),
+      parentId: extractParentId(job),
     }));
+
+    return result;
   }
 
   /**
    * Determine job status based on job properties
    */
-  private getJobStatus(job: any): 'waiting' | 'active' | 'completed' | 'failed' {
+  private getJobStatus(job: { failedReason?: string; finishedOn?: number; processedOn?: number }): 'waiting' | 'active' | 'completed' | 'failed' {
     if (job.failedReason) return 'failed';
     if (job.finishedOn) return 'completed';
     if (job.processedOn) return 'active';
     return 'waiting';
   }
+
 }

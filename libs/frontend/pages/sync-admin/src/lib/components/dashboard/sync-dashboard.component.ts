@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import moment from 'moment';
 
 // PrimeNG Components
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
@@ -17,9 +18,11 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 
+import { SyncButtonComponent } from '@app/frontend-components/sync';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { SyncJob, Tournament } from '../../models';
+import { SyncJob } from '../../models';
 import { SyncDashboardService } from './sync-dashboard.service';
 
 @Component({
@@ -29,7 +32,6 @@ import { SyncDashboardService } from './sync-dashboard.service';
     CommonModule,
     RouterModule,
     FormsModule,
-    HttpClientModule,
     CardModule,
     ButtonModule,
     TableModule,
@@ -40,8 +42,12 @@ import { SyncDashboardService } from './sync-dashboard.service';
     SelectModule,
     DatePickerModule,
     ToastModule,
+    TooltipModule,
     ConfirmDialogModule,
+    DialogModule,
     TranslateModule,
+    DatePipe,
+    SyncButtonComponent,
   ],
   providers: [MessageService, ConfirmationService, SyncDashboardService],
   templateUrl: './sync-dashboard.component.html',
@@ -57,6 +63,12 @@ export class SyncDashboardComponent {
   recentJobs = this.syncService.recentJobs;
   tournaments = this.syncService.tournaments;
 
+  // Hierarchical jobs for table display
+  displayJobs = computed(() => {
+    const jobs = this.recentJobs();
+    return this.syncService.flattenJobsForDisplay(jobs);
+  });
+
   loading = this.syncService.loading;
   loadingStats = this.syncService.queueStatsLoading;
   loadingJobs = this.syncService.recentJobsLoading;
@@ -64,6 +76,22 @@ export class SyncDashboardComponent {
 
   // Manual loading state for actions
   actionLoading = signal(false);
+
+  // Job details dialog
+  jobDetailsVisible = signal(false);
+  selectedJob = signal<SyncJob | null>(null);
+
+  // Dialog visibility property for two-way binding
+  get dialogVisible(): boolean {
+    return this.jobDetailsVisible();
+  }
+
+  set dialogVisible(value: boolean) {
+    this.jobDetailsVisible.set(value);
+    if (!value) {
+      this.selectedJob.set(null);
+    }
+  }
 
   // Filter state
   searchTerm = '';
@@ -105,98 +133,8 @@ export class SyncDashboardComponent {
   });
 
   constructor() {
-    // Poll data every 30 seconds using service refresh
-    setInterval(() => {
-      this.syncService.refresh();
-    }, 30000);
-  }
-
-  async triggerDiscoverySync(): Promise<void> {
-    this.actionLoading.set(true);
-    try {
-      const response = await this.syncService.triggerDiscoverySync();
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: response.message || 'Tournament discovery sync started',
-      });
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to start discovery sync',
-      });
-    } finally {
-      this.actionLoading.set(false);
-    }
-  }
-
-  async triggerManualSync(): Promise<void> {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to trigger a manual sync of all tournaments?',
-      header: 'Manual Sync Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: async () => {
-        this.actionLoading.set(true);
-        try {
-          // Trigger both competition and tournament sync
-          await Promise.all([this.syncService.triggerCompetitionSync(), this.syncService.triggerTournamentSync()]);
-
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Manual sync started for all tournaments',
-          });
-        } catch (error) {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to start manual sync',
-          });
-        } finally {
-          this.actionLoading.set(false);
-        }
-      },
-    });
-  }
-
-  async syncTournament(tournament: Tournament): Promise<void> {
-    try {
-      // TODO: Call tournament sync service for specific tournament
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Structure sync started for ${tournament.name}`,
-      });
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Failed to sync ${tournament.name}`,
-      });
-    }
-  }
-
-  async syncTournamentGames(tournament: Tournament): Promise<void> {
-    try {
-      // TODO: Call tournament sync service for game sync
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: `Game sync started for ${tournament.name}`,
-      });
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Failed to sync games for ${tournament.name}`,
-      });
-    }
+    // WebSocket service now handles real-time updates automatically
+    // No need for polling intervals
   }
 
   onSearchChange(): void {
@@ -208,8 +146,13 @@ export class SyncDashboardComponent {
   }
 
   viewJobDetails(job: SyncJob): void {
-    // TODO: Open job details dialog or navigate to details page
-    console.log('View job details:', job);
+    this.selectedJob.set(job);
+    this.jobDetailsVisible.set(true);
+  }
+
+  closeJobDetails(): void {
+    this.jobDetailsVisible.set(false);
+    this.selectedJob.set(null);
   }
 
   retryJob(job: SyncJob): void {
@@ -286,8 +229,25 @@ export class SyncDashboardComponent {
     }
   }
 
-  getDuration(startMs: number, endMs: number): string {
-    const diffMs = endMs - startMs;
+  getDuration(job: SyncJob): string {
+    const finishedAt = this.getJobFinishedAt(job);
+    const processedAt = this.getJobProcessedAt(job);
+
+    if (!finishedAt && !processedAt) {
+      return '-';
+    }
+
+    const startDate = this.getJobCreatedAt(job);
+    if (!startDate) {
+      return '-';
+    }
+
+    const endDate = finishedAt || processedAt;
+    if (!endDate) {
+      return '-';
+    }
+
+    const diffMs = endDate.getTime() - startDate.getTime();
     const diffSecs = Math.floor(diffMs / 1000);
     const diffMins = Math.floor(diffSecs / 60);
 
@@ -297,16 +257,36 @@ export class SyncDashboardComponent {
     return `${diffSecs}s`;
   }
 
-  getJobCreatedAt(job: SyncJob): Date {
-    return new Date(); // Since we don't have timestamp in new interface
+  getJobCreatedAt(job: SyncJob): Date | undefined {
+    if (job.createdAt) {
+      const momentDate = moment(job.createdAt);
+      return momentDate.isValid() ? momentDate.toDate() : undefined;
+    }
+
+    if (job.timestamp) {
+      const momentFromTimestamp = moment(job.timestamp);
+      return momentFromTimestamp.isValid() ? momentFromTimestamp.toDate() : undefined;
+    }
+
+    return undefined;
   }
 
   getJobProcessedAt(job: SyncJob): Date | undefined {
-    return job.processedOn;
+    if (!job.processedOn) {
+      return undefined;
+    }
+
+    const momentDate = moment(job.processedOn);
+    return momentDate.isValid() ? momentDate.toDate() : undefined;
   }
 
   getJobFinishedAt(job: SyncJob): Date | undefined {
-    return job.finishedOn;
+    if (!job.finishedOn) {
+      return undefined;
+    }
+
+    const momentDate = moment(job.finishedOn);
+    return momentDate.isValid() ? momentDate.toDate() : undefined;
   }
 
   getJobType(job: SyncJob): string {
@@ -319,5 +299,45 @@ export class SyncDashboardComponent {
 
   getCurrentTime(): Date {
     return new Date();
+  }
+
+  /**
+   * Toggle expansion of a job to show/hide its children
+   */
+  toggleJobExpansion(job: SyncJob): void {
+    if (job.children && job.children.length > 0) {
+      this.syncService.toggleJobExpansion(job.id);
+    }
+  }
+
+  /**
+   * Check if a job has children
+   */
+  hasChildren(job: SyncJob): boolean {
+    return !!(job.children && job.children.length > 0);
+  }
+
+  /**
+   * Get indentation style for hierarchical display
+   */
+  getIndentStyle(level: number): { 'padding-left': string } {
+    return { 'padding-left': `${level * 20}px` };
+  }
+
+  /**
+   * Get appropriate icon for expansion state
+   */
+  getExpansionIcon(job: SyncJob): string {
+    if (!this.hasChildren(job)) {
+      return '';
+    }
+    return job.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right';
+  }
+
+  /**
+   * Get job level for styling purposes
+   */
+  getJobLevel(job: SyncJob & { level?: number }): number {
+    return job.level || 0;
   }
 }

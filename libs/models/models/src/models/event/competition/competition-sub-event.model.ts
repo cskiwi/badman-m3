@@ -69,6 +69,11 @@ export class CompetitionSubEvent extends BaseEntity {
   @Column({ nullable: true })
   declare maxBaseIndex?: number;
 
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true })
+  declare lastSync?: Date;
+
   @Field(() => CompetitionEvent, { nullable: true })
   @ManyToOne(() => CompetitionEvent, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })

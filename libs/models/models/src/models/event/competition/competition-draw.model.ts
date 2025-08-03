@@ -11,7 +11,7 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { SortableField } from '@app/utils';
+import { SortableField, WhereField } from '@app/utils';
 import { DrawType } from '@app/models-enum';
 import { CompetitionEncounter } from './competition-encounter.model';
 import { CompetitionSubEvent } from './competition-sub-event.model';
@@ -66,4 +66,9 @@ export class CompetitionDraw extends BaseEntity {
 
   @OneToMany(() => CompetitionEncounter, (encounter) => encounter.drawCompetition)
   declare competitionEncounters?: Relation<CompetitionEncounter[]>;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true })
+  declare lastSync?: Date;
 }

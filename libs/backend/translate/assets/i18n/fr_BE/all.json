@@ -3,6 +3,7 @@
     "accessRequired": "Accès administrateur requis",
     "noPermission": "Vous n'avez pas la permission d'accéder à cette page.",
     "panel": {
+      "description": "Gérer les fonctionnalités et paramètres d'administration du système",
       "information": {
         "availableTypes": "Types disponibles",
         "title": "Information"
@@ -18,8 +19,10 @@
       "sync": {
         "title": "Synchronisation des tournois"
       },
-      "title": "Panneau d'administration",
-      "description": "Gérer les fonctionnalités et paramètres d'administration du système"
+      "teamMatching": {
+        "title": "Correspondance des équipes"
+      },
+      "title": "Panneau d'administration"
     }
   },
   "clubs": {
@@ -268,6 +271,151 @@
       "title": "Langue"
     }
   },
+  "sync": {
+    "dashboard": {
+      "actions": {
+        "discoverySync": "Sync de découverte",
+        "manualSync": "Sync manuelle"
+      },
+      "jobs": {
+        "actions": "Actions",
+        "childJob": "Tâche enfant",
+        "children": "enfants",
+        "collapse": "Réduire",
+        "created": "Créé",
+        "duration": "Durée",
+        "expand": "Développer",
+        "jobId": "ID de tâche",
+        "noJobsFound": "Aucune tâche récente trouvée",
+        "progress": "Progression",
+        "retry": "Réessayer la tâche",
+        "status": "Statut",
+        "title": "Tâches de synchronisation récentes",
+        "type": "Type",
+        "viewDetails": "Voir les détails"
+      },
+      "queue": {
+        "status": {
+          "active": "Actif",
+          "completed": "Terminé",
+          "failed": "Échoué",
+          "waiting": "En attente"
+        },
+        "title": "Statistiques de la file"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Actions",
+          "created": "Créé",
+          "duration": "Durée",
+          "jobId": "ID de tâche",
+          "progress": "Progression",
+          "status": "Statut",
+          "type": "Type"
+        },
+        "noJobs": "Aucune tâche récente trouvée",
+        "title": "Tâches de synchronisation récentes"
+      },
+      "title": "Synchronisation d'événements",
+      "tournaments": {
+        "allStatuses": "Tous les statuts",
+        "allTypes": "Tous les types",
+        "headers": {
+          "actions": "Actions",
+          "dates": "Dates",
+          "lastSync": "Dernière sync",
+          "name": "Nom",
+          "status": "Statut",
+          "syncStatus": "Statut de sync",
+          "type": "Type"
+        },
+        "levelSync": {
+          "dialogs": {
+            "cancel": "Annuler",
+            "drawSync": {
+              "drawCode": "Code du tableau",
+              "drawCodePlaceholder": "Entrez le code du tableau (ex: M1, Q1)",
+              "eventCode": "Code de l'épreuve",
+              "eventCodePlaceholder": "Entrez le code de l'épreuve (ex: H1, D2)",
+              "syncButton": "Synchroniser le tableau",
+              "title": "Synchronisation au niveau tableau"
+            },
+            "eventSync": {
+              "eventCode": "Code de l'épreuve",
+              "eventCodePlaceholder": "Entrez le code de l'épreuve (ex: H1, D2)",
+              "syncButton": "Synchroniser l'épreuve",
+              "title": "Synchronisation au niveau épreuve"
+            },
+            "gameSync": {
+              "drawCode": "Code du tableau (Optionnel)",
+              "drawCodePlaceholder": "Entrez le code du tableau (ex: M1, Q1) - optionnel",
+              "eventCode": "Code de l'épreuve (Optionnel)",
+              "eventCodePlaceholder": "Entrez le code de l'épreuve (ex: H1, D2) - optionnel",
+              "matchCodes": "Codes des matchs (Optionnel)",
+              "matchCodesHelp": "Laissez vide pour synchroniser tous les matchs correspondant aux critères épreuve/tableau",
+              "matchCodesPlaceholder": "Entrez les codes des matchs séparés par des virgules (ex: M1_G1, M1_G2)",
+              "syncButton": "Synchroniser les matchs",
+              "title": "Synchronisation de matchs spécifiques"
+            },
+            "tournament": "Tournoi"
+          },
+          "syncAllGames": "Synchroniser tous les matchs",
+          "syncDrawLevel": "Synchroniser au niveau tableau",
+          "syncEventLevel": "Synchroniser au niveau épreuve",
+          "syncSpecificGames": "Synchroniser des matchs spécifiques"
+        },
+        "never": "Jamais",
+        "noTournaments": "Aucun tournoi trouvé",
+        "search": "Rechercher des tournois...",
+        "title": "Tournois et compétitions",
+        "tooltips": {
+          "manage": "Gérer",
+          "syncGames": "Synchroniser les matchs",
+          "syncStructure": "Synchroniser la structure"
+        }
+      }
+    },
+    "lastSync": "Dernière synchronisation",
+    "status": {
+      "failed": "Échec",
+      "neverSynced": "Non synchronisé",
+      "queued": "En attente",
+      "synced": "Synchronisé",
+      "syncing": "En cours"
+    },
+    "teamMatching": {
+      "refresh": "Actualiser",
+      "statistics": {
+        "highConfidence": "Haute confiance",
+        "lowConfidence": "Faible confiance",
+        "matched": "Correspondant",
+        "mediumConfidence": "Confiance moyenne",
+        "pendingReview": "En attente de révision",
+        "rejected": "Rejeté",
+        "title": "Statistiques de correspondance"
+      },
+      "title": "Correspondance d'équipe",
+      "unmatchedTeams": {
+        "headers": {
+          "actions": "Actions",
+          "bestMatch": "Meilleure correspondance",
+          "confidence": "Confiance",
+          "status": "Statut",
+          "teamInfo": "Info équipe",
+          "tournament": "Tournoi"
+        },
+        "title": "Équipes non appariées"
+      }
+    },
+    "title": "Synchronisation d'événements fonctionne!",
+    "tooltip": {
+      "failed": "Échec de synchronisation",
+      "neverSynced": "Jamais synchronisé",
+      "queued": "En attente de synchronisation",
+      "synced": "Synchronisation réussie",
+      "syncing": "Synchronisation en cours"
+    }
+  },
   "system": {
     "update": {
       "available": "Mise à jour disponible",
@@ -406,83 +554,5 @@
       "women": "Femmes"
     },
     "visualCode": "Code visuel"
-  },
-  "tournamentSync": {
-    "dashboard": {
-      "actions": {
-        "discoverySync": "Sync de découverte",
-        "manualSync": "Sync manuelle"
-      },
-      "queue": {
-        "status": {
-          "active": "Actif",
-          "completed": "Terminé",
-          "failed": "Échoué",
-          "waiting": "En attente"
-        },
-        "title": "Statistiques de la file"
-      },
-      "recentJobs": {
-        "headers": {
-          "actions": "Actions",
-          "created": "Créé",
-          "duration": "Durée",
-          "jobId": "ID de tâche",
-          "progress": "Progression",
-          "status": "Statut",
-          "type": "Type"
-        },
-        "noJobs": "Aucune tâche récente trouvée",
-        "title": "Tâches de synchronisation récentes"
-      },
-      "title": "Synchronisation d'événements",
-      "tournaments": {
-        "allStatuses": "Tous les statuts",
-        "allTypes": "Tous les types",
-        "headers": {
-          "actions": "Actions",
-          "dates": "Dates",
-          "lastSync": "Dernière sync",
-          "name": "Nom",
-          "status": "Statut",
-          "syncStatus": "Statut de sync",
-          "type": "Type"
-        },
-        "never": "Jamais",
-        "noTournaments": "Aucun tournoi trouvé",
-        "search": "Rechercher des tournois...",
-        "title": "Tournois et compétitions",
-        "tooltips": {
-          "manage": "Gérer",
-          "syncGames": "Synchroniser les matchs",
-          "syncStructure": "Synchroniser la structure"
-        }
-      }
-    },
-    "teamMatching": {
-      "refresh": "Actualiser",
-      "statistics": {
-        "highConfidence": "Haute confiance",
-        "lowConfidence": "Faible confiance",
-        "matched": "Correspondant",
-        "mediumConfidence": "Confiance moyenne",
-        "pendingReview": "En attente de révision",
-        "rejected": "Rejeté",
-        "title": "Statistiques de correspondance"
-      },
-      "title": "Correspondance d'équipe",
-      "unmatchedTeams": {
-        "headers": {
-          "actions": "Actions",
-          "bestMatch": "Meilleure correspondance",
-          "confidence": "Confiance",
-          "status": "Statut",
-          "teamInfo": "Info équipe",
-          "tournament": "Tournoi"
-        },
-        "title": "Équipes non appariées"
-      }
-    },
-    "title": "Synchronisation d'événements fonctionne!"
   }
 }

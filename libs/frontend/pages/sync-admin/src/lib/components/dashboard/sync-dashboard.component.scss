@@ -5,4 +5,59 @@
   :host {
     display: block;
   }
+
+  // Hierarchical job table styles
+  .hierarchical-job-table {
+    .expansion-column {
+      width: 3rem;
+      min-width: 3rem;
+    }
+
+    .job-row {
+      &.level-0 {
+        background-color: var(--surface-0);
+        font-weight: 500;
+      }
+
+      &.level-1 {
+        background-color: var(--surface-50);
+        font-size: 0.9rem;
+      }
+
+      &.level-2 {
+        background-color: var(--surface-100);
+        font-size: 0.85rem;
+      }
+
+      &.level-3 {
+        background-color: var(--surface-150);
+        font-size: 0.8rem;
+      }
+    }
+
+    .job-indent {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .expansion-button {
+      padding: 0.25rem;
+      
+      &:hover {
+        background-color: var(--primary-100);
+      }
+    }
+
+    .child-indicator {
+      color: var(--text-color-secondary);
+      font-size: 0.75rem;
+      font-style: italic;
+    }
+
+    .children-count {
+      color: var(--text-color-secondary);
+      font-size: 0.75rem;
+    }
+  }
 }

@@ -1,7 +1,8 @@
 import { DatePipe, SlicePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { SyncButtonComponent, SyncButtonConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -11,7 +12,7 @@ import { DrawsService } from './page-draws.service';
 
 @Component({
   selector: 'app-page-draws',
-  imports: [DatePipe, SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule],
+  imports: [DatePipe, SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule, SyncButtonComponent],
   templateUrl: './page-draws.component.html',
   styleUrl: './page-draws.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +32,27 @@ export class PageDrawsComponent {
 
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  // Sync configuration for competition draw
+  syncConfig = computed((): SyncButtonConfig | null => {
+    const competition = this.competition();
+    const subEvent = this.subEvent();
+    const draw = this.draw();
+    
+    if (!competition || !subEvent || !draw) {
+      return null;
+    }
+
+    return {
+      level: 'draw',
+      tournamentCode: competition.visualCode || competition.id,
+      tournamentName: competition.name,
+      eventCode: subEvent.id,
+      eventName: subEvent.name,
+      drawCode: draw.visualCode || draw.id,
+      drawName: draw.name || 'Draw',
+    };
+  });
 
   constructor() {
     effect(() => {

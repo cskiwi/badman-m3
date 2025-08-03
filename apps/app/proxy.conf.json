@@ -8,5 +8,11 @@
     "target": "http://localhost:5000",
     "secure": false,
     "logLevel": "silent"
+  },
+  "/socket.io": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "silent",
+    "ws": true
   }
 }

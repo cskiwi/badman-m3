@@ -1,7 +1,8 @@
 import { SlicePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { SyncButtonComponent, SyncButtonConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -11,7 +12,7 @@ import { DrawDetailService } from './page-draw-detail.service';
 
 @Component({
   selector: 'app-page-draw-detail',
-  imports: [SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule],
+  imports: [SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule, SyncButtonComponent],
   templateUrl: './page-draw-detail.component.html',
   styleUrl: './page-draw-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +32,27 @@ export class PageDrawDetailComponent {
 
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  // Sync configuration
+  syncConfig = computed((): SyncButtonConfig | null => {
+    const tournament = this.tournament();
+    const subEvent = this.subEvent();
+    const draw = this.draw();
+    
+    if (!tournament || !subEvent || !draw) {
+      return null;
+    }
+
+    return {
+      level: 'draw',
+      tournamentCode: tournament.visualCode,
+      tournamentName: tournament.name,
+      eventCode: subEvent.visualCode || subEvent.id,
+      eventName: subEvent.name,
+      drawCode: draw.visualCode || draw.id,
+      drawName: draw.name || 'Draw',
+    };
+  });
 
   constructor() {
     effect(() => {

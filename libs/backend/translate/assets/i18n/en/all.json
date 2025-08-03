@@ -3,6 +3,7 @@
     "accessRequired": "Admin Access Required",
     "noPermission": "You do not have permission to access this page.",
     "panel": {
+      "description": "Manage system administration features and settings",
       "information": {
         "availableTypes": "Available Types",
         "title": "Information"
@@ -18,8 +19,10 @@
       "sync": {
         "title": "Tournament Sync"
       },
-      "title": "Admin Panel",
-      "description": "Manage system administration features and settings"
+      "teamMatching": {
+        "title": "Team Matching"
+      },
+      "title": "Admin Panel"
     }
   },
   "clubs": {
@@ -268,6 +271,151 @@
       "title": "Language"
     }
   },
+  "sync": {
+    "dashboard": {
+      "actions": {
+        "discoverySync": "Discovery Sync",
+        "manualSync": "Manual Sync"
+      },
+      "jobs": {
+        "actions": "Actions",
+        "childJob": "Child Job",
+        "children": "children",
+        "collapse": "Collapse",
+        "created": "Created",
+        "duration": "Duration",
+        "expand": "Expand",
+        "jobId": "Job ID",
+        "noJobsFound": "No recent jobs found",
+        "progress": "Progress",
+        "retry": "Retry Job",
+        "status": "Status",
+        "title": "Recent Sync Jobs",
+        "type": "Type",
+        "viewDetails": "View Details"
+      },
+      "queue": {
+        "status": {
+          "active": "Active",
+          "completed": "Completed",
+          "failed": "Failed",
+          "waiting": "Waiting"
+        },
+        "title": "Queue Statistics"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Actions",
+          "created": "Created",
+          "duration": "Duration",
+          "jobId": "Job ID",
+          "progress": "Progress",
+          "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "No recent jobs found",
+        "title": "Recent Sync Jobs"
+      },
+      "title": "Sync Events",
+      "tournaments": {
+        "allStatuses": "All Statuses",
+        "allTypes": "All Types",
+        "headers": {
+          "actions": "Actions",
+          "dates": "Dates",
+          "lastSync": "Last Sync",
+          "name": "Name",
+          "status": "Status",
+          "syncStatus": "Sync Status",
+          "type": "Type"
+        },
+        "levelSync": {
+          "dialogs": {
+            "cancel": "Cancel",
+            "drawSync": {
+              "drawCode": "Draw Code",
+              "drawCodePlaceholder": "Enter draw code (e.g., M1, Q1)",
+              "eventCode": "Event Code",
+              "eventCodePlaceholder": "Enter event code (e.g., H1, D2)",
+              "syncButton": "Sync Draw",
+              "title": "Sync Draw Level"
+            },
+            "eventSync": {
+              "eventCode": "Event Code",
+              "eventCodePlaceholder": "Enter event code (e.g., H1, D2)",
+              "syncButton": "Sync Event",
+              "title": "Sync Event Level"
+            },
+            "gameSync": {
+              "drawCode": "Draw Code (Optional)",
+              "drawCodePlaceholder": "Enter draw code (e.g., M1, Q1) - optional",
+              "eventCode": "Event Code (Optional)",
+              "eventCodePlaceholder": "Enter event code (e.g., H1, D2) - optional",
+              "matchCodes": "Match Codes (Optional)",
+              "matchCodesHelp": "Leave empty to sync all games matching the event/draw criteria",
+              "matchCodesPlaceholder": "Enter match codes separated by commas (e.g., M1_G1, M1_G2)",
+              "syncButton": "Sync Games",
+              "title": "Sync Specific Games"
+            },
+            "tournament": "Tournament"
+          },
+          "syncAllGames": "Sync All Games",
+          "syncDrawLevel": "Sync Draw Level",
+          "syncEventLevel": "Sync Event Level",
+          "syncSpecificGames": "Sync Specific Games"
+        },
+        "never": "Never",
+        "noTournaments": "No tournaments found",
+        "search": "Search tournaments...",
+        "title": "Tournaments & Competitions",
+        "tooltips": {
+          "manage": "Manage",
+          "syncGames": "Sync Games",
+          "syncStructure": "Sync Structure"
+        }
+      }
+    },
+    "lastSync": "Last synced",
+    "status": {
+      "failed": "Failed",
+      "neverSynced": "Not synced",
+      "queued": "Queued",
+      "synced": "Synced",
+      "syncing": "Syncing"
+    },
+    "teamMatching": {
+      "refresh": "Refresh",
+      "statistics": {
+        "highConfidence": "High Confidence",
+        "lowConfidence": "Low Confidence",
+        "matched": "Matched",
+        "mediumConfidence": "Medium Confidence",
+        "pendingReview": "Pending Review",
+        "rejected": "Rejected",
+        "title": "Matching Statistics"
+      },
+      "title": "Team Matching",
+      "unmatchedTeams": {
+        "headers": {
+          "actions": "Actions",
+          "bestMatch": "Best Match",
+          "confidence": "Confidence",
+          "status": "Status",
+          "teamInfo": "Team Info",
+          "tournament": "Tournament"
+        },
+        "title": "Unmatched Teams"
+      }
+    },
+    "title": "Sync Events works!",
+    "tooltip": {
+      "failed": "Synchronization failed",
+      "neverSynced": "Never synchronized",
+      "queued": "Queued for synchronization",
+      "synced": "Successfully synchronized",
+      "syncing": "Synchronization in progress"
+    }
+  },
   "system": {
     "update": {
       "available": "Update Available",
@@ -406,83 +554,5 @@
       "women": "Ladies"
     },
     "visualCode": "Visual Code"
-  },
-  "tournamentSync": {
-    "dashboard": {
-      "actions": {
-        "discoverySync": "Discovery Sync",
-        "manualSync": "Manual Sync"
-      },
-      "queue": {
-        "status": {
-          "active": "Active",
-          "completed": "Completed",
-          "failed": "Failed",
-          "waiting": "Waiting"
-        },
-        "title": "Queue Statistics"
-      },
-      "recentJobs": {
-        "headers": {
-          "actions": "Actions",
-          "created": "Created",
-          "duration": "Duration",
-          "jobId": "Job ID",
-          "progress": "Progress",
-          "status": "Status",
-          "type": "Type"
-        },
-        "noJobs": "No recent jobs found",
-        "title": "Recent Sync Jobs"
-      },
-      "title": "Sync Events",
-      "tournaments": {
-        "allStatuses": "All Statuses",
-        "allTypes": "All Types",
-        "headers": {
-          "actions": "Actions",
-          "dates": "Dates",
-          "lastSync": "Last Sync",
-          "name": "Name",
-          "status": "Status",
-          "syncStatus": "Sync Status",
-          "type": "Type"
-        },
-        "never": "Never",
-        "noTournaments": "No tournaments found",
-        "search": "Search tournaments...",
-        "title": "Tournaments & Competitions",
-        "tooltips": {
-          "manage": "Manage",
-          "syncGames": "Sync Games",
-          "syncStructure": "Sync Structure"
-        }
-      }
-    },
-    "teamMatching": {
-      "refresh": "Refresh",
-      "statistics": {
-        "highConfidence": "High Confidence",
-        "lowConfidence": "Low Confidence",
-        "matched": "Matched",
-        "mediumConfidence": "Medium Confidence",
-        "pendingReview": "Pending Review",
-        "rejected": "Rejected",
-        "title": "Matching Statistics"
-      },
-      "title": "Team Matching",
-      "unmatchedTeams": {
-        "headers": {
-          "actions": "Actions",
-          "bestMatch": "Best Match",
-          "confidence": "Confidence",
-          "status": "Status",
-          "teamInfo": "Team Info",
-          "tournament": "Tournament"
-        },
-        "title": "Unmatched Teams"
-      }
-    },
-    "title": "Sync Events works!"
   }
 }

@@ -34,6 +34,7 @@ export class DetailService {
                   slug
                   tournamentNumber
                   firstDay
+                  lastSync
                   openDate
                   closeDate
                   dates
@@ -48,6 +49,7 @@ export class DetailService {
                     gameType
                     level
                     visualCode
+                    lastSync
                     drawTournaments {
                       id
                       name

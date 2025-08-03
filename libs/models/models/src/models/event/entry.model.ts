@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   Relation,
+  OneToOne,
 } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 import { Standing } from './standing.model';
@@ -59,6 +60,7 @@ export class Entry extends BaseEntity {
   @Index()
   declare player2Id?: string;
 
+
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ nullable: true })
@@ -86,9 +88,9 @@ export class Entry extends BaseEntity {
   @Column({ type: 'timestamp with time zone', nullable: true })
   declare sendOn?: Date;
 
-  @Field(() => [Standing], { nullable: true })
-  @OneToMany(() => Standing, standing => standing.entry)
-  declare standings?: Relation<Standing[]>;
+  @Field(() => Standing, { nullable: true })
+  @OneToOne(() => Standing, standing => standing.entry)
+  declare standing?: Relation<Standing>;
 
   @Field(() => Player, { nullable: true })
   @ManyToOne(() => Player, { nullable: true })
@@ -100,9 +102,4 @@ export class Entry extends BaseEntity {
   @JoinColumn({ name: 'player2Id' })
   declare player2?: Relation<Player>;
 
-  // Note: TournamentDraw relationship - avoiding circular import
-  // @Field(() => TournamentDraw, { nullable: true })
-  // @ManyToOne(() => TournamentDraw, draw => draw.entries)
-  // @JoinColumn({ name: 'drawId' })
-  // declare drawTournament?: Relation<TournamentDraw>;
 }

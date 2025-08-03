@@ -51,7 +51,7 @@ export class TournamentDrawResolver {
       where: {
         drawId: id,
       },
-      relations: ['standings'],
+      relations: ['standing'],
     });
   }
 

@@ -14,6 +14,11 @@ export interface SyncJob {
   finishedOn?: Date;
   failedReason?: string;
   status: string;
+  timestamp?: number;
+  createdAt?: Date;
+  parentId?: string;
+  children?: SyncJob[];
+  expanded?: boolean; // For UI state management
 }
 
 export interface SyncStatus {

@@ -17,7 +17,11 @@
               </div>
             </div>
           </ng-content>
-          <ng-content actions> </ng-content>
+          <ng-content actions>
+            @if (syncConfig(); as config) {
+              <app-sync-button [config]="config" />
+            }
+          </ng-content>
         </app-page-header>
 
         <!-- Draw Information Section -->

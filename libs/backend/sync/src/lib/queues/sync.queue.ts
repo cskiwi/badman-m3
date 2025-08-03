@@ -1,19 +1,11 @@
-import { BullModule } from '@nestjs/bull';
+// Queue Names - Each processor gets its own queue
+export const TOURNAMENT_DISCOVERY_QUEUE = 'tournament-discovery';
+export const COMPETITION_EVENT_QUEUE = 'competition-event';
+export const TOURNAMENT_EVENT_QUEUE = 'tournament-event';
+export const TEAM_MATCHING_QUEUE = 'team-matching';
 
+// Legacy queue name for backwards compatibility
 export const SYNC_QUEUE = 'sync';
-
-export const SyncQueueModule = BullModule.registerQueue({
-  name: SYNC_QUEUE,
-  defaultJobOptions: {
-    removeOnComplete: 100,
-    removeOnFail: 50,
-    attempts: 3,
-    backoff: {
-      type: 'exponential',
-      delay: 2000,
-    },
-  },
-});
 
 // Job Types
 export enum SyncJobType {
@@ -24,6 +16,24 @@ export enum SyncJobType {
   TOURNAMENT_GAME_SYNC = 'tournament-game-sync',
   TEAM_MATCHING = 'team-matching',
 }
+
+// Array of all queue names for easy iteration
+export const ALL_SYNC_QUEUES = [
+  SYNC_QUEUE,
+  TOURNAMENT_DISCOVERY_QUEUE,
+  COMPETITION_EVENT_QUEUE,
+  TOURNAMENT_EVENT_QUEUE,
+  TEAM_MATCHING_QUEUE,
+] as const;
+
+// Queue to job type mapping for easy reference
+export const QUEUE_JOB_TYPE_MAP = {
+  [TOURNAMENT_DISCOVERY_QUEUE]: [SyncJobType.TOURNAMENT_DISCOVERY],
+  [COMPETITION_EVENT_QUEUE]: [SyncJobType.COMPETITION_STRUCTURE_SYNC, SyncJobType.COMPETITION_GAME_SYNC],
+  [TOURNAMENT_EVENT_QUEUE]: [SyncJobType.TOURNAMENT_STRUCTURE_SYNC, SyncJobType.TOURNAMENT_GAME_SYNC],
+  [TEAM_MATCHING_QUEUE]: [SyncJobType.TEAM_MATCHING],
+  [SYNC_QUEUE]: [], // Legacy queue
+} as const;
 
 // Job Data Interfaces
 export interface TournamentDiscoveryJobData {
@@ -36,6 +46,7 @@ export interface StructureSyncJobData {
   tournamentCode: string;
   eventCodes?: string[];
   forceUpdate?: boolean;
+  includeSubComponents?: boolean;
 }
 
 export interface GameSyncJobData {

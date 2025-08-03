@@ -10,6 +10,7 @@ export type I18nTranslations = {
             "accessRequired": string;
             "noPermission": string;
             "panel": {
+                "description": string;
                 "information": {
                     "availableTypes": string;
                     "title": string;
@@ -25,8 +26,10 @@ export type I18nTranslations = {
                 "sync": {
                     "title": string;
                 };
+                "teamMatching": {
+                    "title": string;
+                };
                 "title": string;
-                "description": string;
             };
         };
         "clubs": {
@@ -275,6 +278,151 @@ export type I18nTranslations = {
                 "title": string;
             };
         };
+        "sync": {
+            "dashboard": {
+                "actions": {
+                    "discoverySync": string;
+                    "manualSync": string;
+                };
+                "jobs": {
+                    "actions": string;
+                    "childJob": string;
+                    "children": string;
+                    "collapse": string;
+                    "created": string;
+                    "duration": string;
+                    "expand": string;
+                    "jobId": string;
+                    "noJobsFound": string;
+                    "progress": string;
+                    "retry": string;
+                    "status": string;
+                    "title": string;
+                    "type": string;
+                    "viewDetails": string;
+                };
+                "queue": {
+                    "status": {
+                        "active": string;
+                        "completed": string;
+                        "failed": string;
+                        "waiting": string;
+                    };
+                    "title": string;
+                };
+                "recentJobs": {
+                    "headers": {
+                        "actions": string;
+                        "created": string;
+                        "duration": string;
+                        "jobId": string;
+                        "progress": string;
+                        "status": string;
+                        "type": string;
+                    };
+                    "noJobs": string;
+                    "title": string;
+                };
+                "title": string;
+                "tournaments": {
+                    "allStatuses": string;
+                    "allTypes": string;
+                    "headers": {
+                        "actions": string;
+                        "dates": string;
+                        "lastSync": string;
+                        "name": string;
+                        "status": string;
+                        "syncStatus": string;
+                        "type": string;
+                    };
+                    "levelSync": {
+                        "dialogs": {
+                            "cancel": string;
+                            "drawSync": {
+                                "drawCode": string;
+                                "drawCodePlaceholder": string;
+                                "eventCode": string;
+                                "eventCodePlaceholder": string;
+                                "syncButton": string;
+                                "title": string;
+                            };
+                            "eventSync": {
+                                "eventCode": string;
+                                "eventCodePlaceholder": string;
+                                "syncButton": string;
+                                "title": string;
+                            };
+                            "gameSync": {
+                                "drawCode": string;
+                                "drawCodePlaceholder": string;
+                                "eventCode": string;
+                                "eventCodePlaceholder": string;
+                                "matchCodes": string;
+                                "matchCodesHelp": string;
+                                "matchCodesPlaceholder": string;
+                                "syncButton": string;
+                                "title": string;
+                            };
+                            "tournament": string;
+                        };
+                        "syncAllGames": string;
+                        "syncDrawLevel": string;
+                        "syncEventLevel": string;
+                        "syncSpecificGames": string;
+                    };
+                    "never": string;
+                    "noTournaments": string;
+                    "search": string;
+                    "title": string;
+                    "tooltips": {
+                        "manage": string;
+                        "syncGames": string;
+                        "syncStructure": string;
+                    };
+                };
+            };
+            "lastSync": string;
+            "status": {
+                "failed": string;
+                "neverSynced": string;
+                "queued": string;
+                "synced": string;
+                "syncing": string;
+            };
+            "teamMatching": {
+                "refresh": string;
+                "statistics": {
+                    "highConfidence": string;
+                    "lowConfidence": string;
+                    "matched": string;
+                    "mediumConfidence": string;
+                    "pendingReview": string;
+                    "rejected": string;
+                    "title": string;
+                };
+                "title": string;
+                "unmatchedTeams": {
+                    "headers": {
+                        "actions": string;
+                        "bestMatch": string;
+                        "confidence": string;
+                        "status": string;
+                        "teamInfo": string;
+                        "tournament": string;
+                    };
+                    "title": string;
+                };
+            };
+            "title": string;
+            "tooltip": {
+                "failed": string;
+                "neverSynced": string;
+                "queued": string;
+                "synced": string;
+                "syncing": string;
+            };
+        };
         "system": {
             "update": {
                 "available": string;
@@ -413,84 +561,6 @@ export type I18nTranslations = {
                 "women": string;
             };
             "visualCode": string;
-        };
-        "tournamentSync": {
-            "dashboard": {
-                "actions": {
-                    "discoverySync": string;
-                    "manualSync": string;
-                };
-                "queue": {
-                    "status": {
-                        "active": string;
-                        "completed": string;
-                        "failed": string;
-                        "waiting": string;
-                    };
-                    "title": string;
-                };
-                "recentJobs": {
-                    "headers": {
-                        "actions": string;
-                        "created": string;
-                        "duration": string;
-                        "jobId": string;
-                        "progress": string;
-                        "status": string;
-                        "type": string;
-                    };
-                    "noJobs": string;
-                    "title": string;
-                };
-                "title": string;
-                "tournaments": {
-                    "allStatuses": string;
-                    "allTypes": string;
-                    "headers": {
-                        "actions": string;
-                        "dates": string;
-                        "lastSync": string;
-                        "name": string;
-                        "status": string;
-                        "syncStatus": string;
-                        "type": string;
-                    };
-                    "never": string;
-                    "noTournaments": string;
-                    "search": string;
-                    "title": string;
-                    "tooltips": {
-                        "manage": string;
-                        "syncGames": string;
-                        "syncStructure": string;
-                    };
-                };
-            };
-            "teamMatching": {
-                "refresh": string;
-                "statistics": {
-                    "highConfidence": string;
-                    "lowConfidence": string;
-                    "matched": string;
-                    "mediumConfidence": string;
-                    "pendingReview": string;
-                    "rejected": string;
-                    "title": string;
-                };
-                "title": string;
-                "unmatchedTeams": {
-                    "headers": {
-                        "actions": string;
-                        "bestMatch": string;
-                        "confidence": string;
-                        "status": string;
-                        "teamInfo": string;
-                        "tournament": string;
-                    };
-                    "title": string;
-                };
-            };
-            "title": string;
         };
     };
 };

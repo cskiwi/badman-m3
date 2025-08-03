@@ -33,6 +33,7 @@ export class DetailService {
                   name
                   slug
                   season
+                  lastSync
                   openDate
                   closeDate
                   changeOpenDate
@@ -55,6 +56,7 @@ export class DetailService {
                     maxLevel
                     minBaseIndex
                     maxBaseIndex
+                    lastSync
                     competitionDraws {
                       id
                       name

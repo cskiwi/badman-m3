@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, Relation, OneToOne } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 import { Entry } from './entry.model';
 
@@ -27,7 +27,7 @@ export class Standing extends BaseEntity {
   declare entryId?: string;
 
   @Field(() => Entry, { nullable: true })
-  @ManyToOne(() => Entry, entry => entry.standings)
+  @OneToOne(() => Entry, entry => entry.standing)
   @JoinColumn({ name: 'entryId' })
   declare entry?: Relation<Entry>;
 

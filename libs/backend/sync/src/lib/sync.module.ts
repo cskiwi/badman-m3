@@ -1,24 +1,72 @@
-import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ConfigModule } from '@nestjs/config';
 import { TournamentApiModule } from '@app/backend-tournament-api';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
-import { SyncQueueModule } from './queues/sync.queue';
+import { BullModule } from '@nestjs/bullmq';
+import { SyncGateway } from './gateways/sync.gateway';
 import { SyncService } from './services/sync.service';
+import { 
+  SyncEventsListener,
+  TournamentDiscoveryEventsListener,
+  CompetitionEventEventsListener,
+  TournamentEventEventsListener,
+  TeamMatchingEventsListener,
+} from './listeners/sync-events.listener';
+import { 
+  ALL_SYNC_QUEUES,
+} from './queues/sync.queue';
 
 @Module({
   imports: [
     ConfigModule,
     ScheduleModule.forRoot(),
-    // Redis configuration is now handled by the parent application
-    SyncQueueModule,
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => {
+        // Use CACHE_* environment variables to match the project's configuration
+        const host = configService.get('CACHE_HOST') || configService.get('REDIS_HOST') || 'localhost';
+        const port = configService.get<number>('CACHE_PORT') || configService.get<number>('REDIS_PORT') || 6379;
+        const password = configService.get('CACHE_PASSWORD') || configService.get('REDIS_PASSWORD');
+        const db = configService.get<number>('CACHE_DB') || configService.get<number>('REDIS_DB') || 0;
+        
+        return {
+          connection: {
+            host,
+            port,
+            password,
+            db,
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
+    // Register all queues dynamically
+    ...ALL_SYNC_QUEUES.map(queueName => 
+      BullModule.registerQueue({
+        name: queueName,
+      })
+    ),
+
+    // Register flow producers for sub-option sync capabilities
+    BullModule.registerFlowProducer({
+      name: 'tournament-sync',
+    }),
+    BullModule.registerFlowProducer({
+      name: 'competition-sync',
+    }),
+
     TournamentApiModule,
   ],
   providers: [
-    SyncService,
+    SyncService, 
+    SyncGateway, 
+    SyncEventsListener,
+    TournamentDiscoveryEventsListener,
+    CompetitionEventEventsListener,
+    TournamentEventEventsListener,
+    TeamMatchingEventsListener,
   ],
-  exports: [
-    SyncService,
-  ],
+  exports: [SyncService, SyncGateway],
 })
 export class SyncModule {}

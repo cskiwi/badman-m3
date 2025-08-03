@@ -3,6 +3,7 @@
     "accessRequired": "Admin toegang vereist",
     "noPermission": "Je hebt geen toestemming om deze pagina te bekijken.",
     "panel": {
+      "description": "Beheer systeemadministratie functies en instellingen",
       "information": {
         "availableTypes": "Beschikbare types",
         "title": "Informatie"
@@ -18,8 +19,10 @@
       "sync": {
         "title": "Toernooi Synchronisatie"
       },
-      "title": "Admin Paneel",
-      "description": "Beheer systeemadministratie functies en instellingen"
+      "teamMatching": {
+        "title": "Team Matching"
+      },
+      "title": "Admin Paneel"
     }
   },
   "clubs": {
@@ -268,6 +271,151 @@
       "title": "Taal"
     }
   },
+  "sync": {
+    "dashboard": {
+      "actions": {
+        "discoverySync": "Discovery Sync",
+        "manualSync": "Handmatige Sync"
+      },
+      "jobs": {
+        "actions": "Acties",
+        "childJob": "Sub-job",
+        "children": "kinderen",
+        "collapse": "Inklappen",
+        "created": "Aangemaakt",
+        "duration": "Duur",
+        "expand": "Uitklappen",
+        "jobId": "Job ID",
+        "noJobsFound": "Geen recente jobs gevonden",
+        "progress": "Voortgang",
+        "retry": "Job opnieuw proberen",
+        "status": "Status",
+        "title": "Recente Sync Jobs",
+        "type": "Type",
+        "viewDetails": "Details bekijken"
+      },
+      "queue": {
+        "status": {
+          "active": "Actief",
+          "completed": "Voltooid",
+          "failed": "Mislukt",
+          "waiting": "Wachtend"
+        },
+        "title": "Wachtrij Statistieken"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Acties",
+          "created": "Aangemaakt",
+          "duration": "Duur",
+          "jobId": "Job ID",
+          "progress": "Voortgang",
+          "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "Geen recente jobs gevonden",
+        "title": "Recente Sync Jobs"
+      },
+      "title": "Synchronisatie Evenementen",
+      "tournaments": {
+        "allStatuses": "Alle Statussen",
+        "allTypes": "Alle Types",
+        "headers": {
+          "actions": "Acties",
+          "dates": "Data",
+          "lastSync": "Laatste Sync",
+          "name": "Naam",
+          "status": "Status",
+          "syncStatus": "Sync Status",
+          "type": "Type"
+        },
+        "levelSync": {
+          "dialogs": {
+            "cancel": "Annuleren",
+            "drawSync": {
+              "drawCode": "Schema code",
+              "drawCodePlaceholder": "Voer schema code in (bijv: M1, Q1)",
+              "eventCode": "Event code",
+              "eventCodePlaceholder": "Voer event code in (bijv: H1, D2)",
+              "syncButton": "Synchroniseer schema",
+              "title": "Schema niveau synchronisatie"
+            },
+            "eventSync": {
+              "eventCode": "Event code",
+              "eventCodePlaceholder": "Voer event code in (bijv: H1, D2)",
+              "syncButton": "Synchroniseer event",
+              "title": "Event niveau synchronisatie"
+            },
+            "gameSync": {
+              "drawCode": "Schema code (Optioneel)",
+              "drawCodePlaceholder": "Voer schema code in (bijv: M1, Q1) - optioneel",
+              "eventCode": "Event code (Optioneel)",
+              "eventCodePlaceholder": "Voer event code in (bijv: H1, D2) - optioneel",
+              "matchCodes": "Wedstrijd codes (Optioneel)",
+              "matchCodesHelp": "Laat leeg om alle wedstrijden te synchroniseren die voldoen aan de event/schema criteria",
+              "matchCodesPlaceholder": "Voer wedstrijd codes in gescheiden door komma's (bijv: M1_G1, M1_G2)",
+              "syncButton": "Synchroniseer wedstrijden",
+              "title": "Specifieke wedstrijden synchronisatie"
+            },
+            "tournament": "Toernooi"
+          },
+          "syncAllGames": "Alle wedstrijden synchroniseren",
+          "syncDrawLevel": "Schema niveau synchroniseren",
+          "syncEventLevel": "Event niveau synchroniseren",
+          "syncSpecificGames": "Specifieke wedstrijden synchroniseren"
+        },
+        "never": "Nooit",
+        "noTournaments": "Geen toernooien gevonden",
+        "search": "Zoek toernooien...",
+        "title": "Toernooien & Competities",
+        "tooltips": {
+          "manage": "Beheren",
+          "syncGames": "Sync Wedstrijden",
+          "syncStructure": "Sync Structuur"
+        }
+      }
+    },
+    "lastSync": "Laatst gesynchroniseerd",
+    "status": {
+      "failed": "Mislukt",
+      "neverSynced": "Niet gesynchroniseerd",
+      "queued": "In wachtrij",
+      "synced": "Gesynchroniseerd",
+      "syncing": "Synchroniseren"
+    },
+    "teamMatching": {
+      "refresh": "Vernieuwen",
+      "statistics": {
+        "highConfidence": "Hoog vertrouwen",
+        "lowConfidence": "Laag vertrouwen",
+        "matched": "Gematcht",
+        "mediumConfidence": "Gemiddeld vertrouwen",
+        "pendingReview": "Wachten op beoordeling",
+        "rejected": "Afgewezen",
+        "title": "Matching Statistieken"
+      },
+      "title": "Team Matching",
+      "unmatchedTeams": {
+        "headers": {
+          "actions": "Acties",
+          "bestMatch": "Beste Match",
+          "confidence": "Vertrouwen",
+          "status": "Status",
+          "teamInfo": "Team Info",
+          "tournament": "Toernooi"
+        },
+        "title": "Ongematched Teams"
+      }
+    },
+    "title": "Synchronisatie Evenementen werkt!",
+    "tooltip": {
+      "failed": "Synchronisatie mislukt",
+      "neverSynced": "Nooit gesynchroniseerd",
+      "queued": "In wachtrij voor synchronisatie",
+      "synced": "Succesvol gesynchroniseerd",
+      "syncing": "Synchronisatie bezig"
+    }
+  },
   "system": {
     "update": {
       "available": "Update beschikbaar",
@@ -406,83 +554,5 @@
       "women": "Dames"
     },
     "visualCode": "Visuele Code"
-  },
-  "tournamentSync": {
-    "dashboard": {
-      "actions": {
-        "discoverySync": "Discovery Sync",
-        "manualSync": "Handmatige Sync"
-      },
-      "queue": {
-        "status": {
-          "active": "Actief",
-          "completed": "Voltooid",
-          "failed": "Mislukt",
-          "waiting": "Wachtend"
-        },
-        "title": "Wachtrij Statistieken"
-      },
-      "recentJobs": {
-        "headers": {
-          "actions": "Acties",
-          "created": "Aangemaakt",
-          "duration": "Duur",
-          "jobId": "Job ID",
-          "progress": "Voortgang",
-          "status": "Status",
-          "type": "Type"
-        },
-        "noJobs": "Geen recente jobs gevonden",
-        "title": "Recente Sync Jobs"
-      },
-      "title": "Synchronisatie Evenementen",
-      "tournaments": {
-        "allStatuses": "Alle Statussen",
-        "allTypes": "Alle Types",
-        "headers": {
-          "actions": "Acties",
-          "dates": "Data",
-          "lastSync": "Laatste Sync",
-          "name": "Naam",
-          "status": "Status",
-          "syncStatus": "Sync Status",
-          "type": "Type"
-        },
-        "never": "Nooit",
-        "noTournaments": "Geen toernooien gevonden",
-        "search": "Zoek toernooien...",
-        "title": "Toernooien & Competities",
-        "tooltips": {
-          "manage": "Beheren",
-          "syncGames": "Sync Wedstrijden",
-          "syncStructure": "Sync Structuur"
-        }
-      }
-    },
-    "teamMatching": {
-      "refresh": "Vernieuwen",
-      "statistics": {
-        "highConfidence": "Hoog vertrouwen",
-        "lowConfidence": "Laag vertrouwen",
-        "matched": "Gematcht",
-        "mediumConfidence": "Gemiddeld vertrouwen",
-        "pendingReview": "Wachten op beoordeling",
-        "rejected": "Afgewezen",
-        "title": "Matching Statistieken"
-      },
-      "title": "Team Matching",
-      "unmatchedTeams": {
-        "headers": {
-          "actions": "Acties",
-          "bestMatch": "Beste Match",
-          "confidence": "Vertrouwen",
-          "status": "Status",
-          "teamInfo": "Team Info",
-          "tournament": "Toernooi"
-        },
-        "title": "Ongematched Teams"
-      }
-    },
-    "title": "Synchronisatie Evenementen werkt!"
   }
 }

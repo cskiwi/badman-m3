@@ -31,6 +31,8 @@ const GET_SYNC_JOBS = gql`
       finishedOn
       failedReason
       status
+      timestamp
+      parentId
     }
   }
 `;
@@ -72,55 +74,57 @@ export class SyncApiService {
    * Get sync worker status and queue statistics
    */
   getStatus(): Observable<SyncStatus> {
-    return this.apollo.watchQuery<{ syncStatus: SyncStatus }>({
-      query: GET_SYNC_STATUS,
-    }).valueChanges.pipe(
-      map(result => result.data.syncStatus)
-    );
+    return this.apollo
+      .query<{ syncStatus: SyncStatus }>({
+        query: GET_SYNC_STATUS,
+      })
+      .pipe(map((result) => result.data.syncStatus));
   }
 
   /**
    * Trigger discovery sync
    */
   triggerDiscoverySync(): Observable<SyncTriggerResponse> {
-    return this.apollo.mutate<{ triggerDiscoverySync: SyncTriggerResponse }>({
-      mutation: TRIGGER_DISCOVERY_SYNC,
-    }).pipe(
-      map(result => result.data!.triggerDiscoverySync)
-    );
+    return this.apollo
+      .mutate<{ triggerDiscoverySync: SyncTriggerResponse }>({
+        mutation: TRIGGER_DISCOVERY_SYNC,
+      })
+      .pipe(map((result) => result.data!.triggerDiscoverySync));
   }
 
   /**
    * Trigger competition structure sync
    */
   triggerCompetitionSync(): Observable<SyncTriggerResponse> {
-    return this.apollo.mutate<{ triggerCompetitionSync: SyncTriggerResponse }>({
-      mutation: TRIGGER_COMPETITION_SYNC,
-    }).pipe(
-      map(result => result.data!.triggerCompetitionSync)
-    );
+    return this.apollo
+      .mutate<{ triggerCompetitionSync: SyncTriggerResponse }>({
+        mutation: TRIGGER_COMPETITION_SYNC,
+      })
+      .pipe(map((result) => result.data!.triggerCompetitionSync));
   }
 
   /**
    * Trigger tournament structure sync
    */
   triggerTournamentSync(): Observable<SyncTriggerResponse> {
-    return this.apollo.mutate<{ triggerTournamentSync: SyncTriggerResponse }>({
-      mutation: TRIGGER_TOURNAMENT_SYNC,
-    }).pipe(
-      map(result => result.data!.triggerTournamentSync)
-    );
+    return this.apollo
+      .mutate<{ triggerTournamentSync: SyncTriggerResponse }>({
+        mutation: TRIGGER_TOURNAMENT_SYNC,
+      })
+      .pipe(map((result) => result.data!.triggerTournamentSync));
   }
 
   /**
    * Get recent jobs from the queue
    */
   getRecentJobs(limit = 20, status?: string): Observable<SyncJob[]> {
-    return this.apollo.watchQuery<{ syncJobs: SyncJob[] }>({
-      query: GET_SYNC_JOBS,
-      variables: { limit, status },
-    }).valueChanges.pipe(
-      map(result => result.data.syncJobs)
-    );
+    console.log('Fetching recent sync jobs with limit:', limit, 'and status:', status);
+
+    return this.apollo
+      .query<{ syncJobs: SyncJob[] }>({
+        query: GET_SYNC_JOBS,
+        variables: { limit, status },
+      })
+      .pipe(map((result) => result.data.syncJobs));
   }
 }

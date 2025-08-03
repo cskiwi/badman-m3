@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo, gql } from 'apollo-angular';
 import { ButtonModule } from 'primeng/button';
@@ -50,10 +51,12 @@ const INDEX_ALL_MUTATION = gql`
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [MessageService],
 })
-export class PageAdminComponent {
+export class PageAdminComponent implements OnInit {
   private readonly apollo = inject(Apollo);
   private readonly messageService = inject(MessageService);
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   // Loading and error states
   loading = signal(false);
@@ -76,9 +79,26 @@ export class PageAdminComponent {
   // Tab management
   activeTabIndex = signal('0');
 
-  onActiveIndexChange(event: any): void {
-    this.activeTabIndex.set(event.index?.toString() || '0');
+  constructor() {
+    // Effect to update URL when tab changes
+    effect(() => {
+      const currentTab = this.activeTabIndex();
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { tab: currentTab },
+        queryParamsHandling: 'merge'
+      });
+    });
   }
+
+  ngOnInit(): void {
+    // Initialize tab from URL query parameter
+    const tabParam = this.route.snapshot.queryParams['tab'];
+    if (tabParam && ['0', '1', '2'].includes(tabParam)) {
+      this.activeTabIndex.set(tabParam);
+    }
+  }
+
 
   // Available index types with labels
   indexTypes = [

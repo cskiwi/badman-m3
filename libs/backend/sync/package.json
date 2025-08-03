@@ -8,10 +8,10 @@
   "dependencies": {
     "tslib": "^2.3.0",
     "@nestjs/common": "*",
-    "@nestjs/bull": "*",
+    "@nestjs/bullmq": "*",
     "@nestjs/schedule": "*",
     "@nestjs/config": "*",
     "@app/backend-tournament-api": "*",
-    "bull": "*"
+    "bullmq": "*"
   }
 }

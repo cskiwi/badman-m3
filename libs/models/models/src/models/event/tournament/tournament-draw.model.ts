@@ -72,4 +72,9 @@ export class TournamentDraw extends BaseEntity {
   @WhereField(() => ID, { nullable: true })
   @Column({ type: 'uuid', nullable: true })
   declare subeventId?: string;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true })
+  declare lastSync?: Date;
 }

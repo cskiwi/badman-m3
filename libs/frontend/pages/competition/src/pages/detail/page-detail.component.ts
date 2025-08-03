@@ -2,6 +2,7 @@ import { DatePipe, SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -10,7 +11,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 
 @Component({
   selector: 'app-page-detail',
-  imports: [DatePipe, SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent],
+  imports: [DatePipe, SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SyncButtonComponent, SyncStatusIndicatorComponent],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,8 +29,6 @@ export class PageDetailComponent {
     if (!eventType) return { type: 'Other', level: 999 };
     
     const match = eventType.match(/^(MX|M|F)(\d+)?/);
-
-    console.log(match, eventType)
 
     if (!match) return { type: 'Other', level: 999 };
     
@@ -93,6 +92,71 @@ export class PageDetailComponent {
   error = this.dataService.error;
   loading = this.dataService.loading;
 
+  // Sync configuration for competition level
+  syncConfig = computed((): SyncButtonConfig | null => {
+    const competition = this.competition();
+    
+    if (!competition) {
+      return null;
+    }
+
+    return {
+      level: 'tournament', // Use tournament level for competition events
+      tournamentCode: competition.visualCode || competition.id,
+      tournamentName: competition.name,
+      eventCode: competition.visualCode || competition.id, // Use competition code as event code
+      eventName: competition.name,
+    };
+  });
+
+  // Sync status configuration for competition level
+  syncStatusConfig = computed((): SyncStatusConfig | null => {
+    const competition = this.competition();
+    
+    if (!competition) {
+      return null;
+    }
+
+    return {
+      entityType: 'competition',
+      entityCode: competition.visualCode || competition.id,
+      entityName: competition.name,
+      lastSync: competition.lastSync,
+    };
+  });
+
+  // Helper method to create sync config for individual subevents
+  getSubEventSyncConfig(subEvent: any): SyncButtonConfig | null {
+    const competition = this.competition();
+    
+    if (!competition || !subEvent) {
+      return null;
+    }
+
+    return {
+      level: 'event',
+      tournamentCode: competition.visualCode || competition.id,
+      tournamentName: competition.name,
+      eventCode: subEvent.visualCode || subEvent.id,
+      eventName: subEvent.name,
+    };
+  }
+
+  // Helper method to create sync status config for individual subevents
+  getSubEventSyncStatusConfig(subEvent: any): SyncStatusConfig | null {
+    const competition = this.competition();
+    
+    if (!competition || !subEvent) {
+      return null;
+    }
+
+    return {
+      entityType: 'event',
+      entityCode: subEvent.visualCode || subEvent.id,
+      entityName: subEvent.name,
+      lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
+    };
+  }
 
   /**
    * Scroll smoothly to the event group with the given type.

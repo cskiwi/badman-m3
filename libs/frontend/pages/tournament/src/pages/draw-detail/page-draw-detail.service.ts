@@ -39,6 +39,7 @@ export class DrawDetailService {
                   name
                   slug
                   tournamentNumber
+                  visualCode
                 }
                 tournamentSubEvent(id: $subEventId) {
                   id
@@ -71,7 +72,7 @@ export class DrawDetailService {
                       lastName
                       fullName
                     }
-                    standings {
+                    standing {
                       id
                       position
                       played
@@ -103,14 +104,14 @@ export class DrawDetailService {
         // Flatten standings from entries
         const standings = result.data.tournamentDraw.entries
           ?.flatMap(entry => 
-            entry.standings?.map(standing => ({
-              ...standing,
+            entry.standing ? [{
+              ...entry.standing,
               player1Id: entry.player1Id,
               player2Id: entry.player2Id,
               teamId: entry.teamId,
               player1: entry.player1,
               player2: entry.player2,
-            })) || []
+            }] : []
           )
           .sort((a, b) => a.position - b.position) || [];
 

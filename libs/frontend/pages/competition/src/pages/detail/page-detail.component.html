@@ -14,7 +14,16 @@
           </div>
         </div>
       </ng-content>
-      <ng-content actions> </ng-content>
+      <ng-content actions>
+        <div class="flex items-center gap-3">
+          @if (syncStatusConfig(); as statusConfig) {
+            <app-sync-status-indicator [config]="statusConfig" />
+          }
+          @if (syncConfig(); as config) {
+            <app-sync-button [config]="config" />
+          }
+        </div>
+      </ng-content>
     </app-page-header>
 
     <!-- Competition Information Section -->
@@ -155,7 +164,7 @@
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               @for (subEvent of group.events; track subEvent.id) {
                 <div class="rounded-border bg-highlight p-6">
-                  <div class="flex items-start justify-between">
+                  <div class="flex items-start justify-between mb-4">
                     <h5 class="font-semibold text-lg text-primary my-0">
                       {{ subEvent.name }}
                       @if (subEvent.eventType) {
@@ -163,6 +172,14 @@
                         <span>{{ subEvent.eventType }}</span>
                       }
                     </h5>
+                    <div class="flex items-center gap-2">
+                      @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
+                        <app-sync-status-indicator [config]="statusConfig" />
+                      }
+                      @if (getSubEventSyncConfig(subEvent); as config) {
+                        <app-sync-button [config]="config" />
+                      }
+                    </div>
                   </div>
 
                   <!-- Sub Event Information -->

@@ -62,6 +62,11 @@ export class TournamentSubEvent extends BaseEntity {
   @Column({ nullable: true })
   declare eventId?: string;
 
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true })
+  declare lastSync?: Date;
+
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, (eventEntry) => eventEntry.subEventTournament, { cascade: true, onDelete: 'CASCADE' })
   // eventEntries?: EventEntry[];

@@ -3,145 +3,104 @@ import { computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AuthService } from '@app/frontend-modules-auth/service';
-import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { Tournament } from '../../models/sync-dashboard.models';
-import { SyncJob, SyncStatus } from '../../models/sync.models';
+import { SyncJob } from '../../models/sync.models';
+import { SyncApiService } from '../../services';
+import { WebSocketSyncService } from '../../services/websocket-sync.service';
 
 export class SyncDashboardService {
-  private readonly apollo = inject(Apollo);
   private readonly auth = inject(AuthService);
+  readonly webSocketService = inject(WebSocketSyncService);
+  private readonly syncService = inject(SyncApiService);
+
+  // Internal flat job list for centralized management
+  private _flatJobsList = signal<SyncJob[]>([]);
+  private _expansionStates = signal<Map<string, boolean>>(new Map());
+
+  // Computed hierarchical jobs that automatically rebuild when flat list changes
+  private _hierarchicalJobs = computed(() => {
+    const flatJobs = this._flatJobsList();
+    if (flatJobs.length === 0) {
+      return [];
+    }
+
+    // Build hierarchy from flat list
+    const hierarchicalJobs = this.buildJobHierarchy([...flatJobs]);
+
+    // Restore expansion states
+    this.restoreExpansionStates(hierarchicalJobs, this._expansionStates());
+
+    // Limit to 20 root jobs for display
+    return hierarchicalJobs.slice(0, 20);
+  });
 
   // Filter form for reactive updates
   filter = new FormGroup({
-    jobsLimit: new FormControl<number>(10),
+    jobsLimit: new FormControl<number>(10000),
     jobsStatus: new FormControl<string | null>(null),
-    refreshInterval: new FormControl<number>(30000), // 30 seconds default
+    refreshInterval: new FormControl<number>(30000), // 30 seconds default (not used with WebSocket)
   });
 
-  // Convert form to signal for resource
+  // Convert form to signal for reactive updates
   private filterSignal = toSignal(this.filter.valueChanges);
 
-  // Refresh trigger for manual updates
+  // Manual refresh trigger for fallback GraphQL queries
   private refreshTrigger = signal(0);
 
-  // Queue Stats Resource
-  private queueStatsResource = resource({
-    params: computed(() => ({ refresh: this.refreshTrigger(), user: this.auth.loggedIn() })),
-    loader: async ({ abortSignal, params: { user } }) => {
-      try {
-        // we need to skip the user check for SSR
-        if (!user) {
-          return null;
-        }
+  constructor() {
+    // Load initial data via GraphQL, then rely on WebSocket for updates
+    this.loadInitialData();
 
-        const result = await lastValueFrom(
-          this.apollo.query<{ syncStatus: SyncStatus }>({
-            query: gql`
-              query GetSyncStatus {
-                syncStatus {
-                  status
-                  timestamp
-                  queues {
-                    waiting
-                    active
-                    completed
-                    failed
-                  }
-                }
-              }
-            `,
-            context: { signal: abortSignal },
-            fetchPolicy: 'network-only', // Always fetch fresh data
-            // errorPolicy: 'all', // Continue even with GraphQL errors
-          }),
-        );
+    // Set up WebSocket job handling delegation
+    this.webSocketService.setJobUpdateHandler((job: SyncJob) => this.handleJobUpdate(job));
+  }
 
-        return result?.data?.syncStatus || null;
-      } catch (err) {
-        console.warn('Failed to load sync status:', err);
-        // Return null instead of throwing to prevent SSR crashes
-        return null;
+  /**
+   * Load initial data via GraphQL, then WebSocket takes over for real-time updates
+   */
+  private async loadInitialData(): Promise<void> {
+    try {
+      if (!this.auth.loggedIn()) {
+        return;
       }
-    },
-  });
 
-  // Recent Jobs Resource
-  private recentJobsResource = resource({
-    params: computed(() => ({
-      ...this.filterSignal(),
-      refresh: this.refreshTrigger(),
-    })),
-    loader: async ({ params, abortSignal }) => {
-      try {
-        const result = await lastValueFrom(
-          this.apollo.query<{ syncJobs: SyncJob[] }>({
-            query: gql`
-              query GetSyncJobs($limit: Int, $status: String) {
-                syncJobs(limit: $limit, status: $status) {
-                  id
-                  name
-                  data
-                  progress
-                  processedOn
-                  finishedOn
-                  failedReason
-                  status
-                }
-              }
-            `,
-            variables: {
-              limit: params?.jobsLimit || 10,
-              status: params?.jobsStatus || undefined,
-            },
-            context: { signal: abortSignal },
-            fetchPolicy: 'network-only', // Always fetch fresh data
-            errorPolicy: 'all', // Continue even with GraphQL errors
-          }),
-        );
+      // Set loading states
+      this.webSocketService.setQueueStatsLoading(true);
+      this.webSocketService.setRecentJobsLoading(true);
 
-        return result?.data?.syncJobs || [];
-      } catch (err) {
-        console.warn('Failed to load sync jobs:', err);
-        // Return empty array instead of throwing to prevent SSR crashes
-        return [];
+      // Load queue stats
+      const syncStatusResult = await lastValueFrom(this.syncService.getStatus());
+
+      if (syncStatusResult) {
+        this.webSocketService.setInitialSyncStatus(syncStatusResult);
+        this.webSocketService.setInitialQueueStats(syncStatusResult.queues);
       }
-    },
-  });
+
+      // Load recent jobs
+      const filterValues = this.filterSignal();
+      const syncJobsResult = await lastValueFrom(
+        this.syncService.getRecentJobs(filterValues?.jobsLimit || 10000, filterValues?.jobsStatus || undefined),
+      );
+
+      if (syncJobsResult) {
+        // Set initial jobs using centralized management
+        this.setInitialJobs(syncJobsResult);
+      }
+    } catch (err) {
+      console.warn('Failed to load initial sync data:', err);
+    } finally {
+      this.webSocketService.setQueueStatsLoading(false);
+      this.webSocketService.setRecentJobsLoading(false);
+    }
+  }
 
   // Tournaments Resource (mock data for now)
   private tournamentsResource = resource({
     params: computed(() => ({ refresh: this.refreshTrigger() })),
-    loader: async ({ abortSignal }) => {
+    loader: async () => {
       try {
-        // TODO: Replace with actual GraphQL query when tournaments API is ready
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
-
-        const tournaments: Tournament[] = [
-          {
-            id: '1',
-            visualCode: 'C3B7B9D5-902B-40B8-939B-30A14C01F5AC',
-            name: 'PBO Competitie 2025-2026',
-            type: 'competition',
-            status: 'active',
-            startDate: new Date('2025-09-01'),
-            endDate: new Date('2026-04-30'),
-            lastSyncAt: new Date(Date.now() - 86400000),
-            syncStatus: 'success',
-          },
-          {
-            id: '2',
-            visualCode: '3BAC39DE-2E82-4655-8269-4D83777598BA',
-            name: 'Lokerse Volvo International 2025',
-            type: 'tournament',
-            status: 'finished',
-            startDate: new Date('2025-04-26'),
-            endDate: new Date('2025-04-27'),
-            lastSyncAt: new Date(Date.now() - 7200000),
-            syncStatus: 'success',
-          },
-        ];
-
+        const tournaments: Tournament[] = [];
         return tournaments;
       } catch (err) {
         console.warn('Failed to load tournaments:', err);
@@ -151,99 +110,26 @@ export class SyncDashboardService {
     },
   });
 
-  // Public computed selectors
-  syncStatus = computed(() => this.queueStatsResource.value());
-  queueStats = computed(() => this.queueStatsResource.value()?.queues);
-  queueStatsLoading = computed(() => this.queueStatsResource.isLoading());
-  queueStatsError = computed(() => this.queueStatsResource.error()?.message || null);
+  // Public computed selectors - now delegated to WebSocket service
+  syncStatus = this.webSocketService.syncStatus;
+  queueStats = this.webSocketService.queueStats;
+  queueStatsLoading = this.webSocketService.queueStatsLoading;
+  queueStatsError = computed(() => null); // WebSocket errors handled internally
 
-  recentJobs = computed(() => this.recentJobsResource.value() ?? []);
-  recentJobsLoading = computed(() => this.recentJobsResource.isLoading());
-  recentJobsError = computed(() => this.recentJobsResource.error()?.message || null);
+  recentJobs = computed(() => this._hierarchicalJobs());
+  recentJobsLoading = this.webSocketService.recentJobsLoading;
+  recentJobsError = computed(() => null); // WebSocket errors handled internally
 
   tournaments = computed(() => this.tournamentsResource.value() ?? []);
-  tournamentsLoading = computed(() => this.tournamentsResource.isLoading());
+  tournamentsLoading = this.webSocketService.tournamentsLoading;
   tournamentsError = computed(() => this.tournamentsResource.error()?.message || null);
 
   // Combined loading state
-  loading = computed(() => this.queueStatsLoading() || this.recentJobsLoading() || this.tournamentsLoading());
+  loading = this.webSocketService.loading;
 
-  // Action methods
-  async triggerDiscoverySync(): Promise<{ message: string; success: boolean }> {
-    try {
-      const result = await lastValueFrom(
-        this.apollo.mutate<{ triggerDiscoverySync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerDiscoverySync {
-              triggerDiscoverySync {
-                message
-                success
-              }
-            }
-          `,
-        }),
-      );
-
-      // Refresh data after successful trigger
-      this.refresh();
-
-      return result.data!.triggerDiscoverySync;
-    } catch (err) {
-      throw new Error(this.handleError(err as HttpErrorResponse));
-    }
-  }
-
-  async triggerCompetitionSync(): Promise<{ message: string; success: boolean }> {
-    try {
-      const result = await lastValueFrom(
-        this.apollo.mutate<{ triggerCompetitionSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerCompetitionSync {
-              triggerCompetitionSync {
-                message
-                success
-              }
-            }
-          `,
-        }),
-      );
-
-      // Refresh data after successful trigger
-      this.refresh();
-
-      return result.data!.triggerCompetitionSync;
-    } catch (err) {
-      throw new Error(this.handleError(err as HttpErrorResponse));
-    }
-  }
-
-  async triggerTournamentSync(): Promise<{ message: string; success: boolean }> {
-    try {
-      const result = await lastValueFrom(
-        this.apollo.mutate<{ triggerTournamentSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerTournamentSync {
-              triggerTournamentSync {
-                message
-                success
-              }
-            }
-          `,
-        }),
-      );
-
-      // Refresh data after successful trigger
-      this.refresh();
-
-      return result.data!.triggerTournamentSync;
-    } catch (err) {
-      throw new Error(this.handleError(err as HttpErrorResponse));
-    }
-  }
-
-  // Manual refresh method
+  // Manual refresh method - now reloads initial data instead of triggering resource refresh
   refresh(): void {
-    this.refreshTrigger.update((val) => val + 1);
+    this.loadInitialData();
   }
 
   // Update filter settings
@@ -273,5 +159,205 @@ export class SyncDashboardService {
 
     // Generic error if no cases match
     return err.statusText || 'An error occurred while loading sync data';
+  }
+
+  /**
+   * Build hierarchical structure from flat job array based on parent-child relationships
+   */
+  private buildJobHierarchy(jobs: SyncJob[]): SyncJob[] {
+    const jobMap = new Map<string, SyncJob>();
+    const rootJobs: SyncJob[] = [];
+
+    // First pass: clone jobs and initialize children arrays
+    const clonedJobs = jobs.map((job) => ({
+      ...job,
+      children: [],
+      expanded: false,
+    }));
+    clonedJobs.forEach((job) => {
+      jobMap.set(job.id, job);
+    });
+
+    // Second pass: build hierarchy
+    clonedJobs.forEach((job) => {
+      if (job.parentId && jobMap.has(job.parentId)) {
+        const parent = jobMap.get(job.parentId);
+        if (parent && Array.isArray(parent.children)) {
+          parent.children.push(job);
+        }
+      } else {
+        // Root level job (no parent or parent not found)
+        rootJobs.push(job);
+      }
+    });
+
+    // Sort children within each parent by timestamp (newest first)
+    this.sortJobsRecursively(rootJobs);
+
+    return rootJobs;
+  }
+
+  /**
+   * Recursively sort jobs and their children by timestamp (newest first)
+   */
+  private sortJobsRecursively(jobs: SyncJob[]): void {
+    jobs.sort((a, b) => {
+      const timeA = a.timestamp || a.createdAt?.getTime() || 0;
+      const timeB = b.timestamp || b.createdAt?.getTime() || 0;
+      return timeB - timeA; // Newest first
+    });
+
+    jobs.forEach((job) => {
+      if (job.children && job.children.length > 0) {
+        this.sortJobsRecursively(job.children);
+      }
+    });
+  }
+
+  // ===== CENTRALIZED JOB MANAGEMENT =====
+
+  /**
+   * Set initial jobs from GraphQL query
+   */
+  private setInitialJobs(jobs: SyncJob[]): void {
+    // Preserve expansion states from existing jobs
+    const currentHierarchy = this._hierarchicalJobs();
+    const expansionState = new Map<string, boolean>();
+    this.collectExpansionStates(currentHierarchy, expansionState);
+    this._expansionStates.set(expansionState);
+
+    // Store flat list - computed will automatically rebuild hierarchy
+    this._flatJobsList.set([...jobs]);
+  }
+
+  /**
+   * Handle job updates from WebSocket
+   */
+  private handleJobUpdate(updatedJob: SyncJob): void {
+    // Initialize hierarchy properties if not set
+    if (!updatedJob.children) updatedJob.children = [];
+    if (updatedJob.expanded === undefined) updatedJob.expanded = false;
+
+    // Update flat list - computed will automatically rebuild hierarchy
+    const currentFlatJobs = this._flatJobsList();
+    const existingIndex = currentFlatJobs.findIndex((job) => job.id === updatedJob.id);
+
+    let updatedFlatJobs: SyncJob[];
+    if (existingIndex >= 0) {
+      // Replace existing job
+      updatedFlatJobs = [...currentFlatJobs];
+      updatedFlatJobs[existingIndex] = updatedJob;
+    } else {
+      // Add new job - insert at appropriate position to maintain hierarchy order
+      updatedFlatJobs = this.insertJobInProperPosition(updatedJob, currentFlatJobs);
+    }
+
+    this._flatJobsList.set(updatedFlatJobs);
+  }
+
+  /**
+   * Insert a job in the proper position within the flat list to help maintain hierarchy
+   */
+  private insertJobInProperPosition(newJob: SyncJob, currentJobs: SyncJob[]): SyncJob[] {
+    // If the job has a parent, try to place it near the parent
+    if (newJob.parentId) {
+      const parentIndex = currentJobs.findIndex((job) => job.id === newJob.parentId);
+      if (parentIndex >= 0) {
+        // Insert after the parent job
+        const updatedJobs = [...currentJobs];
+        updatedJobs.splice(parentIndex + 1, 0, newJob);
+        return updatedJobs;
+      }
+
+      // If parent not found, look for siblings (jobs with same parentId)
+      const siblingIndex = currentJobs.findIndex((job) => job.parentId === newJob.parentId);
+      if (siblingIndex >= 0) {
+        // Insert near the sibling
+        const updatedJobs = [...currentJobs];
+        updatedJobs.splice(siblingIndex, 0, newJob);
+        return updatedJobs;
+      }
+    }
+
+    // If no parent relationship found, add at the beginning (most recent)
+    return [newJob, ...currentJobs];
+  }
+
+  /**
+   * Collect expansion states from current hierarchy
+   */
+  private collectExpansionStates(jobs: SyncJob[], stateMap: Map<string, boolean>): void {
+    jobs.forEach((job) => {
+      if (job.expanded !== undefined) {
+        stateMap.set(job.id, job.expanded);
+      }
+      if (job.children && job.children.length > 0) {
+        this.collectExpansionStates(job.children, stateMap);
+      }
+    });
+  }
+
+  /**
+   * Restore expansion states to rebuilt hierarchy
+   */
+  private restoreExpansionStates(jobs: SyncJob[], stateMap: Map<string, boolean>): void {
+    jobs.forEach((job) => {
+      const savedState = stateMap.get(job.id);
+      if (savedState !== undefined) {
+        job.expanded = savedState;
+      }
+      if (job.children && job.children.length > 0) {
+        this.restoreExpansionStates(job.children, stateMap);
+      }
+    });
+  }
+
+  /**
+   * Toggle expansion state of a job
+   */
+  toggleJobExpansion(jobId: string): void {
+    const currentStates = this._expansionStates();
+    const newStates = new Map(currentStates);
+    const currentState = newStates.get(jobId) || false;
+    newStates.set(jobId, !currentState);
+    this._expansionStates.set(newStates);
+  }
+
+  /**
+   * Find a job by ID in the hierarchical structure
+   */
+  private findJobInHierarchy(jobId: string, jobs: SyncJob[]): SyncJob | null {
+    for (const job of jobs) {
+      if (job.id === jobId) {
+        return job;
+      }
+      if (job.children) {
+        const found = this.findJobInHierarchy(jobId, job.children);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Flatten hierarchical jobs for table display while preserving structure
+   */
+  flattenJobsForDisplay(jobs: SyncJob[], level = 0): Array<SyncJob & { level: number }> {
+    const flattened: Array<SyncJob & { level: number }> = [];
+
+    jobs.forEach((job) => {
+      // Add the job itself with its level
+      flattened.push({ ...job, level });
+
+      // If job is expanded and has children, add them recursively
+      if (job.expanded && job.children && job.children.length > 0) {
+        const childrenFlattened = this.flattenJobsForDisplay(job.children, level + 1);
+        flattened.push(...childrenFlattened);
+      }
+    });
+
+    return flattened;
   }
 }

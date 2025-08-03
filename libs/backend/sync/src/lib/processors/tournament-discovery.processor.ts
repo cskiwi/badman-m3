@@ -1,35 +1,29 @@
-import { Process, Processor } from '@nestjs/bull';
-import { Injectable, Logger } from '@nestjs/common';
-import { Job } from 'bull';
-import { TournamentApiClient, Tournament, TournamentType } from '@app/backend-tournament-api';
-import { TournamentEvent, CompetitionEvent } from '@app/models';
-import {
-  SYNC_QUEUE,
-  SyncJobType,
-  TournamentDiscoveryJobData,
-} from '../queues/sync.queue';
-import { SyncService } from '../services/sync.service';
+import { Tournament, TournamentApiClient, TournamentType } from '@app/backend-tournament-api';
+import { CompetitionEvent, TournamentEvent } from '@app/models';
+import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Job } from 'bullmq';
+import { TOURNAMENT_DISCOVERY_QUEUE, TournamentDiscoveryJobData } from '../queues/sync.queue';
 
 @Injectable()
-@Processor(SYNC_QUEUE)
-export class TournamentDiscoveryProcessor {
+@Processor(TOURNAMENT_DISCOVERY_QUEUE)
+export class TournamentDiscoveryProcessor extends WorkerHost {
   private readonly logger = new Logger(TournamentDiscoveryProcessor.name);
 
-  constructor(
-    private readonly tournamentApiClient: TournamentApiClient,
-    private readonly syncService: SyncService,
-  ) {}
+  constructor(private readonly tournamentApiClient: TournamentApiClient) {
+    super();
+    this.logger.log('TournamentDiscoveryProcessor constructor?');
+  }
 
-  @Process(SyncJobType.TOURNAMENT_DISCOVERY)
-  async processTournamentDiscovery(job: Job<TournamentDiscoveryJobData>): Promise<void> {
+  async process(job: Job<TournamentDiscoveryJobData, void, string>): Promise<void> {
     this.logger.log(`Processing tournament discovery job: ${job.id}`);
-    
+
     try {
       const { refDate, pageSize, searchTerm } = job.data;
-      
+
       // Initialize progress
-      await job.progress(0);
-      
+      await job.updateProgress(0);
+
       // Discover tournaments from API
       const tournaments = await this.tournamentApiClient.discoverTournaments({
         refDate: refDate || '2024-01-01',
@@ -38,11 +32,11 @@ export class TournamentDiscoveryProcessor {
       });
 
       this.logger.log(`Discovered ${tournaments.length} tournaments`);
-      
+
       // Calculate total work units
       const totalTournaments = tournaments.length;
       if (totalTournaments === 0) {
-        await job.progress(100);
+        await job.updateProgress(100);
         this.logger.log(`No tournaments to process for job: ${job.id}`);
         return;
       }
@@ -51,11 +45,11 @@ export class TournamentDiscoveryProcessor {
       for (let i = 0; i < tournaments.length; i++) {
         const tournament = tournaments[i];
         await this.processTournament(tournament);
-        
+
         // Update progress: calculate percentage completed
         const progressPercentage = Math.round(((i + 1) / totalTournaments) * 100);
-        await job.progress(progressPercentage);
-        
+        await job.updateProgress(progressPercentage);
+
         this.logger.debug(`Processed tournament ${i + 1}/${totalTournaments} (${progressPercentage}%): ${tournament.Name}`);
       }
 
@@ -72,7 +66,7 @@ export class TournamentDiscoveryProcessor {
     try {
       // Check if tournament already exists in our database
       const existingTournament = await this.findExistingTournament(tournament.Code);
-      
+
       if (existingTournament) {
         this.logger.debug(`Tournament ${tournament.Code} already exists, skipping`);
         return;
@@ -80,15 +74,15 @@ export class TournamentDiscoveryProcessor {
 
       // Create new tournament record
       await this.createTournament(tournament);
-      
+
       this.logger.log(`Created new tournament: ${tournament.Name} (${tournament.Code})`);
-      
+
       // // Schedule initial structure sync based on tournament type
       // if (tournament.TypeID === TournamentType.Team) {
       //   // Competition - schedule structure sync only during May-August
       //   const now = new Date();
       //   const month = now.getMonth() + 1; // JavaScript months are 0-based
-        
+
       //   if (month >= 5 && month <= 8) {
       //     await this.syncService.queueCompetitionStructureSync({
       //       tournamentCode: tournament.Code,
@@ -115,15 +109,15 @@ export class TournamentDiscoveryProcessor {
     const existingTournament = await TournamentEvent.findOne({
       where: { visualCode: tournamentCode },
     });
-    
+
     if (existingTournament) {
       return existingTournament;
     }
-    
+
     const existingCompetition = await CompetitionEvent.findOne({
       where: { visualCode: tournamentCode },
     });
-    
+
     return existingCompetition;
   }
 
@@ -167,18 +161,27 @@ export class TournamentDiscoveryProcessor {
 
   private mapTournamentStatus(status: number): string {
     switch (status) {
-      case 0: return 'unknown';
-      case 101: return 'finished';
-      case 199: return 'cancelled';
-      case 198: return 'postponed';
-      case 201: return 'league_new';
-      case 202: return 'league_entry_open';
-      case 203: return 'league_publicly_visible';
-      case 204: return 'league_finished';
-      default: return 'unknown';
+      case 0:
+        return 'unknown';
+      case 101:
+        return 'finished';
+      case 199:
+        return 'cancelled';
+      case 198:
+        return 'postponed';
+      case 201:
+        return 'league_new';
+      case 202:
+        return 'league_entry_open';
+      case 203:
+        return 'league_publicly_visible';
+      case 204:
+        return 'league_finished';
+      default:
+        return 'unknown';
     }
   }
-  
+
   private createSlug(name: string): string {
     return name
       .toLowerCase()

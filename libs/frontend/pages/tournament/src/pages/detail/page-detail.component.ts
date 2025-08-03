@@ -2,6 +2,7 @@ import { DatePipe, SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -10,7 +11,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-page-detail',
-  imports: [DatePipe, SlicePipe, SkeletonModule, RouterModule, TranslateModule, PageHeaderComponent],
+  imports: [DatePipe, SlicePipe, SkeletonModule, RouterModule, TranslateModule, PageHeaderComponent, SyncButtonComponent, SyncStatusIndicatorComponent],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,6 +77,72 @@ export class PageDetailComponent {
 
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  // Sync configuration for tournament level
+  syncConfig = computed((): SyncButtonConfig | null => {
+    const tournament = this.tournament();
+    
+    if (!tournament) {
+      return null;
+    }
+
+    return {
+      level: 'tournament',
+      tournamentCode: tournament.visualCode || tournament.id,
+      tournamentName: tournament.name,
+      eventCode: tournament.visualCode || tournament.id, // Use tournament code as event code for tournament-level sync
+      eventName: tournament.name,
+    };
+  });
+
+  // Sync status configuration for tournament level
+  syncStatusConfig = computed((): SyncStatusConfig | null => {
+    const tournament = this.tournament();
+    
+    if (!tournament) {
+      return null;
+    }
+
+    return {
+      entityType: 'tournament',
+      entityCode: tournament.visualCode || tournament.id,
+      entityName: tournament.name,
+      lastSync: tournament.lastSync,
+    };
+  });
+
+  // Helper method to create sync config for individual subevents
+  getSubEventSyncConfig(subEvent: any): SyncButtonConfig | null {
+    const tournament = this.tournament();
+    
+    if (!tournament || !subEvent) {
+      return null;
+    }
+
+    return {
+      level: 'event',
+      tournamentCode: tournament.visualCode || tournament.id,
+      tournamentName: tournament.name,
+      eventCode: subEvent.visualCode || subEvent.id,
+      eventName: subEvent.name,
+    };
+  }
+
+  // Helper method to create sync status config for individual subevents
+  getSubEventSyncStatusConfig(subEvent: any): SyncStatusConfig | null {
+    const tournament = this.tournament();
+    
+    if (!tournament || !subEvent) {
+      return null;
+    }
+
+    return {
+      entityType: 'event',
+      entityCode: subEvent.visualCode || subEvent.id,
+      entityName: subEvent.name,
+      lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
+    };
+  }
 
   constructor() {
     effect(() => {

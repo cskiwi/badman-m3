@@ -16,6 +16,9 @@
             </div>
           </ng-content>
           <ng-content actions>
+            @if (syncConfig(); as config) {
+              <app-sync-button [config]="config" />
+            }
             <a [routerLink]="['/', 'tournament', tournament.slug]" class="p-button p-button-outlined p-button-sm no-underline">
               <i class="pi pi-arrow-left mr-2"></i>
               Back

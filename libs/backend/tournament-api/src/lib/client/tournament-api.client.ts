@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
@@ -24,6 +24,7 @@ import {
 
 @Injectable()
 export class TournamentApiClient {
+  private readonly logger = new Logger(TournamentApiClient.name);
   private readonly baseUrl: string;
   private readonly username: string;
   private readonly password: string;
@@ -226,5 +227,43 @@ export class TournamentApiClient {
     
     const response = await this.makeRequest<TournamentTeamsResponse>(endpoint);
     return Array.isArray(response.Result.Team) ? response.Result.Team : [response.Result.Team];
+  }
+
+  /**
+   * Get draw entries
+   */
+  async getDrawEntries(tournamentCode: string, drawCode: string): Promise<Entry[]> {
+    const response = await this.makeRequest<TournamentEntriesResponse>(
+      `/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Entry`
+    );
+    return Array.isArray(response.Result.Entry) ? response.Result.Entry : [response.Result.Entry];
+  }
+
+  /**
+   * Get encounter details
+   */
+  async getEncounterDetails(tournamentCode: string, encounterCode: string): Promise<Match> {
+    const response = await this.makeRequest<MatchResponse>(
+      `/1.0/Tournament/${tournamentCode}/EncounterDetail/${encounterCode}`
+    );
+    return response.Result.Match;
+  }
+
+  /**
+   * Get encounters by draw
+   */
+  async getEncountersByDraw(tournamentCode: string, drawCode: string): Promise<Match[]> {
+    const response = await this.makeRequest<MatchesResponse>(
+      `/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Encounter`
+    );
+    return Array.isArray(response.Result.Match) ? response.Result.Match : [response.Result.Match];
+  }
+
+
+  /**
+   * Get draw details
+   */
+  async getDrawDetails(tournamentCode: string, drawCode: string): Promise<TournamentDraw> {
+    return this.getTournamentDraw(tournamentCode, drawCode);
   }
 }

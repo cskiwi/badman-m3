@@ -107,7 +107,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await withLatestFrom(this.authService!.logout());
+      await lastValueFrom(this.authService!.logout());
       this.userSignal.set(null);
       this.loggedInSignal.set(false);
       this.loadedSignal.set(false);
@@ -128,6 +128,7 @@ export class AuthService {
           cacheMode: 'off',
         }),
       );
+
       this.tokenSignal.set(token);
     } catch (error) {
       console.error('Failed to get token:', error);

@@ -1,270 +1,325 @@
-    <div class="sync-dashboard p-4 space-y-6">
-      <!-- Header -->
-      <div class="flex justify-between items-center">
-        <h1 class="text-3xl font-bold">{{ 'all.tournamentSync.dashboard.title' | translate }}</h1>
-        <div class="flex gap-2">
-          <p-button
-            [label]="'all.tournamentSync.dashboard.actions.discoverySync' | translate"
-            icon="pi pi-search"
-            [loading]="loading()"
-            (onClick)="triggerDiscoverySync()"
-            severity="secondary"
-          />
-          <p-button
-            [label]="'all.tournamentSync.dashboard.actions.manualSync' | translate"
-            icon="pi pi-refresh"
-            [loading]="loading()"
-            (onClick)="triggerManualSync()"
-          />
+<div class="sync-dashboard p-4 space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold">{{ 'all.sync.dashboard.title' | translate }}</h1>
+    <div class="flex gap-2">
+      <!-- Global sync actions will need to be implemented separately -->
+      <!-- These don't fit the sync-button component pattern which is entity-specific -->
+    </div>
+  </div>
+
+  <!-- Queue Statistics -->
+  <p-card [header]="'all.sync.dashboard.queue.title' | translate">
+    @if (loadingStats()) {
+      <div class="grid grid-cols-4 gap-4">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="text-center">
+            <p-skeleton width="4rem" height="2rem" class="mx-auto mb-2"></p-skeleton>
+            <p-skeleton width="6rem" height="1rem" class="mx-auto"></p-skeleton>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-4 gap-4">
+        <div class="text-center p-3 rounded-border border-surface border">
+          <div class="text-2xl font-bold text-orange-500">{{ queueStats()?.waiting || 0 }}</div>
+          <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.waiting' | translate }}</div>
+        </div>
+        <div class="text-center p-3 rounded-border border-surface border">
+          <div class="text-2xl font-bold text-blue-500">{{ queueStats()?.active || 0 }}</div>
+          <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.active' | translate }}</div>
+        </div>
+        <div class="text-center p-3 rounded-border border-surface border">
+          <div class="text-2xl font-bold text-green-500">{{ queueStats()?.completed || 0 }}</div>
+          <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.completed' | translate }}</div>
+        </div>
+        <div class="text-center p-3 rounded-border border-surface border">
+          <div class="text-2xl font-bold text-red-500">{{ queueStats()?.failed || 0 }}</div>
+          <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.failed' | translate }}</div>
         </div>
       </div>
+    }
+  </p-card>
 
-      <!-- Queue Statistics -->
-      <p-card [header]="'all.tournamentSync.dashboard.queue.title' | translate">
-        @if (loadingStats()) {
-          <div class="grid grid-cols-4 gap-4">
-            @for (i of [1,2,3,4]; track i) {
-              <div class="text-center">
-                <p-skeleton width="4rem" height="2rem" class="mx-auto mb-2"></p-skeleton>
-                <p-skeleton width="6rem" height="1rem" class="mx-auto"></p-skeleton>
+  <!-- Recent Jobs -->
+  <p-card [header]="'all.sync.dashboard.jobs.title' | translate">
+    <p-table 
+      [value]="displayJobs()" 
+      [loading]="loadingJobs()" 
+      [paginator]="true" 
+      [rows]="20" 
+      responsiveLayout="scroll"
+      class="hierarchical-job-table"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="expansion-column"></th> <!-- Expansion column -->
+          <th>{{ 'all.sync.dashboard.jobs.jobId' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.jobs.type' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.jobs.status' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.jobs.progress' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.jobs.created' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.jobs.duration' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.jobs.actions' | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-job>
+        <tr [class]="'job-row level-' + getJobLevel(job)">
+          <td class="expansion-column">
+            <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
+              @if (hasChildren(job)) {
+                <p-button 
+                  [icon]="getExpansionIcon(job)" 
+                  size="small" 
+                  severity="secondary" 
+                  [text]="true"
+                  (onClick)="toggleJobExpansion(job)"
+                  class="expansion-button"
+                  [pTooltip]="(job.expanded ? 'all.sync.dashboard.jobs.collapse' : 'all.sync.dashboard.jobs.expand') | translate"
+                />
+              }
+            </div>
+          </td>
+          <td>
+            <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
+              <span class="font-mono text-sm">{{ job.id }}</span>
+              @if (getJobLevel(job) > 0) {
+                <div class="child-indicator">{{ 'all.sync.dashboard.jobs.childJob' | translate }}</div>
+              }
+            </div>
+          </td>
+          <td>
+            <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
+              {{ getJobType(job) }}
+              @if (hasChildren(job)) {
+                <span class="children-count ml-2">
+                  ({{ job.children?.length }} {{ 'all.sync.dashboard.jobs.children' | translate }})
+                </span>
+              }
+            </div>
+          </td>
+          <td>
+            <p-tag [value]="job.status" [severity]="getJobStatusSeverity(job.status)" />
+          </td>
+          <td>
+            @if (job.status === 'active') {
+              <div class="flex items-center gap-2">
+                <div class="w-20 bg-surface-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" [style.width.%]="job.progress"></div>
+                </div>
+                <span class="text-xs text-color">{{ job.progress }}%</span>
               </div>
+            } @else {
+              <span class="text-sm text-muted-color">-</span>
+            }
+          </td>
+          <td>{{ getJobCreatedAt(job) | date: 'short' }}</td>
+          <td>
+            <span class="text-sm text-color">{{ getDuration(job) }}</span>
+          </td>
+          <td>
+            <div class="flex gap-1">
+              <p-button 
+                icon="pi pi-eye" 
+                size="small" 
+                severity="secondary" 
+                [text]="true" 
+                (onClick)="viewJobDetails(job)"
+                [pTooltip]="'all.sync.dashboard.jobs.viewDetails' | translate"
+              />
+              @if (job.status === 'failed') {
+                <p-button 
+                  icon="pi pi-refresh" 
+                  size="small" 
+                  severity="warn" 
+                  [text]="true" 
+                  (onClick)="retryJob(job)"
+                  [pTooltip]="'all.sync.dashboard.jobs.retry' | translate"
+                />
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center p-4 text-muted-color">
+            {{ 'all.sync.dashboard.jobs.noJobsFound' | translate }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Tournaments -->
+  <p-card header="Tournaments & Competitions">
+    <div class="mb-4 flex gap-4">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText placeholder="Search tournaments..." [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+      </span>
+      <p-select [options]="typeOptions" [(ngModel)]="selectedType" placeholder="All Types" (onChange)="onFilterChange()" />
+      <p-select [options]="statusOptions" [(ngModel)]="selectedStatus" placeholder="All Statuses" (onChange)="onFilterChange()" />
+    </div>
+
+    <p-table [value]="filteredTournaments()" [loading]="loadingTournaments()" [paginator]="true" [rows]="20" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Dates</th>
+          <th>Last Sync</th>
+          <th>Sync Status</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-tournament>
+        <tr>
+          <td>
+            <div>
+              <div class="font-semibold text-color">{{ tournament.name }}</div>
+              <div class="text-xs text-muted-color">{{ tournament.visualCode }}</div>
+            </div>
+          </td>
+          <td>
+            <p-tag [value]="tournament.type" severity="secondary" />
+          </td>
+          <td>
+            <p-tag [value]="tournament.status" [severity]="getTournamentStatusSeverity(tournament.status)" />
+          </td>
+          <td>
+            <div class="text-sm">
+              <div class="text-color">{{ tournament.startDate | date: 'shortDate' }}</div>
+              <div class="text-muted-color">{{ tournament.endDate | date: 'shortDate' }}</div>
+            </div>
+          </td>
+          <td>
+            @if (tournament.lastSyncAt) {
+              <span class="text-sm text-color">{{ tournament.lastSyncAt | date: 'short' }}</span>
+            } @else {
+              <span class="text-sm text-muted-color">Never</span>
+            }
+          </td>
+          <td>
+            <p-tag [value]="tournament.syncStatus" [severity]="getSyncStatusSeverity(tournament.syncStatus)" />
+          </td>
+          <td>
+            <div class="flex gap-1">
+              <app-sync-button
+                [config]="{
+                  tournamentCode: tournament.visualCode,
+                  tournamentName: tournament.name,
+                  level: 'tournament'
+                }"
+              />
+              <p-button
+                icon="pi pi-cog"
+                size="small"
+                severity="secondary"
+                [text]="true"
+                [routerLink]="['/admin/sync/tournament', tournament.id]"
+                pTooltip="Manage"
+              />
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center p-4 text-muted-color">No tournaments found</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Job Details Dialog -->
+  <p-dialog
+    [(visible)]="dialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '50rem' }"
+    header="Job Details"
+  >
+    @if (selectedJob(); as job) {
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Job ID</label>
+            <p class="text-color font-mono">{{ job.id }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Type</label>
+            <p class="text-color">{{ getJobType(job) }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Status</label>
+            <p-tag [value]="job.status" [severity]="getJobStatusSeverity(job.status)"></p-tag>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Progress</label>
+            @if (job.status === 'active') {
+              <div class="flex items-center gap-2">
+                <div class="w-32 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" [style.width.%]="job.progress"></div>
+                </div>
+                <span class="text-sm text-color">{{ job.progress }}%</span>
+              </div>
+            } @else {
+              <span class="text-color">-</span>
             }
           </div>
-        } @else {
-          <div class="grid grid-cols-4 gap-4">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-orange-600">{{ queueStats()?.waiting || 0 }}</div>
-              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.waiting' | translate }}</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-blue-600">{{ queueStats()?.active || 0 }}</div>
-              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.active' | translate }}</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-green-600">{{ queueStats()?.completed || 0 }}</div>
-              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.completed' | translate }}</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-red-600">{{ queueStats()?.failed || 0 }}</div>
-              <div class="text-sm text-gray-600">{{ 'all.tournamentSync.dashboard.queue.status.failed' | translate }}</div>
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Created At</label>
+            <p class="text-color">{{ getJobCreatedAt(job) | date: 'medium' }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Duration</label>
+            <p class="text-color">{{ getDuration(job) }}</p>
+          </div>
+        </div>
+
+        @if (job.processedOn) {
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Processed At</label>
+            <p class="text-color">{{ job.processedOn | date: 'medium' }}</p>
+          </div>
+        }
+
+        @if (job.finishedOn) {
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Finished At</label>
+            <p class="text-color">{{ job.finishedOn | date: 'medium' }}</p>
+          </div>
+        }
+
+        @if (getJobError(job)) {
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Error</label>
+            <div class="bg-red-50 border border-red-200 rounded-border p-3">
+              <p class="text-red-800 text-sm">{{ getJobError(job) }}</p>
             </div>
           </div>
         }
-      </p-card>
 
-      <!-- Recent Jobs -->
-      <p-card header="Recent Sync Jobs">
-        <p-table 
-          [value]="recentJobs()" 
-          [loading]="loadingJobs()" 
-          [paginator]="true" 
-          [rows]="10"
-          responsiveLayout="scroll"
-        >
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Job ID</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Progress</th>
-              <th>Created</th>
-              <th>Duration</th>
-              <th>Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-job>
-            <tr>
-              <td>{{ job.id }}</td>
-              <td>{{ getJobType(job) }}</td>
-              <td>
-                <p-tag 
-                  [value]="job.status" 
-                  [severity]="getJobStatusSeverity(job.status)"
-                />
-              </td>
-              <td>
-                @if (job.status === 'active') {
-                  <div class="flex items-center gap-2">
-                    <div class="w-20 bg-gray-200 rounded-full h-2">
-                      <div 
-                        class="bg-blue-600 h-2 rounded-full" 
-                        [style.width.%]="job.progress"
-                      ></div>
-                    </div>
-                    <span class="text-xs">{{ job.progress }}%</span>
-                  </div>
-                } @else {
-                  <span class="text-sm text-gray-500">-</span>
-                }
-              </td>
-              <td>{{ getJobCreatedAt(job) | date:'short' }}</td>
-              <td>
-                @if (getJobFinishedAt(job)) {
-                  {{ getDuration(job.timestamp, job.finishedOn!) }}
-                } @else if (getJobProcessedAt(job)) {
-                  {{ getDuration(job.timestamp, getCurrentTime().getTime()) }}
-                } @else {
-                  <span class="text-sm text-gray-500">-</span>
-                }
-              </td>
-              <td>
-                <div class="flex gap-1">
-                  <p-button
-                    icon="pi pi-eye"
-                    size="small"
-                    severity="secondary"
-                    [text]="true"
-                    (onClick)="viewJobDetails(job)"
-                  />
-                  @if (job.status === 'failed') {
-                    <p-button
-                      icon="pi pi-refresh"
-                      size="small"
-                      severity="warn"
-                      [text]="true"
-                      (onClick)="retryJob(job)"
-                    />
-                  }
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="7" class="text-center p-4 text-gray-500">
-                No recent jobs found
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
+        @if (job.data) {
+          <div>
+            <label class="block text-sm font-medium text-muted-color mb-1">Job Data</label>
+            <div class="border border-surface rounded-border p-3">
+              <pre class="text-sm text-color whitespace-pre-wrap">{{ job.data }}</pre>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </p-dialog>
 
-      <!-- Tournaments -->
-      <p-card header="Tournaments & Competitions">
-        <div class="mb-4 flex gap-4">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
-            <input 
-              pInputText 
-              placeholder="Search tournaments..." 
-              [(ngModel)]="searchTerm"
-              (input)="onSearchChange()"
-            />
-          </span>
-          <p-select
-            [options]="typeOptions"
-            [(ngModel)]="selectedType"
-            placeholder="All Types"
-            (onChange)="onFilterChange()"
-          />
-          <p-select
-            [options]="statusOptions"
-            [(ngModel)]="selectedStatus"
-            placeholder="All Statuses"
-            (onChange)="onFilterChange()"
-          />
-        </div>
+  <!-- Toast Messages -->
+  <p-toast />
 
-        <p-table 
-          [value]="filteredTournaments()" 
-          [loading]="loadingTournaments()" 
-          [paginator]="true" 
-          [rows]="20"
-          responsiveLayout="scroll"
-        >
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Dates</th>
-              <th>Last Sync</th>
-              <th>Sync Status</th>
-              <th>Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-tournament>
-            <tr>
-              <td>
-                <div>
-                  <div class="font-semibold">{{ tournament.name }}</div>
-                  <div class="text-xs text-gray-500">{{ tournament.visualCode }}</div>
-                </div>
-              </td>
-              <td>
-                <p-tag 
-                  [value]="tournament.type" 
-                  [severity]="tournament.type === 'competition' ? 'info' : 'success'"
-                />
-              </td>
-              <td>
-                <p-tag 
-                  [value]="tournament.status" 
-                  [severity]="getTournamentStatusSeverity(tournament.status)"
-                />
-              </td>
-              <td>
-                <div class="text-sm">
-                  <div>{{ tournament.startDate | date:'shortDate' }}</div>
-                  <div class="text-gray-500">{{ tournament.endDate | date:'shortDate' }}</div>
-                </div>
-              </td>
-              <td>
-                @if (tournament.lastSyncAt) {
-                  {{ tournament.lastSyncAt | date:'short' }}
-                } @else {
-                  <span class="text-gray-500">Never</span>
-                }
-              </td>
-              <td>
-                <p-tag 
-                  [value]="tournament.syncStatus" 
-                  [severity]="getSyncStatusSeverity(tournament.syncStatus)"
-                />
-              </td>
-              <td>
-                <div class="flex gap-1">
-                  <p-button
-                    icon="pi pi-refresh"
-                    size="small"
-                    severity="secondary"
-                    [text]="true"
-                    (onClick)="syncTournament(tournament)"
-                    pTooltip="Sync Structure"
-                  />
-                  <p-button
-                    icon="pi pi-download"
-                    size="small"
-                    severity="secondary"
-                    [text]="true"
-                    (onClick)="syncTournamentGames(tournament)"
-                    pTooltip="Sync Games"
-                  />
-                  <p-button
-                    icon="pi pi-cog"
-                    size="small"
-                    severity="secondary"
-                    [text]="true"
-                    [routerLink]="['/admin/sync/tournament', tournament.id]"
-                    pTooltip="Manage"
-                  />
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="7" class="text-center p-4 text-gray-500">
-                No tournaments found
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </p-card>
 
-      <!-- Toast Messages -->
-      <p-toast />
-      
-      <!-- Confirmation Dialog -->
-      <p-confirmDialog />
-    </div>
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog />
+</div>

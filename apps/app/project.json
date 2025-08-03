@@ -5,7 +5,6 @@
   "prefix": "app",
   "sourceRoot": "apps/app/src",
   "tags": ["scope:app"],
-  "implicitDependencies": ["api"],
   "targets": {
     "build": {
       "executor": "@nx/angular:application",

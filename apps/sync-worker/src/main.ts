@@ -9,27 +9,14 @@ import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
-  // Set global prefix for API endpoints
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  
+
   // Enable graceful shutdown
   app.enableShutdownHooks();
   
-  // Configure port
-  const port = process.env.TOURNAMENT_SYNC_WORKER_PORT || 3001;
+  // Start the application - this is crucial for processors to start listening
+  await app.init();
   
-  await app.listen(port);
-  
-  Logger.log(`🚀 Tournament Sync Worker is running on: http://localhost:${port}/${globalPrefix}`);
-  Logger.log('📊 Available endpoints:');
-  Logger.log(`   GET  http://localhost:${port}/${globalPrefix}/status - Service status`);
-  Logger.log(`   GET  http://localhost:${port}/${globalPrefix}/health - Health check`);
-  Logger.log(`   GET  http://localhost:${port}/${globalPrefix}/jobs - Get recent jobs`);
-  Logger.log(`   POST http://localhost:${port}/${globalPrefix}/sync/discovery - Trigger discovery sync`);
-  Logger.log(`   POST http://localhost:${port}/${globalPrefix}/sync/competitions - Trigger competition sync`);
-  Logger.log(`   POST http://localhost:${port}/${globalPrefix}/sync/tournaments - Trigger tournament sync`);
+  Logger.log('Tournament Sync Worker is running and listening for jobs...');
 }
 
 bootstrap().catch(err => {
