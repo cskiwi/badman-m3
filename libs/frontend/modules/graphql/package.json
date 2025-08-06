@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@app/frontend-utils": "0.0.1",
-    "@angular/core": "20.1.0",
+    "@angular/core": "20.1.6",
     "apollo-angular": "^11.0.0",
-    "@angular/common": "20.1.0",
+    "@angular/common": "20.1.6",
     "rxjs": "~7.8.2",
     "@apollo/client": "^3.13.8"
   },
