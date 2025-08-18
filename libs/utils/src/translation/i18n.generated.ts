@@ -284,7 +284,20 @@ export type I18nTranslations = {
             "dashboard": {
                 "actions": {
                     "discoverySync": string;
+                    "fullSync": string;
                     "manualSync": string;
+                    "sync": string;
+                    "syncAllGames": string;
+                    "syncDraw": string;
+                    "syncDrawWithGames": string;
+                    "syncEvent": string;
+                    "syncEventFull": string;
+                    "syncSubEvent": string;
+                    "syncSubEventFull": string;
+                    "syncGames": string;
+                    "syncSpecificGames": string;
+                    "syncTournament": string;
+                    "syncTournamentFull": string;
                 };
                 "jobs": {
                     "actions": string;

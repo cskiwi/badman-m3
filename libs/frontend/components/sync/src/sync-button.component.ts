@@ -51,18 +51,18 @@ export interface SyncButtonConfig {
           severity="secondary"
           [disabled]="loading()"
           (onClick)="syncTournament()"
-          [label]="'Sync Event' | translate"
+          [label]="'all.sync.actions.syncTournament' | translate"
           [model]="tournamentSyncItems"
         />
       } @else if (cfg.level === 'event') {
-        <!-- Event level sync -->
+        <!-- Event level sync (actually subevent) -->
         <p-splitButton
           icon="pi pi-refresh"
           size="small"
           severity="secondary"
           [disabled]="loading()"
           (onClick)="syncEvent()"
-          [label]="'Sync Event' | translate"
+          [label]="'all.sync.actions.syncSubEvent' | translate"
           [model]="eventSyncItems"
         />
       } @else if (cfg.level === 'draw') {
@@ -73,7 +73,7 @@ export interface SyncButtonConfig {
           severity="secondary"
           [disabled]="loading()"
           (onClick)="syncDraw()"
-          [label]="'Sync Draw' | translate"
+          [label]="'all.sync.actions.syncDraw' | translate"
           [model]="drawSyncItems"
         />
       } @else if (cfg.level === 'game') {
@@ -84,7 +84,7 @@ export interface SyncButtonConfig {
           severity="secondary"
           [disabled]="loading()"
           (onClick)="syncAllGames()"
-          [label]="'Sync Games' | translate"
+          [label]="'all.sync.actions.syncGames' | translate"
           [model]="gameSyncItems"
         />
       }
@@ -173,7 +173,7 @@ export class SyncButtonComponent {
   // Menu items for split button (as properties instead of getters)
   drawSyncItems = [
     {
-      label: 'Sync Draw + Games',
+      label: 'all.sync.actions.syncDrawWithGames',
       icon: 'pi pi-download',
       command: () => this.syncDraw(true),
     },
@@ -182,7 +182,7 @@ export class SyncButtonComponent {
   // Menu items for split button
   tournamentSyncItems = [
     {
-      label: 'Sync Event + Sub-components',
+      label: 'all.sync.actions.syncTournamentFull',
       icon: 'pi pi-sitemap',
       command: () => this.syncTournament(true),
     },
@@ -190,7 +190,7 @@ export class SyncButtonComponent {
 
   eventSyncItems = [
     {
-      label: 'Sync Event + Sub-components',
+      label: 'all.sync.actions.syncSubEventFull',
       icon: 'pi pi-sitemap',
       command: () => this.syncEvent(true),
     },
@@ -198,12 +198,12 @@ export class SyncButtonComponent {
 
   gameSyncItems = [
     {
-      label: 'Sync All Games',
+      label: 'all.sync.actions.syncAllGames',
       icon: 'pi pi-download',
       command: () => this.syncAllGames(),
     },
     {
-      label: 'Sync Specific Games',
+      label: 'all.sync.actions.syncSpecificGames',
       icon: 'pi pi-list',
       command: () => this.openGameSyncDialog(),
     },

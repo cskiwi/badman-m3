@@ -277,7 +277,20 @@
     "dashboard": {
       "actions": {
         "discoverySync": "Discovery Sync",
-        "manualSync": "Handmatige Sync"
+        "fullSync": "Volledige Sync",
+        "manualSync": "Handmatige Sync",
+        "sync": "Synchroniseren",
+        "syncAllGames": "Alle wedstrijden synchroniseren",
+        "syncDraw": "Schema synchroniseren",
+        "syncDrawWithGames": "Schema + wedstrijden synchroniseren",
+        "syncEvent": "Reeks synchroniseren",
+        "syncEventFull": "Reeks + sub-onderdelen synchroniseren",
+        "syncSubEvent": "Sub-reeks synchroniseren",
+        "syncSubEventFull": "Sub-reeks + sub-onderdelen synchroniseren",
+        "syncGames": "Wedstrijden synchroniseren",
+        "syncSpecificGames": "Specifieke wedstrijden synchroniseren",
+        "syncTournament": "Toernooi synchroniseren",
+        "syncTournamentFull": "Toernooi + sub-onderdelen synchroniseren"
       },
       "jobs": {
         "actions": "Acties",

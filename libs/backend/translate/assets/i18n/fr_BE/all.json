@@ -277,7 +277,20 @@
     "dashboard": {
       "actions": {
         "discoverySync": "Sync de découverte",
-        "manualSync": "Sync manuelle"
+        "fullSync": "Sync complète",
+        "manualSync": "Sync manuelle",
+        "sync": "Synchroniser",
+        "syncAllGames": "Synchroniser tous les matchs",
+        "syncDraw": "Synchroniser le tableau",
+        "syncDrawWithGames": "Synchroniser le tableau + matchs",
+        "syncEvent": "Synchroniser l'épreuve",
+        "syncEventFull": "Synchroniser l'épreuve + sous-composants",
+        "syncSubEvent": "Synchroniser la sous-épreuve",
+        "syncSubEventFull": "Synchroniser la sous-épreuve + sous-composants",
+        "syncGames": "Synchroniser les matchs",
+        "syncSpecificGames": "Synchroniser des matchs spécifiques",
+        "syncTournament": "Synchroniser le tournoi",
+        "syncTournamentFull": "Synchroniser le tournoi + sous-composants"
       },
       "jobs": {
         "actions": "Actions",

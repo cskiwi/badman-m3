@@ -15,7 +15,7 @@
         </div>
       </ng-content>
       <ng-content actions>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           @if (syncStatusConfig(); as statusConfig) {
             <app-sync-status-indicator [config]="statusConfig" />
           }
@@ -149,7 +149,7 @@
                 <div class="rounded-border bg-highlight p-6">
                   <div class="flex items-start justify-between mb-4">
                     <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1 flex-shrink-0">
                       @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
                         <app-sync-status-indicator [config]="statusConfig" />
                       }

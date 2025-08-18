@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
@@ -17,6 +18,8 @@ import { SkeletonModule } from 'primeng/skeleton';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageDetailComponent {
+  private readonly auth = inject(AuthService);
+  
   // Helper function to extract event type and level
   private getEventTypeAndLevel = (eventType: string) => {
     if (!eventType) return { type: 'Other', level: 999 };
@@ -82,7 +85,7 @@ export class PageDetailComponent {
   syncConfig = computed((): SyncButtonConfig | null => {
     const tournament = this.tournament();
     
-    if (!tournament) {
+    if (!tournament || !this.auth.loggedIn()) {
       return null;
     }
 
@@ -99,7 +102,7 @@ export class PageDetailComponent {
   syncStatusConfig = computed((): SyncStatusConfig | null => {
     const tournament = this.tournament();
     
-    if (!tournament) {
+    if (!tournament || !this.auth.loggedIn()) {
       return null;
     }
 
@@ -115,7 +118,7 @@ export class PageDetailComponent {
   getSubEventSyncConfig(subEvent: any): SyncButtonConfig | null {
     const tournament = this.tournament();
     
-    if (!tournament || !subEvent) {
+    if (!tournament || !subEvent || !this.auth.loggedIn()) {
       return null;
     }
 
@@ -132,7 +135,7 @@ export class PageDetailComponent {
   getSubEventSyncStatusConfig(subEvent: any): SyncStatusConfig | null {
     const tournament = this.tournament();
     
-    if (!tournament || !subEvent) {
+    if (!tournament || !subEvent || !this.auth.loggedIn()) {
       return null;
     }
 
