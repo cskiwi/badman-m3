@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CompetitionEncounter } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { map } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 
@@ -120,7 +120,7 @@ export class PlayerUpcommingGamesService {
       }
 
       try {
-        const today = moment().startOf('day');
+        const today = dayjs().startOf('day');
 
         const where = {
           AND: [{ date: { gte: today.toISOString() } }, { OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }] }],
@@ -143,7 +143,7 @@ export class PlayerUpcommingGamesService {
           return { games: [], endReached: true };
         }
 
-        const encounters = result.data.competitionEncounters;//.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+        const encounters = result.data.competitionEncounters;//.sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
 
         // Apply pagination
         const currentPage = page || 1;

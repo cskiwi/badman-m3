@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Game, Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
 
 const PLAYER_RECENT_GAMES_QUERY = gql`
@@ -146,7 +146,7 @@ export class PlayerRecentGamesService {
                 gt: 0,
               },
               playedAt: {
-                lte: moment().format('YYYY-MM-DD'),
+                lte: dayjs().format('YYYY-MM-DD'),
               },
             },
           },
@@ -266,7 +266,7 @@ export class PlayerRecentGamesService {
               gt: 0,
             },
             playedAt: {
-              lte: moment().format('YYYY-MM-DD'),
+              lte: dayjs().format('YYYY-MM-DD'),
             },
           },
         },

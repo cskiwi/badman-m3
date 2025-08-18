@@ -14,7 +14,6 @@ import {
 
 import { IS_MOBILE } from '@app/frontend-utils';
 import { Game } from '@app/models';
-import { MomentModule } from 'ngx-moment';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -24,10 +23,10 @@ import { RouterLink } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { DayjsFormatPipe } from '@app/ngx-dayjs/fmt';
 @Component({
   selector: 'app-recent-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, TranslateModule],
+  imports: [DayjsFormatPipe, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, TranslateModule],
   templateUrl: './recent-games-player.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,7 +1,15 @@
 {
   "name": "@app/frontend-components/sync",
   "version": "0.0.1",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@angular/common": "20.1.0",
+    "@angular/core": "20.1.0",
+    "@angular/forms": "20.1.0",
+    "apollo-angular": "^11.0.0",
+    "@ngx-translate/core": "^16.0.4",
+    "primeng": "^20.0.0",
+    "rxjs": "~7.8.2"
+  },
   "dependencies": {},
   "sideEffects": false
 }

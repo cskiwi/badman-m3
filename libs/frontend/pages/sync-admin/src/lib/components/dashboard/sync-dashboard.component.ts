@@ -2,7 +2,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 // PrimeNG Components
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -260,13 +260,13 @@ export class SyncDashboardComponent {
 
   getJobCreatedAt(job: SyncJob): Date | undefined {
     if (job.createdAt) {
-      const momentDate = moment(job.createdAt);
-      return momentDate.isValid() ? momentDate.toDate() : undefined;
+      const dayjsDate = dayjs(job.createdAt);
+      return dayjsDate.isValid() ? dayjsDate.toDate() : undefined;
     }
 
     if (job.timestamp) {
-      const momentFromTimestamp = moment(job.timestamp);
-      return momentFromTimestamp.isValid() ? momentFromTimestamp.toDate() : undefined;
+      const dayjsFromTimestamp = dayjs(job.timestamp);
+      return dayjsFromTimestamp.isValid() ? dayjsFromTimestamp.toDate() : undefined;
     }
 
     return undefined;
@@ -277,8 +277,8 @@ export class SyncDashboardComponent {
       return undefined;
     }
 
-    const momentDate = moment(job.processedOn);
-    return momentDate.isValid() ? momentDate.toDate() : undefined;
+    const dayjsDate = dayjs(job.processedOn);
+    return dayjsDate.isValid() ? dayjsDate.toDate() : undefined;
   }
 
   getJobFinishedAt(job: SyncJob): Date | undefined {
@@ -286,8 +286,8 @@ export class SyncDashboardComponent {
       return undefined;
     }
 
-    const momentDate = moment(job.finishedOn);
-    return momentDate.isValid() ? momentDate.toDate() : undefined;
+    const dayjsDate = dayjs(job.finishedOn);
+    return dayjsDate.isValid() ? dayjsDate.toDate() : undefined;
   }
 
   getJobType(job: SyncJob): string {

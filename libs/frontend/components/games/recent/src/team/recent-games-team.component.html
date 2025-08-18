@@ -10,8 +10,8 @@
               <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3">
                 <div class="flex items-center gap-2">
                   <i class="pi pi-calendar text-xs text-primary-500"></i>
-                  <span class="font-semibold text-sm">{{ game?.playedAt | amDateFormat: 'MMM Do' }}</span>
-                  <span class="text-xs text-muted-color-emphasis">{{ game?.playedAt | amDateFormat: 'HH:mm' }}</span>
+                  <span class="font-semibold text-sm">{{ game?.playedAt | dayjsFormat: 'MMM Do' }}</span>
+                  <span class="text-xs text-muted-color-emphasis">{{ game?.playedAt | dayjsFormat: 'HH:mm' }}</span>
                 </div>
                 @if (
                   game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name ||

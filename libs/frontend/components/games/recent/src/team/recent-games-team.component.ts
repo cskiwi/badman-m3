@@ -14,7 +14,6 @@ import {
 
 import { IS_MOBILE } from '@app/frontend-utils';
 import { Game } from '@app/models';
-import { MomentModule } from 'ngx-moment';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -25,10 +24,22 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { BadgeModule } from 'primeng/badge';
 import { TranslateModule } from '@ngx-translate/core';
+import { DayjsFormatPipe } from '@app/ngx-dayjs/fmt';
 
 @Component({
   selector: 'app-recent-games-team',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, BadgeModule, TranslateModule],
+  imports: [
+    DayjsFormatPipe,
+    CardModule,
+    ChipModule,
+    ProgressBarModule,
+    DividerModule,
+    RouterLink,
+    SkeletonModule,
+    ButtonModule,
+    BadgeModule,
+    TranslateModule,
+  ],
   templateUrl: './recent-games-team.component.html',
   styleUrl: './recent-games-team.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -245,10 +256,10 @@ export class RecentGamesTeamComponent implements AfterViewInit, OnDestroy {
     // For competitions, we need to determine which team (1 or 2) corresponds to home/away
     const homeTeam = game?.competitionEncounter?.homeTeam;
     const awayTeam = game?.competitionEncounter?.awayTeam;
-    
+
     const homeName = homeTeam?.name || homeTeam?.abbreviation || 'Home';
     const awayName = awayTeam?.name || awayTeam?.abbreviation || 'Away';
-    
+
     return team === 1 ? homeName : awayName;
   }
 }

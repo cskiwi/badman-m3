@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CompetitionEncounter } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
 
 const UPCOMING_TEAM_GAMES_QUERY = gql`
@@ -74,7 +74,7 @@ export class UpcomingGamesTeamService {
         }
 
         // Sort by date ascending
-        const encounters = [...result.data.competitionEncounters].sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+        const encounters = [...result.data.competitionEncounters].sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
 
         // Apply pagination
         const page = params.page || 1;

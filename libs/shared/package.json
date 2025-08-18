@@ -14,7 +14,9 @@
     "@nestjs/config": "4.0.2",
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/core": "^11.1.5",
-    "@nestjs/swagger": "^11.2.0"
+    "@nestjs/swagger": "^11.2.0",
+    "@app/backend-sync": "0.0.1",
+    "@nestjs/platform-socket.io": "^11.1.5"
   },
   "type": "commonjs",
   "main": "./src/index.js",

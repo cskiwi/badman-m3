@@ -1,4 +1,5 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
+import { Dayjs } from 'dayjs';
 
 export const getSeasonPeriod = (season?: number) => {
   if (!season) {
@@ -7,26 +8,26 @@ export const getSeasonPeriod = (season?: number) => {
   return [`${season}-09-01`, `${season + 1}-04-30`] as const;
 };
 
-export const getSeason = (inputDate?: Date | moment.Moment) => {
-  let date = moment(inputDate);
+export const getSeason = (inputDate?: Date | Dayjs) => {
+  let date = dayjs(inputDate);
   if (!date.isValid()) {
-    date = moment();
+    date = dayjs();
   }
   return date.month() >= 4 ? date.year() : date.year() - 1;
 };
 
-export const getNextSeason = (inputDate?: Date | moment.Moment) => {
-  let date = moment(inputDate);
+export const getNextSeason = (inputDate?: Date | Dayjs) => {
+  let date = dayjs(inputDate);
   if (!date.isValid()) {
-    date = moment();
+    date = dayjs();
   }
   return date.month() >= 9 ? date.year() + 1 : date.year();
 };
 
 export const startOfSeason = (season: number) => {
-  return moment(`${season}-07-01`);
+  return dayjs(`${season}-07-01`);
 };
 
 export const endOfSeason = (season: number) => {
-  return moment(`${season + 1}-06-01`).endOf('month');
+  return dayjs(`${season + 1}-06-01`).endOf('month');
 };

@@ -54,6 +54,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@nx/angular:package": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "plugins": [
@@ -196,5 +201,10 @@
     }
   },
   "nxCloudAccessToken": "ODc0OWI3OWEtYjQ3Mi00ZTcxLTg2MDAtOTc4NmRlODk0NDE0fHJlYWQtd3JpdGU=",
-  "nxCloudId": "687533f4d4eccd26fa54a33d"
+  "nxCloudId": "687533f4d4eccd26fa54a33d",
+  "release": {
+    "version": {
+      "preVersionCommand": "npx nx run-many -t build"
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { Club, CompetitionEvent, TournamentEvent, Player } from '@app/models';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Client } from 'typesense';
 import { TYPESENSE_CLIENT } from '../utils';
 import { ClubDocument, EventDocument, PlayerDocument } from '../documents';
@@ -131,7 +131,7 @@ export class IndexService implements OnModuleInit {
         slug: event.slug,
         name: event.name,
         type: 'competition',
-        date: moment(`${event.season}-09-01`).toDate().getTime(),
+        date: dayjs(`${event.season}-09-01`).toDate().getTime(),
         order: multiMatchOrder.competitionEvent,
       };
     });

@@ -1,0 +1,8 @@
+# Ignore generated distribution/build artifacts
+**/dist/**
+
+# Ignore npm package build outputs
+**/node_modules/**
+
+# Ignore temporary folders
+tmp/**

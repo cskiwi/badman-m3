@@ -5,7 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ClubPlayerMembership, GamePlayerMembership, Player } from '@app/models';
 import { getSeason, startOfSeason } from '@app/utils/comp';
 import { Apollo, gql } from 'apollo-angular';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
 
 const PLAYER_QUERY = gql`
@@ -75,7 +75,7 @@ export class DetailService {
     private gamePlayerResource = resource({
       params: this.filterSignal,
       loader: ({ params, abortSignal }) => {
-        if (!params.playerId || !moment(params.date).isValid()) {
+        if (!params.playerId || !dayjs(params.date).isValid()) {
           return Promise.resolve(null);
         }
         return lastValueFrom(this.apollo

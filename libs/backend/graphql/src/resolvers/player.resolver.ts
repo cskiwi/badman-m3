@@ -4,8 +4,8 @@ import { IsUUID } from '@app/utils';
 import { NotFoundException, UseGuards, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql';
 import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs, TeamPlayerMembershipArgs, ClaimArgs } from '../args';
+import dayjs from 'dayjs';
 import { UpdatePlayerInput } from '../inputs/update-player.input';
-import moment from 'moment';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -263,8 +263,8 @@ export class PlayerResolver {
 
       // Handle date comparison specially
       if (key === 'birthDate') {
-        const newDate = value ? moment(value) : null;
-        const originalDate = originalValue && (typeof originalValue === 'string' || originalValue instanceof Date) ? moment(originalValue) : null;
+        const newDate = value ? dayjs(value) : null;
+        const originalDate = originalValue && (typeof originalValue === 'string' || originalValue instanceof Date) ? dayjs(originalValue) : null;
         return newDate && originalDate ? !newDate.isSame(originalDate) : newDate !== originalDate;
       }
 

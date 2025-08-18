@@ -71,6 +71,6 @@ module.exports = [
       },
     })),
   {
-    ignores: ['node_modules\r', 'i18n.generated.ts'],
+  ignores: ['node_modules\r', 'i18n.generated.ts', '**/dist/**', '**/dist/**/*.d.ts'],
   },
 ];

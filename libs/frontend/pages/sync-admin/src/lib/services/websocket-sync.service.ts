@@ -1,4 +1,4 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal, OnDestroy } from '@angular/core';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { io, Socket } from 'socket.io-client';
 import { QueueStats, SyncJob, SyncStatus } from '../models/sync.models';
@@ -23,7 +23,7 @@ interface SyncStatusMessage extends WebSocketMessage {
 @Injectable({
   providedIn: 'root',
 })
-export class WebSocketSyncService {
+export class WebSocketSyncService implements OnDestroy {
   private readonly auth = inject(AuthService);
 
   private socket: Socket | null = null;

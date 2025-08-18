@@ -11,7 +11,7 @@
     "typesense": "^1.8.2",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/config": "4.0.2",
-    "moment": "^2.30.1"
+    "dayjs": "^1.11.13"
   },
   "type": "commonjs",
   "main": "./src/index.js",

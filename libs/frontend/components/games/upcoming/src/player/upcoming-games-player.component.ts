@@ -1,7 +1,6 @@
 import { Component, effect, inject, input } from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';
-import { MomentModule } from 'ngx-moment';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -9,10 +8,11 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { PlayerUpcommingGamesService } from './upcoming-games-player.service';
 import { ButtonModule } from 'primeng/button';
 import { TranslateModule } from '@ngx-translate/core';
+import { DayjsFormatPipe } from '@app/ngx-dayjs/fmt';
 
 @Component({
   selector: 'app-upcoming-games-player',
-  imports: [MomentModule, CardModule, ChipModule, ProgressBarModule, ButtonModule, SkeletonModule, TranslateModule],
+  imports: [DayjsFormatPipe, CardModule, ChipModule, ProgressBarModule, ButtonModule, SkeletonModule, TranslateModule],
   templateUrl: './upcoming-games-player.component.html',
   styleUrls: ['./upcoming-games-player.component.scss'],
 })

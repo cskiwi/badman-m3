@@ -63,7 +63,6 @@ module.exports = [
             '@angular/forms',
             'rxjs',
             'apollo-angular',
-            'moment'
           ],
         },
       ],

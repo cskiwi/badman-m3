@@ -23,7 +23,6 @@ import { AuthModule } from '@auth0/auth0-angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import Aura from '@primeuix/themes/aura';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
-import { MomentModule } from 'ngx-moment';
 import { providePrimeNG } from 'primeng/config';
 import { environment } from '../src/environments/environment';
 import { appRoutes } from './app.routes';
@@ -34,7 +33,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideGraphQL(),
     importProvidersFrom(
-      MomentModule.forRoot(),
       AuthModule.forRoot({
         domain: environment.Auth0IssuerUrl,
         clientId: environment.Auth0ClientId,

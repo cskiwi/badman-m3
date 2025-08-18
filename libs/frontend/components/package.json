@@ -2,13 +2,11 @@
   "name": "@app/frontend-components",
   "version": "0.0.1",
   "peerDependencies": {
-    "moment": "^2.30.1",
     "@app/models": "0.0.1",
     "@app/frontend-modules-auth": "0.0.1",
     "@app/frontend-utils": "0.0.1",
     "@app/models-enum": "0.0.1",
     "@angular/core": "20.1.0",
-    "ngx-moment": "^6.0.2",
     "primeng": "^20.0.0-rc.3",
     "@angular/common": "20.1.0",
     "@angular/forms": "20.1.0",
@@ -20,7 +18,9 @@
     "@ngx-translate/core": "^16.0.4",
     "ngxtension": "^5.1.0",
     "@angular/service-worker": "20.1.0",
-    "ngx-cookie-service-ssr": "^20.0.1"
+    "ngx-cookie-service-ssr": "^20.0.1",
+    "@app/ngx-dayjs": "0.0.1",
+    "dayjs": "^1.11.13"
   },
   "sideEffects": false
 }

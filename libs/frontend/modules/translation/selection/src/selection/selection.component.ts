@@ -21,7 +21,6 @@ import { MenuItem } from 'primeng/api';
 export class LanguageSelectionComponent implements OnInit {
   public translate = inject(TranslateService);
   public cookieService = inject(SsrCookieService);
-  // private _adapter = inject<DateAdapter<MomentDateAdapter>>(DateAdapter<MomentDateAdapter>);
   current!: string;
   langs!: AvaliableLanguages[];
   menuItems: MenuItem[] = [];

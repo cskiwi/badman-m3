@@ -239,7 +239,8 @@ export class SyncButtonComponent {
         summary: 'Success',
         detail: result.data?.triggerEventSync.message || `Event sync started for ${cfg.tournamentName}`,
       });
-    } catch (error) {
+    } catch (e: unknown) {
+      console.error('syncTournament error', e);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -279,7 +280,8 @@ export class SyncButtonComponent {
         summary: 'Success',
         detail: result.data?.triggerEventSync.message || `Event sync started for ${cfg.eventName}`,
       });
-    } catch (error) {
+    } catch (e: unknown) {
+      console.error('syncEvent error', e);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -325,7 +327,8 @@ export class SyncButtonComponent {
         summary: 'Success',
         detail: result.data?.triggerDrawSync.message || `Draw sync started for ${cfg.drawName}`,
       });
-    } catch (error) {
+    } catch (e: unknown) {
+      console.error('syncDraw error', e);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -366,7 +369,8 @@ export class SyncButtonComponent {
         summary: 'Success',
         detail: result.data?.triggerGameSync.message || 'Game sync started',
       });
-    } catch (error) {
+    } catch (e: unknown) {
+      console.error('syncGames error', e);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -394,7 +398,7 @@ export class SyncButtonComponent {
     console.log('Dropdown button clicked:', event);
   }
 
-  onMenuShow(event: any): void {
+  onMenuShow(event?: Event | CustomEvent): void {
     console.log('Menu shown:', event);
   }
 
@@ -442,7 +446,8 @@ export class SyncButtonComponent {
       });
 
       this.closeGameSyncDialog();
-    } catch (error) {
+    } catch (e: unknown) {
+      console.error('executeGameSync error', e);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',

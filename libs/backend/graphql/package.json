@@ -13,12 +13,12 @@
     "class-validator": "^0.14.2",
     "@app/utils": "0.0.1",
     "@app/backend-search": "0.0.1",
-    "moment": "^2.30.1",
     "typeorm": "^0.3.25",
     "graphql": "^16.11.0",
     "graphql-type-json": "^0.3.2",
     "reflect-metadata": "^0.2.2",
-    "@app/models-enum": "0.0.1"
+    "@app/models-enum": "0.0.1",
+    "dayjs": "^1.11.13"
   },
   "type": "commonjs",
   "main": "./src/index.js",
