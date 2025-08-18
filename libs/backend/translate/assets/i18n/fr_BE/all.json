@@ -34,10 +34,12 @@
   },
   "common": {
     "cancel": "Annuler",
+    "error": "Erreur",
     "no": "Non",
     "save": "Enregistrer",
     "season": "Saison",
     "selectSeason": "Sélectionner la saison",
+    "success": "Succès",
     "viewAll": "Voir Tout",
     "yes": "Oui"
   },
@@ -282,16 +284,43 @@
         "childJob": "Tâche enfant",
         "children": "enfants",
         "collapse": "Réduire",
+        "confirmRetry": "Êtes-vous sûr de vouloir réessayer la tâche {{id}} ?",
         "created": "Créé",
+        "details": {
+          "createdAt": "Créé le",
+          "duration": "Durée",
+          "error": "Erreur",
+          "finishedAt": "Terminé le",
+          "jobData": "Données de la tâche",
+          "jobId": "ID de la tâche",
+          "processedAt": "Traité le",
+          "progress": "Progression",
+          "status": "Statut",
+          "title": "Détails de la tâche",
+          "type": "Type"
+        },
         "duration": "Durée",
         "expand": "Développer",
         "jobId": "ID de tâche",
         "noJobsFound": "Aucune tâche récente trouvée",
         "progress": "Progression",
         "retry": "Réessayer la tâche",
+        "retryError": "Échec de la reprise de la tâche {{id}}",
+        "retryHeader": "Réessayer la tâche",
+        "retrySuccess": "Tâche {{id}} mise en file d'attente pour reprise",
         "status": "Statut",
         "title": "Tâches de synchronisation récentes",
         "type": "Type",
+        "types": {
+          "competition": "Compétition",
+          "draw": "Tableau",
+          "encounter": "Rencontre",
+          "event": "Épreuve",
+          "games": "Matchs",
+          "standing": "Classement",
+          "subEvent": "Sous-épreuve",
+          "tournament": "Tournoi"
+        },
         "viewDetails": "Voir les détails"
       },
       "queue": {
@@ -318,16 +347,32 @@
       },
       "title": "Synchronisation d'événements",
       "tournaments": {
-        "allStatuses": "Tous les statuts",
-        "allTypes": "Tous les types",
-        "headers": {
+        "filters": {
+          "allStatuses": "Tous les statuts",
+          "allTypes": "Tous les types"
+        },
+        "search": "Rechercher des tournois...",
+        "statuses": {
+          "active": "Actif",
+          "cancelled": "Annulé",
+          "finished": "Terminé"
+        },
+        "table": {
           "actions": "Actions",
           "dates": "Dates",
           "lastSync": "Dernière sync",
+          "manage": "Gérer",
           "name": "Nom",
+          "never": "Jamais",
+          "noTournamentsFound": "Aucun tournoi trouvé",
           "status": "Statut",
           "syncStatus": "Statut de sync",
           "type": "Type"
+        },
+        "title": "Tournois et compétitions",
+        "types": {
+          "competition": "Compétition",
+          "tournament": "Tournoi"
         },
         "levelSync": {
           "dialogs": {

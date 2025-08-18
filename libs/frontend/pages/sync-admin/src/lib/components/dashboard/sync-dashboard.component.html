@@ -90,7 +90,7 @@
           </td>
           <td>
             <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
-              {{ getJobType(job) }}
+              {{ getJobDisplayName(job) }}
               @if (hasChildren(job)) {
                 <span class="children-count ml-2">
                   ({{ job.children?.length }} {{ 'all.sync.dashboard.jobs.children' | translate }})
@@ -152,26 +152,26 @@
   </p-card>
 
   <!-- Tournaments -->
-  <p-card header="Tournaments & Competitions">
+  <p-card [header]="'all.sync.dashboard.tournaments.title' | translate">
     <div class="mb-4 flex gap-4">
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
-        <input pInputText placeholder="Search tournaments..." [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+        <input pInputText [placeholder]="'all.sync.dashboard.tournaments.search' | translate" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
       </span>
-      <p-select [options]="typeOptions" [(ngModel)]="selectedType" placeholder="All Types" (onChange)="onFilterChange()" />
-      <p-select [options]="statusOptions" [(ngModel)]="selectedStatus" placeholder="All Statuses" (onChange)="onFilterChange()" />
+      <p-select [options]="typeOptions()" [(ngModel)]="selectedType" [placeholder]="'all.sync.dashboard.tournaments.filters.allTypes' | translate" (onChange)="onFilterChange()" />
+      <p-select [options]="statusOptions()" [(ngModel)]="selectedStatus" [placeholder]="'all.sync.dashboard.tournaments.filters.allStatuses' | translate" (onChange)="onFilterChange()" />
     </div>
 
     <p-table [value]="filteredTournaments()" [loading]="loadingTournaments()" [paginator]="true" [rows]="20" responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Dates</th>
-          <th>Last Sync</th>
-          <th>Sync Status</th>
-          <th>Actions</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.name' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.type' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.status' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.dates' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.lastSync' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.syncStatus' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.tournaments.table.actions' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-tournament>
@@ -198,7 +198,7 @@
             @if (tournament.lastSyncAt) {
               <span class="text-sm text-color">{{ tournament.lastSyncAt | date: 'short' }}</span>
             } @else {
-              <span class="text-sm text-muted-color">Never</span>
+              <span class="text-sm text-muted-color">{{ 'all.sync.dashboard.tournaments.table.never' | translate }}</span>
             }
           </td>
           <td>
@@ -219,7 +219,7 @@
                 severity="secondary"
                 [text]="true"
                 [routerLink]="['/admin/sync/tournament', tournament.id]"
-                pTooltip="Manage"
+                [pTooltip]="'all.sync.dashboard.tournaments.table.manage' | translate"
               />
             </div>
           </td>
@@ -227,7 +227,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7" class="text-center p-4 text-muted-color">No tournaments found</td>
+          <td colspan="7" class="text-center p-4 text-muted-color">{{ 'all.sync.dashboard.tournaments.table.noTournamentsFound' | translate }}</td>
         </tr>
       </ng-template>
     </p-table>
@@ -241,25 +241,25 @@
     [draggable]="false"
     [resizable]="false"
     [style]="{ width: '50rem' }"
-    header="Job Details"
+    [header]="'all.sync.dashboard.jobs.details.title' | translate"
   >
     @if (selectedJob(); as job) {
       <div class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Job ID</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.jobId' | translate }}</label>
             <p class="text-color font-mono">{{ job.id }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Type</label>
-            <p class="text-color">{{ getJobType(job) }}</p>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.type' | translate }}</label>
+            <p class="text-color">{{ getJobDisplayName(job) }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Status</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.status' | translate }}</label>
             <p-tag [value]="job.status" [severity]="getJobStatusSeverity(job.status)"></p-tag>
           </div>
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Progress</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.progress' | translate }}</label>
             @if (job.status === 'active') {
               <div class="flex items-center gap-2">
                 <div class="w-32 rounded-full h-2">
@@ -272,32 +272,32 @@
             }
           </div>
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Created At</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.createdAt' | translate }}</label>
             <p class="text-color">{{ getJobCreatedAt(job) | date: 'medium' }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Duration</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.duration' | translate }}</label>
             <p class="text-color">{{ getDuration(job) }}</p>
           </div>
         </div>
 
         @if (job.processedOn) {
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Processed At</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.processedAt' | translate }}</label>
             <p class="text-color">{{ job.processedOn | date: 'medium' }}</p>
           </div>
         }
 
         @if (job.finishedOn) {
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Finished At</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.finishedAt' | translate }}</label>
             <p class="text-color">{{ job.finishedOn | date: 'medium' }}</p>
           </div>
         }
 
         @if (getJobError(job)) {
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Error</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.error' | translate }}</label>
             <div class="bg-red-50 border border-red-200 rounded-border p-3">
               <p class="text-red-800 text-sm">{{ getJobError(job) }}</p>
             </div>
@@ -306,7 +306,7 @@
 
         @if (job.data) {
           <div>
-            <label class="block text-sm font-medium text-muted-color mb-1">Job Data</label>
+            <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.jobData' | translate }}</label>
             <div class="border border-surface rounded-border p-3">
               <pre class="text-sm text-color whitespace-pre-wrap">{{ job.data }}</pre>
             </div>

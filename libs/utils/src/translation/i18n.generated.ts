@@ -41,10 +41,12 @@ export type I18nTranslations = {
         };
         "common": {
             "cancel": string;
+            "error": string;
             "no": string;
             "save": string;
             "season": string;
             "selectSeason": string;
+            "success": string;
             "viewAll": string;
             "yes": string;
         };
@@ -289,16 +291,43 @@ export type I18nTranslations = {
                     "childJob": string;
                     "children": string;
                     "collapse": string;
+                    "confirmRetry": string;
                     "created": string;
+                    "details": {
+                        "createdAt": string;
+                        "duration": string;
+                        "error": string;
+                        "finishedAt": string;
+                        "jobData": string;
+                        "jobId": string;
+                        "processedAt": string;
+                        "progress": string;
+                        "status": string;
+                        "title": string;
+                        "type": string;
+                    };
                     "duration": string;
                     "expand": string;
                     "jobId": string;
                     "noJobsFound": string;
                     "progress": string;
                     "retry": string;
+                    "retryError": string;
+                    "retryHeader": string;
+                    "retrySuccess": string;
                     "status": string;
                     "title": string;
                     "type": string;
+                    "types": {
+                        "competition": string;
+                        "draw": string;
+                        "encounter": string;
+                        "event": string;
+                        "games": string;
+                        "standing": string;
+                        "subEvent": string;
+                        "tournament": string;
+                    };
                     "viewDetails": string;
                 };
                 "queue": {
@@ -325,16 +354,32 @@ export type I18nTranslations = {
                 };
                 "title": string;
                 "tournaments": {
-                    "allStatuses": string;
-                    "allTypes": string;
-                    "headers": {
+                    "filters": {
+                        "allStatuses": string;
+                        "allTypes": string;
+                    };
+                    "search": string;
+                    "statuses": {
+                        "active": string;
+                        "cancelled": string;
+                        "finished": string;
+                    };
+                    "table": {
                         "actions": string;
                         "dates": string;
                         "lastSync": string;
+                        "manage": string;
                         "name": string;
+                        "never": string;
+                        "noTournamentsFound": string;
                         "status": string;
                         "syncStatus": string;
                         "type": string;
+                    };
+                    "title": string;
+                    "types": {
+                        "competition": string;
+                        "tournament": string;
                     };
                     "levelSync": {
                         "dialogs": {
@@ -373,8 +418,6 @@ export type I18nTranslations = {
                     };
                     "never": string;
                     "noTournaments": string;
-                    "search": string;
-                    "title": string;
                     "tooltips": {
                         "manage": string;
                         "syncGames": string;

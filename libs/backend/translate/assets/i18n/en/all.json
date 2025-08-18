@@ -34,10 +34,12 @@
   },
   "common": {
     "cancel": "Cancel",
+    "error": "Error",
     "no": "No",
     "save": "Save",
     "season": "Season",
     "selectSeason": "Select season",
+    "success": "Success",
     "viewAll": "View All",
     "yes": "Yes"
   },
@@ -282,16 +284,43 @@
         "childJob": "Child Job",
         "children": "children",
         "collapse": "Collapse",
+        "confirmRetry": "Are you sure you want to retry job {{id}}?",
         "created": "Created",
+        "details": {
+          "createdAt": "Created At",
+          "duration": "Duration",
+          "error": "Error",
+          "finishedAt": "Finished At",
+          "jobData": "Job Data",
+          "jobId": "Job ID",
+          "processedAt": "Processed At",
+          "progress": "Progress",
+          "status": "Status",
+          "title": "Job Details",
+          "type": "Type"
+        },
         "duration": "Duration",
         "expand": "Expand",
         "jobId": "Job ID",
         "noJobsFound": "No recent jobs found",
         "progress": "Progress",
         "retry": "Retry Job",
+        "retryError": "Failed to retry job {{id}}",
+        "retryHeader": "Retry Job",
+        "retrySuccess": "Job {{id}} queued for retry",
         "status": "Status",
         "title": "Recent Sync Jobs",
         "type": "Type",
+        "types": {
+          "competition": "Competition",
+          "draw": "Draw",
+          "encounter": "Encounter",
+          "event": "Event",
+          "games": "Games",
+          "standing": "Standing",
+          "subEvent": "Sub Event",
+          "tournament": "Tournament"
+        },
         "viewDetails": "View Details"
       },
       "queue": {
@@ -318,16 +347,32 @@
       },
       "title": "Sync Events",
       "tournaments": {
-        "allStatuses": "All Statuses",
-        "allTypes": "All Types",
-        "headers": {
+        "filters": {
+          "allStatuses": "All Statuses",
+          "allTypes": "All Types"
+        },
+        "search": "Search tournaments...",
+        "statuses": {
+          "active": "Active",
+          "cancelled": "Cancelled",
+          "finished": "Finished"
+        },
+        "table": {
           "actions": "Actions",
           "dates": "Dates",
           "lastSync": "Last Sync",
+          "manage": "Manage",
           "name": "Name",
+          "never": "Never",
+          "noTournamentsFound": "No tournaments found",
           "status": "Status",
           "syncStatus": "Sync Status",
           "type": "Type"
+        },
+        "title": "Tournaments & Competitions",
+        "types": {
+          "competition": "Competition",
+          "tournament": "Tournament"
         },
         "levelSync": {
           "dialogs": {

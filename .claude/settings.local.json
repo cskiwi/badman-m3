@@ -79,7 +79,9 @@
       "mcp__redis-mcp-server__type",
       "mcp__redis-mcp-server__smembers",
       "mcp__redis-mcp-server__hget",
-      "mcp__redis-mcp-server__delete"
+      "mcp__redis-mcp-server__delete",
+      "mcp__kubernetes__namespaces_list",
+      "mcp__kubernetes__resources_list"
     ],
     "deny": []
   },

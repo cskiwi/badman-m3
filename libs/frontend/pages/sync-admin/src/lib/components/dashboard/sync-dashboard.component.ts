@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import moment from 'moment';
 
 // PrimeNG Components
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -57,6 +57,7 @@ export class SyncDashboardComponent {
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private syncService = inject(SyncDashboardService);
+  private translateService = inject(TranslateService);
 
   // State from service
   queueStats = this.syncService.queueStats;
@@ -98,19 +99,19 @@ export class SyncDashboardComponent {
   selectedType: string | null = null;
   selectedStatus: string | null = null;
 
-  // Dropdown options
-  typeOptions = [
-    { label: 'All Types', value: null },
-    { label: 'Competition', value: 'competition' },
-    { label: 'Tournament', value: 'tournament' },
-  ];
+  // Dropdown options with translations
+  typeOptions = computed(() => [
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.filters.allTypes'), value: null },
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.types.competition'), value: 'competition' },
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.types.tournament'), value: 'tournament' },
+  ]);
 
-  statusOptions = [
-    { label: 'All Statuses', value: null },
-    { label: 'Active', value: 'active' },
-    { label: 'Finished', value: 'finished' },
-    { label: 'Cancelled', value: 'cancelled' },
-  ];
+  statusOptions = computed(() => [
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.filters.allStatuses'), value: null },
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.statuses.active'), value: 'active' },
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.statuses.finished'), value: 'finished' },
+    { label: this.translateService.instant('all.sync.dashboard.tournaments.statuses.cancelled'), value: 'cancelled' },
+  ]);
 
   // Computed filtered tournaments
   filteredTournaments = computed(() => {
@@ -157,8 +158,8 @@ export class SyncDashboardComponent {
 
   retryJob(job: SyncJob): void {
     this.confirmationService.confirm({
-      message: `Are you sure you want to retry job ${job.id}?`,
-      header: 'Retry Job',
+      message: this.translateService.instant('all.sync.dashboard.jobs.confirmRetry', { id: job.id }),
+      header: this.translateService.instant('all.sync.dashboard.jobs.retryHeader'),
       icon: 'pi pi-refresh',
       accept: async () => {
         try {
@@ -167,8 +168,8 @@ export class SyncDashboardComponent {
 
           this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: `Job ${job.id} queued for retry`,
+            summary: this.translateService.instant('all.common.success'),
+            detail: this.translateService.instant('all.sync.dashboard.jobs.retrySuccess', { id: job.id }),
           });
 
           // Refresh jobs
@@ -176,8 +177,8 @@ export class SyncDashboardComponent {
         } catch (error) {
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
-            detail: `Failed to retry job ${job.id}`,
+            summary: this.translateService.instant('all.common.error'),
+            detail: this.translateService.instant('all.sync.dashboard.jobs.retryError', { id: job.id }),
           });
         }
       },
@@ -291,6 +292,116 @@ export class SyncDashboardComponent {
 
   getJobType(job: SyncJob): string {
     return job.name || 'Unknown';
+  }
+
+  /**
+   * Get a display name for the job that shows meaningful names instead of IDs
+   */
+  getJobDisplayName(job: SyncJob): string {
+    try {
+      // Parse job data to extract meaningful information
+      let jobData: any = {};
+      if (job.data) {
+        if (typeof job.data === 'string') {
+          jobData = JSON.parse(job.data);
+        } else {
+          jobData = job.data;
+        }
+      }
+
+      // First check if we have metadata with a display name
+      if (jobData.metadata?.displayName) {
+        return jobData.metadata.displayName;
+      }
+
+      const jobType = this.getJobType(job);
+      
+      // Handle different job types and extract names
+      switch (jobType.toLowerCase()) {
+        case 'event':
+          if (jobData.metadata?.eventName) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.event')}: ${jobData.metadata.eventName}`;
+          } else if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.event')}: ${jobData.name}`;
+          }
+          break;
+          
+        case 'subevent':
+          if (jobData.metadata?.subEventName) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.subEvent')}: ${jobData.metadata.subEventName}`;
+          } else if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.subEvent')}: ${jobData.name}`;
+          }
+          break;
+          
+        case 'draw':
+          if (jobData.metadata?.drawName) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.draw')}: ${jobData.metadata.drawName}`;
+          } else if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.draw')}: ${jobData.name}`;
+          }
+          break;
+          
+        case 'games':
+          if (jobData.metadata?.drawName) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.games')}: ${jobData.metadata.drawName}`;
+          } else if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.games')}: ${jobData.name}`;
+          }
+          break;
+          
+        case 'standing':
+          if (jobData.metadata?.drawName) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.standing')}: ${jobData.metadata.drawName}`;
+          } else if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.standing')}: ${jobData.name}`;
+          }
+          break;
+          
+        case 'encounter':
+        case 'competition':
+          // For encounters, check metadata first for team names
+          if (jobData.metadata?.homeTeam && jobData.metadata?.awayTeam) {
+            const homeTeamName = jobData.metadata.homeTeam.name || jobData.metadata.homeTeam;
+            const awayTeamName = jobData.metadata.awayTeam.name || jobData.metadata.awayTeam;
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${homeTeamName} vs ${awayTeamName}`;
+          }
+          // Fallback to legacy format
+          else if (jobData.homeTeam && jobData.awayTeam) {
+            const homeTeamName = jobData.homeTeam.name || jobData.homeTeam;
+            const awayTeamName = jobData.awayTeam.name || jobData.awayTeam;
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${homeTeamName} vs ${awayTeamName}`;
+          } else if (jobData.metadata?.drawName) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${jobData.metadata.drawName}`;
+          } else if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${jobData.name}`;
+          }
+          break;
+          
+        case 'tournament':
+          if (jobData.name) {
+            return `${this.translateService.instant('all.sync.dashboard.jobs.types.tournament')}: ${jobData.name}`;
+          }
+          break;
+      }
+
+      // Fallback: try to get a generic name from job data
+      if (jobData.name) {
+        return `${jobType}: ${jobData.name}`;
+      }
+
+      // Final fallback: just return the translated job type
+      const translationKey = `all.sync.dashboard.jobs.types.${jobType.toLowerCase()}`;
+      const translatedType = this.translateService.instant(translationKey);
+      
+      // If translation doesn't exist, fallback to the original job type
+      return translatedType !== translationKey ? translatedType : jobType;
+      
+    } catch (error) {
+      // If parsing fails, fall back to job type
+      console.warn('Failed to parse job data for display name:', error);
+      return this.getJobType(job);
+    }
   }
 
   getJobError(job: SyncJob): string | undefined {

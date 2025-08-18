@@ -138,7 +138,15 @@ export class TournamentEventProcessor extends WorkerHost {
           await this.tournamentSyncFlow.add({
             name: 'tournament-subevent-sync',
             queueName: TOURNAMENT_EVENT_QUEUE,
-            data: { tournamentCode, eventCodes, includeSubComponents: true },
+            data: { 
+              tournamentCode, 
+              eventCodes, 
+              includeSubComponents: true,
+              metadata: {
+                displayName: `Sub-Event Sync: ${tournamentCode}`,
+                description: `Sub-event synchronization for tournament ${tournamentCode}`
+              }
+            },
             opts: {
               jobId: subEventJobName,
               parent: {
@@ -209,7 +217,17 @@ export class TournamentEventProcessor extends WorkerHost {
               await this.tournamentSyncFlow.add({
                 name: 'tournament-draw-sync',
                 queueName: TOURNAMENT_EVENT_QUEUE,
-                data: { tournamentCode, drawCode: draw.Code, includeSubComponents: true },
+                data: { 
+                  tournamentCode, 
+                  drawCode: draw.Code, 
+                  includeSubComponents: true,
+                  metadata: {
+                    displayName: draw.Name,
+                    drawName: draw.Name,
+                    eventName: event.Name,
+                    description: `Draw: ${draw.Name} in ${event.Name}`
+                  }
+                },
                 opts: {
                   jobId: drawJobName,
                   parent: {
@@ -268,11 +286,22 @@ export class TournamentEventProcessor extends WorkerHost {
 
           this.logger.debug(`Creating child jobs for draw ${drawCode}: ${gameJobName}, ${standingJobName}`);
 
+          // Get draw name for metadata
+          const drawName = await this.getDrawName(tournamentCode, drawCode);
+
           // Add games sync job with proper parent reference
           await this.tournamentSyncFlow.add({
             name: 'tournament-game-sync',
             queueName: TOURNAMENT_EVENT_QUEUE,
-            data: { tournamentCode, drawCode },
+            data: { 
+              tournamentCode, 
+              drawCode,
+              metadata: {
+                displayName: `Games: ${drawName}`,
+                drawName: drawName,
+                description: `Game synchronization for draw ${drawName}`
+              }
+            },
             opts: {
               jobId: gameJobName,
               parent: {
@@ -286,7 +315,15 @@ export class TournamentEventProcessor extends WorkerHost {
           await this.tournamentSyncFlow.add({
             name: 'tournament-standing-sync',
             queueName: TOURNAMENT_EVENT_QUEUE,
-            data: { tournamentCode, drawCode },
+            data: { 
+              tournamentCode, 
+              drawCode,
+              metadata: {
+                displayName: `Standing: ${drawName}`,
+                drawName: drawName,
+                description: `Standing synchronization for draw ${drawName}`
+              }
+            },
             opts: {
               jobId: standingJobName,
               parent: {
@@ -1396,6 +1433,35 @@ export class TournamentEventProcessor extends WorkerHost {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to repair sub-event relationship: ${errorMessage}`);
       throw error;
+    }
+  }
+
+  /**
+   * Get draw name for display purposes
+   */
+  private async getDrawName(tournamentCode: string, drawCode: string): Promise<string> {
+    try {
+      // Try to get the draw from the tournament API to get its name
+      const events = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
+      
+      for (const event of events) {
+        try {
+          const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
+          const draw = draws.find(d => d.Code === drawCode);
+          if (draw) {
+            return draw.Name || drawCode;
+          }
+        } catch (error) {
+          // Continue to next event if this one fails
+          continue;
+        }
+      }
+      
+      // Fallback to draw code if name not found
+      return drawCode;
+    } catch (error) {
+      // Fallback to draw code if API call fails
+      return drawCode;
     }
   }
 

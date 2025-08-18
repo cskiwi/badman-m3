@@ -32,11 +32,22 @@ export class CompetitionDrawSyncService {
       // Update/create the draw record and sync entries
       await this.updateCompetitionDrawFromApi(tournamentCode, drawCode);
 
+      // Get draw name for metadata
+      const drawName = await this.getDrawName(tournamentCode, drawCode);
+
       // Sync entries for this draw
       await this.competitionSyncFlow.add({
         name: 'competition-entry-sync',
         queueName: COMPETITION_EVENT_QUEUE,
-        data: { tournamentCode, drawCode },
+        data: { 
+          tournamentCode, 
+          drawCode,
+          metadata: {
+            displayName: `Entries: ${drawName}`,
+            drawName: drawName,
+            description: `Entry synchronization for draw ${drawName}`
+          }
+        },
         opts: {
           parent: {
             id: jobId,
@@ -50,12 +61,28 @@ export class CompetitionDrawSyncService {
         await this.competitionSyncFlow.add({
           name: 'competition-encounter-sync',
           queueName: COMPETITION_EVENT_QUEUE,
-          data: { tournamentCode, drawCode },
+          data: { 
+            tournamentCode, 
+            drawCode,
+            metadata: {
+              displayName: `Encounters: ${drawName}`,
+              drawName: drawName,
+              description: `Encounter synchronization for draw ${drawName}`
+            }
+          },
           children: [
             {
               name: 'competition-standing-sync',
               queueName: COMPETITION_EVENT_QUEUE,
-              data: { tournamentCode, drawCode },
+              data: { 
+                tournamentCode, 
+                drawCode,
+                metadata: {
+                  displayName: `Standing: ${drawName}`,
+                  drawName: drawName,
+                  description: `Standing synchronization for draw ${drawName}`
+                }
+              },
             },
           ],
           opts: {
@@ -102,6 +129,19 @@ export class CompetitionDrawSyncService {
       }
     } catch {
       this.logger.debug(`Could not update competition draw ${drawCode} from API`);
+    }
+  }
+
+  /**
+   * Get draw name for display purposes
+   */
+  private async getDrawName(tournamentCode: string, drawCode: string): Promise<string> {
+    try {
+      const drawData = await this.tournamentApiClient.getDrawDetails?.(tournamentCode, drawCode);
+      return drawData?.Name || drawCode;
+    } catch (error) {
+      // Fallback to draw code if API call fails
+      return drawCode;
     }
   }
 

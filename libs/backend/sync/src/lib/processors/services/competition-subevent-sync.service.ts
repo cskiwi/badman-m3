@@ -56,7 +56,17 @@ export class CompetitionSubEventSyncService {
             await this.competitionSyncFlow.add({
               name: 'competition-draw-sync',
               queueName: COMPETITION_EVENT_QUEUE,
-              data: { tournamentCode, drawCode: draw.Code, includeSubComponents: true },
+              data: { 
+                tournamentCode, 
+                drawCode: draw.Code, 
+                includeSubComponents: true,
+                metadata: {
+                  displayName: draw.Name,
+                  drawName: draw.Name,
+                  eventName: event.Name,
+                  description: `Draw: ${draw.Name} in ${event.Name}`
+                }
+              },
               opts: {
                 parent: {
                   id: jobId,

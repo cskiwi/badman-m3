@@ -35,11 +35,30 @@ export const QUEUE_JOB_TYPE_MAP = {
   [SYNC_QUEUE]: [], // Legacy queue
 } as const;
 
+// Base interface for job metadata
+export interface JobDisplayMetadata {
+  displayName?: string;
+  description?: string;
+  homeTeam?: {
+    name: string;
+    id?: string;
+  };
+  awayTeam?: {
+    name: string;
+    id?: string;
+  };
+  eventName?: string;
+  drawName?: string;
+  subEventName?: string;
+}
+
 // Job Data Interfaces
 export interface TournamentDiscoveryJobData {
   refDate?: string;
   pageSize?: number;
   searchTerm?: string;
+  // Display metadata
+  metadata?: JobDisplayMetadata;
 }
 
 export interface StructureSyncJobData {
@@ -47,6 +66,8 @@ export interface StructureSyncJobData {
   eventCodes?: string[];
   forceUpdate?: boolean;
   includeSubComponents?: boolean;
+  // Display metadata
+  metadata?: JobDisplayMetadata;
 }
 
 export interface GameSyncJobData {
@@ -55,6 +76,8 @@ export interface GameSyncJobData {
   drawCode?: string;
   matchCodes?: string[];
   date?: string;
+  // Display metadata
+  metadata?: JobDisplayMetadata;
 }
 
 export interface TeamMatchingJobData {
@@ -69,4 +92,6 @@ export interface TeamMatchingJobData {
     gender?: string;
     strength?: number;
   }>;
+  // Display metadata
+  metadata?: JobDisplayMetadata;
 }

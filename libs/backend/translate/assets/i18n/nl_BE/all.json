@@ -34,10 +34,12 @@
   },
   "common": {
     "cancel": "Annuleren",
+    "error": "Fout",
     "no": "Nee",
     "save": "Opslaan",
     "season": "Seizoen",
     "selectSeason": "Selecteer seizoen",
+    "success": "Succes",
     "viewAll": "Bekijk Alle",
     "yes": "Ja"
   },
@@ -282,16 +284,43 @@
         "childJob": "Sub-job",
         "children": "kinderen",
         "collapse": "Inklappen",
+        "confirmRetry": "Weet je zeker dat je job {{id}} opnieuw wilt proberen?",
         "created": "Aangemaakt",
+        "details": {
+          "createdAt": "Aangemaakt op",
+          "duration": "Duur",
+          "error": "Fout",
+          "finishedAt": "Voltooid op",
+          "jobData": "Job Gegevens",
+          "jobId": "Job ID",
+          "processedAt": "Verwerkt op",
+          "progress": "Voortgang",
+          "status": "Status",
+          "title": "Job Details",
+          "type": "Type"
+        },
         "duration": "Duur",
         "expand": "Uitklappen",
         "jobId": "Job ID",
         "noJobsFound": "Geen recente jobs gevonden",
         "progress": "Voortgang",
         "retry": "Job opnieuw proberen",
+        "retryError": "Fout bij opnieuw proberen van job {{id}}",
+        "retryHeader": "Job Opnieuw Proberen",
+        "retrySuccess": "Job {{id}} in wachtrij geplaatst voor heruitvoering",
         "status": "Status",
         "title": "Recente Sync Jobs",
         "type": "Type",
+        "types": {
+          "competition": "Competitie",
+          "draw": "Schema",
+          "encounter": "Ontmoeting",
+          "event": "Event",
+          "games": "Wedstrijden",
+          "standing": "Klassement",
+          "subEvent": "Sub-Event",
+          "tournament": "Toernooi"
+        },
         "viewDetails": "Details bekijken"
       },
       "queue": {
@@ -318,16 +347,32 @@
       },
       "title": "Synchronisatie Evenementen",
       "tournaments": {
-        "allStatuses": "Alle Statussen",
-        "allTypes": "Alle Types",
-        "headers": {
+        "filters": {
+          "allStatuses": "Alle Statussen",
+          "allTypes": "Alle Types"
+        },
+        "search": "Zoek toernooien...",
+        "statuses": {
+          "active": "Actief",
+          "cancelled": "Geannuleerd",
+          "finished": "Voltooid"
+        },
+        "table": {
           "actions": "Acties",
           "dates": "Data",
           "lastSync": "Laatste Sync",
+          "manage": "Beheren",
           "name": "Naam",
+          "never": "Nooit",
+          "noTournamentsFound": "Geen toernooien gevonden",
           "status": "Status",
           "syncStatus": "Sync Status",
           "type": "Type"
+        },
+        "title": "Toernooien & Competities",
+        "types": {
+          "competition": "Competitie",
+          "tournament": "Toernooi"
         },
         "levelSync": {
           "dialogs": {
