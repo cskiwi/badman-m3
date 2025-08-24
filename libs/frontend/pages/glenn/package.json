@@ -1,0 +1,8 @@
+{
+  "name": "@app/glenn",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/core": "^20.1.0"
+  },
+  "sideEffects": false
+}

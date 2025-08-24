@@ -23,7 +23,7 @@ import { RouterLink } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { DayjsFormatPipe } from '@app/ngx-dayjs/fmt';
+import { DayjsFormatPipe } from '@app/frontend-utils/dayjs-fmt';
 @Component({
   selector: 'app-recent-games-player',
   imports: [DayjsFormatPipe, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, TranslateModule],

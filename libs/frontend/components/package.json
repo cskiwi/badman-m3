@@ -19,7 +19,6 @@
     "ngxtension": "^5.1.0",
     "@angular/service-worker": "20.1.0",
     "ngx-cookie-service-ssr": "^20.0.1",
-    "@app/ngx-dayjs": "0.0.1",
     "dayjs": "^1.11.13"
   },
   "sideEffects": false
