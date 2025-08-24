@@ -8,7 +8,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { PlayerUpcommingGamesService } from './upcoming-games-player.service';
 import { ButtonModule } from 'primeng/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { DayjsFormatPipe } from '@app/frontend-utils/dayjs-fmt';
+import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
 
 @Component({
   selector: 'app-upcoming-games-player',

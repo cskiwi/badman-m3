@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(nx run:*)",
-      "Bash(nx reset:*)"
+      "Bash(nx reset:*)",
+      "Bash(timeout 30s nx run-many -t build --skip-nx-cache --projects=sync-admin,frontend-components-sync,utils,models,frontend-modules-auth,enums --verbose)",
+      "Bash(timeout 60s nx run-many:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []
