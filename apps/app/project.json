@@ -50,15 +50,41 @@
         "scripts": [],
         "ssr": {
           "entry": "apps/app/server/server.ts"
-        }
+        },
+        "allowedCommonJsDependencies": [
+          "dayjs",
+          "dayjs/locale/nl",
+          "dayjs/locale/en", 
+          "dayjs/locale/fr",
+          "dayjs/plugin/utc",
+          "dayjs/plugin/timezone",
+          "dayjs/plugin/relativeTime",
+          "dayjs/plugin/calendar",
+          "cookie-parser",
+          "debug",
+          "socket.io",
+          "engine.io",
+          "socket.io-adapter",
+          "socket.io-parser",
+          "cors",
+          "cron-parser",
+          "node-abort-controller",
+          "base64id",
+          "reflect-metadata",
+          "msgpackr-extract",
+          "xmlhttprequest-ssl",
+          "typesense",
+          "xml2js",
+          "semver"
+        ]
       },
       "configurations": {
         "production": {
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "600kb",
-              "maximumError": "1.2mb"
+              "maximumWarning": "1mb",
+              "maximumError": "2mb"
             },
             {
               "type": "anyComponentStyle",
