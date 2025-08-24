@@ -7,7 +7,7 @@
   "tags": ["scope:app"],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@nx/angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "{workspaceRoot}/dist/{projectRoot}",
@@ -48,35 +48,10 @@
           "nestjs-i18n"
         ],
         "scripts": [],
+        "prerender": false,
         "ssr": {
           "entry": "apps/app/server/server.ts"
-        },
-        "allowedCommonJsDependencies": [
-          "dayjs",
-          "dayjs/locale/nl",
-          "dayjs/locale/en", 
-          "dayjs/locale/fr",
-          "dayjs/plugin/utc",
-          "dayjs/plugin/timezone",
-          "dayjs/plugin/relativeTime",
-          "dayjs/plugin/calendar",
-          "cookie-parser",
-          "debug",
-          "socket.io",
-          "engine.io",
-          "socket.io-adapter",
-          "socket.io-parser",
-          "cors",
-          "cron-parser",
-          "node-abort-controller",
-          "base64id",
-          "reflect-metadata",
-          "msgpackr-extract",
-          "xmlhttprequest-ssl",
-          "typesense",
-          "xml2js",
-          "semver"
-        ]
+        }
       },
       "configurations": {
         "production": {
@@ -88,11 +63,12 @@
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "serviceWorker": "apps/app/ngsw-config.json"
         },
         "development": {
           "optimization": false,
@@ -103,40 +79,30 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "continuous": true,
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:dev-server",
       "options": {
-        "port": 3000,
-        "host": "0.0.0.0"
+        "port": 3000
       },
       "configurations": {
         "production": {
           "buildTarget": "app:build:production"
         },
         "development": {
-          "buildTarget": "app:build:development"
+          "buildTarget": "app:build:development",
+          "proxyConfig": "{projectRoot}/proxy.conf.json"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@nx/angular:extract-i18n",
       "options": {
         "buildTarget": "app:build"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
-    },
-
-    "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "app:build",
-        "staticFilePath": "{workspaceRoot}/dist/{projectRoot}/browser",
-        "spa": true
-      }
     },
     "test": {
       "inputs": [
