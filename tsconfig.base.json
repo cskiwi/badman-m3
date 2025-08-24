@@ -68,8 +68,6 @@
       "@app/frontend-utils/dayjs-subtract": ["libs/frontend/utils/dayjs-subtract/src/index.ts"],
       "@app/frontend-utils/dayjs-timezone": ["libs/frontend/utils/dayjs-timezone/src/index.ts"],
       "@app/frontend-utils/dayjs-utc": ["libs/frontend/utils/dayjs-utc/src/index.ts"],
-      "@app/glenn": ["libs/frontend/pages/glenn/src/index.ts"],
-      "@app/glenn/glenn-2nd": ["libs/frontend/pages/glenn/glenn-2nd/src/index.ts"],
       "@app/models": ["libs/models/models/src/index.ts"],
       "@app/models-enum": ["libs/models/enum/src/index.ts"],
       "@app/set-env": ["libs/set-env/src/index.ts"],

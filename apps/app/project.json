@@ -7,25 +7,26 @@
   "tags": ["scope:app"],
   "targets": {
     "build": {
-      "executor": "@nx/angular:application",
+      "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/app",
-        "index": "apps/app/src/index.html",
-        "browser": "apps/app/src/main.ts",
-        "server": "apps/app/src/main.server.ts",
-        "tsConfig": "apps/app/tsconfig.app.json",
+        "outputPath": "{workspaceRoot}/dist/{projectRoot}",
+        "index": "{projectRoot}/src/index.html",
+        "browser": "{projectRoot}/src/main.ts",
+        "server": "{projectRoot}/src/main.server.ts",
+        "tsConfig": "{projectRoot}/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/app/public"
+            "input": "{projectRoot}/public"
+          },
+          {
+            "glob": "**/assets/**",
+            "input": "{workspaceRoot}/libs"
           }
         ],
-        "styles": ["apps/app/src/styles.scss"],
-        "stylePreprocessorOptions": {
-          "includePaths": ["node_modules/"]
-        },
+        "styles": ["{projectRoot}/src/styles.scss"],
         "externalDependencies": [
           "@apollo/gateway",
           "@apollo/subgraph",
@@ -47,7 +48,6 @@
           "nestjs-i18n"
         ],
         "scripts": [],
-        "prerender": false,
         "ssr": {
           "entry": "apps/app/server/server.ts"
         }
@@ -57,17 +57,16 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "1mb",
-              "maximumError": "2mb"
+              "maximumWarning": "600kb",
+              "maximumError": "1.2mb"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "2kb",
-              "maximumError": "4kb"
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all",
-          "serviceWorker": "apps/app/ngsw-config.json"
+          "outputHashing": "all"
         },
         "development": {
           "optimization": false,
@@ -78,30 +77,40 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nx/angular:dev-server",
+      "continuous": true,
+      "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "port": 3000
+        "port": 3000,
+        "host": "0.0.0.0"
       },
       "configurations": {
         "production": {
           "buildTarget": "app:build:production"
         },
         "development": {
-          "buildTarget": "app:build:development",
-          "proxyConfig": "{projectRoot}/proxy.conf.json"
+          "buildTarget": "app:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "continuous": true
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "executor": "@nx/angular:extract-i18n",
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "buildTarget": "app:build"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "app:build",
+        "staticFilePath": "{workspaceRoot}/dist/{projectRoot}/browser",
+        "spa": true
+      }
     },
     "test": {
       "inputs": [
