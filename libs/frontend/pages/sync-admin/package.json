@@ -12,8 +12,8 @@
     "apollo-angular": "^11.0.0",
     "rxjs": "~7.8.2",
     "dayjs": "^1.11.13",
-    "@app/frontend-components/sync": "0.0.1",
-    "@app/frontend-modules-auth": "0.0.1",
+    "@app/frontend-components/sync": "*",
+    "@app/frontend-modules-auth": "*",
     "socket.io-client": "^4.8.1"
   },
   "sideEffects": false

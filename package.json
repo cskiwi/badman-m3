@@ -163,8 +163,5 @@
   "browser": {
     "node:fs": false,
     "node:path": false
-  },
-  "nx": {
-    "includedScripts": []
   }
 }

@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(nx run:*)"
+      "Bash(nx run:*)",
+      "Bash(nx reset:*)"
     ],
     "deny": [],
     "ask": []
