@@ -2,7 +2,7 @@
   "name": "@app/backend-authorization",
   "version": "0.0.1",
   "dependencies": {
-    "@app/models": "0.0.1",
+    "@app/models": "*",
     "tslib": "^2.0.0",
     "@nestjs/common": "^11.1.5",
     "@nestjs/config": "4.0.2",

@@ -2,7 +2,7 @@
 "name": "@app/frontend-modules-graphql",
   "version": "0.0.1",
   "peerDependencies": {
-    "@app/frontend-utils": "0.0.1",
+    "@app/frontend-utils": "*",
     "@angular/core": "20.1.0",
     "apollo-angular": "^11.0.0",
     "@angular/common": "20.1.0",

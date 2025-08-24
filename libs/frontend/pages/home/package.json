@@ -2,9 +2,9 @@
   "name": "@app/frontend-pages-home",
   "version": "0.0.1",
   "peerDependencies": {
-    "@app/frontend-components": "0.0.1",
-    "@app/frontend-modules-graphql": "0.0.1",
-    "@app/models": "0.0.1",
+    "@app/frontend-components": "*",
+    "@app/frontend-modules-graphql": "*",
+    "@app/models": "*",
     "@angular/core": "20.1.0",
     "primeng": "^20.0.0-rc.3",
     "@ngx-translate/core": "^16.0.4",

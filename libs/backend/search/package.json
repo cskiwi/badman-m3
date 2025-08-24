@@ -2,7 +2,7 @@
   "name": "@app/backend-search",
   "version": "0.0.1",
   "dependencies": {
-    "@app/models": "0.0.1",
+    "@app/models": "*",
     "tslib": "^2.8.1",
     "@nestjs/common": "^11.1.5",
     "@nestjs/swagger": "^11.2.0",

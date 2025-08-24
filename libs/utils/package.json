@@ -7,7 +7,7 @@
     "@nestjs/common": "^11.1.5",
     "@nestjs/graphql": "^13.1.0",
     "reflect-metadata": "^0.2.2",
-    "@app/models-enum": "0.0.1",
+    "@app/models-enum": "*",
     "dayjs": "^1.11.13"
   }
 }

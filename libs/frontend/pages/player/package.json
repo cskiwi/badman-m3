@@ -2,11 +2,11 @@
   "name": "@app/frontend-pages-player",
   "version": "0.0.1",
   "peerDependencies": {
-    "@app/frontend-modules-graphql": "0.0.1",
-    "@app/models": "0.0.1",
-    "@app/frontend-modules-seo": "0.0.1",
-    "@app/frontend-components": "0.0.1",
-    "@app/frontend-modules-auth": "0.0.1",
+    "@app/frontend-modules-graphql": "*",
+    "@app/models": "*",
+    "@app/frontend-modules-seo": "*",
+    "@app/frontend-components": "*",
+    "@app/frontend-modules-auth": "*",
     "@angular/common": "20.1.0",
     "@angular/core": "20.1.0",
     "@ngx-translate/core": "^16.0.4",
@@ -16,7 +16,7 @@
     "@angular/forms": "20.1.0",
     "rxjs": "~7.8.2",
     "apollo-angular": "^8.0.0",
-    "@app/utils": "0.0.1",
+    "@app/utils": "*",
     "dayjs": "^1.11.13"
   },
   "sideEffects": false
