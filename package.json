@@ -123,7 +123,7 @@
     "@types/jest": "30.0.0",
     "@types/node": "~24.0.15",
     "@typescript-eslint/parser": "^8.37.0",
-    "@typescript-eslint/utils": "8.36.0",
+    "@typescript-eslint/utils": "8.41.0",
     "angular-eslint": "^20.1.1",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.0",
@@ -145,7 +145,7 @@
     "ts-jest": "29.4.1",
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.36.0",
+    "typescript-eslint": "8.41.0",
     "verdaccio": "^6.0.5",
     "webpack-cli": "^6.0.1",
     "zone.js": "^0.15.1"
