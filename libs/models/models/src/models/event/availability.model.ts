@@ -1,19 +1,9 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Availability', { description: 'Player availability for events' })
-@Entity('Availabilities')
+@Entity('Availabilities', { schema: 'event' })
 export class Availability extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -21,44 +11,31 @@ export class Availability extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index()
-  declare playerId: string;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'json', nullable: true })
+  declare exceptions?: any;
+
+  @SortableField(() => String)
+  @WhereField(() => String)
+  @Column({ type: 'json' })
+  declare days: any;
 
   @SortableField()
   @WhereField()
   @Column()
-  @Index()
-  declare eventId: string;
+  declare season: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare subEventId?: string;
-
-  @SortableField()
-  @WhereField()
-  @Column()
-  declare date: Date;
-
-  @SortableField()
-  @WhereField()
-  @Column({ default: true })
-  declare available: boolean;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'text', nullable: true })
-  declare comment?: string;
+  @Column({ type: 'uuid', nullable: true })
+  declare locationId?: string;
 }

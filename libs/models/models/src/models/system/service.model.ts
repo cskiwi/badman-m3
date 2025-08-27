@@ -1,13 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Service', { description: 'External service configuration' })
@@ -19,33 +11,33 @@ export class Service extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   @Index({ unique: true })
   declare name: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare description?: string;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare serviceType: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare endpoint?: string;
 
   @Field({ nullable: true })
@@ -67,12 +59,12 @@ export class Service extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare lastHealthCheck?: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ default: 'unknown' })
+  @Column({ default: 'unknown', type: 'character varying', length: 255 })
   declare healthStatus?: string;
 
   @SortableField({ nullable: true })

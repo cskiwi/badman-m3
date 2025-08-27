@@ -1,6 +1,6 @@
 import { SortableField, SortableObject, WhereField } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { Player } from './player.model';
 import { Team } from './team.model';
 import { TeamMembershipType } from '@app/models-enum';
@@ -14,13 +14,23 @@ export class TeamPlayerMembership extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @Column({ type: 'uuid' })
-  declare playerId?: string;
+  @CreateDateColumn({ type: 'timestamptz' })
+  declare createdAt: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
+  declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
   @Column({ type: 'uuid' })
-  declare teamId?: string;
+  declare playerId: string;
+
+  @SortableField()
+  @WhereField()
+  @Column({ type: 'uuid' })
+  declare teamId: string;
 
   @SortableField(() => String)
   @WhereField(() => String)
@@ -33,12 +43,12 @@ export class TeamPlayerMembership extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare end?: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'timestamptz' })
   declare start: Date;
 
   @SortableObject('Player')

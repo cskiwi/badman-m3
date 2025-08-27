@@ -19,23 +19,23 @@ export class TournamentGroupSubEventMembership extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
   declare groupId: string;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
   declare subEventId: string;
 

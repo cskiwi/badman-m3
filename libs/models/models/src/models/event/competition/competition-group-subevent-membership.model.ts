@@ -18,20 +18,20 @@ export class CompetitionGroupSubEventMembership extends BaseEntity {
   declare id: string;
 
   @SortableField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
   declare groupId: string;
 
   @SortableField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
   declare subEventId: string;
 

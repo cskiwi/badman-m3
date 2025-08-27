@@ -26,26 +26,26 @@ export class CompetitionEncounter extends BaseEntity {
 
   @SortableField()
   @WhereField(() => Date)
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare date?: Date;
 
   @SortableField({ nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare originalDate?: Date;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare visualCode?: string;
 
   @SortableField({ nullable: true })
@@ -60,44 +60,44 @@ export class CompetitionEncounter extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare drawId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare locationId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare originalLocationId?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare shuttle?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare startHour?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare endHour?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare homeTeamId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare awayTeamId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare gameLeaderId?: string;
 
   @Field({ nullable: true })
@@ -123,6 +123,51 @@ export class CompetitionEncounter extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true, default: false })
   declare gameLeaderAccepted?: boolean;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare synced?: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare enteredById?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare acceptedById?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare enteredOn?: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare acceptedOn?: Date;
+
+  @SortableField()
+  @WhereField()
+  @Column({ default: false })
+  declare accepted: boolean;
+
+  @SortableField()
+  @WhereField()
+  @Column({ default: false })
+  declare finished: boolean;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare tempHomeCaptainId?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare tempAwayCaptainId?: string;
 
   @Field(() => CompetitionDraw, { nullable: true })
   @ManyToOne(() => CompetitionDraw, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })

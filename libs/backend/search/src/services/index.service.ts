@@ -155,7 +155,7 @@ export class IndexService implements OnModuleInit {
         slug: event.slug,
         name: event.name,
         type: 'tournament',
-        date: event.firstDay.getTime(),
+        date: event.firstDay?.getTime(),
         order: multiMatchOrder.tournamentEvent,
       };
     });

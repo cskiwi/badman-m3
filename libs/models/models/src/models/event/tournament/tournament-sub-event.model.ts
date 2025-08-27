@@ -15,17 +15,17 @@ export class TournamentSubEvent extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare name?: string;
 
   @SortableField({ nullable: true })
@@ -45,7 +45,7 @@ export class TournamentSubEvent extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare visualCode?: string;
 
   @Field(() => [TournamentDraw], { nullable: true })
@@ -59,12 +59,12 @@ export class TournamentSubEvent extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare eventId?: string;
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare lastSync?: Date;
 
   // @Field(() => [EventEntry], { nullable: true })

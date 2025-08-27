@@ -16,8 +16,8 @@ import { lastValueFrom } from 'rxjs';
 export type SyncLevel = 'tournament' | 'event' | 'draw' | 'game';
 
 export interface SyncButtonConfig {
-  tournamentCode: string;
-  tournamentName: string;
+  tournamentCode?: string;
+  tournamentName?: string;
   level: SyncLevel;
   eventCode?: string;
   eventName?: string;

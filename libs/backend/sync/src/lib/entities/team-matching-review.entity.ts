@@ -5,10 +5,10 @@ export class TeamMatchingReview extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @Column()

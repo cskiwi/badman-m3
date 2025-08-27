@@ -27,17 +27,17 @@ export class CompetitionSubEvent extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare name?: string;
 
   @SortableField(() => String, { nullable: true })
@@ -52,8 +52,13 @@ export class CompetitionSubEvent extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare eventId?: string;
+
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare visualCode?: string;
 
   @SortableField(() => Int, { nullable: true })
   @WhereField(() => Int, { nullable: true })
@@ -71,7 +76,7 @@ export class CompetitionSubEvent extends BaseEntity {
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare lastSync?: Date;
 
   @Field(() => CompetitionEvent, { nullable: true })

@@ -30,60 +30,60 @@ export class Player extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @Index({ unique: true })
   @WhereField({ nullable: true })
-  @Column({ unique: true })
+  @Column({ type: 'character varying', length: 255, unique: true, nullable: true })
   declare sub: string;
 
+  @Index({ fulltext: true })
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index({ fulltext: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare firstName: string;
 
+  @Index({ fulltext: true })
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index({ fulltext: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare lastName: string;
 
   @Index({ unique: true })
-  @SortableField()
-  @WhereField()
-  @Column()
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare slug: string;
 
   @Index({ unique: true })
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare memberId: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare email: string;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare phone: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare gender: 'M' | 'F';
+  @Column({ type: 'character varying', length: 10, nullable: true })
+  declare gender?: 'M' | 'F';
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   declare birthDate: Date;
 
   @SortableField({ nullable: true })

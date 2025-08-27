@@ -16,9 +16,9 @@ import { Club } from '../club.model';
 import { Player } from '../player.model';
 import { Team } from '../team.model';
 import { Claim, ClaimUpdateInput } from './claim.model';
-import { SecurityType } from '@app/models-enum';
 import { CompetitionEvent, TournamentEvent } from '../event';
 import { SortableField, WhereField } from '@app/utils';
+import { LinkType } from '@app/models-enum';
 
 @ObjectType('Role', { description: 'A Role' })
 @Entity({ name: 'Roles', schema: 'security' })
@@ -29,23 +29,23 @@ export class Role extends BaseEntity {
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt?: Date;
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @CreateDateColumn({ nullable: true })
+  @CreateDateColumn({ type: 'timestamptz', nullable: true })
   createdAt?: Date;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   @Index()
   name?: string;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   @Index()
   description?: string;
 
@@ -57,7 +57,7 @@ export class Role extends BaseEntity {
   @Field(() => [Claim], { nullable: true })
   @ManyToMany(() => Claim, (claim) => claim.roles, { nullable: true })
   @JoinTable({
-    name: 'RoleClaimMembership',
+    name: 'RoleClaimMemberships',
     joinColumn: { name: 'roleId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'claimId', referencedColumnName: 'id' },
   })
@@ -66,11 +66,31 @@ export class Role extends BaseEntity {
   @Field(() => [Player], { nullable: true })
   @ManyToMany(() => Player, (player) => player.roles, { nullable: true })
   @JoinTable({
-    name: 'PlayerRoleMembership',
+    name: 'PlayerRoleMemberships',
     joinColumn: { name: 'roleId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'playerId', referencedColumnName: 'id' },
   })
   players?: Relation<Player[]>;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  clubId?: string;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  teamId?: string;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  competitionId?: string;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  tournamentId?: string;
 
   @Field(() => Club, { nullable: true })
   @ManyToOne(() => Club, { nullable: true })
@@ -95,8 +115,8 @@ export class Role extends BaseEntity {
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'enum', enum: SecurityType, nullable: true })
-  linkType?: string;
+  @Column({ type: 'simple-enum', enum: LinkType })
+  linkType?: LinkType;
 }
 
 @InputType()

@@ -1,27 +1,30 @@
 import {
-  CompetitionAssembly,
+  Availability,
   Claim,
   Club,
   ClubPlayerMembership,
   Comment,
+  CompetitionAssembly,
   CompetitionDraw,
   CompetitionEncounter,
   CompetitionEncounterChange,
   CompetitionEncounterChangeDate,
-  CompetitionSubEvent,
-  TournamentDraw,
   CompetitionEvent,
-  TournamentEvent,
+  CompetitionSubEvent,
+  Court,
   Entry,
   Faq,
   Game,
   GamePlayerMembership,
+  Location,
   Notification,
   Player,
   PlayerClaimMembership,
   PlayerRoleMembership,
   RankingGroup,
   RankingLastPlace,
+  RankingPlace,
+  RankingPoint,
   RankingSystem,
   RankingSystemRankingGroupMembership,
   RequestLink,
@@ -29,11 +32,11 @@ import {
   RoleClaimMembership,
   Setting,
   Standing,
-  TournamentSubEvent,
   Team,
   TeamPlayerMembership,
-  RankingPoint,
-  RankingPlace,
+  TournamentDraw,
+  TournamentEvent,
+  TournamentSubEvent,
 } from '@app/models';
 import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -46,7 +49,6 @@ const entities = [
   RankingLastPlace,
   RankingPoint,
   RankingPlace,
-  RankingLastPlace,
   Club,
   ClubPlayerMembership,
   Game,
@@ -66,6 +68,10 @@ const entities = [
   CompetitionDraw,
   CompetitionSubEvent,
   CompetitionAssembly,
+
+  Location,
+  Court,
+  Availability,
 
   Comment,
   Faq,
@@ -111,6 +117,9 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
       migrations: addMigrations ? ['libs/backend/database/src/migrations/*.ts'] : undefined,
       synchronize: false,
       migrationsRun: false,
+      cli: {
+        migrationsDir: 'libs/backend/database/src/migrations'
+      },
       // logging: true,
     } as DataSourceOptions;
   } else {

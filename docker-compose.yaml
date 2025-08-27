@@ -1,44 +1,80 @@
+version: '3'
+name: badman-next
 services:
-  typesense:
-    image: typesense/typesense:27.1
-    restart: on-failure
+  # Databases
+  postgres:
+    image: postgis/postgis:16-master
+    shm_size: 1gb
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: postgres
+      POSTGRES_MAX_CONNECTIONS: 500
     ports:
-      - "8108:8108"
-    volumes:
-      - ./typesense-data:/data
-    command: '--data-dir /data --api-key=SZs*s^y7CUiUq54wVKiaX3qZn --enable-cors'
+      - '0.0.0.0:5432:5432'
     networks:
       - api
+      - postgres
+    volumes:
+      - db-data:/var/lib/postgresql-16/data
+      - ./database/backup:/home/backup
+      - ./database/scripts:/home/scripts
 
   redis:
-    image: redis:7-alpine
+    image: 'redis:7.2.4-alpine'
     ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    command: redis-server --appendonly yes
+      - '0.0.0.0:6379:6379'
     networks:
       - api
     restart: unless-stopped
 
-  # Redis Commander for development (queue monitoring)
-  redis-commander:
-    image: rediscommander/redis-commander:latest
+  typesense:
+    image: typesense/typesense:27.1
+    restart: unless-stopped
     ports:
-      - "8081:8081"
-    environment:
-      - CACHE_HOSTS=local:redis:6379
+      - '8108:8108'
     networks:
       - api
-    depends_on:
-      - redis
-    profiles:
-      - development
+    volumes:
+      - ./typesense-data:/data
+    environment:
+      TYPESENSE_API_KEY: 'xyz'
+      TYPESENSE_DATA_DIR: '/data'
 
-volumes:
-  redis-data:
-    driver: local
+  # Tools
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:8.9
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      GUNICORN_ACCESS_LOGFILE: '/dev/null'
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED: 'False'
+    volumes:
+      - db-admin:/var/lib/pgadmin
+      - ./database/backup:/home/backup
+      - ./database/scripts:/home/scripts
+    ports:
+      - '${PGADMIN_PORT:-5050}:80'
+    links:
+      - postgres:postgres
+    depends_on:
+      - postgres
+    networks:
+      - postgres
+    restart: unless-stopped
+    logging:
+      driver: 'none'
 
 networks:
   api:
-    driver: bridge
+  postgres:
+
+volumes:
+  db-data:
+  db-admin:
+  typesense-data:

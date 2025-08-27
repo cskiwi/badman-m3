@@ -1,13 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('CronJob', { description: 'Scheduled job configuration' })
@@ -19,33 +11,33 @@ export class CronJob extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   @Index({ unique: true })
   declare name: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare description?: string;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare cronExpression: string;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare jobFunction: string;
 
   @Field({ nullable: true })
@@ -61,17 +53,17 @@ export class CronJob extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare lastRun?: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
   declare nextRun?: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare lastStatus?: string;
 
   @SortableField({ nullable: true })

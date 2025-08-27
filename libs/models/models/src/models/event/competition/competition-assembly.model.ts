@@ -27,18 +27,18 @@ export interface CompetitionAssemblyData {
 }
 
 @ObjectType('CompetitionAssembly', { description: 'A Team Assembly in Competition' })
-@Entity('CompetitionAssemblies', { schema: 'event' })
+@Entity('Assemblies', { schema: 'personal' })
 export class CompetitionAssembly extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
   @SortableField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @Field(() => GraphQLJSONObject, { nullable: true })
@@ -46,23 +46,23 @@ export class CompetitionAssembly extends BaseEntity {
   declare assembly?: CompetitionAssemblyData;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   declare description?: string;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare encounterId?: string;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare teamId?: string;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare captainId?: string;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare playerId?: string;
 
   @Field({ nullable: true })

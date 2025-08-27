@@ -27,49 +27,49 @@ export class Entry extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare subEventId?: string;
 
   @SortableField(() => ID, { nullable: true })
   @WhereField(() => ID, { nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare drawId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare player1Id?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare player2Id?: string;
 
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare teamId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare entryType?: string;
 
   @SortableField(() => EntryMeta, { nullable: true })

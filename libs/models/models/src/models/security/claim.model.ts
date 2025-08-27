@@ -28,29 +28,29 @@ export class Claim extends BaseEntity {
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt?: Date;
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @CreateDateColumn({ nullable: true })
+  @CreateDateColumn({ type: 'timestamptz', nullable: true })
   createdAt?: Date;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   @Index()
   name?: string;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   @Index()
   description?: string;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   category?: string;
 
   @SortableField(() => String, { nullable: true })
@@ -71,7 +71,7 @@ export class Claim extends BaseEntity {
   @Field(() => [Role], { nullable: true })
   @ManyToMany(() => Role, (role) => role.claims, { nullable: true })
   @JoinTable({
-    name: 'RoleClaimMembership',
+    name: 'RoleClaimMemberships',
     schema: 'security',
     joinColumn: { name: 'claimId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'roleId', referencedColumnName: 'id' },

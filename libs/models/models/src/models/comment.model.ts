@@ -19,12 +19,12 @@ export class Comment extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
@@ -35,16 +35,21 @@ export class Comment extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   declare playerId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  declare clubId?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
   declare linkId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare linkType?: string;
 }

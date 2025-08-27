@@ -21,35 +21,35 @@ export class GamePlayerMembership extends BaseEntity {
 
   @WhereField()
   @Column({ type: 'uuid' })
-  declare playerId?: string;
+  declare playerId: string;
 
   @WhereField()
   @Column({ type: 'uuid' })
-  declare gameId?: string;
+  declare gameId: string;
 
-  @SortableField()
-  @Column()
-  declare team: number;
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
+  declare team?: number;
 
-  @SortableField()
-  @Column()
-  declare player: number;
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
+  declare player?: number;
   
-  @SortableField({nullable: true})
-  @Column()
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
   declare single?: number;
 
-  @SortableField({nullable: true})
-  @Column()
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
   declare double?: number;
 
-  @SortableField({nullable: true})
-  @Column()
+  @SortableField({ nullable: true })
+  @Column({ nullable: true })
   declare mix?: number;
 
-  @WhereField()
-  @Column({ type: 'uuid' })
-  declare systemId: string;
+  @WhereField({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  declare systemId?: string;
 
   @SortableObject('Player')
   @ManyToOne(() => Player, (player) => player.gamePlayerMemberships)

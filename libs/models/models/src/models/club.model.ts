@@ -1,20 +1,9 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Relation,
-  Unique,
-  UpdateDateColumn,
-} from 'typeorm';
-import { UseForTeamName } from '@app/models-enum';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, Relation, Unique, UpdateDateColumn } from 'typeorm';
 import { ClubPlayerMembership } from './club-player-membership';
 import { Team } from './team.model';
 import { SortableField, WhereField } from '@app/utils';
+import { UseForTeamName } from '@app/models-enum';
 
 @ObjectType('Club', { description: 'A Club' })
 @Entity('Clubs')
@@ -26,74 +15,67 @@ export class Club extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   @Index({ fulltext: true })
   declare name: string;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare teamName: string;
 
   @SortableField()
   @WhereField({ nullable: true })
-  @Column({nullable: true})
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare fullName?: string;
 
-  @SortableField()
-  @WhereField()
-  @Column()
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare contactCompetition: string;
 
   @SortableField(() => String)
   @WhereField(() => String)
-  @Column({
-    type: 'simple-enum',
-    enum: UseForTeamName,
-    default: UseForTeamName.TEAM_NAME,
-  })
+  @Column({ type: 'simple-enum', enum: UseForTeamName })
   declare useForTeamName: UseForTeamName;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare abbreviation: string;
 
-  @SortableField()
-  @WhereField()
-  @Column()
-  declare clubId: number;
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true })
+  declare clubId?: number;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare slug: string;
 
   @SortableField()
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare state?: string;
 
   @SortableField()
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare country?: string;
 
   @SortableField(() => ClubPlayerMembership)
-  @OneToMany(
-    () => ClubPlayerMembership,
-    (clubPlayerMembership) => clubPlayerMembership.player,
-  )
+  @OneToMany(() => ClubPlayerMembership, (clubPlayerMembership) => clubPlayerMembership.player)
   declare clubPlayerMemberships: Relation<ClubPlayerMembership[]>;
 
   @SortableField(() => [Team])

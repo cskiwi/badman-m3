@@ -24,19 +24,19 @@ export class CompetitionDraw extends BaseEntity {
   declare id: string;
 
   @SortableField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare name?: string;
 
   @Field({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'character varying', length: 255 })
   declare visualCode?: string;
 
   @SortableField(() => String, { nullable: true })
@@ -47,16 +47,16 @@ export class CompetitionDraw extends BaseEntity {
   @Column({ nullable: true })
   declare size?: number;
 
-  @SortableField(() => Int, { nullable: true })
-  @Column({ nullable: true })
-  declare risers?: number;
+  @SortableField(() => Int)
+  @Column({ default: 1 })
+  declare risers: number;
 
-  @SortableField(() => Int, { nullable: true })
-  @Column({ nullable: true })
-  declare fallers?: number;
+  @SortableField(() => Int)
+  @Column({ default: 1 })
+  declare fallers: number;
 
   @SortableField({ nullable: true })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   declare subeventId?: string;
 
   @Field(() => CompetitionSubEvent, { nullable: true })

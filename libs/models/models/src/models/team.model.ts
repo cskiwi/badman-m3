@@ -15,8 +15,8 @@ import {
 import { Player } from './player.model';
 import { TeamPlayerMembership } from './team-player-membership';
 import { Club } from './club.model';
-import { SubEventTypeEnum } from '@app/models-enum';
 import { SortableField, WhereField } from '@app/utils';
+import { Days } from '@app/models-enum';
 
 @ObjectType('Team', { description: 'A Team' })
 @Entity('Teams')
@@ -28,42 +28,37 @@ export class Team extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  name?: string;
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare name?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ nullable: true })
-  season?: number;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  teamNumber?: number;
+  declare teamNumber?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ type: 'time', nullable: true })
-  preferredTime?: string;
+  declare preferredTime?: string;
+
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String,{ nullable: true })
+  @Column({ type: 'simple-enum', enum: Days, nullable: true })
+  declare preferredDay?: Days;
 
   @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  preferredDay?: string;
-
-  @SortableField({ nullable: true })
-  @Column({ nullable: true })
-  abbreviation?: string;
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare abbreviation?: string;
 
   // @SortableField({ nullable: true })
   // @Column({ nullable: true })
@@ -71,26 +66,23 @@ export class Team extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  clubId?: string;
+  @Column({ nullable: true, type: 'uuid' })
+  declare clubId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  slug?: string;
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare slug?: string;
 
   @SortableField(() => String)
   @WhereField(() => String, { nullable: true })
-  @Column({
-    type: 'simple-enum',
-    enum: SubEventTypeEnum,
-  })
-  type?: SubEventTypeEnum;
+  @Column({ type: 'character varying', length: 255 })
+  declare type?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  captainId?: string;
+  @Column({ nullable: true, type: 'uuid' })
+  declare captainId?: string;
 
   // @SortableField({ nullable: true })
   // @Column({ nullable: true })
@@ -98,8 +90,8 @@ export class Team extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  prefferedLocationId?: string;
+  @Column({ nullable: true, type: 'uuid' })
+  declare prefferedLocationId?: string;
 
   // @SortableField({ nullable: true })
   // @Column({ nullable: true })
@@ -107,21 +99,41 @@ export class Team extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  prefferedLocation2Id?: string;
+  @Column({ nullable: true, type: 'uuid' })
+  declare prefferedLocation2Id?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  email?: string;
+  @Column({ nullable: true, type: 'character varying', length: 255 })
+  declare email?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  phone?: string;
+  @Column({ nullable: true, type: 'character varying', length: 255 })
+  declare phone?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'time', nullable: true })
+  declare preferredTime2?: string;
+
+  @SortableField(() => String,{ nullable: true })
+  @WhereField(() => String,{ nullable: true })
+  @Column({ type: 'simple-enum', enum: Days, nullable: true })
+  declare preferredDay2?: Days;
+
+  @SortableField()
+  @WhereField()
+  @Column({ type: 'integer', default: 2022 })
+  declare season: number;
+
+  @SortableField()
+  @WhereField()
+  @Column({ type: 'uuid' })
+  declare link: string;
 
   @SortableField(() => Player, { nullable: true })
-  @OneToOne(() => Player)
+  @ManyToOne(() => Player)
   @JoinColumn({ name: 'captainId' })
   declare captain: Relation<Player>;
 
@@ -144,7 +156,10 @@ export class Team extends BaseEntity {
 }
 
 @InputType()
-export class TeamUpdateInput extends PartialType(OmitType(Team, ['createdAt', 'updatedAt', 'captain', 'teamPlayerMemberships', 'club'] as const), InputType) {}
+export class TeamUpdateInput extends PartialType(
+  OmitType(Team, ['createdAt', 'updatedAt', 'captain', 'teamPlayerMemberships', 'club'] as const),
+  InputType,
+) {}
 
 @InputType()
 export class TeamNewInput extends PartialType(OmitType(TeamUpdateInput, ['id'] as const), InputType) {}

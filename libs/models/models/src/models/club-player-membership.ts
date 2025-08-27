@@ -1,12 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { ClubMembershipType } from '@app/models-enum';
 import { Club } from './club.model';
 import { Player } from './player.model';
@@ -31,12 +24,12 @@ export class ClubPlayerMembership extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true, type: 'timestamptz' })
   declare end: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'timestamptz' })
   declare start: Date;
 
   @SortableField()

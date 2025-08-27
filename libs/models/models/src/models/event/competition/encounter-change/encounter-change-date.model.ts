@@ -1,20 +1,11 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-  UpdateDateColumn,
-} from 'typeorm';
+import { ChangeEncounterAvailability } from '@app/models-enum';
 import { SortableField, WhereField } from '@app/utils';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { CompetitionEncounterChange } from './encounter-change.model';
 
 @ObjectType('CompetitionEncounterChangeDate', { description: 'Date changes for a competition encounter' })
-@Entity('CompetitionEncounterChangeDates')
+@Entity('EncounterChangeDates', { schema: 'event' })
 export class CompetitionEncounterChangeDate extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -22,51 +13,46 @@ export class CompetitionEncounterChangeDate extends BaseEntity {
 
   @SortableField()
   @WhereField(() => Date)
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField(() => Date, { nullable: true })
-  @UpdateDateColumn({ nullable: true })
-  declare updatedAt: Date;
+  @UpdateDateColumn({ type: 'timestamptz' })
+  declare updatedAt?: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'uuid', nullable: true })
+  @Index()
+  declare encounterChangeId?: string;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true })
+  declare selected?: boolean;
 
   @SortableField()
   @WhereField()
-  @Column()
-  @Index()
-  declare encounterChangeId: string;
+  @Column({ type: 'timestamptz' })
+  declare date: Date;
 
-  @SortableField({ nullable: true })
-  @WhereField(() => Date, { nullable: true })
-  @Column({ nullable: true })
-  declare originalDate?: Date;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'simple-enum', enum: ChangeEncounterAvailability, nullable: true })
+  declare availabilityHome?: ChangeEncounterAvailability;
 
-  @SortableField({ nullable: true })
-  @WhereField(() => Date, { nullable: true })
-  @Column({ nullable: true })
-  declare newDate?: Date;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare originalTime?: string;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'simple-enum', enum: ChangeEncounterAvailability, nullable: true })
+  declare availabilityAway?: ChangeEncounterAvailability;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare newTime?: string;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare originalLocationId?: string;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare newLocationId?: string;
+  @Column({ nullable: true, type: 'uuid' })
+  declare locationId?: string;
 
   @Field(() => CompetitionEncounterChange)
   @ManyToOne(() => CompetitionEncounterChange, (competitionEncounterChange) => competitionEncounterChange.changeDates)
-  declare competitionEncounterChange: Relation<CompetitionEncounterChange>;
+  declare encounterChange: Relation<CompetitionEncounterChange>;
 }

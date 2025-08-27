@@ -13,7 +13,7 @@ import {
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Court', { description: 'A court at a location' })
-@Entity('Courts')
+@Entity('Courts', { schema: 'event' })
 export class Court extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -21,43 +21,21 @@ export class Court extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index({ fulltext: true })
-  declare name: string;
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare name?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare description?: string;
-
-  @SortableField()
-  @WhereField()
-  @Column()
-  @Index()
-  declare locationId: string;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'int', nullable: true })
-  declare courtNumber?: number;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ default: true })
-  declare isActive?: boolean;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'int', default: 0 })
-  declare sortOrder?: number;
+  @Column({ type: 'uuid', nullable: true })
+  declare locationId?: string;
 }

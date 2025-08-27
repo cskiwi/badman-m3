@@ -1,17 +1,9 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Notification', { description: 'User notification' })
-@Entity('Notifications')
+@Entity('Notifications', { schema: 'personal' })
 export class Notification extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -19,63 +11,41 @@ export class Notification extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
-  @Index()
-  declare playerId: string;
+  @Column({ type: 'uuid' })
+  declare sendToId: string;
 
   @SortableField()
   @WhereField()
-  @Column()
-  declare title: string;
-
-  @SortableField()
-  @WhereField()
-  @Column('text')
-  declare message: string;
-
-  @SortableField()
-  @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare type: string;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare linkId?: string;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare linkType?: string;
+  @SortableField()
+  @WhereField()
+  @Column({ type: 'character varying', length: 255 })
+  declare linkType: string;
 
   @SortableField()
   @WhereField()
-  @Column({ default: false })
-  @Index()
-  declare isRead: boolean;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare readAt?: Date;
+  @Column({ type: 'uuid' })
+  declare linkId: string;
 
   @SortableField()
   @WhereField()
-  @Column({ default: 'normal' })
-  declare priority: string;
+  @Column({ type: 'boolean' })
+  declare read: boolean;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare expiresAt?: Date;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'json', nullable: true })
+  declare meta?: any;
 }

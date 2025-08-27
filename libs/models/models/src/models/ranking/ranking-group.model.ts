@@ -12,17 +12,17 @@ export class RankingGroup extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'character varying', length: 255 })
   declare name: string;
 
   @OneToMany(() => RankingSystemRankingGroupMembership, (membership) => membership.rankingGroup)

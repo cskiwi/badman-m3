@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
+import { RankingGroup } from './ranking-group.model';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('RankingPlace', { description: 'A RankingPlace' })
@@ -24,26 +25,28 @@ export class RankingPlace extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'timestamptz' })
   declare rankingDate: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare gender: string;
 
   @SortableField()
   @WhereField()
-  @Column({
-    type: 'simple-enum',
-    enum: ['M', 'F'],
-  })
-  declare gender: 'M' | 'F';
+  @Column({ default: false })
+  declare updatePossible: boolean;
 
   @SortableField()
   @WhereField({ nullable: true })
@@ -158,6 +161,10 @@ export class RankingPlace extends BaseEntity {
   @Column()
   declare systemId: string;
 
+  @Field(() => ID, { nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare groupId?: string;
+
   @Field(() => Player, { nullable: true })
   @ManyToOne(() => Player, (player) => player.rankingPlaces)
   @JoinColumn({ name: 'playerId' })
@@ -167,4 +174,9 @@ export class RankingPlace extends BaseEntity {
   @ManyToOne(() => RankingSystem, (system) => system.rankingPlaces)
   @JoinColumn({ name: 'systemId' })
   declare system: Relation<RankingSystem>;
+
+  @Field(() => RankingGroup, { nullable: true })
+  @ManyToOne(() => RankingGroup)
+  @JoinColumn({ name: 'groupId' })
+  declare group?: Relation<RankingGroup>;
 }

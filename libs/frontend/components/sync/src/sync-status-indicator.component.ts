@@ -10,7 +10,7 @@ export type SyncStatusType = 'synced' | 'syncing' | 'queued' | 'failed' | 'never
 export interface SyncStatusConfig {
   entityType: 'tournament' | 'competition' | 'event' | 'draw';
   entityCode: string;
-  entityName: string;
+  entityName?: string;
   lastSync?: Date | null;
   currentStatus?: SyncStatusType; // Allow parent to override status
 }

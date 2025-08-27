@@ -1,15 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  Relation,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
 import { Claim } from './claim.model';
 import { Role } from './role.model';
 import { SortableField, WhereField } from '@app/utils';
@@ -19,33 +9,33 @@ import { SortableField, WhereField } from '@app/utils';
 export class RoleClaimMembership extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  declare id: string;
 
-  @SortableField(() => Date, { nullable: true })
-  @WhereField(() => Date, { nullable: true })
-  @UpdateDateColumn({ nullable: true })
-  updatedAt?: Date;
+  @SortableField(() => Date)
+  @WhereField(() => Date)
+  @UpdateDateColumn({ type: 'timestamptz' })
+  declare updatedAt: Date;
 
-  @SortableField(() => Date, { nullable: true })
-  @WhereField(() => Date, { nullable: true })
-  @CreateDateColumn({ nullable: true })
-  createdAt?: Date;
+  @SortableField(() => Date)
+  @WhereField(() => Date)
+  @CreateDateColumn({ type: 'timestamptz' })
+  declare createdAt: Date;
 
-  @SortableField(() => ID, { nullable: true })
-  @WhereField(() => ID, { nullable: true })
-  @Column({ type: 'uuid', nullable: true })
+  @SortableField(() => ID)
+  @WhereField(() => ID)
+  @Column({ type: 'uuid' })
   @Index()
-  roleId?: string;
+  declare roleId: string;
 
-  @SortableField(() => ID, { nullable: true })
-  @WhereField(() => ID, { nullable: true })
-  @Column({ type: 'uuid', nullable: true })
+  @SortableField(() => ID)
+  @WhereField(() => ID)
+  @Column({ type: 'uuid' })
   @Index()
-  claimId?: string;
+  declare claimId: string;
 
-  @ManyToOne(() => Role, { nullable: true })
-  role?: Relation<Role>;
+  @ManyToOne(() => Role)
+  declare role: Relation<Role>;
 
-  @ManyToOne(() => Claim, { nullable: true })
-  claim?: Relation<Claim>;
+  @ManyToOne(() => Claim)
+  declare claim: Relation<Claim>;
 }

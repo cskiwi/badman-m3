@@ -14,18 +14,23 @@ export class TournamentDraw extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt?: Date;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
   declare name?: string;
+
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare visualCode?: string;
 
   @SortableField(() => String, { nullable: true })
   @WhereField(() => String, { nullable: true })
@@ -48,10 +53,6 @@ export class TournamentDraw extends BaseEntity {
   // @OneToMany(() => EventEntry, eventEntry => eventEntry.drawTournament, { cascade: true, onDelete: 'CASCADE' })
   // eventEntries?: EventEntry[];
 
-  @SortableField(() => String, { nullable: true })
-  @WhereField(() => String, { nullable: true })
-  @Column({ type: 'varchar', nullable: true })
-  declare visualCode?: string;
 
   @SortableField(() => Int)
   @WhereField(() => Int)

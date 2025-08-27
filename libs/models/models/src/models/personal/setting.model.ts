@@ -1,17 +1,9 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 
-@ObjectType('Setting', { description: 'User or system setting' })
-@Entity('Settings')
+@ObjectType('Setting', { description: 'User notification and preference settings' })
+@Entity('Settings', { schema: 'personal' })
 export class Setting extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -19,60 +11,77 @@ export class Setting extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
-  declare key: string;
+  declare playerId: string;
 
-  @SortableField()
-  @WhereField()
-  @Column('text')
-  declare value: string;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'json', nullable: true })
+  declare pushSubscriptions?: any;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare playerId?: string;
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer' })
+  declare encounterNotEnteredNotification: number;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare clubId?: string;
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer' })
+  declare encounterNotAcceptedNotification: number;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  @Index()
-  declare eventId?: string;
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer' })
+  declare encounterChangeNewNotification: number;
 
-  @SortableField()
-  @WhereField()
-  @Column({ default: 'user' })
-  declare scope: string;
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer' })
+  declare encounterChangeConfirmationNotification: number;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true })
-  declare description?: string;
-
-  @SortableField()
-  @WhereField()
-  @Column({ default: 'string' })
-  declare valueType: string;
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer' })
+  declare encounterChangeFinishedNotification: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ default: true })
-  declare isActive?: boolean;
+  @Column({ type: 'character varying', length: 255, nullable: true, default: 'nl_BE' })
+  declare language?: string;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 0 })
+  declare syncSuccessNotification: number;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 0 })
+  declare syncFailedNotification: number;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 2 })
+  declare clubEnrollmentNotification: number;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 2 })
+  declare synEncounterFailed: number;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 2 })
+  declare encounterHasCommentNotification: number;
 }

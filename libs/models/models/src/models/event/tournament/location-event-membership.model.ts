@@ -11,7 +11,7 @@ import {
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('LocationEventMembership', { description: 'Membership between location and event' })
-@Entity('LocationEventMemberships')
+@Entity('LocationEventTournaments', { schema: 'event' })
 export class LocationEventMembership extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -19,23 +19,23 @@ export class LocationEventMembership extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
   declare locationId: string;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   @Index()
   declare eventId: string;
 

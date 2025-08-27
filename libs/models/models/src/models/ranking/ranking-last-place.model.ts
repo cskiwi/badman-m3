@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
+import { RankingGroup } from './ranking-group.model';
 import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('RankingLastPlace', { description: 'A RankingLastPlace' })
@@ -24,115 +25,112 @@ export class RankingLastPlace extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField()
   @WhereField()
-  @Column()
+  @Column({ type: 'timestamptz' })
   declare rankingDate: Date;
 
-  @SortableField()
-  @WhereField()
-  @Column({
-    type: 'simple-enum',
-    enum: ['M', 'F'],
-  })
-  declare gender: 'M' | 'F';
+  @SortableField({nullable: true})
+  @WhereField({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare gender: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare singlePoints?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare mixPoints?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare doublePoints?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare singlePointsDowngrade?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare mixPointsDowngrade?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare doublePointsDowngrade?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare singleRank?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare mixRank?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare doubleRank?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare totalSingleRanking?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare totalMixRanking?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare totalDoubleRanking?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare totalWithinSingleLevel?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare totalWithinMixLevel?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare totalWithinDoubleLevel?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare single?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare mix?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   declare double?: number;
 
   @SortableField()
@@ -152,13 +150,18 @@ export class RankingLastPlace extends BaseEntity {
 
   @Field(() => ID)
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   declare playerId: string;
 
   @Field(() => ID)
   @WhereField()
-  @Column()
+  @Column({ type: 'uuid' })
   declare systemId: string;
+
+  @Field(() => ID, { nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare groupId?: string;
 
   @Field(() => Player, { nullable: true })
   @ManyToOne(() => Player, (player) => player.rankingLastPlaces)
@@ -169,4 +172,9 @@ export class RankingLastPlace extends BaseEntity {
   @ManyToOne(() => RankingSystem, (system) => system.rankingLastPlaces)
   @JoinColumn({ name: 'systemId' })
   declare system: Relation<RankingSystem>;
+
+  @Field(() => RankingGroup, { nullable: true })
+  @ManyToOne(() => RankingGroup)
+  @JoinColumn({ name: 'groupId' })
+  declare group?: Relation<RankingGroup>;
 }

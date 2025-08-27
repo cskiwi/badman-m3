@@ -12,18 +12,17 @@ export class Standing extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @UpdateDateColumn({ nullable: true })
+  @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
 
   @SortableField(() => ID, { nullable: true })
   @WhereField(() => ID, { nullable: true })
-  @Column({ nullable: true })
-  @Index()
+  @Column({ type: 'uuid', nullable: true })
   declare entryId?: string;
 
   @Field(() => Entry, { nullable: true })

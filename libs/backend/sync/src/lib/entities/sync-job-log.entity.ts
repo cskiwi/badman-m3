@@ -5,7 +5,7 @@ export class SyncJobLog extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   declare createdAt: Date;
 
   @Column()

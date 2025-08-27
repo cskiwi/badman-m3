@@ -8,7 +8,7 @@
             <!-- Left: Date and Time -->
             <div class="flex items-center gap-3 text-sm min-w-0">
               <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                <span class="font-semibold text-base">{{ game?.playedAt | dayjsFormat: 'MMM Do' }}</span>
+                <span class="font-semibold text-base">{{ game?.playedAt | dayjsFormat: 'MMM DD' }}</span>
                 <span class="text-xs text-color-secondary font-medium">{{ game?.playedAt | dayjsFormat: 'HH:mm' }}</span>
               </div>
             </div>

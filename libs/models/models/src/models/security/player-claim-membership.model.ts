@@ -11,21 +11,21 @@ export class PlayerClaimMembership extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 
-  @SortableField(() => ID, { nullable: true })
-  @WhereField(() => ID, { nullable: true })
-  @Column({ type: 'uuid', nullable: true })
+  @SortableField(() => ID)
+  @WhereField(() => ID)
+  @Column({ type: 'uuid' })
   @Index()
-  playerId?: string;
+  declare playerId: string;
 
-  @SortableField(() => ID, { nullable: true })
-  @WhereField(() => ID, { nullable: true })
-  @Column({ type: 'uuid', nullable: true })
+  @SortableField(() => ID)
+  @WhereField(() => ID)
+  @Column({ type: 'uuid' })
   @Index()
-  claimId?: string;
+  declare claimId: string;
 
-  @ManyToOne(() => Player, { nullable: true })
-  player?: Relation<Player>;
+  @ManyToOne(() => Player)
+  declare player: Relation<Player>;
 
-  @ManyToOne(() => Claim, { nullable: true })
-  claim?: Relation<Claim>;
+  @ManyToOne(() => Claim)
+  declare claim: Relation<Claim>;
 }
