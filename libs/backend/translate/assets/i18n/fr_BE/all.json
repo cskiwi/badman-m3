@@ -35,6 +35,7 @@
   "common": {
     "cancel": "Annuler",
     "error": "Erreur",
+    "name": "Nom",
     "no": "Non",
     "save": "Enregistrer",
     "season": "Saison",
@@ -44,23 +45,58 @@
     "yes": "Oui"
   },
   "competition": {
+    "bracket_view": "Vue en tableau",
+    "bracket_view_description": "Représentation visuelle du tableau disponible bientôt",
     "changeClosePeriod1": "Clôture des changements (Période 1)",
     "changeClosePeriod2": "Clôture des changements (Période 2)",
     "changeOpenDate": "Ouverture des changements d'équipe",
     "closeDate": "Clôture des inscriptions",
     "dates": "Dates importantes",
     "details": "Détails de la compétition",
+    "draw": "Poule",
     "draws": "Série",
+    "eliminated": "Éliminé",
     "encounters": "Rencontres",
     "eventType": "Type d'épreuve",
+    "game": "concurrence",
+    "games": "Jeux",
     "information": "Informations sur la compétition",
+    "knockout_bracket": "Tableau éliminatoire",
     "level": "Niveau",
     "location": "Lieu",
+    "lost": "Perdu",
+    "no_bracket": "Aucun tableau disponible",
+    "no_bracket_description": "Cette poule éliminatoire n'a pas encore de données de tableau.",
+    "no_games": "Aucun jeu disponible",
+    "no_qualification": "Aucune donnée de qualification",
+    "no_qualification_description": "Cette poule de qualification n'a pas encore de données de qualification.",
+    "no_standings": "Aucun classement disponible",
+    "no_standings_description": "Cette poule n'a pas encore de données de classement.",
     "official": "Compétition officielle",
     "openDate": "Ouverture des inscriptions",
+    "participant": "Participant",
+    "pending": "En attente",
+    "played": "Joué",
+    "player": "Joueur",
+    "player_team": "L'équipe",
+    "points": "Points",
+    "position": "Position",
+    "qualification_matches": "Matchs de qualification",
+    "qualification_results": "Résultats de qualification",
+    "qualification_rounds": "Tours de qualification",
+    "qualification_view": "Vue de qualification",
+    "qualification_view_description": "Vue des tours de qualification disponible bientôt",
+    "qualified": "Qualifié",
     "season": "Saison",
+    "sets": "Sets",
+    "standings": "Classement",
+    "statistics": "Statistiques",
+    "status": "Statut",
+    "subEvent": "Section",
     "subEvents": "Série",
+    "team": "Équipe",
     "teams": "Équipes",
+    "tournament_winner": "Vainqueur du tournoi",
     "type": "Type",
     "types": {
       "F": "",
@@ -72,7 +108,8 @@
       "Other": "",
       "women": "Compétition féminine"
     },
-    "visualCode": "Code visuel"
+    "visualCode": "Code visuel",
+    "won": "Gagné"
   },
   "days": {
     "friday": "Vendredi",
@@ -274,6 +311,11 @@
     }
   },
   "sync": {
+    "actions": {
+      "syncDraw": "Pool de synchronisation",
+      "syncSubEvent": "Série Sync",
+      "syncTournament": "Tournoi de synchronisation"
+    },
     "dashboard": {
       "actions": {
         "discoverySync": "Sync de découverte",
@@ -285,10 +327,10 @@
         "syncDrawWithGames": "Synchroniser le tableau + matchs",
         "syncEvent": "Synchroniser l'épreuve",
         "syncEventFull": "Synchroniser l'épreuve + sous-composants",
-        "syncSubEvent": "Synchroniser la sous-épreuve",
-        "syncSubEventFull": "Synchroniser la sous-épreuve + sous-composants",
         "syncGames": "Synchroniser les matchs",
         "syncSpecificGames": "Synchroniser des matchs spécifiques",
+        "syncSubEvent": "Synchroniser la sous-épreuve",
+        "syncSubEventFull": "Synchroniser la sous-épreuve + sous-composants",
         "syncTournament": "Synchroniser le tournoi",
         "syncTournamentFull": "Synchroniser le tournoi + sous-composants"
       },
@@ -364,29 +406,6 @@
           "allStatuses": "Tous les statuts",
           "allTypes": "Tous les types"
         },
-        "search": "Rechercher des tournois...",
-        "statuses": {
-          "active": "Actif",
-          "cancelled": "Annulé",
-          "finished": "Terminé"
-        },
-        "table": {
-          "actions": "Actions",
-          "dates": "Dates",
-          "lastSync": "Dernière sync",
-          "manage": "Gérer",
-          "name": "Nom",
-          "never": "Jamais",
-          "noTournamentsFound": "Aucun tournoi trouvé",
-          "status": "Statut",
-          "syncStatus": "Statut de sync",
-          "type": "Type"
-        },
-        "title": "Tournois et compétitions",
-        "types": {
-          "competition": "Compétition",
-          "tournament": "Tournoi"
-        },
         "levelSync": {
           "dialogs": {
             "cancel": "Annuler",
@@ -425,11 +444,32 @@
         "never": "Jamais",
         "noTournaments": "Aucun tournoi trouvé",
         "search": "Rechercher des tournois...",
+        "statuses": {
+          "active": "Actif",
+          "cancelled": "Annulé",
+          "finished": "Terminé"
+        },
+        "table": {
+          "actions": "Actions",
+          "dates": "Dates",
+          "lastSync": "Dernière sync",
+          "manage": "Gérer",
+          "name": "Nom",
+          "never": "Jamais",
+          "noTournamentsFound": "Aucun tournoi trouvé",
+          "status": "Statut",
+          "syncStatus": "Statut de sync",
+          "type": "Type"
+        },
         "title": "Tournois et compétitions",
         "tooltips": {
           "manage": "Gérer",
           "syncGames": "Synchroniser les matchs",
           "syncStructure": "Synchroniser la structure"
+        },
+        "types": {
+          "competition": "Compétition",
+          "tournament": "Tournoi"
         }
       }
     },

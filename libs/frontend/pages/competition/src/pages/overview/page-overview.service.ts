@@ -28,7 +28,7 @@ export class OverviewService {
         const result = await lastValueFrom(this.apollo
           .query<{ competitionEvents: CompetitionEvent[] }>({
             query: gql`
-              query Competitions($args: CompetitionEventArgs) {
+              query CompetitionsOverview($args: CompetitionEventArgs) {
                 competitionEvents(args: $args) {
                   id
                   name

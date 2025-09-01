@@ -27,7 +27,7 @@ export class DetailService {
         const result = await lastValueFrom(this.apollo
           .query<{ player: Player }>({
             query: gql`
-              query Player($id: ID!) {
+              query PlayerDetail($id: ID!) {
                 player(id: $id) {
                   id
                   fullName

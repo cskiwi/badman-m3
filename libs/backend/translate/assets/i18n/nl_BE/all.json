@@ -35,6 +35,7 @@
   "common": {
     "cancel": "Annuleren",
     "error": "Fout",
+    "name": "Naam",
     "no": "Nee",
     "save": "Opslaan",
     "season": "Seizoen",
@@ -44,23 +45,58 @@
     "yes": "Ja"
   },
   "competition": {
+    "bracket_view": "Schema Weergave",
+    "bracket_view_description": "Visueel schema komt binnenkort beschikbaar",
     "changeClosePeriod1": "Wijzigingen Sluiten (Periode 1)",
     "changeClosePeriod2": "Wijzigingen Sluiten (Periode 2)",
     "changeOpenDate": "Team Wijzigingen Open",
     "closeDate": "Inschrijvingen Sluiten",
     "dates": "Belangrijke Data",
     "details": "Competitie Details",
+    "draw": "Schema",
     "draws": "Reeks",
+    "eliminated": "Geëlimineerd",
     "encounters": "Ontmoetingen",
     "eventType": "Event Type",
+    "game": "wedstrijd",
+    "games": "Wedstrijden",
     "information": "Competitie Informatie",
+    "knockout_bracket": "Eliminatieschema",
     "level": "Niveau",
     "location": "Locatie",
+    "lost": "Verloren",
+    "no_bracket": "Geen Schema Beschikbaar",
+    "no_bracket_description": "Dit eliminatie schema heeft nog geen schema gegevens.",
+    "no_games": "Geen wedstrijden beschikbaar",
+    "no_qualification": "Geen Kwalificatie Gegevens",
+    "no_qualification_description": "Dit kwalificatie schema heeft nog geen kwalificatie gegevens.",
+    "no_standings": "Geen Klassement Beschikbaar",
+    "no_standings_description": "Dit schema heeft nog geen klassement gegevens.",
     "official": "Officiële Competitie",
     "openDate": "Inschrijvingen Open",
+    "participant": "Deelnemer",
+    "pending": "In afwachting",
+    "played": "Gespeeld",
+    "player": "Speler",
+    "player_team": "Team",
+    "points": "Punten",
+    "position": "Positie",
+    "qualification_matches": "Kwalificatie Wedstrijden",
+    "qualification_results": "Kwalificatie Resultaten",
+    "qualification_rounds": "Kwalificatie Ronden",
+    "qualification_view": "Kwalificatie Weergave",
+    "qualification_view_description": "Kwalificatie ronden weergave komt binnenkort",
+    "qualified": "Gekwalificeerd",
     "season": "Seizoen",
+    "sets": "Sets",
+    "standings": "Klassement",
+    "statistics": "Statistieken",
+    "status": "Status",
+    "subEvent": "Onderdeel",
     "subEvents": "Reeksen",
+    "team": "Team",
     "teams": "Teams",
+    "tournament_winner": "Toernooi Winnaar",
     "type": "Type",
     "types": {
       "F": "",
@@ -72,7 +108,8 @@
       "Other": "",
       "women": "Vrouwen competitie"
     },
-    "visualCode": "Visuele Code"
+    "visualCode": "Visuele Code",
+    "won": "Gewonnen"
   },
   "days": {
     "friday": "Vrijdag",
@@ -274,6 +311,11 @@
     }
   },
   "sync": {
+    "actions": {
+      "syncDraw": "Sync poule",
+      "syncSubEvent": "Sync reeks",
+      "syncTournament": "Sync toernooi"
+    },
     "dashboard": {
       "actions": {
         "discoverySync": "Discovery Sync",
@@ -285,10 +327,10 @@
         "syncDrawWithGames": "Schema + wedstrijden synchroniseren",
         "syncEvent": "Reeks synchroniseren",
         "syncEventFull": "Reeks + sub-onderdelen synchroniseren",
-        "syncSubEvent": "Sub-reeks synchroniseren",
-        "syncSubEventFull": "Sub-reeks + sub-onderdelen synchroniseren",
         "syncGames": "Wedstrijden synchroniseren",
         "syncSpecificGames": "Specifieke wedstrijden synchroniseren",
+        "syncSubEvent": "Sub-reeks synchroniseren",
+        "syncSubEventFull": "Sub-reeks + sub-onderdelen synchroniseren",
         "syncTournament": "Toernooi synchroniseren",
         "syncTournamentFull": "Toernooi + sub-onderdelen synchroniseren"
       },
@@ -364,29 +406,6 @@
           "allStatuses": "Alle Statussen",
           "allTypes": "Alle Types"
         },
-        "search": "Zoek toernooien...",
-        "statuses": {
-          "active": "Actief",
-          "cancelled": "Geannuleerd",
-          "finished": "Voltooid"
-        },
-        "table": {
-          "actions": "Acties",
-          "dates": "Data",
-          "lastSync": "Laatste Sync",
-          "manage": "Beheren",
-          "name": "Naam",
-          "never": "Nooit",
-          "noTournamentsFound": "Geen toernooien gevonden",
-          "status": "Status",
-          "syncStatus": "Sync Status",
-          "type": "Type"
-        },
-        "title": "Toernooien & Competities",
-        "types": {
-          "competition": "Competitie",
-          "tournament": "Toernooi"
-        },
         "levelSync": {
           "dialogs": {
             "cancel": "Annuleren",
@@ -425,11 +444,32 @@
         "never": "Nooit",
         "noTournaments": "Geen toernooien gevonden",
         "search": "Zoek toernooien...",
+        "statuses": {
+          "active": "Actief",
+          "cancelled": "Geannuleerd",
+          "finished": "Voltooid"
+        },
+        "table": {
+          "actions": "Acties",
+          "dates": "Data",
+          "lastSync": "Laatste Sync",
+          "manage": "Beheren",
+          "name": "Naam",
+          "never": "Nooit",
+          "noTournamentsFound": "Geen toernooien gevonden",
+          "status": "Status",
+          "syncStatus": "Sync Status",
+          "type": "Type"
+        },
         "title": "Toernooien & Competities",
         "tooltips": {
           "manage": "Beheren",
           "syncGames": "Sync Wedstrijden",
           "syncStructure": "Sync Structuur"
+        },
+        "types": {
+          "competition": "Competitie",
+          "tournament": "Toernooi"
         }
       }
     },

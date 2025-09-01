@@ -1,0 +1,10 @@
+{
+  "client": {
+    "service": {
+      "name": "SSR",
+      "url": "http://localhost:5000/graphql"
+    },
+    "includes": ["**/*.ts", "**/*.tsx", "**/*.graphql", "**/*.gql"],
+    "excludes": ["**/node_modules/**"]
+  }
+}

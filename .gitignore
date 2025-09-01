@@ -45,3 +45,4 @@ routes.txt
 .env
 typesense-data/
 .claude-collective/metrics/
+.playwright-mcp/

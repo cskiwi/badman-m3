@@ -135,6 +135,22 @@
           </section>
         }
 
+        <!-- Draw Type Specific Content -->
+        @switch (draw.type) {
+          @case ('POULE') {
+            <app-poule-draw [entries]="standings()" />
+          }
+          @case ('KO') {
+            <app-ko-draw [encounters]="encounters()" />
+          }
+          @case ('QUALIFICATION') {
+            <app-qualification-draw [encounters]="encounters()" [standings]="standings()" />
+          }
+          @default {
+            <!-- No specific component for this draw type -->
+          }
+        }
+
         <!-- Encounters Section -->
         @if (encounters().length > 0) {
           <section class="encounters">
@@ -143,43 +159,11 @@
               {{ 'all.competition.encounters' | translate }}
             </h3>
             
-            <div class="space-y-3">
+            <div>
               @for (encounter of encounters(); track encounter.id) {
-                <div class="rounded-border bg-highlight p-4">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                      <!-- Home Team -->
-                      <div class="flex items-center gap-2">
-                        <span class="font-medium">{{ encounter.homeTeam?.name || 'TBD' }}</span>
-                        @if (encounter.homeTeam?.abbreviation) {
-                          <span class="text-xs text-muted-color-emphasis">({{ encounter.homeTeam?.abbreviation }})</span>
-                        }
-                      </div>
-                      
-                      <!-- Score -->
-                      @if (encounter.homeScore !== null && encounter.awayScore !== null) {
-                        <span class="font-bold px-3 py-1 bg-primary-100 text-primary-800 rounded">
-                          {{ encounter.homeScore }} - {{ encounter.awayScore }}
-                        </span>
-                      } @else {
-                        <span class="text-muted-color-emphasis">vs</span>
-                      }
-                      
-                      <!-- Away Team -->
-                      <div class="flex items-center gap-2">
-                        <span class="font-medium">{{ encounter.awayTeam?.name || 'TBD' }}</span>
-                        @if (encounter.awayTeam?.abbreviation) {
-                          <span class="text-xs text-muted-color-emphasis">({{ encounter.awayTeam?.abbreviation }})</span>
-                        }
-                      </div>
-                    </div>
-                    
-                    <!-- Date -->
-                    @if (encounter.date) {
-                      <span class="text-sm text-muted-color-emphasis">{{ encounter.date | date:'medium' }}</span>
-                    }
-                  </div>
-                </div>
+                <app-encounter-card 
+                  [encounter]="encounter" 
+                  [onLoadGames]="onLoadGames" />
               }
             </div>
           </section>

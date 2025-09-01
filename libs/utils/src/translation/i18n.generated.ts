@@ -42,6 +42,7 @@ export type I18nTranslations = {
         "common": {
             "cancel": string;
             "error": string;
+            "name": string;
             "no": string;
             "save": string;
             "season": string;
@@ -51,23 +52,58 @@ export type I18nTranslations = {
             "yes": string;
         };
         "competition": {
+            "bracket_view": string;
+            "bracket_view_description": string;
             "changeClosePeriod1": string;
             "changeClosePeriod2": string;
             "changeOpenDate": string;
             "closeDate": string;
             "dates": string;
             "details": string;
+            "draw": string;
             "draws": string;
+            "eliminated": string;
             "encounters": string;
             "eventType": string;
+            "game": string;
+            "games": string;
             "information": string;
+            "knockout_bracket": string;
             "level": string;
             "location": string;
+            "lost": string;
+            "no_bracket": string;
+            "no_bracket_description": string;
+            "no_games": string;
+            "no_qualification": string;
+            "no_qualification_description": string;
+            "no_standings": string;
+            "no_standings_description": string;
             "official": string;
             "openDate": string;
+            "participant": string;
+            "pending": string;
+            "played": string;
+            "player": string;
+            "player_team": string;
+            "points": string;
+            "position": string;
+            "qualification_matches": string;
+            "qualification_results": string;
+            "qualification_rounds": string;
+            "qualification_view": string;
+            "qualification_view_description": string;
+            "qualified": string;
             "season": string;
+            "sets": string;
+            "standings": string;
+            "statistics": string;
+            "status": string;
+            "subEvent": string;
             "subEvents": string;
+            "team": string;
             "teams": string;
+            "tournament_winner": string;
             "type": string;
             "types": {
                 "F": string;
@@ -80,6 +116,7 @@ export type I18nTranslations = {
                 "women": string;
             };
             "visualCode": string;
+            "won": string;
         };
         "days": {
             "friday": string;
@@ -281,6 +318,11 @@ export type I18nTranslations = {
             };
         };
         "sync": {
+            "actions": {
+                "syncDraw": string;
+                "syncSubEvent": string;
+                "syncTournament": string;
+            };
             "dashboard": {
                 "actions": {
                     "discoverySync": string;
@@ -292,10 +334,10 @@ export type I18nTranslations = {
                     "syncDrawWithGames": string;
                     "syncEvent": string;
                     "syncEventFull": string;
-                    "syncSubEvent": string;
-                    "syncSubEventFull": string;
                     "syncGames": string;
                     "syncSpecificGames": string;
+                    "syncSubEvent": string;
+                    "syncSubEventFull": string;
                     "syncTournament": string;
                     "syncTournamentFull": string;
                 };
@@ -371,29 +413,6 @@ export type I18nTranslations = {
                         "allStatuses": string;
                         "allTypes": string;
                     };
-                    "search": string;
-                    "statuses": {
-                        "active": string;
-                        "cancelled": string;
-                        "finished": string;
-                    };
-                    "table": {
-                        "actions": string;
-                        "dates": string;
-                        "lastSync": string;
-                        "manage": string;
-                        "name": string;
-                        "never": string;
-                        "noTournamentsFound": string;
-                        "status": string;
-                        "syncStatus": string;
-                        "type": string;
-                    };
-                    "title": string;
-                    "types": {
-                        "competition": string;
-                        "tournament": string;
-                    };
                     "levelSync": {
                         "dialogs": {
                             "cancel": string;
@@ -431,10 +450,33 @@ export type I18nTranslations = {
                     };
                     "never": string;
                     "noTournaments": string;
+                    "search": string;
+                    "statuses": {
+                        "active": string;
+                        "cancelled": string;
+                        "finished": string;
+                    };
+                    "table": {
+                        "actions": string;
+                        "dates": string;
+                        "lastSync": string;
+                        "manage": string;
+                        "name": string;
+                        "never": string;
+                        "noTournamentsFound": string;
+                        "status": string;
+                        "syncStatus": string;
+                        "type": string;
+                    };
+                    "title": string;
                     "tooltips": {
                         "manage": string;
                         "syncGames": string;
                         "syncStructure": string;
+                    };
+                    "types": {
+                        "competition": string;
+                        "tournament": string;
                     };
                 };
             };

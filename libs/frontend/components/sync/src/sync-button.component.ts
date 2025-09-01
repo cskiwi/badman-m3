@@ -13,6 +13,24 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { lastValueFrom } from 'rxjs';
 
+const TRIGGER_EVENT_SYNC_MUTATION = gql`
+  mutation TriggerEventSync($tournamentCode: String!, $eventCode: String!, $includeSubComponents: Boolean!) {
+    triggerEventSync(tournamentCode: $tournamentCode, eventCode: $eventCode, includeSubComponents: $includeSubComponents) {
+      message
+      success
+    }
+  }
+`;
+
+const TRIGGER_GAME_SYNC_MUTATION = gql`
+  mutation TriggerGameSync($tournamentCode: String!, $eventCode: String, $drawCode: String, $matchCodes: [String!]) {
+    triggerGameSync(tournamentCode: $tournamentCode, eventCode: $eventCode, drawCode: $drawCode, matchCodes: $matchCodes) {
+      message
+      success
+    }
+  }
+`;
+
 export type SyncLevel = 'tournament' | 'event' | 'draw' | 'game';
 
 export interface SyncButtonConfig {
@@ -218,14 +236,7 @@ export class SyncButtonComponent {
     try {
       const result = await lastValueFrom(
         this.apollo.mutate<{ triggerEventSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerEventSync($tournamentCode: String!, $eventCode: String!, $includeSubComponents: Boolean!) {
-              triggerEventSync(tournamentCode: $tournamentCode, eventCode: $eventCode, includeSubComponents: $includeSubComponents) {
-                message
-                success
-              }
-            }
-          `,
+          mutation: TRIGGER_EVENT_SYNC_MUTATION,
           variables: {
             tournamentCode: cfg.tournamentCode,
             eventCode: cfg.eventCode,
@@ -259,14 +270,7 @@ export class SyncButtonComponent {
     try {
       const result = await lastValueFrom(
         this.apollo.mutate<{ triggerEventSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerEventSync($tournamentCode: String!, $eventCode: String!, $includeSubComponents: Boolean!) {
-              triggerEventSync(tournamentCode: $tournamentCode, eventCode: $eventCode, includeSubComponents: $includeSubComponents) {
-                message
-                success
-              }
-            }
-          `,
+          mutation: TRIGGER_EVENT_SYNC_MUTATION,
           variables: {
             tournamentCode: cfg.tournamentCode,
             eventCode: cfg.eventCode,
@@ -347,14 +351,7 @@ export class SyncButtonComponent {
     try {
       const result = await lastValueFrom(
         this.apollo.mutate<{ triggerGameSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerGameSync($tournamentCode: String!, $eventCode: String, $drawCode: String, $matchCodes: [String!]) {
-              triggerGameSync(tournamentCode: $tournamentCode, eventCode: $eventCode, drawCode: $drawCode, matchCodes: $matchCodes) {
-                message
-                success
-              }
-            }
-          `,
+          mutation: TRIGGER_GAME_SYNC_MUTATION,
           variables: {
             tournamentCode: cfg.tournamentCode,
             eventCode: cfg.eventCode,
@@ -422,14 +419,7 @@ export class SyncButtonComponent {
 
       const result = await lastValueFrom(
         this.apollo.mutate<{ triggerGameSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerGameSync($tournamentCode: String!, $eventCode: String, $drawCode: String, $matchCodes: [String!]) {
-              triggerGameSync(tournamentCode: $tournamentCode, eventCode: $eventCode, drawCode: $drawCode, matchCodes: $matchCodes) {
-                message
-                success
-              }
-            }
-          `,
+          mutation: TRIGGER_GAME_SYNC_MUTATION,
           variables: {
             tournamentCode: cfg.tournamentCode,
             eventCode: cfg.eventCode,

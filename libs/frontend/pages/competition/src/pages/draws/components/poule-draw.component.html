@@ -1,0 +1,60 @@
+<!-- Standings Section for Poule draws -->
+@if (entries().length > 0) {
+  <section class="mb-8">
+    <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
+      <i class="pi pi-chart-bar text-primary-500"></i>
+      {{ 'all.competition.standings' | translate }}
+    </h3>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse rounded-border bg-highlight overflow-hidden">
+        <thead class="bg-primary text-primary-contrast">
+          <tr>
+            <th class="p-3 text-left font-semibold">{{ 'all.competition.position' | translate }}</th>
+            <th class="p-3 text-left font-semibold">{{ 'all.competition.player_team' | translate }}</th>
+            <th class="p-3 text-center font-semibold">{{ 'all.competition.played' | translate }}</th>
+            <th class="p-3 text-center font-semibold">{{ 'all.competition.won' | translate }}</th>
+            <th class="p-3 text-center font-semibold">{{ 'all.competition.lost' | translate }}</th>
+            <th class="p-3 text-center font-semibold">{{ 'all.competition.games' | translate }}</th>
+            <th class="p-3 text-center font-semibold">{{ 'all.competition.sets' | translate }}</th>
+            <th class="p-3 text-center font-semibold">{{ 'all.competition.points' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of entries(); track entry.id) {
+            <tr class="border-b border-surface-200 hover:bg-highlight-emphasis">
+              <td class="p-3 font-semibold text-primary">{{ entry.standing?.position }}</td>
+              <td class="p-3">
+                <span>{{ entry.team?.name }}</span>
+              </td>
+              <td class="p-3 text-center">{{ entry.standing?.played || '0' }}</td>
+              <td class="p-3 text-center text-green-600 font-medium">{{ entry.standing?.won || '0' }}</td>
+              <td class="p-3 text-center text-red-600 font-medium">{{ entry.standing?.lost || '0' }}</td>
+              <td class="p-3 text-center text-sm">
+                @if (entry.standing?.gamesWon !== null && entry.standing?.gamesLost !== null) {
+                  <span>{{ entry.standing?.gamesWon }} - {{ entry.standing?.gamesLost }}</span>
+                } @else {
+                  <span>-</span>
+                }
+              </td>
+              <td class="p-3 text-center text-sm">
+                @if (entry.standing?.setsWon !== null && entry.standing?.setsLost !== null) {
+                  <span>{{ entry.standing?.setsWon }} - {{ entry.standing?.setsLost }}</span>
+                } @else {
+                  <span>-</span>
+                }
+              </td>
+              <td class="p-3 text-center font-semibold">{{ entry.standing?.points || '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+} @else {
+  <div class="text-center py-12 text-surface-500">
+    <i class="pi pi-chart-bar text-4xl mb-4 block"></i>
+    <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_standings' | translate }}</h3>
+    <p>{{ 'all.competition.no_standings_description' | translate }}</p>
+  </div>
+}

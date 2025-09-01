@@ -17,6 +17,7 @@ import { SortableField, WhereField } from '@app/utils';
 import { Standing } from './standing.model';
 import { EntryMeta } from './entry-meta.type';
 import { Player } from '../player.model';
+import { Team } from '../team.model';
 
 @ObjectType('Entry', { description: 'Player or team entry in an event' })
 @Entity('Entries', { schema: 'event' })
@@ -101,5 +102,10 @@ export class Entry extends BaseEntity {
   @ManyToOne(() => Player, { nullable: true })
   @JoinColumn({ name: 'player2Id' })
   declare player2?: Relation<Player>;
+
+  @Field(() => Team, { nullable: true })
+  @ManyToOne(() => Team, { nullable: true })
+  @JoinColumn({ name: 'teamId' })
+  declare team?: Relation<Team>;
 
 }

@@ -33,7 +33,15 @@
       "Bash(docker inspect:*)",
       "Bash(docker:*)",
       "Bash(npx jest:*)",
-      "Bash(NODE_OPTIONS=\"\" npx nx test backend-database)"
+      "Bash(NODE_OPTIONS=\"\" npx nx test backend-database)",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "Read(C:\\Users\\glenn\\Pictures\\Screenshots/**)",
+      "Read(C:\\Users\\glenn\\Pictures\\Screenshots/**)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,139 @@
+<!-- Qualification rounds display -->
+<section class="mb-8">
+  <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
+    <i class="pi pi-flag text-primary-500"></i>
+    {{ 'all.competition.qualification_rounds' | translate }}
+  </h3>
+
+  @if (encounters().length > 0 || standings().length > 0) {
+    <!-- Qualification Results/Standings -->
+    @if (standings().length > 0) {
+      <div class="mb-8">
+        <h4 class="flex items-center gap-2 text-lg font-semibold mb-4">
+          <i class="pi pi-chart-bar text-primary-500"></i>
+          {{ 'all.competition.qualification_results' | translate }}
+        </h4>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse rounded-lg bg-surface-0 overflow-hidden">
+            <thead class="bg-primary-500 text-white">
+              <tr>
+                <th class="p-3 text-left font-semibold">{{ 'all.competition.position' | translate }}</th>
+                <th class="p-3 text-left font-semibold">{{ 'all.competition.participant' | translate }}</th>
+                <th class="p-3 text-center font-semibold">{{ 'all.competition.status' | translate }}</th>
+                <th class="p-3 text-center font-semibold">{{ 'all.competition.played' | translate }}</th>
+                <th class="p-3 text-center font-semibold">{{ 'all.competition.won' | translate }}</th>
+                <th class="p-3 text-center font-semibold">{{ 'all.competition.lost' | translate }}</th>
+                <th class="p-3 text-center font-semibold">{{ 'all.competition.points' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (standing of qualifiedStandings(); track standing.id) {
+                <tr class="border-b border-surface-200 hover:bg-surface-50 transition-colors"
+                    [class]="standing.qualified ? 'bg-green-25 border-l-4 border-l-green-500' : standing.eliminated ? 'bg-red-25 border-l-4 border-l-red-500 opacity-80' : ''">
+                  <td class="p-3 font-semibold">{{ standing.position }}</td>
+                  <td class="p-3">
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium">{{ getParticipantName(standing) }}</span>
+                      @if (standing.qualified) {
+                        <i class="pi pi-check-circle text-green-600" title="Qualified"></i>
+                      } @else if (standing.eliminated) {
+                        <i class="pi pi-times-circle text-red-600" title="Eliminated"></i>
+                      }
+                    </div>
+                  </td>
+                  <td class="p-3 text-center">
+                    @if (standing.qualified) {
+                      <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                        {{ 'all.competition.qualified' | translate }}
+                      </span>
+                    } @else if (standing.eliminated) {
+                      <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                        {{ 'all.competition.eliminated' | translate }}
+                      </span>
+                    } @else {
+                      <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                        {{ 'all.competition.pending' | translate }}
+                      </span>
+                    }
+                  </td>
+                  <td class="p-3 text-center">{{ standing.played || 0 }}</td>
+                  <td class="p-3 text-center text-green-600 font-medium">{{ standing.won || 0 }}</td>
+                  <td class="p-3 text-center text-red-600 font-medium">{{ standing.lost || 0 }}</td>
+                  <td class="p-3 text-center font-semibold">{{ standing.points || 0 }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Qualification Matches -->
+    @if (encounters().length > 0) {
+      <div class="min-h-[300px]">
+        <h4 class="flex items-center gap-2 text-lg font-semibold mb-4">
+          <i class="pi pi-calendar text-primary-500"></i>
+          {{ 'all.competition.qualification_matches' | translate }}
+        </h4>
+        
+        <div class="grid gap-4 md:grid-cols-2 grid-cols-1">
+          @for (match of encounters(); track match.id) {
+            <div class="rounded-lg bg-surface-0 border border-surface-200 p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+              <div class="flex items-center justify-between mb-2 md:flex-row flex-col md:gap-0 gap-2">
+                <div class="flex items-center gap-3 md:flex-row flex-col md:text-left text-center">
+                  <!-- Home Participant -->
+                  <div [class]="match.homeScore !== null && match.awayScore !== null && match.homeScore > match.awayScore ? 'font-semibold text-green-600' : ''">
+                    <span class="font-medium">
+                      {{ getMatchParticipantName(match.homeTeam, match.homePlayer) }}
+                    </span>
+                  </div>
+                  
+                  <!-- Score or VS -->
+                  @if (match.homeScore !== null && match.awayScore !== null) {
+                    <div class="flex items-center justify-center gap-2 px-3 py-1 bg-surface-100 rounded font-semibold min-w-[60px]">
+                      <span class="font-bold">{{ match.homeScore }}</span>
+                      <span class="text-surface-500">-</span>
+                      <span class="font-bold">{{ match.awayScore }}</span>
+                    </div>
+                  } @else {
+                    <span class="text-surface-600 text-sm md:self-center self-center">vs</span>
+                  }
+                  
+                  <!-- Away Participant -->
+                  <div [class]="match.homeScore !== null && match.awayScore !== null && match.awayScore > match.homeScore ? 'font-semibold text-green-600' : ''">
+                    <span class="font-medium">
+                      {{ getMatchParticipantName(match.awayTeam, match.awayPlayer) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Match Details -->
+              <div class="mt-2 text-sm text-surface-600">
+                @if (match.date) {
+                  <div class="flex items-center gap-1 mr-4 inline-flex">
+                    <i class="pi pi-clock text-xs"></i>
+                    <span>{{ match.date | date:'short' }}</span>
+                  </div>
+                }
+                @if (match.round) {
+                  <div class="flex items-center gap-1 inline-flex">
+                    <i class="pi pi-flag text-xs"></i>
+                    <span>Round {{ match.round }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="text-center py-12 text-surface-500">
+      <i class="pi pi-flag text-4xl mb-4 block"></i>
+      <h4 class="text-lg font-medium mb-2">{{ 'all.competition.no_qualification' | translate }}</h4>
+      <p>{{ 'all.competition.no_qualification_description' | translate }}</p>
+    </div>
+  }
+</section>
