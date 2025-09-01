@@ -29,9 +29,20 @@
             </thead>
             <tbody>
               @for (standing of qualifiedStandings(); track standing.id) {
-                <tr class="border-b border-surface-200 hover:bg-surface-50 transition-colors"
+                <tr class="border-b border-surface-200 hover:bg-surface-50 transition-colors relative"
                     [class]="standing.qualified ? 'bg-green-25 border-l-4 border-l-green-500' : standing.eliminated ? 'bg-red-25 border-l-4 border-l-red-500 opacity-80' : ''">
-                  <td class="p-3 font-semibold">{{ standing.position }}</td>
+                  <!-- Visual indicator for riser/faller -->
+                  @if (standing.riser) {
+                    <td class="absolute left-0 top-0 bottom-0 w-1 bg-green-500" 
+                        pTooltip="This player/team will rise in the ranking" 
+                        tooltipPosition="right"></td>
+                  } @else if (standing.faller) {
+                    <td class="absolute left-0 top-0 bottom-0 w-1 bg-red-500" 
+                        pTooltip="This player/team will fall in the ranking" 
+                        tooltipPosition="right"></td>
+                  }
+                  
+                  <td class="p-3 font-semibold pl-4">{{ standing.position }}</td>
                   <td class="p-3">
                     <div class="flex items-center gap-2">
                       <span class="font-medium">{{ getParticipantName(standing) }}</span>

@@ -108,6 +108,13 @@
       "Other": "Other type",
       "women": "Women's competition"
     },
+    "tooltip": {
+      "faller": "This player/team will fall in the ranking",
+      "riser": "This player/team will rise in the ranking"
+    },
+    "size": "Size",
+    "no_encounters": "No Encounters",
+    "no_encounters_description": "This draw doesn't have any encounters scheduled yet.",
     "visualCode": "Visual Code",
     "won": "Won"
   },

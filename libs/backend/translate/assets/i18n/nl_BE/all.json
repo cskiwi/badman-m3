@@ -108,6 +108,13 @@
       "Other": "",
       "women": "Vrouwen competitie"
     },
+    "tooltip": {
+      "faller": "Deze speler/team zal dalen in de rangschikking",
+      "riser": "Deze speler/team zal stijgen in de rangschikking"
+    },
+    "size": "Grootte",
+    "no_encounters": "Geen Wedstrijden",
+    "no_encounters_description": "Deze reeks heeft nog geen geplande wedstrijden.",
     "visualCode": "Visuele Code",
     "won": "Gewonnen"
   },

@@ -14,7 +14,6 @@
     "@angular/common": "20.1.0",
     "apollo-angular": "^11.0.0",
     "rxjs": "~7.8.2",
-    "@app/frontend-components/sync": "*",
     "@app/frontend-modules-auth": "*"
   },
   "sideEffects": false

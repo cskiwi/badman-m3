@@ -115,6 +115,10 @@ export type I18nTranslations = {
                 "Other": string;
                 "women": string;
             };
+            "tooltip": {
+                "faller": string;
+                "riser": string;
+            };
             "visualCode": string;
             "won": string;
         };

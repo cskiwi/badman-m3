@@ -3,7 +3,7 @@
     @if (this.subEvent(); as subEvent) {
       @if (this.draw(); as draw) {
         <app-page-header>
-          <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</ng-content>
+          <ng-content title>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</ng-content>
           <ng-content subTitle>
             <div class="info">
               <div class="sub-text">
@@ -12,7 +12,7 @@
                   <span class="mx-2">></span>
                   <span>{{ subEvent.name }}</span>
                   <span class="mx-2">></span>
-                  <span>{{ draw.name || 'Draw' }}</span>
+                  <span>{{ draw.name || ('all.competition.draw' | translate) }}</span>
                 </ng-container>
               </div>
             </div>
@@ -39,7 +39,7 @@
                 <div class="flex items-center gap-2">
                   <i class="pi pi-info-circle text-muted-color"></i>
                   <span class="font-medium">{{ 'all.common.name' | translate }}:</span>
-                  <span>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
+                  <span>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</span>
                 </div>
 
                 @if (draw.type) {
@@ -53,10 +53,10 @@
                 @if (draw.size) {
                   <div class="flex items-center gap-2">
                     <i class="pi pi-users text-muted-color"></i>
-                    <span class="font-medium">Size:</span>
+                    <span class="font-medium">{{ 'all.competition.size' | translate }}:</span>
                     <span>{{ draw.size }}</span>
                   </div>
-                }             
+                }
               </div>
             </div>
 
@@ -95,46 +95,6 @@
           </div>
         </section>
 
-        <!-- Draw Statistics -->
-        @if (draw.size || draw.risers || draw.fallers || encounters().length > 0) {
-          <section class="draw-statistics">
-            <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
-              <i class="pi pi-chart-bar text-primary-500"></i>
-              {{ 'all.competition.statistics' | translate }}
-            </h3>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              @if (draw.size) {
-                <div class="rounded-border bg-highlight p-4 text-center">
-                  <div class="text-2xl font-bold text-primary">{{ draw.size }}</div>
-                  <div class="text-sm text-muted-color-emphasis">Size</div>
-                </div>
-              }
-              
-              @if (draw.risers) {
-                <div class="rounded-border bg-highlight p-4 text-center">
-                  <div class="text-2xl font-bold text-green-600">↑{{ draw.risers }}</div>
-                  <div class="text-sm text-muted-color-emphasis">Risers</div>
-                </div>
-              }
-              
-              @if (draw.fallers) {
-                <div class="rounded-border bg-highlight p-4 text-center">
-                  <div class="text-2xl font-bold text-red-600">↓{{ draw.fallers }}</div>
-                  <div class="text-sm text-muted-color-emphasis">Fallers</div>
-                </div>
-              }
-              
-              @if (encounters().length > 0) {
-                <div class="rounded-border bg-highlight p-4 text-center">
-                  <div class="text-2xl font-bold text-surface-600">{{ encounters().length }}</div>
-                  <div class="text-sm text-muted-color-emphasis">{{ 'all.competition.encounters' | translate }}</div>
-                </div>
-              }
-            </div>
-          </section>
-        }
-
         <!-- Draw Type Specific Content -->
         @switch (draw.type) {
           @case ('POULE') {
@@ -158,20 +118,18 @@
               <i class="pi pi-calendar text-primary-500"></i>
               {{ 'all.competition.encounters' | translate }}
             </h3>
-            
+
             <div>
               @for (encounter of encounters(); track encounter.id) {
-                <app-encounter-card 
-                  [encounter]="encounter" 
-                  [onLoadGames]="onLoadGames" />
+                <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" />
               }
             </div>
           </section>
         } @else {
           <div class="text-center py-12 text-surface-500">
             <i class="pi pi-calendar text-4xl mb-4 block"></i>
-            <h3 class="text-lg font-medium mb-2">No Encounters</h3>
-            <p>This draw doesn't have any encounters scheduled yet.</p>
+            <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
+            <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
           </div>
         }
       }

@@ -108,6 +108,13 @@
       "Other": "",
       "women": "Compétition féminine"
     },
+    "tooltip": {
+      "faller": "Ce joueur/équipe va chuter dans le classement",
+      "riser": "Ce joueur/équipe va monter dans le classement"
+    },
+    "size": "Taille",
+    "no_encounters": "Aucune Rencontre",
+    "no_encounters_description": "Cette série n'a pas encore de rencontres programmées.",
     "visualCode": "Code visuel",
     "won": "Gagné"
   },
