@@ -2,6 +2,7 @@ import { TournamentApiClient } from '@app/backend-tournament-api';
 import { CompetitionDraw } from '@app/models';
 import { DrawType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectFlowProducer } from '@nestjs/bullmq';
 import { FlowProducer } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 
@@ -17,7 +18,7 @@ export class CompetitionDrawSyncService {
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
-    private readonly competitionSyncFlow: FlowProducer,
+    @InjectFlowProducer('competition-sync') private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
   async processDrawSync(

@@ -41,7 +41,12 @@
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_click",
       "Read(C:\\Users\\glenn\\Pictures\\Screenshots/**)",
-      "Read(C:\\Users\\glenn\\Pictures\\Screenshots/**)"
+      "Read(C:\\Users\\glenn\\Pictures\\Screenshots/**)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(for file in competition-*.service.ts)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectFlowProducer } from '@nestjs/bullmq';
 import { FlowProducer } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { CompetitionStructureSyncService } from './competition-structure-sync.service';
@@ -15,7 +16,7 @@ export class CompetitionEventSyncService {
 
   constructor(
     private readonly competitionStructureSyncService: CompetitionStructureSyncService,
-    private readonly competitionSyncFlow: FlowProducer,
+    @InjectFlowProducer('competition-sync') private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
   async processEventSync(

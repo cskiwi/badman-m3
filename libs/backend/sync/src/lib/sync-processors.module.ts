@@ -9,6 +9,17 @@ import { TournamentEventProcessor } from './processors/tournament-event.processo
 import { TeamMatchingProcessor } from './processors/team-matching.processor';
 import { SyncService } from './services/sync.service';
 import { ALL_SYNC_QUEUES } from './queues/sync.queue';
+import {
+  CompetitionStructureSyncService,
+  CompetitionGameSyncService,
+  CompetitionEventSyncService,
+  CompetitionSubEventSyncService,
+  CompetitionDrawSyncService,
+  CompetitionEntrySyncService,
+  CompetitionEncounterSyncService,
+  CompetitionStandingSyncService,
+  CompetitionGameIndividualSyncService,
+} from './processors/services';
 
 @Module({
   imports: [
@@ -64,6 +75,16 @@ import { ALL_SYNC_QUEUES } from './queues/sync.queue';
     CompetitionEventProcessor,
     TournamentEventProcessor,
     TeamMatchingProcessor,
+    // Competition sync services
+    CompetitionStructureSyncService,
+    CompetitionGameSyncService,
+    CompetitionEventSyncService,
+    CompetitionSubEventSyncService,
+    CompetitionDrawSyncService,
+    CompetitionEntrySyncService,
+    CompetitionEncounterSyncService,
+    CompetitionStandingSyncService,
+    CompetitionGameIndividualSyncService,
   ],
 })
 export class SyncProcessorsModule {}

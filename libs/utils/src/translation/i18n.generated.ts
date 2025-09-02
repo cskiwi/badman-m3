@@ -119,6 +119,9 @@ export type I18nTranslations = {
                 "faller": string;
                 "riser": string;
             };
+            "size": string;
+            "no_encounters": string;
+            "no_encounters_description": string;
             "visualCode": string;
             "won": string;
         };
