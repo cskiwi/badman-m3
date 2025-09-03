@@ -11,7 +11,7 @@
     "@ngx-translate/core": "*",
     "ngxtension": "*",
     "primeng": "*",
-    "@angular/common": "20.1.0",
+    "@angular/common": "20.2.4",
     "apollo-angular": "^11.0.0",
     "rxjs": "~7.8.2",
     "@app/frontend-utils": "*",
