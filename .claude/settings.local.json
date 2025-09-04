@@ -13,7 +13,8 @@
       "mcp__redis-mcp-server__hgetall",
       "mcp__redis-mcp-server__smembers",
       "mcp__redis-mcp-server__zrem",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx nx lint:*)"
     ],
     "deny": [],
     "ask": []
