@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import dayjs from 'dayjs';
@@ -53,7 +53,7 @@ import { SyncDashboardService } from './sync-dashboard.service';
   templateUrl: './sync-dashboard.component.html',
   styleUrl: './sync-dashboard.component.scss',
 })
-export class SyncDashboardComponent {
+export class SyncDashboardComponent implements OnDestroy {
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private syncService = inject(SyncDashboardService);
@@ -133,9 +133,10 @@ export class SyncDashboardComponent {
     return filtered;
   });
 
-  constructor() {
-    // WebSocket service now handles real-time updates automatically
-    // No need for polling intervals
+  ngOnDestroy(): void {
+    // Unsubscribe from WebSocket updates when component is destroyed
+    this.syncService.webSocketService.unsubscribeFromQueueStats();
+    this.syncService.webSocketService.unsubscribeFromJobUpdates();
   }
 
   onSearchChange(): void {

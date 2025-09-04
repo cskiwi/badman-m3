@@ -73,11 +73,8 @@ export class WebSocketSyncService implements OnDestroy {
       const currentlyConnected = this.isConnected();
 
       if (shouldConnect && !currentlyConnected) {
-        console.log('Should be connected but not connected, connecting to WebSocket');
-        // Add a small delay to ensure backend is ready
-        setTimeout(() => this.connect(), 1000);
+        this.connect();
       } else if (!shouldConnect && this.socket) {
-        console.log('Should not be connected, disconnecting WebSocket');
         this.disconnect();
       }
     });
@@ -104,7 +101,6 @@ export class WebSocketSyncService implements OnDestroy {
       return;
     }
 
-    console.log('Connecting to WebSocket...');
     this.connectionStatus.set('connecting');
 
     // Create socket connection to the /sync namespace
@@ -141,7 +137,6 @@ export class WebSocketSyncService implements OnDestroy {
    * Force reconnect - disconnect and reconnect
    */
   forceReconnect(): void {
-    console.log('Forcing WebSocket reconnection');
     this.disconnect();
     setTimeout(() => {
       this.connect();
@@ -153,7 +148,6 @@ export class WebSocketSyncService implements OnDestroy {
    */
   subscribeToQueueStats(): void {
     if (this.socket?.connected) {
-      console.log('Subscribing to queue stats updates');
       this.socket.emit('subscribe-queue-stats');
     } else {
       console.warn('Cannot subscribe to queue stats - WebSocket not connected');
@@ -165,7 +159,6 @@ export class WebSocketSyncService implements OnDestroy {
    */
   subscribeToJobUpdates(): void {
     if (this.socket?.connected) {
-      console.log('Subscribing to job updates');
       this.socket.emit('subscribe-job-updates');
     } else {
       console.warn('Cannot subscribe to job updates - WebSocket not connected');
@@ -198,7 +191,6 @@ export class WebSocketSyncService implements OnDestroy {
 
     // Connection events
     this.socket.on('connect', () => {
-      console.log('WebSocket connected successfully');
       this.connectionStatus.set('connected');
 
       // Auto-subscribe to updates
@@ -207,7 +199,6 @@ export class WebSocketSyncService implements OnDestroy {
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
       this.connectionStatus.set('disconnected');
     });
 
@@ -217,7 +208,6 @@ export class WebSocketSyncService implements OnDestroy {
     });
 
     this.socket.on('reconnect_attempt', (attemptNumber) => {
-      console.log(`WebSocket reconnection attempt ${attemptNumber}`);
       this.connectionStatus.set('connecting');
     });
 
@@ -226,33 +216,27 @@ export class WebSocketSyncService implements OnDestroy {
     });
 
     this.socket.on('reconnect', (attemptNumber) => {
-      console.log(`WebSocket reconnected after ${attemptNumber} attempts`);
       this.connectionStatus.set('connected');
     });
 
     // Data update events
     this.socket.on('queue-stats-updated', (data: QueueStatsMessage) => {
-      console.log('Queue stats updated:', data.stats);
       this._queueStats.set(data.stats);
     });
 
     this.socket.on('job-updated', (data: JobUpdateMessage) => {
-      console.log('Job updated:', data.job.id, data.job.status);
       this.handleJobUpdate(data.job);
     });
 
     this.socket.on('job-created', (data: JobUpdateMessage) => {
-      console.log('Job created:', data.job.id, data.job.name);
       this.handleJobUpdate(data.job);
     });
 
     this.socket.on('job-completed', (data: JobUpdateMessage) => {
-      console.log('Job completed:', data.job.id);
       this.handleJobUpdate(data.job);
     });
 
     this.socket.on('job-failed', (data: JobUpdateMessage) => {
-      console.log('Job failed:', data.job.id);
       this.handleJobUpdate(data.job);
     });
 
