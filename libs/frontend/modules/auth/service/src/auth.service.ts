@@ -53,7 +53,7 @@ export class AuthService {
       const result = await lastValueFrom(this.apollo
         .query<{ me: Player }>({
           query: gql`
-            query {
+            query Profile {
               me {
                 id
                 firstName
