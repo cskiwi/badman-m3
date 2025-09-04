@@ -1,8 +1,9 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { Queue } from 'bullmq';
-import { extractParentId } from '../utils/job.utils';
+import { TournamentEvent, CompetitionEvent } from '@app/models';
+import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
   GameSyncJobData,
   StructureSyncJobData,
@@ -11,13 +12,15 @@ import {
   COMPETITION_EVENT_QUEUE,
   TOURNAMENT_EVENT_QUEUE,
   TEAM_MATCHING_QUEUE,
-  SyncJobType,
+  JOB_TYPES,
+  createJobName,
   TeamMatchingJobData,
   TournamentDiscoveryJobData,
 } from '../queues/sync.queue';
 
 @Injectable()
 export class SyncService {
+  private readonly logger = new Logger(SyncService.name);
   constructor(
     @InjectQueue(SYNC_QUEUE)
     private readonly syncQueue: Queue,
@@ -40,6 +43,57 @@ export class SyncService {
    */
   private getAllQueues(): Queue[] {
     return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue];
+  }
+
+  /**
+   * Determine if a tournament code represents a competition or tournament event
+   * by checking the database models
+   */
+  private async determineEventType(tournamentCode: string): Promise<'tournament' | 'competition' | null> {
+    try {
+      // First check if it's a tournament
+      const tournamentEvent = await TournamentEvent.findOne({
+        where: { visualCode: tournamentCode },
+      });
+
+      if (tournamentEvent) {
+        this.logger.debug(`Found tournament event for code: ${tournamentCode}`);
+        return 'tournament';
+      }
+
+      // Then check if it's a competition
+      const competitionEvent = await CompetitionEvent.findOne({
+        where: { visualCode: tournamentCode },
+      });
+
+      if (competitionEvent) {
+        this.logger.debug(`Found competition event for code: ${tournamentCode}`);
+        return 'competition';
+      }
+
+      this.logger.warn(`No event found for tournament code: ${tournamentCode}`);
+      return null;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to determine event type for ${tournamentCode}: ${errorMessage}`);
+      return null;
+    }
+  }
+
+  /**
+   * Determine event type with fallback to string matching for backward compatibility
+   */
+  private async getEventType(tournamentCode: string): Promise<'tournament' | 'competition'> {
+    const eventType = await this.determineEventType(tournamentCode);
+    
+    if (eventType) {
+      return eventType;
+    }
+
+    // Fallback to the old string matching approach for backward compatibility
+    this.logger.warn(`Falling back to string matching for tournament code: ${tournamentCode}`);
+    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+    return isCompetition ? 'competition' : 'tournament';
   }
 
   /**
@@ -109,7 +163,7 @@ export class SyncService {
    * Queue tournament discovery job
    */
   async queueTournamentDiscovery(data?: TournamentDiscoveryJobData): Promise<void> {
-    await this.tournamentDiscoveryQueue.add(SyncJobType.TOURNAMENT_DISCOVERY, data || {}, {
+    await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_DISCOVERY, data || {}, {
       priority: 1,
     });
   }
@@ -118,7 +172,7 @@ export class SyncService {
    * Queue competition structure sync
    */
   async queueCompetitionStructureSync(data?: StructureSyncJobData): Promise<void> {
-    await this.competitionEventQueue.add(SyncJobType.COMPETITION_STRUCTURE_SYNC, data || {}, {
+    await this.competitionEventQueue.add(JOB_TYPES.COMPETITION_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });
   }
@@ -127,7 +181,7 @@ export class SyncService {
    * Queue tournament structure sync
    */
   async queueTournamentStructureSync(data?: StructureSyncJobData): Promise<void> {
-    await this.tournamentEventQueue.add(SyncJobType.TOURNAMENT_STRUCTURE_SYNC, data || {}, {
+    await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });
   }
@@ -136,7 +190,7 @@ export class SyncService {
    * Queue competition game sync
    */
   async queueCompetitionGameSync(data: GameSyncJobData): Promise<void> {
-    await this.competitionEventQueue.add(SyncJobType.COMPETITION_GAME_SYNC, data, {
+    await this.competitionEventQueue.add(JOB_TYPES.COMPETITION_GAME_SYNC, data, {
       priority: 5,
     });
   }
@@ -145,7 +199,7 @@ export class SyncService {
    * Queue tournament game sync
    */
   async queueTournamentGameSync(data: GameSyncJobData): Promise<void> {
-    await this.tournamentEventQueue.add(SyncJobType.TOURNAMENT_GAME_SYNC, data, {
+    await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_GAME_SYNC, data, {
       priority: 10,
     });
   }
@@ -154,7 +208,7 @@ export class SyncService {
    * Queue team matching job
    */
   async queueTeamMatching(data: TeamMatchingJobData): Promise<void> {
-    await this.teamMatchingQueue.add(SyncJobType.TEAM_MATCHING, data, {
+    await this.teamMatchingQueue.add(JOB_TYPES.TEAM_MATCHING, data, {
       priority: 2,
     });
   }
@@ -165,15 +219,18 @@ export class SyncService {
   async queueEventSync(tournamentCode: string, eventCode: string, includeSubComponents = false): Promise<void> {
     const data = { tournamentCode, eventCodes: [eventCode], includeSubComponents };
 
-    // Determine if it's a tournament or competition based on tournament code pattern
-    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+    // Determine if it's a tournament or competition by checking the database
+    const eventType = await this.getEventType(tournamentCode);
+    const jobId = generateJobId(eventType, 'event', tournamentCode, eventCode);
 
-    if (isCompetition) {
-      await this.competitionEventQueue.add('competition-event-sync', data, {
+    if (eventType === 'competition') {
+      await this.competitionEventQueue.add(generateJobId('competition', 'event', tournamentCode, eventCode), data, {
+        jobId,
         priority: 4,
       });
     } else {
-      await this.tournamentEventQueue.add('tournament-event-sync', data, {
+      await this.tournamentEventQueue.add(generateJobId('tournament', 'event', tournamentCode, eventCode), data, {
+        jobId,
         priority: 4,
       });
     }
@@ -190,14 +247,17 @@ export class SyncService {
       includeSubComponents,
     };
 
-    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+    const eventType = await this.getEventType(tournamentCode);
+    const jobId = generateJobId(eventType, 'subevent', tournamentCode, eventCode, subEventCode || '');
 
-    if (isCompetition) {
-      await this.competitionEventQueue.add('competition-subevent-sync', data, {
+    if (eventType === 'competition') {
+      await this.competitionEventQueue.add(generateJobId('competition', 'subevent', tournamentCode, eventCode, subEventCode || ''), data, {
+        jobId,
         priority: 5,
       });
     } else {
-      await this.tournamentEventQueue.add('tournament-subevent-sync', data, {
+      await this.tournamentEventQueue.add(generateJobId('tournament', 'subevent', tournamentCode, eventCode, subEventCode || ''), data, {
+        jobId,
         priority: 5,
       });
     }
@@ -208,17 +268,17 @@ export class SyncService {
    */
   async queueDrawSync(tournamentCode: string, drawCode: string, includeSubComponents = false): Promise<void> {
     const data = { tournamentCode, drawCode, includeSubComponents };
-    const jobId = `draw-sync-${tournamentCode}-${drawCode}-${Date.now()}`;
 
-    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+    const eventType = await this.getEventType(tournamentCode);
+    const jobId = generateJobId(eventType, 'draw', tournamentCode, drawCode);
 
-    if (isCompetition) {
-      await this.competitionEventQueue.add('competition-draw-sync', data, {
+    if (eventType === 'competition') {
+      await this.competitionEventQueue.add(generateJobId('competition', 'draw', tournamentCode, drawCode), data, {
         jobId,
         priority: 6,
       });
     } else {
-      await this.tournamentEventQueue.add('tournament-draw-sync', data, {
+      await this.tournamentEventQueue.add(generateJobId('tournament', 'draw', tournamentCode, drawCode), data, {
         jobId,
         priority: 6,
       });
@@ -251,15 +311,15 @@ export class SyncService {
       matchCodes: finalMatchCodes,
     };
 
-    // Determine if it's a tournament or competition
-    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
+    // Determine if it's a tournament or competition by checking the database
+    const eventType = await this.getEventType(tournamentCode);
 
-    if (isCompetition) {
-      await this.competitionEventQueue.add(SyncJobType.COMPETITION_GAME_SYNC, data, {
+    if (eventType === 'competition') {
+      await this.competitionEventQueue.add(JOB_TYPES.COMPETITION_GAME_SYNC, data, {
         priority: 8,
       });
     } else {
-      await this.tournamentEventQueue.add(SyncJobType.TOURNAMENT_GAME_SYNC, data, {
+      await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_GAME_SYNC, data, {
         priority: 8,
       });
     }
@@ -277,7 +337,7 @@ export class SyncService {
         // During competition - every 4 hours
         for (let i = 0; i < 6; i++) {
           await this.competitionEventQueue.add(
-            SyncJobType.COMPETITION_GAME_SYNC,
+            JOB_TYPES.COMPETITION_GAME_SYNC,
             { tournamentCode },
             {
               delay: i * 4 * 60 * 60 * 1000, // 4 hours in milliseconds
@@ -292,7 +352,7 @@ export class SyncService {
         if (daysSinceEnd <= 7) {
           // Daily sync for first week
           await this.competitionEventQueue.add(
-            SyncJobType.COMPETITION_GAME_SYNC,
+            JOB_TYPES.COMPETITION_GAME_SYNC,
             { tournamentCode },
             {
               delay: 24 * 60 * 60 * 1000, // 24 hours
@@ -302,7 +362,7 @@ export class SyncService {
         } else if (daysSinceEnd <= 30) {
           // Weekly sync for first month
           await this.competitionEventQueue.add(
-            SyncJobType.COMPETITION_GAME_SYNC,
+            JOB_TYPES.COMPETITION_GAME_SYNC,
             { tournamentCode },
             {
               delay: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -319,7 +379,7 @@ export class SyncService {
 
         for (let i = 0; i < Math.min(hoursUntilEnd, 48); i++) {
           await this.tournamentEventQueue.add(
-            SyncJobType.TOURNAMENT_GAME_SYNC,
+            JOB_TYPES.TOURNAMENT_GAME_SYNC,
             { tournamentCode },
             {
               delay: i * 60 * 60 * 1000, // 1 hour in milliseconds
@@ -333,7 +393,7 @@ export class SyncService {
 
         if (daysSinceEnd <= 7) {
           await this.tournamentEventQueue.add(
-            SyncJobType.TOURNAMENT_GAME_SYNC,
+            JOB_TYPES.TOURNAMENT_GAME_SYNC,
             { tournamentCode },
             {
               delay: 24 * 60 * 60 * 1000,
@@ -342,7 +402,7 @@ export class SyncService {
           );
         } else if (daysSinceEnd <= 30) {
           await this.tournamentEventQueue.add(
-            SyncJobType.TOURNAMENT_GAME_SYNC,
+            JOB_TYPES.TOURNAMENT_GAME_SYNC,
             { tournamentCode },
             {
               delay: 7 * 24 * 60 * 60 * 1000,

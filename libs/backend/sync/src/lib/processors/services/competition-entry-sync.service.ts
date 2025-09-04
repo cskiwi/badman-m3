@@ -15,16 +15,22 @@ export class CompetitionEntrySyncService {
     private readonly tournamentApiClient: TournamentApiClient,
   ) {}
 
-  async processEntrySync(data: CompetitionEntrySyncData): Promise<void> {
+  async processEntrySync(
+    data: CompetitionEntrySyncData,
+    updateProgress?: (progress: number) => Promise<void>,
+  ): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
+    await updateProgress?.(10);
     const { tournamentCode, drawCode } = data;
 
     try {
       // Find the draw
+      await updateProgress?.(20);
       const draw = await CompetitionDraw.findOne({
         where: { visualCode: drawCode },
         relations: ['subevent'],
       });
+      await updateProgress?.(30);
 
       if (!draw) {
         this.logger.warn(`Competition draw with code ${drawCode} not found, skipping entry sync`);
@@ -32,11 +38,15 @@ export class CompetitionEntrySyncService {
       }
 
       // Get and sync entries
+      await updateProgress?.(40);
       const entries = await this.tournamentApiClient.getDrawEntries?.(tournamentCode, drawCode);
+      await updateProgress?.(60);
       if (entries) {
         await this.updateCompetitionEntries(draw, entries);
       }
+      await updateProgress?.(90);
 
+      await updateProgress?.(100);
       this.logger.log(`Completed competition entry sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

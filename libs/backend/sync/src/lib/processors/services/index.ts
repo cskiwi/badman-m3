@@ -7,3 +7,13 @@ export * from './competition-entry-sync.service';
 export * from './competition-encounter-sync.service';
 export * from './competition-standing-sync.service';
 export * from './competition-game-individual-sync.service';
+export * from './competition-planning.service';
+
+export * from '../tournament-structure-sync.service';
+export * from './tournament-game-sync.service';
+export * from './tournament-event-sync.service';
+export * from './tournament-subevent-sync.service';
+export * from './tournament-draw-sync.service';
+export * from './tournament-standing-sync.service';
+export * from './tournament-game-individual-sync.service';
+export * from './tournament-planning.service';

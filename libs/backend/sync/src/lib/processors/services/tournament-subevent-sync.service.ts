@@ -2,63 +2,63 @@ import { TournamentApiClient } from '@app/backend-tournament-api';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { FlowProducer } from 'bullmq';
-import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
-import { CompetitionStructureSyncService } from './competition-structure-sync.service';
+import { TOURNAMENT_EVENT_QUEUE } from '../../queues/sync.queue';
+import { TournamentStructureSyncService } from '../tournament-structure-sync.service';
 import { generateJobId } from '../../utils/job.utils';
-import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
+import { TournamentPlanningService, TournamentWorkPlan } from './tournament-planning.service';
 
-export interface CompetitionSubEventSyncData {
+export interface TournamentSubEventSyncData {
   tournamentCode: string;
   eventCodes?: string[];
   subEventCodes?: string[];
   includeSubComponents?: boolean;
-  workPlan?: CompetitionWorkPlan;
+  workPlan?: TournamentWorkPlan;
 }
 
 @Injectable()
-export class CompetitionSubEventSyncService {
-  private readonly logger = new Logger(CompetitionSubEventSyncService.name);
+export class TournamentSubEventSyncService {
+  private readonly logger = new Logger(TournamentSubEventSyncService.name);
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
-    private readonly competitionStructureSyncService: CompetitionStructureSyncService,
-    private readonly competitionPlanningService: CompetitionPlanningService,
-    @InjectFlowProducer('competition-sync') private readonly competitionSyncFlow: FlowProducer,
+    private readonly tournamentStructureSyncService: TournamentStructureSyncService,
+    private readonly tournamentPlanningService: TournamentPlanningService,
+    @InjectFlowProducer('tournament-sync') private readonly tournamentSyncFlow: FlowProducer,
   ) {}
 
   async processSubEventSync(
-    data: CompetitionSubEventSyncData,
+    data: TournamentSubEventSyncData,
     jobId: string,
     queueQualifiedName: string,
     updateProgress?: (progress: number) => Promise<void>,
   ): Promise<void> {
-    this.logger.log(`Processing competition sub-event sync`);
+    this.logger.log(`Processing tournament sub-event sync`);
     const { tournamentCode, eventCodes, subEventCodes, includeSubComponents, workPlan } = data;
 
     try {
       let completedSteps = 0;
-      const totalSteps = 2; // structure sync + draw sync (no child job creation in this service)
+      const totalSteps = includeSubComponents ? 3 : 2; // structure sync + draw sync + (optional child job creation)
 
-      // Sync teams for competition using structure sync service
-      await this.competitionStructureSyncService.processStructureSync(
-        { tournamentCode },
+      // Sync entries for tournament using structure sync service
+      await this.tournamentStructureSyncService.processStructureSync(
+        { tournamentCode, eventCodes: subEventCodes || eventCodes },
         async (progress: number) => {
           // Forward structure sync progress proportionally
           const structureProgress = completedSteps + (progress / 100);
-          const overallProgress = this.competitionPlanningService.calculateProgress(structureProgress, totalSteps);
+          const overallProgress = this.tournamentPlanningService.calculateProgress(structureProgress, totalSteps);
           await updateProgress?.(overallProgress);
           this.logger.debug(`Structure sync progress: ${progress}%`);
         },
       );
       
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps));
 
       // Sync draws for the sub-events
       await this.syncDraws(tournamentCode, subEventCodes || eventCodes);
       
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps));
 
       // If includeSubComponents, add draw-level sync jobs
       if (includeSubComponents) {
@@ -72,11 +72,11 @@ export class CompetitionSubEventSyncService {
           const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
 
           for (const draw of draws) {
-            const drawJobName = generateJobId('competition', 'draw', tournamentCode, event.Code, draw.Code);
+            const drawJobName = generateJobId('tournament', 'draw', tournamentCode, event.Code, draw.Code);
 
-            await this.competitionSyncFlow.add({
-              name: generateJobId('competition', 'draw', tournamentCode, event.Code, draw.Code),
-              queueName: COMPETITION_EVENT_QUEUE,
+            await this.tournamentSyncFlow.add({
+              name: generateJobId('tournament', 'draw', tournamentCode, event.Code, draw.Code),
+              queueName: TOURNAMENT_EVENT_QUEUE,
               data: { 
                 tournamentCode, 
                 drawCode: draw.Code, 
@@ -98,13 +98,20 @@ export class CompetitionSubEventSyncService {
             });
           }
         }
+        
+        // Complete this job's work (structure sync + draw sync + child job creation)
+        completedSteps++;
+        const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps);
+        await updateProgress?.(finalProgress);
+        this.logger.log(`Completed tournament sub-event sync, child jobs queued`);
+        return;
       }
 
       await updateProgress?.(100);
-      this.logger.log(`Completed competition sub-event sync`);
+      this.logger.log(`Completed tournament sub-event sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process competition sub-event sync: ${errorMessage}`);
+      this.logger.error(`Failed to process tournament sub-event sync: ${errorMessage}`);
       throw error;
     }
   }
@@ -125,10 +132,9 @@ export class CompetitionSubEventSyncService {
           const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
 
           for (const draw of draws) {
-            this.logger.debug(`Processing competition draw/group: ${draw.Name} (${draw.Code})`);
-            // Competition draws are handled differently - they're more like divisions/groups
-            // For now, we'll log this but not create separate entities as the structure
-            // is captured in the encounter/match relationships
+            this.logger.debug(`Processing tournament draw: ${draw.Name} (${draw.Code})`);
+            // Tournament draws creation is handled in the structure sync service
+            // This method primarily handles the orchestration of draw-level sync jobs
           }
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -143,5 +149,4 @@ export class CompetitionSubEventSyncService {
       throw error;
     }
   }
-
 }

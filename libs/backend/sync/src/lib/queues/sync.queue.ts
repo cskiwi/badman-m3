@@ -7,13 +7,51 @@ export const TEAM_MATCHING_QUEUE = 'team-matching';
 // Legacy queue name for backwards compatibility
 export const SYNC_QUEUE = 'sync';
 
-// Job Types
+// Unified Job Naming System
+// Jobs are named using a clear, hierarchical pattern:
+// {eventType}-{operation}-{scope?}
+// Examples: "tournament-sync-structure", "competition-sync-games", "tournament-discovery"
+
+export const JOB_TYPES = {
+  // Discovery jobs
+  TOURNAMENT_DISCOVERY: 'tournament-discovery',
+  
+  // Structure sync jobs (events, draws, entries)
+  TOURNAMENT_STRUCTURE_SYNC: 'tournament-sync-structure',
+  COMPETITION_STRUCTURE_SYNC: 'competition-sync-structure',
+  
+  // Game sync jobs
+  TOURNAMENT_GAME_SYNC: 'tournament-sync-games', 
+  COMPETITION_GAME_SYNC: 'competition-sync-games',
+  
+  // Team matching
+  TEAM_MATCHING: 'team-matching',
+} as const;
+
+// Helper function to create dynamic job names
+export function createJobName(eventType: 'tournament' | 'competition', operation: 'sync' | 'discovery' | 'matching', scope?: 'structure' | 'games' | 'events' | 'draws' | 'standings'): string {
+  if (operation === 'discovery') {
+    return `${eventType}-discovery`;
+  }
+  if (operation === 'matching') {
+    return `team-matching`;
+  }
+  return scope ? `${eventType}-${operation}-${scope}` : `${eventType}-${operation}`;
+}
+
+// Backward compatibility - will be deprecated
 export enum SyncJobType {
+  /** @deprecated Use JOB_TYPES.TOURNAMENT_DISCOVERY */
   TOURNAMENT_DISCOVERY = 'tournament-discovery',
-  COMPETITION_STRUCTURE_SYNC = 'competition-structure-sync',
-  COMPETITION_GAME_SYNC = 'competition-game-sync',
-  TOURNAMENT_STRUCTURE_SYNC = 'tournament-structure-sync',
-  TOURNAMENT_GAME_SYNC = 'tournament-game-sync',
+  /** @deprecated Use createJobName('competition', 'sync', 'structure') */
+  COMPETITION_STRUCTURE_SYNC = 'competition-sync-structure', 
+  /** @deprecated Use createJobName('competition', 'sync', 'games') */
+  COMPETITION_GAME_SYNC = 'competition-sync-games',
+  /** @deprecated Use createJobName('tournament', 'sync', 'structure') */
+  TOURNAMENT_STRUCTURE_SYNC = 'tournament-sync-structure',
+  /** @deprecated Use createJobName('tournament', 'sync', 'games') */
+  TOURNAMENT_GAME_SYNC = 'tournament-sync-games',
+  /** @deprecated Use JOB_TYPES.TEAM_MATCHING */
   TEAM_MATCHING = 'team-matching',
 }
 
@@ -28,10 +66,10 @@ export const ALL_SYNC_QUEUES = [
 
 // Queue to job type mapping for easy reference
 export const QUEUE_JOB_TYPE_MAP = {
-  [TOURNAMENT_DISCOVERY_QUEUE]: [SyncJobType.TOURNAMENT_DISCOVERY],
-  [COMPETITION_EVENT_QUEUE]: [SyncJobType.COMPETITION_STRUCTURE_SYNC, SyncJobType.COMPETITION_GAME_SYNC],
-  [TOURNAMENT_EVENT_QUEUE]: [SyncJobType.TOURNAMENT_STRUCTURE_SYNC, SyncJobType.TOURNAMENT_GAME_SYNC],
-  [TEAM_MATCHING_QUEUE]: [SyncJobType.TEAM_MATCHING],
+  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY],
+  [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
+  [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC],
+  [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
   [SYNC_QUEUE]: [], // Legacy queue
 } as const;
 

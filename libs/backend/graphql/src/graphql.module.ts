@@ -1,6 +1,7 @@
 import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
 import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaReporting';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { AuthorizationModule } from '@app/backend-authorization';
 import { SyncModule } from '@app/backend-sync';
 import { ApolloDriver } from '@nestjs/apollo';
@@ -53,7 +54,7 @@ import {
   TournamentDrawResolver,
   TournamentEventResolver,
   TournamentSubEventResolver,
-  UserResolver
+  UserResolver,
 } from './resolvers';
 @Module({
   imports: [
@@ -84,6 +85,12 @@ import {
               sendVariableValues: { all: true },
             }),
           );
+        }
+
+        if (process.env['NODE_ENV'] !== "production") {
+          // Adds messages only in a dev environment
+          loadDevMessages();
+          loadErrorMessages();
         }
 
         return {

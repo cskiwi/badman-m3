@@ -7,12 +7,12 @@ This directory contains individual injectable NestJS services that handle differ
 ### 1. CompetitionStructureSyncService
 - **File**: `competition-structure-sync.service.ts`
 - **Purpose**: Handles full competition structure synchronization including events, teams, and draws
-- **Corresponds to**: `SyncJobType.COMPETITION_STRUCTURE_SYNC`
+- **Corresponds to**: `JOB_TYPES.COMPETITION_STRUCTURE_SYNC`
 
 ### 2. CompetitionGameSyncService
 - **File**: `competition-game-sync.service.ts`
 - **Purpose**: Handles competition game/match synchronization
-- **Corresponds to**: `SyncJobType.COMPETITION_GAME_SYNC`
+- **Corresponds to**: `JOB_TYPES.COMPETITION_GAME_SYNC`
 
 ### 3. CompetitionEventSyncService
 - **File**: `competition-event-sync.service.ts`

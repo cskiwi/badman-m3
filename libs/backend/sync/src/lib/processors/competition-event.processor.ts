@@ -1,7 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { COMPETITION_EVENT_QUEUE, GameSyncJobData, StructureSyncJobData, SyncJobType } from '../queues/sync.queue';
+import { COMPETITION_EVENT_QUEUE, GameSyncJobData, StructureSyncJobData, JOB_TYPES } from '../queues/sync.queue';
 import {
   CompetitionDrawSyncData,
   CompetitionDrawSyncService,
@@ -37,54 +37,44 @@ export class CompetitionEventProcessor extends WorkerHost {
   }
 
   async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>): Promise<void> {
-    switch (job.name) {
-      case SyncJobType.COMPETITION_STRUCTURE_SYNC: {
-        await this.competitionStructureSyncService.processStructureSync(job.data as StructureSyncJobData, async (progress: number) => {
-          await job.updateProgress(progress);
-        });
-        break;
-      }
-      case SyncJobType.COMPETITION_GAME_SYNC: {
-        await this.competitionGameSyncService.processGameSync(job.data as GameSyncJobData, async (progress: number) => {
-          await job.updateProgress(progress);
-        });
-        break;
-      }
-      case 'competition-event-sync': {
-        await this.competitionEventSyncService.processEventSync(job.data, job.id?.toString() || '', job.queueQualifiedName);
-        break;
-      }
-      case 'competition-subevent-sync': {
-        await this.competitionSubEventSyncService.processSubEventSync(job.data, job.id?.toString() || '', job.queueQualifiedName);
-        break;
-      }
-      case 'competition-draw-sync': {
-        await this.competitionDrawSyncService.processDrawSync(job.data as CompetitionDrawSyncData, job.id?.toString() || '', job.queueQualifiedName);
-        break;
-      }
-      case 'competition-encounter-sync': {
-        await this.competitionEncounterSyncService.processEncounterSync(job.data, async (progress: number) => {
-          await job.updateProgress(progress);
-        });
-        break;
-      }
-      case 'competition-standing-sync': {
-        await this.competitionStandingSyncService.processStandingSync(job.data as CompetitionStandingSyncData);
-        break;
-      }
-      case 'competition-game-sync': {
-        await this.competitionGameIndividualSyncService.processGameIndividualSync(job.data, async (progress: number) => {
-          await job.updateProgress(progress);
-        });
-        break;
-      }
-      case 'competition-entry-sync': {
-        await this.competitionEntrySyncService.processEntrySync(job.data as CompetitionEntrySyncData);
-        break;
-      }
-      default: {
-        throw new Error(`Unknown job type: ${job.name}`);
-      }
+    if (job.name.includes('competition-sync-structure')) {
+      await this.competitionStructureSyncService.processStructureSync(job.data as StructureSyncJobData, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-sync-games')) {
+      await this.competitionGameSyncService.processGameSync(job.data as GameSyncJobData, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-event-')) {
+      await this.competitionEventSyncService.processEventSync(job.data, job.id?.toString() || '', job.queueQualifiedName, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-subevent-')) {
+      await this.competitionSubEventSyncService.processSubEventSync(job.data, job.id?.toString() || '', job.queueQualifiedName, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-draw-')) {
+      await this.competitionDrawSyncService.processDrawSync(job.data as CompetitionDrawSyncData, job.id?.toString() || '', job.queueQualifiedName, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-encounter-')) {
+      await this.competitionEncounterSyncService.processEncounterSync(job.data, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-standing-')) {
+      await this.competitionStandingSyncService.processStandingSync(job.data as CompetitionStandingSyncData, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-game-')) {
+      await this.competitionGameIndividualSyncService.processGameIndividualSync(job.data, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else if (job.name.includes('competition-entry-')) {
+      await this.competitionEntrySyncService.processEntrySync(job.data as CompetitionEntrySyncData, async (progress: number) => {
+        await job.updateProgress(progress);
+      });
+    } else {
+      throw new Error(`Unknown job type: ${job.name}`);
     }
   }
 }

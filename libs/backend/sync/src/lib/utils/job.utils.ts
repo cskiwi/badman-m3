@@ -31,3 +31,17 @@ export function extractParentId(job: Job | any): string | undefined {
 
   return undefined;
 }
+
+/**
+ * Generate a standardized job identifier using tournament/competition type and specific identifiers
+ */
+export function generateJobId(type: 'tournament' | 'competition', component: string, ...identifiers: string[]): string {
+  // Clean and format identifiers (remove special characters, limit length to 8)
+  const cleanIdentifiers = identifiers
+    .filter(id => id && id.trim())
+    .map(id => id.replace(/[^a-zA-Z0-9-]/g, '').substring(0, 8));
+  
+  // Create the standardized job ID: {type}-{component}-{identifiers}
+  const parts = [type, component, ...cleanIdentifiers];
+  return parts.join('-').toLowerCase();
+}

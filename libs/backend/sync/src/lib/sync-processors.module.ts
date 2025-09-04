@@ -19,6 +19,15 @@ import {
   CompetitionEncounterSyncService,
   CompetitionStandingSyncService,
   CompetitionGameIndividualSyncService,
+  CompetitionPlanningService,
+  TournamentStructureSyncService,
+  TournamentGameSyncService,
+  TournamentEventSyncService,
+  TournamentSubEventSyncService,
+  TournamentDrawSyncService,
+  TournamentStandingSyncService,
+  TournamentGameIndividualSyncService,
+  TournamentPlanningService,
 } from './processors/services';
 
 @Module({
@@ -85,6 +94,16 @@ import {
     CompetitionEncounterSyncService,
     CompetitionStandingSyncService,
     CompetitionGameIndividualSyncService,
+    CompetitionPlanningService,
+    // Tournament sync services
+    TournamentStructureSyncService,
+    TournamentGameSyncService,
+    TournamentEventSyncService,
+    TournamentSubEventSyncService,
+    TournamentDrawSyncService,
+    TournamentStandingSyncService,
+    TournamentGameIndividualSyncService,
+    TournamentPlanningService,
   ],
 })
 export class SyncProcessorsModule {}

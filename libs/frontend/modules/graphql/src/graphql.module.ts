@@ -23,7 +23,7 @@ export const GRAPHQL_CONFIG_TOKEN = new InjectionToken<GraphqlConfiguration>(
 
 export type GraphqlConfiguration = Readonly<{
   suffix?: string;
-  connectToDevTools?: boolean;
+  devToolsEnabled?: boolean;
 }>;
 
 export function provideGraphQL(
@@ -95,7 +95,9 @@ export function createApollo(
       ttl: 900, // 15 minutes
     },
     cache,
-    connectToDevTools: config?.connectToDevTools ?? true,
+    devtools: {
+      enabled: config?.devToolsEnabled ?? true,
+    },
   };
 }
 
