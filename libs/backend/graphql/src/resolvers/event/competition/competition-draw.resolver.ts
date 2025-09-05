@@ -1,6 +1,7 @@
 import { CompetitionDraw, CompetitionSubEvent, CompetitionEncounter } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { CompetitionDrawArgs, CompetitionEncounterArgs } from '../../../args';
 
 @Resolver(() => CompetitionDraw)
 export class CompetitionDrawResolver {
@@ -20,8 +21,12 @@ export class CompetitionDrawResolver {
   }
 
   @Query(() => [CompetitionDraw])
-  async competitionDraws(): Promise<CompetitionDraw[]> {
-    return CompetitionDraw.find();
+  async competitionDraws(
+    @Args('args', { type: () => CompetitionDrawArgs, nullable: true })
+    inputArgs?: InstanceType<typeof CompetitionDrawArgs>,
+  ): Promise<CompetitionDraw[]> {
+    const args = CompetitionDrawArgs.toFindManyOptions(inputArgs);
+    return CompetitionDraw.find(args);
   }
 
   @ResolveField(() => CompetitionSubEvent, { nullable: true })
@@ -36,11 +41,29 @@ export class CompetitionDrawResolver {
   }
 
   @ResolveField(() => [CompetitionEncounter], { nullable: true })
-  async competitionEncounters(@Parent() { id }: CompetitionDraw): Promise<CompetitionEncounter[]> {
-    return CompetitionEncounter.find({
-      where: {
+  async competitionEncounters(
+    @Parent() { id }: CompetitionDraw,
+    @Args('args', {
+      type: () => CompetitionEncounterArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof CompetitionEncounterArgs>,
+  ): Promise<CompetitionEncounter[]> {
+    const args = CompetitionEncounterArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         drawId: id,
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          drawId: id,
+        },
+      ];
+    }
+
+    return CompetitionEncounter.find(args);
   }
 }

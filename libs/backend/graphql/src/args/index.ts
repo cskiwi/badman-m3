@@ -4,6 +4,8 @@ import {
   Club,
   ClubPlayerMembership,
   Comment,
+  CompetitionAssembly,
+  CompetitionDraw,
   Court,
   CronJob,
   TournamentDraw,
@@ -18,9 +20,12 @@ import {
   GamePlayerMembership,
   ImportFile,
   Location,
+  LocationEventMembership,
   LogEntry,
   Notification,
   Player,
+  PlayerClaimMembership,
+  PlayerRoleMembership,
   RankingGroup,
   RankingLastPlace,
   RankingPlace,
@@ -28,12 +33,15 @@ import {
   RankingSystem,
   RankingSystemRankingGroupMembership,
   RequestLink,
+  Role,
+  RoleClaimMembership,
   Rule,
   Service,
   Setting,
   Standing,
   CompetitionSubEvent,
   TournamentSubEvent,
+  TournamentGroupSubEventMembership,
   Team,
   TeamPlayerMembership,
 } from '@app/models';
@@ -80,6 +88,14 @@ SortOrderType(CronJob, 'CronJob');
 SortOrderType(LogEntry, 'LogEntry');
 SortOrderType(Rule, 'Rule');
 SortOrderType(Service, 'Service');
+SortOrderType(CompetitionAssembly, 'CompetitionAssembly');
+SortOrderType(CompetitionDraw, 'CompetitionDraw');
+SortOrderType(LocationEventMembership, 'LocationEventMembership');
+SortOrderType(Role, 'Role');
+SortOrderType(PlayerClaimMembership, 'PlayerClaimMembership');
+SortOrderType(PlayerRoleMembership, 'PlayerRoleMembership');
+SortOrderType(RoleClaimMembership, 'RoleClaimMembership');
+SortOrderType(TournamentGroupSubEventMembership, 'TournamentGroupSubEventMembership');
 
 // Register all WhereInputTypes
 WhereInputType(Claim, 'Claim');
@@ -119,6 +135,14 @@ WhereInputType(CronJob, 'CronJob');
 WhereInputType(LogEntry, 'LogEntry');
 WhereInputType(Rule, 'Rule');
 WhereInputType(Service, 'Service');
+WhereInputType(CompetitionAssembly, 'CompetitionAssembly');
+WhereInputType(CompetitionDraw, 'CompetitionDraw');
+WhereInputType(LocationEventMembership, 'LocationEventMembership');
+WhereInputType(Role, 'Role');
+WhereInputType(PlayerClaimMembership, 'PlayerClaimMembership');
+WhereInputType(PlayerRoleMembership, 'PlayerRoleMembership');
+WhereInputType(RoleClaimMembership, 'RoleClaimMembership');
+WhereInputType(TournamentGroupSubEventMembership, 'TournamentGroupSubEventMembership');
 
 // Append nested objects to orders
 appendSortableObjects(Claim, 'Claim');
@@ -158,6 +182,14 @@ appendSortableObjects(CronJob, 'CronJob');
 appendSortableObjects(LogEntry, 'LogEntry');
 appendSortableObjects(Rule, 'Rule');
 appendSortableObjects(Service, 'Service');
+appendSortableObjects(CompetitionAssembly, 'CompetitionAssembly');
+appendSortableObjects(CompetitionDraw, 'CompetitionDraw');
+appendSortableObjects(LocationEventMembership, 'LocationEventMembership');
+appendSortableObjects(Role, 'Role');
+appendSortableObjects(PlayerClaimMembership, 'PlayerClaimMembership');
+appendSortableObjects(PlayerRoleMembership, 'PlayerRoleMembership');
+appendSortableObjects(RoleClaimMembership, 'RoleClaimMembership');
+appendSortableObjects(TournamentGroupSubEventMembership, 'TournamentGroupSubEventMembership');
 
 // Append nested objects to where inputs
 appendWhereObjects(Claim, 'Claim');
@@ -197,6 +229,14 @@ appendWhereObjects(CronJob, 'CronJob');
 appendWhereObjects(LogEntry, 'LogEntry');
 appendWhereObjects(Rule, 'Rule');
 appendWhereObjects(Service, 'Service');
+appendWhereObjects(CompetitionAssembly, 'CompetitionAssembly');
+appendWhereObjects(CompetitionDraw, 'CompetitionDraw');
+appendWhereObjects(LocationEventMembership, 'LocationEventMembership');
+appendWhereObjects(Role, 'Role');
+appendWhereObjects(PlayerClaimMembership, 'PlayerClaimMembership');
+appendWhereObjects(PlayerRoleMembership, 'PlayerRoleMembership');
+appendWhereObjects(RoleClaimMembership, 'RoleClaimMembership');
+appendWhereObjects(TournamentGroupSubEventMembership, 'TournamentGroupSubEventMembership');
 
 export const ClaimArgs = args<Claim>('Claim');
 export const ClubArgs = args<Club>('Club');
@@ -238,3 +278,11 @@ export const CronJobArgs = args<CronJob>('CronJob');
 export const LogEntryArgs = args<LogEntry>('LogEntry');
 export const RuleArgs = args<Rule>('Rule');
 export const ServiceArgs = args<Service>('Service');
+export const CompetitionAssemblyArgs = args<CompetitionAssembly>('CompetitionAssembly');
+export const CompetitionDrawArgs = args<CompetitionDraw>('CompetitionDraw');
+export const LocationEventMembershipArgs = args<LocationEventMembership>('LocationEventMembership');
+export const RoleArgs = args<Role>('Role');
+export const PlayerClaimMembershipArgs = args<PlayerClaimMembership>('PlayerClaimMembership');
+export const PlayerRoleMembershipArgs = args<PlayerRoleMembership>('PlayerRoleMembership');
+export const RoleClaimMembershipArgs = args<RoleClaimMembership>('RoleClaimMembership');
+export const TournamentGroupSubEventMembershipArgs = args<TournamentGroupSubEventMembership>('TournamentGroupSubEventMembership');

@@ -1,7 +1,7 @@
 import { CompetitionAssembly, CompetitionDraw, CompetitionEncounter, Game, Team } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { CompetitionEncounterArgs } from '../../../args';
+import { CompetitionEncounterArgs, GameArgs, CompetitionAssemblyArgs } from '../../../args';
 import { AllowAnonymous } from '@app/backend-authorization';
 
 @Resolver(() => CompetitionEncounter)
@@ -43,22 +43,59 @@ export class CompetitionEncounterResolver {
   }
 
   @ResolveField(() => [Game], { nullable: true })
-  async games(@Parent() { id }: CompetitionEncounter): Promise<Game[]> {
-    return Game.find({
-      where: {
+  async games(
+    @Parent() { id }: CompetitionEncounter,
+    @Args('args', {
+      type: () => GameArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof GameArgs>,
+  ): Promise<Game[]> {
+    const args = GameArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         linkId: id,
         linkType: 'competition',
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          linkId: id,
+          linkType: 'competition',
+        },
+      ];
+    }
+
+    return Game.find(args);
   }
 
   @ResolveField(() => [CompetitionAssembly], { nullable: true })
-  async assemblies(@Parent() { id }: CompetitionEncounter): Promise<CompetitionAssembly[]> {
-    return CompetitionAssembly.find({
-      where: {
+  async assemblies(
+    @Parent() { id }: CompetitionEncounter,
+    @Args('args', {
+      type: () => CompetitionAssemblyArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof CompetitionAssemblyArgs>,
+  ): Promise<CompetitionAssembly[]> {
+    const args = CompetitionAssemblyArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         encounterId: id,
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          encounterId: id,
+        },
+      ];
+    }
+
+    return CompetitionAssembly.find(args);
   }
 
   @ResolveField(() => Team, { nullable: true })

@@ -2,7 +2,7 @@ import { AllowAnonymous } from '@app/backend-authorization';
 import { TournamentDraw, Game, GamePlayerMembership, CompetitionEncounter, RankingPoint } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { GameArgs, GamePlayerMembershipArgs } from '../args';
+import { GameArgs, GamePlayerMembershipArgs, RankingPointArgs } from '../args';
 
 @Resolver(() => Game)
 export class GameResolver {
@@ -83,9 +83,29 @@ export class GameResolver {
   }
 
   @ResolveField(() => [RankingPoint], { nullable: true })
-  async rankingPoints(@Parent() { id }: Game): Promise<RankingPoint[] | null> {
-    return RankingPoint.find({
-      where: { gameId: id },
-    });
+  async rankingPoints(
+    @Parent() { id }: Game,
+    @Args('args', {
+      type: () => RankingPointArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof RankingPointArgs>,
+  ): Promise<RankingPoint[] | null> {
+    const args = RankingPointArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        gameId: id,
+      }));
+    } else {
+      args.where = [
+        {
+          gameId: id,
+        },
+      ];
+    }
+
+    return RankingPoint.find(args);
   }
 }

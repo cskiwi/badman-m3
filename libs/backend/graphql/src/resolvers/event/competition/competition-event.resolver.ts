@@ -3,7 +3,7 @@ import { CompetitionEvent, CompetitionSubEvent } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { IsUUID } from '@app/utils';
-import { CompetitionEventArgs } from '../../../args';
+import { CompetitionEventArgs, CompetitionSubEventArgs } from '../../../args';
 
 @Resolver(() => CompetitionEvent)
 export class CompetitionEventResolver {
@@ -42,11 +42,29 @@ export class CompetitionEventResolver {
   }
 
   @ResolveField(() => [CompetitionSubEvent], { nullable: true })
-  async competitionSubEvents(@Parent() { id }: CompetitionEvent): Promise<CompetitionSubEvent[]> {
-    return CompetitionSubEvent.find({
-      where: {
+  async competitionSubEvents(
+    @Parent() { id }: CompetitionEvent,
+    @Args('args', {
+      type: () => CompetitionSubEventArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof CompetitionSubEventArgs>,
+  ): Promise<CompetitionSubEvent[]> {
+    const args = CompetitionSubEventArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         eventId: id,
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          eventId: id,
+        },
+      ];
+    }
+
+    return CompetitionSubEvent.find(args);
   }
 }

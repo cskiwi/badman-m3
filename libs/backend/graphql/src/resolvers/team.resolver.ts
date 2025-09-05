@@ -5,7 +5,7 @@ import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation, Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { IsEnum, IsUUID as IsUUIDValidator, IsOptional } from 'class-validator';
-import { TeamArgs } from '../args';
+import { TeamArgs, TeamPlayerMembershipArgs } from '../args';
 
 // Register the enum for GraphQL
 registerEnumType(TeamMembershipType, {
@@ -74,12 +74,30 @@ export class TeamResolver {
   }
 
   @ResolveField(() => [TeamPlayerMembership], { nullable: true })
-  async teamPlayerMemberships(@Parent() { id }: Team) {
-    return TeamPlayerMembership.find({
-      where: {
+  async teamPlayerMemberships(
+    @Parent() { id }: Team,
+    @Args('args', {
+      type: () => TeamPlayerMembershipArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof TeamPlayerMembershipArgs>,
+  ) {
+    const args = TeamPlayerMembershipArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         teamId: id,
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          teamId: id,
+        },
+      ];
+    }
+
+    return TeamPlayerMembership.find(args);
   }
 
   @ResolveField(() => Player, { nullable: true })

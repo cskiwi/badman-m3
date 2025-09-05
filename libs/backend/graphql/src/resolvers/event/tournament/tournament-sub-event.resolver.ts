@@ -1,7 +1,7 @@
 import { TournamentSubEvent, TournamentDraw, TournamentEvent } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { TournamentSubEventArgs } from '../../../args';
+import { TournamentSubEventArgs, TournamentDrawArgs } from '../../../args';
 
 @Resolver(() => TournamentSubEvent)
 export class TournamentSubEventResolver {
@@ -32,12 +32,30 @@ export class TournamentSubEventResolver {
   }
 
   @ResolveField(() => [TournamentDraw], { nullable: true })
-  async drawTournaments(@Parent() { id }: TournamentSubEvent): Promise<TournamentDraw[]> {
-    return TournamentDraw.find({
-      where: {
+  async drawTournaments(
+    @Parent() { id }: TournamentSubEvent,
+    @Args('args', {
+      type: () => TournamentDrawArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof TournamentDrawArgs>,
+  ): Promise<TournamentDraw[]> {
+    const args = TournamentDrawArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
         subeventId: id,
-      },
-    });
+      }));
+    } else {
+      args.where = [
+        {
+          subeventId: id,
+        },
+      ];
+    }
+
+    return TournamentDraw.find(args);
   }
 
   @ResolveField(() => TournamentEvent, { nullable: true })

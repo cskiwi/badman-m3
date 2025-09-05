@@ -2,6 +2,7 @@ import { AllowAnonymous } from '@app/backend-authorization';
 import { RankingSystem, RankingPoint, RankingPlace, RankingLastPlace } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
 import { Args, ID, Query, Resolver, Parent, ResolveField } from '@nestjs/graphql';
+import { RankingSystemArgs, RankingPointArgs, RankingPlaceArgs, RankingLastPlaceArgs } from '../args';
 
 @Resolver(() => RankingSystem)
 export class RankingSystemResolver {
@@ -31,34 +32,93 @@ export class RankingSystemResolver {
 
   @Query(() => [RankingSystem])
   @AllowAnonymous()
-  async rankingSystems(): Promise<RankingSystem[]> {
-    return RankingSystem.find({
-      take: 10,
-    });
+  async rankingSystems(
+    @Args('args', { type: () => RankingSystemArgs, nullable: true })
+    inputArgs?: InstanceType<typeof RankingSystemArgs>,
+  ): Promise<RankingSystem[]> {
+    const args = RankingSystemArgs.toFindManyOptions(inputArgs);
+    return RankingSystem.find(args);
   }
 
   @ResolveField(() => [RankingPoint])
-  async rankingPoints(@Parent() system: RankingSystem): Promise<RankingPoint[]> {
-    return RankingPoint.find({
-      where: { systemId: system.id },
-      take: 100,
-    });
+  async rankingPoints(
+    @Parent() system: RankingSystem,
+    @Args('args', {
+      type: () => RankingPointArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof RankingPointArgs>,
+  ): Promise<RankingPoint[]> {
+    const args = RankingPointArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        systemId: system.id,
+      }));
+    } else {
+      args.where = [
+        {
+          systemId: system.id,
+        },
+      ];
+    }
+
+    return RankingPoint.find(args);
   }
 
   @ResolveField(() => [RankingPlace])
-  async rankingPlaces(@Parent() system: RankingSystem): Promise<RankingPlace[]> {
-    return RankingPlace.find({
-      where: { systemId: system.id },
-      take: 100,
-    });
+  async rankingPlaces(
+    @Parent() system: RankingSystem,
+    @Args('args', {
+      type: () => RankingPlaceArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof RankingPlaceArgs>,
+  ): Promise<RankingPlace[]> {
+    const args = RankingPlaceArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        systemId: system.id,
+      }));
+    } else {
+      args.where = [
+        {
+          systemId: system.id,
+        },
+      ];
+    }
+
+    return RankingPlace.find(args);
   }
 
   @ResolveField(() => [RankingLastPlace])
-  async rankingLastPlaces(@Parent() system: RankingSystem): Promise<RankingLastPlace[]> {
-    return RankingLastPlace.find({
-      where: { systemId: system.id },
-      take: 100,
-    });
+  async rankingLastPlaces(
+    @Parent() system: RankingSystem,
+    @Args('args', {
+      type: () => RankingLastPlaceArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof RankingLastPlaceArgs>,
+  ): Promise<RankingLastPlace[]> {
+    const args = RankingLastPlaceArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        systemId: system.id,
+      }));
+    } else {
+      args.where = [
+        {
+          systemId: system.id,
+        },
+      ];
+    }
+
+    return RankingLastPlace.find(args);
   }
 }
 
