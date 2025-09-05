@@ -24,10 +24,10 @@ export class DetailService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ tournamentEvent: TournamentEvent }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ tournamentEvent: TournamentEvent }>({
             query: gql`
-              query Tournament($id: ID!) {
+              query Tournament($id: ID!, $args: TournamentSubEventArgs) {
                 tournamentEvent(id: $id) {
                   id
                   name
@@ -42,7 +42,7 @@ export class DetailService {
                   official
                   state
                   country
-                  tournamentSubEvents {
+                  tournamentSubEvents(args: $args) {
                     id
                     name
                     eventType
@@ -62,9 +62,15 @@ export class DetailService {
             `,
             variables: {
               id: params.tournamentId,
+              args: {
+                order: {
+                  level: 'ASC',
+                },
+              },
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data.tournamentEvent) {
           throw new Error('No tournament found');
