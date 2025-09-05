@@ -1,6 +1,8 @@
 import { TournamentApiClient, Match } from '@app/backend-tournament-api';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job, WaitingChildrenError } from 'bullmq';
 import { CompetitionGameSyncService } from './competition-game-sync.service';
+import { CompetitionPlanningService } from './competition-planning.service';
 
 export interface CompetitionGameIndividualSyncData {
   tournamentCode: string;
@@ -15,11 +17,14 @@ export class CompetitionGameIndividualSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly competitionGameSyncService: CompetitionGameSyncService,
+    private readonly competitionPlanningService: CompetitionPlanningService,
   ) {}
 
   async processGameIndividualSync(
     data: CompetitionGameIndividualSyncData,
     updateProgress: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition game individual sync`);
     const { tournamentCode, drawCode, matchCodes } = data;
@@ -58,8 +63,17 @@ export class CompetitionGameIndividualSyncService {
         // Delegate to the game sync service
         await this.processMatch(tournamentCode, match);
 
-        const progressPercentage = Math.round(((i + 1) / matches.length) * 100);
-        await updateProgress(progressPercentage);
+        const finalProgress = this.competitionPlanningService.calculateProgress(i + 1, matches.length, true);
+        await updateProgress(finalProgress);
+      }
+
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition game individual sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
       }
 
       this.logger.log(`Completed competition game individual sync - processed ${matches.length} matches`);

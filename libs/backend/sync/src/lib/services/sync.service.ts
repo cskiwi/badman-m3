@@ -1,7 +1,7 @@
-import { InjectQueue } from '@nestjs/bullmq';
+import { InjectQueue, InjectFlowProducer } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { Queue } from 'bullmq';
+import { Queue, FlowProducer } from 'bullmq';
 import { TournamentEvent, CompetitionEvent } from '@app/models';
 import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
@@ -36,6 +36,12 @@ export class SyncService {
 
     @InjectQueue(TEAM_MATCHING_QUEUE)
     private readonly teamMatchingQueue: Queue,
+
+    @InjectFlowProducer('competition-sync') 
+    private readonly competitionSyncFlow: FlowProducer,
+
+    @InjectFlowProducer('tournament-sync') 
+    private readonly tournamentSyncFlow: FlowProducer,
   ) {}
 
   /**
@@ -85,7 +91,7 @@ export class SyncService {
    */
   private async getEventType(tournamentCode: string): Promise<'tournament' | 'competition'> {
     const eventType = await this.determineEventType(tournamentCode);
-    
+
     if (eventType) {
       return eventType;
     }
@@ -222,17 +228,44 @@ export class SyncService {
     // Determine if it's a tournament or competition by checking the database
     const eventType = await this.getEventType(tournamentCode);
     const jobId = generateJobId(eventType, 'event', tournamentCode, eventCode);
+    const jobName = generateJobId(eventType, 'event', tournamentCode, eventCode);
 
-    if (eventType === 'competition') {
-      await this.competitionEventQueue.add(generateJobId('competition', 'event', tournamentCode, eventCode), data, {
-        jobId,
-        priority: 4,
-      });
+    if (includeSubComponents) {
+      // Use FlowProducer when creating jobs that will have children
+      if (eventType === 'competition') {
+        await this.competitionSyncFlow.add({
+          name: jobName,
+          queueName: COMPETITION_EVENT_QUEUE,
+          data,
+          opts: {
+            jobId,
+            priority: 4,
+          },
+        });
+      } else {
+        await this.tournamentSyncFlow.add({
+          name: jobName,
+          queueName: TOURNAMENT_EVENT_QUEUE,
+          data,
+          opts: {
+            jobId,
+            priority: 4,
+          },
+        });
+      }
     } else {
-      await this.tournamentEventQueue.add(generateJobId('tournament', 'event', tournamentCode, eventCode), data, {
-        jobId,
-        priority: 4,
-      });
+      // Use regular Queue.add() for jobs without children
+      if (eventType === 'competition') {
+        await this.competitionEventQueue.add(jobName, data, {
+          jobId,
+          priority: 4,
+        });
+      } else {
+        await this.tournamentEventQueue.add(jobName, data, {
+          jobId,
+          priority: 4,
+        });
+      }
     }
   }
 
@@ -249,17 +282,44 @@ export class SyncService {
 
     const eventType = await this.getEventType(tournamentCode);
     const jobId = generateJobId(eventType, 'subevent', tournamentCode, eventCode, subEventCode || '');
+    const jobName = generateJobId(eventType, 'subevent', tournamentCode, eventCode, subEventCode || '');
 
-    if (eventType === 'competition') {
-      await this.competitionEventQueue.add(generateJobId('competition', 'subevent', tournamentCode, eventCode, subEventCode || ''), data, {
-        jobId,
-        priority: 5,
-      });
+    if (includeSubComponents) {
+      // Use FlowProducer when creating jobs that will have children
+      if (eventType === 'competition') {
+        await this.competitionSyncFlow.add({
+          name: jobName,
+          queueName: COMPETITION_EVENT_QUEUE,
+          data,
+          opts: {
+            jobId,
+            priority: 5,
+          },
+        });
+      } else {
+        await this.tournamentSyncFlow.add({
+          name: jobName,
+          queueName: TOURNAMENT_EVENT_QUEUE,
+          data,
+          opts: {
+            jobId,
+            priority: 5,
+          },
+        });
+      }
     } else {
-      await this.tournamentEventQueue.add(generateJobId('tournament', 'subevent', tournamentCode, eventCode, subEventCode || ''), data, {
-        jobId,
-        priority: 5,
-      });
+      // Use regular Queue.add() for jobs without children
+      if (eventType === 'competition') {
+        await this.competitionEventQueue.add(jobName, data, {
+          jobId,
+          priority: 5,
+        });
+      } else {
+        await this.tournamentEventQueue.add(jobName, data, {
+          jobId,
+          priority: 5,
+        });
+      }
     }
   }
 
@@ -271,17 +331,44 @@ export class SyncService {
 
     const eventType = await this.getEventType(tournamentCode);
     const jobId = generateJobId(eventType, 'draw', tournamentCode, drawCode);
+    const jobName = generateJobId(eventType, 'draw', tournamentCode, drawCode);
 
-    if (eventType === 'competition') {
-      await this.competitionEventQueue.add(generateJobId('competition', 'draw', tournamentCode, drawCode), data, {
-        jobId,
-        priority: 6,
-      });
+    if (includeSubComponents) {
+      // Use FlowProducer when creating jobs that will have children
+      if (eventType === 'competition') {
+        await this.competitionSyncFlow.add({
+          name: jobName,
+          queueName: COMPETITION_EVENT_QUEUE,
+          data,
+          opts: {
+            jobId,
+            priority: 6,
+          },
+        });
+      } else {
+        await this.tournamentSyncFlow.add({
+          name: jobName,
+          queueName: TOURNAMENT_EVENT_QUEUE,
+          data,
+          opts: {
+            jobId,
+            priority: 6,
+          },
+        });
+      }
     } else {
-      await this.tournamentEventQueue.add(generateJobId('tournament', 'draw', tournamentCode, drawCode), data, {
-        jobId,
-        priority: 6,
-      });
+      // Use regular Queue.add() for jobs without children
+      if (eventType === 'competition') {
+        await this.competitionEventQueue.add(jobName, data, {
+          jobId,
+          priority: 6,
+        });
+      } else {
+        await this.tournamentEventQueue.add(jobName, data, {
+          jobId,
+          priority: 6,
+        });
+      }
     }
   }
 
@@ -512,5 +599,4 @@ export class SyncService {
     if (job.processedOn) return 'active';
     return 'waiting';
   }
-
 }

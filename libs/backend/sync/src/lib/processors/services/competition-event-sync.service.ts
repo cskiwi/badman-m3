@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer } from 'bullmq';
+import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { CompetitionStructureSyncService } from './competition-structure-sync.service';
 import { generateJobId } from '../../utils/job.utils';
@@ -28,6 +28,8 @@ export class CompetitionEventSyncService {
     jobId: string,
     queueQualifiedName: string,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition event sync`);
     const { tournamentCode, eventCodes, includeSubComponents, workPlan } = data;
@@ -48,7 +50,7 @@ export class CompetitionEventSyncService {
       }
       
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // Sync events first using the structure sync service
       await this.competitionStructureSyncService.processStructureSync(
@@ -56,14 +58,14 @@ export class CompetitionEventSyncService {
         async (progress: number) => {
           // Forward structure sync progress proportionally
           const structureProgress = completedSteps + (progress / 100);
-          const overallProgress = this.competitionPlanningService.calculateProgress(structureProgress, totalSteps);
+          const overallProgress = this.competitionPlanningService.calculateProgress(structureProgress, totalSteps, includeSubComponents);
           await updateProgress?.(overallProgress);
           this.logger.debug(`Structure sync progress: ${progress}%`);
         },
       );
       
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // If includeSubComponents, add sub-component sync jobs with work plan context
       if (includeSubComponents) {
@@ -95,13 +97,22 @@ export class CompetitionEventSyncService {
 
         // Complete this job's work (planning + structure sync + child job creation)
         completedSteps++;
-        const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps);
+        const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
         await updateProgress?.(finalProgress);
+        
+        // Check if we should wait for children using BullMQ pattern
+        if (job && token) {
+          const shouldWait = await job.moveToWaitingChildren(token);
+          if (shouldWait) {
+            this.logger.log(`Competition event sync waiting for child jobs. Total work plan: ${currentWorkPlan.totalJobs} jobs`);
+            throw new WaitingChildrenError();
+          }
+        }
+        
         this.logger.log(`Completed competition event sync, child jobs queued. Total work plan: ${currentWorkPlan.totalJobs} jobs`);
         return;
       }
 
-      await updateProgress?.(100);
       this.logger.log(`Completed competition event sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

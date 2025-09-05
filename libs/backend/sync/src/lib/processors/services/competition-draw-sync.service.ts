@@ -3,7 +3,7 @@ import { CompetitionDraw } from '@app/models';
 import { DrawType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer } from 'bullmq';
+import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
@@ -30,6 +30,8 @@ export class CompetitionDrawSyncService {
     jobId: string,
     queueQualifiedName: string,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition draw sync`);
     const { tournamentCode, drawCode, includeSubComponents, workPlan } = data;
@@ -40,15 +42,15 @@ export class CompetitionDrawSyncService {
 
       // Update/create the draw record and sync entries
       await this.updateCompetitionDrawFromApi(tournamentCode, drawCode);
-      
+
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // Get draw name for metadata
       const drawName = await this.getDrawName(tournamentCode, drawCode);
-      
+
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // Sync entries for this draw
       const entryJobName = generateJobId('competition', 'entry', tournamentCode, drawCode);
@@ -56,14 +58,14 @@ export class CompetitionDrawSyncService {
       await this.competitionSyncFlow.add({
         name: generateJobId('competition', 'entry', tournamentCode, drawCode),
         queueName: COMPETITION_EVENT_QUEUE,
-        data: { 
-          tournamentCode, 
+        data: {
+          tournamentCode,
           drawCode,
           metadata: {
             displayName: `Entries: ${drawName}`,
             drawName: drawName,
-            description: `Entry synchronization for draw ${drawName}`
-          }
+            description: `Entry synchronization for draw ${drawName}`,
+          },
         },
         opts: {
           jobId: entryJobName,
@@ -75,7 +77,7 @@ export class CompetitionDrawSyncService {
       });
 
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // If includeSubComponents, sync encounters and then standings
       if (includeSubComponents) {
@@ -85,27 +87,27 @@ export class CompetitionDrawSyncService {
         await this.competitionSyncFlow.add({
           name: generateJobId('competition', 'encounter', tournamentCode, drawCode),
           queueName: COMPETITION_EVENT_QUEUE,
-          data: { 
-            tournamentCode, 
+          data: {
+            tournamentCode,
             drawCode,
             metadata: {
               displayName: `Encounters: ${drawName}`,
               drawName: drawName,
-              description: `Encounter synchronization for draw ${drawName}`
-            }
+              description: `Encounter synchronization for draw ${drawName}`,
+            },
           },
           children: [
             {
               name: generateJobId('competition', 'standing', tournamentCode, drawCode),
               queueName: COMPETITION_EVENT_QUEUE,
-              data: { 
-                tournamentCode, 
+              data: {
+                tournamentCode,
                 drawCode,
                 metadata: {
                   displayName: `Standing: ${drawName}`,
                   drawName: drawName,
-                  description: `Standing synchronization for draw ${drawName}`
-                }
+                  description: `Standing synchronization for draw ${drawName}`,
+                },
               },
               opts: {
                 jobId: standingJobName,
@@ -125,12 +127,29 @@ export class CompetitionDrawSyncService {
         completedSteps++;
         const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps);
         await updateProgress?.(finalProgress);
+        
+        // Check if we should wait for children using BullMQ pattern
+        if (job && token) {
+          const shouldWait = await job.moveToWaitingChildren(token);
+          if (shouldWait) {
+            this.logger.log(`Competition draw sync waiting for child jobs`);
+            throw new WaitingChildrenError();
+          }
+        }
+        
         this.logger.log(`Completed competition draw sync, child jobs queued`);
         return;
       }
 
-      // If no child jobs, complete normally
-      await updateProgress?.(100);
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition draw sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
+      }
+
       this.logger.log(`Completed competition draw sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -200,5 +219,4 @@ export class CompetitionDrawSyncService {
         return 'POULE'; // Default to round-robin for competitions
     }
   }
-
 }

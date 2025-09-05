@@ -45,3 +45,14 @@ export function generateJobId(type: 'tournament' | 'competition', component: str
   const parts = [type, component, ...cleanIdentifiers];
   return parts.join('-').toLowerCase();
 }
+
+/**
+ * Protect parent jobs from reaching 100% progress when they have child jobs
+ * Parent jobs should never reach 100% - they should be capped at 99%
+ */
+export function safeProgressUpdate(progress: number, hasChildJobs: boolean): number {
+  if (hasChildJobs && progress >= 100) {
+    return 99;
+  }
+  return progress;
+}

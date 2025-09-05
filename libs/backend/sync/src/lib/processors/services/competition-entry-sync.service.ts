@@ -1,6 +1,7 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { CompetitionDraw, Entry, Team as TeamModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job, WaitingChildrenError } from 'bullmq';
 
 export interface CompetitionEntrySyncData {
   tournamentCode: string;
@@ -18,6 +19,8 @@ export class CompetitionEntrySyncService {
   async processEntrySync(
     data: CompetitionEntrySyncData,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
     await updateProgress?.(10);
@@ -46,7 +49,15 @@ export class CompetitionEntrySyncService {
       }
       await updateProgress?.(90);
 
-      await updateProgress?.(100);
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition entry sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
+      }
+
       this.logger.log(`Completed competition entry sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

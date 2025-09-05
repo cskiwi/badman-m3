@@ -2,9 +2,11 @@ import { TournamentApiClient, TournamentEvent, Team, TournamentDraw } from '@app
 import { CompetitionSubEvent, Team as TeamModel } from '@app/models';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job, WaitingChildrenError } from 'bullmq';
 import { IsNull } from 'typeorm';
 import { StructureSyncJobData } from '../../queues/sync.queue';
 import { SyncService } from '../../services/sync.service';
+import { TournamentPlanningService } from './tournament-planning.service';
 
 @Injectable()
 export class CompetitionStructureSyncService {
@@ -13,9 +15,15 @@ export class CompetitionStructureSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly syncService: SyncService,
+    private readonly tournamentPlanningService: TournamentPlanningService,
   ) {}
 
-  async processStructureSync(data: StructureSyncJobData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
+  async processStructureSync(
+    data: StructureSyncJobData,
+    updateProgress: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
+  ): Promise<void> {
     this.logger.log(`Processing competition structure sync`);
 
     try {
@@ -28,27 +36,41 @@ export class CompetitionStructureSyncService {
       const tournament = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
       this.logger.log(`Syncing competition structure for: ${tournament.Name}`);
 
-      // Calculate total work units (3 main operations: events, teams, draws)
-      const totalSteps = 3;
-      let currentStep = 0;
+      // Calculate work plan for more accurate progress tracking
+      const workPlan = await this.tournamentPlanningService.calculateTournamentWorkPlan(tournamentCode, eventCodes, data.includeSubComponents);
+
+      this.logger.log(`Work plan: ${workPlan.totalJobs} total operations`);
+      let completedOperations = 0;
 
       // Sync events
       await this.syncEvents(tournamentCode, eventCodes);
-      currentStep++;
-      await updateProgress(Math.round((currentStep / totalSteps) * 100));
-      this.logger.debug(`Completed events sync (${currentStep}/${totalSteps})`);
+      completedOperations += workPlan.breakdown.events;
+      const eventsProgress = this.tournamentPlanningService.calculateProgress(completedOperations, workPlan.totalJobs, true);
+      await updateProgress(eventsProgress);
+      this.logger.debug(`Completed events sync (${completedOperations}/${workPlan.totalJobs})`);
 
-      // Sync teams
+      // Sync teams - estimate 1 operation for teams sync
       await this.syncTeams(tournamentCode);
-      currentStep++;
-      await updateProgress(Math.round((currentStep / totalSteps) * 100));
-      this.logger.debug(`Completed teams sync (${currentStep}/${totalSteps})`);
+      completedOperations += 1;
+      const teamsProgress = this.tournamentPlanningService.calculateProgress(completedOperations, workPlan.totalJobs, true);
+      await updateProgress(teamsProgress);
+      this.logger.debug(`Completed teams sync (${completedOperations}/${workPlan.totalJobs})`);
 
       // Sync draws/poules
       await this.syncDraws(tournamentCode, eventCodes);
-      currentStep++;
-      await updateProgress(100);
-      this.logger.debug(`Completed draws sync (${currentStep}/${totalSteps})`);
+      completedOperations = workPlan.totalJobs;
+      const finalProgress = this.tournamentPlanningService.calculateProgress(completedOperations, workPlan.totalJobs, true);
+      await updateProgress(finalProgress);
+      this.logger.debug(`Completed draws sync (${completedOperations}/${workPlan.totalJobs})`);
+
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition structure sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
+      }
 
       this.logger.log(`Completed competition structure sync`);
     } catch (error: unknown) {

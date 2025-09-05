@@ -14,7 +14,13 @@
       "mcp__redis-mcp-server__smembers",
       "mcp__redis-mcp-server__zrem",
       "Bash(find:*)",
-      "Bash(npx nx lint:*)"
+      "Bash(npx nx lint:*)",
+      "Bash(nx run:*)",
+      "mcp__context7-server__resolve-library-id",
+      "mcp__context7-server__get-library-docs",
+      "mcp__redis-mcp-server__delete",
+      "WebSearch",
+      "WebFetch(domain:docs.bullmq.io)"
     ],
     "deny": [],
     "ask": []

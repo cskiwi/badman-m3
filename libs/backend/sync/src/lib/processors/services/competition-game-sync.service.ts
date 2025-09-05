@@ -2,7 +2,9 @@ import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/bac
 import { Game, Player } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job, WaitingChildrenError } from 'bullmq';
 import { GameSyncJobData } from '../../queues/sync.queue';
+import { CompetitionPlanningService } from './competition-planning.service';
 
 @Injectable()
 export class CompetitionGameSyncService {
@@ -10,9 +12,15 @@ export class CompetitionGameSyncService {
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
+    private readonly competitionPlanningService: CompetitionPlanningService,
   ) {}
 
-  async processGameSync(data: GameSyncJobData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
+  async processGameSync(
+    data: GameSyncJobData,
+    updateProgress: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
+  ): Promise<void> {
     this.logger.log(`Processing competition game sync`);
 
     try {
@@ -61,7 +69,6 @@ export class CompetitionGameSyncService {
 
       // Update progress after collecting all matches
       if (matches.length === 0) {
-        await updateProgress(100);
         this.logger.log(`No matches to process`);
         return;
       }
@@ -71,11 +78,19 @@ export class CompetitionGameSyncService {
         const match = matches[i];
         await this.processMatch(tournamentCode, match, true); // true = isCompetition
 
-        // Update progress: calculate percentage completed
-        const progressPercentage = Math.round(((i + 1) / matches.length) * 100);
-        await updateProgress(progressPercentage);
+        const finalProgress = this.competitionPlanningService.calculateProgress(i + 1, matches.length, true);
+        await updateProgress(finalProgress);
 
-        this.logger.debug(`Processed match ${i + 1}/${matches.length} (${progressPercentage}%): ${match.Code}`);
+        this.logger.debug(`Processed match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code}`);
+      }
+
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition game sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
       }
 
       this.logger.log(`Completed competition game sync - processed ${matches.length} matches`);

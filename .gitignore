@@ -47,3 +47,4 @@ typesense-data/
 .claude-collective/metrics/
 .playwright-mcp/
 database/backup/
+logs/

@@ -1,10 +1,10 @@
-import { 
-  TournamentDraw as TournamentDrawModel, 
+import {
+  TournamentDraw as TournamentDrawModel,
   TournamentEvent as TournamentEventModel,
   TournamentSubEvent,
   Entry as EntryModel,
   Game,
-  Standing
+  Standing,
 } from '@app/models';
 import { GameStatus } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
@@ -19,10 +19,7 @@ export interface TournamentStandingSyncData {
 export class TournamentStandingSyncService {
   private readonly logger = new Logger(TournamentStandingSyncService.name);
 
-  async processStandingSync(
-    data: TournamentStandingSyncData,
-    updateProgress?: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processStandingSync(data: TournamentStandingSyncData, updateProgress?: (progress: number) => Promise<void>): Promise<void> {
     this.logger.log(`Processing tournament standing sync`);
     await updateProgress?.(10);
     const { tournamentCode, drawCode } = data;
@@ -107,7 +104,6 @@ export class TournamentStandingSyncService {
         this.logger.debug(`No games found for standings calculation for draw ${drawCode}`);
       }
 
-      await updateProgress?.(100);
       this.logger.log(`Completed tournament standing sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

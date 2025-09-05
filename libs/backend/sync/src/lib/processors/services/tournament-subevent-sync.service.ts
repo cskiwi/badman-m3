@@ -1,9 +1,9 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer } from 'bullmq';
+import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { TOURNAMENT_EVENT_QUEUE } from '../../queues/sync.queue';
-import { TournamentStructureSyncService } from '../tournament-structure-sync.service';
+import { TournamentStructureSyncService } from './tournament-structure-sync.service';
 import { generateJobId } from '../../utils/job.utils';
 import { TournamentPlanningService, TournamentWorkPlan } from './tournament-planning.service';
 
@@ -31,6 +31,8 @@ export class TournamentSubEventSyncService {
     jobId: string,
     queueQualifiedName: string,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing tournament sub-event sync`);
     const { tournamentCode, eventCodes, subEventCodes, includeSubComponents, workPlan } = data;
@@ -45,20 +47,20 @@ export class TournamentSubEventSyncService {
         async (progress: number) => {
           // Forward structure sync progress proportionally
           const structureProgress = completedSteps + (progress / 100);
-          const overallProgress = this.tournamentPlanningService.calculateProgress(structureProgress, totalSteps);
+          const overallProgress = this.tournamentPlanningService.calculateProgress(structureProgress, totalSteps, includeSubComponents);
           await updateProgress?.(overallProgress);
           this.logger.debug(`Structure sync progress: ${progress}%`);
         },
       );
       
       completedSteps++;
-      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // Sync draws for the sub-events
       await this.syncDraws(tournamentCode, subEventCodes || eventCodes);
       
       completedSteps++;
-      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // If includeSubComponents, add draw-level sync jobs
       if (includeSubComponents) {
@@ -101,13 +103,22 @@ export class TournamentSubEventSyncService {
         
         // Complete this job's work (structure sync + draw sync + child job creation)
         completedSteps++;
-        const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps);
+        const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
         await updateProgress?.(finalProgress);
+        
+        // Check if we should wait for children using BullMQ pattern
+        if (job && token) {
+          const shouldWait = await job.moveToWaitingChildren(token);
+          if (shouldWait) {
+            this.logger.log(`Tournament sub-event sync waiting for child jobs`);
+            throw new WaitingChildrenError();
+          }
+        }
+        
         this.logger.log(`Completed tournament sub-event sync, child jobs queued`);
         return;
       }
 
-      await updateProgress?.(100);
       this.logger.log(`Completed tournament sub-event sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

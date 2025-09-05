@@ -7,7 +7,7 @@ import {
 import { DrawType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer } from 'bullmq';
+import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { TOURNAMENT_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { TournamentPlanningService, TournamentWorkPlan } from './tournament-planning.service';
@@ -34,6 +34,8 @@ export class TournamentDrawSyncService {
     jobId: string,
     queueQualifiedName: string,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing tournament draw sync`);
     const { tournamentCode, drawCode, includeSubComponents, workPlan } = data;
@@ -46,13 +48,13 @@ export class TournamentDrawSyncService {
       await this.updateTournamentDrawFromApi(tournamentCode, drawCode);
       
       completedSteps++;
-      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // Get draw name for metadata
       const drawName = await this.getDrawName(tournamentCode, drawCode);
       
       completedSteps++;
-      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // If includeSubComponents, sync games and then standings
       if (includeSubComponents) {
@@ -100,13 +102,22 @@ export class TournamentDrawSyncService {
         
         // Complete this job's work (update draw + get name + child job creation)
         completedSteps++;
-        const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps);
+        const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
         await updateProgress?.(finalProgress);
+        
+        // Check if we should wait for children using BullMQ pattern
+        if (job && token) {
+          const shouldWait = await job.moveToWaitingChildren(token);
+          if (shouldWait) {
+            this.logger.log(`Tournament draw sync waiting for child jobs`);
+            throw new WaitingChildrenError();
+          }
+        }
+        
         this.logger.log(`Completed tournament draw sync, child jobs queued`);
         return;
       }
 
-      await updateProgress?.(100);
       this.logger.log(`Completed tournament draw sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

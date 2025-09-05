@@ -159,9 +159,17 @@ export class TournamentPlanningService {
 
   /**
    * Calculate progress percentage based on completed jobs
+   * For parent jobs with children, progress is capped at 99% to prevent premature completion
    */
-  calculateProgress(completedJobs: number, totalJobs: number): number {
+  calculateProgress(completedJobs: number, totalJobs: number, isSubFlow = false): number {
     if (totalJobs <= 0) return 100;
-    return Math.min(100, Math.round((completedJobs / totalJobs) * 100));
+    const progress = Math.min(100, Math.round((completedJobs / totalJobs) * 100));
+    
+    // Protect parent jobs from reaching 100% when they have child jobs
+    if (isSubFlow && progress >= 100) {
+      return 99;
+    }
+    
+    return progress;
   }
 }

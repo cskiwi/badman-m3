@@ -9,7 +9,7 @@ export * from './competition-standing-sync.service';
 export * from './competition-game-individual-sync.service';
 export * from './competition-planning.service';
 
-export * from '../tournament-structure-sync.service';
+export * from './tournament-structure-sync.service';
 export * from './tournament-game-sync.service';
 export * from './tournament-event-sync.service';
 export * from './tournament-subevent-sync.service';

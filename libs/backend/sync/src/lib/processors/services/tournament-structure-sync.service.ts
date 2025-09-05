@@ -7,7 +7,8 @@ import {
   TournamentSubEvent,
 } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
-import { StructureSyncJobData } from '../queues/sync.queue';
+import { TournamentPlanningService } from './tournament-planning.service';
+import { StructureSyncJobData } from '../../queues';
 
 @Injectable()
 export class TournamentStructureSyncService {
@@ -15,6 +16,7 @@ export class TournamentStructureSyncService {
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
+    private readonly tournamentPlanningService: TournamentPlanningService,
   ) {}
 
   async processStructureSync(data: StructureSyncJobData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
@@ -30,27 +32,32 @@ export class TournamentStructureSyncService {
       const tournament = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
       this.logger.log(`Syncing tournament structure for: ${tournament.Name}`);
 
-      // Calculate total work units (3 main operations: events, entries, draws)
-      const totalSteps = 3;
-      let currentStep = 0;
+      // Calculate work plan for more accurate progress tracking
+      const workPlan = await this.tournamentPlanningService.calculateTournamentWorkPlan(tournamentCode, eventCodes, data.includeSubComponents);
+
+      this.logger.log(`Work plan: ${workPlan.totalJobs} total operations`);
+      let completedOperations = 0;
 
       // Sync events
       await this.syncEvents(tournamentCode, eventCodes);
-      currentStep++;
-      await updateProgress(Math.round((currentStep / totalSteps) * 100));
-      this.logger.debug(`Completed events sync (${currentStep}/${totalSteps})`);
+      completedOperations += workPlan.breakdown.events;
+      const eventsProgress = this.tournamentPlanningService.calculateProgress(completedOperations, workPlan.totalJobs, true);
+      await updateProgress(eventsProgress);
+      this.logger.debug(`Completed events sync (${completedOperations}/${workPlan.totalJobs})`);
 
       // Sync entries (players)
       await this.syncEntries(tournamentCode, eventCodes);
-      currentStep++;
-      await updateProgress(Math.round((currentStep / totalSteps) * 100));
-      this.logger.debug(`Completed entries sync (${currentStep}/${totalSteps})`);
+      completedOperations += workPlan.breakdown.draws; // Using draws count as proxy for entry operations
+      const entriesProgress = this.tournamentPlanningService.calculateProgress(completedOperations, workPlan.totalJobs, true);
+      await updateProgress(entriesProgress);
+      this.logger.debug(`Completed entries sync (${completedOperations}/${workPlan.totalJobs})`);
 
       // Sync draws
       await this.syncDraws(tournamentCode, eventCodes);
-      currentStep++;
-      await updateProgress(100);
-      this.logger.debug(`Completed draws sync (${currentStep}/${totalSteps})`);
+      completedOperations = workPlan.totalJobs;
+      const finalProgress = this.tournamentPlanningService.calculateProgress(completedOperations, workPlan.totalJobs, true);
+      await updateProgress(finalProgress);
+      this.logger.debug(`Completed draws sync (${completedOperations}/${workPlan.totalJobs})`);
 
       this.logger.log(`Completed tournament structure sync`);
     } catch (error: unknown) {

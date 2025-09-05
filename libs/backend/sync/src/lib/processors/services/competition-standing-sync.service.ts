@@ -1,5 +1,6 @@
 import { CompetitionDraw } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job, WaitingChildrenError } from 'bullmq';
 
 export interface CompetitionStandingSyncData {
   tournamentCode: string;
@@ -13,6 +14,8 @@ export class CompetitionStandingSyncService {
   async processStandingSync(
     data: CompetitionStandingSyncData,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition standing sync`);
     await updateProgress?.(10);
@@ -40,7 +43,15 @@ export class CompetitionStandingSyncService {
       this.logger.debug(`Standings for draw ${drawCode} are calculated locally from game results`);
       await updateProgress?.(90);
 
-      await updateProgress?.(100);
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition standing sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
+      }
+
       this.logger.log(`Completed competition standing sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

@@ -1,7 +1,7 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer } from 'bullmq';
+import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { CompetitionStructureSyncService } from './competition-structure-sync.service';
 import { generateJobId } from '../../utils/job.utils';
@@ -31,13 +31,15 @@ export class CompetitionSubEventSyncService {
     jobId: string,
     queueQualifiedName: string,
     updateProgress?: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition sub-event sync`);
     const { tournamentCode, eventCodes, subEventCodes, includeSubComponents, workPlan } = data;
 
     try {
       let completedSteps = 0;
-      const totalSteps = 2; // structure sync + draw sync (no child job creation in this service)
+      const totalSteps = includeSubComponents ? 3 : 2; // structure sync + draw sync + (optional child job creation)
 
       // Sync teams for competition using structure sync service
       await this.competitionStructureSyncService.processStructureSync(
@@ -45,20 +47,20 @@ export class CompetitionSubEventSyncService {
         async (progress: number) => {
           // Forward structure sync progress proportionally
           const structureProgress = completedSteps + (progress / 100);
-          const overallProgress = this.competitionPlanningService.calculateProgress(structureProgress, totalSteps);
+          const overallProgress = this.competitionPlanningService.calculateProgress(structureProgress, totalSteps, includeSubComponents);
           await updateProgress?.(overallProgress);
           this.logger.debug(`Structure sync progress: ${progress}%`);
         },
       );
       
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // Sync draws for the sub-events
       await this.syncDraws(tournamentCode, subEventCodes || eventCodes);
       
       completedSteps++;
-      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps));
+      await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
 
       // If includeSubComponents, add draw-level sync jobs
       if (includeSubComponents) {
@@ -98,9 +100,34 @@ export class CompetitionSubEventSyncService {
             });
           }
         }
+        
+        // Complete this job's work (structure sync + draw sync + child job creation)
+        completedSteps++;
+        const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
+        await updateProgress?.(finalProgress);
+        
+        // Check if we should wait for children using BullMQ pattern
+        if (job && token) {
+          const shouldWait = await job.moveToWaitingChildren(token);
+          if (shouldWait) {
+            this.logger.log(`Competition sub-event sync waiting for child jobs`);
+            throw new WaitingChildrenError();
+          }
+        }
+        
+        this.logger.log(`Completed competition sub-event sync, child jobs queued`);
+        return;
       }
 
-      await updateProgress?.(100);
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition sub-event sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
+      }
+
       this.logger.log(`Completed competition sub-event sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

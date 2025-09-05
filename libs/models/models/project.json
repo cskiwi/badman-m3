@@ -8,6 +8,7 @@
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["^build"],
       "options": {
         "outputPath": "{workspaceRoot}/dist/libs/models/models",
         "tsConfig": "libs/models/models/tsconfig.lib.json",

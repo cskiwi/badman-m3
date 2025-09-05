@@ -67,6 +67,7 @@
     "graphql-type-json": "^0.3.2",
     "ioredis": "^5.7.0",
     "jwks-rsa": "^3.2.0",
+    "nest-winston": "^1.10.2",
     "nestjs-i18n": "^10.5.1",
     "ng-packagr": "20.1.0",
     "ngx-cookie-service-ssr": "^20.1.0",
@@ -84,6 +85,7 @@
     "typeorm": "^0.3.26",
     "typesense": "^1.8.2",
     "util": "^0.12.5",
+    "winston": "^3.17.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {

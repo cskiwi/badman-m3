@@ -1,6 +1,8 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { CompetitionDraw, CompetitionEncounter, Team as TeamModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
+import { Job, WaitingChildrenError } from 'bullmq';
+import { CompetitionPlanningService } from './competition-planning.service';
 
 export interface CompetitionEncounterSyncData {
   tournamentCode: string;
@@ -14,11 +16,14 @@ export class CompetitionEncounterSyncService {
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
+    private readonly competitionPlanningService: CompetitionPlanningService,
   ) {}
 
   async processEncounterSync(
     data: CompetitionEncounterSyncData,
     updateProgress: (progress: number) => Promise<void>,
+    job?: Job,
+    token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition encounter sync`);
     const { tournamentCode, drawCode, encounterCodes } = data;
@@ -64,8 +69,18 @@ export class CompetitionEncounterSyncService {
           }
         }
 
-        const progressPercentage = Math.round(((i + 1) / encounters.length) * 100);
+        const progressPercentage = this.competitionPlanningService.calculateProgress(i + 1, encounters.length, true);
+
         await updateProgress(progressPercentage);
+      }
+
+      // Check if we should wait for children using BullMQ pattern
+      if (job && token) {
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Competition encounter sync waiting for child jobs`);
+          throw new WaitingChildrenError();
+        }
       }
 
       this.logger.log(`Completed competition encounter sync - processed ${encounters.length} encounters`);
@@ -155,7 +170,7 @@ export class CompetitionEncounterSyncService {
 
   private async findOrCreateTeamFromEntry(teamData: unknown): Promise<TeamModel | null> {
     const team = teamData as { Code?: string; Name?: string };
-    
+
     if (!team || !team.Code) {
       return null;
     }
