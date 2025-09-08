@@ -15,12 +15,7 @@ export class TournamentGameSyncService {
     private readonly tournamentPlanningService: TournamentPlanningService,
   ) {}
 
-  async processGameSync(
-    data: GameSyncJobData,
-    updateProgress: (progress: number) => Promise<void>,
-    job?: Job,
-    token?: string,
-  ): Promise<void> {
+  async processGameSync(data: GameSyncJobData, updateProgress: (progress: number) => Promise<void>, job?: Job, token?: string): Promise<void> {
     this.logger.log(`Processing tournament game sync`);
 
     try {
@@ -43,7 +38,7 @@ export class TournamentGameSyncService {
             }
           } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`);
+            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
           }
         }
       } else if (drawCode) {
@@ -279,7 +274,11 @@ export class TournamentGameSyncService {
     }
   }
 
-  private mapGenderType(genderId: number): string {
+  private mapGenderType(genderId: number | string): string {
+    if (typeof genderId === 'string') {
+      genderId = parseInt(genderId, 10);
+    }
+
     switch (genderId) {
       case 1:
         return 'M';

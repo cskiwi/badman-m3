@@ -14,5 +14,15 @@
       "remoteRoot": "/usr/src",
       "restart": true
     },
+    {
+      "name": "Worker sync",
+      "type": "node",
+      "request": "attach",
+      "port": 9230,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/apps/sync-worker",
+      "remoteRoot": "/usr/src",
+      "restart": true
+    },
   ]
 }

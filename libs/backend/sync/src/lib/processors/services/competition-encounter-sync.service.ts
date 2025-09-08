@@ -1,13 +1,19 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { CompetitionDraw, CompetitionEncounter, Team as TeamModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
-import { Job, WaitingChildrenError } from 'bullmq';
-import { CompetitionPlanningService } from './competition-planning.service';
+import { InjectFlowProducer } from '@nestjs/bullmq';
+import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
+import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
+import { generateJobId } from '../../utils/job.utils';
+import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
 
 export interface CompetitionEncounterSyncData {
   tournamentCode: string;
-  drawCode?: string;
+  drawCode: string;
   encounterCodes?: string[];
+  includeSubComponents?: boolean;
+  workPlan?: CompetitionWorkPlan;
+  childJobsCreated?: boolean;
 }
 
 @Injectable()
@@ -17,16 +23,131 @@ export class CompetitionEncounterSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly competitionPlanningService: CompetitionPlanningService,
+    @InjectFlowProducer('competition-sync') private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
   async processEncounterSync(
     data: CompetitionEncounterSyncData,
-    updateProgress: (progress: number) => Promise<void>,
+    jobId: string,
+    queueQualifiedName: string,
+    updateProgress?: (progress: number) => Promise<void>,
     job?: Job,
     token?: string,
   ): Promise<void> {
     this.logger.log(`Processing competition encounter sync`);
-    const { tournamentCode, drawCode, encounterCodes } = data;
+    const { tournamentCode, drawCode, encounterCodes, includeSubComponents, workPlan } = data;
+
+    try {
+      // Check if this job has already created child jobs and handle different resume scenarios
+      const isResumeAfterChildren = data.childJobsCreated && includeSubComponents;
+      
+      if (isResumeAfterChildren) {
+        if (job && token) {
+          // We have job and token - this is a legitimate resume after child completion
+          this.logger.log(`Competition encounter sync resuming after child completion`);
+          // Skip the work but continue to completion logic
+        } else {
+          // No job/token - this is likely a duplicate job creation, exit early
+          this.logger.log(`Competition encounter sync resuming - child jobs already created (duplicate prevention)`);
+          return;
+        }
+      }
+
+      let completedSteps = 0;
+      const totalSteps = includeSubComponents ? 3 : 2; // encounter sync + (optional child job creation)
+
+      // Only do the actual work if we're not resuming after children
+      if (!isResumeAfterChildren) {
+        // Create/update encounters (primary responsibility of Encounter service)
+        await this.createOrUpdateEncounters(tournamentCode, drawCode, encounterCodes);
+        
+        completedSteps++;
+        await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+        this.logger.debug(`Completed encounter creation/update`);
+
+        // If includeSubComponents, add game-level sync jobs
+        if (includeSubComponents) {
+          const gameJobName = generateJobId('competition', 'game', tournamentCode, drawCode);
+          const standingJobName = generateJobId('competition', 'standing', tournamentCode, drawCode);
+
+          await this.competitionSyncFlow.add({
+            name: generateJobId('competition', 'game', tournamentCode, drawCode),
+            queueName: COMPETITION_EVENT_QUEUE,
+            data: {
+              tournamentCode,
+              drawCode,
+              includeSubComponents: true,
+              metadata: {
+                displayName: `Game Sync: ${drawCode}`,
+                description: `Game synchronization for draw ${drawCode} in competition ${tournamentCode}`
+              }
+            },
+            opts: {
+              jobId: gameJobName,
+              parent: {
+                id: jobId,
+                queue: queueQualifiedName,
+              },
+            },
+          });
+
+          await this.competitionSyncFlow.add({
+            name: generateJobId('competition', 'standing', tournamentCode, drawCode),
+            queueName: COMPETITION_EVENT_QUEUE,
+            data: {
+              tournamentCode,
+              drawCode,
+              metadata: {
+                displayName: `Standing Sync: ${drawCode}`,
+                description: `Standing synchronization for draw ${drawCode} in competition ${tournamentCode}`
+              }
+            },
+            opts: {
+              jobId: standingJobName,
+              parent: {
+                id: jobId,
+                queue: queueQualifiedName,
+              },
+            },
+          });
+
+          // Complete this job's work (encounter sync + child job creation)
+          completedSteps++;
+          const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
+          await updateProgress?.(finalProgress);
+          
+          // Mark job data to indicate child jobs have been created to prevent re-creation on resume
+          if (job) {
+            await job.updateData({ ...data, childJobsCreated: true });
+          }
+        }
+      }
+
+      // Handle completion logic for both first run and resume scenarios
+      if (includeSubComponents) {
+        // Check if we should wait for children using BullMQ pattern
+        if (job && token) {
+          const shouldWait = await job.moveToWaitingChildren(token);
+          if (shouldWait) {
+            this.logger.log(`Competition encounter sync waiting for child jobs`);
+            throw new WaitingChildrenError();
+          }
+        }
+        
+        this.logger.log(`Completed competition encounter sync, child jobs queued`);
+        return;
+      }
+
+      this.logger.log(`Completed competition encounter sync`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to process competition encounter sync: ${errorMessage}`, error);
+      throw error;
+    }
+  }
+
+  private async createOrUpdateEncounters(tournamentCode: string, drawCode: string, encounterCodes?: string[]): Promise<void> {
+    this.logger.log(`Creating/updating encounters for competition ${tournamentCode}, draw ${drawCode}`);
 
     try {
       let encounters: unknown[] = [];
@@ -41,57 +162,34 @@ export class CompetitionEncounterSyncService {
             }
           } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            this.logger.warn(`Failed to get encounter ${encounterCode}: ${errorMessage}`);
+            this.logger.warn(`Failed to get encounter ${encounterCode}: ${errorMessage}`, error);
           }
         }
-      } else if (drawCode) {
+      } else {
         // Sync all encounters in a draw
         const drawEncounters = await this.tournamentApiClient.getEncountersByDraw?.(tournamentCode, drawCode);
         encounters = drawEncounters?.filter((encounter: unknown) => encounter != null) || [];
       }
 
-      // Process encounters and their games
-      for (let i = 0; i < encounters.length; i++) {
-        const encounter = encounters[i];
-
+      // Process encounters
+      for (const encounter of encounters) {
         if (!encounter) {
-          this.logger.warn(`Skipping undefined encounter at index ${i}`);
+          this.logger.warn(`Skipping undefined encounter`);
           continue;
         }
 
-        await this.processEncounter(tournamentCode, encounter);
-
-        // Update all games for this encounter
-        const encounterData = encounter as { Games?: unknown[] };
-        if (encounterData.Games) {
-          for (const game of encounterData.Games) {
-            await this.processGame(tournamentCode, game);
-          }
-        }
-
-        const progressPercentage = this.competitionPlanningService.calculateProgress(i + 1, encounters.length, true);
-
-        await updateProgress(progressPercentage);
+        await this.createOrUpdateEncounter(tournamentCode, encounter);
       }
 
-      // Check if we should wait for children using BullMQ pattern
-      if (job && token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-          this.logger.log(`Competition encounter sync waiting for child jobs`);
-          throw new WaitingChildrenError();
-        }
-      }
-
-      this.logger.log(`Completed competition encounter sync - processed ${encounters.length} encounters`);
+      this.logger.log(`Created/updated ${encounters.length} encounters`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process competition encounter sync: ${errorMessage}`);
+      this.logger.error(`Failed to create/update encounters: ${errorMessage}`, error);
       throw error;
     }
   }
 
-  private async processEncounter(tournamentCode: string, encounter: unknown): Promise<void> {
+  private async createOrUpdateEncounter(tournamentCode: string, encounter: unknown): Promise<void> {
     const encounterData = encounter as {
       Code: string;
       DrawCode: string;

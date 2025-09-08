@@ -74,6 +74,8 @@ export type I18nTranslations = {
             "lost": string;
             "no_bracket": string;
             "no_bracket_description": string;
+            "no_encounters": string;
+            "no_encounters_description": string;
             "no_games": string;
             "no_qualification": string;
             "no_qualification_description": string;
@@ -96,6 +98,7 @@ export type I18nTranslations = {
             "qualified": string;
             "season": string;
             "sets": string;
+            "size": string;
             "standings": string;
             "statistics": string;
             "status": string;
@@ -103,6 +106,10 @@ export type I18nTranslations = {
             "subEvents": string;
             "team": string;
             "teams": string;
+            "tooltip": {
+                "faller": string;
+                "riser": string;
+            };
             "tournament_winner": string;
             "type": string;
             "types": {
@@ -115,13 +122,6 @@ export type I18nTranslations = {
                 "Other": string;
                 "women": string;
             };
-            "tooltip": {
-                "faller": string;
-                "riser": string;
-            };
-            "size": string;
-            "no_encounters": string;
-            "no_encounters_description": string;
             "visualCode": string;
             "won": string;
         };
@@ -651,6 +651,12 @@ export type I18nTranslations = {
             "eventType": string;
             "firstDay": string;
             "gameType": string;
+            "gameTypes": {
+                "doubles": string;
+                "mixed": string;
+                "other": string;
+                "singles": string;
+            };
             "information": string;
             "level": string;
             "location": string;

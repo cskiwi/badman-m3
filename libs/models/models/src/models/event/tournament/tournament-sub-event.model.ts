@@ -3,6 +3,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, On
 import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament-draw.model';
 import { TournamentEvent } from './tournament-event.model';
+import { SubEventTypeEnum, GameType } from '@app/models-enum';
 
 @ObjectType('TournamentSubEvent', {
   description: 'A TournamentSubEvent',
@@ -28,15 +29,15 @@ export class TournamentSubEvent extends BaseEntity {
   @Column({ nullable: true, type: 'character varying', length: 255 })
   declare name?: string;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'enum', enum: ['M', 'F', 'MX', 'MINIBAD'], nullable: true })
-  declare eventType?: string;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'simple-enum', enum: SubEventTypeEnum, nullable: true })
+  declare eventType?: SubEventTypeEnum;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'enum', enum: ['S', 'D', 'MX'], nullable: true })
-  declare gameType?: string;
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'simple-enum', enum: GameType, nullable: true })
+  declare gameType?: GameType;
 
   @SortableField(() => Int, { nullable: true })
   @WhereField(() => Int, { nullable: true })
@@ -66,6 +67,27 @@ export class TournamentSubEvent extends BaseEntity {
   @WhereField(() => Date, { nullable: true })
   @Column({ nullable: true, type: 'timestamptz' })
   declare lastSync?: Date;
+
+  // API fields from Tournament Software XML <TournamentEvent> elements
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare levelId?: number; // For tournaments only
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare genderId?: number; // 1=Men, 2=Women, 3=Mixed
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare gameTypeId?: number; // 1=Singles, 2=Doubles
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare paraClassId?: number; // 0=Standard
 
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, (eventEntry) => eventEntry.subEventTournament, { cascade: true, onDelete: 'CASCADE' })

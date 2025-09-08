@@ -31,29 +31,23 @@ export interface CompetitionEventWorkPlan {
 export class CompetitionPlanningService {
   private readonly logger = new Logger(CompetitionPlanningService.name);
 
-  constructor(
-    private readonly tournamentApiClient: TournamentApiClient,
-  ) {}
+  constructor(private readonly tournamentApiClient: TournamentApiClient) {}
 
   /**
    * Calculate the total work plan for a competition synchronization
    */
-  async calculateCompetitionWorkPlan(
-    competitionId: string, 
-    eventIds?: string[],
-    includeSubComponents = true
-  ): Promise<CompetitionWorkPlan> {
+  async calculateCompetitionWorkPlan(competitionId: string, eventIds?: string[], includeSubComponents = true): Promise<CompetitionWorkPlan> {
     this.logger.log(`Calculating work plan for competition ${competitionId}`);
 
     try {
       // Get competition events
-      const events = eventIds && eventIds.length > 0
-        ? await Promise.all(eventIds.map(id => 
-            this.tournamentApiClient.getTournamentEvents(competitionId, id)))
-        : [await this.tournamentApiClient.getTournamentEvents(competitionId)];
+      const events =
+        eventIds && eventIds.length > 0
+          ? await Promise.all(eventIds.map((id) => this.tournamentApiClient.getTournamentEvents(competitionId, id)))
+          : [await this.tournamentApiClient.getTournamentEvents(competitionId)];
 
       const flatEvents = events.flat();
-      
+
       let totalDraws = 0;
       const eventPlans: CompetitionEventWorkPlan[] = [];
 
@@ -83,7 +77,6 @@ export class CompetitionPlanningService {
             totalEncounters: eventGames, // For tournaments, encounters are essentially games
             totalGames: eventGames,
           });
-
         } catch (error) {
           this.logger.warn(`Could not get draws for event ${event.Code}: ${error}`);
           eventPlans.push({
@@ -123,11 +116,10 @@ export class CompetitionPlanningService {
       this.logger.debug(`Breakdown: ${JSON.stringify(breakdown, null, 2)}`);
 
       return workPlan;
-
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to calculate work plan: ${errorMessage}`);
-      
+      this.logger.error(`Failed to calculate work plan: ${errorMessage}`, error);
+
       // Return minimal work plan as fallback
       return {
         competitionId,
@@ -149,22 +141,26 @@ export class CompetitionPlanningService {
   /**
    * Estimate number of games in a draw based on size and type
    */
-  private estimateGamesInDraw(drawSize: number, drawTypeId: number): number {
+  private estimateGamesInDraw(drawSize: number, drawTypeId: number | string): number {
     if (!drawSize || drawSize <= 0) return 0;
+
+    if (typeof drawTypeId === 'string') {
+      drawTypeId = parseInt(drawTypeId, 10);
+    }
 
     switch (drawTypeId) {
       case 0: // Knockout elimination
       case 4: // Playoff/championship
         return Math.max(1, drawSize - 1); // n-1 games for elimination
-      
+
       case 1: // Qualification rounds
-      case 2: // Pre-qualification  
+      case 2: // Pre-qualification
       case 5: // Qualifying tournament
         return Math.max(1, Math.ceil(drawSize / 2)); // Estimate half the players play
-      
+
       case 3: // Round-robin groups
         return drawSize > 1 ? (drawSize * (drawSize - 1)) / 2 : 0; // All play all: n*(n-1)/2
-      
+
       default:
         return Math.max(1, Math.ceil(drawSize / 2)); // Conservative estimate
     }
@@ -177,12 +173,12 @@ export class CompetitionPlanningService {
   calculateProgress(completedJobs: number, totalJobs: number, hasChildJobs = false): number {
     if (totalJobs <= 0) return 100;
     const progress = Math.min(100, Math.round((completedJobs / totalJobs) * 100));
-    
+
     // Protect parent jobs from reaching 100% when they have child jobs
     if (hasChildJobs && progress >= 100) {
       return 99;
     }
-    
+
     return progress;
   }
 }

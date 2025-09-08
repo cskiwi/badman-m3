@@ -67,6 +67,8 @@
     "lost": "Perdu",
     "no_bracket": "Aucun tableau disponible",
     "no_bracket_description": "Cette poule éliminatoire n'a pas encore de données de tableau.",
+    "no_encounters": "Aucune Rencontre",
+    "no_encounters_description": "Cette série n'a pas encore de rencontres programmées.",
     "no_games": "Aucun jeu disponible",
     "no_qualification": "Aucune donnée de qualification",
     "no_qualification_description": "Cette poule de qualification n'a pas encore de données de qualification.",
@@ -89,6 +91,7 @@
     "qualified": "Qualifié",
     "season": "Saison",
     "sets": "Sets",
+    "size": "Taille",
     "standings": "Classement",
     "statistics": "Statistiques",
     "status": "Statut",
@@ -96,6 +99,10 @@
     "subEvents": "Série",
     "team": "Équipe",
     "teams": "Équipes",
+    "tooltip": {
+      "faller": "Ce joueur/équipe va chuter dans le classement",
+      "riser": "Ce joueur/équipe va monter dans le classement"
+    },
     "tournament_winner": "Vainqueur du tournoi",
     "type": "Type",
     "types": {
@@ -108,13 +115,6 @@
       "Other": "",
       "women": "Compétition féminine"
     },
-    "tooltip": {
-      "faller": "Ce joueur/équipe va chuter dans le classement",
-      "riser": "Ce joueur/équipe va monter dans le classement"
-    },
-    "size": "Taille",
-    "no_encounters": "Aucune Rencontre",
-    "no_encounters_description": "Cette série n'a pas encore de rencontres programmées.",
     "visualCode": "Code visuel",
     "won": "Gagné"
   },
@@ -644,6 +644,12 @@
     "eventType": "Type d'épreuve",
     "firstDay": "Premier jour",
     "gameType": "Type de jeu",
+    "gameTypes": {
+      "doubles": "Double",
+      "mixed": "Mixte",
+      "other": "Autres",
+      "singles": "Simple"
+    },
     "information": "Informations sur le tournoi",
     "level": "Niveau",
     "location": "Lieu",

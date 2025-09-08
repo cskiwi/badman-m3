@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/sync-worker/src",
   "projectType": "application",
+  "tags": ["scope:worker"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -18,13 +19,13 @@
       }
     },
     "serve": {
-      "continuous": true,
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
       "options": {
         "buildTarget": "sync-worker:build",
-        "runBuildTargetDependencies": false
+        "port": 9230,
+        "inspect": "inspect",
+        "host": "0.0.0.0"
       },
       "configurations": {
         "development": {
@@ -35,6 +36,5 @@
         }
       }
     }
-  },
-  "tags": []
+  }
 }

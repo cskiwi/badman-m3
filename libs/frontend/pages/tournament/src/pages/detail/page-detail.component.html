@@ -121,81 +121,149 @@
           {{ 'all.tournament.events' | translate }}
         </h3>
 
-        <!-- Quick Scroll Buttons -->
-        <div class="flex flex-wrap gap-2 mb-6">
-          @for (group of groupedSubEvents(); track group.type) {
-            <a
-              (click)="scrollToGroup(group.type)"
-              class="px-3 py-1 rounded bg-primary-100 text-primary-700 hover:bg-primary-200 transition-colors text-sm font-medium cursor-pointer no-underline"
-              [attr.aria-label]="group.label | translate"
-              style="user-select: none;"
-            >
-              {{ group.label | translate }}
-            </a>
-          }
-        </div>
 
-        @for (group of groupedSubEvents(); track group.type) {
-          <div class="mb-8" [attr.id]="'group-' + group.type">
-            <!-- Group Header -->
-            <div class="flex items-center gap-3 mb-4">
-              <h4 class="text-lg font-semibold text-color">{{ group.label | translate }}</h4>
-              <div class="flex-1 h-px bg-surface-200"></div>
-            </div>
+        <!-- Group Type Tabs -->
+        @if (groupedSubEvents().length > 1) {
+          <p-tabs [value]="groupedSubEvents()[0].type">
+            <p-tablist>
+              @for (group of groupedSubEvents(); track group.type) {
+                <p-tab [value]="group.type">{{ group.label | translate }}</p-tab>
+              }
+            </p-tablist>
+            <p-tabpanels>
+              @for (group of groupedSubEvents(); track group.type) {
+                <p-tabpanel [value]="group.type">
+                  @for (gameTypeTab of group.gameTypeTabs; track gameTypeTab.gameType) {
+                    <div class="mb-8" [attr.id]="'gametype-' + group.type + '-' + gameTypeTab.gameType">
+                      <!-- Game Type Header -->
+                      <div class="flex items-center gap-3 mb-4">
+                        <h4 class="text-lg font-semibold text-color">{{ gameTypeTab.label | translate }}</h4>
+                        <div class="flex-1 h-px bg-surface-200"></div>
+                      </div>
 
-            <!-- SubEvents Grid -->
-            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              @for (subEvent of group.events; track subEvent.id) {
-                <div class="rounded-border bg-highlight p-6">
-                  <div class="flex items-start justify-between mb-4">
-                    <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                      @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
-                        <app-sync-status-indicator [config]="statusConfig" />
-                      }
-                      @if (getSubEventSyncConfig(subEvent); as config) {
-                        <app-sync-button [config]="config" />
-                      }
-                    </div>
-                  </div>
+                      <!-- SubEvents Grid for this game type -->
+                      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
+                        @for (subEvent of gameTypeTab.events; track subEvent.id) {
+                          <div class="rounded-border bg-highlight p-6">
+                            <div class="flex items-start justify-between mb-4">
+                              <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
+                              <div class="flex items-center gap-1 flex-shrink-0">
+                                @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
+                                  <app-sync-status-indicator [config]="statusConfig" />
+                                }
+                                @if (getSubEventSyncConfig(subEvent); as config) {
+                                  <app-sync-button [config]="config" />
+                                }
+                              </div>
+                            </div>
 
-                  <!-- Draws Information -->
-                  @if (subEvent.drawTournaments && subEvent.drawTournaments.length > 0) {
-                    <h5 class="font-medium mb-2 flex items-center gap-2">
-                      <i class="pi pi-sitemap text-primary-500"></i>
-                      {{ 'all.tournament.draws' | translate }} ({{ subEvent.drawTournaments.length }})
-                    </h5>
+                            <!-- Draws Information -->
+                            @if (subEvent.drawTournaments && subEvent.drawTournaments.length > 0) {
+                              <h5 class="font-medium mb-2 flex items-center gap-2">
+                                <i class="pi pi-sitemap text-primary-500"></i>
+                                {{ 'all.tournament.draws' | translate }} ({{ subEvent.drawTournaments.length }})
+                              </h5>
 
-                    <div class="space-y-2">
-                      @for (draw of subEvent.drawTournaments; track draw.id) {
-                        <a
-                          [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
-                          class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
-                        >
-                          <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
-                          <div class="text-muted-color-emphasis text-xs flex gap-4">
-                            @if (draw.type) {
-                              <span>{{ draw.type }}</span>
+                              <div class="space-y-2">
+                                @for (draw of subEvent.drawTournaments; track draw.id) {
+                                  <a
+                                    [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
+                                    class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
+                                  >
+                                    <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
+                                    <div class="text-muted-color-emphasis text-xs flex gap-4">
+                                      @if (draw.type) {
+                                        <span>{{ draw.type }}</span>
+                                      }
+                                      @if (draw.size) {
+                                        <span>Size: {{ draw.size }}</span>
+                                      }
+                                    </div>
+                                  </a>
+                                }
+                              </div>
                             }
-                            @if (draw.size) {
-                              <span>Size: {{ draw.size }}</span>
+
+                            @if (!subEvent.drawTournaments || subEvent.drawTournaments.length === 0) {
+                              <div class="mt-4 pt-4 text-center text-sm text-muted-color-emphasis">
+                                <i class="pi pi-info-circle mr-2"></i>
+                                No draws configured for this event yet
+                              </div>
                             }
                           </div>
-                        </a>
-                      }
+                        }
+                      </div>
                     </div>
                   }
+                </p-tabpanel>
+              }
+            </p-tabpanels>
+          </p-tabs>
+        } @else {
+          <!-- Single group type, show without tabs -->
+          @for (group of groupedSubEvents(); track group.type) {
+            @for (gameTypeTab of group.gameTypeTabs; track gameTypeTab.gameType) {
+              <div class="mb-8" [attr.id]="'gametype-' + group.type + '-' + gameTypeTab.gameType">
+                <!-- Game Type Header -->
+                <div class="flex items-center gap-3 mb-4">
+                  <h4 class="text-lg font-semibold text-color">{{ gameTypeTab.label | translate }}</h4>
+                  <div class="flex-1 h-px bg-surface-200"></div>
+                </div>
 
-                  @if (!subEvent.drawTournaments || subEvent.drawTournaments.length === 0) {
-                    <div class="mt-4 pt-4 text-center text-sm text-muted-color-emphasis">
-                      <i class="pi pi-info-circle mr-2"></i>
-                      No draws configured for this event yet
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  @for (subEvent of gameTypeTab.events; track subEvent.id) {
+                    <div class="rounded-border bg-highlight p-6">
+                      <div class="flex items-start justify-between mb-4">
+                        <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                          @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
+                            <app-sync-status-indicator [config]="statusConfig" />
+                          }
+                          @if (getSubEventSyncConfig(subEvent); as config) {
+                            <app-sync-button [config]="config" />
+                          }
+                        </div>
+                      </div>
+
+                      <!-- Draws Information -->
+                      @if (subEvent.drawTournaments && subEvent.drawTournaments.length > 0) {
+                        <h5 class="font-medium mb-2 flex items-center gap-2">
+                          <i class="pi pi-sitemap text-primary-500"></i>
+                          {{ 'all.tournament.draws' | translate }} ({{ subEvent.drawTournaments.length }})
+                        </h5>
+
+                        <div class="space-y-2">
+                          @for (draw of subEvent.drawTournaments; track draw.id) {
+                            <a
+                              [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
+                              class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
+                            >
+                              <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
+                              <div class="text-muted-color-emphasis text-xs flex gap-4">
+                                @if (draw.type) {
+                                  <span>{{ draw.type }}</span>
+                                }
+                                @if (draw.size) {
+                                  <span>Size: {{ draw.size }}</span>
+                                }
+                              </div>
+                            </a>
+                          }
+                        </div>
+                      }
+
+                      @if (!subEvent.drawTournaments || subEvent.drawTournaments.length === 0) {
+                        <div class="mt-4 pt-4 text-center text-sm text-muted-color-emphasis">
+                          <i class="pi pi-info-circle mr-2"></i>
+                          No draws configured for this event yet
+                        </div>
+                      }
                     </div>
                   }
                 </div>
-              }
-            </div>
-          </div>
+              </div>
+            }
+          }
         }
       </section>
     }

@@ -22,6 +22,24 @@ const TRIGGER_EVENT_SYNC_MUTATION = gql`
   }
 `;
 
+const TRIGGER_SUB_EVENT_SYNC_MUTATION = gql`
+  mutation TriggerSubEventSync($tournamentCode: String!, $eventCode: String!, $includeSubComponents: Boolean!) {
+    triggerSubEventSync(tournamentCode: $tournamentCode, eventCode: $eventCode, includeSubComponents: $includeSubComponents) {
+      message
+      success
+    }
+  }
+`;
+
+const TRIGGER_DRAW_SYNC_MUTATION = gql`
+  mutation TriggerDrawSync($tournamentCode: String!, $drawCode: String!, $includeSubComponents: Boolean!) {
+    triggerDrawSync(tournamentCode: $tournamentCode, drawCode: $drawCode, includeSubComponents: $includeSubComponents) {
+      message
+      success
+    }
+  }
+`;
+
 const TRIGGER_GAME_SYNC_MUTATION = gql`
   mutation TriggerGameSync($tournamentCode: String!, $eventCode: String, $drawCode: String, $matchCodes: [String!]) {
     triggerGameSync(tournamentCode: $tournamentCode, eventCode: $eventCode, drawCode: $drawCode, matchCodes: $matchCodes) {
@@ -31,7 +49,7 @@ const TRIGGER_GAME_SYNC_MUTATION = gql`
   }
 `;
 
-export type SyncLevel = 'tournament' | 'event' | 'draw' | 'game';
+export type SyncLevel = 'tournament' | 'event' | 'sub-event' | 'draw' | 'game';
 
 export interface SyncButtonConfig {
   tournamentCode?: string;
@@ -73,15 +91,26 @@ export interface SyncButtonConfig {
           [model]="tournamentSyncItems"
         />
       } @else if (cfg.level === 'event') {
-        <!-- Event level sync (actually subevent) -->
+        <!-- Event level sync -->
         <p-splitButton
           icon="pi pi-refresh"
           size="small"
           severity="secondary"
           [disabled]="loading()"
           (onClick)="syncEvent()"
-          [label]="'all.sync.actions.syncSubEvent' | translate"
+          [label]="'all.sync.actions.syncEvent' | translate"
           [model]="eventSyncItems"
+        />
+      } @else if (cfg.level === 'sub-event') {
+        <!-- Sub-event level sync -->
+        <p-splitButton
+          icon="pi pi-refresh"
+          size="small"
+          severity="secondary"
+          [disabled]="loading()"
+          (onClick)="syncSubEvent()"
+          [label]="'all.sync.actions.syncSubEvent' | translate"
+          [model]="subEventSyncItems"
         />
       } @else if (cfg.level === 'draw') {
         <!-- Draw level sync -->
@@ -208,9 +237,17 @@ export class SyncButtonComponent {
 
   eventSyncItems = [
     {
-      label: 'all.sync.actions.syncSubEventFull',
+      label: 'all.sync.actions.syncEventFull',
       icon: 'pi pi-sitemap',
       command: () => this.syncEvent(true),
+    },
+  ];
+
+  subEventSyncItems = [
+    {
+      label: 'all.sync.actions.syncSubEventFull',
+      icon: 'pi pi-sitemap',
+      command: () => this.syncSubEvent(true),
     },
   ];
 
@@ -296,6 +333,40 @@ export class SyncButtonComponent {
     }
   }
 
+  async syncSubEvent(includeSubComponents = false): Promise<void> {
+    const cfg = this.config();
+    if (!cfg || !cfg.eventCode) return;
+
+    this.loading.set(true);
+    try {
+      const result = await lastValueFrom(
+        this.apollo.mutate<{ triggerSubEventSync: { message: string; success: boolean } }>({
+          mutation: TRIGGER_SUB_EVENT_SYNC_MUTATION,
+          variables: {
+            tournamentCode: cfg.tournamentCode,
+            eventCode: cfg.eventCode,
+            includeSubComponents,
+          },
+        }),
+      );
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: result.data?.triggerSubEventSync.message || `Sub-event sync started for ${cfg.eventName}`,
+      });
+    } catch (e: unknown) {
+      console.error('syncSubEvent error', e);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: `Failed to sync sub-event ${cfg.eventName}`,
+      });
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   async syncDraw(includeSubComponents = false): Promise<void> {
     console.log('syncDraw called with includeSubComponents:', includeSubComponents);
     const cfg = this.config();
@@ -310,14 +381,7 @@ export class SyncButtonComponent {
     try {
       const result = await lastValueFrom(
         this.apollo.mutate<{ triggerDrawSync: { message: string; success: boolean } }>({
-          mutation: gql`
-            mutation TriggerDrawSync($tournamentCode: String!, $drawCode: String!, $includeSubComponents: Boolean!) {
-              triggerDrawSync(tournamentCode: $tournamentCode, drawCode: $drawCode, includeSubComponents: $includeSubComponents) {
-                message
-                success
-              }
-            }
-          `,
+          mutation: TRIGGER_DRAW_SYNC_MUTATION,
           variables: {
             tournamentCode: cfg.tournamentCode,
             drawCode: cfg.drawCode,

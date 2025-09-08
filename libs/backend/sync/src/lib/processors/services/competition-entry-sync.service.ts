@@ -61,7 +61,7 @@ export class CompetitionEntrySyncService {
       this.logger.log(`Completed competition entry sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process competition entry sync: ${errorMessage}`);
+      this.logger.error(`Failed to process competition entry sync: ${errorMessage}`, error);
       throw error;
     }
   }
@@ -80,16 +80,16 @@ export class CompetitionEntrySyncService {
       }
 
       // Create entry for team1
-      await this.createTeamEntry(draw, team1, 'competition');
+      await this.createOrUpdateEntry(draw, team1, 'competition');
 
       // Create entry for team2 if it exists
       if (team2) {
-        await this.createTeamEntry(draw, team2, 'competition');
+        await this.createOrUpdateEntry(draw, team2, 'competition');
       }
     }
   }
 
-  private async createTeamEntry(draw: CompetitionDraw, team: TeamModel, entryType: string): Promise<void> {
+  private async createOrUpdateEntry(draw: CompetitionDraw, team: TeamModel, entryType: string): Promise<void> {
     // Check if team entry already exists
     const existingTeamEntry = await Entry.findOne({
       where: {

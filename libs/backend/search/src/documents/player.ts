@@ -1,8 +1,7 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const PlayerDocument: CollectionCreateSchema = {
+export const PlayerDocument = {
   name: 'players',
-  enable_nested_fields: true,
   fields: [
     { name: 'objectID', type: 'string' },
     { name: 'firstName', type: 'string' },
@@ -15,5 +14,6 @@ export const PlayerDocument: CollectionCreateSchema = {
     { name: 'type', type: 'string' },
     { name: 'order', type: 'int32' },
   ],
-  default_sorting_field: 'order',
-};
+  // enable_nested_fields: true,
+  // default_sorting_field: 'order',
+} satisfies CollectionCreateSchema;

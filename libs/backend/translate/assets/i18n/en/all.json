@@ -67,6 +67,8 @@
     "lost": "Lost",
     "no_bracket": "No Bracket Available",
     "no_bracket_description": "This knockout draw doesn't have bracket data yet.",
+    "no_encounters": "No Encounters",
+    "no_encounters_description": "This draw doesn't have any encounters scheduled yet.",
     "no_games": "No games available",
     "no_qualification": "No Qualification Data",
     "no_qualification_description": "This qualification draw doesn't have qualification data yet.",
@@ -89,6 +91,7 @@
     "qualified": "Qualified",
     "season": "Season",
     "sets": "Sets",
+    "size": "Size",
     "standings": "Standings",
     "statistics": "Statistics",
     "status": "Status",
@@ -96,6 +99,10 @@
     "subEvents": "Series",
     "team": "Team",
     "teams": "Teams",
+    "tooltip": {
+      "faller": "This player/team will fall in the ranking",
+      "riser": "This player/team will rise in the ranking"
+    },
     "tournament_winner": "Tournament Winner",
     "type": "Type",
     "types": {
@@ -108,13 +115,6 @@
       "Other": "Other type",
       "women": "Women's competition"
     },
-    "tooltip": {
-      "faller": "This player/team will fall in the ranking",
-      "riser": "This player/team will rise in the ranking"
-    },
-    "size": "Size",
-    "no_encounters": "No Encounters",
-    "no_encounters_description": "This draw doesn't have any encounters scheduled yet.",
     "visualCode": "Visual Code",
     "won": "Won"
   },
@@ -644,6 +644,12 @@
     "eventType": "Event Type",
     "firstDay": "First Day",
     "gameType": "Game Type",
+    "gameTypes": {
+      "doubles": "Doubles",
+      "mixed": "Mixed",
+      "other": "Other",
+      "singles": "Singles"
+    },
     "information": "Tournament Information",
     "level": "Level",
     "location": "Location",

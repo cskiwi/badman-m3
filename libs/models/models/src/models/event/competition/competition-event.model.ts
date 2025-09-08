@@ -72,12 +72,12 @@ export class CompetitionEvent extends BaseEntity {
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
   @Column({ type: 'timestamp with time zone', nullable: true })
-  declare openDate: Date;
+  declare openDate?: Date;
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })
   @Column({ type: 'timestamp with time zone', nullable: true })
-  declare closeDate: Date;
+  declare closeDate?: Date;
 
   @SortableField(() => Date, { nullable: true })
   @WhereField(() => Date, { nullable: true })

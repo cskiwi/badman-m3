@@ -18,4 +18,11 @@ export class HealthController {
   check() {
     return this.health.check([() => this.typeOrm.pingCheck('database'), () => this.memory.checkHeap('memory_heap', 1 * 1024 * 1024 * 1024 * 1024)]);
   }
+
+  @Get('Test')
+  test() {
+    throw new Error('Test error');
+
+    return 'Test endpoint';
+  }
 }

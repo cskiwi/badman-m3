@@ -1,34 +1,33 @@
-import { Module } from '@nestjs/common';
 import { TournamentApiModule } from '@app/backend-tournament-api';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { TournamentDiscoveryProcessor } from './processors/tournament-discovery.processor';
-import { CompetitionEventProcessor } from './processors/competition-event.processor';
-import { TournamentEventProcessor } from './processors/tournament-event.processor';
-import { TeamMatchingProcessor } from './processors/team-matching.processor';
-import { SyncService } from './services/sync.service';
-import { ALL_SYNC_QUEUES } from './queues/sync.queue';
 import {
-  CompetitionStructureSyncService,
-  CompetitionGameSyncService,
-  CompetitionEventSyncService,
-  CompetitionSubEventSyncService,
   CompetitionDrawSyncService,
-  CompetitionEntrySyncService,
   CompetitionEncounterSyncService,
-  CompetitionStandingSyncService,
+  CompetitionEntrySyncService,
+  CompetitionEventProcessor,
+  CompetitionEventSyncService,
   CompetitionGameIndividualSyncService,
+  CompetitionGameSyncService,
   CompetitionPlanningService,
-  TournamentStructureSyncService,
-  TournamentGameSyncService,
-  TournamentEventSyncService,
-  TournamentSubEventSyncService,
+  CompetitionStandingSyncService,
+  CompetitionSubEventSyncService,
+  TeamMatchingProcessor,
+  TeamSyncService,
+  DiscoveryProcessor,
   TournamentDrawSyncService,
-  TournamentStandingSyncService,
+  TournamentEventProcessor,
+  TournamentEventSyncService,
   TournamentGameIndividualSyncService,
+  TournamentGameSyncService,
   TournamentPlanningService,
-} from './processors/services';
+  TournamentStandingSyncService,
+  TournamentSubEventSyncService,
+} from './processors';
+import { ALL_SYNC_QUEUES } from './queues/sync.queue';
+import { SyncService } from './services/sync.service';
 
 @Module({
   imports: [
@@ -80,12 +79,11 @@ import {
   ],
   providers: [
     SyncService, // Add SyncService so processors can queue additional jobs
-    TournamentDiscoveryProcessor,
+    DiscoveryProcessor,
     CompetitionEventProcessor,
     TournamentEventProcessor,
     TeamMatchingProcessor,
     // Competition sync services
-    CompetitionStructureSyncService,
     CompetitionGameSyncService,
     CompetitionEventSyncService,
     CompetitionSubEventSyncService,
@@ -96,7 +94,6 @@ import {
     CompetitionGameIndividualSyncService,
     CompetitionPlanningService,
     // Tournament sync services
-    TournamentStructureSyncService,
     TournamentGameSyncService,
     TournamentEventSyncService,
     TournamentSubEventSyncService,
@@ -104,6 +101,8 @@ import {
     TournamentStandingSyncService,
     TournamentGameIndividualSyncService,
     TournamentPlanningService,
+    // Shared sync services
+    TeamSyncService,
   ],
 })
 export class SyncProcessorsModule {}

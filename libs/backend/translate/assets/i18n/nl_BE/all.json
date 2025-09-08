@@ -67,6 +67,8 @@
     "lost": "Verloren",
     "no_bracket": "Geen Schema Beschikbaar",
     "no_bracket_description": "Dit eliminatie schema heeft nog geen schema gegevens.",
+    "no_encounters": "Geen Wedstrijden",
+    "no_encounters_description": "Deze reeks heeft nog geen geplande wedstrijden.",
     "no_games": "Geen wedstrijden beschikbaar",
     "no_qualification": "Geen Kwalificatie Gegevens",
     "no_qualification_description": "Dit kwalificatie schema heeft nog geen kwalificatie gegevens.",
@@ -89,6 +91,7 @@
     "qualified": "Gekwalificeerd",
     "season": "Seizoen",
     "sets": "Sets",
+    "size": "Grootte",
     "standings": "Klassement",
     "statistics": "Statistieken",
     "status": "Status",
@@ -96,6 +99,10 @@
     "subEvents": "Reeksen",
     "team": "Team",
     "teams": "Teams",
+    "tooltip": {
+      "faller": "Deze speler/team zal dalen in de rangschikking",
+      "riser": "Deze speler/team zal stijgen in de rangschikking"
+    },
     "tournament_winner": "Toernooi Winnaar",
     "type": "Type",
     "types": {
@@ -108,13 +115,6 @@
       "Other": "",
       "women": "Vrouwen competitie"
     },
-    "tooltip": {
-      "faller": "Deze speler/team zal dalen in de rangschikking",
-      "riser": "Deze speler/team zal stijgen in de rangschikking"
-    },
-    "size": "Grootte",
-    "no_encounters": "Geen Wedstrijden",
-    "no_encounters_description": "Deze reeks heeft nog geen geplande wedstrijden.",
     "visualCode": "Visuele Code",
     "won": "Gewonnen"
   },
@@ -644,6 +644,12 @@
     "eventType": "Event Type",
     "firstDay": "Eerste Dag",
     "gameType": "Spel Type",
+    "gameTypes": {
+      "doubles": "Dubbelspel",
+      "mixed": "Gemengd",
+      "other": "Andere",
+      "singles": "Enkelspel"
+    },
     "information": "Toernooi Informatie",
     "level": "Niveau",
     "location": "Locatie",

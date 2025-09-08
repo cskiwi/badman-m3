@@ -1,3 +1,5 @@
+import { TournamentWorkPlan } from '../processors/services/tournament-planning.service';
+
 // Queue Names - Each processor gets its own queue
 export const TOURNAMENT_DISCOVERY_QUEUE = 'tournament-discovery';
 export const COMPETITION_EVENT_QUEUE = 'competition-event';
@@ -106,6 +108,10 @@ export interface StructureSyncJobData {
   includeSubComponents?: boolean;
   // Display metadata
   metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentStructureSyncJobData extends StructureSyncJobData {
+  workPlan?: TournamentWorkPlan;
 }
 
 export interface GameSyncJobData {

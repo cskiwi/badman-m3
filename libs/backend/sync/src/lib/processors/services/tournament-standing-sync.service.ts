@@ -107,7 +107,7 @@ export class TournamentStandingSyncService {
       this.logger.log(`Completed tournament standing sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process tournament standing sync: ${errorMessage}`);
+      this.logger.error(`Failed to process tournament standing sync: ${errorMessage}`, error);
       throw error;
     }
   }
@@ -335,7 +335,7 @@ export class TournamentStandingSyncService {
       this.logger.log(`Successfully repaired sub-event relationship`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to repair sub-event relationship: ${errorMessage}`);
+      this.logger.error(`Failed to repair sub-event relationship: ${errorMessage}`, error);
       throw error;
     }
   }

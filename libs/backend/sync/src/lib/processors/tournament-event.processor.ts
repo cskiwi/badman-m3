@@ -1,6 +1,6 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
-import { Job, WaitingChildrenError } from 'bullmq';
+import { Job } from 'bullmq';
 import { GameSyncJobData, StructureSyncJobData, TOURNAMENT_EVENT_QUEUE } from '../queues/sync.queue';
 import {
   TournamentDrawSyncData,
@@ -10,7 +10,6 @@ import {
   TournamentGameSyncService,
   TournamentStandingSyncData,
   TournamentStandingSyncService,
-  TournamentStructureSyncService,
   TournamentSubEventSyncService,
 } from './services';
 
@@ -20,7 +19,6 @@ export class TournamentEventProcessor extends WorkerHost {
   private readonly logger = new Logger(TournamentEventProcessor.name);
 
   constructor(
-    private readonly tournamentStructureSyncService: TournamentStructureSyncService,
     private readonly tournamentGameSyncService: TournamentGameSyncService,
     private readonly tournamentEventSyncService: TournamentEventSyncService,
     private readonly tournamentSubEventSyncService: TournamentSubEventSyncService,
@@ -31,12 +29,11 @@ export class TournamentEventProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token: string): Promise<void> {
+  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token?: string): Promise<void> {
     if (job.name.includes('tournament-sync-structure')) {
-      await this.tournamentStructureSyncService.processStructureSync(job.data as StructureSyncJobData, async (progress: number) => {
-        this.logger.debug(`Tournament structure sync progress: ${progress}%`);
-        await job.updateProgress(progress);
-      });
+      // Structure sync jobs should be handled by individual specialized processors
+      // This should not happen - structure sync logic should be in specialized services
+      throw new Error('Structure sync jobs should not be processed here - use specialized processors');
     } else if (job.name.includes('tournament-sync-games')) {
       await this.tournamentGameSyncService.processGameSync(job.data as GameSyncJobData, async (progress: number) => {
         this.logger.debug(`Tournament game sync progress: ${progress}%`);
@@ -85,4 +82,5 @@ export class TournamentEventProcessor extends WorkerHost {
       throw new Error(`Unknown job type: ${job.name}`);
     }
   }
+
 }

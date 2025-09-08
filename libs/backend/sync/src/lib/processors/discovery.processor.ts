@@ -3,20 +3,19 @@ import { CompetitionEvent, TournamentEvent } from '@app/models';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { TOURNAMENT_DISCOVERY_QUEUE, TournamentDiscoveryJobData } from '../queues/sync.queue';
+import { TOURNAMENT_DISCOVERY_QUEUE as DISCOVERY_QUEUE, TournamentDiscoveryJobData } from '../queues/sync.queue';
 
 @Injectable()
-@Processor(TOURNAMENT_DISCOVERY_QUEUE)
-export class TournamentDiscoveryProcessor extends WorkerHost {
-  private readonly logger = new Logger(TournamentDiscoveryProcessor.name);
+@Processor(DISCOVERY_QUEUE)
+export class DiscoveryProcessor extends WorkerHost {
+  private readonly logger = new Logger(DiscoveryProcessor.name);
 
   constructor(private readonly tournamentApiClient: TournamentApiClient) {
     super();
-    this.logger.log('TournamentDiscoveryProcessor constructor?');
   }
 
   async process(job: Job<TournamentDiscoveryJobData, void, string>): Promise<void> {
-    this.logger.log(`Processing tournament discovery job: ${job.id}`);
+    this.logger.log(`Processing discovery job: ${job.id}`);
 
     try {
       const { refDate, pageSize, searchTerm } = job.data;
@@ -31,7 +30,7 @@ export class TournamentDiscoveryProcessor extends WorkerHost {
         searchTerm,
       });
 
-      this.logger.log(`Discovered ${tournaments.length} tournaments`);
+      this.logger.log(`Discovered ${tournaments.length} events from API`);
 
       // Calculate total work units
       const totalTournaments = tournaments.length;
@@ -100,7 +99,7 @@ export class TournamentDiscoveryProcessor extends WorkerHost {
       // }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process tournament ${tournament.Code}: ${errorMessage}`);
+      this.logger.error(`Failed to process tournament ${tournament.Code}: ${errorMessage}`, error);
     }
   }
 

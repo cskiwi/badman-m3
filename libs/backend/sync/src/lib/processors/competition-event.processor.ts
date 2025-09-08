@@ -5,6 +5,7 @@ import { COMPETITION_EVENT_QUEUE, GameSyncJobData, StructureSyncJobData, JOB_TYP
 import {
   CompetitionDrawSyncData,
   CompetitionDrawSyncService,
+  CompetitionEncounterSyncData,
   CompetitionEncounterSyncService,
   CompetitionEntrySyncData,
   CompetitionEntrySyncService,
@@ -13,7 +14,6 @@ import {
   CompetitionGameSyncService,
   CompetitionStandingSyncData,
   CompetitionStandingSyncService,
-  CompetitionStructureSyncService,
   CompetitionSubEventSyncService,
 } from './services';
 
@@ -23,7 +23,6 @@ export class CompetitionEventProcessor extends WorkerHost {
   private readonly logger = new Logger(CompetitionEventProcessor.name);
 
   constructor(
-    private readonly competitionStructureSyncService: CompetitionStructureSyncService,
     private readonly competitionGameSyncService: CompetitionGameSyncService,
     private readonly competitionEventSyncService: CompetitionEventSyncService,
     private readonly competitionSubEventSyncService: CompetitionSubEventSyncService,
@@ -36,11 +35,11 @@ export class CompetitionEventProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>): Promise<void> {
+  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token?: string): Promise<void> {
     if (job.name.includes('competition-sync-structure')) {
-      await this.competitionStructureSyncService.processStructureSync(job.data as StructureSyncJobData, async (progress: number) => {
-        await job.updateProgress(progress);
-      });
+      // Structure sync jobs should be handled by individual specialized processors
+      // This should not happen - structure sync logic should be in specialized services
+      throw new Error('Structure sync jobs should not be processed here - use specialized processors');
     } else if (job.name.includes('competition-sync-games')) {
       await this.competitionGameSyncService.processGameSync(job.data as GameSyncJobData, async (progress: number) => {
         await job.updateProgress(progress);
@@ -58,9 +57,16 @@ export class CompetitionEventProcessor extends WorkerHost {
         await job.updateProgress(progress);
       });
     } else if (job.name.includes('competition-encounter-')) {
-      await this.competitionEncounterSyncService.processEncounterSync(job.data, async (progress: number) => {
-        await job.updateProgress(progress);
-      });
+      await this.competitionEncounterSyncService.processEncounterSync(
+        job.data as CompetitionEncounterSyncData,
+        job.id?.toString() || '',
+        job.queueQualifiedName,
+        async (progress: number) => {
+          await job.updateProgress(progress);
+        },
+        job,
+        token
+      );
     } else if (job.name.includes('competition-standing-')) {
       await this.competitionStandingSyncService.processStandingSync(job.data as CompetitionStandingSyncData, async (progress: number) => {
         await job.updateProgress(progress);

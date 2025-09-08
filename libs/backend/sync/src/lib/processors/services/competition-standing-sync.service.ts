@@ -55,7 +55,7 @@ export class CompetitionStandingSyncService {
       this.logger.log(`Completed competition standing sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process competition standing sync: ${errorMessage}`);
+      this.logger.error(`Failed to process competition standing sync: ${errorMessage}`, error);
       throw error;
     }
   }

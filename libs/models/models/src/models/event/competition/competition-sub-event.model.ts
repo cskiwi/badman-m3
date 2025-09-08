@@ -79,6 +79,22 @@ export class CompetitionSubEvent extends BaseEntity {
   @Column({ nullable: true, type: 'timestamptz' })
   declare lastSync?: Date;
 
+  // API fields from Tournament Software XML <TournamentEvent> elements
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare genderId?: number; // 1=Men, 2=Women, 3=Mixed
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare gameTypeId?: number; // 1=Singles, 2=Doubles
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ type: 'integer', nullable: true })
+  declare paraClassId?: number; // 0=Standard
+
   @Field(() => CompetitionEvent, { nullable: true })
   @ManyToOne(() => CompetitionEvent, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })

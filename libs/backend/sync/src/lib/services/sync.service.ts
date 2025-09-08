@@ -7,6 +7,7 @@ import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
   GameSyncJobData,
   StructureSyncJobData,
+  TournamentStructureSyncJobData,
   SYNC_QUEUE,
   TOURNAMENT_DISCOVERY_QUEUE,
   COMPETITION_EVENT_QUEUE,
@@ -37,10 +38,10 @@ export class SyncService {
     @InjectQueue(TEAM_MATCHING_QUEUE)
     private readonly teamMatchingQueue: Queue,
 
-    @InjectFlowProducer('competition-sync') 
+    @InjectFlowProducer('competition-sync')
     private readonly competitionSyncFlow: FlowProducer,
 
-    @InjectFlowProducer('tournament-sync') 
+    @InjectFlowProducer('tournament-sync')
     private readonly tournamentSyncFlow: FlowProducer,
   ) {}
 
@@ -186,7 +187,7 @@ export class SyncService {
   /**
    * Queue tournament structure sync
    */
-  async queueTournamentStructureSync(data?: StructureSyncJobData): Promise<void> {
+  async queueTournamentStructureSync(data?: TournamentStructureSyncJobData): Promise<void> {
     await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });

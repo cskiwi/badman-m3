@@ -1,14 +1,1 @@
-export * from './lib/sync.module';
-export { SyncModule } from './lib/sync.module';
-export * from './lib/sync-processors.module';
-export { SyncProcessorsModule } from './lib/sync-processors.module';
-export { SyncService } from './lib/services/sync.service';
-export * from './lib/services/sync.service';
-export { SyncGateway } from './lib/gateways/sync.gateway';
-export * from './lib/gateways/sync.gateway';
-export * from './lib/queues/sync.queue';
-export * from './lib/processors/tournament-discovery.processor';
-export * from './lib/processors/competition-event.processor';
-export * from './lib/processors/tournament-event.processor';
-export * from './lib/processors/team-matching.processor';
-export * from './lib/listeners/sync-events.listener';
+export * from './lib';

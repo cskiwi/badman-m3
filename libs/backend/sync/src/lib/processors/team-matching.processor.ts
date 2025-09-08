@@ -115,7 +115,7 @@ export class TeamMatchingProcessor extends WorkerHost {
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to match team ${externalTeam.externalName}: ${errorMessage}`);
+      this.logger.error(`Failed to match team ${externalTeam.externalName}: ${errorMessage}`, error);
       await this.queueForManualReview(tournamentCode, externalTeam, [], errorMessage);
     }
   }
@@ -192,7 +192,7 @@ export class TeamMatchingProcessor extends WorkerHost {
       return candidates;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to find matching candidates: ${errorMessage}`);
+      this.logger.error(`Failed to find matching candidates: ${errorMessage}`, error);
       return [];
     }
   }
@@ -375,7 +375,7 @@ export class TeamMatchingProcessor extends WorkerHost {
       this.logger.log(`Created new team: ${newTeam.name} (${newTeam.id})`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create new team: ${errorMessage}`);
+      this.logger.error(`Failed to create new team: ${errorMessage}`, error);
     }
   }
 

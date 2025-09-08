@@ -42,7 +42,7 @@ export class CompetitionGameIndividualSyncService {
             }
           } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`);
+            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
           }
         }
       } else if (drawCode) {
@@ -79,7 +79,7 @@ export class CompetitionGameIndividualSyncService {
       this.logger.log(`Completed competition game individual sync - processed ${matches.length} matches`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process competition game individual sync: ${errorMessage}`);
+      this.logger.error(`Failed to process competition game individual sync: ${errorMessage}`, error);
       throw error;
     }
   }
