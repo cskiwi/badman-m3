@@ -325,28 +325,11 @@ export type I18nTranslations = {
             };
         };
         "sync": {
-            "actions": {
-                "syncDraw": string;
-                "syncSubEvent": string;
-                "syncTournament": string;
-            };
             "dashboard": {
                 "actions": {
                     "discoverySync": string;
                     "fullSync": string;
-                    "manualSync": string;
                     "sync": string;
-                    "syncAllGames": string;
-                    "syncDraw": string;
-                    "syncDrawWithGames": string;
-                    "syncEvent": string;
-                    "syncEventFull": string;
-                    "syncGames": string;
-                    "syncSpecificGames": string;
-                    "syncSubEvent": string;
-                    "syncSubEventFull": string;
-                    "syncTournament": string;
-                    "syncTournamentFull": string;
                 };
                 "jobs": {
                     "actions": string;

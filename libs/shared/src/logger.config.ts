@@ -28,7 +28,7 @@ export function createWinstonLogger(config?: { name?: string; logDir?: string })
         format: winston.format.combine(
           winston.format.timestamp(),
           winston.format.ms(),
-          nestWinstonModuleUtilities.format.nestLike('MyApp', {
+          nestWinstonModuleUtilities.format.nestLike('Badman', {
             colors: true,
             prettyPrint: true,
             processId: true,

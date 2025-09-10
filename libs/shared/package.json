@@ -16,7 +16,9 @@
     "@nestjs/core": "^11.1.5",
     "@nestjs/swagger": "^11.2.0",
     "@app/backend-sync": "*",
-    "@nestjs/platform-socket.io": "^11.1.5"
+    "@nestjs/platform-socket.io": "^11.1.5",
+    "winston": "^3.17.0",
+    "nest-winston": "^1.10.2"
   },
   "type": "commonjs",
   "main": "./src/index.js",

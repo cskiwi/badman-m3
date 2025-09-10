@@ -103,7 +103,7 @@ export interface TournamentDiscoveryJobData {
 
 export interface StructureSyncJobData {
   tournamentCode: string;
-  eventCodes?: string[];
+  eventCode?: string;
   forceUpdate?: boolean;
   includeSubComponents?: boolean;
   // Display metadata

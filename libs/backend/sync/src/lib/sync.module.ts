@@ -6,16 +6,14 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bullmq';
 import { SyncGateway } from './gateways/sync.gateway';
 import { SyncService } from './services/sync.service';
-import { 
+import {
   SyncEventsListener,
   TournamentDiscoveryEventsListener,
   CompetitionEventEventsListener,
   TournamentEventEventsListener,
   TeamMatchingEventsListener,
 } from './listeners/sync-events.listener';
-import { 
-  ALL_SYNC_QUEUES,
-} from './queues/sync.queue';
+import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
 
 @Module({
   imports: [
@@ -29,7 +27,7 @@ import {
         const port = configService.get<number>('CACHE_PORT') || configService.get<number>('REDIS_PORT') || 6379;
         const password = configService.get('CACHE_PASSWORD') || configService.get('REDIS_PASSWORD');
         const db = configService.get<number>('CACHE_DB') || configService.get<number>('REDIS_DB') || 0;
-        
+
         return {
           connection: {
             host,
@@ -42,25 +40,25 @@ import {
       inject: [ConfigService],
     }),
     // Register all queues dynamically
-    ...ALL_SYNC_QUEUES.map(queueName => 
+    ...ALL_SYNC_QUEUES.map((queueName) =>
       BullModule.registerQueue({
         name: queueName,
-      })
+      }),
     ),
 
     // Register flow producers for sub-option sync capabilities
     BullModule.registerFlowProducer({
-      name: 'tournament-sync',
+      name: TOURNAMENT_EVENT_QUEUE,
     }),
     BullModule.registerFlowProducer({
-      name: 'competition-sync',
+      name: COMPETITION_EVENT_QUEUE,
     }),
 
     TournamentApiModule,
   ],
   providers: [
-    SyncService, 
-    SyncGateway, 
+    SyncService,
+    SyncGateway,
     SyncEventsListener,
     TournamentDiscoveryEventsListener,
     CompetitionEventEventsListener,

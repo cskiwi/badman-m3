@@ -1,17 +1,17 @@
 import { TournamentApiClient, TournamentEvent } from '@app/backend-tournament-api';
 import { TournamentEvent as TournamentEventModel, TournamentSubEvent } from '@app/models';
-import { Injectable, Logger } from '@nestjs/common';
+import { GameType, SubEventTypeEnum } from '@app/models-enum';
 import { InjectFlowProducer } from '@nestjs/bullmq';
+import { Injectable, Logger } from '@nestjs/common';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { TOURNAMENT_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { TournamentPlanningService, TournamentWorkPlan } from './tournament-planning.service';
-import { SubEventTypeEnum, GameType } from '@app/models-enum';
 
 export interface TournamentSubEventSyncData {
   tournamentCode: string;
-  eventCodes?: string[];
-  subEventCodes?: string[];
+  eventId?: string;
+  eventCode?: string;
   includeSubComponents?: boolean;
   workPlan?: TournamentWorkPlan;
   childJobsCreated?: boolean;
@@ -24,148 +24,111 @@ export class TournamentSubEventSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly tournamentPlanningService: TournamentPlanningService,
-    @InjectFlowProducer('tournament-sync') private readonly tournamentSyncFlow: FlowProducer,
+    @InjectFlowProducer(TOURNAMENT_EVENT_QUEUE) private readonly tournamentSyncFlow: FlowProducer,
   ) {}
 
   async processSubEventSync(
-    data: TournamentSubEventSyncData,
-    jobId: string,
-    queueQualifiedName: string,
-    updateProgress?: (progress: number) => Promise<void>,
-    job?: Job,
-    token?: string,
+    job: Job<TournamentSubEventSyncData>,
+    updateProgress: (progress: number) => Promise<void>,
+    token: string,
   ): Promise<void> {
     this.logger.log(`Processing tournament sub-event sync`);
-    const { tournamentCode, eventCodes, subEventCodes, includeSubComponents, workPlan } = data;
+    const { tournamentCode, eventCode, includeSubComponents, childJobsCreated } = job.data;
 
     try {
-      // Check if this job has already created child jobs and handle different resume scenarios
-      const isResumeAfterChildren = data.childJobsCreated && includeSubComponents;
-
-      if (isResumeAfterChildren) {
-        if (job && token) {
-          // We have job and token - this is a legitimate resume after child completion
-          this.logger.log(`Tournament sub-event sync resuming after child completion`);
-          // Skip the work but continue to completion logic
-        } else {
-          // No job/token - this is likely a duplicate job creation, exit early
-          this.logger.log(`Tournament sub-event sync resuming - child jobs already created (duplicate prevention)`);
-          return;
-        }
-      }
-
       let completedSteps = 0;
       const totalSteps = includeSubComponents ? 3 : 2; // structure sync + draw sync + (optional child job creation)
 
-      // Only do the actual work if we're not resuming after children
-      if (!isResumeAfterChildren) {
-        // Create/update sub-events (primary responsibility of SubEvent service)
-        await this.createOrUpdateSubEvents(tournamentCode, eventCodes || subEventCodes);
+      // Get event information (needed for child job creation)
+      const event = (await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode))?.[0];
 
-        completedSteps++;
-        await updateProgress?.(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-        this.logger.debug(`Completed sub-event creation/update`);
-
-        // If includeSubComponents, add draw-level sync jobs
-        if (includeSubComponents) {
-          const events = eventCodes
-            ? await Promise.all(eventCodes.map((code: string) => this.tournamentApiClient.getTournamentEvents(tournamentCode, code)))
-            : [await this.tournamentApiClient.getTournamentEvents(tournamentCode)];
-
-          const flatEvents = events.flat();
-
-          for (const event of flatEvents) {
-            const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
-
-            for (const draw of draws) {
-              const drawJobName = generateJobId('tournament', 'draw', tournamentCode, event.Code, draw.Code);
-
-              await this.tournamentSyncFlow.add({
-                name: generateJobId('tournament', 'draw', tournamentCode, event.Code, draw.Code),
-                queueName: TOURNAMENT_EVENT_QUEUE,
-                data: {
-                  tournamentCode,
-                  eventCode: event.Code,
-                  drawCode: draw.Code,
-                  includeSubComponents: true,
-                  metadata: {
-                    displayName: draw.Name,
-                    drawName: draw.Name,
-                    eventName: event.Name,
-                    description: `Draw: ${draw.Name} in ${event.Name}`,
-                  },
-                },
-                opts: {
-                  jobId: drawJobName,
-                  parent: {
-                    id: jobId,
-                    queue: queueQualifiedName,
-                  },
-                },
-              });
-            }
-          }
-
-          // Complete this job's work (structure sync + draw sync + child job creation)
-          completedSteps++;
-          const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
-          await updateProgress?.(finalProgress);
-
-          // Mark job data to indicate child jobs have been created to prevent re-creation on resume
-          if (job) {
-            await job.updateData({ ...data, childJobsCreated: true });
-          }
-        }
+      if (!event) {
+        throw new Error(`Event with code ${eventCode} not found in tournament ${tournamentCode}`);
       }
 
-      // Handle completion logic for both first run and resume scenarios
-      if (includeSubComponents) {
-        // Check if we should wait for children using BullMQ pattern
-        if (job && token) {
-          const shouldWait = await job.moveToWaitingChildren(token);
-          if (shouldWait) {
-            this.logger.log(`Tournament sub-event sync waiting for child jobs`);
-            throw new WaitingChildrenError();
-          }
+      // Always do the actual work first (create/update sub-event)
+      await this.createOrUpdateSubEvent(tournamentCode, event);
+
+      completedSteps++;
+      await updateProgress(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      this.logger.debug(`Completed sub-event creation/update`);
+
+      // If includeSubComponents and children haven't been created yet, create them and wait
+      if (includeSubComponents && !childJobsCreated) {
+        const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
+
+        const validDraws = draws.filter((draw) => draw?.Code);
+
+        if (validDraws.length === 0) {
+          this.logger.log(`No valid draws found for event ${event.Code}`);
+          return;
         }
 
-        this.logger.log(`Completed tournament sub-event sync, child jobs queued`);
-        return;
+        // Log any skipped draws
+        const skippedDraws = draws.length - validDraws.length;
+        if (skippedDraws > 0) {
+          this.logger.warn(`${skippedDraws} draws without codes were skipped for event ${event.Code}`);
+        }
+
+        // Create children jobs for the flow
+        const children = validDraws.map((draw) => ({
+          name: generateJobId('tournament', 'draw', tournamentCode, event.Code, draw.Code),
+          queueName: TOURNAMENT_EVENT_QUEUE,
+          data: {
+            tournamentCode,
+            eventCode: event.Code,
+            drawCode: draw.Code,
+            includeSubComponents: true,
+            metadata: {
+              displayName: draw.Name,
+              drawName: draw.Name,
+              eventName: event.Name,
+              description: `Draw: ${draw.Name} in ${event.Name}`,
+            },
+          },
+          opts: {
+            jobId: generateJobId('tournament', 'draw', tournamentCode, event.Code, draw.Code),
+            parent: {
+              id: job.id!,
+              queue: job.queueQualifiedName,
+            },
+          },
+        }));
+
+        await job.updateData({
+          ...job.data,
+          childJobsCreated: true,
+        });
+
+        await this.tournamentSyncFlow.addBulk(children);
+
+        this.logger.log(`Added ${children.length} child draw jobs to flow`);
+
+        // Move to waiting for children and throw WaitingChildrenError
+        const shouldWait = await job.moveToWaitingChildren(token!);
+        if (shouldWait) {
+          this.logger.log(`Moving to waiting for children - ${validDraws.length} draw jobs pending`);
+          throw new WaitingChildrenError();
+        }
+
+        // If we reach here, all children have completed
+        this.logger.log(`All child draw jobs completed, continuing`);
       }
+
+      completedSteps++;
+      const finalProgress = this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
+      await updateProgress(finalProgress);
 
       this.logger.log(`Completed tournament sub-event sync`);
     } catch (error: unknown) {
+      // Re-throw WaitingChildrenError as expected
+      if (error instanceof WaitingChildrenError) {
+        throw error;
+      }
+
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process tournament sub-event sync: ${errorMessage}`, error);
-      throw error;
-    }
-  }
-
-  private async createOrUpdateSubEvents(tournamentCode: string, eventCodes?: string[]): Promise<void> {
-    this.logger.log(`Creating/updating sub-events for tournament ${tournamentCode}`);
-
-    try {
-      let events: any[] = [];
-
-      if (eventCodes && eventCodes.length > 0) {
-        // Sync specific events
-        for (const eventCode of eventCodes) {
-          const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode);
-          events.push(...eventList);
-        }
-      } else {
-        // Sync all events
-        events = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
-      }
-
-      for (const event of events) {
-        await this.createOrUpdateSubEvent(tournamentCode, event);
-      }
-
-      this.logger.log(`Created/updated ${events.length} sub-events`);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create/update sub-events: ${errorMessage}`, error);
+      await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
       throw error;
     }
   }
@@ -196,6 +159,7 @@ export class TournamentSubEventSyncService {
       existingEvent.eventType = this.mapSubEventType(event.GenderID);
       existingEvent.gameType = this.mapGameType(event.GameTypeID);
       existingEvent.level = event.LevelID;
+      existingEvent.lastSync = new Date();
       await existingEvent.save();
       this.logger.debug(`Updated existing sub-event ${event.Code} for tournament ${tournamentCode}`);
     } else {
@@ -206,6 +170,7 @@ export class TournamentSubEventSyncService {
       newEvent.level = event.LevelID;
       newEvent.visualCode = event.Code;
       newEvent.eventId = tournamentEvent.id; // Link to parent tournament
+      newEvent.lastSync = new Date();
       await newEvent.save();
       this.logger.debug(`Created new sub-event ${event.Code} for tournament ${tournamentCode}`);
     }

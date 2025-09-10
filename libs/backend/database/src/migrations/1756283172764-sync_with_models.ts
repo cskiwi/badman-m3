@@ -1373,6 +1373,11 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ALTER COLUMN "abbreviation"
             SET NOT NULL
         `);
+
+        await queryRunner.query(`
+          DELETE FROM "Clubs" where "clubId" = 15 and "id" = '9c62b2b6-507e-4428-8579-8a280dfaa19e';
+        `);
+
         await queryRunner.query(`
             ALTER TABLE "Clubs"
             ADD CONSTRAINT "UQ_8df52627355046c679aeb6c2401" UNIQUE ("clubId")
@@ -1530,6 +1535,9 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             CREATE INDEX "IDX_50d658fb8980e83fa9955cbe8b" ON "security"."Claims" ("description")
         `);
         await queryRunner.query(`
+            delete from "security"."Claims" where "id" in ('401bfdbd-c11b-4a7a-89ed-3599c5e4da86', '5d532421-0cfc-43d7-b22d-dea7a3f29b7b')
+        `);
+        await queryRunner.query(`
             CREATE UNIQUE INDEX "Claims_name_category" ON "security"."Claims" ("name", "category")
         `);
         await queryRunner.query(`
@@ -1555,6 +1563,9 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         `);
         await queryRunner.query(`
             CREATE UNIQUE INDEX "IDX_068a64efe79abae7599848f485" ON "Players" ("slug")
+        `);
+        await queryRunner.query(`
+            delete from "Players" where "memberId" = '50109200' and "sub" is null
         `);
         await queryRunner.query(`
             CREATE UNIQUE INDEX "IDX_d55be4fadce35c977029a620e6" ON "Players" ("memberId")
@@ -1608,6 +1619,12 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ADD CONSTRAINT "FK_8e23443cc2621bd06c7e3cbb44b" FOREIGN KEY ("entryId") REFERENCES "event"."Entries"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            delete from "event"."Standings" where "entryId" in (select "id" from "event"."Entries" where "player1Id" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d' or "player2Id" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d')
+        `);
+        await queryRunner.query(`
+            delete from "event"."Entries" where "player1Id" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d' or "player2Id" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d'
+        `);        
+        await queryRunner.query(`
             ALTER TABLE "event"."Entries"
             ADD CONSTRAINT "FK_b9a08449d33c5d0ce86d2c4c61c" FOREIGN KEY ("player1Id") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
@@ -1654,6 +1671,9 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ADD CONSTRAINT "FK_3b8afe506db2e006445d8fe9a22" FOREIGN KEY ("groupId") REFERENCES "ranking"."RankingGroups"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            delete from "ranking"."RankingPlaces" where "playerId" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d'
+        `);
+        await queryRunner.query(`
             ALTER TABLE "ranking"."RankingPlaces"
             ADD CONSTRAINT "FK_81b10f6e5a751108b3c3387114c" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
@@ -1662,12 +1682,18 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ADD CONSTRAINT "FK_506581cb94a36eb978fc5ccc824" FOREIGN KEY ("systemId") REFERENCES "ranking"."RankingSystems"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            delete from "ranking"."RankingLastPlaces" where "playerId" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d'
+        `);
+        await queryRunner.query(`
             ALTER TABLE "ranking"."RankingLastPlaces"
             ADD CONSTRAINT "FK_43b21895b5a5be60041562616c2" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingLastPlaces"
             ADD CONSTRAINT "FK_72fcbcbca75596f83be474b1e1c" FOREIGN KEY ("systemId") REFERENCES "ranking"."RankingSystems"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            delete from "ranking"."RankingPoints" where "playerId" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d'
         `);
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingPoints"
@@ -1682,6 +1708,9 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ADD CONSTRAINT "FK_fc0a37f539e1af22063e23e8c0c" FOREIGN KEY ("systemId") REFERENCES "ranking"."RankingSystems"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            delete from "event"."GamePlayerMemberships" where "playerId" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d'
+        `);
+        await queryRunner.query(`
             ALTER TABLE "event"."GamePlayerMemberships"
             ADD CONSTRAINT "FK_838500ca255539b133c7b86f8b7" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
@@ -1689,6 +1718,7 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ALTER TABLE "event"."GamePlayerMemberships"
             ADD CONSTRAINT "FK_afe644cba7b2ed50c0051cf9b97" FOREIGN KEY ("gameId") REFERENCES "event"."Games"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
+   
         await queryRunner.query(`
             ALTER TABLE "TeamPlayerMemberships"
             ADD CONSTRAINT "FK_7612ed67aaf658bdffe35ae9d62" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -1722,12 +1752,21 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ADD CONSTRAINT "FK_ce43a59a6ab0c141eb0372a932c" FOREIGN KEY ("captainId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            delete from "Teams" where "clubId" = '9c62b2b6-507e-4428-8579-8a280dfaa19e'
+        `);
+        await queryRunner.query(`
             ALTER TABLE "Teams"
             ADD CONSTRAINT "FK_2ec058fec5585684854fa80197d" FOREIGN KEY ("clubId") REFERENCES "Clubs"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
+            delete from "ClubPlayerMemberships" where "playerId" = '0d1829c8-e74b-4dd6-a70c-f865a899cb6d'
+        `);
+        await queryRunner.query(`
             ALTER TABLE "ClubPlayerMemberships"
             ADD CONSTRAINT "FK_0c39db4aebb22ddacb3354d9949" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            delete from "ClubPlayerMemberships" where "clubId" = '9c62b2b6-507e-4428-8579-8a280dfaa19e'
         `);
         await queryRunner.query(`
             ALTER TABLE "ClubPlayerMemberships"
@@ -1744,6 +1783,9 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         await queryRunner.query(`
             ALTER TABLE "security"."RoleClaimMemberships"
             ADD CONSTRAINT "FK_c58a3fa6f0cf3e39415fb8c921e" FOREIGN KEY ("roleId") REFERENCES "security"."Roles"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            delete from "security"."RoleClaimMemberships" where "claimId" in ('5d532421-0cfc-43d7-b22d-dea7a3f29b7b', '401bfdbd-c11b-4a7a-89ed-3599c5e4da86')
         `);
         await queryRunner.query(`
             ALTER TABLE "security"."RoleClaimMemberships"

@@ -18,7 +18,8 @@
     "graphql-type-json": "^0.3.2",
     "reflect-metadata": "^0.2.2",
     "@app/models-enum": "*",
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "@apollo/client": "^3.14.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

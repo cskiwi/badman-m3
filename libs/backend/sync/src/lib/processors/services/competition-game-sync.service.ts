@@ -2,9 +2,15 @@ import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/bac
 import { Game, Player } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
-import { Job, WaitingChildrenError } from 'bullmq';
+import { Job } from 'bullmq';
 import { GameSyncJobData } from '../../queues/sync.queue';
 import { CompetitionPlanningService } from './competition-planning.service';
+
+export interface CompetitionGameIndividualSyncData {
+  tournamentCode: string;
+  drawCode?: string;
+  matchCodes?: string[];
+}
 
 @Injectable()
 export class CompetitionGameSyncService {
@@ -15,16 +21,11 @@ export class CompetitionGameSyncService {
     private readonly competitionPlanningService: CompetitionPlanningService,
   ) {}
 
-  async processGameSync(
-    data: GameSyncJobData,
-    updateProgress: (progress: number) => Promise<void>,
-    job?: Job,
-    token?: string,
-  ): Promise<void> {
+  async processGameSync(job: Job<GameSyncJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     this.logger.log(`Processing competition game sync`);
 
     try {
-      const { tournamentCode, drawCode, matchCodes, date } = data;
+      const { tournamentCode, drawCode, matchCodes, date } = job.data;
 
       // Initialize progress
       await updateProgress(0);
@@ -76,21 +77,12 @@ export class CompetitionGameSyncService {
       // Process matches with progress tracking
       for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
-        await this.processMatch(tournamentCode, match, true); // true = isCompetition
+        await this.processMatch(tournamentCode, match);
 
         const finalProgress = this.competitionPlanningService.calculateProgress(i + 1, matches.length, true);
         await updateProgress(finalProgress);
 
         this.logger.debug(`Processed match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code}`);
-      }
-
-      // Check if we should wait for children using BullMQ pattern
-      if (job && token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-          this.logger.log(`Competition game sync waiting for child jobs`);
-          throw new WaitingChildrenError();
-        }
       }
 
       this.logger.log(`Completed competition game sync - processed ${matches.length} matches`);
@@ -102,7 +94,68 @@ export class CompetitionGameSyncService {
     }
   }
 
-  private async processMatch(tournamentCode: string, match: Match, isCompetition: boolean): Promise<void> {
+  async processGameIndividualSync(job: Job<CompetitionGameIndividualSyncData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
+    this.logger.log(`Processing competition game individual sync`);
+    const { tournamentCode, drawCode, matchCodes } = job.data;
+
+    try {
+      await updateProgress(0);
+      let matches: Match[] = [];
+
+      if (matchCodes && matchCodes.length > 0) {
+        // Sync specific matches
+        for (const matchCode of matchCodes) {
+          try {
+            const match = await this.tournamentApiClient.getTeamMatch(tournamentCode, matchCode);
+            if (match) {
+              matches.push(match);
+            }
+          } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
+          }
+        }
+      } else if (drawCode) {
+        // Sync all matches in a draw
+        const drawMatches = await this.tournamentApiClient.getMatchesByDraw(tournamentCode, drawCode);
+        matches = drawMatches?.filter((match) => match != null) || [];
+      }
+
+      this.logger.log(`Found ${matches.length} matches to process`);
+
+      if (matches.length === 0) {
+        this.logger.log(`No matches to process`);
+        await updateProgress(100);
+        return;
+      }
+
+      // Process matches with progress tracking
+      for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
+
+        if (!match) {
+          this.logger.warn(`Skipping undefined match at index ${i}`);
+          continue;
+        }
+
+        await this.processMatch(tournamentCode, match);
+
+        const finalProgress = this.competitionPlanningService.calculateProgress(i + 1, matches.length, true);
+        await updateProgress(finalProgress);
+
+        this.logger.debug(`Processed individual match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code}`);
+      }
+
+      this.logger.log(`Completed competition game individual sync - processed ${matches.length} matches`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to process competition game individual sync: ${errorMessage}`, errorStack);
+      throw error;
+    }
+  }
+
+  private async processMatch(tournamentCode: string, match: Match): Promise<void> {
     this.logger.debug(`Processing match: ${match.Code} - ${match.EventName}`);
 
     // Check if game already exists
@@ -130,7 +183,7 @@ export class CompetitionGameSyncService {
       newGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
       newGame.winner = match.Winner;
       newGame.round = match.RoundName;
-      newGame.linkType = isCompetition ? 'competition' : 'tournament';
+      newGame.linkType = 'competition';
       newGame.visualCode = match.Code;
       newGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
       newGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -79,62 +79,15 @@ export interface SyncButtonConfig {
   providers: [MessageService, ConfirmationService],
   template: `
     @if (config(); as cfg) {
-      @if (cfg.level === 'tournament') {
-        <!-- Tournament level sync -->
-        <p-splitButton
-          icon="pi pi-refresh"
-          size="small"
-          severity="secondary"
-          [disabled]="loading()"
-          (onClick)="syncTournament()"
-          [label]="'all.sync.actions.syncTournament' | translate"
-          [model]="tournamentSyncItems"
-        />
-      } @else if (cfg.level === 'event') {
-        <!-- Event level sync -->
-        <p-splitButton
-          icon="pi pi-refresh"
-          size="small"
-          severity="secondary"
-          [disabled]="loading()"
-          (onClick)="syncEvent()"
-          [label]="'all.sync.actions.syncEvent' | translate"
-          [model]="eventSyncItems"
-        />
-      } @else if (cfg.level === 'sub-event') {
-        <!-- Sub-event level sync -->
-        <p-splitButton
-          icon="pi pi-refresh"
-          size="small"
-          severity="secondary"
-          [disabled]="loading()"
-          (onClick)="syncSubEvent()"
-          [label]="'all.sync.actions.syncSubEvent' | translate"
-          [model]="subEventSyncItems"
-        />
-      } @else if (cfg.level === 'draw') {
-        <!-- Draw level sync -->
-        <p-splitButton
-          icon="pi pi-refresh"
-          size="small"
-          severity="secondary"
-          [disabled]="loading()"
-          (onClick)="syncDraw()"
-          [label]="'all.sync.actions.syncDraw' | translate"
-          [model]="drawSyncItems"
-        />
-      } @else if (cfg.level === 'game') {
-        <!-- Game level sync with options -->
-        <p-splitButton
-          icon="pi pi-download"
-          size="small"
-          severity="secondary"
-          [disabled]="loading()"
-          (onClick)="syncAllGames()"
-          [label]="'all.sync.actions.syncGames' | translate"
-          [model]="gameSyncItems"
-        />
-      }
+      <p-splitButton
+        [icon]="getSyncIcon(cfg.level)"
+        size="small"
+        severity="secondary"
+        [disabled]="loading()"
+        (onClick)="handleSyncClick(cfg.level)"
+        [label]="getSyncLabel(cfg.level) | translate"
+        [model]="getSyncItems(cfg.level)"
+      />
     }
 
     <!-- Game Sync Dialog -->
@@ -207,7 +160,7 @@ export interface SyncButtonConfig {
 export class SyncButtonComponent {
   private readonly apollo = inject(Apollo);
   private readonly messageService = inject(MessageService);
-  private readonly confirmationService = inject(ConfirmationService);
+  public translate = inject(TranslateService);
 
   // Inputs
   config = input.required<SyncButtonConfig>();
@@ -217,52 +170,87 @@ export class SyncButtonComponent {
   gameSyncDialogVisible = signal(false);
   matchCodes = '';
 
-  // Menu items for split button (as properties instead of getters)
-  drawSyncItems = [
-    {
-      label: 'all.sync.actions.syncDrawWithGames',
-      icon: 'pi pi-download',
-      command: () => this.syncDraw(true),
-    },
-  ];
+  // Helper methods for template
+  getSyncIcon(level: SyncLevel): string {
+    return level === 'game' ? 'pi pi-download' : 'pi pi-refresh';
+  }
 
-  // Menu items for split button
-  tournamentSyncItems = [
-    {
-      label: 'all.sync.actions.syncTournamentFull',
-      icon: 'pi pi-sitemap',
-      command: () => this.syncTournament(true),
-    },
-  ];
+  getSyncLabel(level: SyncLevel): string {
+    const labels = {
+      tournament: 'all.sync.dashboard.actions.fullSync',
+      event: 'all.sync.dashboard.actions.fullSync',
+      'sub-event': 'all.sync.dashboard.actions.fullSync',
+      draw: 'all.sync.dashboard.actions.fullSync',
+      game: 'all.sync.dashboard.actions.fullSync',
+    };
+    return labels[level];
+  }
 
-  eventSyncItems = [
-    {
-      label: 'all.sync.actions.syncEventFull',
-      icon: 'pi pi-sitemap',
-      command: () => this.syncEvent(true),
-    },
-  ];
+  getSyncItems(level: SyncLevel): any[] {
+    const baseItems = {
+      tournament: [
+        {
+          label: this.translate.instant('all.sync.dashboard.actions.sync'),
+          icon: 'pi pi-refresh',
+          command: () => this.syncTournament(),
+        },
+      ],
+      event: [
+        {
+          label: this.translate.instant('all.sync.dashboard.actions.sync'),
+          icon: 'pi pi-refresh',
+          command: () => this.syncEvent(),
+        },
+      ],
+      'sub-event': [
+        {
+          label: this.translate.instant('all.sync.dashboard.actions.sync'),
+          icon: 'pi pi-refresh',
+          command: () => this.syncSubEvent(),
+        },
+      ],
+      draw: [
+        {
+          label: this.translate.instant('all.sync.dashboard.actions.sync'),
+          icon: 'pi pi-refresh',
+          command: () => this.syncDraw(),
+        },
+      ],
+      game: [
+        {
+          label: this.translate.instant('all.sync.dashboard.actions.sync'),
+          icon: 'pi pi-download',
+          command: () => this.syncAllGames(),
+        },
+        {
+          label: this.translate.instant('all.sync.dashboard.actions.sync'),
+          icon: 'pi pi-list',
+          command: () => this.openGameSyncDialog(),
+        },
+      ],
+    };
+    return baseItems[level] || [];
+  }
 
-  subEventSyncItems = [
-    {
-      label: 'all.sync.actions.syncSubEventFull',
-      icon: 'pi pi-sitemap',
-      command: () => this.syncSubEvent(true),
-    },
-  ];
-
-  gameSyncItems = [
-    {
-      label: 'all.sync.actions.syncAllGames',
-      icon: 'pi pi-download',
-      command: () => this.syncAllGames(),
-    },
-    {
-      label: 'all.sync.actions.syncSpecificGames',
-      icon: 'pi pi-list',
-      command: () => this.openGameSyncDialog(),
-    },
-  ];
+  handleSyncClick(level: SyncLevel): void {
+    switch (level) {
+      case 'tournament':
+        this.syncTournament(true);
+        break;
+      case 'event':
+        this.syncEvent(true);
+        break;
+      case 'sub-event':
+        this.syncSubEvent(true);
+        break;
+      case 'draw':
+        this.syncDraw(true);
+        break;
+      case 'game':
+        this.syncAllGames();
+        break;
+    }
+  }
 
   // Sync methods
   async syncTournament(includeSubComponents = false): Promise<void> {

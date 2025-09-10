@@ -186,7 +186,7 @@ export class SyncResolver {
   async triggerCompetitionSync(
     @User() user: Player,
     @Args('tournamentCode', { nullable: true }) tournamentCode?: string,
-    @Args('eventCodes', { type: () => [String], nullable: true }) eventCodes?: string[],
+    @Args('eventCode', { type: () => [String], nullable: true }) eventCode?: string,
     @Args('forceUpdate', { type: () => Boolean, defaultValue: false }) forceUpdate?: boolean,
     @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
   ): Promise<SyncTriggerResponse> {
@@ -194,7 +194,7 @@ export class SyncResolver {
       throw new ForbiddenException('Insufficient permissions to trigger competition sync');
     }
 
-    const data = tournamentCode ? { tournamentCode, eventCodes, forceUpdate, includeSubComponents } : undefined;
+    const data = tournamentCode ? { tournamentCode, eventCode, forceUpdate, includeSubComponents } : undefined;
     await this.syncService.queueCompetitionStructureSync(data);
 
     return {
@@ -208,7 +208,7 @@ export class SyncResolver {
   async triggerTournamentSync(
     @User() user: Player,
     @Args('tournamentCode', { nullable: true }) tournamentCode?: string,
-    @Args('eventCodes', { type: () => [String], nullable: true }) eventCodes?: string[],
+    @Args('eventCode', { type: () => [String], nullable: true }) eventCode?: string,
     @Args('forceUpdate', { type: () => Boolean, defaultValue: false }) forceUpdate?: boolean,
     @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
   ): Promise<SyncTriggerResponse> {
@@ -216,7 +216,7 @@ export class SyncResolver {
       throw new ForbiddenException('Insufficient permissions to trigger tournament sync');
     }
 
-    const data = tournamentCode ? { tournamentCode, eventCodes, forceUpdate, includeSubComponents } : undefined;
+    const data = tournamentCode ? { tournamentCode, eventCode, forceUpdate, includeSubComponents } : undefined;
     await this.syncService.queueTournamentStructureSync(data);
 
     return {

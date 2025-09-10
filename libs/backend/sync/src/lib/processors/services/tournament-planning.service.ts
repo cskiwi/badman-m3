@@ -31,17 +31,16 @@ export class TournamentPlanningService {
   /**
    * Calculate the total work plan for a tournament synchronization
    */
-  async calculateTournamentWorkPlan(tournamentCode: string, eventCodes?: string[], includeSubComponents = true): Promise<TournamentWorkPlan> {
+  async calculateTournamentWorkPlan(tournamentCode: string, eventCode?: string, includeSubComponents = true): Promise<TournamentWorkPlan> {
     this.logger.log(`Calculating work plan for tournament ${tournamentCode}`);
 
     try {
       // Get tournament events
-      const events =
-        eventCodes && eventCodes.length > 0
-          ? await Promise.all(eventCodes.map((code) => this.tournamentApiClient.getTournamentEvents(tournamentCode, code)))
-          : [await this.tournamentApiClient.getTournamentEvents(tournamentCode)];
+      const events = eventCode
+          ? await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode)
+          : await this.tournamentApiClient.getTournamentEvents(tournamentCode);
 
-      const flatEvents = events.flat();
+      const flatEvents = Array.isArray(events) ? events : [events];
 
       let totalDraws = 0;
       let totalGames = 0;

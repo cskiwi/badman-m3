@@ -10,13 +10,12 @@ import {
   TournamentStructureSyncJobData,
   SYNC_QUEUE,
   TOURNAMENT_DISCOVERY_QUEUE,
-  COMPETITION_EVENT_QUEUE,
-  TOURNAMENT_EVENT_QUEUE,
   TEAM_MATCHING_QUEUE,
   JOB_TYPES,
-  createJobName,
   TeamMatchingJobData,
   TournamentDiscoveryJobData,
+  TOURNAMENT_EVENT_QUEUE,
+  COMPETITION_EVENT_QUEUE,
 } from '../queues/sync.queue';
 
 @Injectable()
@@ -38,10 +37,10 @@ export class SyncService {
     @InjectQueue(TEAM_MATCHING_QUEUE)
     private readonly teamMatchingQueue: Queue,
 
-    @InjectFlowProducer('competition-sync')
+    @InjectFlowProducer(COMPETITION_EVENT_QUEUE)
     private readonly competitionSyncFlow: FlowProducer,
 
-    @InjectFlowProducer('tournament-sync')
+    @InjectFlowProducer(TOURNAMENT_EVENT_QUEUE)
     private readonly tournamentSyncFlow: FlowProducer,
   ) {}
 
@@ -224,7 +223,7 @@ export class SyncService {
    * Queue sync for a specific event with granular control
    */
   async queueEventSync(tournamentCode: string, eventCode: string, includeSubComponents = false): Promise<void> {
-    const data = { tournamentCode, eventCodes: [eventCode], includeSubComponents };
+    const data = { tournamentCode, eventCode, includeSubComponents };
 
     // Determine if it's a tournament or competition by checking the database
     const eventType = await this.getEventType(tournamentCode);
@@ -276,8 +275,8 @@ export class SyncService {
   async queueSubEventSync(tournamentCode: string, eventCode: string, subEventCode?: string, includeSubComponents = false): Promise<void> {
     const data = {
       tournamentCode,
-      eventCodes: [eventCode],
-      subEventCodes: subEventCode ? [subEventCode] : undefined,
+      eventCode,
+      subEventCode,
       includeSubComponents,
     };
 

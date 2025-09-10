@@ -318,28 +318,11 @@
     }
   },
   "sync": {
-    "actions": {
-      "syncDraw": "Sync draw",
-      "syncSubEvent": "Sync sub-event",
-      "syncTournament": "Sync tournament"
-    },
     "dashboard": {
       "actions": {
         "discoverySync": "Discovery Sync",
         "fullSync": "Full Sync",
-        "manualSync": "Manual Sync",
-        "sync": "Sync",
-        "syncAllGames": "Sync All Games",
-        "syncDraw": "Sync Draw",
-        "syncDrawWithGames": "Sync Draw + Games",
-        "syncEvent": "Sync Event",
-        "syncEventFull": "Sync Event + Sub-components",
-        "syncGames": "Sync Games",
-        "syncSpecificGames": "Sync Specific Games",
-        "syncSubEvent": "Sync Sub-Event",
-        "syncSubEventFull": "Sync Sub-Event + Sub-components",
-        "syncTournament": "Sync Tournament",
-        "syncTournamentFull": "Sync Tournament + Sub-components"
+        "sync": "Sync"
       },
       "jobs": {
         "actions": "Actions",

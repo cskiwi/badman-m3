@@ -36,6 +36,12 @@ export class UpdateModelsBasedToernooiAPI1757094264444 implements MigrationInter
             ALTER TABLE "event"."Locations"
             ALTER COLUMN "coordinates" TYPE geometry
         `);
+         await queryRunner.query(`
+            delete from "event"."Standings" where "entryId" in (select "id" from "event"."Entries" where "teamId" in ('a0548712-2c28-4783-83e4-044200f7ebdb', 'e39a73da-460b-44ad-8c30-78bb574f39b4'))
+        `);
+        await queryRunner.query(`
+            delete from "event"."Entries" where "teamId" in ('a0548712-2c28-4783-83e4-044200f7ebdb', 'e39a73da-460b-44ad-8c30-78bb574f39b4')
+        `);
         await queryRunner.query(`
             ALTER TABLE "event"."Entries"
             ADD CONSTRAINT "FK_bc7d7f97d512a125be110efc552" FOREIGN KEY ("teamId") REFERENCES "Teams"("id") ON DELETE NO ACTION ON UPDATE NO ACTION

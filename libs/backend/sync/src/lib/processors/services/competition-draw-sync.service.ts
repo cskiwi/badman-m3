@@ -24,58 +24,40 @@ export class CompetitionDrawSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly competitionPlanningService: CompetitionPlanningService,
-    @InjectFlowProducer('competition-sync') private readonly competitionSyncFlow: FlowProducer,
+    @InjectFlowProducer(COMPETITION_EVENT_QUEUE) private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
-  async processDrawSync(
-    data: CompetitionDrawSyncData,
-    jobId: string,
-    queueQualifiedName: string,
-    updateProgress?: (progress: number) => Promise<void>,
-    job?: Job,
-    token?: string,
-  ): Promise<void> {
+  async processDrawSync(job: Job<CompetitionDrawSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition draw sync`);
-    const { tournamentCode, eventCode, drawCode, includeSubComponents, workPlan } = data;
+    const { tournamentCode, eventCode, drawCode, includeSubComponents, workPlan, childJobsCreated } = job.data;
 
     try {
-      // Check if this job has already created child jobs and handle different resume scenarios
-      const isResumeAfterChildren = data.childJobsCreated && includeSubComponents;
-
-      if (isResumeAfterChildren) {
-        if (job && token) {
-          // We have job and token - this is a legitimate resume after child completion
-          this.logger.log(`Competition draw sync resuming after child completion`);
-          // Skip the work but continue to completion logic
-        } else {
-          // No job/token - this is likely a duplicate job creation, exit early
-          this.logger.log(`Competition draw sync resuming - child jobs already created (duplicate prevention)`);
-          return;
-        }
-      }
-
       let completedSteps = 0;
       const totalSteps = includeSubComponents ? 4 : 3; // update draw + get name + entry job + (optional child jobs)
 
-      // Only do the actual work if we're not resuming after children
-      if (!isResumeAfterChildren) {
-        // Update/create the draw record and sync entries
-        await this.createOrUpdateDrawFromApi(tournamentCode, drawCode);
+      // Always do the actual work first (create/update draw)
+      completedSteps++;
+      await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      this.logger.log(`Work plan: ${workPlan?.totalJobs} total jobs needed`);
 
-        completedSteps++;
-        await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      // Update/create the draw record
+      await this.createOrUpdateDrawFromApi(tournamentCode, drawCode);
 
-        // Get draw name for metadata
-        const drawName = await this.getDrawName(tournamentCode, drawCode);
+      // Get draw name for metadata
+      const drawName = await this.getDrawName(tournamentCode, drawCode);
 
-        completedSteps++;
-        await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      completedSteps++;
+      await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      this.logger.debug(`Completed draw creation/update`);
 
-        // Sync entries for this draw
+      // Always sync entries for this draw (as a child job)
+      if (!childJobsCreated) {
+        const children = [];
+
+        // Add entry sync job
         const entryJobName = generateJobId('competition', 'entry', tournamentCode, drawCode);
-
-        await this.competitionSyncFlow.add({
-          name: generateJobId('competition', 'entry', tournamentCode, drawCode),
+        children.push({
+          name: entryJobName,
           queueName: COMPETITION_EVENT_QUEUE,
           data: {
             tournamentCode,
@@ -89,35 +71,36 @@ export class CompetitionDrawSyncService {
           opts: {
             jobId: entryJobName,
             parent: {
-              id: jobId,
-              queue: queueQualifiedName,
+              id: job.id!,
+              queue: job.queueQualifiedName,
             },
           },
         });
 
-        completedSteps++;
-        await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-
-        // If includeSubComponents, sync encounters and then standings
+        // If includeSubComponents, add encounter sync (with standing as its child)
         if (includeSubComponents) {
           const encounterJobName = generateJobId('competition', 'encounter', tournamentCode, drawCode);
           const standingJobName = generateJobId('competition', 'standing', tournamentCode, drawCode);
 
-          await this.competitionSyncFlow.add({
-            name: generateJobId('competition', 'encounter', tournamentCode, drawCode),
+          children.push({
+            name: encounterJobName,
             queueName: COMPETITION_EVENT_QUEUE,
             data: {
               tournamentCode,
               drawCode,
+              includeSubComponents: true,
+              workPlan, // Pass the work plan to child jobs
               metadata: {
                 displayName: `Encounters: ${drawName}`,
                 drawName: drawName,
                 description: `Encounter synchronization for draw ${drawName}`,
+                totalJobs: workPlan?.totalJobs,
+                breakdown: workPlan?.breakdown,
               },
             },
             children: [
               {
-                name: generateJobId('competition', 'standing', tournamentCode, drawCode),
+                name: standingJobName,
                 queueName: COMPETITION_EVENT_QUEUE,
                 data: {
                   tournamentCode,
@@ -136,52 +119,47 @@ export class CompetitionDrawSyncService {
             opts: {
               jobId: encounterJobName,
               parent: {
-                id: jobId,
-                queue: queueQualifiedName,
+                id: job.id!,
+                queue: job.queueQualifiedName,
               },
             },
           });
-
-          // Complete this job's work (update draw + get name + entry job + child job creation)
-          completedSteps++;
-          const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps);
-          await updateProgress?.(finalProgress);
-
-          // Mark job data to indicate child jobs have been created to prevent re-creation on resume
-          if (job) {
-            await job.updateData({ ...data, childJobsCreated: true });
-          }
-        }
-      }
-
-      // Handle completion logic for both first run and resume scenarios
-      if (includeSubComponents) {
-        // Check if we should wait for children using BullMQ pattern
-        if (job && token) {
-          const shouldWait = await job.moveToWaitingChildren(token);
-          if (shouldWait) {
-            this.logger.log(`Competition draw sync waiting for child jobs`);
-            throw new WaitingChildrenError();
-          }
         }
 
-        this.logger.log(`Completed competition draw sync, child jobs queued`);
-        return;
-      }
+        await job.updateData({
+          ...job.data,
+          childJobsCreated: true,
+        });
 
-      // Check if we should wait for children using BullMQ pattern (for entry job)
-      if (job && token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
+        await this.competitionSyncFlow.addBulk(children);
+
+        this.logger.log(`Added ${children.length} child jobs to flow`);
+
+        // Move to waiting for children and throw WaitingChildrenError
+        const shouldWait = await job.moveToWaitingChildren(token!);
         if (shouldWait) {
-          this.logger.log(`Competition draw sync waiting for child jobs`);
+          this.logger.log(`Moving to waiting for children - ${children.length} child jobs pending`);
           throw new WaitingChildrenError();
         }
+
+        // If we reach here, all children have completed
+        this.logger.log(`All child jobs completed, continuing`);
       }
+
+      completedSteps++;
+      const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
+      await updateProgress(finalProgress);
 
       this.logger.log(`Completed competition draw sync`);
     } catch (error: unknown) {
+      // Re-throw WaitingChildrenError as expected
+      if (error instanceof WaitingChildrenError) {
+        throw error;
+      }
+
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process competition draw sync: ${errorMessage}`, error);
+      await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
       throw error;
     }
   }

@@ -12,28 +12,21 @@ export interface CompetitionEntrySyncData {
 export class CompetitionEntrySyncService {
   private readonly logger = new Logger(CompetitionEntrySyncService.name);
 
-  constructor(
-    private readonly tournamentApiClient: TournamentApiClient,
-  ) {}
+  constructor(private readonly tournamentApiClient: TournamentApiClient) {}
 
-  async processEntrySync(
-    data: CompetitionEntrySyncData,
-    updateProgress?: (progress: number) => Promise<void>,
-    job?: Job,
-    token?: string,
-  ): Promise<void> {
+  async processEntrySync(job: Job<CompetitionEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
-    await updateProgress?.(10);
-    const { tournamentCode, drawCode } = data;
+    await updateProgress(10);
+    const { tournamentCode, drawCode } = job.data;
 
     try {
       // Find the draw
-      await updateProgress?.(20);
+      await updateProgress(20);
       const draw = await CompetitionDraw.findOne({
         where: { visualCode: drawCode },
         relations: ['subevent'],
       });
-      await updateProgress?.(30);
+      await updateProgress(30);
 
       if (!draw) {
         this.logger.warn(`Competition draw with code ${drawCode} not found, skipping entry sync`);
@@ -41,27 +34,19 @@ export class CompetitionEntrySyncService {
       }
 
       // Get and sync entries
-      await updateProgress?.(40);
+      await updateProgress(40);
       const entries = await this.tournamentApiClient.getDrawEntries?.(tournamentCode, drawCode);
-      await updateProgress?.(60);
+      await updateProgress(60);
       if (entries) {
         await this.updateCompetitionEntries(draw, entries);
       }
-      await updateProgress?.(90);
-
-      // Check if we should wait for children using BullMQ pattern
-      if (job && token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-          this.logger.log(`Competition entry sync waiting for child jobs`);
-          throw new WaitingChildrenError();
-        }
-      }
+      await updateProgress(90);
 
       this.logger.log(`Completed competition entry sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process competition entry sync: ${errorMessage}`, error);
+      await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
       throw error;
     }
   }
@@ -69,7 +54,7 @@ export class CompetitionEntrySyncService {
   private async updateCompetitionEntries(draw: CompetitionDraw, entries: unknown[]): Promise<void> {
     for (const entryData of entries) {
       const entry = entryData as { Team1: unknown; Team2?: unknown };
-      
+
       // Find or create teams
       const team1 = await this.findOrCreateTeamFromEntry(entry.Team1);
       const team2 = entry.Team2 ? await this.findOrCreateTeamFromEntry(entry.Team2) : null;
@@ -110,7 +95,7 @@ export class CompetitionEntrySyncService {
 
   private async findOrCreateTeamFromEntry(teamData: unknown): Promise<TeamModel | null> {
     const team = teamData as { Code?: string; Name?: string };
-    
+
     if (!team || !team.Code) {
       return null;
     }

@@ -19,18 +19,18 @@ export interface TournamentStandingSyncData {
 export class TournamentStandingSyncService {
   private readonly logger = new Logger(TournamentStandingSyncService.name);
 
-  async processStandingSync(data: TournamentStandingSyncData, updateProgress?: (progress: number) => Promise<void>): Promise<void> {
+  async processStandingSync(data: TournamentStandingSyncData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     this.logger.log(`Processing tournament standing sync`);
-    await updateProgress?.(10);
+    await updateProgress(10);
     const { tournamentCode, drawCode } = data;
 
     try {
       // Find the tournament event first to get proper context
-      await updateProgress?.(10);
+      await updateProgress(10);
       const tournamentEvent = await TournamentEventModel.findOne({
         where: { visualCode: tournamentCode },
       });
-      await updateProgress?.(20);
+      await updateProgress(20);
 
       if (!tournamentEvent) {
         this.logger.warn(`Tournament with code ${tournamentCode} not found, skipping standing sync`);
@@ -40,7 +40,7 @@ export class TournamentStandingSyncService {
       this.logger.debug(`Found tournament: ${tournamentEvent.id} with code ${tournamentCode}`);
 
       // Find the draw with tournament context to avoid visualCode ambiguity
-      await updateProgress?.(30);
+      await updateProgress(30);
       const draw = await TournamentDrawModel.findOne({
         where: {
           visualCode: drawCode,
@@ -52,7 +52,7 @@ export class TournamentStandingSyncService {
         },
         relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
       });
-      await updateProgress?.(40);
+      await updateProgress(40);
 
       if (!draw) {
         this.logger.warn(`Draw with code ${drawCode} not found for tournament ${tournamentCode}, skipping standing sync`);
@@ -90,10 +90,10 @@ export class TournamentStandingSyncService {
       }
 
       // Calculate standings locally from games
-      await updateProgress?.(50);
+      await updateProgress(50);
       this.logger.debug(`Starting standings calculation for draw ${drawCode}`);
       const calculatedStandings = await this.calculateStandingsFromGames(draw);
-      await updateProgress?.(80);
+      await updateProgress(80);
       this.logger.debug(`Calculated ${calculatedStandings.length} standings for draw ${drawCode}`);
 
       if (calculatedStandings.length > 0) {

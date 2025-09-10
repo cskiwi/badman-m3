@@ -5,7 +5,18 @@
       "mcp__kubernetes__pods_exec",
       "WebFetch(domain:ngx-translate.org)",
       "mcp__context7-server__resolve-library-id",
-      "mcp__context7-server__get-library-docs"
+      "mcp__context7-server__get-library-docs",
+      "WebFetch(domain:docs.bullmq.io)",
+      "Bash(find:*)",
+      "Bash(npx nx run:*)",
+      "mcp__kubernetes__pods_list_in_namespace",
+      "mcp__kubernetes__resources_get",
+      "mcp__kubernetes__pods_run",
+      "Bash(npx nx lint:*)",
+      "Bash(npx nx build:*)",
+      "WebSearch",
+      "Bash(sed:*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": [],
     "ask": []

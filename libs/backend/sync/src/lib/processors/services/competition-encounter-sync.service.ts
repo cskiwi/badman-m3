@@ -23,46 +23,30 @@ export class CompetitionEncounterSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly competitionPlanningService: CompetitionPlanningService,
-    @InjectFlowProducer('competition-sync') private readonly competitionSyncFlow: FlowProducer,
+    @InjectFlowProducer(COMPETITION_EVENT_QUEUE) private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
   async processEncounterSync(
-    data: CompetitionEncounterSyncData,
-    jobId: string,
-    queueQualifiedName: string,
-    updateProgress?: (progress: number) => Promise<void>,
-    job?: Job,
-    token?: string,
+    job: Job<CompetitionEncounterSyncData>,
+    updateProgress: (progress: number) => Promise<void>,
+    token: string
   ): Promise<void> {
     this.logger.log(`Processing competition encounter sync`);
-    const { tournamentCode, drawCode, encounterCodes, includeSubComponents, workPlan } = data;
+    const { tournamentCode, drawCode, encounterCodes, includeSubComponents, workPlan } = job.data;
 
     try {
       // Check if this job has already created child jobs and handle different resume scenarios
-      const isResumeAfterChildren = data.childJobsCreated && includeSubComponents;
-      
-      if (isResumeAfterChildren) {
-        if (job && token) {
-          // We have job and token - this is a legitimate resume after child completion
-          this.logger.log(`Competition encounter sync resuming after child completion`);
-          // Skip the work but continue to completion logic
-        } else {
-          // No job/token - this is likely a duplicate job creation, exit early
-          this.logger.log(`Competition encounter sync resuming - child jobs already created (duplicate prevention)`);
-          return;
-        }
-      }
 
       let completedSteps = 0;
       const totalSteps = includeSubComponents ? 3 : 2; // encounter sync + (optional child job creation)
 
       // Only do the actual work if we're not resuming after children
-      if (!isResumeAfterChildren) {
+      if (!includeSubComponents) {
         // Create/update encounters (primary responsibility of Encounter service)
         await this.createOrUpdateEncounters(tournamentCode, drawCode, encounterCodes);
-        
+
         completedSteps++;
-        await updateProgress?.(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+        await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
         this.logger.debug(`Completed encounter creation/update`);
 
         // If includeSubComponents, add game-level sync jobs
@@ -79,14 +63,14 @@ export class CompetitionEncounterSyncService {
               includeSubComponents: true,
               metadata: {
                 displayName: `Game Sync: ${drawCode}`,
-                description: `Game synchronization for draw ${drawCode} in competition ${tournamentCode}`
-              }
+                description: `Game synchronization for draw ${drawCode} in competition ${tournamentCode}`,
+              },
             },
             opts: {
               jobId: gameJobName,
               parent: {
-                id: jobId,
-                queue: queueQualifiedName,
+                id: job.id!,
+                queue: job.queueQualifiedName,
               },
             },
           });
@@ -99,14 +83,14 @@ export class CompetitionEncounterSyncService {
               drawCode,
               metadata: {
                 displayName: `Standing Sync: ${drawCode}`,
-                description: `Standing synchronization for draw ${drawCode} in competition ${tournamentCode}`
-              }
+                description: `Standing synchronization for draw ${drawCode} in competition ${tournamentCode}`,
+              },
             },
             opts: {
               jobId: standingJobName,
               parent: {
-                id: jobId,
-                queue: queueQualifiedName,
+                id: job.id!,
+                queue: job.queueQualifiedName,
               },
             },
           });
@@ -114,34 +98,15 @@ export class CompetitionEncounterSyncService {
           // Complete this job's work (encounter sync + child job creation)
           completedSteps++;
           const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
-          await updateProgress?.(finalProgress);
-          
-          // Mark job data to indicate child jobs have been created to prevent re-creation on resume
-          if (job) {
-            await job.updateData({ ...data, childJobsCreated: true });
-          }
+          await updateProgress(finalProgress);
         }
-      }
-
-      // Handle completion logic for both first run and resume scenarios
-      if (includeSubComponents) {
-        // Check if we should wait for children using BullMQ pattern
-        if (job && token) {
-          const shouldWait = await job.moveToWaitingChildren(token);
-          if (shouldWait) {
-            this.logger.log(`Competition encounter sync waiting for child jobs`);
-            throw new WaitingChildrenError();
-          }
-        }
-        
-        this.logger.log(`Completed competition encounter sync, child jobs queued`);
-        return;
       }
 
       this.logger.log(`Completed competition encounter sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process competition encounter sync: ${errorMessage}`, error);
+      await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
       throw error;
     }
   }

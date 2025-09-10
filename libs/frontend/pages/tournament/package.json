@@ -11,7 +11,7 @@
     "ngxtension": "^5.1.0",
     "primeng": "^20.0.0-rc.3",
     "@angular/forms": "20.1.0",
-    "@angular/common": "20.1.0",
+    "@angular/common": "20.2.4",
     "apollo-angular": "^11.0.0",
     "rxjs": "~7.8.2",
     "@app/frontend-modules-auth": "*"

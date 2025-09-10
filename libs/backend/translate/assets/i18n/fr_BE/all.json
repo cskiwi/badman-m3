@@ -318,28 +318,11 @@
     }
   },
   "sync": {
-    "actions": {
-      "syncDraw": "Pool de synchronisation",
-      "syncSubEvent": "Série Sync",
-      "syncTournament": "Tournoi de synchronisation"
-    },
     "dashboard": {
       "actions": {
         "discoverySync": "Sync de découverte",
         "fullSync": "Sync complète",
-        "manualSync": "Sync manuelle",
-        "sync": "Synchroniser",
-        "syncAllGames": "Synchroniser tous les matchs",
-        "syncDraw": "Synchroniser le tableau",
-        "syncDrawWithGames": "Synchroniser le tableau + matchs",
-        "syncEvent": "Synchroniser l'épreuve",
-        "syncEventFull": "Synchroniser l'épreuve + sous-composants",
-        "syncGames": "Synchroniser les matchs",
-        "syncSpecificGames": "Synchroniser des matchs spécifiques",
-        "syncSubEvent": "Synchroniser la sous-épreuve",
-        "syncSubEventFull": "Synchroniser la sous-épreuve + sous-composants",
-        "syncTournament": "Synchroniser le tournoi",
-        "syncTournamentFull": "Synchroniser le tournoi + sous-composants"
+        "sync": "Sync"
       },
       "jobs": {
         "actions": "Actions",

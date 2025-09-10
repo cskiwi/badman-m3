@@ -9,7 +9,6 @@ import {
   CompetitionEntrySyncService,
   CompetitionEventProcessor,
   CompetitionEventSyncService,
-  CompetitionGameIndividualSyncService,
   CompetitionGameSyncService,
   CompetitionPlanningService,
   CompetitionStandingSyncService,
@@ -18,15 +17,15 @@ import {
   TeamSyncService,
   DiscoveryProcessor,
   TournamentDrawSyncService,
+  TournamentEntrySyncService,
   TournamentEventProcessor,
   TournamentEventSyncService,
-  TournamentGameIndividualSyncService,
   TournamentGameSyncService,
   TournamentPlanningService,
   TournamentStandingSyncService,
   TournamentSubEventSyncService,
 } from './processors';
-import { ALL_SYNC_QUEUES } from './queues/sync.queue';
+import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
 import { SyncService } from './services/sync.service';
 
 @Module({
@@ -70,10 +69,10 @@ import { SyncService } from './services/sync.service';
     ),
     // Register flow producers for sub-option sync capabilities
     BullModule.registerFlowProducer({
-      name: 'competition-sync',
+      name: TOURNAMENT_EVENT_QUEUE,
     }),
     BullModule.registerFlowProducer({
-      name: 'tournament-sync',
+      name: COMPETITION_EVENT_QUEUE,
     }),
     TournamentApiModule,
   ],
@@ -91,15 +90,14 @@ import { SyncService } from './services/sync.service';
     CompetitionEntrySyncService,
     CompetitionEncounterSyncService,
     CompetitionStandingSyncService,
-    CompetitionGameIndividualSyncService,
     CompetitionPlanningService,
     // Tournament sync services
     TournamentGameSyncService,
     TournamentEventSyncService,
     TournamentSubEventSyncService,
     TournamentDrawSyncService,
+    TournamentEntrySyncService,
     TournamentStandingSyncService,
-    TournamentGameIndividualSyncService,
     TournamentPlanningService,
     // Shared sync services
     TeamSyncService,

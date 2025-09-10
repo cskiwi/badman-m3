@@ -318,28 +318,11 @@
     }
   },
   "sync": {
-    "actions": {
-      "syncDraw": "Sync poule",
-      "syncSubEvent": "Sync reeks",
-      "syncTournament": "Sync toernooi"
-    },
     "dashboard": {
       "actions": {
         "discoverySync": "Discovery Sync",
         "fullSync": "Volledige Sync",
-        "manualSync": "Handmatige Sync",
-        "sync": "Synchroniseren",
-        "syncAllGames": "Alle wedstrijden synchroniseren",
-        "syncDraw": "Schema synchroniseren",
-        "syncDrawWithGames": "Schema + wedstrijden synchroniseren",
-        "syncEvent": "Reeks synchroniseren",
-        "syncEventFull": "Reeks + sub-onderdelen synchroniseren",
-        "syncGames": "Wedstrijden synchroniseren",
-        "syncSpecificGames": "Specifieke wedstrijden synchroniseren",
-        "syncSubEvent": "Sub-reeks synchroniseren",
-        "syncSubEventFull": "Sub-reeks + sub-onderdelen synchroniseren",
-        "syncTournament": "Toernooi synchroniseren",
-        "syncTournamentFull": "Toernooi + sub-onderdelen synchroniseren"
+        "sync": "Sync"
       },
       "jobs": {
         "actions": "Acties",

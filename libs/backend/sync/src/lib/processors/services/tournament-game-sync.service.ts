@@ -2,9 +2,14 @@ import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/bac
 import { Game, Player, TournamentEvent as TournamentEventModel, TournamentDraw as TournamentDrawModel } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
-import { Job, WaitingChildrenError } from 'bullmq';
 import { GameSyncJobData } from '../../queues/sync.queue';
 import { TournamentPlanningService } from './tournament-planning.service';
+
+export interface TournamentGameIndividualSyncData {
+  tournamentCode: string;
+  drawCode?: string;
+  matchCodes?: string[];
+}
 
 @Injectable()
 export class TournamentGameSyncService {
@@ -15,7 +20,7 @@ export class TournamentGameSyncService {
     private readonly tournamentPlanningService: TournamentPlanningService,
   ) {}
 
-  async processGameSync(data: GameSyncJobData, updateProgress: (progress: number) => Promise<void>, job?: Job, token?: string): Promise<void> {
+  async processGameSync(data: GameSyncJobData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     this.logger.log(`Processing tournament game sync`);
 
     try {
@@ -85,21 +90,12 @@ export class TournamentGameSyncService {
           continue;
         }
 
-        await this.processMatch(tournamentCode, match, false); // false = isCompetition
+        await this.processMatch(tournamentCode, match);
 
         const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
         await updateProgress(finalProgress);
 
         this.logger.debug(`Processed match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code || 'NO_CODE'}`);
-      }
-
-      // Check if we should wait for children using BullMQ pattern
-      if (job && token) {
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-          this.logger.log(`Tournament game sync waiting for child jobs`);
-          throw new WaitingChildrenError();
-        }
       }
 
       this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
@@ -111,7 +107,68 @@ export class TournamentGameSyncService {
     }
   }
 
-  private async processMatch(tournamentCode: string, match: Match, isCompetition: boolean): Promise<void> {
+  async processGameIndividualSync(data: TournamentGameIndividualSyncData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
+    this.logger.log(`Processing tournament game individual sync`);
+    const { tournamentCode, drawCode, matchCodes } = data;
+
+    try {
+      await updateProgress(0);
+      let matches: Match[] = [];
+
+      if (matchCodes && matchCodes.length > 0) {
+        // Sync specific matches
+        for (const matchCode of matchCodes) {
+          try {
+            const match = await this.tournamentApiClient.getMatchDetails(tournamentCode, matchCode);
+            if (match) {
+              matches.push(match);
+            }
+          } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
+          }
+        }
+      } else if (drawCode) {
+        // Sync all matches in a draw
+        const drawMatches = await this.tournamentApiClient.getMatchesByDraw(tournamentCode, drawCode);
+        matches = drawMatches?.filter((match) => match != null) || [];
+      }
+
+      this.logger.log(`Found ${matches.length} matches to process`);
+
+      if (matches.length === 0) {
+        this.logger.log(`No matches to process`);
+        await updateProgress(100);
+        return;
+      }
+
+      // Process matches with progress tracking
+      for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
+
+        if (!match) {
+          this.logger.warn(`Skipping undefined match at index ${i}`);
+          continue;
+        }
+
+        await this.processMatch(tournamentCode, match);
+
+        const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
+        await updateProgress(finalProgress);
+
+        this.logger.debug(`Processed individual match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code || 'NO_CODE'}`);
+      }
+
+      this.logger.log(`Completed tournament game individual sync - processed ${matches.length} matches`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to process tournament game individual sync: ${errorMessage}`, errorStack);
+      throw error;
+    }
+  }
+
+  private async processMatch(tournamentCode: string, match: Match): Promise<void> {
     if (!match) {
       this.logger.warn('Received undefined or null match, skipping processing');
       return;
@@ -124,9 +181,37 @@ export class TournamentGameSyncService {
 
     this.logger.debug(`Processing tournament match: ${match.Code} - ${match.EventName}`);
 
-    // Check if game already exists
+    // Calculate linkId first for proper game lookup
+    let linkId: string | undefined;
+    if (match.DrawCode) {
+      // Find the tournament event first to get proper context
+      const tournamentEvent = await TournamentEventModel.findOne({
+        where: { visualCode: tournamentCode },
+      });
+
+      if (tournamentEvent) {
+        const draw = await TournamentDrawModel.findOne({
+          where: {
+            visualCode: match.DrawCode,
+            tournamentSubEvent: {
+              tournamentEvent: {
+                id: tournamentEvent.id,
+              },
+            },
+          },
+          relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
+        });
+        if (draw) {
+          linkId = draw.id;
+        }
+      }
+    }
+
     const existingGame = await Game.findOne({
-      where: { visualCode: match.Code },
+      where: {
+        visualCode: match.Code,
+        linkId: linkId,
+      },
     });
 
     if (existingGame) {
@@ -137,28 +222,8 @@ export class TournamentGameSyncService {
       existingGame.round = match.RoundName;
 
       // Set linkId to the draw ID for tournament games
-      if (!isCompetition && match.DrawCode) {
-        // Find the tournament event first to get proper context
-        const tournamentEvent = await TournamentEventModel.findOne({
-          where: { visualCode: tournamentCode },
-        });
-
-        if (tournamentEvent) {
-          const draw = await TournamentDrawModel.findOne({
-            where: {
-              visualCode: match.DrawCode,
-              tournamentSubEvent: {
-                tournamentEvent: {
-                  id: tournamentEvent.id,
-                },
-              },
-            },
-            relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
-          });
-          if (draw) {
-            existingGame.linkId = draw.id;
-          }
-        }
+      if (linkId) {
+        existingGame.linkId = linkId;
       }
 
       existingGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
@@ -175,32 +240,12 @@ export class TournamentGameSyncService {
       newGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
       newGame.winner = match.Winner;
       newGame.round = match.RoundName;
-      newGame.linkType = isCompetition ? 'competition' : 'tournament';
+      newGame.linkType = 'tournament';
       newGame.visualCode = match.Code;
 
       // Set linkId to the draw ID for tournament games
-      if (!isCompetition && match.DrawCode) {
-        // Find the tournament event first to get proper context
-        const tournamentEvent = await TournamentEventModel.findOne({
-          where: { visualCode: tournamentCode },
-        });
-
-        if (tournamentEvent) {
-          const draw = await TournamentDrawModel.findOne({
-            where: {
-              visualCode: match.DrawCode,
-              tournamentSubEvent: {
-                tournamentEvent: {
-                  id: tournamentEvent.id,
-                },
-              },
-            },
-            relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
-          });
-          if (draw) {
-            newGame.linkId = draw.id;
-          }
-        }
+      if (linkId) {
+        newGame.linkId = linkId;
       }
 
       newGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;

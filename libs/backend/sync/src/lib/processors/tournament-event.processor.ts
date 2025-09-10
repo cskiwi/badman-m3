@@ -5,8 +5,10 @@ import { GameSyncJobData, StructureSyncJobData, TOURNAMENT_EVENT_QUEUE } from '.
 import {
   TournamentDrawSyncData,
   TournamentDrawSyncService,
+  TournamentEntrySyncData,
+  TournamentEntrySyncService,
   TournamentEventSyncService,
-  TournamentGameIndividualSyncService,
+  TournamentGameIndividualSyncData,
   TournamentGameSyncService,
   TournamentStandingSyncData,
   TournamentStandingSyncService,
@@ -23,13 +25,13 @@ export class TournamentEventProcessor extends WorkerHost {
     private readonly tournamentEventSyncService: TournamentEventSyncService,
     private readonly tournamentSubEventSyncService: TournamentSubEventSyncService,
     private readonly tournamentDrawSyncService: TournamentDrawSyncService,
+    private readonly tournamentEntrySyncService: TournamentEntrySyncService,
     private readonly tournamentStandingSyncService: TournamentStandingSyncService,
-    private readonly tournamentGameIndividualSyncService: TournamentGameIndividualSyncService,
   ) {
     super();
   }
 
-  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token?: string): Promise<void> {
+  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token: string): Promise<void> {
     if (job.name.includes('tournament-sync-structure')) {
       // Structure sync jobs should be handled by individual specialized processors
       // This should not happen - structure sync logic should be in specialized services
@@ -40,47 +42,40 @@ export class TournamentEventProcessor extends WorkerHost {
         await job.updateProgress(progress);
       });
     } else if (job.name.includes('tournament-event-')) {
-      await this.tournamentEventSyncService.processEventSync(job.data, job.id?.toString() || '', job.queueQualifiedName, async (progress: number) => {
+      await this.tournamentEventSyncService.processEventSync(job, async (progress: number) => {
         this.logger.debug(`Tournament event sync progress: ${progress}%`);
         await job.updateProgress(progress);
-      }, job, token);
+      }, token);
     } else if (job.name.includes('tournament-subevent-')) {
-      await this.tournamentSubEventSyncService.processSubEventSync(
-        job.data,
-        job.id?.toString() || '',
-        job.queueQualifiedName,
-        async (progress: number) => {
-          this.logger.debug(`Tournament subevent sync progress: ${progress}%`);
-          await job.updateProgress(progress);
-        },
-        job,
-        token,
-      );
+      await this.tournamentSubEventSyncService.processSubEventSync(job, async (progress: number) => {
+        this.logger.debug(`Tournament subevent sync progress: ${progress}%`);
+        await job.updateProgress(progress);
+      }, token);
     } else if (job.name.includes('tournament-draw-')) {
-      await this.tournamentDrawSyncService.processDrawSync(
-        job.data as TournamentDrawSyncData,
-        job.id?.toString() || '',
-        job.queueQualifiedName,
-        async (progress: number) => {
-          this.logger.debug(`Tournament draw sync progress: ${progress}%`);
-          await job.updateProgress(progress);
-        },
-        job,
-        token,
-      );
+      await this.tournamentDrawSyncService.processDrawSync(job as Job<TournamentDrawSyncData>, async (progress: number) => {
+        this.logger.debug(`Tournament draw sync progress: ${progress}%`);
+        await job.updateProgress(progress);
+      }, token);
+    } else if (job.name.includes('tournament-entry-')) {
+      await this.tournamentEntrySyncService.processEntrySync(job as Job<TournamentEntrySyncData>, async (progress: number) => {
+        this.logger.debug(`Tournament entry sync progress: ${progress}%`);
+        await job.updateProgress(progress);
+      }, token);
     } else if (job.name.includes('tournament-standing-')) {
       await this.tournamentStandingSyncService.processStandingSync(job.data as TournamentStandingSyncData, async (progress: number) => {
         this.logger.debug(`Tournament standing sync progress: ${progress}%`);
         await job.updateProgress(progress);
       });
     } else if (job.name.includes('tournament-game-')) {
-      await this.tournamentGameIndividualSyncService.processGameIndividualSync(job.data, async (progress: number) => {
-        this.logger.debug(`Tournament game individual sync progress: ${progress}%`);
-        await job.updateProgress(progress);
-      });
+      await this.tournamentGameSyncService.processGameIndividualSync(
+        job.data as TournamentGameIndividualSyncData,
+        async (progress: number) => {
+          this.logger.debug(`Tournament game individual sync progress: ${progress}%`);
+          await job.updateProgress(progress);
+        },
+      );
     } else {
       throw new Error(`Unknown job type: ${job.name}`);
     }
   }
-
 }
