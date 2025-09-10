@@ -105,25 +105,13 @@ export class ShellComponent {
       separator: true,
     });
 
-    baseItems.push(
-      {
-        label: `${isDark ? 'Light' : 'Dark'} Mode`,
-        icon: isDark ? 'pi pi-sun' : 'pi pi-moon',
-        command: (event) => {
-          this.toggleTheme();
-        },
+    baseItems.push({
+      label: 'Logout',
+      icon: 'pi pi-sign-out',
+      command: (event) => {
+        this.logout();
       },
-      {
-        separator: true,
-      },
-      {
-        label: 'Logout',
-        icon: 'pi pi-sign-out',
-        command: (event) => {
-          this.logout();
-        },
-      },
-    );
+    });
 
     return baseItems;
   });

@@ -26,6 +26,15 @@
 
           <ng-template #end>
             <div class="flex items-center space-x-2">
+              <!-- Theme Toggle Icon Button -->
+              <p-button 
+                [icon]="themeToggleIcon()" 
+                [outlined]="true" 
+                [rounded]="true"
+                (click)="toggleTheme()" 
+                [ariaLabel]="themeToggleLabel()"
+                size="small"
+              />
               @if (user()?.firstName) {
                 <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
                 <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
@@ -45,6 +54,15 @@
               <h1 class="text-lg font-bold text-color cursor-pointer" [routerLink]="['/']">Badman</h1>
             </div>
             <div class="flex items-center space-x-2">
+              <!-- Theme Toggle Icon Button -->
+              <p-button 
+                [icon]="themeToggleIcon()" 
+                [outlined]="true" 
+                [rounded]="true"
+                (click)="toggleTheme()" 
+                [ariaLabel]="themeToggleLabel()"
+                size="small"
+              />
               @if (user()?.firstName) {
                 <span class="text-sm font-medium text-color">{{ user()?.firstName }}</span>
                 <p-menu #mobileMenu [model]="userMenuItems()" [popup]="true" appendTo="body" />
