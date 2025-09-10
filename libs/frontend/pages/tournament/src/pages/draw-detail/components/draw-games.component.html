@@ -1,0 +1,92 @@
+<div class="mt-8">
+  <h3 class="mb-4 text-xl font-semibold text-primary">Games</h3>
+
+  @if (games().length === 0) {
+    <p class="text-center italic p-8 bg-surface-ground rounded-lg text-surface-500">No games found for this draw</p>
+  } @else {
+    <div class="space-y-3">
+      @for (game of games(); track game.id) {
+        <div class="bg-surface-card border border-surface-border rounded-lg p-4 hover:bg-surface-hover transition-colors">
+          <!-- Header with status and round info -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              @if (game.playedAt) {
+                <span class="bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-300 px-2 py-1 rounded text-xs font-medium">
+                  {{ game.playedAt | date: 'short' }}
+                </span>
+              }
+              @if (game.round) {
+                <span class="bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200 px-2 py-1 rounded text-xs font-medium">
+                  {{ game.round }}
+                </span>
+              }
+            </div>
+            <div class="flex items-center gap-2">
+              @if (!isBye(game) && game.winner) {
+                <div class="flex items-center gap-1">
+                  <i class="pi pi-trophy text-yellow-500 text-xs"></i>
+                  <span class="text-xs text-surface-600 dark:text-surface-300"> Team {{ game.winner }} </span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Players and Score -->
+          <div class="flex items-start relative">
+            <!-- Players stacked vertically on the left -->
+            <div class="flex flex-col flex-1 min-w-0">
+              @for (playerName of getPlayers(game); track $index; let i = $index) {
+                <div
+                  class="flex items-center gap-1 min-w-0 h-8"
+                  [class]="
+                    getWinnerIndicator(game, i) ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'
+                  "
+                >
+                  @if (getWinnerIndicator(game, i)) {
+                    <i class="pi pi-crown text-yellow-500 text-xs"></i>
+                  }
+                  <span class="truncate text-sm">{{ playerName }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Scores positioned at 400px from left border, stacked vertically and aligned with names -->
+            <div class="absolute left-75 flex flex-col">
+              @if (isBye(game)) {
+                <div class="flex items-center h-16">
+                  <span class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic">
+                    Bye
+                  </span>
+                </div>
+              } @else {
+                @let setScores = getSetScores(game);
+                <div class="flex items-center h-8">
+                  <div class="flex gap-1">
+                    @for (setScore of setScores.team1Sets; track $index) {
+                      <span
+                        class="bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200 px-2 py-1 rounded text-xs font-semibold"
+                      >
+                        {{ setScore }}
+                      </span>
+                    }
+                  </div>
+                </div>
+                <div class="flex items-center h-8">
+                  <div class="flex gap-1">
+                    @for (setScore of setScores.team2Sets; track $index) {
+                      <span
+                        class="bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200 px-2 py-1 rounded text-xs font-semibold"
+                      >
+                        {{ setScore }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { TournamentEvent, TournamentSubEvent, TournamentDraw, Entry, Standing } from '@app/models';
+import { TournamentEvent, TournamentSubEvent, TournamentDraw, Entry, Game } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 
@@ -30,7 +30,7 @@ export class DrawDetailService {
           this.apollo.query<{ 
             tournamentEvent: TournamentEvent; 
             tournamentSubEvent: TournamentSubEvent; 
-            tournamentDraw: TournamentDraw & { entries: Entry[] };
+            tournamentDraw: TournamentDraw & { entries: Entry[]; games: Game[] };
           }>({
             query: gql`
               query TournamentDrawDetail($tournamentId: ID!, $subEventId: ID!, $drawId: ID!) {
@@ -85,6 +85,32 @@ export class DrawDetailService {
                       points
                     }
                   }
+                  games {
+                    id
+                    playedAt
+                    gameType
+                    status
+                    set1Team1
+                    set1Team2
+                    set2Team1
+                    set2Team2
+                    set3Team1
+                    set3Team2
+                    winner
+                    order
+                    round
+                    visualCode
+                    gamePlayerMemberships {
+                      id
+                      team
+                      gamePlayer {
+                        id
+                        firstName
+                        lastName
+                        fullName
+                      }
+                    }
+                  }
                 }
               }
             `,
@@ -115,11 +141,23 @@ export class DrawDetailService {
           )
           .sort((a, b) => a.position - b.position) || [];
 
+        // Sort games chronologically by playedAt, then by order
+        const games = [...(result.data.tournamentDraw.games || [])]
+          .sort((a, b) => {
+            if (a.playedAt && b.playedAt) {
+              return new Date(a.playedAt).getTime() - new Date(b.playedAt).getTime();
+            }
+            if (a.playedAt && !b.playedAt) return -1;
+            if (!a.playedAt && b.playedAt) return 1;
+            return (a.order || 0) - (b.order || 0);
+          });
+
         return {
           tournament: result.data.tournamentEvent,
           subEvent: result.data.tournamentSubEvent,
           draw: result.data.tournamentDraw,
           standings,
+          games,
         };
       } catch (err) {
         console.log(err);
@@ -133,6 +171,7 @@ export class DrawDetailService {
   subEvent = computed(() => this.dataResource.value()?.subEvent);
   draw = computed(() => this.dataResource.value()?.draw);
   standings = computed(() => this.dataResource.value()?.standings ?? []);
+  games = computed(() => this.dataResource.value()?.games ?? []);
   error = computed(() => this.dataResource.error()?.message || null);
   loading = computed(() => this.dataResource.isLoading());
 

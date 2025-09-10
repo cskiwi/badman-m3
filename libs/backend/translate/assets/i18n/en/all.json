@@ -647,6 +647,12 @@
       "other": "Other",
       "women": "Ladies"
     },
-    "visualCode": "Visual Code"
+    "visualCode": "Visual Code",
+    "draw-detail": {
+      "games": {
+        "title": "Games",
+        "no-games": "No games found for this draw"
+      }
+    }
   }
 }

@@ -145,7 +145,7 @@
                         @for (subEvent of gameTypeTab.events; track subEvent.id) {
                           <div class="rounded-border bg-highlight p-6">
                             <div class="flex items-start justify-between mb-4">
-                              <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }} {{ subEvent.visualCode }}</h4>
+                              <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
                               <div class="flex items-center gap-1 flex-shrink-0">
                                 @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
                                   <app-sync-status-indicator [config]="statusConfig" />

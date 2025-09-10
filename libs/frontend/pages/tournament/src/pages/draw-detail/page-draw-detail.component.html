@@ -3,7 +3,7 @@
     @if (this.subEvent(); as subEvent) {
       @if (this.draw(); as draw) {
         <app-page-header>
-          <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }} - Standings</ng-content>
+          <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</ng-content>
           <ng-content subTitle>
             <div class="info">
               <div class="sub-text">
@@ -72,7 +72,7 @@
           <section class="standings">
             <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
               <i class="pi pi-chart-bar text-primary-500"></i>
-              Standings
+              
             </h3>
 
             <div class="overflow-x-auto">
@@ -149,6 +149,9 @@
             <p>This draw doesn't have any standings data yet.</p>
           </div>
         }
+
+        <!-- Games Section -->
+        <app-draw-games [games]="games()" />
       }
     }
   }

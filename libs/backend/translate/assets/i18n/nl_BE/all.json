@@ -647,6 +647,12 @@
       "other": "Andere",
       "women": "Dames"
     },
-    "visualCode": "Visuele Code"
+    "visualCode": "Visuele Code",
+    "draw-detail": {
+      "games": {
+        "title": "Wedstrijden",
+        "no-games": "Geen wedstrijden gevonden voor dit schema"
+      }
+    }
   }
 }

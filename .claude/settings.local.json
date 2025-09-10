@@ -16,7 +16,10 @@
       "Bash(npx nx build:*)",
       "WebSearch",
       "Bash(sed:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_take_screenshot"
     ],
     "deny": [],
     "ask": []

@@ -9,10 +9,11 @@ import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DrawDetailService } from './page-draw-detail.service';
+import { DrawGamesComponent } from './components/draw-games.component';
 
 @Component({
   selector: 'app-page-draw-detail',
-  imports: [SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule, SyncButtonComponent],
+  imports: [SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule, SyncButtonComponent, DrawGamesComponent],
   templateUrl: './page-draw-detail.component.html',
   styleUrl: './page-draw-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +30,7 @@ export class PageDrawDetailComponent {
   subEvent = this.dataService.subEvent;
   draw = this.dataService.draw;
   standings = this.dataService.standings;
+  games = this.dataService.games;
 
   error = this.dataService.error;
   loading = this.dataService.loading;

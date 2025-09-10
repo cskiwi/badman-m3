@@ -647,6 +647,12 @@
       "other": "Autres",
       "women": "Femmes"
     },
-    "visualCode": "Code visuel"
+    "visualCode": "Code visuel",
+    "draw-detail": {
+      "games": {
+        "title": "Matchs",
+        "no-games": "Aucun match trouvé pour ce tableau"
+      }
+    }
   }
 }

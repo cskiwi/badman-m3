@@ -655,6 +655,12 @@ export type I18nTranslations = {
                 "women": string;
             };
             "visualCode": string;
+            "draw-detail": {
+                "games": {
+                    "title": string;
+                    "no-games": string;
+                };
+            };
         };
     };
 };
