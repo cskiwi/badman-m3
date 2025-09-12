@@ -127,7 +127,7 @@ export class TournamentStandingSyncService {
       return [];
     }
 
-    // Get all games for this draw
+    // Get all games for this draw - only count games with a determined winner
     const games = await Game.find({
       where: {
         linkId: draw.id,
@@ -135,11 +135,11 @@ export class TournamentStandingSyncService {
         status: GameStatus.NORMAL, // Only count completed games
       },
       relations: ['gamePlayerMemberships'],
-    });
+    }).then(games => games.filter(game => game.winner === 1 || game.winner === 2));
 
-    this.logger.debug(`Found ${games.length} games for draw ${draw.id} with status NORMAL`);
+    this.logger.debug(`Found ${games.length} completed games with winner for draw ${draw.id}`);
     if (games.length === 0) {
-      this.logger.debug(`No games found for draw ${draw.id}`);
+      this.logger.debug(`No completed games with winner found for draw ${draw.id}`);
       return [];
     }
 
