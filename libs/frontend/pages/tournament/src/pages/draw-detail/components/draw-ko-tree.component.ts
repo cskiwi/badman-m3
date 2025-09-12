@@ -28,7 +28,7 @@ import { KoChart, OrgChartNode } from '@app/frontend-components/ko-chart';
                   <!-- Team 1 -->
                   <div
                     class="player flex items-center justify-between"
-                    [class]="node.data?.winner === 1 ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'"
+                    [class]="node.data?.winner !== 0 && node.data?.winner === 1 ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'"
                   >
                     <span class="font-medium truncate ">
                       @let teamName1 = node.data?.team1Name;
@@ -53,7 +53,7 @@ import { KoChart, OrgChartNode } from '@app/frontend-components/ko-chart';
                   <!-- Team 2 -->
                   <div
                     class="player flex items-center justify-between"
-                    [class]="node.data?.winner === 2 ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'"
+                    [class]="node.data?.winner !== 0 && node.data?.winner === 2 ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'"
                   >
                     <span class="font-medium truncate ">
                       @let teamName2 = node.data?.team2Name;
@@ -167,16 +167,8 @@ export class DrawKoTreeComponent {
 
     const finalMatch = finalRound.games[0];
 
-    // Determine winner
-    let winner = 0;
-    if (finalMatch.set1Team1 !== null && finalMatch.set1Team2 !== null) {
-      // Simple logic to determine winner based on first set
-      if (finalMatch.set1Team1! > finalMatch.set1Team2!) {
-        winner = 1;
-      } else if (finalMatch.set1Team2! > finalMatch.set1Team1!) {
-        winner = 2;
-      }
-    }
+    // Use the actual winner field from the game, defaulting to 0 if not set
+    const winner = finalMatch.winner || 0;
 
     // Create the root node (final match)
     const rootNode: OrgChartNode = {
@@ -273,16 +265,8 @@ export class DrawKoTreeComponent {
     // For a knockout bracket, each match should have 2 children (the matches that fed into it)
     // This is a simplified approach - in a real tournament you'd need to track actual match relationships
     return round.games.slice(0, 2).map((childMatch, index) => {
-      // Determine winner
-      let winner = 0;
-      if (childMatch.set1Team1 !== null && childMatch.set1Team2 !== null) {
-        // Simple logic to determine winner based on first set
-        if (childMatch.set1Team1! > childMatch.set1Team2!) {
-          winner = 1;
-        } else if (childMatch.set1Team2! > childMatch.set1Team1!) {
-          winner = 2;
-        }
-      }
+      // Use the actual winner field from the game, defaulting to 0 if not set
+      const winner = childMatch.winner || 0;
 
       return {
         id: `round-${targetRoundIndex}-match-${childMatch.id || index}`,

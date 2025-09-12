@@ -46,7 +46,7 @@ export class EncounterCardComponent {
   }
 
   isWinnerTeam(game: any, team: number): boolean {
-    return game.winner === team;
+    return game.winner !== null && game.winner !== 0 && game.winner === team;
   }
 
   async toggleExpanded(): Promise<void> {

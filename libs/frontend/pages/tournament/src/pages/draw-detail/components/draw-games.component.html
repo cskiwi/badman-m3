@@ -35,18 +35,44 @@
           <div class="flex items-start relative">
             <!-- Players stacked vertically on the left -->
             <div class="flex flex-col flex-1 min-w-0">
-              @for (playerName of getPlayers(game); track $index; let i = $index) {
-                <div
-                  class="flex items-center gap-1 min-w-0 h-8"
-                  [class]="
-                    getWinnerIndicator(game, i) ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'
-                  "
-                >
-                  @if (getWinnerIndicator(game, i)) {
-                    <i class="pi pi-crown text-yellow-500 text-xs"></i>
-                  }
-                  <span class="truncate text-sm">{{ playerName }}</span>
+              @if (isBye(game)) {
+                <div class="flex items-center h-16">
+                  <span class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic">
+                    Bye
+                  </span>
                 </div>
+              } @else {
+                @for (teamNumber of teamNumbers; track teamNumber; let teamIndex = $index) {
+                  <div class="flex flex-col gap-1 py-1">
+                    @for (membership of getTeamMemberships(game, teamNumber); track membership.id; let playerIndex = $index) {
+                      <div
+                        class="flex items-center gap-2 min-w-0"
+                        [class]="
+                          getWinnerIndicator(game, teamIndex) ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'
+                        "
+                      >
+                        @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
+                          <i class="pi pi-crown text-yellow-500 text-xs"></i>
+                        }
+                        @if (membership.gamePlayer?.id) {
+                          <a 
+                            [routerLink]="['/player', membership.gamePlayer.id]"
+                            class="truncate text-sm no-underline text-current"
+                          >
+                            {{ membership.gamePlayer.fullName || 'Unknown' }}
+                          </a>
+                        } @else {
+                          <span class="truncate text-sm">{{ membership.gamePlayer.fullName || 'Unknown' }}</span>
+                        }
+                        @if (getPlayerLevel(membership, game.gameType); as level) {
+                          <span class="bg-secondary-100 dark:bg-secondary-900/50 text-secondary-800 dark:text-secondary-200 px-1.5 py-0.5 rounded text-xs font-medium">
+                            {{ level }}
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
               }
             </div>
 
