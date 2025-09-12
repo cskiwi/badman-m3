@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { parseStringPromise } from 'xml2js';
+import Redis from 'ioredis';
 import {
   Tournament,
   TournamentEvent,
@@ -28,6 +29,20 @@ export class TournamentApiClient {
   private readonly baseUrl: string;
   private readonly username: string;
   private readonly password: string;
+  private readonly redis?: Redis;
+  private readonly cacheEnabled: boolean;
+
+  // Cache TTL in seconds for different data types
+  private readonly cacheTtl = {
+    tournaments: 3600, // 1 hour - tournament list changes infrequently
+    tournamentDetails: 1800, // 30 minutes - details may update during tournament
+    events: 1800, // 30 minutes - events are fairly static
+    teams: 900, // 15 minutes - team compositions may change
+    entries: 600, // 10 minutes - entries may be updated
+    draws: 300, // 5 minutes - draws may be updated during tournament
+    matches: 60, // 1 minute - match data changes frequently during play
+    stages: 1800, // 30 minutes - stages are static during tournament
+  };
 
   constructor(
     private readonly httpService: HttpService,
@@ -36,6 +51,27 @@ export class TournamentApiClient {
     this.baseUrl = this.configService.get<string>('TOURNAMENT_API_BASE_URL', 'https://api.tournamentsoftware.com');
     this.username = this.configService.getOrThrow<string>('TOURNAMENT_API_USERNAME');
     this.password = this.configService.getOrThrow<string>('TOURNAMENT_API_PASSWORD');
+    this.cacheEnabled = this.configService.get<boolean>('TOURNAMENT_API_CACHE_ENABLED', true);
+
+    // Initialize Redis connection if caching is enabled
+    if (this.cacheEnabled) {
+      const redisUrl = this.configService.get<string>('REDIS_URL');
+      const redisHost = this.configService.get<string>('REDIS_HOST', 'localhost');
+      const redisPort = this.configService.get<number>('REDIS_PORT', 6379);
+      const redisDB = this.configService.get<number>('REDIS_DB');
+
+      if (redisUrl) {
+        this.redis = new Redis(redisUrl);
+      } else {
+        this.redis = new Redis({
+          host: redisHost,
+          port: redisPort,
+          db: redisDB,
+          maxRetriesPerRequest: 3,
+          lazyConnect: true,
+        });
+      }
+    }
   }
 
   private getAuthHeaders() {
@@ -47,7 +83,39 @@ export class TournamentApiClient {
     };
   }
 
+  private generateCacheKey(endpoint: string): string {
+    return `tournament-api:${endpoint}`;
+  }
+
+  private getCacheType(endpoint: string): keyof typeof this.cacheTtl {
+    if (endpoint.includes('/Tournament?')) return 'tournaments';
+    if (endpoint.includes('/Tournament/') && endpoint.includes('/Event')) return 'events';
+    if (endpoint.includes('/Tournament/') && endpoint.includes('/Team')) return 'teams';
+    if (endpoint.includes('/Tournament/') && endpoint.includes('/Entry')) return 'entries';
+    if (endpoint.includes('/Tournament/') && endpoint.includes('/Draw')) return 'draws';
+    if (endpoint.includes('/Match') || endpoint.includes('/Encounter')) return 'matches';
+    if (endpoint.includes('/Stages')) return 'stages';
+    if (endpoint.includes('/Tournament/') && !endpoint.includes('/')) return 'tournamentDetails';
+    return 'tournamentDetails'; // Default fallback
+  }
+
   private async makeRequest<T>(endpoint: string): Promise<T> {
+    const cacheKey = this.generateCacheKey(endpoint);
+
+    // Try to get from cache first if caching is enabled
+    if (this.cacheEnabled && this.redis) {
+      try {
+        const cachedResult = await this.redis.get(cacheKey);
+        if (cachedResult) {
+          this.logger.debug(`Cache hit for endpoint: ${endpoint}`);
+          return JSON.parse(cachedResult) as T;
+        }
+        this.logger.debug(`Cache miss for endpoint: ${endpoint}`);
+      } catch (cacheError) {
+        this.logger.warn(`Cache read failed for ${endpoint}:`, cacheError instanceof Error ? cacheError.message : String(cacheError));
+      }
+    }
+
     try {
       const response = await firstValueFrom(
         this.httpService.get(`${this.baseUrl}${endpoint}`, {
@@ -62,6 +130,18 @@ export class TournamentApiClient {
         mergeAttrs: true,
       });
 
+      // Store in cache if caching is enabled
+      if (this.cacheEnabled && this.redis) {
+        try {
+          const cacheType = this.getCacheType(endpoint);
+          const ttl = this.cacheTtl[cacheType];
+          await this.redis.setex(cacheKey, ttl, JSON.stringify(parsed));
+          this.logger.debug(`Cached result for endpoint: ${endpoint} (TTL: ${ttl}s)`);
+        } catch (cacheError) {
+          this.logger.warn(`Cache write failed for ${endpoint}:`, cacheError instanceof Error ? cacheError.message : String(cacheError));
+        }
+      }
+
       return parsed as T;
     } catch (error) {
       throw new Error(`Tournament API request failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -69,22 +149,53 @@ export class TournamentApiClient {
   }
 
   /**
+   * Clear cache for specific endpoint or all tournament API cache
+   */
+  async clearCache(endpoint?: string): Promise<void> {
+    if (!this.cacheEnabled || !this.redis) {
+      return;
+    }
+
+    try {
+      if (endpoint) {
+        const cacheKey = this.generateCacheKey(endpoint);
+        await this.redis.del(cacheKey);
+        this.logger.debug(`Cleared cache for endpoint: ${endpoint}`);
+      } else {
+        const pattern = this.generateCacheKey('*');
+        const keys = await this.redis.keys(pattern);
+        if (keys.length > 0) {
+          await this.redis.del(...keys);
+          this.logger.debug(`Cleared ${keys.length} tournament API cache entries`);
+        }
+      }
+    } catch (error) {
+      this.logger.warn(`Failed to clear cache:`, error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
+   * Check Redis connection status
+   */
+  get cacheStatus(): string {
+    if (!this.cacheEnabled) return 'disabled';
+    if (!this.redis) return 'not_configured';
+    return this.redis.status;
+  }
+
+  /**
    * Discover tournaments with optional filters
    */
-  async discoverTournaments(options?: {
-    refDate?: string;
-    pageSize?: number;
-    searchTerm?: string;
-  }): Promise<Tournament[]> {
+  async discoverTournaments(options?: { refDate?: string; pageSize?: number; searchTerm?: string }): Promise<Tournament[]> {
     const params = new URLSearchParams();
-    
+
     if (options?.searchTerm) {
       params.append('q', options.searchTerm);
     } else {
       params.append('list', '1');
       params.append('refdate', options?.refDate || '2014-01-01');
     }
-    
+
     params.append('pagesize', (options?.pageSize || 100).toString());
 
     const response = await this.makeRequest<TournamentListResponse>(`/1.0/Tournament?${params.toString()}`);
@@ -103,24 +214,18 @@ export class TournamentApiClient {
    * Get tournament events
    */
   async getTournamentEvents(tournamentCode: string, eventCode?: string): Promise<TournamentEvent[]> {
-    const endpoint = eventCode 
-      ? `/1.0/Tournament/${tournamentCode}/Event/${eventCode}`
-      : `/1.0/Tournament/${tournamentCode}/Event`;
-    
+    const endpoint = eventCode ? `/1.0/Tournament/${tournamentCode}/Event/${eventCode}` : `/1.0/Tournament/${tournamentCode}/Event`;
+
     const response = await this.makeRequest<TournamentEventsResponse>(endpoint);
-    return Array.isArray(response.Result.TournamentEvent) 
-      ? response.Result.TournamentEvent 
-      : [response.Result.TournamentEvent];
+    return Array.isArray(response.Result.TournamentEvent) ? response.Result.TournamentEvent : [response.Result.TournamentEvent];
   }
 
   /**
    * Get tournament teams
    */
   async getTournamentTeams(tournamentCode: string, teamCode?: string): Promise<Team[]> {
-    const endpoint = teamCode 
-      ? `/1.0/Tournament/${tournamentCode}/Team/${teamCode}`
-      : `/1.0/Tournament/${tournamentCode}/Team`;
-    
+    const endpoint = teamCode ? `/1.0/Tournament/${tournamentCode}/Team/${teamCode}` : `/1.0/Tournament/${tournamentCode}/Team`;
+
     const response = await this.makeRequest<TournamentTeamsResponse>(endpoint);
     return Array.isArray(response.Result.Team) ? response.Result.Team : [response.Result.Team];
   }
@@ -129,9 +234,7 @@ export class TournamentApiClient {
    * Get event entries (for individual tournaments)
    */
   async getEventEntries(tournamentCode: string, eventCode: string): Promise<Entry[]> {
-    const response = await this.makeRequest<TournamentEntriesResponse>(
-      `/1.0/Tournament/${tournamentCode}/Event/${eventCode}/Entry`
-    );
+    const response = await this.makeRequest<TournamentEntriesResponse>(`/1.0/Tournament/${tournamentCode}/Event/${eventCode}/Entry`);
     return Array.isArray(response.Result.Entry) ? response.Result.Entry : [response.Result.Entry];
   }
 
@@ -139,9 +242,7 @@ export class TournamentApiClient {
    * Get tournament draw
    */
   async getTournamentDraw(tournamentCode: string, drawCode: string): Promise<TournamentDraw> {
-    const response = await this.makeRequest<TournamentDrawResponse>(
-      `/1.0/Tournament/${tournamentCode}/Draw/${drawCode}`
-    );
+    const response = await this.makeRequest<TournamentDrawResponse>(`/1.0/Tournament/${tournamentCode}/Draw/${drawCode}`);
     return response.Result.TournamentDraw;
   }
 
@@ -152,20 +253,16 @@ export class TournamentApiClient {
     const endpoint = drawCode
       ? `/1.0/Tournament/${tournamentCode}/Event/${eventCode}/Draw/${drawCode}`
       : `/1.0/Tournament/${tournamentCode}/Event/${eventCode}/Draw`;
-    
+
     const response = await this.makeRequest<TournamentDrawResponse>(endpoint);
-    return Array.isArray(response.Result.TournamentDraw) 
-      ? response.Result.TournamentDraw 
-      : [response.Result.TournamentDraw];
+    return Array.isArray(response.Result.TournamentDraw) ? response.Result.TournamentDraw : [response.Result.TournamentDraw];
   }
 
   /**
    * Get matches by date
    */
   async getMatchesByDate(tournamentCode: string, date: string): Promise<Match[]> {
-    const response = await this.makeRequest<MatchesResponse>(
-      `/1.0/Tournament/${tournamentCode}/Match/${date}`
-    );
+    const response = await this.makeRequest<MatchesResponse>(`/1.0/Tournament/${tournamentCode}/Match/${date}`);
     return Array.isArray(response.Result.Match) ? response.Result.Match : [response.Result.Match];
   }
 
@@ -173,9 +270,7 @@ export class TournamentApiClient {
    * Get matches by draw
    */
   async getMatchesByDraw(tournamentCode: string, drawCode: string): Promise<Match[]> {
-    const response = await this.makeRequest<MatchesResponse>(
-      `/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Match`
-    );
+    const response = await this.makeRequest<MatchesResponse>(`/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Match`);
     return Array.isArray(response.Result.Match) ? response.Result.Match : [response.Result.Match];
   }
 
@@ -183,9 +278,7 @@ export class TournamentApiClient {
    * Get detailed match information
    */
   async getMatchDetails(tournamentCode: string, matchCode: string): Promise<Match> {
-    const response = await this.makeRequest<MatchResponse>(
-      `/1.0/Tournament/${tournamentCode}/MatchDetail/${matchCode}`
-    );
+    const response = await this.makeRequest<MatchResponse>(`/1.0/Tournament/${tournamentCode}/MatchDetail/${matchCode}`);
     return response.Result.Match;
   }
 
@@ -193,9 +286,7 @@ export class TournamentApiClient {
    * Get team match details (for competitions)
    */
   async getTeamMatch(tournamentCode: string, matchCode: string): Promise<Match> {
-    const response = await this.makeRequest<MatchResponse>(
-      `/1.0/Tournament/${tournamentCode}/TeamMatch/${matchCode}`
-    );
+    const response = await this.makeRequest<MatchResponse>(`/1.0/Tournament/${tournamentCode}/TeamMatch/${matchCode}`);
     return response.Result.Match;
   }
 
@@ -211,9 +302,7 @@ export class TournamentApiClient {
    * Get club teams for a specific club in a tournament
    */
   async getClubTeams(tournamentCode: string, clubCode: string): Promise<Team[]> {
-    const response = await this.makeRequest<TournamentTeamsResponse>(
-      `/1.0/Tournament/${tournamentCode}/Club/${clubCode}/Team`
-    );
+    const response = await this.makeRequest<TournamentTeamsResponse>(`/1.0/Tournament/${tournamentCode}/Club/${clubCode}/Team`);
     return Array.isArray(response.Result.Team) ? response.Result.Team : [response.Result.Team];
   }
 
@@ -224,7 +313,7 @@ export class TournamentApiClient {
     const endpoint = teamCode
       ? `/1.0/Tournament/${tournamentCode}/Event/${eventCode}/Team/${teamCode}`
       : `/1.0/Tournament/${tournamentCode}/Event/${eventCode}/Team`;
-    
+
     const response = await this.makeRequest<TournamentTeamsResponse>(endpoint);
     return Array.isArray(response.Result.Team) ? response.Result.Team : [response.Result.Team];
   }
@@ -233,9 +322,7 @@ export class TournamentApiClient {
    * Get draw entries
    */
   async getDrawEntries(tournamentCode: string, drawCode: string): Promise<Entry[]> {
-    const response = await this.makeRequest<TournamentEntriesResponse>(
-      `/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Entry`
-    );
+    const response = await this.makeRequest<TournamentEntriesResponse>(`/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Entry`);
     return Array.isArray(response.Result.Entry) ? response.Result.Entry : [response.Result.Entry];
   }
 
@@ -243,9 +330,7 @@ export class TournamentApiClient {
    * Get encounter details
    */
   async getEncounterDetails(tournamentCode: string, encounterCode: string): Promise<Match> {
-    const response = await this.makeRequest<MatchResponse>(
-      `/1.0/Tournament/${tournamentCode}/EncounterDetail/${encounterCode}`
-    );
+    const response = await this.makeRequest<MatchResponse>(`/1.0/Tournament/${tournamentCode}/EncounterDetail/${encounterCode}`);
     return response.Result.Match;
   }
 
@@ -253,12 +338,9 @@ export class TournamentApiClient {
    * Get encounters by draw
    */
   async getEncountersByDraw(tournamentCode: string, drawCode: string): Promise<Match[]> {
-    const response = await this.makeRequest<MatchesResponse>(
-      `/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Encounter`
-    );
+    const response = await this.makeRequest<MatchesResponse>(`/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Encounter`);
     return Array.isArray(response.Result.Match) ? response.Result.Match : [response.Result.Match];
   }
-
 
   /**
    * Get draw details
