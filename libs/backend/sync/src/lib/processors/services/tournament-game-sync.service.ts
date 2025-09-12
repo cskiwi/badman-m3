@@ -1,14 +1,24 @@
 import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
-import { Game, Player, TournamentEvent as TournamentEventModel, TournamentDraw as TournamentDrawModel } from '@app/models';
+import {
+  Game,
+  Player,
+  TournamentEvent as TournamentEventModel,
+  TournamentDraw as TournamentDrawModel,
+  GamePlayerMembership,
+  RankingSystem,
+} from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
-import { GameSyncJobData } from '../../queues/sync.queue';
 import { TournamentPlanningService } from './tournament-planning.service';
+import { Job } from 'bullmq';
+import { LessThanOrEqual } from 'typeorm';
 
-export interface TournamentGameIndividualSyncData {
+export interface TournamentGameSyncOptions {
   tournamentCode: string;
+  eventCode?: string;
   drawCode?: string;
   matchCodes?: string[];
+  metadata?: any; // JobDisplayMetadata from queue
 }
 
 @Injectable()
@@ -20,119 +30,14 @@ export class TournamentGameSyncService {
     private readonly tournamentPlanningService: TournamentPlanningService,
   ) {}
 
-  async processGameSync(data: GameSyncJobData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
-    this.logger.log(`Processing tournament game sync`);
-
+  async processGameSync(job: Job<TournamentGameSyncOptions>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     try {
-      const { tournamentCode, drawCode, matchCodes, date } = data;
+      const { tournamentCode, drawCode, matchCodes } = job.data;
 
       // Initialize progress
       await updateProgress(0);
 
-      let matches: Match[] = [];
-
-      if (matchCodes && matchCodes.length > 0) {
-        // Sync specific matches
-        for (const matchCode of matchCodes) {
-          try {
-            const match = await this.tournamentApiClient.getMatchDetails(tournamentCode, matchCode);
-            if (match) {
-              matches.push(match);
-            } else {
-              this.logger.warn(`Match API returned null/undefined for matchCode: ${matchCode}`);
-            }
-          } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
-          }
-        }
-      } else if (drawCode) {
-        // Sync all matches in a draw
-        const drawMatches = await this.tournamentApiClient.getMatchesByDraw(tournamentCode, drawCode);
-        matches = drawMatches?.filter((match) => match != null) || [];
-      } else if (date) {
-        // Sync matches by date
-        const dateMatches = await this.tournamentApiClient.getMatchesByDate(tournamentCode, date);
-        matches = dateMatches?.filter((match) => match != null) || [];
-      } else {
-        // Sync all recent matches (tournament duration + 1 day)
-        const tournament = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
-        const startDate = new Date(tournament.StartDate);
-        const endDate = new Date(tournament.EndDate);
-        endDate.setDate(endDate.getDate() + 1); // Add one day buffer
-
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          const dateStr = d.toISOString().split('T')[0];
-          try {
-            const dayMatches = await this.tournamentApiClient.getMatchesByDate(tournamentCode, dateStr);
-            const validMatches = dayMatches?.filter((match) => match != null) || [];
-            matches.push(...validMatches);
-          } catch {
-            this.logger.debug(`No matches found for date ${dateStr}`);
-          }
-        }
-      }
-
-      this.logger.log(`Found ${matches.length} matches to process`);
-
-      // Update progress after collecting all matches
-      if (matches.length === 0) {
-        this.logger.log(`No matches to process`);
-        return;
-      }
-
-      // Process matches with progress tracking
-      for (let i = 0; i < matches.length; i++) {
-        const match = matches[i];
-
-        if (!match) {
-          this.logger.warn(`Skipping undefined match at index ${i}`);
-          continue;
-        }
-
-        await this.processMatch(tournamentCode, match);
-
-        const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
-        await updateProgress(finalProgress);
-
-        this.logger.debug(`Processed match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code || 'NO_CODE'}`);
-      }
-
-      this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const errorStack = error instanceof Error ? error.stack : undefined;
-      this.logger.error(`Failed to process tournament game sync: ${errorMessage}`, errorStack);
-      throw error;
-    }
-  }
-
-  async processGameIndividualSync(data: TournamentGameIndividualSyncData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
-    this.logger.log(`Processing tournament game individual sync`);
-    const { tournamentCode, drawCode, matchCodes } = data;
-
-    try {
-      await updateProgress(0);
-      let matches: Match[] = [];
-
-      if (matchCodes && matchCodes.length > 0) {
-        // Sync specific matches
-        for (const matchCode of matchCodes) {
-          try {
-            const match = await this.tournamentApiClient.getMatchDetails(tournamentCode, matchCode);
-            if (match) {
-              matches.push(match);
-            }
-          } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
-          }
-        }
-      } else if (drawCode) {
-        // Sync all matches in a draw
-        const drawMatches = await this.tournamentApiClient.getMatchesByDraw(tournamentCode, drawCode);
-        matches = drawMatches?.filter((match) => match != null) || [];
-      }
+      const matches = await this.collectMatches(tournamentCode, drawCode, matchCodes);
 
       this.logger.log(`Found ${matches.length} matches to process`);
 
@@ -143,28 +48,66 @@ export class TournamentGameSyncService {
       }
 
       // Process matches with progress tracking
-      for (let i = 0; i < matches.length; i++) {
-        const match = matches[i];
+      await this.processMatches(matches, tournamentCode, updateProgress);
 
-        if (!match) {
-          this.logger.warn(`Skipping undefined match at index ${i}`);
-          continue;
-        }
-
-        await this.processMatch(tournamentCode, match);
-
-        const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
-        await updateProgress(finalProgress);
-
-        this.logger.debug(`Processed individual match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code || 'NO_CODE'}`);
-      }
-
-      this.logger.log(`Completed tournament game individual sync - processed ${matches.length} matches`);
+      this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
-      this.logger.error(`Failed to process tournament game individual sync: ${errorMessage}`, errorStack);
+      this.logger.error(`Failed to process tournament game sync: ${errorMessage}`, errorStack);
       throw error;
+    }
+  }
+
+  private async collectMatches(tournamentCode: string, drawCode?: string, matchCodes?: string[]): Promise<Match[]> {
+    let matches: Match[] = [];
+
+    if (matchCodes && matchCodes.length > 0) {
+      // Sync specific matches
+      matches = await this.getMatchesByCode(tournamentCode, matchCodes);
+    } else if (drawCode) {
+      // Sync all matches in a draw
+      const drawMatches = await this.tournamentApiClient.getMatchesByDraw(tournamentCode, drawCode);
+      matches = drawMatches?.filter((match) => match != null) || [];
+    }
+    return matches;
+  }
+
+  private async getMatchesByCode(tournamentCode: string, matchCodes: string[]): Promise<Match[]> {
+    const matches: Match[] = [];
+
+    for (const matchCode of matchCodes) {
+      try {
+        const match = await this.tournamentApiClient.getMatchDetails(tournamentCode, matchCode);
+        if (match) {
+          matches.push(match);
+        } else {
+          this.logger.warn(`Match API returned null/undefined for matchCode: ${matchCode}`);
+        }
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this.logger.warn(`Failed to get match ${matchCode}: ${errorMessage}`, error);
+      }
+    }
+
+    return matches;
+  }
+
+  private async processMatches(matches: Match[], tournamentCode: string, updateProgress: (progress: number) => Promise<void>): Promise<void> {
+    for (let i = 0; i < matches.length; i++) {
+      const match = matches[i];
+
+      if (!match) {
+        this.logger.warn(`Skipping undefined match at index ${i}`);
+        continue;
+      }
+
+      await this.processMatch(tournamentCode, match);
+
+      const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
+      await updateProgress(finalProgress);
+
+      this.logger.debug(`Processed match ${i + 1}/${matches.length} (${finalProgress}%): ${match.Code || 'NO_CODE'}`);
     }
   }
 
@@ -211,6 +154,7 @@ export class TournamentGameSyncService {
       where: {
         visualCode: match.Code,
         linkId: linkId,
+        linkType: 'tournament',
       },
     });
 
@@ -269,6 +213,21 @@ export class TournamentGameSyncService {
     }
     if (match.Team2?.Player2) {
       await this.createOrUpdatePlayer(match.Team2.Player2);
+    }
+
+    // Create game player memberships
+    const game =
+      existingGame ||
+      (await Game.findOne({
+        where: {
+          visualCode: match.Code,
+          linkId: linkId,
+          linkType: 'tournament',
+        },
+      }));
+
+    if (game) {
+      await this.createGamePlayerMemberships(game, match);
     }
   }
 
@@ -333,6 +292,86 @@ export class TournamentGameSyncService {
         return 'MX';
       default:
         return 'M';
+    }
+  }
+
+  private async createGamePlayerMemberships(game: Game, match: Match): Promise<void> {
+    this.logger.debug(`Creating game player memberships for game: ${game.visualCode}`);
+
+    // Helper function to create or update membership for a player
+    const createMembershipForPlayer = async (tournamentPlayer: TournamentPlayer, team: number, playerPosition: number): Promise<void> => {
+      if (!tournamentPlayer?.MemberID) return;
+
+      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
+
+      // Find the player in our system, with the ranking place that has a date equals to or before the game date
+      const player = await Player.findOne({
+        where: {
+          memberId: tournamentPlayer.MemberID,
+          rankingPlaces: { rankingDate: LessThanOrEqual(game.playedAt || new Date()), system: { id: primarySystem!.id } },
+        },
+        relations: ['rankingPlaces'],
+      });
+
+      if (!player) {
+        this.logger.warn(`Player not found for memberID: ${tournamentPlayer.MemberID}`);
+        return;
+      }
+
+      // Check if membership already exists
+      const existingMembership = await GamePlayerMembership.findOne({
+        where: {
+          gameId: game.id,
+          playerId: player.id,
+        },
+      });
+
+      const rankingplace = player.rankingPlaces
+        .filter((rp) => (game.playedAt ? rp.rankingDate <= game.playedAt : true))
+        .sort((a, b) => b.rankingDate.getTime() - a.rankingDate.getTime())[0];
+
+      if (existingMembership) {
+        // Update existing membership
+        existingMembership.team = team;
+        existingMembership.player = playerPosition;
+
+        existingMembership.single = rankingplace ? rankingplace.single : primarySystem!.amountOfLevels;
+        existingMembership.double = rankingplace ? rankingplace.double : primarySystem!.amountOfLevels;
+        existingMembership.mix = rankingplace ? rankingplace.mix : primarySystem!.amountOfLevels;
+
+        await existingMembership.save();
+        this.logger.debug(`Updated game player membership for player ${player.id} in game ${game.id}`);
+      } else {
+        // Create new membership
+        const membership = new GamePlayerMembership();
+        membership.gameId = game.id;
+        membership.playerId = player.id;
+        membership.team = team;
+        membership.player = playerPosition;
+
+        membership.single = rankingplace ? rankingplace.single : primarySystem!.amountOfLevels;
+        membership.double = rankingplace ? rankingplace.double : primarySystem!.amountOfLevels;
+        membership.mix = rankingplace ? rankingplace.mix : primarySystem!.amountOfLevels;
+
+        await membership.save();
+        this.logger.debug(`Created game player membership for player ${player.id} in game ${game.id}`);
+      }
+    };
+
+    // Create memberships for Team 1 players
+    if (match.Team1?.Player1) {
+      await createMembershipForPlayer(match.Team1.Player1, 1, 1);
+    }
+    if (match.Team1?.Player2) {
+      await createMembershipForPlayer(match.Team1.Player2, 1, 2);
+    }
+
+    // Create memberships for Team 2 players
+    if (match.Team2?.Player1) {
+      await createMembershipForPlayer(match.Team2.Player1, 2, 1);
+    }
+    if (match.Team2?.Player2) {
+      await createMembershipForPlayer(match.Team2.Player2, 2, 2);
     }
   }
 }

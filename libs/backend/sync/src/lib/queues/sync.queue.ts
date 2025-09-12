@@ -17,21 +17,23 @@ export const SYNC_QUEUE = 'sync';
 export const JOB_TYPES = {
   // Discovery jobs
   TOURNAMENT_DISCOVERY: 'tournament-discovery',
-  
+
   // Structure sync jobs (events, draws, entries)
-  TOURNAMENT_STRUCTURE_SYNC: 'tournament-sync-structure',
-  COMPETITION_STRUCTURE_SYNC: 'competition-sync-structure',
-  
-  // Game sync jobs
-  TOURNAMENT_GAME_SYNC: 'tournament-sync-games', 
-  COMPETITION_GAME_SYNC: 'competition-sync-games',
-  
+  TOURNAMENT_STRUCTURE_SYNC: 'tournament-structure-sync',
+  COMPETITION_STRUCTURE_SYNC: 'competition-structure-sync',
+// Game sync jobs
+  TOURNAMENT_GAME_SYNC: 'tournament-games-sync', 
+  COMPETITION_GAME_SYNC: 'competition-games-sync',
   // Team matching
   TEAM_MATCHING: 'team-matching',
 } as const;
 
 // Helper function to create dynamic job names
-export function createJobName(eventType: 'tournament' | 'competition', operation: 'sync' | 'discovery' | 'matching', scope?: 'structure' | 'games' | 'events' | 'draws' | 'standings'): string {
+export function createJobName(
+  eventType: 'tournament' | 'competition',
+  operation: 'sync' | 'discovery' | 'matching',
+  scope?: 'structure' | 'games' | 'events' | 'draws' | 'standings',
+): string {
   if (operation === 'discovery') {
     return `${eventType}-discovery`;
   }
@@ -46,13 +48,13 @@ export enum SyncJobType {
   /** @deprecated Use JOB_TYPES.TOURNAMENT_DISCOVERY */
   TOURNAMENT_DISCOVERY = 'tournament-discovery',
   /** @deprecated Use createJobName('competition', 'sync', 'structure') */
-  COMPETITION_STRUCTURE_SYNC = 'competition-sync-structure', 
+  COMPETITION_STRUCTURE_SYNC = 'competition-structure-sync',
   /** @deprecated Use createJobName('competition', 'sync', 'games') */
-  COMPETITION_GAME_SYNC = 'competition-sync-games',
+  COMPETITION_GAME_SYNC = 'competition-games-sync',
   /** @deprecated Use createJobName('tournament', 'sync', 'structure') */
-  TOURNAMENT_STRUCTURE_SYNC = 'tournament-sync-structure',
+  TOURNAMENT_STRUCTURE_SYNC = 'tournament-structure-sync',
   /** @deprecated Use createJobName('tournament', 'sync', 'games') */
-  TOURNAMENT_GAME_SYNC = 'tournament-sync-games',
+  TOURNAMENT_GAME_SYNC = 'tournament-games-sync',
   /** @deprecated Use JOB_TYPES.TEAM_MATCHING */
   TEAM_MATCHING = 'team-matching',
 }
