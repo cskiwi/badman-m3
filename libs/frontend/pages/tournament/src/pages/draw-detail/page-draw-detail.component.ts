@@ -1,5 +1,6 @@
 import { SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SyncButtonComponent, SyncButtonConfig } from '@app/frontend-components/sync';
@@ -7,6 +8,7 @@ import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DrawDetailService } from './page-draw-detail.service';
 import { DrawGamesComponent } from './components/draw-games.component';
@@ -21,6 +23,7 @@ import { DrawKoTreeComponent } from './components/draw-ko-tree.component';
     RouterModule,
     TranslateModule,
     PageHeaderComponent,
+    ButtonModule,
     SkeletonModule,
     SyncButtonComponent,
     DrawGamesComponent,
@@ -34,19 +37,50 @@ import { DrawKoTreeComponent } from './components/draw-ko-tree.component';
 export class PageDrawDetailComponent {
   private readonly dataService = new DrawDetailService();
   private readonly seoService = inject(SeoService);
+  private readonly router = inject(Router);
   private readonly tournamentId = injectParams('tournamentId');
   private readonly subEventId = injectParams('subEventId');
-  private readonly drawId = injectParams('drawId');
+  readonly drawId = injectParams('drawId');
 
   // selectors
   tournament = this.dataService.tournament;
   subEvent = this.dataService.subEvent;
   draw = this.dataService.draw;
+  draws = this.dataService.draws;
   standings = this.dataService.standings;
   games = this.dataService.games;
 
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  // Draw switching
+  drawOptions = computed(() => {
+    const draws = this.draws();
+    return draws.map(draw => ({
+      label: draw.name || 'Draw ' + (draw.id.slice(0, 8)),
+      value: draw.id,
+      draw: draw
+    }));
+  });
+
+  hasMultipleDraws = computed(() => this.draws().length > 1);
+
+  onDrawChange(selectedDrawId: string) {
+    const tournament = this.tournament();
+    const subEvent = this.subEvent();
+    
+    if (tournament && subEvent) {
+      this.router.navigate([
+        '/', 
+        'tournament', 
+        tournament.slug, 
+        'sub-events', 
+        subEvent.id, 
+        'draws', 
+        selectedDrawId
+      ]);
+    }
+  }
 
   // Sync configuration
   syncConfig = computed((): SyncButtonConfig | null => {

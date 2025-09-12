@@ -29,7 +29,7 @@ export class DrawDetailService {
         const result = await lastValueFrom(
           this.apollo.query<{ 
             tournamentEvent: TournamentEvent; 
-            tournamentSubEvent: TournamentSubEvent; 
+            tournamentSubEvent: TournamentSubEvent & { drawTournaments: TournamentDraw[] }; 
             tournamentDraw: TournamentDraw & { entries: Entry[]; games: Game[] };
           }>({
             query: gql`
@@ -48,6 +48,13 @@ export class DrawDetailService {
                   gameType
                   level
                   visualCode
+                  drawTournaments {
+                    id
+                    name
+                    type
+                    size
+                    visualCode
+                  }
                 }
                 tournamentDraw(id: $drawId) {
                   id
@@ -156,6 +163,7 @@ export class DrawDetailService {
           tournament: result.data.tournamentEvent,
           subEvent: result.data.tournamentSubEvent,
           draw: result.data.tournamentDraw,
+          draws: result.data.tournamentSubEvent.drawTournaments || [],
           standings,
           games,
         };
@@ -170,6 +178,7 @@ export class DrawDetailService {
   tournament = computed(() => this.dataResource.value()?.tournament);
   subEvent = computed(() => this.dataResource.value()?.subEvent);
   draw = computed(() => this.dataResource.value()?.draw);
+  draws = computed(() => this.dataResource.value()?.draws ?? []);
   standings = computed(() => this.dataResource.value()?.standings ?? []);
   games = computed(() => this.dataResource.value()?.games ?? []);
   error = computed(() => this.dataResource.error()?.message || null);

@@ -15,8 +15,7 @@
     "@angular/common": "20.2.4",
     "apollo-angular": "^11.0.0",
     "rxjs": "~7.8.2",
-    "@app/frontend-modules-auth": "*",
-    "ngx-interactive-org-chart": "*"
+    "@app/frontend-modules-auth": "*"
   },
   "sideEffects": false
 }

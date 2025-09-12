@@ -81,6 +81,28 @@
           </div>
         </section>
 
+        <!-- Draw Switcher -->
+        @if (hasMultipleDraws()) {
+          <section class="draw-switcher mb-6">
+            <div class="flex items-center justify-center">
+              <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-color">Switch Draw:</span>
+                <div class="flex gap-2">
+                  @for (option of drawOptions(); track option.value) {
+                    <p-button
+                      [label]="option.label"
+                      [severity]="option.value === drawId() ? 'primary' : 'secondary'"
+                      [outlined]="option.value !== drawId()"
+                      size="small"
+                      (onClick)="onDrawChange(option.value)"
+                    />
+                  }
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
         <!-- Standings Section -->
         @if (standings().length > 0) {
           @if (draw?.type === 'KO') {
