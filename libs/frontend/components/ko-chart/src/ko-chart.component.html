@@ -1,0 +1,94 @@
+<section class="flex min-h-full max-h-full w-full overflow-hidden surface-ground" [class.rtl]="isRtl()">
+  <section class="text-center min-w-full w-max scroll-smooth surface-ground border-0 cursor-grab active:cursor-grabbing" #panZoomContainer>
+    @if (nodes()?.id) {
+      <ul class="flex flex-nowrap justify-center relative opacity-100 box-border m-auto min-w-0 pt-2 my-0 px-0">
+        <ng-container
+          [ngTemplateOutlet]="nodeTemplate"
+          [ngTemplateOutletContext]="{ node: nodes() }"
+        ></ng-container>
+      </ul>
+    }
+  </section>
+</section>
+
+<ng-template #nodeTemplate let-node="node">
+  <li class="inline-table text-center list-none relative flex-shrink-0 overflow-hidden transition-all duration-500 p-2" [class.collapsed]="node.collapsed" #orgChartContainer>
+    <a
+      [ngClass]="[
+        node?.nodeClass ?? '', 
+        nodeClass() ?? '', 
+        'surface-card text-color relative inline-grid no-underline z-10 transition-all duration-500',
+        'shadow-lg p-3 rounded-lg border-2 border-surface hover:border-primary'
+      ]"
+      [ngStyle]="node.style"
+      [id]="getNodeId(node.id)"
+      [attr.aria-expanded]="node.children?.length ? !node.collapsed : null"
+      [attr.aria-label]="
+        node.name + (node.children?.length ? (node.collapsed ? ' (collapsed)' : ' (expanded)') : '')
+      "
+    >
+      @if (customNodeTemplate) {
+        <ng-container
+          [ngTemplateOutlet]="customNodeTemplate"
+          [ngTemplateOutletContext]="{
+            $implicit: node,
+            node: node,
+          }"
+        ></ng-container>
+      } @else {
+        <span>{{ node.name }}</span>
+      }
+      @if (collapsible() && node.children?.length) {
+        <button
+          class="collapse-btn flex items-center justify-center text-muted-color surface-card border border-surface rounded absolute z-20 cursor-pointer transition-all duration-300 w-5 h-5 -translate-x-1/2 hover:scale-105 hover:shadow-md hover:text-primary hover:surface-hover focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-1"
+          style="inset-block-end: calc(-0.5rem); inset-inline-start: 50%;"
+          (click)="onToggleCollapse({ node, highlightNode: focusOnCollapseOrExpand() })"
+          [class.collapsed]="node.collapsed"
+          (mouseenter)="panZoomInstance?.pause()"
+          (mousewheel)="panZoomInstance?.resume()"
+          (mouseleave)="panZoomInstance?.resume()"
+          (pointerenter)="panZoomInstance?.pause()"
+          (pointerleave)="panZoomInstance?.resume()"
+          [attr.aria-label]="(node.collapsed ? 'Expand' : 'Collapse') + ' ' + node.name"
+          type="button"
+        >
+          @if (displayChildrenCount()) {
+            <small class="pl-1 text-xs">{{ node.descendantsCount }}</small>
+          }
+          <svg class="transition-transform duration-300 w-5 h-5" [class.rotate-180]="node.collapsed" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M11.9995 16.8001C11.2995 16.8001 10.5995 16.5301 10.0695 16.0001L3.54953 9.48014C3.25953 9.19014 3.25953 8.71014 3.54953 8.42014C3.83953 8.13014 4.31953 8.13014 4.60953 8.42014L11.1295 14.9401C11.6095 15.4201 12.3895 15.4201 12.8695 14.9401L19.3895 8.42014C19.6795 8.13014 20.1595 8.13014 20.4495 8.42014C20.7395 8.71014 20.7395 9.19014 20.4495 9.48014L13.9295 16.0001C13.3995 16.5301 12.6995 16.8001 11.9995 16.8001Z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      }
+    </a>
+
+    @if (node.children?.length && !node.hidden && !node.collapsed) {
+      <ul
+        class="flex flex-nowrap justify-center relative opacity-100 box-border m-auto min-w-0 transition-all duration-300"
+        style="padding-block-start: var(--combined-spacing-vertical); padding-inline-start: 0;"
+        [id]="getNodeChildrenId(node.id)"
+        [class.collapsed]="node.collapsed"
+        [class.instant-animation]="true"
+        [class.max-h-0]="node.collapsed"
+        [class.opacity-0]="node.collapsed"
+        [attr.aria-hidden]="node.collapsed"
+        @toggleNode
+      >
+        @for (child of node.children; track child.id) {
+          @if (!child.hidden) {
+            <ng-container
+              [ngTemplateOutlet]="nodeTemplate"
+              [ngTemplateOutletContext]="{
+                node: child,
+                nodeTemplate: nodeTemplate,
+              }"
+            ></ng-container>
+          }
+        }
+      </ul>
+    }
+  </li>
+</ng-template>

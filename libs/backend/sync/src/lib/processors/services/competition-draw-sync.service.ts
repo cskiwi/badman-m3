@@ -168,8 +168,17 @@ export class CompetitionDrawSyncService {
     try {
       const drawData = await this.tournamentApiClient.getDrawDetails?.(tournamentCode, drawCode);
       if (drawData) {
+        // Find the draw with competition context to avoid visualCode ambiguity
         const existingDraw = await CompetitionDraw.findOne({
-          where: { visualCode: drawCode },
+          where: {
+            visualCode: drawCode,
+            competitionSubEvent: {
+              competitionEvent: {
+                visualCode: tournamentCode,
+              },
+            },
+          },
+          relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
         });
 
         if (existingDraw) {

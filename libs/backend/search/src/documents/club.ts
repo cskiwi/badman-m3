@@ -1,6 +1,6 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const ClubDocument = {
+export const ClubDocument: CollectionCreateSchema<{}> = {
   name: 'clubs',
   fields: [
     { name: 'objectID', type: 'string' },
@@ -11,5 +11,5 @@ export const ClubDocument = {
     { name: 'type', type: 'string' },
     { name: 'order', type: 'int32' },
   ],
-  // default_sorting_field: 'order',
-} satisfies CollectionCreateSchema;
+  default_sorting_field: 'order',
+};

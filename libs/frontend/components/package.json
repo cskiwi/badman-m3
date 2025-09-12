@@ -19,7 +19,8 @@
     "ngxtension": "^5.1.0",
     "@angular/service-worker": "20.2.4",
     "ngx-cookie-service-ssr": "^20.0.1",
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "panzoom": "^9.4.3"
   },
   "sideEffects": false
 }

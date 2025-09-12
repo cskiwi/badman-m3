@@ -1,6 +1,6 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const EventDocument = {
+export const EventDocument: CollectionCreateSchema<{}> = {
   name: 'events',
   fields: [
     { name: 'objectID', type: 'string' },
@@ -10,5 +10,5 @@ export const EventDocument = {
     { name: 'date', type: 'int64', optional: true },
     { name: 'order', type: 'int32' },
   ],
-  // default_sorting_field: 'order',
-} satisfies CollectionCreateSchema;
+  default_sorting_field: 'order',
+};

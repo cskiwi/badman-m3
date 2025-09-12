@@ -53,6 +53,34 @@ export class TournamentEntrySyncService {
 
       this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
 
+      // Verify the draw belongs to the correct tournament
+      if (draw.tournamentSubEvent) {
+        // Load the subevent with tournament relation to check eventId
+        const subEvent = await TournamentSubEvent.findOne({
+          where: { id: draw.tournamentSubEvent.id },
+          relations: ['tournamentEvent'],
+        });
+
+        this.logger.debug(`Found subEvent: ${subEvent?.id}, eventId: ${subEvent?.eventId}, tournament eventId: ${tournamentEvent.id}`);
+
+        if (!subEvent || subEvent.eventId !== tournamentEvent.id) {
+          // Try to repair the relationship if the sub-event exists but has wrong eventId
+          if (subEvent && subEvent.eventId !== tournamentEvent.id) {
+            this.logger.log(`Attempting to repair orphaned sub-event relationship for draw ${drawCode}`);
+            await this.repairSubEventRelationship(subEvent, tournamentEvent);
+            // Continue with entry sync after repair
+          } else {
+            this.logger.warn(
+              `Draw ${drawCode} does not belong to tournament ${tournamentCode}. SubEvent eventId: ${subEvent?.eventId}, Tournament id: ${tournamentEvent.id}, skipping entry sync`,
+            );
+            return;
+          }
+        }
+      } else {
+        this.logger.warn(`Draw ${drawCode} has no tournamentSubEvent relation, skipping entry sync`);
+        return;
+      }
+
       // Create entries from existing games if entries don't exist
       await updateProgress(40);
       await this.createEntriesFromGames(draw);
@@ -149,5 +177,22 @@ export class TournamentEntrySyncService {
     }
 
     this.logger.log(`Created ${teamPlayerCombinations.size} entries for draw ${draw.visualCode}`);
+  }
+
+  private async repairSubEventRelationship(subEvent: TournamentSubEvent, tournamentEvent: TournamentEventModel): Promise<void> {
+    try {
+      this.logger.log(
+        `Repairing sub-event ${subEvent.id} (${subEvent.visualCode}) to link to tournament ${tournamentEvent.id} (${tournamentEvent.visualCode})`,
+      );
+
+      subEvent.eventId = tournamentEvent.id;
+      await subEvent.save();
+
+      this.logger.log(`Successfully repaired sub-event relationship`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to repair sub-event relationship: ${errorMessage}`, error);
+      throw error;
+    }
   }
 }

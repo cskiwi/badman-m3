@@ -16,6 +16,18 @@
       </ng-content>
       <ng-content actions>
         <div class="flex items-center gap-2">
+          @if (tournament.visualCode) {
+            <a
+              [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
+              title="View on toernooi.nl"
+            >
+              <i class="pi pi-external-link text-xs"></i>
+              <span>toernooi.nl</span>
+            </a>
+          }
           @if (syncStatusConfig(); as statusConfig) {
             <app-sync-status-indicator [config]="statusConfig" />
           }
@@ -147,6 +159,17 @@
                             <div class="flex items-start justify-between mb-4">
                               <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
                               <div class="flex items-center gap-1 flex-shrink-0">
+                                @if (tournament.visualCode && subEvent.visualCode) {
+                                  <a
+                                    [href]="'https://www.toernooi.nl/sport/event.aspx?id=' + tournament.visualCode + '&event=' + subEvent.visualCode"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="flex items-center justify-center w-5 h-5 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors no-underline opacity-60 hover:opacity-100"
+                                    title="View subevent on toernooi.nl"
+                                  >
+                                    <i class="pi pi-external-link text-xs"></i>
+                                  </a>
+                                }
                                 @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
                                   <app-sync-status-indicator [config]="statusConfig" />
                                 }
@@ -165,20 +188,33 @@
 
                               <div class="space-y-2">
                                 @for (draw of subEvent.drawTournaments; track draw.id) {
-                                  <a
-                                    [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
-                                    class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
-                                  >
-                                    <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
-                                    <div class="text-muted-color-emphasis text-xs flex gap-4">
-                                      @if (draw.type) {
-                                        <span>{{ draw.type }}</span>
-                                      }
-                                      @if (draw.size) {
-                                        <span>Size: {{ draw.size }}</span>
-                                      }
-                                    </div>
-                                  </a>
+                                  <div class="flex items-center gap-2">
+                                    <a
+                                      [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
+                                      class="flex-1 block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
+                                    >
+                                      <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
+                                      <div class="text-muted-color-emphasis text-xs flex gap-4">
+                                        @if (draw.type) {
+                                          <span>{{ draw.type }}</span>
+                                        }
+                                        @if (draw.size) {
+                                          <span>Size: {{ draw.size }}</span>
+                                        }
+                                      </div>
+                                    </a>
+                                    @if (tournament.visualCode && draw.visualCode) {
+                                      <a
+                                        [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="flex items-center justify-center w-5 h-5 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors no-underline flex-shrink-0 opacity-60 hover:opacity-100"
+                                        title="View draw on toernooi.nl"
+                                      >
+                                        <i class="pi pi-external-link text-xs"></i>
+                                      </a>
+                                    }
+                                  </div>
                                 }
                               </div>
                             }
@@ -215,6 +251,17 @@
                       <div class="flex items-start justify-between mb-4">
                         <h4 class="font-semibold text-lg text-primary my-0">{{ subEvent.name }}</h4>
                         <div class="flex items-center gap-1 flex-shrink-0">
+                          @if (tournament.visualCode && subEvent.visualCode) {
+                            <a
+                              [href]="'https://www.toernooi.nl/sport/event.aspx?id=' + tournament.visualCode + '&event=' + subEvent.visualCode"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="flex items-center justify-center w-5 h-5 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors no-underline opacity-60 hover:opacity-100"
+                              title="View subevent on toernooi.nl"
+                            >
+                              <i class="pi pi-external-link text-xs"></i>
+                            </a>
+                          }
                           @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
                             <app-sync-status-indicator [config]="statusConfig" />
                           }
@@ -233,20 +280,33 @@
 
                         <div class="space-y-2">
                           @for (draw of subEvent.drawTournaments; track draw.id) {
-                            <a
-                              [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
-                              class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
-                            >
-                              <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
-                              <div class="text-muted-color-emphasis text-xs flex gap-4">
-                                @if (draw.type) {
-                                  <span>{{ draw.type }}</span>
-                                }
-                                @if (draw.size) {
-                                  <span>Size: {{ draw.size }}</span>
-                                }
-                              </div>
-                            </a>
+                            <div class="flex items-center gap-2">
+                              <a
+                                [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
+                                class="flex-1 block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
+                              >
+                                <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
+                                <div class="text-muted-color-emphasis text-xs flex gap-4">
+                                  @if (draw.type) {
+                                    <span>{{ draw.type }}</span>
+                                  }
+                                  @if (draw.size) {
+                                    <span>Size: {{ draw.size }}</span>
+                                  }
+                                </div>
+                              </a>
+                              @if (tournament.visualCode && draw.visualCode) {
+                                <a
+                                  [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  class="flex items-center justify-center w-5 h-5 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors no-underline flex-shrink-0 opacity-60 hover:opacity-100"
+                                  title="View draw on toernooi.nl"
+                                >
+                                  <i class="pi pi-external-link text-xs"></i>
+                                </a>
+                              }
+                            </div>
                           }
                         </div>
                       }

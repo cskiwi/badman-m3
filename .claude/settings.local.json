@@ -19,7 +19,17 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_click",
-      "mcp__playwright__browser_take_screenshot"
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_console_messages",
+      "WebFetch(domain:primeng.org)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm run build:*)",
+      "mcp__postgres-badman__query",
+      "mcp__postgres-badman__list_schemas",
+      "mcp__postgres-badman__list_tables",
+      "mcp__postgres-badman__describe_table"
     ],
     "deny": [],
     "ask": []

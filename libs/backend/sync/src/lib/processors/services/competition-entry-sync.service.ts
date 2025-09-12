@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, Entry, Team as TeamModel } from '@app/models';
+import { CompetitionDraw, Entry, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job, WaitingChildrenError } from 'bullmq';
 
@@ -20,18 +20,41 @@ export class CompetitionEntrySyncService {
     const { tournamentCode, drawCode } = job.data;
 
     try {
-      // Find the draw
+      // Find the competition event first to get proper context
+      await updateProgress(15);
+      const competitionEvent = await CompetitionEventModel.findOne({
+        where: { visualCode: tournamentCode },
+      });
       await updateProgress(20);
+
+      if (!competitionEvent) {
+        this.logger.warn(`Competition with code ${tournamentCode} not found, skipping entry sync`);
+        return;
+      }
+
+      this.logger.debug(`Found competition: ${competitionEvent.id} with code ${tournamentCode}`);
+
+      // Find the draw with competition context to avoid visualCode ambiguity
+      await updateProgress(25);
       const draw = await CompetitionDraw.findOne({
-        where: { visualCode: drawCode },
-        relations: ['subevent'],
+        where: {
+          visualCode: drawCode,
+          competitionSubEvent: {
+            competitionEvent: {
+              id: competitionEvent.id,
+            },
+          },
+        },
+        relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
       });
       await updateProgress(30);
 
       if (!draw) {
-        this.logger.warn(`Competition draw with code ${drawCode} not found, skipping entry sync`);
+        this.logger.warn(`Draw with code ${drawCode} not found for competition ${tournamentCode}, skipping entry sync`);
         return;
       }
+
+      this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
 
       // Get and sync entries
       await updateProgress(40);

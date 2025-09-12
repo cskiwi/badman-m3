@@ -16,13 +16,27 @@
             </div>
           </ng-content>
           <ng-content actions>
-            @if (syncConfig(); as config) {
-              <app-sync-button [config]="config" />
-            }
-            <a [routerLink]="['/', 'tournament', tournament.slug]" class="p-button p-button-outlined p-button-sm no-underline">
-              <i class="pi pi-arrow-left mr-2"></i>
-              Back
-            </a>
+            <div class="flex items-center gap-2">
+              @if (tournament.visualCode && draw.visualCode) {
+                <a
+                  [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
+                  title="View draw on toernooi.nl"
+                >
+                  <i class="pi pi-external-link text-xs"></i>
+                  <span>toernooi.nl</span>
+                </a>
+              }
+              @if (syncConfig(); as config) {
+                <app-sync-button [config]="config" />
+              }
+              <a [routerLink]="['/', 'tournament', tournament.slug]" class="p-button p-button-outlined p-button-sm no-underline">
+                <i class="pi pi-arrow-left mr-2"></i>
+                Back
+              </a>
+            </div>
           </ng-content>
         </app-page-header>
 
@@ -69,84 +83,22 @@
 
         <!-- Standings Section -->
         @if (standings().length > 0) {
-          <section class="standings">
-            <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
-              <i class="pi pi-chart-bar text-primary-500"></i>
-              
-            </h3>
-
-            <div class="overflow-x-auto">
-              <table class="w-full border-collapse rounded-border bg-highlight overflow-hidden">
-                <thead class="bg-primary text-primary-contrast">
-                  <tr>
-                    <th class="p-3 text-left font-semibold">Position</th>
-                    <th class="p-3 text-left font-semibold">Player/Team</th>
-                    <th class="p-3 text-center font-semibold">Played</th>
-                    <th class="p-3 text-center font-semibold">Won</th>
-                    <th class="p-3 text-center font-semibold">Lost</th>
-                    <th class="p-3 text-center font-semibold">Games</th>
-                    <th class="p-3 text-center font-semibold">Sets</th>
-                    <th class="p-3 text-center font-semibold">Points</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (standing of standings(); track standing.id) {
-                    <tr class="border-b border-surface-200 hover:bg-highlight-emphasis">
-                      <td class="p-3 font-semibold text-primary">{{ standing.position }}</td>
-                      <td class="p-3">
-                        @if (standing.teamId) {
-                          <span>Team {{ standing.teamId | slice: 0 : 8 }}</span>
-                        } @else if (standing.player1 || standing.player2) {
-                          <div class="flex flex-col gap-1">
-                            @if (standing.player1) {
-                              <span class="font-medium">{{ standing.player1.fullName }}</span>
-                            }
-                            @if (standing.player2) {
-                              <span class="font-medium">{{ standing.player2.fullName }}</span>
-                            }
-                          </div>
-                        } @else if (standing.player1Id || standing.player2Id) {
-                          <div class="flex flex-col gap-1">
-                            @if (standing.player1Id) {
-                              <span class="text-xs text-muted-color">Player 1: {{ standing.player1Id | slice: 0 : 8 }}</span>
-                            }
-                            @if (standing.player2Id) {
-                              <span class="text-xs text-muted-color">Player 2: {{ standing.player2Id | slice: 0 : 8 }}</span>
-                            }
-                          </div>
-                        } @else {
-                          <span>-</span>
-                        }
-                      </td>
-                      <td class="p-3 text-center">{{ standing.played || '-' }}</td>
-                      <td class="p-3 text-center text-green-600 font-medium">{{ standing.won || '-' }}</td>
-                      <td class="p-3 text-center text-red-600 font-medium">{{ standing.lost || '-' }}</td>
-                      <td class="p-3 text-center text-sm">
-                        @if (standing.gamesWon !== null && standing.gamesLost !== null) {
-                          <span>{{ standing.gamesWon }} - {{ standing.gamesLost }}</span>
-                        } @else {
-                          <span>-</span>
-                        }
-                      </td>
-                      <td class="p-3 text-center text-sm">
-                        @if (standing.setsWon !== null && standing.setsLost !== null) {
-                          <span>{{ standing.setsWon }} - {{ standing.setsLost }}</span>
-                        } @else {
-                          <span>-</span>
-                        }
-                      </td>
-                      <td class="p-3 text-center font-semibold">{{ standing.points || '-' }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-          </section>
+          @if (draw?.type === 'KO') {
+            <app-draw-ko-tree [standings]="standings()" [games]="games()" />
+          } @else {
+            <app-draw-standings-table [standings]="standings()" />
+          }
         } @else {
           <div class="text-center py-12 text-surface-500">
-            <i class="pi pi-chart-bar text-4xl mb-4 block"></i>
-            <h3 class="text-lg font-medium mb-2">No Standings</h3>
-            <p>This draw doesn't have any standings data yet.</p>
+            @if (draw?.type === 'KO') {
+              <i class="pi pi-sitemap text-4xl mb-4 block"></i>
+              <h3 class="text-lg font-medium mb-2">No Tournament Tree</h3>
+              <p>This knockout draw doesn't have any tournament data yet.</p>
+            } @else {
+              <i class="pi pi-chart-bar text-4xl mb-4 block"></i>
+              <h3 class="text-lg font-medium mb-2">No Standings</h3>
+              <p>This draw doesn't have any standings data yet.</p>
+            }
           </div>
         }
 

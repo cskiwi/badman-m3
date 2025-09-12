@@ -9,7 +9,6 @@ import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EncounterCardComponent } from './components/encounter-card.component';
-import { KoDrawComponent } from './components/ko-draw.component';
 import { PouleDrawComponent } from './components/poule-draw.component';
 import { QualificationDrawComponent } from './components/qualification-draw.component';
 import { DrawsService } from './page-draws.service';
@@ -25,7 +24,6 @@ import { DrawsService } from './page-draws.service';
     SkeletonModule,
     SyncButtonComponent,
     PouleDrawComponent,
-    KoDrawComponent,
     QualificationDrawComponent,
     EncounterCardComponent,
   ],

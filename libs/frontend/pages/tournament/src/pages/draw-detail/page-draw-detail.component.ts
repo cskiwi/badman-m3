@@ -10,10 +10,23 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DrawDetailService } from './page-draw-detail.service';
 import { DrawGamesComponent } from './components/draw-games.component';
+import { DrawStandingsTableComponent } from './components/draw-standings-table.component';
+import { DrawKoTreeComponent } from './components/draw-ko-tree.component';
 
 @Component({
   selector: 'app-page-draw-detail',
-  imports: [SlicePipe, ProgressBarModule, RouterModule, TranslateModule, PageHeaderComponent, SkeletonModule, SyncButtonComponent, DrawGamesComponent],
+  imports: [
+    SlicePipe,
+    ProgressBarModule,
+    RouterModule,
+    TranslateModule,
+    PageHeaderComponent,
+    SkeletonModule,
+    SyncButtonComponent,
+    DrawGamesComponent,
+    DrawStandingsTableComponent,
+    DrawKoTreeComponent,
+  ],
   templateUrl: './page-draw-detail.component.html',
   styleUrl: './page-draw-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +53,7 @@ export class PageDrawDetailComponent {
     const tournament = this.tournament();
     const subEvent = this.subEvent();
     const draw = this.draw();
-    
+
     if (!tournament || !subEvent || !draw) {
       return null;
     }

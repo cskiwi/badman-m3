@@ -171,9 +171,17 @@ export class CompetitionEncounterSyncService {
 
     this.logger.debug(`Processing encounter: ${encounterData.Code}`);
 
-    // Find the draw this encounter belongs to
+    // Find the draw this encounter belongs to with competition context
     const draw = await CompetitionDraw.findOne({
-      where: { visualCode: encounterData.DrawCode },
+      where: {
+        visualCode: encounterData.DrawCode,
+        competitionSubEvent: {
+          competitionEvent: {
+            visualCode: tournamentCode,
+          },
+        },
+      },
+      relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
     });
 
     if (!draw) {
@@ -193,7 +201,17 @@ export class CompetitionEncounterSyncService {
     }
 
     const existingEncounter = await CompetitionEncounter.findOne({
-      where: { visualCode: encounterData.Code },
+      where: {
+        visualCode: encounterData.Code,
+        drawCompetition: {
+          competitionSubEvent: {
+            competitionEvent: {
+              visualCode: tournamentCode,
+            },
+          },
+        },
+      },
+      relations: ['drawCompetition', 'drawCompetition.competitionSubEvent', 'drawCompetition.competitionSubEvent.competitionEvent'],
     });
 
     if (existingEncounter) {

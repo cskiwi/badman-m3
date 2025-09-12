@@ -18,9 +18,23 @@
             </div>
           </ng-content>
           <ng-content actions>
-            @if (syncConfig(); as config) {
-              <app-sync-button [config]="config" />
-            }
+            <div class="flex items-center gap-2">
+              @if (competition.visualCode && draw.visualCode) {
+                <a
+                  [href]="'https://www.toernooi.nl/sport/league/draw?id=' + competition.visualCode + '&draw=' + draw.visualCode"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
+                  title="View draw on toernooi.nl"
+                >
+                  <i class="pi pi-external-link text-xs"></i>
+                  <span>toernooi.nl</span>
+                </a>
+              }
+              @if (syncConfig(); as config) {
+                <app-sync-button [config]="config" />
+              }
+            </div>
           </ng-content>
         </app-page-header>
 
@@ -99,9 +113,6 @@
         @switch (draw.type) {
           @case ('POULE') {
             <app-poule-draw [entries]="standings()" />
-          }
-          @case ('KO') {
-            <app-ko-draw [encounters]="encounters()" />
           }
           @case ('QUALIFICATION') {
             <app-qualification-draw [encounters]="encounters()" [standings]="standings()" />

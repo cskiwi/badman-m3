@@ -162,7 +162,7 @@ export class TournamentDrawSyncService {
 
       if (drawData) {
         // Use the existing createOrUpdateDraw method
-        await this.createOrUpdateDraw(eventCode, drawData);
+        await this.createOrUpdateDraw(tournamentCode, eventCode, drawData);
         return;
       }
 
@@ -177,7 +177,7 @@ export class TournamentDrawSyncService {
           Size: drawDetails.Size,
         } as TournamentDraw;
 
-        await this.createOrUpdateDraw(eventCode, tournamentDrawData);
+        await this.createOrUpdateDraw(tournamentCode, eventCode, tournamentDrawData);
       }
     } catch (error: unknown) {
       this.logger.error(`Could not update tournament draw ${drawCode} from API`, error);
@@ -213,16 +213,22 @@ export class TournamentDrawSyncService {
     }
   }
 
-  private async createOrUpdateDraw(eventCode: string, draw: TournamentDraw): Promise<void> {
+  private async createOrUpdateDraw(tournamentCode: string, eventCode: string, draw: TournamentDraw): Promise<void> {
     this.logger.debug(`Creating/updating tournament draw: ${draw.Name} (${draw.Code})`);
 
-    // Find the sub-event that this draw belongs to
+    // Find the sub-event that this draw belongs to with tournament context
     const subEvent = await TournamentSubEvent.findOne({
-      where: { visualCode: eventCode },
+      where: { 
+        visualCode: eventCode,
+        tournamentEvent: {
+          visualCode: tournamentCode
+        }
+      },
+      relations: ['tournamentEvent']
     });
 
     if (!subEvent) {
-      this.logger.warn(`Sub-event with code ${eventCode} not found, skipping draw ${draw.Code}`);
+      this.logger.warn(`Sub-event with code ${eventCode} not found for tournament ${tournamentCode}, skipping draw ${draw.Code}`);
       return;
     }
 
