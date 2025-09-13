@@ -32,7 +32,10 @@
       "mcp__postgres-badman__describe_table",
       "mcp__playwright__browser_snapshot",
       "WebFetch(domain:www.toernooi.nl)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(npx nx show:*)",
+      "Bash(npx nx test:*)",
+      "Bash(npx jest:*)"
     ],
     "deny": [],
     "ask": []

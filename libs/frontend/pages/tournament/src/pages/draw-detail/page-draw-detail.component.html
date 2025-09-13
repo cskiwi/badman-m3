@@ -108,7 +108,7 @@
         <!-- Standings Section -->
         @if (standings().length > 0) {
           @if (draw?.type === 'KO') {
-            <app-draw-ko-tree [standings]="standings()" [games]="games()" />
+            <app-draw-ko-tree [games]="games()" />
           } @else {
             <app-draw-standings-table [standings]="standings()" />
           }

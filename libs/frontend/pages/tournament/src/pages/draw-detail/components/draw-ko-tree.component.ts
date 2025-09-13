@@ -8,7 +8,7 @@ import { BracketTree } from '@app/frontend-components/bracket-tree';
   imports: [BracketTree],
   template: `
     <div class="ko-tree-container">
-      <bracket-tree [games]="games()" [standings]="standings()"></bracket-tree>
+      <app-bracket-tree [games]="games()"></app-bracket-tree>
     </div>
   `,
   styles: [
@@ -22,6 +22,5 @@ import { BracketTree } from '@app/frontend-components/bracket-tree';
   ],
 })
 export class DrawKoTreeComponent {
-  standings = input.required<any[]>();
   games = input.required<Game[]>();
 }
