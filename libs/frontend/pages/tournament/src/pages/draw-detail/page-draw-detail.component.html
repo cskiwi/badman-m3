@@ -2,106 +2,108 @@
   @if (this.tournament(); as tournament) {
     @if (this.subEvent(); as subEvent) {
       @if (this.draw(); as draw) {
-        <app-page-header>
-          <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</ng-content>
-          <ng-content subTitle>
-            <div class="info">
-              <div class="sub-text">
-                <ng-container>
-                  <a [routerLink]="['/', 'tournament', tournament.slug]">{{ tournament.name }}</a>
-                  <span class="mx-2">></span>
-                  <span>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
-                </ng-container>
+        <div class="page-content">
+          <app-page-header>
+            <ng-content title>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</ng-content>
+            <ng-content subTitle>
+              <div class="info">
+                <div class="sub-text">
+                  <ng-container>
+                    <a [routerLink]="['/', 'tournament', tournament.slug]">{{ tournament.name }}</a>
+                    <span class="mx-2">></span>
+                    <span>{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
+                  </ng-container>
+                </div>
               </div>
-            </div>
-          </ng-content>
-          <ng-content actions>
-            <div class="flex items-center gap-2">
-              @if (tournament.visualCode && draw.visualCode) {
-                <a
-                  [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
-                  title="View draw on toernooi.nl"
-                >
-                  <i class="pi pi-external-link text-xs"></i>
-                  <span>toernooi.nl</span>
-                </a>
-              }
-              @if (syncConfig(); as config) {
-                <app-sync-button [config]="config" />
-              }
-              <a [routerLink]="['/', 'tournament', tournament.slug]" class="p-button p-button-outlined p-button-sm no-underline">
-                <i class="pi pi-arrow-left mr-2"></i>
-                Back
-              </a>
-            </div>
-          </ng-content>
-        </app-page-header>
-
-        <!-- Draw Information -->
-        <section class="draw-info mb-8">
-          <div class="rounded-border bg-highlight p-6">
-            <div class="flex items-start justify-between mb-4">
-              <div>
-                <h3 class="font-semibold text-xl text-primary">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</h3>
-              </div>
-
-              <div class="flex gap-2 text-sm">
-                @if (draw.type) {
-                  <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded">{{ draw.type }}</span>
+            </ng-content>
+            <ng-content actions>
+              <div class="flex items-center gap-2">
+                @if (tournament.visualCode && draw.visualCode) {
+                  <a
+                    [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
+                    title="View draw on toernooi.nl"
+                  >
+                    <i class="pi pi-external-link text-xs"></i>
+                    <span>toernooi.nl</span>
+                  </a>
                 }
+                @if (syncConfig(); as config) {
+                  <app-sync-button [config]="config" />
+                }
+                <a [routerLink]="['/', 'tournament', tournament.slug]" class="p-button p-button-outlined p-button-sm no-underline">
+                  <i class="pi pi-arrow-left mr-2"></i>
+                  Back
+                </a>
               </div>
-            </div>
+            </ng-content>
+          </app-page-header>
 
-            <!-- Draw Details -->
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-sm">
-              @if (draw.size) {
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-users text-xs text-muted-color"></i>
-                  <span class="font-medium">Size:</span>
-                  <span>{{ draw.size }}</span>
+          <!-- Draw Information -->
+          <section class="draw-info mb-8">
+            <div class="rounded-border bg-highlight p-6">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-semibold text-xl text-primary">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</h3>
                 </div>
-              }
 
-              @if (draw.type) {
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-cog text-xs text-muted-color"></i>
-                  <span class="font-medium">Type:</span>
-                  <span>{{ draw.type }}</span>
-                </div>
-              }
-
-              <div class="flex items-center gap-2 text-muted-color-emphasis">
-                <i class="pi pi-calendar text-xs"></i>
-                <span class="text-xs">Match details coming soon</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Draw Switcher -->
-        @if (hasMultipleDraws()) {
-          <section class="draw-switcher mb-6">
-            <div class="flex items-center justify-center">
-              <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-color">Switch Draw:</span>
-                <div class="flex gap-2">
-                  @for (option of drawOptions(); track option.value) {
-                    <p-button
-                      [label]="option.label"
-                      [severity]="option.value === drawId() ? 'primary' : 'secondary'"
-                      [outlined]="option.value !== drawId()"
-                      size="small"
-                      (onClick)="onDrawChange(option.value)"
-                    />
+                <div class="flex gap-2 text-sm">
+                  @if (draw.type) {
+                    <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded">{{ draw.type }}</span>
                   }
+                </div>
+              </div>
+
+              <!-- Draw Details -->
+              <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-sm">
+                @if (draw.size) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-users text-xs text-muted-color"></i>
+                    <span class="font-medium">Size:</span>
+                    <span>{{ draw.size }}</span>
+                  </div>
+                }
+
+                @if (draw.type) {
+                  <div class="flex items-center gap-2">
+                    <i class="pi pi-cog text-xs text-muted-color"></i>
+                    <span class="font-medium">Type:</span>
+                    <span>{{ draw.type }}</span>
+                  </div>
+                }
+
+                <div class="flex items-center gap-2 text-muted-color-emphasis">
+                  <i class="pi pi-calendar text-xs"></i>
+                  <span class="text-xs">Match details coming soon</span>
                 </div>
               </div>
             </div>
           </section>
-        }
+
+          <!-- Draw Switcher -->
+          @if (hasMultipleDraws()) {
+            <section class="draw-switcher mb-6">
+              <div class="flex items-center justify-center">
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-medium text-color">Switch Draw:</span>
+                  <div class="flex gap-2">
+                    @for (option of drawOptions(); track option.value) {
+                      <p-button
+                        [label]="option.label"
+                        [severity]="option.value === drawId() ? 'primary' : 'secondary'"
+                        [outlined]="option.value !== drawId()"
+                        size="small"
+                        (onClick)="onDrawChange(option.value)"
+                      />
+                    }
+                  </div>
+                </div>
+              </div>
+            </section>
+          }
+        </div>
 
         <!-- Standings Section -->
         @if (standings().length > 0) {
@@ -111,86 +113,94 @@
             <app-draw-standings-table [standings]="standings()" />
           }
         } @else {
-          <div class="text-center py-12 text-surface-500">
-            @if (draw?.type === 'KO') {
-              <i class="pi pi-sitemap text-4xl mb-4 block"></i>
-              <h3 class="text-lg font-medium mb-2">No Tournament Tree</h3>
-              <p>This knockout draw doesn't have any tournament data yet.</p>
-            } @else {
-              <i class="pi pi-chart-bar text-4xl mb-4 block"></i>
-              <h3 class="text-lg font-medium mb-2">No Standings</h3>
-              <p>This draw doesn't have any standings data yet.</p>
-            }
+          <div class="page-content">
+            <div class="text-center py-12 text-surface-500">
+              @if (draw?.type === 'KO') {
+                <i class="pi pi-sitemap text-4xl mb-4 block"></i>
+                <h3 class="text-lg font-medium mb-2">No Tournament Tree</h3>
+                <p>This knockout draw doesn't have any tournament data yet.</p>
+              } @else {
+                <i class="pi pi-chart-bar text-4xl mb-4 block"></i>
+                <h3 class="text-lg font-medium mb-2">No Standings</h3>
+                <p>This draw doesn't have any standings data yet.</p>
+              }
+            </div>
           </div>
         }
 
         <!-- Games Section -->
-        <app-draw-games [games]="games()" />
+        <div class="page-content">
+          <app-draw-games [games]="games()" />
+        </div>
       }
     }
   }
 } @else {
   <!-- Loading Skeletons -->
-  <div class="space-y-6">
-    <!-- Header skeleton -->
-    <div class="space-y-2">
-      <p-skeleton width="25rem" height="2rem"></p-skeleton>
-      <p-skeleton width="20rem" height="1rem"></p-skeleton>
-    </div>
-
-    <!-- Draw info skeleton -->
-    <div class="rounded-border bg-highlight p-6 space-y-4">
-      <div class="flex justify-between">
-        <p-skeleton width="15rem" height="1.5rem"></p-skeleton>
-        <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
+  <div class="page-content">
+    <div class="space-y-6">
+      <!-- Header skeleton -->
+      <div class="space-y-2">
+        <p-skeleton width="25rem" height="2rem"></p-skeleton>
+        <p-skeleton width="20rem" height="1rem"></p-skeleton>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 space-y-2">
-        <p-skeleton width="8rem" height="1rem"></p-skeleton>
-        <p-skeleton width="6rem" height="1rem"></p-skeleton>
-        <p-skeleton width="10rem" height="1rem"></p-skeleton>
-      </div>
-    </div>
-
-    <!-- Standings skeleton -->
-    <div class="space-y-4">
-      <p-skeleton width="8rem" height="1.5rem"></p-skeleton>
-      <div class="rounded-border bg-highlight overflow-hidden">
-        <!-- Table header skeleton -->
-        <div class="bg-primary p-3 flex gap-4">
-          <p-skeleton width="6rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="8rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="5rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
-          <p-skeleton width="5rem" height="1rem" class="bg-primary-200"></p-skeleton>
+      <!-- Draw info skeleton -->
+      <div class="rounded-border bg-highlight p-6 space-y-4">
+        <div class="flex justify-between">
+          <p-skeleton width="15rem" height="1.5rem"></p-skeleton>
+          <p-skeleton width="4rem" height="1.5rem"></p-skeleton>
         </div>
-        <!-- Table rows skeleton -->
-        @for (i of [1, 2, 3, 4, 5]; track i) {
-          <div class="p-3 border-b border-surface-200 flex gap-4">
-            <p-skeleton width="2rem" height="1rem"></p-skeleton>
-            <div class="flex flex-col gap-1">
-              <p-skeleton width="8rem" height="0.75rem"></p-skeleton>
-              <p-skeleton width="8rem" height="0.75rem"></p-skeleton>
-            </div>
-            <p-skeleton width="3rem" height="1rem"></p-skeleton>
-            <p-skeleton width="3rem" height="1rem"></p-skeleton>
-            <p-skeleton width="3rem" height="1rem"></p-skeleton>
-            <p-skeleton width="4rem" height="1rem"></p-skeleton>
-            <p-skeleton width="4rem" height="1rem"></p-skeleton>
-            <p-skeleton width="4rem" height="1rem"></p-skeleton>
+
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 space-y-2">
+          <p-skeleton width="8rem" height="1rem"></p-skeleton>
+          <p-skeleton width="6rem" height="1rem"></p-skeleton>
+          <p-skeleton width="10rem" height="1rem"></p-skeleton>
+        </div>
+      </div>
+
+      <!-- Standings skeleton -->
+      <div class="space-y-4">
+        <p-skeleton width="8rem" height="1.5rem"></p-skeleton>
+        <div class="rounded-border bg-highlight overflow-hidden">
+          <!-- Table header skeleton -->
+          <div class="bg-primary p-3 flex gap-4">
+            <p-skeleton width="6rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="8rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="5rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="4rem" height="1rem" class="bg-primary-200"></p-skeleton>
+            <p-skeleton width="5rem" height="1rem" class="bg-primary-200"></p-skeleton>
           </div>
-        }
+          <!-- Table rows skeleton -->
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <div class="p-3 border-b border-surface-200 flex gap-4">
+              <p-skeleton width="2rem" height="1rem"></p-skeleton>
+              <div class="flex flex-col gap-1">
+                <p-skeleton width="8rem" height="0.75rem"></p-skeleton>
+                <p-skeleton width="8rem" height="0.75rem"></p-skeleton>
+              </div>
+              <p-skeleton width="3rem" height="1rem"></p-skeleton>
+              <p-skeleton width="3rem" height="1rem"></p-skeleton>
+              <p-skeleton width="3rem" height="1rem"></p-skeleton>
+              <p-skeleton width="4rem" height="1rem"></p-skeleton>
+              <p-skeleton width="4rem" height="1rem"></p-skeleton>
+              <p-skeleton width="4rem" height="1rem"></p-skeleton>
+            </div>
+          }
+        </div>
       </div>
     </div>
   </div>
 }
 
 @if (error()) {
-  <div class="error flex items-center gap-2 p-4 text-red-600">
-    <i class="pi pi-exclamation-triangle"></i>
-    {{ error() }}
+  <div class="page-content">
+    <div class="error flex items-center gap-2 p-4 text-red-600">
+      <i class="pi pi-exclamation-triangle"></i>
+      {{ error() }}
+    </div>
   </div>
 }

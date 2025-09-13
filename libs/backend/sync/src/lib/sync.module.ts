@@ -39,10 +39,19 @@ import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from
       },
       inject: [ConfigService],
     }),
-    // Register all queues dynamically
+    // Register all queues dynamically with retry configuration
     ...ALL_SYNC_QUEUES.map((queueName) =>
       BullModule.registerQueue({
         name: queueName,
+        defaultJobOptions: {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: 100,
+          removeOnFail: 50,
+        },
       }),
     ),
 

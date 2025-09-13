@@ -4,12 +4,11 @@ import { Game } from '@app/models';
 
 @Component({
   standalone: true,
-  selector: 'ko-chart',
+  selector: 'bracket-tree',
   imports: [CommonModule],
-  templateUrl: './ko-chart.component.html',
-  styleUrls: ['./ko-chart.component.scss'],
+  templateUrl: './bracket-tree.component.html',
 })
-export class KoChart {
+export class BracketTree {
   /**
    * Games data for bracket mode
    */
@@ -31,21 +30,17 @@ export class KoChart {
   readonly matchBoxHeight = input<number>(80);
 
   /**
-   * Connector length for rounds in pixels
-   */
-  readonly connectorLength = input<number>(20);
-
-  /**
    * Gap between columns
    */
-  readonly columnGap = input<number>(50);
-
-
+  readonly columnGap = input<number>(40);
 
   readonly columnWidth = computed(() => {
     return this.matchBoxWidth();
   });
 
+  readonly connectorLength = computed(() => {
+    return this.columnGap() / 2;
+  });
 
   // Transform games into round-based structure for horizontal bracket display
   bracketRounds = computed(() => {
@@ -64,7 +59,7 @@ export class KoChart {
     });
 
     // Define all possible tournament rounds from largest to smallest
-    const allPossibleRounds = ['R256', 'R128', 'R64', 'R32', 'R16', 'R8', 'QF', 'SF', 'Final', 'Third', '3rd'];
+    const allPossibleRounds = ['R256', 'R128', 'R64', 'R32', 'R16', 'R8', 'QF', 'SF', 'Final', 'Third'];
 
     // Filter to only include rounds that actually exist in the data
     const existingRounds = allPossibleRounds.filter((round) => roundsMap.has(round));
@@ -87,8 +82,6 @@ export class KoChart {
   spacing = computed(() => {
     const rounds = this.bracketRounds();
     const spacing: number[] = [];
-    console.log('Calculating spacing for rounds:', rounds);
-
     for (let i = 0; i < (rounds?.length || 0); i++) {
       spacing.push(this.getMatchSpacing(i));
     }
@@ -121,9 +114,6 @@ export class KoChart {
         return 'Semi Final';
       case 'Final':
         return 'Final';
-      case '3rd':
-      case 'Third':
-        return 'Third Place';
       default:
         // Handle any Rxx format dynamically
         if (roundKey.startsWith('R') && /^R\d+$/.test(roundKey)) {
@@ -164,14 +154,17 @@ export class KoChart {
   }
 
   isBye(game: Game): boolean {
-    return (
+    const isScorelessBye =
       game.set1Team1 === null &&
       game.set1Team2 === null &&
       game.set2Team1 === null &&
       game.set2Team2 === null &&
       game.set3Team1 === null &&
-      game.set3Team2 === null
-    );
+      game.set3Team2 === null;
+
+    const isPastGame = game.playedAt ? new Date(game.playedAt) < new Date() : false;
+
+    return isScorelessBye && isPastGame;
   }
 
   isGameCompleted(game: Game): boolean {
@@ -184,64 +177,25 @@ export class KoChart {
 
     if (roundIndex === 0) return baseSpacing;
 
-    // For proper tournament bracket alignment, the spacing between matches in round N
-    // must ensure that matches in round N+1 can be perfectly centered between pairs
-    // from round N.
-    //
-    // The correct formula is: for each round, the spacing should be 
-    // (matchHeight + previousRoundSpacing) + previousRoundSpacing
-    // This ensures connector lines from two matches align to the center of the next match
-    
     let spacing = baseSpacing;
     for (let i = 1; i <= roundIndex; i++) {
-      // Calculate what the previous round's spacing was
       const prevSpacing = i === 1 ? baseSpacing : spacing;
-      // The new spacing ensures perfect centering: match + spacing + match = 2 * match + spacing
-      // So new spacing = (matchHeight + prevSpacing) * 2 - matchHeight = matchHeight + 2 * prevSpacing
       spacing = matchHeight + 2 * prevSpacing;
     }
-
-    console.log(
-      'Spacing for round',
-      roundIndex,
-      ':',
-      spacing,
-      '(calculated iteratively for proper alignment)'
-    );
 
     return spacing;
   }
 
   getVerticalOffset(roundIndex: number): number {
-    // Each match in round N should be positioned at the exact center
-    // between two matches in round N-1
     if (roundIndex === 0) return 0;
 
     const matchHeight = this.matchBoxHeight();
-    const spacing = this.spacing();
-    
-    // Calculate the vertical offset to center matches between pairs from the previous round
-    // 
-    // The key insight: each match in round N needs to be positioned exactly at the 
-    // center point between two adjacent matches in round N-1.
-    //
-    // Since spacing doubles each round (20, 40, 80, 160, 320), 
-    // the offset needed is exactly:
-    // - For round 1: (matchHeight + spacing[0]) / 2 = (80 + 20) / 2 = 50px
-    // - For round 2: previous offset + (matchHeight + spacing[1]) / 2 = 50 + (80 + 40) / 2 = 110px
-    // - For round 3: previous offset + (matchHeight + spacing[2]) / 2 = 110 + (80 + 80) / 2 = 190px
-    // - For round 4: previous offset + (matchHeight + spacing[3]) / 2 = 190 + (80 + 160) / 2 = 310px
-    //
-    // But actually, there's a simpler mathematical relationship based on powers of 2:
-    // Each round's offset should be: (matchHeight + baseSpacing) * (2^roundIndex - 1) / 2
-    
+
     const baseSpacing = 20;
-    
+
     // Simple formula: offset = (matchHeight + baseSpacing) * (2^roundIndex - 1) / 2
-    const offset = (matchHeight + baseSpacing) * (Math.pow(2, roundIndex) - 1) / 2;
-    
-    console.log(`Vertical offset for round ${roundIndex}: ${offset}px`);
-    
+    const offset = ((matchHeight + baseSpacing) * (Math.pow(2, roundIndex) - 1)) / 2;
+
     return offset;
   }
 }

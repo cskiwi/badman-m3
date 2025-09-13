@@ -31,7 +31,8 @@
       "mcp__postgres-badman__list_tables",
       "mcp__postgres-badman__describe_table",
       "mcp__playwright__browser_snapshot",
-      "WebFetch(domain:www.toernooi.nl)"
+      "WebFetch(domain:www.toernooi.nl)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []
