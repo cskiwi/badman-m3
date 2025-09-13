@@ -4,7 +4,8 @@
       "mcp__ruv-swarm",
       "mcp__claude-flow",
       "Bash(npx claude-flow hive-mind:*)",
-      "Bash(npm rebuild:*)"
+      "Bash(npm rebuild:*)",
+      "Bash(npx claude-flow:*)"
     ],
     "deny": []
   }

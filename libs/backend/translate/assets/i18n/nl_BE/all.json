@@ -45,6 +45,8 @@
     "yes": "Ja"
   },
   "competition": {
+    "title": "Toernooien & Competities",
+    "search": "Zoek toernooien en competities",
     "bracket_view": "Schema Weergave",
     "bracket_view_description": "Visueel schema komt binnenkort beschikbaar",
     "changeClosePeriod1": "Wijzigingen Sluiten (Periode 1)",
@@ -203,7 +205,11 @@
     "competitions": "Competities",
     "home": "Home",
     "login": "Inloggen",
-    "players": "Spelers"
+    "players": "Spelers",
+    "searchClubs": "Zoek Clubs",
+    "searchClubsDescription": "Vind en ontdek badmintonclubs in je buurt",
+    "searchPlayers": "Zoek Spelers",
+    "searchPlayersDescription": "Ontdek spelers, rankings en statistieken"
   },
   "player": {
     "edit": {

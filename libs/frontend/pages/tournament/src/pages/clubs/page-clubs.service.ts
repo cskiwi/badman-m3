@@ -16,7 +16,7 @@ interface ClubsQueryResponse {
   clubs: ClubWithStats[];
 }
 
-export class OverviewService {
+export class ClubsService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
@@ -50,7 +50,6 @@ export class OverviewService {
                   country
                   teamName
                   contactCompetition
-                  clubId
                   clubPlayerMemberships {
                     id
                     player {
@@ -116,9 +115,7 @@ export class OverviewService {
   }
 
   private _buildWhereClause(params: any) {
-    const where: any = {
-      clubId: { ne: null }
-    };
+    const where: any = {};
 
     if (params?.query) {
       const searchTerms = this._parseSearchQuery(params.query);
@@ -127,7 +124,6 @@ export class OverviewService {
           ...searchTerms.map(term => ({ name: { ilike: `%${term}%` } })),
           ...searchTerms.map(term => ({ fullName: { ilike: `%${term}%` } })),
           ...searchTerms.map(term => ({ abbreviation: { ilike: `%${term}%` } })),
-          ...searchTerms.filter(term => !isNaN(parseInt(term))).map(term => ({ clubId: parseInt(term) }))
         ];
       }
     }
@@ -144,7 +140,7 @@ export class OverviewService {
     // with aggregations. For now, we'll filter on the client side in a real implementation.
     // This is a simplified version for demonstration.
 
-    return where;
+    return Object.keys(where).length > 0 ? where : undefined;
   }
 
   private _parseSearchQuery(query: string | null | undefined): string[] {

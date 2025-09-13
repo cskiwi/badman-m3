@@ -1,0 +1,593 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="space-y-6">
+    <!-- Header Skeleton -->
+    <div class="bg-surface-50 p-6 rounded-lg">
+      <div class="flex items-center gap-4">
+        <p-skeleton shape="circle" size="3rem"></p-skeleton>
+        <div class="flex-1 space-y-2">
+          <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+          <p-skeleton width="8rem" height="1rem"></p-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Skeletons -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      @for (i of [1,2,3]; track i) {
+        <p-card>
+          <div class="space-y-3">
+            <p-skeleton width="8rem" height="1.25rem"></p-skeleton>
+            <p-skeleton width="100%" height="1rem"></p-skeleton>
+            <p-skeleton width="60%" height="1rem"></p-skeleton>
+          </div>
+        </p-card>
+      }
+    </div>
+  </div>
+}
+
+<!-- Main Content -->
+@if (club(); as club) {
+  <!-- Breadcrumb Navigation -->
+  <p-breadcrumb [model]="breadcrumbItems()" class="mb-6"></p-breadcrumb>
+
+  <!-- Club Header -->
+  <app-page-header class="mb-6">
+    <ng-content avatar>
+      <p-avatar 
+        [label]="club.abbreviation || club.name.substring(0, 2).toUpperCase()" 
+        size="large" 
+        shape="circle"
+        styleClass="text-primary-contrast bg-primary">
+      </p-avatar>
+    </ng-content>
+    
+    <ng-content title>{{ club.fullName || club.name }}</ng-content>
+    
+    <ng-content subTitle>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-2 text-surface-600">
+        <div class="flex items-center gap-1">
+          <i class="pi pi-building text-xs"></i>
+          <span>{{ club.name }}</span>
+          @if (club.clubId) {
+            <span class="text-surface-400">•</span>
+            <span>{{ club.clubId }}</span>
+          }
+        </div>
+        @if (club.state || club.country) {
+          <div class="flex items-center gap-1">
+            <i class="pi pi-map-marker text-xs"></i>
+            <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
+          </div>
+        }
+      </div>
+    </ng-content>
+
+    <ng-content actions>
+      <!-- Season Selector -->
+      <div class="flex items-center gap-2">
+        <label for="season-select" class="text-sm font-medium text-surface-600 whitespace-nowrap">
+          {{ 'all.common.season' | translate }}:
+        </label>
+        <p-select
+          id="season-select"
+          [formControl]="seasonControl"
+          [options]="availableSeasons()"
+          optionLabel="label"
+          optionValue="value"
+          [style]="{ 'min-width': '120px' }"
+          placeholder="{{ 'all.common.selectSeason' | translate }}"
+        />
+      </div>
+    </ng-content>
+  </app-page-header>
+
+  <!-- Statistics Overview Cards -->
+  @if (statistics(); as stats) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Total Teams -->
+      <p-card styleClass="h-full">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-bold text-primary mb-1">{{ stats.totalTeams }}</h3>
+            <p class="text-sm text-surface-600">{{ 'all.club.stats.totalTeams' | translate }}</p>
+          </div>
+          <i class="pi pi-users text-3xl text-primary-300"></i>
+        </div>
+      </p-card>
+
+      <!-- Total Players -->
+      <p-card styleClass="h-full">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-bold text-green-600 mb-1">{{ stats.totalPlayers }}</h3>
+            <p class="text-sm text-surface-600">{{ 'all.club.stats.totalPlayers' | translate }}</p>
+          </div>
+          <i class="pi pi-user text-3xl text-green-300"></i>
+        </div>
+      </p-card>
+
+      <!-- Total Games -->
+      <p-card styleClass="h-full">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-bold text-blue-600 mb-1">{{ stats.totalGames }}</h3>
+            <p class="text-sm text-surface-600">{{ 'all.club.stats.totalGames' | translate }}</p>
+          </div>
+          <i class="pi pi-calendar text-3xl text-blue-300"></i>
+        </div>
+      </p-card>
+
+      <!-- Win Percentage -->
+      <p-card styleClass="h-full">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-2xl font-bold text-orange-600 mb-1">{{ stats.winPercentage }}%</h3>
+            <p class="text-sm text-surface-600">{{ 'all.club.stats.winPercentage' | translate }}</p>
+          </div>
+          <i class="pi pi-chart-line text-3xl text-orange-300"></i>
+        </div>
+      </p-card>
+    </div>
+  }
+
+  <!-- Main Content Tabs -->
+  <p-tabs>
+    <!-- Overview Tab -->
+    <p-tab header="{{ 'all.club.tabs.overview' | translate }}">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        <!-- Club Information -->
+        <p-card header="{{ 'all.club.info.title' | translate }}">
+          <div class="space-y-4">
+            @if (club.fullName && club.fullName !== club.name) {
+              <div>
+                <label class="block text-sm font-medium text-surface-600 mb-1">
+                  {{ 'all.club.info.fullName' | translate }}
+                </label>
+                <p class="text-surface-900">{{ club.fullName }}</p>
+              </div>
+            }
+            
+            @if (club.abbreviation) {
+              <div>
+                <label class="block text-sm font-medium text-surface-600 mb-1">
+                  {{ 'all.club.info.abbreviation' | translate }}
+                </label>
+                <p-badge [value]="club.abbreviation" styleClass="p-badge-lg"></p-badge>
+              </div>
+            }
+
+            @if (club.contactCompetition) {
+              <div>
+                <label class="block text-sm font-medium text-surface-600 mb-1">
+                  {{ 'all.club.info.contact' | translate }}
+                </label>
+                <p class="text-surface-900">{{ club.contactCompetition }}</p>
+              </div>
+            }
+
+            <div class="grid grid-cols-2 gap-4">
+              @if (club.createdAt) {
+                <div>
+                  <label class="block text-sm font-medium text-surface-600 mb-1">
+                    {{ 'all.common.created' | translate }}
+                  </label>
+                  <p class="text-surface-900">{{ club.createdAt | date: 'mediumDate' }}</p>
+                </div>
+              }
+
+              @if (club.distinctSeasons?.length) {
+                <div>
+                  <label class="block text-sm font-medium text-surface-600 mb-1">
+                    {{ 'all.club.info.activeSeasons' | translate }}
+                  </label>
+                  <p class="text-surface-900">{{ club.distinctSeasons.length }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </p-card>
+
+        <!-- Performance Chart -->
+        @if (performanceChartData()) {
+          <p-card header="{{ 'all.club.stats.performance' | translate }}">
+            <div style="height: 300px; position: relative;">
+              <p-chart 
+                type="pie" 
+                [data]="performanceChartData()" 
+                [options]="performanceChartOptions"
+                width="100%" 
+                height="100%">
+              </p-chart>
+            </div>
+          </p-card>
+        }
+      </div>
+
+      <!-- Team Distribution Chart -->
+      @if (teamDistributionData()) {
+        <p-card header="{{ 'all.club.stats.teamDistribution' | translate }}" class="mt-6">
+          <div style="height: 300px; position: relative;">
+            <p-chart 
+              type="bar" 
+              [data]="teamDistributionData()" 
+              [options]="{ responsive: true, maintainAspectRatio: false }"
+              width="100%" 
+              height="100%">
+            </p-chart>
+          </div>
+        </p-card>
+      }
+    </p-tab>
+
+    <!-- Player Roster Tab -->
+    <p-tab header="{{ 'all.club.tabs.players' | translate }}">
+      <div class="mt-4">
+        @if (playerRoster().length > 0) {
+          <p-table 
+            [value]="playerRoster()" 
+            [paginator]="true" 
+            [rows]="25" 
+            [showCurrentPageReport]="true" 
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} players"
+            [trackByFn]="trackByPlayerId"
+            styleClass="p-datatable-sm">
+            
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{ 'all.player.name' | translate }}</th>
+                <th>{{ 'all.player.gender' | translate }}</th>
+                <th>{{ 'all.player.cpi' | translate }}</th>
+                <th>{{ 'all.club.player.teams' | translate }}</th>
+                <th>{{ 'all.common.actions' | translate }}</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-player>
+              <tr>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <p-avatar 
+                      [label]="getPlayerInitials(player)" 
+                      size="small" 
+                      shape="circle">
+                    </p-avatar>
+                    <div>
+                      <div class="font-medium">{{ player.fullName }}</div>
+                      @if (player.slug) {
+                        <div class="text-sm text-surface-600">@{{ player.slug }}</div>
+                      }
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  @if (player.gender) {
+                    <p-tag 
+                      [value]="player.gender" 
+                      [severity]="getGenderSeverity(player.gender)">
+                    </p-tag>
+                  }
+                </td>
+                <td>
+                  @if (player.competitivePlayerIndex) {
+                    <span class="font-mono text-sm bg-surface-100 px-2 py-1 rounded">
+                      {{ player.competitivePlayerIndex | number: '1.0-0' }}
+                    </span>
+                  } @else {
+                    <span class="text-surface-400">N/A</span>
+                  }
+                </td>
+                <td>
+                  <div class="space-y-1">
+                    @for (team of player.teams; track team.id) {
+                      <div class="flex items-center gap-2 text-sm">
+                        <span class="font-medium">{{ team.name }}</span>
+                        @if (team.season) {
+                          <p-badge [value]="team.season" size="small"></p-badge>
+                        }
+                        @if (team.membershipType) {
+                          <p-tag [value]="team.membershipType" size="small" severity="info"></p-tag>
+                        }
+                      </div>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <button 
+                    pButton 
+                    type="button" 
+                    icon="pi pi-external-link" 
+                    class="p-button-text p-button-sm" 
+                    [routerLink]="['/player', player.slug || player.id]"
+                    pTooltip="{{ 'all.player.viewProfile' | translate }}">
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center py-8">
+                  <div class="flex flex-col items-center gap-2 text-surface-500">
+                    <i class="pi pi-users text-4xl"></i>
+                    <p>{{ 'all.club.players.noPlayers' | translate }}</p>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        } @else {
+          <div class="text-center py-12 text-surface-500">
+            <i class="pi pi-users text-6xl mb-4 block"></i>
+            <h3 class="text-xl font-medium mb-2">{{ 'all.club.players.noPlayers' | translate }}</h3>
+            <p>{{ 'all.club.players.noPlayersDescription' | translate }}</p>
+          </div>
+        }
+      </div>
+    </p-tab>
+
+    <!-- Teams Tab -->
+    <p-tab header="{{ 'all.club.tabs.teams' | translate }}">
+      <div class="mt-4">
+        @if (teams().length > 0) {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (team of teams(); track trackByTeamId($index, team)) {
+              <p-card styleClass="h-full">
+                <ng-template pTemplate="header">
+                  <div class="flex items-center justify-between p-4 pb-0">
+                    <h4 class="font-semibold text-lg text-primary">{{ team.name }}</h4>
+                    @if (team.abbreviation) {
+                      <p-badge [value]="team.abbreviation"></p-badge>
+                    }
+                  </div>
+                </ng-template>
+
+                <div class="space-y-3">
+                  @if (team.captain) {
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-user text-sm text-surface-600"></i>
+                      <span class="text-sm">
+                        <strong>{{ 'all.team.captain' | translate }}:</strong> {{ team.captain.fullName }}
+                      </span>
+                    </div>
+                  }
+
+                  @if (team.email) {
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-envelope text-sm text-surface-600"></i>
+                      <a [href]="'mailto:' + team.email" class="text-sm text-primary hover:underline">
+                        {{ team.email }}
+                      </a>
+                    </div>
+                  }
+
+                  @if (team.phone) {
+                    <div class="flex items-center gap-2">
+                      <i class="pi pi-phone text-sm text-surface-600"></i>
+                      <a [href]="'tel:' + team.phone" class="text-sm text-primary hover:underline">
+                        {{ team.phone }}
+                      </a>
+                    </div>
+                  }
+
+                  @if (team.teamPlayerMemberships?.length) {
+                    <div>
+                      <div class="flex items-center gap-2 mb-2">
+                        <i class="pi pi-users text-sm text-surface-600"></i>
+                        <span class="text-sm font-medium">
+                          {{ 'all.team.players' | translate }} ({{ team.teamPlayerMemberships.length }})
+                        </span>
+                      </div>
+                      <div class="flex flex-wrap gap-1">
+                        @for (membership of team.teamPlayerMemberships.slice(0, 6); track membership.id) {
+                          @if (membership.player) {
+                            <p-avatar
+                              [label]="getPlayerInitials(membership.player)"
+                              size="small"
+                              shape="circle"
+                              [pTooltip]="membership.player.fullName">
+                            </p-avatar>
+                          }
+                        }
+                        @if (team.teamPlayerMemberships.length > 6) {
+                          <p-avatar
+                            [label]="'+' + (team.teamPlayerMemberships.length - 6)"
+                            size="small"
+                            shape="circle"
+                            styleClass="bg-surface-200 text-surface-600">
+                          </p-avatar>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <ng-template pTemplate="footer">
+                  <div class="flex items-center justify-between">
+                    @if (team.season) {
+                      <p-badge [value]="'Season ' + team.season" severity="info"></p-badge>
+                    }
+                    <button 
+                      pButton 
+                      type="button" 
+                      label="{{ 'all.common.viewDetails' | translate }}" 
+                      icon="pi pi-external-link" 
+                      class="p-button-text p-button-sm">
+                    </button>
+                  </div>
+                </ng-template>
+              </p-card>
+            }
+          </div>
+        } @else {
+          <div class="text-center py-12 text-surface-500">
+            <i class="pi pi-users text-6xl mb-4 block"></i>
+            <h3 class="text-xl font-medium mb-2">{{ 'all.club.teams.noTeams' | translate }}</h3>
+            <p>{{ 'all.club.teams.noTeamsDescription' | translate }}</p>
+          </div>
+        }
+      </div>
+    </p-tab>
+
+    <!-- Tournament History Tab -->
+    <p-tab header="{{ 'all.club.tabs.tournaments' | translate }}">
+      <div class="mt-4">
+        @if (tournamentEntries().length > 0) {
+          <p-table 
+            [value]="tournamentEntries()" 
+            [paginator]="true" 
+            [rows]="20" 
+            [showCurrentPageReport]="true" 
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} tournament entries"
+            [trackByFn]="trackByEntryId"
+            styleClass="p-datatable-sm">
+            
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{ 'all.tournament.name' | translate }}</th>
+                <th>{{ 'all.tournament.event' | translate }}</th>
+                <th>{{ 'all.tournament.level' | translate }}</th>
+                <th>{{ 'all.team.name' | translate }}</th>
+                <th>{{ 'all.tournament.date' | translate }}</th>
+                <th>{{ 'all.tournament.position' | translate }}</th>
+                <th>{{ 'all.tournament.points' | translate }}</th>
+                <th>{{ 'all.common.actions' | translate }}</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-entry>
+              <tr>
+                <td>
+                  <div class="font-medium">
+                    @if (entry.tournament.drawTournaments?.[0]?.tournamentEvent) {
+                      <a 
+                        [routerLink]="['/tournament', entry.tournament.drawTournaments[0].tournamentEvent.slug || entry.tournament.drawTournaments[0].tournamentEvent.id]"
+                        class="text-primary hover:underline">
+                        {{ entry.tournament.drawTournaments[0].tournamentEvent.name }}
+                      </a>
+                    } @else {
+                      {{ entry.tournament.name }}
+                    }
+                  </div>
+                  @if (entry.tournament.drawTournaments?.[0]?.tournamentEvent?.state) {
+                    <div class="text-sm text-surface-600">
+                      {{ entry.tournament.drawTournaments[0].tournamentEvent.state }}
+                      @if (entry.tournament.drawTournaments[0].tournamentEvent.country) {
+                        , {{ entry.tournament.drawTournaments[0].tournamentEvent.country }}
+                      }
+                    </div>
+                  }
+                </td>
+                <td>
+                  @if (entry.tournament.eventType) {
+                    <p-tag 
+                      [value]="entry.tournament.eventType" 
+                      [severity]="getEventTypeSeverity(entry.tournament.eventType)">
+                    </p-tag>
+                  }
+                </td>
+                <td>
+                  @if (entry.tournament.level) {
+                    <span class="font-mono text-sm bg-surface-100 px-2 py-1 rounded">
+                      {{ entry.tournament.level }}
+                    </span>
+                  }
+                </td>
+                <td>
+                  <div class="font-medium">{{ entry.team.name }}</div>
+                  @if (entry.team.season) {
+                    <div class="text-sm text-surface-600">Season {{ entry.team.season }}</div>
+                  }
+                </td>
+                <td>
+                  @if (getTournamentDate(entry.tournament); as date) {
+                    {{ date | date: 'mediumDate' }}
+                  } @else {
+                    <span class="text-surface-400">N/A</span>
+                  }
+                </td>
+                <td>
+                  @if (entry.standing?.position) {
+                    <p-badge 
+                      [value]="entry.standing.position" 
+                      [severity]="getPositionSeverity(entry.standing.position)">
+                    </p-badge>
+                  } @else {
+                    <span class="text-surface-400">N/A</span>
+                  }
+                </td>
+                <td>
+                  @if (entry.standing?.points !== null && entry.standing?.points !== undefined) {
+                    <span class="font-mono text-sm">{{ entry.standing.points }}</span>
+                  } @else {
+                    <span class="text-surface-400">N/A</span>
+                  }
+                </td>
+                <td>
+                  @if (entry.tournament.drawTournaments?.[0]?.tournamentEvent) {
+                    <button 
+                      pButton 
+                      type="button" 
+                      icon="pi pi-external-link" 
+                      class="p-button-text p-button-sm" 
+                      [routerLink]="['/tournament', entry.tournament.drawTournaments[0].tournamentEvent.slug || entry.tournament.drawTournaments[0].tournamentEvent.id]"
+                      pTooltip="{{ 'all.tournament.viewDetails' | translate }}">
+                    </button>
+                  }
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="8" class="text-center py-8">
+                  <div class="flex flex-col items-center gap-2 text-surface-500">
+                    <i class="pi pi-trophy text-4xl"></i>
+                    <p>{{ 'all.club.tournaments.noTournaments' | translate }}</p>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        } @else {
+          <div class="text-center py-12 text-surface-500">
+            <i class="pi pi-trophy text-6xl mb-4 block"></i>
+            <h3 class="text-xl font-medium mb-2">{{ 'all.club.tournaments.noTournaments' | translate }}</h3>
+            <p>{{ 'all.club.tournaments.noTournamentsDescription' | translate }}</p>
+          </div>
+        }
+      </div>
+    </p-tab>
+  </p-tabs>
+}
+
+<!-- Error State -->
+@if (error()) {
+  <div class="flex items-center gap-3 p-6 text-red-600 bg-red-50 border border-red-200 rounded-lg">
+    <i class="pi pi-exclamation-triangle text-xl"></i>
+    <div>
+      <h3 class="font-semibold mb-1">{{ 'all.common.error' | translate }}</h3>
+      <p class="text-sm">{{ error() }}</p>
+    </div>
+  </div>
+}
+
+<!-- No Club Found -->
+@if (!loading() && !club() && !error()) {
+  <div class="text-center py-12">
+    <div class="bg-surface-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+      <i class="pi pi-building text-4xl text-surface-400"></i>
+    </div>
+    <h3 class="text-xl font-medium text-surface-900 mb-2">{{ 'all.club.notFound.title' | translate }}</h3>
+    <p class="text-surface-600 mb-6">{{ 'all.club.notFound.description' | translate }}</p>
+    <button 
+      pButton 
+      type="button" 
+      label="{{ 'all.common.goBack' | translate }}" 
+      icon="pi pi-arrow-left" 
+      class="p-button-outlined"
+      routerLink="/tournament">
+    </button>
+  </div>
+}

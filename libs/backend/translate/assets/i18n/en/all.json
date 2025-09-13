@@ -45,6 +45,8 @@
     "yes": "Yes"
   },
   "competition": {
+    "title": "Tournaments & Competitions",
+    "search": "Search tournaments and competitions",
     "bracket_view": "Bracket View",
     "bracket_view_description": "Visual bracket representation coming soon",
     "changeClosePeriod1": "Changes Close (Period 1)",
@@ -203,7 +205,11 @@
     "competitions": "Competitions",
     "home": "Home",
     "login": "Log in",
-    "players": "Players"
+    "players": "Players",
+    "searchClubs": "Search Clubs",
+    "searchClubsDescription": "Find and explore badminton clubs in your area",
+    "searchPlayers": "Search Players",
+    "searchPlayersDescription": "Discover players, rankings and statistics"
   },
   "player": {
     "edit": {

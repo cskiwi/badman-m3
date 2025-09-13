@@ -1,0 +1,222 @@
+@if (!loading()) {
+  <app-page-header>
+    <ng-content title>{{ 'all.navigation.players' | translate }}</ng-content>
+  </app-page-header>
+  
+  <section class="players p-4">
+    <!-- Search and Filter Section -->
+    <div class="search-filters mb-6">
+      <!-- Main search input -->
+      <p-floatlabel class="mb-4">
+        <input 
+          type="text" 
+          [formControl]="queryControl" 
+          id="player-search" 
+          pInputText 
+          class="w-full"
+          placeholder="Search by name..."
+        />
+        <label for="player-search">{{ 'all.players.search' | translate }}</label>
+      </p-floatlabel>
+
+      <!-- Advanced filters -->
+      <div class="filters-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
+        <!-- Gender filter -->
+        <p-floatlabel>
+          <p-dropdown
+            [formControl]="genderControl"
+            [options]="genderOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select gender"
+            class="w-full"
+            id="gender-filter"
+          ></p-dropdown>
+          <label for="gender-filter">{{ 'all.players.gender' | translate }}</label>
+        </p-floatlabel>
+
+        <!-- Competition player filter -->
+        <p-floatlabel>
+          <p-dropdown
+            [formControl]="competitionPlayerControl"
+            [options]="competitionPlayerOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select player type"
+            class="w-full"
+            id="competition-filter"
+          ></p-dropdown>
+          <label for="competition-filter">{{ 'all.players.playerType' | translate }}</label>
+        </p-floatlabel>
+
+        <!-- Min rating -->
+        <p-floatlabel>
+          <p-inputNumber
+            [formControl]="minRatingControl"
+            mode="decimal"
+            [min]="0"
+            [max]="3000"
+            placeholder="Min rating"
+            class="w-full"
+            id="min-rating"
+          ></p-inputNumber>
+          <label for="min-rating">{{ 'all.players.minRating' | translate }}</label>
+        </p-floatlabel>
+
+        <!-- Max rating -->
+        <p-floatlabel>
+          <p-inputNumber
+            [formControl]="maxRatingControl"
+            mode="decimal"
+            [min]="0"
+            [max]="3000"
+            placeholder="Max rating"
+            class="w-full"
+            id="max-rating"
+          ></p-inputNumber>
+          <label for="max-rating">{{ 'all.players.maxRating' | translate }}</label>
+        </p-floatlabel>
+
+        <!-- Clear filters button -->
+        <div class="flex align-items-end">
+          <p-button
+            label="Clear Filters"
+            icon="pi pi-filter-slash"
+            severity="secondary"
+            size="small"
+            (onClick)="clearFilters()"
+            class="w-full"
+          ></p-button>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      <div class="results-info text-sm text-600 mb-4">
+        {{ 'all.players.resultsFound' | translate: { count: filteredPlayersCount() } }}
+      </div>
+    </div>
+
+    <!-- Players Grid -->
+    <div class="players-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      @for (player of players(); track player.id) {
+        <p-card 
+          class="player-card cursor-pointer hover:shadow-lg transition-all duration-200"
+          (click)="navigateToPlayer(player)"
+          pTooltip="{{ player.fullName }}"
+        >
+          <ng-template pTemplate="header">
+            <div class="player-header p-3">
+              <div class="flex justify-content-between align-items-start">
+                <div class="player-info flex-1">
+                  <h3 class="text-lg font-semibold mb-1 line-height-3">{{ player.fullName }}</h3>
+                  @if (player.memberId) {
+                    <div class="text-sm text-600 mb-2">ID: {{ player.memberId }}</div>
+                  }
+                </div>
+                <div class="player-badges">
+                  @if (player.gender) {
+                    <p-tag 
+                      [value]="player.gender === 'M' ? 'Male' : 'Female'"
+                      [severity]="player.gender === 'M' ? 'info' : 'success'"
+                      class="mr-1 mb-1"
+                    ></p-tag>
+                  }
+                  @if (player.competitionPlayer) {
+                    <p-tag 
+                      value="Competition"
+                      severity="warning"
+                      class="mb-1"
+                    ></p-tag>
+                  }
+                </div>
+              </div>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="content">
+            <div class="player-details">
+              <!-- Rating information -->
+              @if (getPlayerRating(player); as rating) {
+                <div class="rating-info mb-3">
+                  <div class="flex justify-content-between align-items-center">
+                    <span class="text-sm font-medium">Singles Rating:</span>
+                    <p-tag 
+                      [value]="formatRating(rating)"
+                      [severity]="getRankingColor(rating)"
+                    ></p-tag>
+                  </div>
+                </div>
+              } @else {
+                <div class="rating-info mb-3">
+                  <div class="flex justify-content-between align-items-center">
+                    <span class="text-sm font-medium">Singles Rating:</span>
+                    <p-tag value="Unrated" severity="secondary"></p-tag>
+                  </div>
+                </div>
+              }
+
+              <!-- Club information -->
+              @if (getPlayerClub(player); as club) {
+                <div class="club-info mb-3">
+                  <div class="flex justify-content-between align-items-center">
+                    <span class="text-sm font-medium">Club:</span>
+                    <span class="text-sm text-600">{{ club.abbreviation }}</span>
+                  </div>
+                  <div class="text-xs text-500 mt-1">{{ club.name }}</div>
+                </div>
+              }
+
+              <!-- Age information -->
+              @if (getPlayerAge(player); as age) {
+                <div class="age-info mb-2">
+                  <div class="flex justify-content-between align-items-center">
+                    <span class="text-sm font-medium">Age:</span>
+                    <span class="text-sm text-600">{{ age }} years</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="footer">
+            <div class="player-actions pt-2">
+              <p-button
+                label="View Profile"
+                icon="pi pi-user"
+                size="small"
+                severity="secondary"
+                (onClick)="navigateToPlayer(player); $event.stopPropagation()"
+                class="w-full"
+              ></p-button>
+            </div>
+          </ng-template>
+        </p-card>
+      } @empty {
+        <div class="col-12">
+          <div class="no-results text-center p-6">
+            <i class="pi pi-search text-4xl text-300 mb-3"></i>
+            <h3 class="text-xl font-medium mb-2">{{ 'all.players.noResults' | translate }}</h3>
+            <p class="text-600">{{ 'all.players.tryDifferentFilters' | translate }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+} @else {
+  <div class="loading-container">
+    <p-progressbar mode="indeterminate" [style]="{'height': '6px'}" />
+    <div class="text-center mt-4">
+      <p class="text-600">{{ 'all.loading.players' | translate }}</p>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="error-container flex items-center gap-2 p-4 text-red-600 bg-red-50 border border-red-200 rounded-md mx-4">
+    <i class="pi pi-exclamation-triangle text-lg"></i>
+    <div>
+      <h4 class="font-medium mb-1">{{ 'all.errors.title' | translate }}</h4>
+      <p class="text-sm">{{ error() }}</p>
+    </div>
+  </div>
+}

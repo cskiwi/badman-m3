@@ -1,0 +1,248 @@
+.games-table-container {
+  :host ::ng-deep {
+    .p-datatable {
+      .p-datatable-header {
+        background: var(--surface-50);
+        border: 1px solid var(--surface-border);
+        border-bottom: none;
+      }
+
+      .p-datatable-thead > tr > th {
+        background: var(--surface-100);
+        border-color: var(--surface-border);
+        font-weight: 600;
+        color: var(--text-color);
+        padding: 0.75rem;
+        font-size: 0.875rem;
+
+        &:first-child {
+          border-radius: 0.375rem 0 0 0;
+        }
+
+        &:last-child {
+          border-radius: 0 0.375rem 0 0;
+        }
+
+        .p-sortable-column-icon {
+          color: var(--text-color-secondary);
+        }
+
+        &.p-highlight {
+          background: var(--primary-100);
+          color: var(--primary-700);
+
+          .p-sortable-column-icon {
+            color: var(--primary-600);
+          }
+        }
+      }
+
+      .p-datatable-tbody > tr {
+        border-color: var(--surface-border);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--surface-50);
+        }
+
+        > td {
+          padding: 0.75rem;
+          border-color: var(--surface-border);
+          font-size: 0.875rem;
+        }
+      }
+
+      .p-datatable-scrollable-wrapper {
+        border-radius: 0.375rem;
+        overflow: hidden;
+      }
+    }
+
+    .p-paginator {
+      background: var(--surface-ground);
+      border: 1px solid var(--surface-border);
+      border-top: none;
+      border-radius: 0 0 0.375rem 0.375rem;
+      padding: 0.75rem 1rem;
+    }
+  }
+
+  .date-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+
+    .date {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .time {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .tournament-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+
+    .tournament-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .sub-event-info {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .opponent-cell {
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  .score-cell {
+    .sets {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .set {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-family: monospace;
+      font-weight: 600;
+      font-size: 0.8rem;
+      min-width: 2rem;
+      text-align: center;
+
+      &.winner {
+        background: var(--green-100);
+        color: var(--green-800);
+        border: 1px solid var(--green-200);
+      }
+
+      &.loser {
+        background: var(--red-100);
+        color: var(--red-800);
+        border: 1px solid var(--red-200);
+      }
+    }
+  }
+
+  .result-cell {
+    :host ::ng-deep {
+      .p-tag {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .round-badge {
+    display: inline-block;
+    background: var(--surface-200);
+    color: var(--text-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .empty-message {
+    padding: 2rem;
+    text-align: center;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .games-table-container {
+    :host ::ng-deep {
+      .p-datatable {
+        font-size: 0.8rem;
+
+        .p-datatable-thead > tr > th {
+          padding: 0.5rem 0.375rem;
+          font-size: 0.8rem;
+        }
+
+        .p-datatable-tbody > tr > td {
+          padding: 0.5rem 0.375rem;
+        }
+      }
+    }
+
+    .tournament-info {
+      .tournament-link {
+        font-size: 0.8rem;
+      }
+
+      .sub-event-info {
+        font-size: 0.7rem;
+      }
+    }
+
+    .score-cell {
+      .sets {
+        gap: 0.25rem;
+      }
+
+      .set {
+        padding: 0.1875rem 0.375rem;
+        font-size: 0.7rem;
+        min-width: 1.75rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .games-table-container {
+    :host ::ng-deep {
+      .p-datatable {
+        .p-datatable-thead > tr > th {
+          padding: 0.375rem 0.25rem;
+          font-size: 0.75rem;
+
+          // Hide less important columns on very small screens
+          &:nth-child(n+5) {
+            display: none;
+          }
+        }
+
+        .p-datatable-tbody > tr > td {
+          padding: 0.375rem 0.25rem;
+
+          // Hide less important columns on very small screens
+          &:nth-child(n+5) {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .score-cell {
+      .sets {
+        flex-direction: column;
+        gap: 0.125rem;
+      }
+
+      .set {
+        font-size: 0.65rem;
+      }
+    }
+  }
+}

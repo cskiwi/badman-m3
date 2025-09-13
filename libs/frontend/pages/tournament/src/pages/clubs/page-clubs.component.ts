@@ -1,10 +1,9 @@
-
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { TranslateModule } from '@ngx-translate/core';
-import { OverviewService } from './page-overview.service';
+import { ClubsService } from './page-clubs.service';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -16,7 +15,7 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 
 @Component({
-  selector: 'app-page-overview',
+  selector: 'app-page-clubs',
   imports: [
     RouterLink,
     ReactiveFormsModule,
@@ -33,12 +32,12 @@ import { DividerModule } from 'primeng/divider';
     DividerModule,
     PageHeaderComponent
   ],
-  templateUrl: './page-overview.component.html',
-  styleUrl: './page-overview.component.scss',
+  templateUrl: './page-clubs.component.html',
+  styleUrl: './page-clubs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PageOverviewComponent {
-  private readonly dataService = new OverviewService();
+export class PageClubsComponent {
+  private readonly dataService = new ClubsService();
 
   // selectors
   clubs = this.dataService.clubs;

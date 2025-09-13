@@ -163,7 +163,7 @@
     "node": "24"
   },
   "volta": {
-    "node": "24.4.0"
+    "node": "24.8.0"
   },
   "browser": {
     "node:fs": false,

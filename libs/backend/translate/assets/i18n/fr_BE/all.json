@@ -45,6 +45,8 @@
     "yes": "Oui"
   },
   "competition": {
+    "title": "Tournois & Compétitions",
+    "search": "Rechercher tournois et compétitions",
     "bracket_view": "Vue en tableau",
     "bracket_view_description": "Représentation visuelle du tableau disponible bientôt",
     "changeClosePeriod1": "Clôture des changements (Période 1)",
@@ -203,7 +205,11 @@
     "competitions": "Compétitions",
     "home": "Accueil",
     "login": "Se connecter",
-    "players": "Joueurs"
+    "players": "Joueurs",
+    "searchClubs": "Rechercher Clubs",
+    "searchClubsDescription": "Trouvez et explorez les clubs de badminton dans votre région",
+    "searchPlayers": "Rechercher Joueurs",
+    "searchPlayersDescription": "Découvrez les joueurs, les classements et les statistiques"
   },
   "player": {
     "edit": {
