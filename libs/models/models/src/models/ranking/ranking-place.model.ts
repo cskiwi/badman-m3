@@ -6,7 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  Index,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
@@ -16,6 +16,7 @@ import { RankingSystem } from './ranking-system.model';
 import { RankingGroup } from './ranking-group.model';
 import { SortableField, WhereField } from '@app/utils';
 
+@Index(["playerId", "systemId", "rankingDate"])
 @ObjectType('RankingPlace', { description: 'A RankingPlace' })
 @Entity('RankingPlaces', { schema: 'ranking' })
 export class RankingPlace extends BaseEntity {

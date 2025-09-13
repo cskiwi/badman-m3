@@ -20,7 +20,8 @@
     "@angular/service-worker": "20.2.4",
     "ngx-cookie-service-ssr": "^20.0.1",
     "dayjs": "^1.11.13",
-    "panzoom": "^9.4.3"
+    "panzoom": "^9.4.3",
+    "@angular/animations": "20.2.4"
   },
   "sideEffects": false
 }

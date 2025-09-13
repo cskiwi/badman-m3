@@ -1,256 +1,120 @@
+// Tournament bracket styles
 :host {
-  --collapse-duration: 0.3s;
-  --base-delay: 100ms;
-  --animation-duration: 0.5s;
-  --node-spacing-vertical: .5rem;
-  --node-spacing-horizontal: .5rem;
-  --connector-length: .5rem;
-  --connector-offset: 1.75rem;
-  --combined-spacing-vertical: calc(var(--connector-length) + var(--node-spacing-vertical));
-  --combined-spacing-horizontal: calc(var(--connector-length) + var(--node-spacing-horizontal));
-  cursor: grab;
-
-  &:active {
-    cursor: grabbing;
-  }
+  display: block;
+  width: 100%;
 }
 
-// Horizontal layout specific styles
-:host[data-layout='horizontal'] {
-  ul:first-child {
-    display: flex;
-
-    a {
-      align-self: center;
-    }
-
-    li {
-      display: flex;
-      justify-content: flex-start;
-    }
-
-    a {
-      margin-inline-end: var(--connector-offset);
-    }
-  }
-
-  ul {
-    padding-inline-start: var(--combined-spacing-horizontal);
-    display: flex;
-    flex-direction: column;
-
-    ul::before {
-      content: '';
-      position: absolute;
-      inset-inline-start: calc(-1 * var(--connector-offset));
-      inset-block-start: 50%;
-      border-block-start: 1px solid var(--p-primary-color, #34d399);
-      height: 0;
-      width: var(--combined-spacing-horizontal);
-      opacity: 0;
-      animation: lineAppearX var(--animation-duration, 0.5s) ease-out forwards;
-      animation-delay: calc(var(--base-delay, 100ms) + 300ms);
-    }
-  }
-
-  li {
-    overflow: visible;
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      inset-inline-start: 0rem;
-      inset-block-end: 50%;
-      border-inline-start: 1px solid var(--p-primary-color, #34d399);
-      height: 50%;
-      width: var(--connector-length);
-      opacity: 0;
-      animation: lineAppearY var(--animation-duration, 0.5s) ease-out forwards;
-      animation-delay: calc(var(--base-delay, 100ms) + 200ms);
-    }
-
-    &::after {
-      inset-block-end: auto;
-      inset-block-start: 50%;
-      border-block-start: 1px solid var(--p-primary-color, #34d399);
-    }
-
-    &:only-child::before,
-    &:only-child::after {
-      display: none;
-    }
-
-    &:first-child::before {
-      border: 0 none;
-    }
-
-    &:first-child::after {
-      border-start-start-radius: 0.75rem;
-      border-block-start: 1px solid var(--p-primary-color, #34d399);
-    }
-
-    &:last-child::after {
-      border: 0 none;
-    }
-
-    &:last-child::before {
-      border-block-end: 1px solid var(--p-primary-color, #34d399);
-      border-end-start-radius: 0.75rem;
-    }
-  }
-
-  .collapse-btn {
-    inset-inline-end: calc(-0.5rem) !important;
-    inset-inline-start: auto !important;
-    inset-block-start: 50% !important;
-    inset-block-end: auto !important;
-    transform: translateY(-50%) !important;
-    flex-direction: column-reverse;
-
-    svg {
-      transform: rotate(-90deg);
-    }
-
-    &.collapsed svg {
-      transform: rotate(90deg);
-    }
-  }
-
-  .rtl .collapse-btn {
-    inset-inline-start: calc(-0.5rem);
-    inset-inline-end: unset;
-  }
+.ko-tree {
+  width: 100%;
 }
 
-// Connector lines for vertical layout only (not horizontal layout)
-:host:not([data-layout='horizontal']) li {
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-end: 50%;
-    border-block-start: 1px solid var(--p-primary-color, #34d399);
-    width: 50%;
-    height: var(--connector-length);
-    opacity: 0;
-    animation: lineAppearX var(--animation-duration, 0.5s) ease-out forwards;
-    animation-delay: calc(var(--base-delay, 100ms) + 200ms);
-    transition: border-color 0.5s;
-  }
-
-  &::after {
-    inset-inline-end: auto;
-    inset-inline-start: 50%;
-    border-inline-start: 1px solid var(--p-primary-color, #34d399);
-  }
-
-  &:only-child::before,
-  &:only-child::after {
-    display: none;
-  }
-
-  &:first-child::before {
-    border: 0 none;
-  }
-
-  &:first-child::after {
-    border-start-start-radius: 0.75rem;
-    border-inline-start: 1px solid var(--p-primary-color, #34d399);
-  }
-
-  &:last-child::after {
-    border: 0 none;
-  }
-
-  &:last-child::before {
-    border-inline-end: 1px solid var(--p-primary-color, #34d399);
-    border-start-end-radius: 0.75rem;
-  }
+.tournament-bracket {
+  min-height: 400px;
 }
 
-// Vertical connectors for vertical layout only
-:host:not([data-layout='horizontal']) ul ul::before {
-  content: '';
+.bracket-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.round-header {
+  margin-bottom: 2rem;
+}
+
+.matches-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.match-wrapper {
+  position: relative;
+}
+
+.match-box {
+  background: var(--surface-0);
+  border: 2px solid var(--surface-200);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.match-box:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.match-box.border-primary-400 {
+  border-color: rgb(99 102 241);
+}
+
+.team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--surface-200);
+}
+
+.team-row:last-child {
+  border-bottom: none;
+}
+
+.team-row.bg-green-50 {
+  background-color: rgb(240 253 244);
+  font-weight: 600;
+  color: rgb(22 101 52);
+}
+
+.team-name {
+  flex: 1;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-score {
+  font-size: 0.875rem;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-weight: bold;
+  margin-left: 0.75rem;
+  color: var(--text-color);
+}
+
+// Connector lines
+.connector-line,
+.vertical-connector,
+.horizontal-connector {
+  background-color: rgb(156 163 175); /* gray-400 */
   position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: 50%;
-  border-inline-start: 1px solid var(--p-primary-color, #34d399);
-  width: 0;
-  height: calc(var(--combined-spacing-vertical) + 1px);
-  opacity: 0;
-  animation: lineAppearY var(--animation-duration, 0.5s) ease-out forwards;
-  animation-delay: calc(var(--base-delay, 100ms) + 300ms);
-  transition: border-color 0.5s;
 }
 
-// Hover effects for connectors (vertical layout only)
-:host:not([data-layout='horizontal']) a:hover + ul::before,
-:host:not([data-layout='horizontal']) a:hover + ul li::before,
-:host:not([data-layout='horizontal']) a:hover + ul li::after,
-:host:not([data-layout='horizontal']) a:hover + ul ul::before {
-  border-color: var(--p-primary-color);
-}
-
-// Keyframe animations
-@keyframes lineAppearX {
-  from {
-    opacity: 0;
-    transform: scaleX(0);
+// Dark mode support
+:host-context(.dark) {
+  .match-box {
+    background: var(--surface-800);
+    border-color: var(--surface-700);
   }
-  to {
-    opacity: 1;
-    transform: scaleX(1);
+  
+  .team-row {
+    border-color: var(--surface-700);
   }
-}
-
-@keyframes lineAppearY {
-  from {
-    opacity: 0;
-    transform: scaleY(0);
+  
+  .team-row.bg-green-50 {
+    background-color: rgb(20 83 45 / 0.2);
+    color: rgb(187 247 208);
   }
-  to {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-}
-
-// Pulse animation for highlighted nodes
-@keyframes pulse {
-  0% {
-    box-shadow:
-      0 4px 6px -1px rgb(0 0 0 / 0.1),
-      0 2px 4px -2px rgb(0 0 0 / 0.1);
-  }
-  70% {
-    box-shadow: 0 0 0 10px var(--p-primary-color, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
-  }
-}
-
-a.highlighted {
-  animation: pulse 1.5s infinite;
-}
-
-// Reduced motion support
-@media (prefers-reduced-motion: reduce) {
-  :host {
-    --base-delay: 0ms;
-    --animation-duration: 0ms;
-    --collapse-duration: 0ms;
-  }
-
-  li::before,
-  li::after,
-  ul ul::before {
-    opacity: 1;
-    animation: none;
-  }
-
-  a.highlighted {
-    animation: none;
+  
+  .connector-line,
+  .vertical-connector,
+  .horizontal-connector {
+    background-color: rgb(75 85 99); /* gray-600 for dark mode */
   }
 }

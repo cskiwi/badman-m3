@@ -54,7 +54,7 @@
                         @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
                           <i class="pi pi-crown text-yellow-500 text-xs"></i>
                         }
-                        @if (membership.gamePlayer?.id) {
+                        @if (membership.gamePlayer.id) {
                           <a 
                             [routerLink]="['/player', membership.gamePlayer.id]"
                             class="truncate text-sm no-underline text-current"

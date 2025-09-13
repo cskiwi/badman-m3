@@ -4,6 +4,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ import {
 import { Player } from '../player.model';
 import { Game } from './game.model';
 
+@Index(["playerId", "gameId"])
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
 export class GamePlayerMembership extends BaseEntity {

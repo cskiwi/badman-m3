@@ -6,6 +6,7 @@ import {
   TournamentDraw as TournamentDrawModel,
   GamePlayerMembership,
   RankingSystem,
+  RankingPlace,
 } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
@@ -304,19 +305,27 @@ export class TournamentGameSyncService {
 
       const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
 
-      // Find the player in our system, with the ranking place that has a date equals to or before the game date
+      // Find the player in our system
       const player = await Player.findOne({
-        where: {
-          memberId: tournamentPlayer.MemberID,
-          rankingPlaces: { rankingDate: LessThanOrEqual(game.playedAt || new Date()), system: { id: primarySystem!.id } },
-        },
-        relations: ['rankingPlaces'],
+        where: { memberId: tournamentPlayer.MemberID },
       });
 
       if (!player) {
         this.logger.warn(`Player not found for memberID: ${tournamentPlayer.MemberID}`);
         return;
       }
+
+      // Find the most recent ranking place for this player that meets the criteria
+      const rankingplace = await RankingPlace.findOne({
+        where: {
+          playerId: player.id,
+          rankingDate: LessThanOrEqual(game.playedAt || new Date()),
+          systemId: primarySystem!.id,
+        },
+        order: {
+          rankingDate: 'DESC',
+        },
+      });
 
       // Check if membership already exists
       const existingMembership = await GamePlayerMembership.findOne({
@@ -325,10 +334,6 @@ export class TournamentGameSyncService {
           playerId: player.id,
         },
       });
-
-      const rankingplace = player.rankingPlaces
-        .filter((rp) => (game.playedAt ? rp.rankingDate <= game.playedAt : true))
-        .sort((a, b) => b.rankingDate.getTime() - a.rankingDate.getTime())[0];
 
       if (existingMembership) {
         // Update existing membership

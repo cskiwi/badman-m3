@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nx run-many -t serve -p tag:scope:app",
     "start:all": "nx run-many -t serve -p tag:scope:app,tag:scope:worker",
+    "start:workers": "pm2 start cmd --name worker -i 25 -- /c \"npx nx run-many -t serve -p tag:scope:worker\"",
     "start:prod": "npx nx run app:set-env && node ./dist/apps/app/server/server.mjs",
     "build": "nx run-many -t build --prod",
     "lint": "nx run-many -t lint",
