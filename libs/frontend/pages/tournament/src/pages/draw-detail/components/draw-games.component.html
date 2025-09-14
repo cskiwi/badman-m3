@@ -56,7 +56,7 @@
                         }
                         @if (membership.gamePlayer.id) {
                           <a 
-                            [routerLink]="['/player', membership.gamePlayer.id]"
+                            [routerLink]="['/players', membership.gamePlayer.id]"
                             class="truncate text-sm no-underline text-current"
                           >
                             {{ membership.gamePlayer.fullName || 'Unknown' }}

@@ -23,11 +23,11 @@ export interface PlayerStatistics {
 }
 
 export interface PlayerTournamentHistory {
-  tournament: TournamentEvent;
-  subEvent: TournamentSubEvent;
-  draw: TournamentDraw;
-  entry: Entry;
-  games: Game[];
+  tournament?: TournamentEvent;
+  subEvent?: TournamentSubEvent;
+  draw?: TournamentDraw;
+  entry?: Entry;
+  games?: Game[];
   finalPosition?: number;
 }
 
@@ -53,13 +53,15 @@ export class PlayerDetailService {
           this.apollo.query<{
             player: Player;
             playerGames: Game[];
-            playerEntries: Array<Entry & {
-              draw: TournamentDraw & {
-                subEvent: TournamentSubEvent & {
-                  tournament: TournamentEvent;
+            playerEntries: Array<
+              Entry & {
+                draw: TournamentDraw & {
+                  subEvent: TournamentSubEvent & {
+                    tournament: TournamentEvent;
+                  };
                 };
-              };
-            }>;
+              }
+            >;
           }>({
             query: gql`
               query PlayerDetail($playerId: ID!) {
@@ -79,15 +81,7 @@ export class PlayerDetailService {
                   mix
                 }
                 playerGames: games(
-                  where: {
-                    gamePlayerMemberships: {
-                      some: {
-                        gamePlayer: {
-                          id: { equals: $playerId }
-                        }
-                      }
-                    }
-                  }
+                  where: { gamePlayerMemberships: { some: { gamePlayer: { id: { equals: $playerId } } } } }
                   orderBy: { playedAt: desc }
                   take: 100
                 ) {
@@ -138,12 +132,7 @@ export class PlayerDetailService {
                   }
                 }
                 playerEntries: entries(
-                  where: {
-                    OR: [
-                      { player1Id: { equals: $playerId } }
-                      { player2Id: { equals: $playerId } }
-                    ]
-                  }
+                  where: { OR: [{ player1Id: { equals: $playerId } }, { player2Id: { equals: $playerId } }] }
                   orderBy: { createdAt: desc }
                 ) {
                   id
@@ -258,8 +247,8 @@ export class PlayerDetailService {
     let pointsLost = 0;
 
     // Calculate from games
-    games.forEach(game => {
-      if (game.status !== 'completed') return;
+    games.forEach((game) => {
+      if (game.status !== 'NORMAL') return;
 
       const playerTeam = this.getPlayerTeam(game, player.id);
       if (playerTeam === null) return;
@@ -279,9 +268,9 @@ export class PlayerDetailService {
         { team1: game.set1Team1, team2: game.set1Team2 },
         { team1: game.set2Team1, team2: game.set2Team2 },
         { team1: game.set3Team1, team2: game.set3Team2 },
-      ].filter(set => set.team1 !== null && set.team2 !== null);
+      ].filter((set) => set.team1 !== null && set.team2 !== null);
 
-      sets.forEach(set => {
+      sets.forEach((set) => {
         const playerPoints = playerTeam === 1 ? set.team1! : set.team2!;
         const opponentPoints = playerTeam === 1 ? set.team2! : set.team1!;
 
@@ -297,21 +286,13 @@ export class PlayerDetailService {
     });
 
     // Calculate tournament statistics
-    const tournaments = new Set(
-      entries.map(entry => entry.draw.subEvent.tournament.id)
-    ).size;
+    const tournaments = new Set(entries.map((entry) => entry.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id)).size;
 
-    const positions = entries
-      .filter(entry => entry.standing?.position)
-      .map(entry => entry.standing!.position);
+    const positions = entries.filter((entry) => entry.standing?.position).map((entry) => entry.standing!.position);
 
-    const avgPosition = positions.length > 0 
-      ? positions.reduce((sum, pos) => sum + pos, 0) / positions.length 
-      : 0;
+    const avgPosition = positions.length > 0 ? positions.reduce((sum, pos) => sum + pos, 0) / positions.length : 0;
 
-    const bestPosition = positions.length > 0 
-      ? Math.min(...positions) 
-      : 0;
+    const bestPosition = positions.length > 0 ? Math.min(...positions) : 0;
 
     return {
       totalGames,
@@ -320,10 +301,10 @@ export class PlayerDetailService {
       winRate: totalGames > 0 ? (gamesWon / totalGames) * 100 : 0,
       setsWon,
       setsLost,
-      setWinRate: (setsWon + setsLost) > 0 ? (setsWon / (setsWon + setsLost)) * 100 : 0,
+      setWinRate: setsWon + setsLost > 0 ? (setsWon / (setsWon + setsLost)) * 100 : 0,
       pointsWon,
       pointsLost,
-      pointWinRate: (pointsWon + pointsLost) > 0 ? (pointsWon / (pointsWon + pointsLost)) * 100 : 0,
+      pointWinRate: pointsWon + pointsLost > 0 ? (pointsWon / (pointsWon + pointsLost)) * 100 : 0,
       tournaments,
       avgPosition,
       bestPosition,
@@ -333,14 +314,14 @@ export class PlayerDetailService {
   private groupTournamentHistory(entries: Entry[], games: Game[]): PlayerTournamentHistory[] {
     const historyMap = new Map<string, PlayerTournamentHistory>();
 
-    entries.forEach(entry => {
-      const key = `${entry.draw.subEvent.tournament.id}-${entry.draw.subEvent.id}-${entry.draw.id}`;
-      
+    entries.forEach((entry) => {
+      const key = `${entry.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id}-${entry.tournamentDraw?.tournamentSubEvent?.id}-${entry.tournamentDraw?.id}`;
+
       if (!historyMap.has(key)) {
         historyMap.set(key, {
-          tournament: entry.draw.subEvent.tournament,
-          subEvent: entry.draw.subEvent,
-          draw: entry.draw,
+          tournament: entry.tournamentDraw?.tournamentSubEvent?.tournamentEvent,
+          subEvent: entry.tournamentDraw?.tournamentSubEvent,
+          draw: entry.tournamentDraw,
           entry,
           games: [],
           finalPosition: entry.standing?.position,
@@ -349,28 +330,24 @@ export class PlayerDetailService {
     });
 
     // Add games to respective tournaments
-    games.forEach(game => {
-      if (game.draw?.subEvent?.tournament) {
-        const key = `${game.draw.subEvent.tournament.id}-${game.draw.subEvent.id}-${game.draw.id}`;
+    games.forEach((game) => {
+      if (game.tournamentDraw?.tournamentSubEvent?.tournamentEvent) {
+        const key = `${game.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id}-${game.tournamentDraw?.tournamentSubEvent?.id}-${game.tournamentDraw?.id}`;
         const history = historyMap.get(key);
         if (history) {
-          history.games.push(game);
+          history.games?.push(game);
         }
       }
     });
 
-    return Array.from(historyMap.values())
-      .sort((a, b) => 
-        new Date(b.tournament.startDate || 0).getTime() - 
-        new Date(a.tournament.startDate || 0).getTime()
-      );
+    return Array.from(historyMap.values()).sort(
+      (a, b) => new Date(b.tournament?.firstDay || 0).getTime() - new Date(a.tournament?.firstDay || 0).getTime(),
+    );
   }
 
   private getPlayerTeam(game: Game, playerId: string): number | null {
-    const membership = game.gamePlayerMemberships?.find(
-      gpm => gpm.gamePlayer.id === playerId
-    );
-    return membership ? membership.team : null;
+    const membership = game.gamePlayerMemberships?.find((gpm) => gpm.gamePlayer.id === playerId);
+    return membership ? (membership.team ?? null) : null;
   }
 
   private handleError(err: HttpErrorResponse): string {

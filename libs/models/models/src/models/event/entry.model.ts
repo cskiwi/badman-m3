@@ -18,6 +18,8 @@ import { Standing } from './standing.model';
 import { EntryMeta } from './entry-meta.type';
 import { Player } from '../player.model';
 import { Team } from '../team.model';
+import { TournamentDraw, TournamentSubEvent } from './tournament';
+import { CompetitionDraw, CompetitionSubEvent } from './competition';
 
 @ObjectType('Entry', { description: 'Player or team entry in an event' })
 @Entity('Entries', { schema: 'event' })
@@ -35,7 +37,6 @@ export class Entry extends BaseEntity {
   @WhereField({ nullable: true })
   @UpdateDateColumn({ type: 'timestamptz' })
   declare updatedAt: Date;
-
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
@@ -60,7 +61,6 @@ export class Entry extends BaseEntity {
   @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare player2Id?: string;
-
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
@@ -90,7 +90,7 @@ export class Entry extends BaseEntity {
   declare sendOn?: Date;
 
   @Field(() => Standing, { nullable: true })
-  @OneToOne(() => Standing, standing => standing.entry)
+  @OneToOne(() => Standing, (standing) => standing.entry)
   declare standing?: Relation<Standing>;
 
   @Field(() => Player, { nullable: true })
@@ -108,4 +108,23 @@ export class Entry extends BaseEntity {
   @JoinColumn({ name: 'teamId' })
   declare team?: Relation<Team>;
 
+  @Field(() => TournamentSubEvent, { nullable: true })
+  @ManyToOne(() => TournamentSubEvent, { nullable: true })
+  @JoinColumn({ name: 'subEventId' })
+  declare tournamentSubEvent?: Relation<TournamentSubEvent>;
+
+  @Field(() => CompetitionSubEvent, { nullable: true })
+  @ManyToOne(() => CompetitionSubEvent, { nullable: true })
+  @JoinColumn({ name: 'subEventId' })
+  declare competitionSubEvent?: Relation<CompetitionSubEvent>;
+
+  @Field(() => TournamentDraw, { nullable: true })
+  @ManyToOne(() => TournamentDraw, { nullable: true })
+  @JoinColumn({ name: 'drawId' })
+  declare tournamentDraw?: Relation<TournamentDraw>;
+
+  @Field(() => CompetitionDraw, { nullable: true })
+  @ManyToOne(() => CompetitionDraw, { nullable: true })
+  @JoinColumn({ name: 'drawId' })
+  declare competitionDraw?: Relation<CompetitionDraw>;
 }

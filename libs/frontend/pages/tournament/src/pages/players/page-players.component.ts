@@ -6,7 +6,7 @@ import { Player } from '@app/models';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -29,7 +29,7 @@ import { PlayersService } from './page-players.service';
     FloatLabelModule,
     CardModule,
     ButtonModule,
-    DropdownModule,
+    SelectModule,
     TagModule,
     TooltipModule,
     PageHeaderComponent
@@ -77,7 +77,7 @@ export class PagePlayersComponent {
 
   navigateToPlayer(player: Player) {
     // Navigate to player detail page
-    this.router.navigate(['/player', player.slug]);
+    this.router.navigate(['/players', player.slug]);
   }
 
   getPlayerRating(player: Player): number | null {

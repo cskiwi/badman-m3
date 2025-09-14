@@ -141,7 +141,7 @@
     <div class="clubs-grid mt-6">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @for (club of clubs(); track club.id) {
-          <p-card [routerLink]="['/club', club.slug]" class="club-card cursor-pointer hover:shadow-lg transition-all duration-200 h-full">
+          <p-card [routerLink]="['/clubs', club.slug]" class="club-card cursor-pointer hover:shadow-lg transition-all duration-200 h-full">
             <ng-template pTemplate="header">
               <div class="club-header p-4">
                 <h3 class="text-lg font-semibold text-primary mb-1 truncate" [title]="club.fullName || club.name">

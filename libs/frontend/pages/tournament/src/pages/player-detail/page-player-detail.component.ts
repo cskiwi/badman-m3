@@ -10,7 +10,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { CardModule } from 'primeng/card';
-import { TabViewModule } from 'primeng/tabview';
+import { TabsModule } from 'primeng/tabs';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { PlayerDetailService } from './page-player-detail.service';
@@ -18,6 +18,8 @@ import { PlayerStatisticsCardComponent } from './components/player-statistics-ca
 import { PlayerGamesTableComponent } from './components/player-games-table.component';
 import { PlayerTournamentHistoryComponent } from './components/player-tournament-history.component';
 import { PlayerPerformanceChartComponent } from './components/player-performance-chart.component';
+import { PlayerHeadToHeadComponent } from './components/player-head-to-head.component';
+import { PlayerAvatarComponent } from './components/player-avatar.component';
 
 @Component({
   selector: 'app-page-player-detail',
@@ -32,15 +34,16 @@ import { PlayerPerformanceChartComponent } from './components/player-performance
     ButtonModule,
     SkeletonModule,
     CardModule,
-    TabViewModule,
+    TabsModule,
     BreadcrumbModule,
     PlayerStatisticsCardComponent,
     PlayerGamesTableComponent,
     PlayerTournamentHistoryComponent,
     PlayerPerformanceChartComponent,
+    PlayerHeadToHeadComponent,
+    PlayerAvatarComponent,
   ],
   templateUrl: './page-player-detail.component.html',
-  styleUrl: './page-player-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePlayerDetailComponent {
@@ -65,21 +68,21 @@ export class PagePlayerDetailComponent {
     if (!player) return [];
 
     return [
-      { 
-        label: 'Players', 
+      {
+        label: 'Players',
         routerLink: '/players',
-        icon: 'pi pi-users'
+        icon: 'pi pi-users',
       },
-      { 
+      {
         label: player.fullName || `${player.firstName} ${player.lastName}`,
-        icon: 'pi pi-user'
+        icon: 'pi pi-user',
       },
     ];
   });
 
-  homeItem: MenuItem = { 
-    icon: 'pi pi-home', 
-    routerLink: '/' 
+  homeItem: MenuItem = {
+    icon: 'pi pi-home',
+    routerLink: '/',
   };
 
   // Computed properties for display
@@ -91,16 +94,16 @@ export class PagePlayerDetailComponent {
   playerAge = computed(() => {
     const player = this.player();
     if (!player?.birthDate) return null;
-    
+
     const birthDate = new Date(player.birthDate);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   });
 
@@ -122,7 +125,7 @@ export class PagePlayerDetailComponent {
     effect(() => {
       const player = this.player();
       const statistics = this.statistics();
-      
+
       if (player && statistics) {
         const displayName = this.playerDisplayName();
         this.seoService.update({

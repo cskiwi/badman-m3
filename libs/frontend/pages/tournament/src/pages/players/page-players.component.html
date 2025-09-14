@@ -23,7 +23,7 @@
       <div class="filters-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
         <!-- Gender filter -->
         <p-floatlabel>
-          <p-dropdown
+          <p-select
             [formControl]="genderControl"
             [options]="genderOptions"
             optionLabel="label"
@@ -31,13 +31,13 @@
             placeholder="Select gender"
             class="w-full"
             id="gender-filter"
-          ></p-dropdown>
+          ></p-select>
           <label for="gender-filter">{{ 'all.players.gender' | translate }}</label>
         </p-floatlabel>
 
         <!-- Competition player filter -->
         <p-floatlabel>
-          <p-dropdown
+          <p-select
             [formControl]="competitionPlayerControl"
             [options]="competitionPlayerOptions"
             optionLabel="label"
@@ -45,7 +45,7 @@
             placeholder="Select player type"
             class="w-full"
             id="competition-filter"
-          ></p-dropdown>
+          ></p-select>
           <label for="competition-filter">{{ 'all.players.playerType' | translate }}</label>
         </p-floatlabel>
 

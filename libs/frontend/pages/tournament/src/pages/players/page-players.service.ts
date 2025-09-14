@@ -8,24 +8,26 @@ import { debounceTime } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 
 interface PlayerSearchFilters {
-  query?: string;
-  clubId?: string;
-  minRating?: number;
-  maxRating?: number;
-  gender?: 'M' | 'F';
-  competitionPlayer?: boolean;
+  // allow null because FormGroup.value can contain nulls
+  query?: string | null;
+  clubId?: string | null;
+  minRating?: number | null;
+  maxRating?: number | null;
+  gender?: 'M' | 'F' | null;
+  competitionPlayer?: boolean | null;
 }
 
 export class PlayersService {
   private readonly apollo = inject(Apollo);
 
   filter = new FormGroup({
-    query: new FormControl<string | undefined>(undefined),
-    clubId: new FormControl<string | undefined>(undefined),
-    minRating: new FormControl<number | undefined>(undefined),
-    maxRating: new FormControl<number | undefined>(undefined),
-    gender: new FormControl<'M' | 'F' | undefined>(undefined),
-    competitionPlayer: new FormControl<boolean | undefined>(undefined),
+    // include null in FormControl generics to reflect actual emitted types
+    query: new FormControl<string | null | undefined>(undefined),
+    clubId: new FormControl<string | null | undefined>(undefined),
+    minRating: new FormControl<number | null | undefined>(undefined),
+    maxRating: new FormControl<number | null | undefined>(undefined),
+    gender: new FormControl<'M' | 'F' | null | undefined>(undefined),
+    competitionPlayer: new FormControl<boolean | null | undefined>(undefined),
   });
 
   // Convert form to signal for resource with debounce
@@ -121,11 +123,11 @@ export class PlayersService {
     return err.statusText || 'An error occurred while loading players';
   }
 
-  private _buildPlayerSearchWhere(filters: PlayerSearchFilters) {
+  private _buildPlayerSearchWhere(filters?: PlayerSearchFilters) {
     const where: any = {};
     
     // Text search in name
-    if (filters.query && filters.query.trim()) {
+    if (filters?.query && filters.query.trim()) {
       const searchTerms = filters.query
         .toLowerCase()
         .replace(/[;\\\\/:*?"<>|&',]/, ' ')
@@ -143,7 +145,7 @@ export class PlayersService {
     }
 
     // Club filter
-    if (filters.clubId) {
+    if (filters?.clubId) {
       where.clubPlayerMemberships = {
         some: {
           clubId: filters.clubId
@@ -152,17 +154,17 @@ export class PlayersService {
     }
 
     // Gender filter
-    if (filters.gender) {
+    if (filters?.gender) {
       where.gender = filters.gender;
     }
 
     // Competition player filter
-    if (filters.competitionPlayer !== undefined) {
+    if (filters?.competitionPlayer !== undefined) {
       where.competitionPlayer = filters.competitionPlayer;
     }
 
     // Rating filters (based on ranking places)
-    if (filters.minRating || filters.maxRating) {
+    if (filters?.minRating || filters?.maxRating) {
       const ratingWhere: any = {};
       
       if (filters.minRating) {
@@ -198,7 +200,7 @@ export class PlayersService {
       .filter(place => place[system] !== null && place[system] !== undefined)
       .sort((a, b) => new Date(b.rankingDate).getTime() - new Date(a.rankingDate).getTime());
 
-    return sortedRankings.length > 0 ? sortedRankings[0][system] : null;
+    return sortedRankings.length > 0 ? (sortedRankings[0][system] ?? null) : null;
   }
 
   // Helper method to get current club for a player

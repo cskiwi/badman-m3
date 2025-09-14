@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, OnInit } from '@an
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { type Game } from '@app/models';
 import { FormsModule } from '@angular/forms';
 
@@ -27,119 +27,133 @@ interface ChartTimeframe {
     TranslateModule,
     CardModule,
     ChartModule,
-    DropdownModule,
+    SelectModule,
   ],
   template: `
-    <div class="performance-chart-container">
+    <div class="space-y-6">
       <!-- Chart Controls -->
-      <div class="chart-controls mb-4">
-        <div class="flex justify-content-between align-items-center">
-          <h3 class="chart-title m-0">
-            <i class="pi pi-chart-line mr-2"></i>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center">
+            <i class="pi pi-chart-line text-primary-600 dark:text-primary-400 text-lg"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-surface-900 dark:text-surface-50 m-0">
             {{ 'PERFORMANCE.WIN_RATE_OVER_TIME' | translate }}
           </h3>
-          
-          <p-dropdown
-            [(ngModel)]="selectedTimeframe"
-            [options]="timeframeOptions"
-            optionLabel="label"
-            optionValue="value"
-            [style]="{ 'min-width': '150px' }"
-            (onChange)="updateChartData()">
-          </p-dropdown>
         </div>
+
+        <p-select
+          [(ngModel)]="selectedTimeframe"
+          [options]="timeframeOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="min-w-36"
+          (onChange)="updateChartData()">
+        </p-select>
       </div>
 
       <!-- Performance Chart -->
-      <div class="chart-section">
-        <p-card>
-          @if (chartData()) {
-            <p-chart
-              type="line"
-              [data]="chartData()"
-              [options]="chartOptions"
-              [style]="{ height: '400px' }">
-            </p-chart>
-          } @else {
-            <div class="no-data-message">
-              <i class="pi pi-info-circle text-3xl text-color-secondary"></i>
-              <p class="text-lg text-color-secondary mt-2">
-                {{ 'PERFORMANCE.NO_DATA_AVAILABLE' | translate }}
-              </p>
-            </div>
-          }
-        </p-card>
-      </div>
+      <p-card class="border border-surface-200 dark:border-surface-700">
+        @if (chartData()) {
+          <p-chart
+            type="line"
+            [data]="chartData()"
+            [options]="chartOptions"
+            [style]="{ height: '400px' }">
+          </p-chart>
+        } @else {
+          <div class="flex flex-col items-center justify-center py-16">
+            <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
+            <p class="text-lg text-surface-500 dark:text-surface-400">
+              {{ 'PERFORMANCE.NO_DATA_AVAILABLE' | translate }}
+            </p>
+          </div>
+        }
+      </p-card>
 
       <!-- Performance Stats Grid -->
-      <div class="stats-grid mt-4">
-        <div class="grid">
-          <div class="col-12 md:col-6 lg:col-3">
-            <p-card class="stat-card">
-              <div class="stat-content">
-                <div class="stat-icon trending-up">
-                  <i class="pi pi-arrow-up"></i>
+      <div class="grid gap-4">
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                <i class="pi pi-arrow-up text-green-600 dark:text-green-400 text-xl"></i>
+              </div>
+              <div>
+                <div class="text-surface-500 dark:text-surface-400 text-sm">
+                  {{ 'PERFORMANCE.PEAK_WIN_RATE' | translate }}
                 </div>
-                <div class="stat-details">
-                  <div class="stat-label">{{ 'PERFORMANCE.PEAK_WIN_RATE' | translate }}</div>
-                  <div class="stat-value">{{ peakWinRate() }}%</div>
+                <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                  {{ peakWinRate() }}%
                 </div>
               </div>
-            </p-card>
-          </div>
+            </div>
+          </p-card>
+        </div>
 
-          <div class="col-12 md:col-6 lg:col-3">
-            <p-card class="stat-card">
-              <div class="stat-content">
-                <div class="stat-icon trending-avg">
-                  <i class="pi pi-minus"></i>
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                <i class="pi pi-minus text-blue-600 dark:text-blue-400 text-xl"></i>
+              </div>
+              <div>
+                <div class="text-surface-500 dark:text-surface-400 text-sm">
+                  {{ 'PERFORMANCE.CURRENT_WIN_RATE' | translate }}
                 </div>
-                <div class="stat-details">
-                  <div class="stat-label">{{ 'PERFORMANCE.CURRENT_WIN_RATE' | translate }}</div>
-                  <div class="stat-value">{{ currentWinRate() }}%</div>
+                <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                  {{ currentWinRate() }}%
                 </div>
               </div>
-            </p-card>
-          </div>
+            </div>
+          </p-card>
+        </div>
 
-          <div class="col-12 md:col-6 lg:col-3">
-            <p-card class="stat-card">
-              <div class="stat-content">
-                <div class="stat-icon games">
-                  <i class="pi pi-play-circle"></i>
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
+                <i class="pi pi-play-circle text-yellow-600 dark:text-yellow-400 text-xl"></i>
+              </div>
+              <div>
+                <div class="text-surface-500 dark:text-surface-400 text-sm">
+                  {{ 'PERFORMANCE.RECENT_GAMES' | translate }}
                 </div>
-                <div class="stat-details">
-                  <div class="stat-label">{{ 'PERFORMANCE.RECENT_GAMES' | translate }}</div>
-                  <div class="stat-value">{{ recentGamesCount() }}</div>
+                <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                  {{ recentGamesCount() }}
                 </div>
               </div>
-            </p-card>
-          </div>
+            </div>
+          </p-card>
+        </div>
 
-          <div class="col-12 md:col-6 lg:col-3">
-            <p-card class="stat-card">
-              <div class="stat-content">
-                <div class="stat-icon trend" [class.positive]="trendDirection() === 'up'" [class.negative]="trendDirection() === 'down'">
-                  @if (trendDirection() === 'up') {
-                    <i class="pi pi-trending-up"></i>
-                  } @else if (trendDirection() === 'down') {
-                    <i class="pi pi-trending-down"></i>
-                  } @else {
-                    <i class="pi pi-arrows-h"></i>
-                  }
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-lg flex items-center justify-center"
+                   [class]="trendDirection() === 'up' ? 'bg-green-100 dark:bg-green-900' : trendDirection() === 'down' ? 'bg-red-100 dark:bg-red-900' : 'bg-gray-100 dark:bg-gray-900'">
+                @if (trendDirection() === 'up') {
+                  <i class="pi pi-trending-up text-green-600 dark:text-green-400 text-xl"></i>
+                } @else if (trendDirection() === 'down') {
+                  <i class="pi pi-trending-down text-red-600 dark:text-red-400 text-xl"></i>
+                } @else {
+                  <i class="pi pi-arrows-h text-gray-600 dark:text-gray-400 text-xl"></i>
+                }
+              </div>
+              <div>
+                <div class="text-surface-500 dark:text-surface-400 text-sm">
+                  {{ 'PERFORMANCE.TREND' | translate }}
                 </div>
-                <div class="stat-details">
-                  <div class="stat-label">{{ 'PERFORMANCE.TREND' | translate }}</div>
-                  <div class="stat-value">{{ trendDirection() === 'up' ? '↗' : trendDirection() === 'down' ? '↘' : '→' }}</div>
+                <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                  {{ trendDirection() === 'up' ? '↗' : trendDirection() === 'down' ? '↘' : '→' }}
                 </div>
               </div>
-            </p-card>
-          </div>
+            </div>
+          </p-card>
         </div>
       </div>
     </div>
   `,
-  styleUrl: './player-performance-chart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerPerformanceChartComponent implements OnInit {
@@ -237,7 +251,7 @@ export class PlayerPerformanceChartComponent implements OnInit {
   // Computed data
   filteredGames = computed(() => {
     const games = this.games().filter(game => 
-      game.status === 'completed' && game.playedAt
+      game.status === 'NORMAL' && game.playedAt
     );
     
     const timeframe = this.selectedTimeframe;

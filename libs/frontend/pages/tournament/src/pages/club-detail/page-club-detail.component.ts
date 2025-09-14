@@ -18,6 +18,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
@@ -29,7 +30,6 @@ import { MenuItem } from 'primeng/api';
   imports: [
     DatePipe,
     DecimalPipe,
-    PercentPipe,
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,
@@ -46,6 +46,7 @@ import { MenuItem } from 'primeng/api';
     TagModule,
     AvatarModule,
     BreadcrumbModule,
+    TooltipModule,
   ],
   templateUrl: './page-club-detail.component.html',
   styleUrl: './page-club-detail.component.scss',
@@ -63,7 +64,7 @@ export class PageClubDetailComponent {
   playerRoster = this.dataService.playerRoster;
   tournamentEntries = this.dataService.tournamentEntries;
   statistics = this.dataService.statistics;
-  
+
   error = this.dataService.error;
   loading = this.dataService.loading;
 
@@ -82,7 +83,7 @@ export class PageClubDetailComponent {
     return [
       { label: 'Home', routerLink: '/' },
       { label: 'Tournaments', routerLink: '/tournament' },
-      { label: 'Clubs', routerLink: '/club' },
+      { label: 'Clubs', routerLink: '/clubs' },
       { label: club?.name || 'Club Details' },
     ];
   });
@@ -163,33 +164,35 @@ export class PageClubDetailComponent {
     return `${player.firstName.charAt(0)}${player.lastName.charAt(0)}`.toUpperCase();
   }
 
-  getGenderSeverity(gender: string): 'success' | 'info' | 'warning' | 'danger' {
+  getGenderSeverity(gender: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
     switch (gender?.toLowerCase()) {
-      case 'male': return 'info';
-      case 'female': return 'success';
-      case 'mixed': return 'warning';
-      default: return 'danger';
+      case 'male':
+        return 'info';
+      case 'female':
+        return 'success';
+      case 'mixed':
+        return 'warn';
+      default:
+        return 'danger';
     }
   }
 
-  getEventTypeSeverity(eventType: string): 'success' | 'info' | 'warning' | 'danger' {
+  getEventTypeSeverity(eventType: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
     if (eventType?.startsWith('M')) return 'info';
     if (eventType?.startsWith('F')) return 'success';
-    if (eventType?.startsWith('MX')) return 'warning';
+    if (eventType?.startsWith('MX')) return 'warn';
     return 'danger';
   }
 
   getTournamentDate(tournament: any): Date | null {
-    return tournament?.drawTournaments?.[0]?.tournamentEvent?.firstDay 
-      ? new Date(tournament.drawTournaments[0].tournamentEvent.firstDay)
-      : null;
+    return tournament?.drawTournaments?.[0]?.tournamentEvent?.firstDay ? new Date(tournament.drawTournaments[0].tournamentEvent.firstDay) : null;
   }
 
-  getPositionSeverity(position: number | null): 'success' | 'info' | 'warning' | 'danger' {
+  getPositionSeverity(position: number | null): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' {
     if (!position) return 'danger';
     if (position === 1) return 'success';
     if (position <= 3) return 'info';
-    if (position <= 8) return 'warning';
+    if (position <= 8) return 'warn';
     return 'danger';
   }
 

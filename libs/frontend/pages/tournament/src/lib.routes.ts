@@ -12,14 +12,6 @@ export const routes: Route[] = [
     children: [
       { path: '', component: PageOverviewComponent },
       {
-        path: 'players',
-        loadChildren: () => import('@app/frontend-pages-player').then((m) => m.routes),
-      },
-      {
-        path: 'clubs', 
-        loadChildren: () => import('@app/frontend-pages-club').then((m) => m.routes),
-      },
-      {
         path: 'club/:clubId',
         component: PageClubDetailComponent,
       },

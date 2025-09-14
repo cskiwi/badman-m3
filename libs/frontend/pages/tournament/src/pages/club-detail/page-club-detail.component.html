@@ -133,9 +133,16 @@
   }
 
   <!-- Main Content Tabs -->
-  <p-tabs>
-    <!-- Overview Tab -->
-    <p-tab header="{{ 'all.club.tabs.overview' | translate }}">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">{{ 'all.club.tabs.overview' | translate }}</p-tab>
+      <p-tab value="1">{{ 'all.club.tabs.players' | translate }}</p-tab>
+      <p-tab value="2">{{ 'all.club.tabs.teams' | translate }}</p-tab>
+      <p-tab value="3">{{ 'all.club.tabs.tournaments' | translate }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Overview Tab Panel -->
+      <p-tabpanel value="0">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
         <!-- Club Information -->
         <p-card header="{{ 'all.club.info.title' | translate }}">
@@ -182,7 +189,7 @@
                   <label class="block text-sm font-medium text-surface-600 mb-1">
                     {{ 'all.club.info.activeSeasons' | translate }}
                   </label>
-                  <p class="text-surface-900">{{ club.distinctSeasons.length }}</p>
+                  <p class="text-surface-900">{{ club.distinctSeasons?.length }}</p>
                 </div>
               }
             </div>
@@ -219,10 +226,10 @@
           </div>
         </p-card>
       }
-    </p-tab>
+      </p-tabpanel>
 
-    <!-- Player Roster Tab -->
-    <p-tab header="{{ 'all.club.tabs.players' | translate }}">
+      <!-- Player Roster Tab Panel -->
+      <p-tabpanel value="1">
       <div class="mt-4">
         @if (playerRoster().length > 0) {
           <p-table 
@@ -231,7 +238,6 @@
             [rows]="25" 
             [showCurrentPageReport]="true" 
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} players"
-            [trackByFn]="trackByPlayerId"
             styleClass="p-datatable-sm">
             
             <ng-template pTemplate="header">
@@ -250,7 +256,7 @@
                   <div class="flex items-center gap-3">
                     <p-avatar 
                       [label]="getPlayerInitials(player)" 
-                      size="small" 
+                      size="normal" 
                       shape="circle">
                     </p-avatar>
                     <div>
@@ -299,7 +305,7 @@
                     type="button" 
                     icon="pi pi-external-link" 
                     class="p-button-text p-button-sm" 
-                    [routerLink]="['/player', player.slug || player.id]"
+                    [routerLink]="['/players', player.slug || player.id]"
                     pTooltip="{{ 'all.player.viewProfile' | translate }}">
                   </button>
                 </td>
@@ -325,10 +331,10 @@
           </div>
         }
       </div>
-    </p-tab>
+      </p-tabpanel>
 
-    <!-- Teams Tab -->
-    <p-tab header="{{ 'all.club.tabs.teams' | translate }}">
+      <!-- Teams Tab Panel -->
+      <p-tabpanel value="2">
       <div class="mt-4">
         @if (teams().length > 0) {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -384,7 +390,7 @@
                           @if (membership.player) {
                             <p-avatar
                               [label]="getPlayerInitials(membership.player)"
-                              size="small"
+                              size="normal"
                               shape="circle"
                               [pTooltip]="membership.player.fullName">
                             </p-avatar>
@@ -393,7 +399,7 @@
                         @if (team.teamPlayerMemberships.length > 6) {
                           <p-avatar
                             [label]="'+' + (team.teamPlayerMemberships.length - 6)"
-                            size="small"
+                            size="normal"
                             shape="circle"
                             styleClass="bg-surface-200 text-surface-600">
                           </p-avatar>
@@ -428,10 +434,10 @@
           </div>
         }
       </div>
-    </p-tab>
+      </p-tabpanel>
 
-    <!-- Tournament History Tab -->
-    <p-tab header="{{ 'all.club.tabs.tournaments' | translate }}">
+      <!-- Tournament History Tab Panel -->
+      <p-tabpanel value="3">
       <div class="mt-4">
         @if (tournamentEntries().length > 0) {
           <p-table 
@@ -440,7 +446,6 @@
             [rows]="20" 
             [showCurrentPageReport]="true" 
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} tournament entries"
-            [trackByFn]="trackByEntryId"
             styleClass="p-datatable-sm">
             
             <ng-template pTemplate="header">
@@ -558,7 +563,8 @@
           </div>
         }
       </div>
-    </p-tab>
+      </p-tabpanel>
+    </p-tabpanels>
   </p-tabs>
 }
 

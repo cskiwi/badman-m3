@@ -310,8 +310,8 @@ export class ClubDetailService {
                 name: team.name,
                 season: team.season,
                 membershipType: membership.membershipType,
-                startDate: membership.startDate,
-                endDate: membership.endDate,
+                startDate: membership.start,
+                endDate: membership.end,
               }],
             });
           } else {
@@ -320,8 +320,8 @@ export class ClubDetailService {
               name: team.name,
               season: team.season,
               membershipType: membership.membershipType,
-              startDate: membership.startDate,
-              endDate: membership.endDate,
+              startDate: membership.start,
+              endDate: membership.end,
             });
           }
         }
@@ -340,13 +340,13 @@ export class ClubDetailService {
 
     history.forEach(team => {
       team.entries?.forEach(entry => {
-        if (entry.subEventTournament) {
+        if (entry.tournamentSubEvent) {
           entries.push({
             team,
             entry,
-            tournament: entry.subEventTournament,
+            tournament: entry.tournamentSubEvent,
             standing: entry.standing,
-            drawTournaments: entry.subEventTournament.drawTournaments || [],
+            drawTournaments: entry.tournamentSubEvent.drawTournaments || [],
           });
         }
       });

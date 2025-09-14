@@ -162,7 +162,7 @@
                 @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                   @if (membership?.team === 1) {
                     <div
-                      [routerLink]="['/player', membership?.gamePlayer?.id]"
+                      [routerLink]="['/players', membership?.gamePlayer?.id]"
                       class="text-sm font-medium text-color cursor-pointer truncate hover:underline hover:text-primary-600 transition-colors"
                     >
                       {{ membership?.gamePlayer?.fullName }}
@@ -202,7 +202,7 @@
                 @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                   @if (membership?.team === 2) {
                     <div
-                      [routerLink]="['/player', membership?.gamePlayer?.id]"
+                      [routerLink]="['/players', membership?.gamePlayer?.id]"
                       class="text-sm font-medium text-color cursor-pointer truncate hover:underline hover:text-primary-600 transition-colors"
                     >
                       {{ membership?.gamePlayer?.fullName }}
@@ -228,7 +228,7 @@
                     @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                       @if (membership?.team === 1) {
                         <div
-                          [routerLink]="['/player', membership?.gamePlayer?.id]"
+                          [routerLink]="['/players', membership?.gamePlayer?.id]"
                           class="text-xs font-medium text-color cursor-pointer truncate hover:underline block"
                         >
                           {{ membership?.gamePlayer?.fullName }}
@@ -263,7 +263,7 @@
                     @for (membership of game?.gamePlayerMemberships; track membership?.id) {
                       @if (membership?.team === 2) {
                         <div
-                          [routerLink]="['/player', membership?.gamePlayer?.id]"
+                          [routerLink]="['/players', membership?.gamePlayer?.id]"
                           class="text-xs font-medium text-color cursor-pointer truncate hover:underline block"
                         >
                           {{ membership?.gamePlayer?.fullName }}

@@ -52,6 +52,8 @@ export type I18nTranslations = {
             "yes": string;
         };
         "competition": {
+            "title": string;
+            "search": string;
             "bracket_view": string;
             "bracket_view_description": string;
             "changeClosePeriod1": string;
@@ -211,6 +213,10 @@ export type I18nTranslations = {
             "home": string;
             "login": string;
             "players": string;
+            "searchClubs": string;
+            "searchClubsDescription": string;
+            "searchPlayers": string;
+            "searchPlayersDescription": string;
         };
         "player": {
             "edit": {

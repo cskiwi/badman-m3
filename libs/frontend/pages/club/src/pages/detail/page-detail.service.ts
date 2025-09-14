@@ -126,13 +126,52 @@ export class DetailService {
     },
   });
 
+  // Mock statistics resource - replace with actual GraphQL queries when available
+  private clubStatsResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params }) => {
+      if (!params.clubId) {
+        return null;
+      }
+
+      // Mock statistics - replace with actual GraphQL query
+      return new Promise<any>((resolve) => {
+        setTimeout(() => {
+          resolve({
+            totalGames: Math.floor(Math.random() * 200) + 100,
+            wins: Math.floor(Math.random() * 120) + 60,
+            losses: Math.floor(Math.random() * 80) + 40,
+            draws: Math.floor(Math.random() * 20) + 5,
+            winRate: Math.round(Math.random() * 40 + 40),
+            averageRanking: Math.floor(Math.random() * 50) + 1,
+            seasonsActive: Math.floor(Math.random() * 10) + 5,
+            topPlayer: {
+              id: '1',
+              name: 'John Doe',
+              winRate: 85,
+              gamesPlayed: 45
+            },
+            recentForm: [true, true, false, true, true], // W/L for last 5 matches
+            monthlyStats: Array.from({ length: 12 }, (_, i) => ({
+              month: i + 1,
+              games: Math.floor(Math.random() * 15) + 5,
+              winRate: Math.round(Math.random() * 40 + 40)
+            }))
+          });
+        }, 500);
+      });
+    },
+  });
+
   // Public selectors
   club = computed(() => this.clubResource.value());
   teams = computed(() => this.teamsResource.value() || []);
+  clubStats = computed(() => this.clubStatsResource.value());
 
-  error = computed(() => this.clubResource.error()?.message || this.teamsResource.error()?.message || null);
+  error = computed(() => this.clubResource.error()?.message || this.teamsResource.error()?.message || this.clubStatsResource.error()?.message || null);
   loading = computed(() => this.clubResource.isLoading());
   teamsLoading = computed(() => this.teamsResource.isLoading());
+  statsLoading = computed(() => this.clubStatsResource.isLoading());
 
   // Season management
   currentSeason = computed(() => this.filter.get('season')?.value || getSeason());

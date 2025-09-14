@@ -190,7 +190,6 @@ import { type Game } from '@app/models';
       </p-table>
     </div>
   `,
-  styleUrl: './player-games-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerGamesTableComponent {

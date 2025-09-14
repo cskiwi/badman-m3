@@ -12,56 +12,48 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
 
 @Component({
   selector: 'app-player-tournament-history',
-  imports: [
-    DatePipe,
-    RouterModule,
-    TranslateModule,
-    TableModule,
-    TagModule,
-    ButtonModule,
-    CardModule,
-    AccordionModule,
-    TooltipModule,
-  ],
+  imports: [DatePipe, RouterModule, TranslateModule, TableModule, TagModule, ButtonModule, CardModule, AccordionModule, TooltipModule],
   template: `
-    <div class="tournament-history-container">
-      <p-accordion>
-        @for (history of tournamentHistory(); track history.tournament.id + '-' + history.subEvent.id + '-' + history.draw.id) {
-          <p-accordionTab>
+    <div class="space-y-4">
+      <p-accordion styleClass="border border-surface-200 dark:border-surface-700 rounded-lg overflow-hidden">
+        @for (history of tournamentHistory(); track history.tournament?.id + '-' + history.subEvent?.id + '-' + history.draw?.id) {
+          <p-accordion-panel>
             <ng-template pTemplate="header">
-              <div class="tournament-header w-full">
-                <div class="tournament-main-info">
-                  <div class="tournament-name">
-                    {{ history.tournament.name }}
+              <div class="w-full flex justify-between items-center py-2">
+                <div class="flex-1">
+                  <div class="text-surface-900 dark:text-surface-50 font-semibold text-lg">
+                    {{ history.tournament?.name }}
                   </div>
-                  <div class="tournament-meta">
-                    <span class="event-name">{{ history.subEvent.name }}</span>
-                    @if (history.draw.name) {
-                      <span class="draw-name">- {{ history.draw.name }}</span>
+                  <div class="flex flex-wrap items-center gap-2 mt-1 text-sm text-surface-600 dark:text-surface-400">
+                    <span class="font-medium">{{ history.subEvent?.name }}</span>
+                    @if (history.draw?.name) {
+                      <span>- {{ history.draw?.name }}</span>
                     }
-                    @if (history.tournament.startDate) {
-                      <span class="tournament-date">
-                        ({{ history.tournament.startDate | date:'mediumDate' }})
-                      </span>
+                    @if (history.tournament?.firstDay) {
+                      <span class="text-surface-500 dark:text-surface-500"> ({{ history.tournament?.firstDay | date: 'mediumDate' }}) </span>
                     }
                   </div>
                 </div>
-                
-                <div class="tournament-summary">
+
+                <div class="flex items-center gap-4 ml-4">
                   @if (history.finalPosition) {
-                    <div class="position-badge">
-                      <i class="pi pi-trophy"></i>
+                    <div
+                      class="flex items-center gap-2 px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded-full text-sm font-semibold"
+                    >
+                      <i class="pi pi-trophy text-xs"></i>
                       #{{ history.finalPosition }}
                     </div>
                   }
-                  
-                  <div class="games-summary">
+
+                  <div class="text-right">
                     @if (getWonGames(history) > 0 || getLostGames(history) > 0) {
-                      <span class="wins">{{ getWonGames(history) }}W</span>
-                      <span class="separator">-</span>
-                      <span class="losses">{{ getLostGames(history) }}L</span>
+                      <div class="flex items-center gap-1">
+                        <span class="text-green-600 dark:text-green-400 font-semibold">{{ getWonGames(history) }}W</span>
+                        <span class="text-surface-400 dark:text-surface-600">-</span>
+                        <span class="text-red-600 dark:text-red-400 font-semibold">{{ getLostGames(history) }}L</span>
+                      </div>
                     } @else {
-                      <span class="no-games">{{ 'TOURNAMENT.NO_GAMES' | translate }}</span>
+                      <span class="text-surface-500 dark:text-surface-500 text-sm">{{ 'TOURNAMENT.NO_GAMES' | translate }}</span>
                     }
                   </div>
                 </div>
@@ -69,26 +61,36 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
             </ng-template>
 
             <ng-template pTemplate="content">
-              <div class="tournament-details">
+              <div class="space-y-6 p-6">
                 <!-- Tournament Information -->
-                <div class="info-section mb-4">
-                  <div class="grid">
-                    <div class="col-12 md:col-4">
-                      <div class="info-card">
-                        <div class="info-label">{{ 'TOURNAMENT.EVENT_TYPE' | translate }}</div>
-                        <div class="info-value">{{ history.subEvent.eventType | translate }}</div>
+                <div class="grid gap-4">
+                  <div class="col-12 md:col-4">
+                    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 border border-surface-200 dark:border-surface-700">
+                      <div class="text-surface-500 dark:text-surface-400 text-sm font-medium mb-1">
+                        {{ 'TOURNAMENT.EVENT_TYPE' | translate }}
+                      </div>
+                      <div class="text-surface-900 dark:text-surface-50 font-semibold">
+                        {{ history.subEvent?.eventType | translate }}
                       </div>
                     </div>
-                    <div class="col-12 md:col-4">
-                      <div class="info-card">
-                        <div class="info-label">{{ 'TOURNAMENT.GAME_TYPE' | translate }}</div>
-                        <div class="info-value">{{ history.subEvent.gameType | translate }}</div>
+                  </div>
+                  <div class="col-12 md:col-4">
+                    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 border border-surface-200 dark:border-surface-700">
+                      <div class="text-surface-500 dark:text-surface-400 text-sm font-medium mb-1">
+                        {{ 'TOURNAMENT.GAME_TYPE' | translate }}
+                      </div>
+                      <div class="text-surface-900 dark:text-surface-50 font-semibold">
+                        {{ history.subEvent?.gameType | translate }}
                       </div>
                     </div>
-                    <div class="col-12 md:col-4">
-                      <div class="info-card">
-                        <div class="info-label">{{ 'TOURNAMENT.LEVEL' | translate }}</div>
-                        <div class="info-value">{{ history.subEvent.level | translate }}</div>
+                  </div>
+                  <div class="col-12 md:col-4">
+                    <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 border border-surface-200 dark:border-surface-700">
+                      <div class="text-surface-500 dark:text-surface-400 text-sm font-medium mb-1">
+                        {{ 'TOURNAMENT.LEVEL' | translate }}
+                      </div>
+                      <div class="text-surface-900 dark:text-surface-50 font-semibold">
+                        {{ history.subEvent?.level }}
                       </div>
                     </div>
                   </div>
@@ -96,33 +98,37 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
 
                 <!-- Partner Information -->
                 @if (getPartner(history)) {
-                  <div class="partner-section mb-4">
-                    <h4 class="section-title">
-                      <i class="pi pi-users mr-2"></i>
-                      {{ 'TOURNAMENT.PARTNER' | translate }}
-                    </h4>
-                    <div class="partner-info">
+                  <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center gap-3 mb-2">
+                      <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                        <i class="pi pi-users text-blue-600 dark:text-blue-400"></i>
+                      </div>
+                      <h4 class="text-surface-900 dark:text-surface-50 font-semibold m-0">
+                        {{ 'TOURNAMENT.PARTNER' | translate }}
+                      </h4>
+                    </div>
+                    <div class="text-surface-700 dark:text-surface-300 font-medium pl-11">
                       {{ getPartner(history) }}
                     </div>
                   </div>
                 }
 
                 <!-- Games List -->
-                @if (history.games.length > 0) {
+                @if ((history.games?.length ?? 0) > 0) {
                   <div class="games-section">
                     <h4 class="section-title">
                       <i class="pi pi-list mr-2"></i>
-                      {{ 'TOURNAMENT.GAMES' | translate }} ({{ history.games.length }})
+                      {{ 'TOURNAMENT.GAMES' | translate }} ({{ history.games?.length ?? 0 }})
                     </h4>
-                    
+
                     <p-table
-                      [value]="history.games"
+                      [value]="history.games!"
                       [sortField]="'playedAt'"
                       [sortOrder]="1"
                       sortMode="single"
                       responsiveLayout="scroll"
-                      styleClass="p-datatable-sm games-table">
-                      
+                      styleClass="p-datatable-sm games-table"
+                    >
                       <ng-template pTemplate="header">
                         <tr>
                           <th>{{ 'GAME.DATE' | translate }}</th>
@@ -139,8 +145,8 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                           <td>
                             @if (game.playedAt) {
                               <div class="date-info">
-                                <div class="date">{{ game.playedAt | date:'shortDate' }}</div>
-                                <div class="time">{{ game.playedAt | date:'shortTime' }}</div>
+                                <div class="date">{{ game.playedAt | date: 'shortDate' }}</div>
+                                <div class="time">{{ game.playedAt | date: 'shortTime' }}</div>
                               </div>
                             } @else {
                               <span class="text-color-secondary">{{ 'COMMON.NOT_PLAYED' | translate }}</span>
@@ -192,23 +198,12 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                           <td>
                             @if (game.status === 'completed') {
                               @if (isPlayerWinner(game)) {
-                                <p-tag 
-                                  [value]="'GAME.WON' | translate"
-                                  severity="success"
-                                  icon="pi pi-check">
-                                </p-tag>
+                                <p-tag [value]="'GAME.WON' | translate" severity="success" icon="pi pi-check"> </p-tag>
                               } @else {
-                                <p-tag 
-                                  [value]="'GAME.LOST' | translate"
-                                  severity="danger"
-                                  icon="pi pi-times">
-                                </p-tag>
+                                <p-tag [value]="'GAME.LOST' | translate" severity="danger" icon="pi pi-times"> </p-tag>
                               }
                             } @else {
-                              <p-tag 
-                                [value]="game.status | translate"
-                                severity="warning">
-                              </p-tag>
+                              <p-tag [value]="game.status | translate" severity="warning"> </p-tag>
                             }
                           </td>
                         </tr>
@@ -229,12 +224,13 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                     icon="pi pi-external-link"
                     [routerLink]="getTournamentLink(history)"
                     severity="secondary"
-                    size="small">
+                    size="small"
+                  >
                   </p-button>
                 </div>
               </div>
             </ng-template>
-          </p-accordionTab>
+          </p-accordion-panel>
         }
       </p-accordion>
 
@@ -248,7 +244,6 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
       }
     </div>
   `,
-  styleUrl: './player-tournament-history.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerTournamentHistoryComponent {
@@ -258,31 +253,27 @@ export class PlayerTournamentHistoryComponent {
   getPartner(history: PlayerTournamentHistory): string | null {
     const entry = history.entry;
     const playerId = this.playerId();
-    
-    if (entry.player1Id === playerId && entry.player2) {
+
+    if (entry?.player1Id === playerId && entry.player2) {
       return entry.player2.fullName;
-    } else if (entry.player2Id === playerId && entry.player1) {
+    } else if (entry?.player2Id === playerId && entry.player1) {
       return entry.player1.fullName;
     }
-    
+
     return null;
   }
 
   getWonGames(history: PlayerTournamentHistory): number {
-    return history.games.filter(game => this.isPlayerWinner(game)).length;
+    return history.games?.filter((game) => this.isPlayerWinner(game)).length || 0;
   }
 
   getLostGames(history: PlayerTournamentHistory): number {
-    return history.games.filter(game => 
-      game.status === 'completed' && !this.isPlayerWinner(game)
-    ).length;
+    return history.games?.filter((game) => game.status === 'NORMAL' && !this.isPlayerWinner(game)).length || 0;
   }
 
   getPlayerTeam(game: any): number | null {
     const playerId = this.playerId();
-    const membership = game.gamePlayerMemberships?.find(
-      (gpm: any) => gpm.gamePlayer.id === playerId
-    );
+    const membership = game.gamePlayerMemberships?.find((gpm: any) => gpm.gamePlayer.id === playerId);
     return membership ? membership.team : null;
   }
 
@@ -297,7 +288,7 @@ export class PlayerTournamentHistoryComponent {
       ?.filter((gpm: any) => gpm.gamePlayer.id !== playerId)
       .map((gpm: any) => gpm.gamePlayer.fullName)
       .join(' & ');
-    
+
     return opponents || 'Unknown';
   }
 
@@ -329,13 +320,13 @@ export class PlayerTournamentHistoryComponent {
   }
 
   getTournamentLink(history: PlayerTournamentHistory): string[] {
-    return [
-      '/tournament',
-      history.tournament.slug,
-      'sub-events',
-      history.subEvent.id,
-      'draws',
-      history.draw.id
-    ];
+    // Guard against missing tournament or slug to avoid 'possibly undefined' and 'string | undefined' errors.
+    const tournament = history.tournament;
+    if (!tournament || !tournament.slug) {
+      // Fallback: link to tournament list if specific tournament slug is unavailable.
+      return ['/tournament'];
+    }
+
+    return ['/tournament', tournament.slug, 'sub-events', String(history.subEvent?.id), 'draws', String(history.draw?.id)];
   }
 }

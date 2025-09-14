@@ -15,137 +15,215 @@ import { type PlayerStatistics } from '../page-player-detail.service';
     ProgressBarModule,
   ],
   template: `
-    <div class="statistics-grid">
+    <div class="grid gap-4">
       <!-- Games Statistics -->
-      <p-card class="stat-card games-card">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="pi pi-play-circle"></i>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">{{ 'STATISTICS.TOTAL_GAMES' | translate }}</div>
-            <div class="stat-value">{{ statistics().totalGames }}</div>
-            <div class="stat-breakdown">
-              <div class="breakdown-item win">
-                <span class="breakdown-label">{{ 'STATISTICS.WON' | translate }}</span>
-                <span class="breakdown-value">{{ statistics().gamesWon }}</span>
+      <div class="col-12 md:col-6 lg:col-3">
+        <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+              <i class="pi pi-play-circle text-blue-600 dark:text-blue-400 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">
+                {{ 'STATISTICS.TOTAL_GAMES' | translate }}
               </div>
-              <div class="breakdown-item loss">
-                <span class="breakdown-label">{{ 'STATISTICS.LOST' | translate }}</span>
-                <span class="breakdown-value">{{ statistics().gamesLost }}</span>
+              <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                {{ statistics().totalGames }}
               </div>
             </div>
           </div>
-        </div>
-        <div class="stat-progress">
-          <p-progressBar 
-            [value]="statistics().winRate" 
-            [style]="{ height: '0.5rem' }"
-            [showValue]="false">
-          </p-progressBar>
-          <div class="progress-label">
-            {{ statistics().winRate | number:'1.1-1' }}% {{ 'STATISTICS.WIN_RATE' | translate }}
+          
+          <div class="grid gap-2 mb-4">
+            <div class="col-6 flex justify-between items-center">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.WON' | translate }}
+              </span>
+              <span class="text-green-600 dark:text-green-400 font-semibold">
+                {{ statistics().gamesWon }}
+              </span>
+            </div>
+            <div class="col-6 flex justify-between items-center">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.LOST' | translate }}
+              </span>
+              <span class="text-red-600 dark:text-red-400 font-semibold">
+                {{ statistics().gamesLost }}
+              </span>
+            </div>
           </div>
-        </div>
-      </p-card>
+
+          <div class="mt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.WIN_RATE' | translate }}
+              </span>
+              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
+                {{ statistics().winRate | number:'1.1-1' }}%
+              </span>
+            </div>
+            <p-progressBar 
+              [value]="statistics().winRate" 
+              [style]="{ height: '8px' }"
+              [showValue]="false"
+              styleClass="border-0">
+            </p-progressBar>
+          </div>
+        </p-card>
+      </div>
 
       <!-- Sets Statistics -->
-      <p-card class="stat-card sets-card">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="pi pi-chart-bar"></i>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">{{ 'STATISTICS.SETS' | translate }}</div>
-            <div class="stat-value">{{ statistics().setsWon + statistics().setsLost }}</div>
-            <div class="stat-breakdown">
-              <div class="breakdown-item win">
-                <span class="breakdown-label">{{ 'STATISTICS.WON' | translate }}</span>
-                <span class="breakdown-value">{{ statistics().setsWon }}</span>
+      <div class="col-12 md:col-6 lg:col-3">
+        <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+              <i class="pi pi-chart-bar text-green-600 dark:text-green-400 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">
+                {{ 'STATISTICS.SETS' | translate }}
               </div>
-              <div class="breakdown-item loss">
-                <span class="breakdown-label">{{ 'STATISTICS.LOST' | translate }}</span>
-                <span class="breakdown-value">{{ statistics().setsLost }}</span>
+              <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                {{ statistics().setsWon + statistics().setsLost }}
               </div>
             </div>
           </div>
-        </div>
-        <div class="stat-progress">
-          <p-progressBar 
-            [value]="statistics().setWinRate" 
-            [style]="{ height: '0.5rem' }"
-            [showValue]="false"
-            styleClass="sets-progress">
-          </p-progressBar>
-          <div class="progress-label">
-            {{ statistics().setWinRate | number:'1.1-1' }}% {{ 'STATISTICS.WIN_RATE' | translate }}
+          
+          <div class="grid gap-2 mb-4">
+            <div class="col-6 flex justify-between items-center">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.WON' | translate }}
+              </span>
+              <span class="text-green-600 dark:text-green-400 font-semibold">
+                {{ statistics().setsWon }}
+              </span>
+            </div>
+            <div class="col-6 flex justify-between items-center">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.LOST' | translate }}
+              </span>
+              <span class="text-red-600 dark:text-red-400 font-semibold">
+                {{ statistics().setsLost }}
+              </span>
+            </div>
           </div>
-        </div>
-      </p-card>
+
+          <div class="mt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.WIN_RATE' | translate }}
+              </span>
+              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
+                {{ statistics().setWinRate | number:'1.1-1' }}%
+              </span>
+            </div>
+            <p-progressBar 
+              [value]="statistics().setWinRate" 
+              [style]="{ height: '8px' }"
+              [showValue]="false"
+              styleClass="border-0">
+            </p-progressBar>
+          </div>
+        </p-card>
+      </div>
 
       <!-- Points Statistics -->
-      <p-card class="stat-card points-card">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="pi pi-star"></i>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">{{ 'STATISTICS.POINTS' | translate }}</div>
-            <div class="stat-value">{{ statistics().pointsWon + statistics().pointsLost }}</div>
-            <div class="stat-breakdown">
-              <div class="breakdown-item win">
-                <span class="breakdown-label">{{ 'STATISTICS.WON' | translate }}</span>
-                <span class="breakdown-value">{{ statistics().pointsWon }}</span>
+      <div class="col-12 md:col-6 lg:col-3">
+        <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
+              <i class="pi pi-star text-yellow-600 dark:text-yellow-400 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">
+                {{ 'STATISTICS.POINTS' | translate }}
               </div>
-              <div class="breakdown-item loss">
-                <span class="breakdown-label">{{ 'STATISTICS.LOST' | translate }}</span>
-                <span class="breakdown-value">{{ statistics().pointsLost }}</span>
+              <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                {{ statistics().pointsWon + statistics().pointsLost }}
               </div>
             </div>
           </div>
-        </div>
-        <div class="stat-progress">
-          <p-progressBar 
-            [value]="statistics().pointWinRate" 
-            [style]="{ height: '0.5rem' }"
-            [showValue]="false"
-            styleClass="points-progress">
-          </p-progressBar>
-          <div class="progress-label">
-            {{ statistics().pointWinRate | number:'1.1-1' }}% {{ 'STATISTICS.WIN_RATE' | translate }}
+          
+          <div class="grid gap-2 mb-4">
+            <div class="col-6 flex justify-between items-center">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.WON' | translate }}
+              </span>
+              <span class="text-green-600 dark:text-green-400 font-semibold">
+                {{ statistics().pointsWon }}
+              </span>
+            </div>
+            <div class="col-6 flex justify-between items-center">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.LOST' | translate }}
+              </span>
+              <span class="text-red-600 dark:text-red-400 font-semibold">
+                {{ statistics().pointsLost }}
+              </span>
+            </div>
           </div>
-        </div>
-      </p-card>
+
+          <div class="mt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-surface-600 dark:text-surface-400 text-sm">
+                {{ 'STATISTICS.WIN_RATE' | translate }}
+              </span>
+              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
+                {{ statistics().pointWinRate | number:'1.1-1' }}%
+              </span>
+            </div>
+            <p-progressBar 
+              [value]="statistics().pointWinRate" 
+              [style]="{ height: '8px' }"
+              [showValue]="false"
+              styleClass="border-0">
+            </p-progressBar>
+          </div>
+        </p-card>
+      </div>
 
       <!-- Tournament Statistics -->
-      <p-card class="stat-card tournaments-card">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="pi pi-trophy"></i>
-          </div>
-          <div class="stat-details">
-            <div class="stat-label">{{ 'STATISTICS.TOURNAMENTS' | translate }}</div>
-            <div class="stat-value">{{ statistics().tournaments }}</div>
-            <div class="stat-breakdown">
-              @if (statistics().bestPosition > 0) {
-                <div class="breakdown-item best">
-                  <span class="breakdown-label">{{ 'STATISTICS.BEST_POSITION' | translate }}</span>
-                  <span class="breakdown-value">#{{ statistics().bestPosition }}</span>
-                </div>
-              }
-              @if (statistics().avgPosition > 0) {
-                <div class="breakdown-item avg">
-                  <span class="breakdown-label">{{ 'STATISTICS.AVG_POSITION' | translate }}</span>
-                  <span class="breakdown-value">#{{ statistics().avgPosition | number:'1.0-0' }}</span>
-                </div>
-              }
+      <div class="col-12 md:col-6 lg:col-3">
+        <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+              <i class="pi pi-trophy text-purple-600 dark:text-purple-400 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">
+                {{ 'STATISTICS.TOURNAMENTS' | translate }}
+              </div>
+              <div class="text-surface-900 dark:text-surface-50 text-2xl font-bold">
+                {{ statistics().tournaments }}
+              </div>
             </div>
           </div>
-        </div>
-      </p-card>
+          
+          <div class="space-y-2">
+            @if (statistics().bestPosition > 0) {
+              <div class="flex justify-between items-center">
+                <span class="text-surface-600 dark:text-surface-400 text-sm">
+                  {{ 'STATISTICS.BEST_POSITION' | translate }}
+                </span>
+                <span class="text-surface-900 dark:text-surface-50 font-semibold">
+                  #{{ statistics().bestPosition }}
+                </span>
+              </div>
+            }
+            @if (statistics().avgPosition > 0) {
+              <div class="flex justify-between items-center">
+                <span class="text-surface-600 dark:text-surface-400 text-sm">
+                  {{ 'STATISTICS.AVG_POSITION' | translate }}
+                </span>
+                <span class="text-surface-900 dark:text-surface-50 font-semibold">
+                  #{{ statistics().avgPosition | number:'1.0-0' }}
+                </span>
+              </div>
+            }
+          </div>
+        </p-card>
+      </div>
     </div>
   `,
-  styleUrl: './player-statistics-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerStatisticsCardComponent {
