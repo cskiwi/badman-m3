@@ -20,7 +20,7 @@ export interface DayjsProviderOptions {
  * @example
  * ```typescript
  * // app.config.ts
- * import { provideDayjs } from '@app/frontend-utils/services';
+ * import { provideDayjs } from '@oncall/utils/services';
  * 
  * export const appConfig: ApplicationConfig = {
  *   providers: [

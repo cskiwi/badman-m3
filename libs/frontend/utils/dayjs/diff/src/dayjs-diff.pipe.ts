@@ -1,5 +1,6 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsQUnitType } from '@app/frontend-utils';
+import { Pipe, PipeTransform } from '@angular/core';
+import { DayjsInput, DayjsQUnitType } from '@oncall/utils';
+import dayjs from 'dayjs';
 
 @Pipe({
   name: 'dayjsDiff',
@@ -7,7 +8,6 @@ import { DayjsService, DayjsInput, DayjsQUnitType } from '@app/frontend-utils';
   standalone: true
 })
 export class DayjsDiffPipe implements PipeTransform {
-  private readonly dayjsService = inject(DayjsService);
 
   transform(
     value: DayjsInput,
@@ -19,13 +19,13 @@ export class DayjsDiffPipe implements PipeTransform {
       return null;
     }
 
-    const date1 = this.dayjsService.parse(value);
-    const date2 = this.dayjsService.parse(compareValue);
-    
-    if (!this.dayjsService.isValid(date1) || !this.dayjsService.isValid(date2)) {
+    const date1 = dayjs(value);
+    const date2 = dayjs(compareValue);
+
+    if (!date1.isValid() || !date2.isValid()) {
       return null;
     }
 
-    return this.dayjsService.diff(date1, date2, unit, precise);
+    return date1.diff(date2, unit, precise);
   }
 }

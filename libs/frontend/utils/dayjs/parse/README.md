@@ -1,3 +1,3 @@
-# @app/frontend-utils/dayjs/parse
+# @oncall/utils/dayjs/parse
 
-Secondary entry point of `@app/frontend-utils`. It can be used by importing from `@app/frontend-utils/dayjs/parse`.
+Secondary entry point of `@oncall/utils`. It can be used by importing from `@oncall/utils/dayjs/parse`.

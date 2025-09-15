@@ -1,3 +1,3 @@
-# @app/frontend-utils/dayjs/timezone
+# @oncall/utils/dayjs/timezone
 
-Secondary entry point of `@app/frontend-utils`. It can be used by importing from `@app/frontend-utils/dayjs/timezone`.
+Secondary entry point of `@oncall/utils`. It can be used by importing from `@oncall/utils/dayjs/timezone`.

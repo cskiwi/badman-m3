@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsFormat, DayjsLocale } from '@app/frontend-utils';
+import { DayjsService, DayjsInput, DayjsFormat, DayjsLocale } from '@oncall/utils';
 
 @Pipe({
   name: 'dayjsDate',
@@ -20,7 +20,7 @@ export class DayjsDatePipe implements PipeTransform {
 
     const date = this.dayjsService.parse(value);
     
-    if (!this.dayjsService.isValid(date)) {
+    if (!date.isValid()) {
       return '';
     }
 

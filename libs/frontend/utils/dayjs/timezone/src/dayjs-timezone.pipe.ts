@@ -1,11 +1,15 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsTimeZone } from '@app/frontend-utils';
+import { DayjsService, DayjsInput, DayjsTimeZone } from '@oncall/utils';
 import { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(timezone);
 
 @Pipe({
   name: 'dayjsTimezone',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsTimezonePipe implements PipeTransform {
   private readonly dayjsService = inject(DayjsService);
@@ -16,11 +20,11 @@ export class DayjsTimezonePipe implements PipeTransform {
     }
 
     const date = this.dayjsService.parse(value);
-    
-    if (!this.dayjsService.isValid(date)) {
+
+    if (!date.isValid()) {
       return null;
     }
 
-    return this.dayjsService.tz(date, timezone);
+    return date.tz(timezone);
   }
 }
