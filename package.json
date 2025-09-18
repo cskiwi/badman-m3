@@ -127,7 +127,7 @@
     "@tailwindcss/postcss": "^4.1.13",
     "@types/express": "5.0.3",
     "@types/jest": "30.0.0",
-    "@types/node": "~24.0.15",
+    "@types/node": "~24.5.0",
     "@typescript-eslint/parser": "8.40.0",
     "@typescript-eslint/utils": "8.40.0",
     "angular-eslint": "20.2.0",
@@ -163,7 +163,7 @@
     "node": "24"
   },
   "volta": {
-    "node": "24.4.0"
+    "node": "24.8.0"
   },
   "browser": {
     "node:fs": false,
