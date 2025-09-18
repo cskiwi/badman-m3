@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DayjsInput } from '@oncall/utils';
+import { DayjsInput } from '@app/frontend-utils';
 import dayjs from 'dayjs';
 
 @Pipe({

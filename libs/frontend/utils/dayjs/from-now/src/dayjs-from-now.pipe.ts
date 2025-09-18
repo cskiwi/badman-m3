@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput } from '@oncall/utils';
+import { DayjsService, DayjsInput } from '@app/frontend-utils';
 
 @Pipe({
   name: 'dayjsFromNow',

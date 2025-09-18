@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { Dayjs } from 'dayjs';
-import { DayjsInput, DayjsService } from '@oncall/utils';
+import { DayjsInput, DayjsService } from '@app/frontend-utils';
 
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';

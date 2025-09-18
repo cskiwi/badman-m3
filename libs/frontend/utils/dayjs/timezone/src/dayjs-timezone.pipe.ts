@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsTimeZone } from '@oncall/utils';
+import { DayjsService, DayjsInput, DayjsTimeZone } from '@app/frontend-utils';
 import { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';

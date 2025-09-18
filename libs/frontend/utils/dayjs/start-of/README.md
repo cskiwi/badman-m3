@@ -1,3 +1,3 @@
-# @oncall/utils/dayjs/start-of
+# @app/frontend-utils/dayjs/start-of
 
-Secondary entry point of `@oncall/utils`. It can be used by importing from `@oncall/utils/dayjs/start-of`.
+Secondary entry point of `@app/frontend-utils`. It can be used by importing from `@app/frontend-utils/dayjs/start-of`.

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DayjsInput, DayjsFormat } from '@oncall/utils';
+import { DayjsInput, DayjsFormat } from '@app/frontend-utils';
 import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 

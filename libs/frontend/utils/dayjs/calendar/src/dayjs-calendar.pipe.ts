@@ -3,7 +3,7 @@ import {
   DayjsService,
   DayjsInput,
   DayjsCalendarReference,
-} from '@oncall/utils';
+} from '@app/frontend-utils';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 
