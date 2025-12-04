@@ -21,23 +21,22 @@ export class SyncDashboardService {
   // Computed hierarchical jobs that automatically rebuild when flat list changes
   private _hierarchicalJobs = computed(() => {
     const flatJobs = this._flatJobsList();
+    const expansionStates = this._expansionStates();
+
     if (flatJobs.length === 0) {
       return [];
     }
 
-    // Build hierarchy from flat list
-    const hierarchicalJobs = this.buildJobHierarchy([...flatJobs]);
-
-    // Restore expansion states
-    this.restoreExpansionStates(hierarchicalJobs, this._expansionStates());
+    // Build hierarchy from flat list, passing expansion states to apply during build
+    const hierarchicalJobs = this.buildJobHierarchy([...flatJobs], expansionStates);
 
     // Limit to 20 root jobs for display
-    return hierarchicalJobs.slice(0, 20);
+    return hierarchicalJobs;
   });
 
   // Filter form for reactive updates
   filter = new FormGroup({
-    jobsLimit: new FormControl<number>(10000),
+    jobsLimit: new FormControl<number | undefined>(undefined),
     jobsStatus: new FormControl<string | null>(null),
     refreshInterval: new FormControl<number>(30000), // 30 seconds default (not used with WebSocket)
   });
@@ -80,7 +79,7 @@ export class SyncDashboardService {
       // Load recent jobs
       const filterValues = this.filterSignal();
       const syncJobsResult = await lastValueFrom(
-        this.syncService.getRecentJobs(filterValues?.jobsLimit || 10000, filterValues?.jobsStatus || undefined),
+        this.syncService.getRecentJobs(filterValues?.jobsLimit, filterValues?.jobsStatus || undefined),
       );
 
       if (syncJobsResult) {
@@ -163,33 +162,46 @@ export class SyncDashboardService {
 
   /**
    * Build hierarchical structure from flat job array based on parent-child relationships
+   * @param jobs - Flat array of jobs to build hierarchy from
+   * @param expansionStates - Map of job IDs to their expansion states
    */
-  private buildJobHierarchy(jobs: SyncJob[]): SyncJob[] {
+  private buildJobHierarchy(jobs: SyncJob[], expansionStates: Map<string, boolean>): SyncJob[] {
     const jobMap = new Map<string, SyncJob>();
     const rootJobs: SyncJob[] = [];
+    let attachedToParent = 0;
+    let orphanedJobs = 0;
 
-    // First pass: clone jobs and initialize children arrays
+    // First pass: clone jobs and initialize children arrays, build lookup map
+    // Also apply expansion states during cloning
     const clonedJobs = jobs.map((job) => ({
       ...job,
-      children: [],
-      expanded: false,
+      children: [] as SyncJob[],
+      expanded: expansionStates.get(job.id) ?? false,
     }));
     clonedJobs.forEach((job) => {
       jobMap.set(job.id, job);
     });
 
-    // Second pass: build hierarchy
+    // Second pass: build hierarchy by attaching children to parents
     clonedJobs.forEach((job) => {
       if (job.parentId && jobMap.has(job.parentId)) {
+        // Job has a parent that exists in our list - attach it
         const parent = jobMap.get(job.parentId);
         if (parent && Array.isArray(parent.children)) {
           parent.children.push(job);
+          attachedToParent++;
         }
       } else {
-        // Root level job (no parent or parent not found)
+        // True root level job (no parentId) OR orphaned job (parentId but parent not in list)
+        // Both go to roots - orphans will be reattached when their parent arrives
+        if (job.parentId) {
+          orphanedJobs++;
+        }
         rootJobs.push(job);
       }
     });
+
+    console.log(`[SyncDashboard] Hierarchy built: ${rootJobs.length} root jobs, ${attachedToParent} attached to parents, ${orphanedJobs} orphaned (parent not found)`);
 
     // Sort children within each parent by timestamp (newest first)
     this.sortJobsRecursively(rootJobs);
@@ -220,6 +232,19 @@ export class SyncDashboardService {
    * Set initial jobs from GraphQL query
    */
   private setInitialJobs(jobs: SyncJob[]): void {
+    // Debug: Log incoming jobs to understand parentId distribution
+    const jobsWithParent = jobs.filter((j) => j.parentId);
+    const jobsWithoutParent = jobs.filter((j) => !j.parentId);
+    console.log(`[SyncDashboard] Initial jobs loaded: ${jobs.length} total, ${jobsWithParent.length} with parentId, ${jobsWithoutParent.length} without parentId`);
+
+    // Debug: Check if parent jobs exist for children
+    const parentIds = new Set(jobsWithParent.map((j) => j.parentId));
+    const jobIds = new Set(jobs.map((j) => j.id));
+    const missingParents = [...parentIds].filter((pid) => pid && !jobIds.has(pid));
+    if (missingParents.length > 0) {
+      console.warn(`[SyncDashboard] ${missingParents.length} child jobs have parents not in the list:`, missingParents.slice(0, 5));
+    }
+
     // Preserve expansion states from existing jobs
     const currentHierarchy = this._hierarchicalJobs();
     const expansionState = new Map<string, boolean>();
@@ -293,21 +318,6 @@ export class SyncDashboardService {
       }
       if (job.children && job.children.length > 0) {
         this.collectExpansionStates(job.children, stateMap);
-      }
-    });
-  }
-
-  /**
-   * Restore expansion states to rebuilt hierarchy
-   */
-  private restoreExpansionStates(jobs: SyncJob[], stateMap: Map<string, boolean>): void {
-    jobs.forEach((job) => {
-      const savedState = stateMap.get(job.id);
-      if (savedState !== undefined) {
-        job.expanded = savedState;
-      }
-      if (job.children && job.children.length > 0) {
-        this.restoreExpansionStates(job.children, stateMap);
       }
     });
   }

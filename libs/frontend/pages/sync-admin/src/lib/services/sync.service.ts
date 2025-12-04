@@ -117,7 +117,7 @@ export class SyncApiService {
   /**
    * Get recent jobs from the queue
    */
-  getRecentJobs(limit = 20, status?: string): Observable<SyncJob[]> {
+  getRecentJobs(limit?: number | null, status?: string): Observable<SyncJob[]> {
     console.log('Fetching recent sync jobs with limit:', limit, 'and status:', status);
 
     return this.apollo

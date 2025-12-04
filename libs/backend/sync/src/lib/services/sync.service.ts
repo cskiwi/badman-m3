@@ -117,28 +117,34 @@ export class SyncService {
 
   /**
    * Get individual queue statistics by name
+   * Uses count methods for better performance during active syncs
    */
   async getQueueStatsByName() {
     const queueMap = this.getQueueMap();
-    const stats: Record<string, { waiting: number; active: number; completed: number; failed: number }> = {};
 
-    for (const [queueName, queue] of Object.entries(queueMap)) {
-      const waiting = await queue.getWaiting();
-      const prioritized = await queue.getPrioritized();
-      const active = await queue.getActive();
-      // Use getCompletedCount() and getFailedCount() to get actual counts
-      const completedCount = await queue.getCompletedCount();
-      const failedCount = await queue.getFailedCount();
+    // Fetch stats for all queues in parallel
+    const statsEntries = await Promise.all(
+      Object.entries(queueMap).map(async ([queueName, queue]) => {
+        const [waitingCount, activeCount, completedCount, failedCount] = await Promise.all([
+          queue.getWaitingCount(),
+          queue.getActiveCount(),
+          queue.getCompletedCount(),
+          queue.getFailedCount(),
+        ]);
 
-      stats[queueName] = {
-        waiting: waiting.length + prioritized.length, // Include prioritized jobs in waiting count
-        active: active.length,
-        completed: completedCount,
-        failed: failedCount,
-      };
-    }
+        return [
+          queueName,
+          {
+            waiting: waitingCount,
+            active: activeCount,
+            completed: completedCount,
+            failed: failedCount,
+          },
+        ] as const;
+      }),
+    );
 
-    return stats;
+    return Object.fromEntries(statsEntries);
   }
 
   /**
@@ -503,76 +509,86 @@ export class SyncService {
 
   /**
    * Get queue statistics
+   * Uses count methods for better performance during active syncs
    */
   async getQueueStats() {
-    // Get stats from all queues and aggregate them
+    // Get stats from all queues in parallel for better performance
     const queues = this.getAllQueues();
 
-    let totalWaiting = 0;
-    let totalActive = 0;
-    let totalCompleted = 0;
-    let totalFailed = 0;
+    const statsPromises = queues.map(async (queue) => {
+      // Use count methods instead of fetching all jobs - much faster
+      const [waitingCount, activeCount, completedCount, failedCount] = await Promise.all([
+        queue.getWaitingCount(),
+        queue.getActiveCount(),
+        queue.getCompletedCount(),
+        queue.getFailedCount(),
+      ]);
 
-    for (const queue of queues) {
-      const waiting = await queue.getWaiting();
-      const prioritized = await queue.getPrioritized();
-      const active = await queue.getActive();
-      // Use getCompletedCount() to get the actual count instead of length of limited array
-      const completedCount = await queue.getCompletedCount();
-      const failedCount = await queue.getFailedCount();
+      return {
+        waiting: waitingCount,
+        active: activeCount,
+        completed: completedCount,
+        failed: failedCount,
+      };
+    });
 
-      totalWaiting += waiting.length + prioritized.length; // Include prioritized jobs in waiting count
-      totalActive += active.length;
-      totalCompleted += completedCount;
-      totalFailed += failedCount;
-    }
+    const allStats = await Promise.all(statsPromises);
 
-    return {
-      waiting: totalWaiting,
-      active: totalActive,
-      completed: totalCompleted,
-      failed: totalFailed,
-    };
+    // Aggregate stats from all queues
+    return allStats.reduce(
+      (total, stats) => ({
+        waiting: total.waiting + stats.waiting,
+        active: total.active + stats.active,
+        completed: total.completed + stats.completed,
+        failed: total.failed + stats.failed,
+      }),
+      { waiting: 0, active: 0, completed: 0, failed: 0 },
+    );
   }
 
   /**
    * Get recent jobs from the queue
    */
-  async getRecentJobs(limit = 20, status?: string) {
+  async getRecentJobs(limit?: number | null, status?: string) {
     const jobs = [];
     const queues = this.getAllQueues();
 
     for (const queue of queues) {
       if (!status || status === 'active') {
         const activeJobs = await queue.getActive();
-        jobs.push(...activeJobs.slice(0, limit));
+        jobs.push(...activeJobs.slice(0, limit ?? activeJobs.length));
+
+        // Also get jobs waiting for children - these are parent jobs that spawned child jobs
+        // They're technically "active" but in a waiting-children state
+        const waitingChildrenJobs = await queue.getWaitingChildren();
+        jobs.push(...waitingChildrenJobs.slice(0, limit ?? waitingChildrenJobs.length));
       }
 
       if (!status || status === 'waiting') {
         // Get regular waiting jobs
         const waitingJobs = await queue.getWaiting();
-        jobs.push(...waitingJobs.slice(0, limit));
+        jobs.push(...waitingJobs.slice(0, limit ?? waitingJobs.length));
 
         // Also get prioritized jobs (these are jobs with priority > 0)
         const prioritizedJobs = await queue.getPrioritized();
-        jobs.push(...prioritizedJobs.slice(0, limit));
+        jobs.push(...prioritizedJobs.slice(0, limit ?? prioritizedJobs.length));
       }
 
       if (!status || status === 'completed') {
         const completedJobs = await queue.getCompleted();
-        jobs.push(...completedJobs.slice(0, limit));
+        jobs.push(...completedJobs.slice(0, limit ?? completedJobs.length));
       }
 
       if (!status || status === 'failed') {
         const failedJobs = await queue.getFailed();
-        jobs.push(...failedJobs.slice(0, limit));
+        jobs.push(...failedJobs.slice(0, limit ?? failedJobs.length));
       }
     }
 
     // Sort by timestamp (most recent first)
     jobs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-    const result = jobs.slice(0, limit).map((job) => ({
+    const result = jobs.slice(0, limit ?? jobs.length).map((job) => ({
       id: job.id,
       name: job.name,
       data: job.data,

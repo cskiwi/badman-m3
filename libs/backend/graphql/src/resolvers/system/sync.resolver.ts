@@ -138,7 +138,7 @@ export class SyncResolver {
   @UseGuards(PermGuard)
   async syncJobs(
     @User() user: Player,
-    @Args('limit', { type: () => Int, nullable: true, defaultValue: 20 }) limit: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
     @Args('status', { type: () => String, nullable: true }) status?: string,
   ): Promise<SyncJob[]> {
     if (!(await user.hasAnyPermission(['change:job']))) {

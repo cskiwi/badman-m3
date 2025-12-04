@@ -43,17 +43,18 @@
 
   <!-- Recent Jobs -->
   <p-card [header]="'all.sync.dashboard.jobs.title' | translate">
-    <p-table 
-      [value]="displayJobs()" 
-      [loading]="loadingJobs()" 
-      [paginator]="true" 
-      [rows]="20" 
+    <p-table
+      [value]="displayJobs()"
+      [loading]="loadingJobs()"
+      [paginator]="true"
+      [rows]="20"
       responsiveLayout="scroll"
       class="hierarchical-job-table"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th class="expansion-column"></th> <!-- Expansion column -->
+          <th class="expansion-column"></th>
+          <!-- Expansion column -->
           <th>{{ 'all.sync.dashboard.jobs.jobId' | translate }}</th>
           <th>{{ 'all.sync.dashboard.jobs.type' | translate }}</th>
           <th>{{ 'all.sync.dashboard.jobs.status' | translate }}</th>
@@ -68,10 +69,10 @@
           <td class="expansion-column">
             <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
               @if (hasChildren(job)) {
-                <p-button 
-                  [icon]="getExpansionIcon(job)" 
-                  size="small" 
-                  severity="secondary" 
+                <p-button
+                  [icon]="getExpansionIcon(job)"
+                  size="small"
+                  severity="secondary"
                   [text]="true"
                   (onClick)="toggleJobExpansion(job)"
                   class="expansion-button"
@@ -92,9 +93,7 @@
             <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
               {{ getJobDisplayName(job) }}
               @if (hasChildren(job)) {
-                <span class="children-count ml-2">
-                  ({{ job.children?.length }} {{ 'all.sync.dashboard.jobs.children' | translate }})
-                </span>
+                <span class="children-count ml-2"> ({{ job.children?.length }} {{ 'all.sync.dashboard.jobs.children' | translate }}) </span>
               }
             </div>
           </td>
@@ -119,20 +118,20 @@
           </td>
           <td>
             <div class="flex gap-1">
-              <p-button 
-                icon="pi pi-eye" 
-                size="small" 
-                severity="secondary" 
-                [text]="true" 
+              <p-button
+                icon="pi pi-eye"
+                size="small"
+                severity="secondary"
+                [text]="true"
                 (onClick)="viewJobDetails(job)"
                 [pTooltip]="'all.sync.dashboard.jobs.viewDetails' | translate"
               />
               @if (job.status === 'failed') {
-                <p-button 
-                  icon="pi pi-refresh" 
-                  size="small" 
-                  severity="warn" 
-                  [text]="true" 
+                <p-button
+                  icon="pi pi-refresh"
+                  size="small"
+                  severity="warn"
+                  [text]="true"
                   (onClick)="retryJob(job)"
                   [pTooltip]="'all.sync.dashboard.jobs.retry' | translate"
                 />
@@ -158,8 +157,18 @@
         <i class="pi pi-search"></i>
         <input pInputText [placeholder]="'all.sync.dashboard.tournaments.search' | translate" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
       </span>
-      <p-select [options]="typeOptions()" [(ngModel)]="selectedType" [placeholder]="'all.sync.dashboard.tournaments.filters.allTypes' | translate" (onChange)="onFilterChange()" />
-      <p-select [options]="statusOptions()" [(ngModel)]="selectedStatus" [placeholder]="'all.sync.dashboard.tournaments.filters.allStatuses' | translate" (onChange)="onFilterChange()" />
+      <p-select
+        [options]="typeOptions()"
+        [(ngModel)]="selectedType"
+        [placeholder]="'all.sync.dashboard.tournaments.filters.allTypes' | translate"
+        (onChange)="onFilterChange()"
+      />
+      <p-select
+        [options]="statusOptions()"
+        [(ngModel)]="selectedStatus"
+        [placeholder]="'all.sync.dashboard.tournaments.filters.allStatuses' | translate"
+        (onChange)="onFilterChange()"
+      />
     </div>
 
     <p-table [value]="filteredTournaments()" [loading]="loadingTournaments()" [paginator]="true" [rows]="20" responsiveLayout="scroll">
@@ -210,7 +219,7 @@
                 [config]="{
                   tournamentCode: tournament.visualCode,
                   tournamentName: tournament.name,
-                  level: 'tournament'
+                  level: 'tournament',
                 }"
               />
               <p-button
@@ -318,7 +327,6 @@
 
   <!-- Toast Messages -->
   <p-toast />
-
 
   <!-- Confirmation Dialog -->
   <p-confirmDialog />

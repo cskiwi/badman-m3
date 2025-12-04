@@ -6,11 +6,22 @@ import ShortUniqueId from 'short-unique-id';
  *
  * This utility function checks various places where parent information
  * might be stored in BullMQ jobs and extracts the parent ID if found.
+ * BullMQ stores parent info differently depending on how the job is retrieved.
  */
 export function extractParentId(job: Job | any): string | undefined {
-  // First check if the job has a parent property directly
+  // First check if the job has a parent property directly (set during job creation)
   if (job.parent?.id) {
     return job.parent.id;
+  }
+
+  // Check parentKey - this is how BullMQ stores parent info on retrieved jobs
+  // parentKey format is "queue:jobId" e.g. "bull:competition-event-queue:abc123"
+  if (job.parentKey) {
+    const parts = job.parentKey.split(':');
+    if (parts.length >= 2) {
+      // Return the last part which is the parent job ID
+      return parts[parts.length - 1];
+    }
   }
 
   // Check if the opts contains parent information
