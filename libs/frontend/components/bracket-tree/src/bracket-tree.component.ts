@@ -65,15 +65,12 @@ export class BracketTree {
       roundsMap.get(roundName)?.push(game);
     });
 
-    // Define all possible tournament rounds from largest to smallest
-    const allPossibleRounds = ['R256', 'R128', 'R64', 'R32', 'R16', 'R8', 'QF', 'SF', 'Final'];
-
-    // Get all round keys and sort them by expected tournament progression
+    // Get all round keys and sort them dynamically by tournament progression
+    // (larger round numbers = earlier in tournament, special rounds at the end)
     const roundKeys = Array.from(roundsMap.keys()).sort((a, b) => {
-      const orderA = allPossibleRounds.indexOf(a);
-      const orderB = allPossibleRounds.indexOf(b);
-      // If not in the predefined list, put at the end
-      return (orderA === -1 ? 999 : orderA) - (orderB === -1 ? 999 : orderB);
+      const orderA = this.getRoundSortOrder(a);
+      const orderB = this.getRoundSortOrder(b);
+      return orderA - orderB;
     });
 
     if (roundKeys.length === 0) return null;
@@ -223,33 +220,61 @@ export class BracketTree {
   }
 
   private formatRoundName(roundKey: string): string {
-    switch (roundKey) {
-      case 'R256':
-        return 'Round of 256';
-      case 'R128':
-        return 'Round of 128';
-      case 'R64':
-        return 'Round of 64';
-      case 'R32':
-        return 'Round of 32';
-      case 'R16':
-        return 'Round of 16';
-      case 'R8':
-        return 'Round of 8';
-      case 'QF':
-        return 'Quarter Final';
-      case 'SF':
-        return 'Semi Final';
-      case 'Final':
-        return 'Final';
-      default:
-        // Handle any Rxx format dynamically
-        if (roundKey.startsWith('R') && /^R\d+$/.test(roundKey)) {
-          const number = roundKey.substring(1);
-          return `Round of ${number}`;
-        }
-        return roundKey;
+    // Handle "Rxx" format dynamically (e.g., R256, R128, R64, R32, R16, R8, R4, R2)
+    if (/^R\d+$/i.test(roundKey)) {
+      const number = parseInt(roundKey.substring(1), 10);
+      // R2 is the final, R4 is semi-final, R8 is quarter-final
+      if (number === 2) return 'Final';
+      if (number === 4) return 'Semi Final';
+      if (number === 8) return 'Quarter Final';
+      return `Round of ${number}`;
     }
+
+    // Handle special named rounds
+    const upperKey = roundKey.toUpperCase();
+    if (upperKey === 'QF' || upperKey === 'QUARTERFINAL' || upperKey === 'QUARTER-FINAL') {
+      return 'Quarter Final';
+    }
+    if (upperKey === 'SF' || upperKey === 'SEMIFINAL' || upperKey === 'SEMI-FINAL') {
+      return 'Semi Final';
+    }
+    if (upperKey === 'FINAL' || upperKey === 'F') {
+      return 'Final';
+    }
+
+    return roundKey;
+  }
+
+  /**
+   * Get a numeric sort order for a round key.
+   * Lower numbers = earlier in tournament (more games), higher = later (fewer games).
+   * This allows dynamic sorting of any round format.
+   */
+  private getRoundSortOrder(roundKey: string): number {
+    // Handle "Rxx" format - larger numbers come first (R256 before R128 before R64, etc.)
+    if (/^R\d+$/i.test(roundKey)) {
+      const number = parseInt(roundKey.substring(1), 10);
+      // Invert so larger numbers get lower sort order (come first)
+      // Use a large base to ensure Rxx rounds sort before special rounds
+      return 10000 - number;
+    }
+
+    // Handle special named rounds - these come after Rxx rounds
+    const upperKey = roundKey.toUpperCase();
+
+    // Quarter Final = 8 remaining, Semi Final = 4 remaining, Final = 2 remaining
+    if (upperKey === 'QF' || upperKey === 'QUARTERFINAL' || upperKey === 'QUARTER-FINAL') {
+      return 10000 - 8; // Same as R8
+    }
+    if (upperKey === 'SF' || upperKey === 'SEMIFINAL' || upperKey === 'SEMI-FINAL') {
+      return 10000 - 4; // Same as R4
+    }
+    if (upperKey === 'FINAL' || upperKey === 'F') {
+      return 10000 - 2; // Same as R2
+    }
+
+    // Unknown rounds go to the very end
+    return 99999;
   }
 
   getTeamName(game: Game, teamNumber: 1 | 2): string {
