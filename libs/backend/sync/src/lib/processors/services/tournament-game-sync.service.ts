@@ -51,6 +51,11 @@ export class TournamentGameSyncService {
       // Process matches with progress tracking
       await this.processMatches(matches, tournamentCode, updateProgress);
 
+      // Verify all games are persisted with memberships before completing
+      if (drawCode) {
+        await this.verifyGamesPersistedWithMemberships(tournamentCode, drawCode);
+      }
+
       this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -159,6 +164,9 @@ export class TournamentGameSyncService {
       },
     });
 
+    // Declare game variable to hold either existing or new game
+    let game: Game;
+
     if (existingGame) {
       existingGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
       existingGame.gameType = this.mapGameTypeToEnum(match.EventName);
@@ -178,6 +186,7 @@ export class TournamentGameSyncService {
       existingGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
       existingGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
       await existingGame.save();
+      game = existingGame;
     } else {
       const newGame = new Game();
       newGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
@@ -200,6 +209,7 @@ export class TournamentGameSyncService {
       newGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
       newGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
       await newGame.save();
+      game = newGame;
     }
 
     // Ensure players exist in our system
@@ -216,20 +226,8 @@ export class TournamentGameSyncService {
       await this.createOrUpdatePlayer(match.Team2.Player2);
     }
 
-    // Create game player memberships
-    const game =
-      existingGame ||
-      (await Game.findOne({
-        where: {
-          visualCode: match.Code,
-          linkId: linkId,
-          linkType: 'tournament',
-        },
-      }));
-
-    if (game) {
-      await this.createGamePlayerMemberships(game, match);
-    }
+    // Create game player memberships using the direct game reference
+    await this.createGamePlayerMemberships(game, match);
   }
 
   private mapGameTypeToEnum(eventName: string): GameType {
@@ -377,6 +375,62 @@ export class TournamentGameSyncService {
     }
     if (match.Team2?.Player2) {
       await createMembershipForPlayer(match.Team2.Player2, 2, 2);
+    }
+  }
+
+  /**
+   * Verify that all games for the draw are persisted with their memberships
+   * This ensures the entry sync job can properly find and process the games
+   */
+  private async verifyGamesPersistedWithMemberships(tournamentCode: string, drawCode: string): Promise<void> {
+    this.logger.debug(`Verifying games persisted with memberships for draw ${drawCode}`);
+
+    try {
+      // Find the tournament event first to get proper context
+      const tournamentEvent = await TournamentEventModel.findOne({
+        where: { visualCode: tournamentCode },
+      });
+
+      if (!tournamentEvent) {
+        this.logger.warn(`Tournament with code ${tournamentCode} not found during verification`);
+        return;
+      }
+
+      // Find the draw with tournament context
+      const draw = await TournamentDrawModel.findOne({
+        where: {
+          visualCode: drawCode,
+          tournamentSubEvent: {
+            tournamentEvent: {
+              id: tournamentEvent.id,
+            },
+          },
+        },
+        relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
+      });
+
+      if (!draw) {
+        this.logger.warn(`Draw with code ${drawCode} not found for tournament ${tournamentCode} during verification`);
+        return;
+      }
+
+      // Verify games are queryable with memberships
+      const games = await Game.find({
+        where: { linkId: draw.id, linkType: 'tournament' },
+        relations: ['gamePlayerMemberships', 'gamePlayerMemberships.gamePlayer'],
+      });
+
+      const gamesWithMemberships = games.filter((g) => g.gamePlayerMemberships && g.gamePlayerMemberships.length > 0);
+
+      this.logger.log(`Verified ${games.length} games persisted for draw ${drawCode}, ${gamesWithMemberships.length} have memberships`);
+
+      if (games.length > 0 && gamesWithMemberships.length === 0) {
+        this.logger.warn(`WARNING: ${games.length} games found but NONE have memberships - entry sync may fail!`);
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Failed to verify games persisted: ${errorMessage}`, error);
+      // Don't throw - this is just verification
     }
   }
 }
