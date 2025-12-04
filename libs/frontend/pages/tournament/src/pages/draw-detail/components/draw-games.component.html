@@ -2,7 +2,7 @@
   <h3 class="mb-4 text-xl font-semibold text-primary">Games</h3>
 
   @if (games().length === 0) {
-    <p class="text-center italic p-8 bg-surface-ground rounded-lg text-surface-500">No games found for this draw</p>
+    <p class="text-center italic p-8 bg-surface-ground rounded-lg text-muted-color">No games found for this draw</p>
   } @else {
     <div class="space-y-3">
       @for (game of games(); track game.id) {
@@ -11,12 +11,12 @@
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
               @if (game.playedAt) {
-                <span class="bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-300 px-2 py-1 rounded text-xs font-medium">
+                <span class="bg-emphasis text-muted-color px-2 py-1 rounded text-xs font-medium">
                   {{ game.playedAt | date: 'short' }}
                 </span>
               }
               @if (game.round) {
-                <span class="bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200 px-2 py-1 rounded text-xs font-medium">
+                <span class="bg-primary-50 text-primary px-2 py-1 rounded text-xs font-medium">
                   {{ game.round }}
                 </span>
               }
@@ -25,7 +25,7 @@
               @if (!isBye(game) && game.winner) {
                 <div class="flex items-center gap-1">
                   <i class="pi pi-trophy text-yellow-500 text-xs"></i>
-                  <span class="text-xs text-surface-600 dark:text-surface-300"> Team {{ game.winner }} </span>
+                  <span class="text-xs text-muted-color"> Team {{ game.winner }} </span>
                 </div>
               }
             </div>
@@ -48,7 +48,7 @@
                       <div
                         class="flex items-center gap-2 min-w-0"
                         [class]="
-                          getWinnerIndicator(game, teamIndex) ? 'text-green-700 dark:text-green-400 font-semibold' : 'text-surface-700 dark:text-surface-100'
+                          getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'
                         "
                       >
                         @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
@@ -65,7 +65,7 @@
                           <span class="truncate text-sm">{{ membership.gamePlayer.fullName || 'Unknown' }}</span>
                         }
                         @if (getPlayerLevel(membership, game.gameType); as level) {
-                          <span class="bg-secondary-100 dark:bg-secondary-900/50 text-secondary-800 dark:text-secondary-200 px-1.5 py-0.5 rounded text-xs font-medium">
+                          <span class="bg-highlight text-color px-1.5 py-0.5 rounded text-xs font-medium">
                             {{ level }}
                           </span>
                         }
@@ -90,7 +90,7 @@
                   <div class="flex gap-1">
                     @for (setScore of setScores.team1Sets; track $index) {
                       <span
-                        class="bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200 px-2 py-1 rounded text-xs font-semibold"
+                        class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold"
                       >
                         {{ setScore }}
                       </span>
@@ -101,7 +101,7 @@
                   <div class="flex gap-1">
                     @for (setScore of setScores.team2Sets; track $index) {
                       <span
-                        class="bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200 px-2 py-1 rounded text-xs font-semibold"
+                        class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold"
                       >
                         {{ setScore }}
                       </span>

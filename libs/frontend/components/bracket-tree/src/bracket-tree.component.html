@@ -33,14 +33,18 @@
                       <span class="flex-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                         @let teamName1 = getTeamName(game, 1);
                         @if (isBye(game) && !teamName1) {
-                          <span class="text-surface-500 italic">Bye</span>
+                          <span class="text-muted-color italic">Bye</span>
                         } @else if (teamName1) {
                           {{ teamName1 }}
                         } @else {
-                          <span class="text-surface-500 italic">TBD</span>
+                          <span class="text-muted-color italic">TBD</span>
                         }
                       </span>
-                      <span class="text-sm font-mono font-bold ml-3 text-surface-700">
+                      <span
+                        class="text-sm font-mono font-bold ml-3 min-w-8 text-right"
+                        [class.text-primary]="game.winner === 1"
+                        [class.text-color]="game.winner !== 1"
+                      >
                         {{ getTeamScore(game, 1) || '—' }}
                       </span>
                     </div>
@@ -55,14 +59,18 @@
                       <span class="flex-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                         @let teamName2 = getTeamName(game, 2);
                         @if (isBye(game) && !teamName2) {
-                          <span class="text-surface-500 italic">Bye</span>
+                          <span class="text-muted-color italic">Bye</span>
                         } @else if (teamName2) {
                           {{ teamName2 }}
                         } @else {
-                          \n <span class="text-surface-500 italic">TBD</span>
+                          <span class="text-muted-color italic">TBD</span>
                         }
                       </span>
-                      <span class="text-sm font-mono font-bold ml-3 text-surface-700">
+                      <span
+                        class="text-sm font-mono font-bold ml-3 min-w-8 text-right"
+                        [class.text-primary]="game.winner === 2"
+                        [class.text-color]="game.winner !== 2"
+                      >
                         {{ getTeamScore(game, 2) || '—' }}
                       </span>
                     </div>
