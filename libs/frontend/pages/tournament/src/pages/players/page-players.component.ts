@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { Player } from '@app/models';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { PlayersService } from './page-players.service';
@@ -19,7 +19,6 @@ import { PlayersService } from './page-players.service';
   selector: 'app-page-players',
   standalone: true,
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     FormsModule,
     TranslateModule,
@@ -32,11 +31,11 @@ import { PlayersService } from './page-players.service';
     SelectModule,
     TagModule,
     TooltipModule,
-    PageHeaderComponent
+    PageHeaderComponent,
   ],
   templateUrl: './page-players.component.html',
   styleUrl: './page-players.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePlayersComponent {
   private readonly router = inject(Router);
@@ -59,13 +58,13 @@ export class PagePlayersComponent {
   genderOptions = [
     { label: 'All Genders', value: undefined },
     { label: 'Male', value: 'M' },
-    { label: 'Female', value: 'F' }
+    { label: 'Female', value: 'F' },
   ];
 
   competitionPlayerOptions = [
     { label: 'All Players', value: undefined },
     { label: 'Competition Players Only', value: true },
-    { label: 'Recreational Players Only', value: false }
+    { label: 'Recreational Players Only', value: false },
   ];
 
   // Computed properties
@@ -90,24 +89,24 @@ export class PagePlayersComponent {
 
   getPlayerAge(player: Player): number | null {
     if (!player.birthDate) return null;
-    
+
     const today = new Date();
     const birthDate = new Date(player.birthDate);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   }
 
   getRankingColor(rating: number | null) {
     if (!rating) return 'info';
-    
+
     if (rating >= 1500) return 'success';
-    if (rating >= 1200) return 'primary';
+    if (rating >= 1200) return 'info';
     if (rating >= 900) return 'warn';
     return 'secondary';
   }

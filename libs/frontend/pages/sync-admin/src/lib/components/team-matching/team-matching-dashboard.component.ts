@@ -625,14 +625,14 @@ export class TeamMatchingDashboardComponent {
     this.selectedTeam.set(null);
   }
 
-  getMatchTypeSeverity(matchType: string): string {
+  getMatchTypeSeverity(matchType: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     switch (matchType) {
       case 'automatic_high_confidence':
         return 'success';
       case 'automatic_medium_confidence':
         return 'info';
       case 'manual':
-        return 'warning';
+        return 'warn';
       default:
         return 'secondary';
     }

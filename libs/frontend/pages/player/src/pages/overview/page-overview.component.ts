@@ -119,10 +119,10 @@ export class PageOverviewComponent {
     this.dataService.clearFilters();
   }
 
-  getRankingColor(ranking: number): string {
+  getRankingColor(ranking: number): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     if (ranking <= 100) return 'success';
     if (ranking <= 500) return 'info';
-    if (ranking <= 1000) return 'warning';
+    if (ranking <= 1000) return 'warn';
     return 'secondary';
   }
 

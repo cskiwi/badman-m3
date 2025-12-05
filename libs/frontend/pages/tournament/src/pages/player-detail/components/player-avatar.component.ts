@@ -31,7 +31,7 @@ import { type Player } from '@app/models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerAvatarComponent {
-  player = input.required<Player | null>();
+  player = input.required<Player | null | undefined>();
   size = input<'normal' | 'large' | 'xlarge'>('large');
   imageUrl = input<string | null>(null);
 

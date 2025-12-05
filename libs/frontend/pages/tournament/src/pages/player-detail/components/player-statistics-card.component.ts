@@ -1,4 +1,4 @@
-import { DecimalPipe, PercentPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
@@ -7,13 +7,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
 
 @Component({
   selector: 'app-player-statistics-card',
-  imports: [
-    DecimalPipe,
-    PercentPipe,
-    TranslateModule,
-    CardModule,
-    ProgressBarModule,
-  ],
+  imports: [DecimalPipe, TranslateModule, CardModule, ProgressBarModule],
   template: `
     <div class="grid gap-4">
       <!-- Games Statistics -->
@@ -32,7 +26,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </div>
             </div>
           </div>
-          
+
           <div class="grid gap-2 mb-4">
             <div class="col-6 flex justify-between items-center">
               <span class="text-surface-600 dark:text-surface-400 text-sm">
@@ -57,16 +51,9 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               <span class="text-surface-600 dark:text-surface-400 text-sm">
                 {{ 'STATISTICS.WIN_RATE' | translate }}
               </span>
-              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
-                {{ statistics().winRate | number:'1.1-1' }}%
-              </span>
+              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ statistics().winRate | number: '1.1-1' }}% </span>
             </div>
-            <p-progressBar 
-              [value]="statistics().winRate" 
-              [style]="{ height: '8px' }"
-              [showValue]="false"
-              styleClass="border-0">
-            </p-progressBar>
+            <p-progressBar [value]="statistics().winRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0"> </p-progressBar>
           </div>
         </p-card>
       </div>
@@ -87,7 +74,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </div>
             </div>
           </div>
-          
+
           <div class="grid gap-2 mb-4">
             <div class="col-6 flex justify-between items-center">
               <span class="text-surface-600 dark:text-surface-400 text-sm">
@@ -112,16 +99,9 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               <span class="text-surface-600 dark:text-surface-400 text-sm">
                 {{ 'STATISTICS.WIN_RATE' | translate }}
               </span>
-              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
-                {{ statistics().setWinRate | number:'1.1-1' }}%
-              </span>
+              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ statistics().setWinRate | number: '1.1-1' }}% </span>
             </div>
-            <p-progressBar 
-              [value]="statistics().setWinRate" 
-              [style]="{ height: '8px' }"
-              [showValue]="false"
-              styleClass="border-0">
-            </p-progressBar>
+            <p-progressBar [value]="statistics().setWinRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0"> </p-progressBar>
           </div>
         </p-card>
       </div>
@@ -142,7 +122,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </div>
             </div>
           </div>
-          
+
           <div class="grid gap-2 mb-4">
             <div class="col-6 flex justify-between items-center">
               <span class="text-surface-600 dark:text-surface-400 text-sm">
@@ -167,16 +147,9 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               <span class="text-surface-600 dark:text-surface-400 text-sm">
                 {{ 'STATISTICS.WIN_RATE' | translate }}
               </span>
-              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
-                {{ statistics().pointWinRate | number:'1.1-1' }}%
-              </span>
+              <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ statistics().pointWinRate | number: '1.1-1' }}% </span>
             </div>
-            <p-progressBar 
-              [value]="statistics().pointWinRate" 
-              [style]="{ height: '8px' }"
-              [showValue]="false"
-              styleClass="border-0">
-            </p-progressBar>
+            <p-progressBar [value]="statistics().pointWinRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0"> </p-progressBar>
           </div>
         </p-card>
       </div>
@@ -197,16 +170,14 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </div>
             </div>
           </div>
-          
+
           <div class="space-y-2">
             @if (statistics().bestPosition > 0) {
               <div class="flex justify-between items-center">
                 <span class="text-surface-600 dark:text-surface-400 text-sm">
                   {{ 'STATISTICS.BEST_POSITION' | translate }}
                 </span>
-                <span class="text-surface-900 dark:text-surface-50 font-semibold">
-                  #{{ statistics().bestPosition }}
-                </span>
+                <span class="text-surface-900 dark:text-surface-50 font-semibold"> #{{ statistics().bestPosition }} </span>
               </div>
             }
             @if (statistics().avgPosition > 0) {
@@ -214,9 +185,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
                 <span class="text-surface-600 dark:text-surface-400 text-sm">
                   {{ 'STATISTICS.AVG_POSITION' | translate }}
                 </span>
-                <span class="text-surface-900 dark:text-surface-50 font-semibold">
-                  #{{ statistics().avgPosition | number:'1.0-0' }}
-                </span>
+                <span class="text-surface-900 dark:text-surface-50 font-semibold"> #{{ statistics().avgPosition | number: '1.0-0' }} </span>
               </div>
             }
           </div>

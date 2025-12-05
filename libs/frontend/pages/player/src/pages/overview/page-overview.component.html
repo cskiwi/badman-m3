@@ -178,7 +178,7 @@
                 }
 
                 @if (!isPlayerActive(player)) {
-                  <p-tag value="Inactive" severity="warning" class="text-xs mt-2" />
+                  <p-tag value="Inactive" severity="warn" class="text-xs mt-2" />
                 }
               </div>
             </ng-template>
@@ -218,7 +218,7 @@
                         <p-tag [value]="'#' + getPlayerRanking(player)" [severity]="getRankingColor(getPlayerRanking(player)!)" class="text-xs" />
                       }
                       @if (!isPlayerActive(player)) {
-                        <p-tag value="Inactive" severity="warning" class="text-xs" />
+                        <p-tag value="Inactive" severity="warn" class="text-xs" />
                       }
                     </div>
 

@@ -146,7 +146,7 @@ import { type Game } from '@app/models';
                 } @else {
                   <p-tag 
                     [value]="game.status | translate"
-                    severity="warning">
+                    severity="warn">
                   </p-tag>
                 }
               </div>
@@ -213,7 +213,7 @@ export class PlayerGamesTableComponent {
     const membership = game.gamePlayerMemberships?.find(
       gpm => gpm.gamePlayer.id === playerId
     );
-    return membership ? membership.team : null;
+    return membership?.team ?? null;
   }
 
   isPlayerWinner(game: Game): boolean {

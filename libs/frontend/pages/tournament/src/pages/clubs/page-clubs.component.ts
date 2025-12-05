@@ -8,7 +8,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { CardModule } from 'primeng/card';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -25,7 +25,7 @@ import { DividerModule } from 'primeng/divider';
     InputTextModule,
     FloatLabelModule,
     CardModule,
-    DropdownModule,
+    SelectModule,
     InputNumberModule,
     ButtonModule,
     TagModule,

@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType, InputType, PartialType, OmitType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -153,12 +153,3 @@ export class Team extends BaseEntity {
   @OneToMany(() => Entry, (entry) => entry.team)
   declare entries?: Relation<Entry[]>;
 }
-
-@InputType()
-export class TeamUpdateInput extends PartialType(
-  OmitType(Team, ['createdAt', 'updatedAt', 'captain', 'teamPlayerMemberships', 'club'] as const),
-  InputType,
-) {}
-
-@InputType()
-export class TeamNewInput extends PartialType(OmitType(TeamUpdateInput, ['id'] as const), InputType) {}

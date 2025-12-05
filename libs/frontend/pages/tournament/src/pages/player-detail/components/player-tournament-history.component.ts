@@ -203,7 +203,7 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                                 <p-tag [value]="'GAME.LOST' | translate" severity="danger" icon="pi pi-times"> </p-tag>
                               }
                             } @else {
-                              <p-tag [value]="game.status | translate" severity="warning"> </p-tag>
+                              <p-tag [value]="game.status | translate" severity="warn"> </p-tag>
                             }
                           </td>
                         </tr>

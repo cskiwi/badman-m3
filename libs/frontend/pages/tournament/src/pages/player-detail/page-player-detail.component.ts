@@ -1,36 +1,29 @@
-import { DatePipe, DecimalPipe, SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { Router, RouterModule } from '@angular/router';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
-import { CardModule } from 'primeng/card';
-import { TabsModule } from 'primeng/tabs';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
-import { PlayerDetailService } from './page-player-detail.service';
-import { PlayerStatisticsCardComponent } from './components/player-statistics-card.component';
-import { PlayerGamesTableComponent } from './components/player-games-table.component';
-import { PlayerTournamentHistoryComponent } from './components/player-tournament-history.component';
-import { PlayerPerformanceChartComponent } from './components/player-performance-chart.component';
-import { PlayerHeadToHeadComponent } from './components/player-head-to-head.component';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TabsModule } from 'primeng/tabs';
 import { PlayerAvatarComponent } from './components/player-avatar.component';
+import { PlayerGamesTableComponent } from './components/player-games-table.component';
+import { PlayerHeadToHeadComponent } from './components/player-head-to-head.component';
+import { PlayerPerformanceChartComponent } from './components/player-performance-chart.component';
+import { PlayerStatisticsCardComponent } from './components/player-statistics-card.component';
+import { PlayerTournamentHistoryComponent } from './components/player-tournament-history.component';
+import { PlayerDetailService } from './page-player-detail.service';
 
 @Component({
   selector: 'app-page-player-detail',
   imports: [
-    DatePipe,
-    DecimalPipe,
-    SlicePipe,
     ProgressBarModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     ButtonModule,
     SkeletonModule,
     CardModule,
@@ -47,7 +40,7 @@ import { PlayerAvatarComponent } from './components/player-avatar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePlayerDetailComponent {
-  private readonly dataService = new PlayerDetailService();
+  readonly dataService = new PlayerDetailService();
   private readonly seoService = inject(SeoService);
   private readonly router = inject(Router);
   readonly playerId = injectParams('playerId');

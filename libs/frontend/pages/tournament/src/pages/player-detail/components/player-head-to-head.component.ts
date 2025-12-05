@@ -1,18 +1,18 @@
-import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { type Game } from '@app/models';
+import { GameStatus } from '@app/models-enum';
 import { TranslateModule } from '@ngx-translate/core';
-import { CardModule } from 'primeng/card';
-import { DataViewModule } from 'primeng/dataview';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DataViewModule } from 'primeng/dataview';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
-import { type Game } from '@app/models';
-import { GameStatus } from '../../../../../../../models/enum/src';
 
 interface HeadToHeadRecord {
   opponentId: string;
@@ -36,7 +36,6 @@ interface HeadToHeadRecord {
   selector: 'app-player-head-to-head',
   imports: [
     DecimalPipe,
-    PercentPipe,
     RouterModule,
     TranslateModule,
     CardModule,
@@ -135,7 +134,7 @@ interface HeadToHeadRecord {
                     {{ 'PLAYER.BEST_OPPONENT' | translate }}
                   </div>
                   <div class="text-surface-900 dark:text-surface-50 text-sm font-semibold truncate max-w-32">
-                    {{ bestOpponent()?.opponentName || 'N/A' }}
+                    {{ bestOpponent().opponentName || 'N/A' }}
                   </div>
                 </div>
               </div>

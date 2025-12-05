@@ -17,29 +17,29 @@
         
         <!-- State Filter -->
         <p-floatlabel>
-          <p-dropdown 
-            [formControl]="state" 
-            [options]="stateOptions" 
-            optionLabel="label" 
+          <p-select
+            [formControl]="state"
+            [options]="stateOptions"
+            optionLabel="label"
             optionValue="value"
             [showClear]="true"
             id="state-filter"
             class="w-full">
-          </p-dropdown>
+          </p-select>
           <label for="state-filter">{{ 'all.clubs.state' | translate }}</label>
         </p-floatlabel>
-        
+
         <!-- Country Filter -->
         <p-floatlabel>
-          <p-dropdown 
-            [formControl]="country" 
-            [options]="countryOptions" 
-            optionLabel="label" 
+          <p-select
+            [formControl]="country"
+            [options]="countryOptions"
+            optionLabel="label"
             optionValue="value"
             [showClear]="true"
             id="country-filter"
             class="w-full">
-          </p-dropdown>
+          </p-select>
           <label for="country-filter">{{ 'all.clubs.country' | translate }}</label>
         </p-floatlabel>
       </div>
@@ -204,7 +204,7 @@
             
             <ng-template pTemplate="footer">
               <div class="club-footer flex justify-between items-center">
-                <span class="text-xs text-muted-foreground">ID: {{ club.clubId || 'N/A' }}</span>
+                <span class="text-xs text-muted-foreground">ID: {{ club.id || 'N/A' }}</span>
                 <i class="pi pi-arrow-right text-primary"></i>
               </div>
             </ng-template>

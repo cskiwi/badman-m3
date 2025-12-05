@@ -109,7 +109,7 @@ export class PageDetailComponent {
       style: { maxWidth: '800px' }
     });
 
-    ref.onClose.subscribe((updatedTeam: Team | undefined) => {
+    ref?.onClose.subscribe((updatedTeam: Team | undefined) => {
       if (updatedTeam) {
         // Optionally refresh the data or update local state
         this.dataService.filter.get('clubId')?.setValue(this.clubId());

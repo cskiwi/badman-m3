@@ -1,5 +1,6 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { Player, Team, TeamPlayerMembership, TeamUpdateInput } from '@app/models';
+import { Player, Team, TeamPlayerMembership } from '@app/models';
+import { TeamUpdateInput } from '../inputs';
 import { TeamMembershipType } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';

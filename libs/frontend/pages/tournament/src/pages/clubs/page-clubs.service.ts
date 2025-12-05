@@ -2,12 +2,22 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Club } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { debounceTime } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 
-interface ClubWithStats extends Club {
+export interface ClubWithStats {
+  id: string;
+  name: string;
+  fullName?: string;
+  abbreviation?: string;
+  slug?: string;
+  state?: string;
+  country?: string;
+  teamName?: string;
+  contactCompetition?: string;
+  clubPlayerMemberships?: { id: string; player: { id: string } }[];
+  teams?: { id: string; name: string }[];
   playersCount?: number;
   teamsCount?: number;
 }

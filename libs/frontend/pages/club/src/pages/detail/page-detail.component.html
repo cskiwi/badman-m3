@@ -81,31 +81,31 @@
           </ng-template>
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="text-center p-4">
-              <div class="text-3xl font-bold text-green-600 mb-2">{{ clubStatsComputed()?.totalGames || 0 }}</div>
+              <div class="text-3xl font-bold text-green-600 mb-2">{{ clubStatsComputed().totalGames || 0 }}</div>
               <div class="text-sm text-surface-600">{{ 'all.club.totalGames' | translate }}</div>
               <div class="mt-2">
                 <p-progressbar [value]="100" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
               </div>
             </div>
             <div class="text-center p-4">
-              <div class="text-3xl font-bold text-blue-600 mb-2">{{ clubStatsComputed()?.winRate || 0 }}%</div>
+              <div class="text-3xl font-bold text-blue-600 mb-2">{{ clubStatsComputed().winRate || 0 }}%</div>
               <div class="text-sm text-surface-600">{{ 'all.club.winRate' | translate }}</div>
               <div class="mt-2">
-                <p-progressbar [value]="clubStatsComputed()?.winRate || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
+                <p-progressbar [value]="clubStatsComputed().winRate || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
               </div>
             </div>
             <div class="text-center p-4">
-              <div class="text-3xl font-bold text-purple-600 mb-2">{{ clubStatsComputed()?.averageRanking || 'N/A' }}</div>
+              <div class="text-3xl font-bold text-purple-600 mb-2">{{ clubStatsComputed().averageRanking || 'N/A' }}</div>
               <div class="text-sm text-surface-600">{{ 'all.club.avgRanking' | translate }}</div>
               <div class="mt-2">
-                <p-progressbar [value]="clubStatsComputed()?.rankingProgress || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
+                <p-progressbar [value]="clubStatsComputed().rankingProgress || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
               </div>
             </div>
             <div class="text-center p-4">
-              <div class="text-3xl font-bold text-orange-600 mb-2">{{ clubStatsComputed()?.activeSeasons || 0 }}</div>
+              <div class="text-3xl font-bold text-orange-600 mb-2">{{ clubStatsComputed().activeSeasons || 0 }}</div>
               <div class="text-sm text-surface-600">{{ 'all.club.activeSeasons' | translate }}</div>
               <div class="mt-2">
-                <p-progressbar [value]="clubStatsComputed()?.seasonProgress || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
+                <p-progressbar [value]="clubStatsComputed().seasonProgress || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
               </div>
             </div>
           </div>
@@ -210,11 +210,11 @@
                       <!-- Team Stats -->
                       <div class="grid grid-cols-3 gap-2 text-center">
                         <div class="p-2 bg-highlight rounded">
-                          <div class="font-bold text-primary-600">{{ getTeamStats(team.id)?.gamesPlayed || 0 }}</div>
+                          <div class="font-bold text-primary-600">{{ getTeamStats(team.id).gamesPlayed || 0 }}</div>
                           <div class="text-xs text-surface-600">{{ 'all.team.games' | translate }}</div>
                         </div>
                         <div class="p-2 bg-highlight rounded">
-                          <div class="font-bold text-green-600">{{ getTeamStats(team.id)?.wins || 0 }}</div>
+                          <div class="font-bold text-green-600">{{ getTeamStats(team.id).wins || 0 }}</div>
                           <div class="text-xs text-surface-600">{{ 'all.team.wins' | translate }}</div>
                         </div>
                         <div class="p-2 bg-highlight rounded">
@@ -352,11 +352,11 @@
                 <td>
                   <div class="flex gap-2">
                     <div class="text-center">
-                      <div class="font-bold text-primary-600">{{ getPlayerStats(player.id)?.gamesPlayed || 0 }}</div>
+                      <div class="font-bold text-primary-600">{{ getPlayerStats(player.id).gamesPlayed || 0 }}</div>
                       <div class="text-xs text-surface-500">{{ 'all.player.games' | translate }}</div>
                     </div>
                     <div class="text-center">
-                      <div class="font-bold text-green-600">{{ getPlayerStats(player.id)?.wins || 0 }}</div>
+                      <div class="font-bold text-green-600">{{ getPlayerStats(player.id).wins || 0 }}</div>
                       <div class="text-xs text-surface-500">{{ 'all.player.wins' | translate }}</div>
                     </div>
                     <div class="text-center">
