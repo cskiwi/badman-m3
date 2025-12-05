@@ -103,12 +103,12 @@ export class PagePlayersComponent {
     return age;
   }
 
-  getRankingColor(rating: number | null): string {
+  getRankingColor(rating: number | null) {
     if (!rating) return 'info';
     
     if (rating >= 1500) return 'success';
     if (rating >= 1200) return 'primary';
-    if (rating >= 900) return 'warning';
+    if (rating >= 900) return 'warn';
     return 'secondary';
   }
 

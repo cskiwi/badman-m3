@@ -31,7 +31,7 @@
     "@angular/service-worker": "20.2.4",
     "@angular/ssr": "20.2.2",
     "@apollo/client": "^3.14.0",
-    "@apollo/server": "^4.12.2",
+    "@apollo/server": "^5.0.0",
     "@auth0/auth0-angular": "^2.2.3",
     "@nestjs/apollo": "^13.1.0",
     "@nestjs/axios": "^4.0.1",

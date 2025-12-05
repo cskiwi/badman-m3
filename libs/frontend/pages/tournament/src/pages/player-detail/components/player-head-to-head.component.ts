@@ -1,4 +1,4 @@
-import { DecimalPipe, PercentPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -12,6 +12,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { TooltipModule } from 'primeng/tooltip';
 import { type Game } from '@app/models';
+import { GameStatus } from '../../../../../../../models/enum/src';
 
 interface HeadToHeadRecord {
   opponentId: string;
@@ -47,6 +48,7 @@ interface HeadToHeadRecord {
     AvatarModule,
     BadgeModule,
     TooltipModule,
+    DatePipe,
   ],
   template: `
     <div class="head-to-head-container">
@@ -144,43 +146,33 @@ interface HeadToHeadRecord {
 
       <!-- Head-to-Head Records -->
       @if (headToHeadRecords().length > 0) {
-        <p-dataView 
-          [value]="headToHeadRecords()" 
-          layout="grid"
-          [paginator]="true"
-          [rows]="12"
-          [sortField]="'gamesPlayed'"
-          [sortOrder]="-1">
-          
+        <p-dataView [value]="headToHeadRecords()" layout="grid" [paginator]="true" [rows]="12" [sortField]="'gamesPlayed'" [sortOrder]="-1">
           <ng-template pTemplate="gridItem" let-record>
             <div class="col-12 md:col-6 lg:col-4">
               <p-card class="h-full border border-surface-200 dark:border-surface-700 hover:shadow-lg transition-all duration-200">
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center gap-3">
-                    <p-avatar 
+                    <p-avatar
                       [label]="getInitials(record.opponentName)"
                       size="large"
                       shape="circle"
-                      styleClass="bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold">
+                      styleClass="bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold"
+                    >
                     </p-avatar>
                     <div>
                       <div class="text-surface-900 dark:text-surface-50 font-semibold text-base">
                         {{ record.opponentName }}
                       </div>
                       <div class="text-surface-500 dark:text-surface-400 text-sm">
-                        {{ record.gamesPlayed }} 
+                        {{ record.gamesPlayed }}
                         {{ record.gamesPlayed === 1 ? ('GAME.GAME' | translate) : ('GAME.GAMES' | translate) }}
                       </div>
                     </div>
                   </div>
 
                   <!-- Win Rate Badge -->
-                  <p-badge 
-                    [value]="record.winRate | number:'1.0-0'"
-                    [severity]="getWinRateSeverity(record.winRate)"
-                    size="large">
-                  </p-badge>
+                  <p-badge [value]="record.winRate | number: '1.0-0'" [severity]="getWinRateSeverity(record.winRate)" size="large"> </p-badge>
                 </div>
 
                 <!-- Game Record -->
@@ -213,16 +205,9 @@ interface HeadToHeadRecord {
                     <span class="text-surface-600 dark:text-surface-400 text-sm">
                       {{ 'STATISTICS.WIN_RATE' | translate }}
                     </span>
-                    <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold">
-                      {{ record.winRate | number:'1.1-1' }}%
-                    </span>
+                    <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ record.winRate | number: '1.1-1' }}% </span>
                   </div>
-                  <p-progressBar 
-                    [value]="record.winRate"
-                    [style]="{ height: '6px' }"
-                    [showValue]="false"
-                    styleClass="mb-2">
-                  </p-progressBar>
+                  <p-progressBar [value]="record.winRate" [style]="{ height: '6px' }" [showValue]="false" styleClass="mb-2"> </p-progressBar>
                 </div>
 
                 <!-- Recent Form -->
@@ -233,8 +218,14 @@ interface HeadToHeadRecord {
                     </div>
                     <div class="flex gap-1">
                       @for (result of record.recentForm; track $index) {
-                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold"
-                             [class]="result === 'W' ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'">
+                        <div
+                          class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold"
+                          [class]="
+                            result === 'W'
+                              ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                              : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                          "
+                        >
                           {{ result }}
                         </div>
                       }
@@ -245,28 +236,18 @@ interface HeadToHeadRecord {
                 <!-- Additional Stats -->
                 <div class="grid gap-2 text-sm">
                   <div class="col-12 flex justify-between">
-                    <span class="text-surface-600 dark:text-surface-400">
-                      {{ 'STATISTICS.SETS' | translate }}:
-                    </span>
-                    <span class="text-surface-900 dark:text-surface-50">
-                      {{ record.setsWon }}-{{ record.setsLost }}
-                    </span>
+                    <span class="text-surface-600 dark:text-surface-400"> {{ 'STATISTICS.SETS' | translate }}: </span>
+                    <span class="text-surface-900 dark:text-surface-50"> {{ record.setsWon }}-{{ record.setsLost }} </span>
                   </div>
                   <div class="col-12 flex justify-between">
-                    <span class="text-surface-600 dark:text-surface-400">
-                      {{ 'STATISTICS.SET_WIN_RATE' | translate }}:
-                    </span>
-                    <span class="text-surface-900 dark:text-surface-50">
-                      {{ record.setWinRate | number:'1.1-1' }}%
-                    </span>
+                    <span class="text-surface-600 dark:text-surface-400"> {{ 'STATISTICS.SET_WIN_RATE' | translate }}: </span>
+                    <span class="text-surface-900 dark:text-surface-50"> {{ record.setWinRate | number: '1.1-1' }}% </span>
                   </div>
                   @if (record.lastGame?.playedAt) {
                     <div class="col-12 flex justify-between">
-                      <span class="text-surface-600 dark:text-surface-400">
-                        {{ 'PLAYER.LAST_PLAYED' | translate }}:
-                      </span>
+                      <span class="text-surface-600 dark:text-surface-400"> {{ 'PLAYER.LAST_PLAYED' | translate }}: </span>
                       <span class="text-surface-900 dark:text-surface-50">
-                        {{ record.lastGame.playedAt | date:'shortDate' }}
+                        {{ record.lastGame.playedAt | date: 'shortDate' }}
                       </span>
                     </div>
                   }
@@ -309,29 +290,23 @@ export class PlayerHeadToHeadComponent {
   playerId = input.required<string>();
 
   headToHeadRecords = computed(() => {
-    const games = this.games().filter(game => 
-      game.status === 'completed' && game.gamePlayerMemberships
-    );
-    
+    const games = this.games().filter((game) => game.status === GameStatus.NORMAL && game.gamePlayerMemberships);
+
     const recordsMap = new Map<string, HeadToHeadRecord>();
-    
-    games.forEach(game => {
+
+    games.forEach((game) => {
       const playerId = this.playerId();
-      const playerMembership = game.gamePlayerMemberships?.find(
-        gpm => gpm.gamePlayer.id === playerId
-      );
-      
+      const playerMembership = game.gamePlayerMemberships?.find((gpm) => gpm.gamePlayer.id === playerId);
+
       if (!playerMembership) return;
-      
+
       // Get opponents
-      const opponentMemberships = game.gamePlayerMemberships?.filter(
-        gpm => gpm.gamePlayer.id !== playerId
-      ) || [];
-      
-      opponentMemberships.forEach(opponentMembership => {
+      const opponentMemberships = game.gamePlayerMemberships?.filter((gpm) => gpm.gamePlayer.id !== playerId) || [];
+
+      opponentMemberships.forEach((opponentMembership) => {
         const opponentId = opponentMembership.gamePlayer.id;
         const opponentName = opponentMembership.gamePlayer.fullName;
-        
+
         if (!recordsMap.has(opponentId)) {
           recordsMap.set(opponentId, {
             opponentId,
@@ -350,10 +325,10 @@ export class PlayerHeadToHeadComponent {
             tournaments: 0,
           });
         }
-        
+
         const record = recordsMap.get(opponentId)!;
         record.gamesPlayed++;
-        
+
         const isWinner = game.winner === playerMembership.team;
         if (isWinner) {
           record.gamesWon++;
@@ -362,83 +337,79 @@ export class PlayerHeadToHeadComponent {
           record.gamesLost++;
           record.recentForm.unshift('L');
         }
-        
+
         // Keep only last 5 results
         if (record.recentForm.length > 5) {
           record.recentForm = record.recentForm.slice(0, 5);
         }
-        
+
         // Calculate sets and points
         const sets = [
           { team1: game.set1Team1, team2: game.set1Team2 },
           { team1: game.set2Team1, team2: game.set2Team2 },
           { team1: game.set3Team1, team2: game.set3Team2 },
-        ].filter(set => set.team1 !== null && set.team2 !== null);
+        ].filter((set) => set.team1 !== null && set.team2 !== null);
 
-        sets.forEach(set => {
+        sets.forEach((set) => {
           const playerPoints = playerMembership.team === 1 ? set.team1! : set.team2!;
           const opponentPoints = playerMembership.team === 1 ? set.team2! : set.team1!;
-          
+
           record.pointsWon += playerPoints;
           record.pointsLost += opponentPoints;
-          
+
           if (playerPoints > opponentPoints) {
             record.setsWon++;
           } else {
             record.setsLost++;
           }
         });
-        
+
         // Update last game
-        if (!record.lastGame || 
-            (game.playedAt && record.lastGame.playedAt && 
-             new Date(game.playedAt) > new Date(record.lastGame.playedAt))) {
+        if (!record.lastGame || (game.playedAt && record.lastGame.playedAt && new Date(game.playedAt) > new Date(record.lastGame.playedAt))) {
           record.lastGame = game;
         }
       });
     });
-    
+
     // Calculate rates and sort
     return Array.from(recordsMap.values())
-      .map(record => ({
+      .map((record) => ({
         ...record,
         winRate: record.gamesPlayed > 0 ? (record.gamesWon / record.gamesPlayed) * 100 : 0,
-        setWinRate: (record.setsWon + record.setsLost) > 0 
-          ? (record.setsWon / (record.setsWon + record.setsLost)) * 100 
-          : 0,
-        pointWinRate: (record.pointsWon + record.pointsLost) > 0 
-          ? (record.pointsWon / (record.pointsWon + record.pointsLost)) * 100 
-          : 0,
+        setWinRate: record.setsWon + record.setsLost > 0 ? (record.setsWon / (record.setsWon + record.setsLost)) * 100 : 0,
+        pointWinRate: record.pointsWon + record.pointsLost > 0 ? (record.pointsWon / (record.pointsWon + record.pointsLost)) * 100 : 0,
       }))
       .sort((a, b) => b.gamesPlayed - a.gamesPlayed);
   });
 
   favorableMatchups = computed(() => {
-    return this.headToHeadRecords().filter(record => record.winRate > 50).length;
+    return this.headToHeadRecords().filter((record) => record.winRate > 50).length;
   });
 
   difficultMatchups = computed(() => {
-    return this.headToHeadRecords().filter(record => record.winRate < 50).length;
+    return this.headToHeadRecords().filter((record) => record.winRate < 50).length;
   });
 
   bestOpponent = computed(() => {
-    return this.headToHeadRecords()
-      .filter(record => record.gamesPlayed >= 3)
-      .sort((a, b) => b.winRate - a.winRate)[0] || null;
+    return (
+      this.headToHeadRecords()
+        .filter((record) => record.gamesPlayed >= 3)
+        .sort((a, b) => b.winRate - a.winRate)[0] || null
+    );
   });
 
   getInitials(name: string): string {
     return name
       .split(' ')
-      .map(part => part.charAt(0).toUpperCase())
+      .map((part) => part.charAt(0).toUpperCase())
       .join('')
       .slice(0, 2);
   }
 
-  getWinRateSeverity(winRate: number): 'success' | 'warning' | 'danger' | 'info' {
+  getWinRateSeverity(winRate: number): 'success' | 'warn' | 'danger' | 'info' {
     if (winRate >= 70) return 'success';
     if (winRate >= 50) return 'info';
-    if (winRate >= 30) return 'warning';
+    if (winRate >= 30) return 'warn';
     return 'danger';
   }
 }

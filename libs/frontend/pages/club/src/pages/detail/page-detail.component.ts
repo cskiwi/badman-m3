@@ -314,11 +314,11 @@ export class PageDetailComponent {
     return Math.floor(Math.random() * 21) - 10; // -10 to +10
   }
 
-  getRankingSeverity(ranking: number | null): 'success' | 'info' | 'warning' | 'danger' {
+  getRankingSeverity(ranking: number | null): 'success' | 'info' | 'warn' | 'danger' {
     if (!ranking) return 'info';
     if (ranking <= 10) return 'success';
     if (ranking <= 25) return 'info';
-    if (ranking <= 50) return 'warning';
+    if (ranking <= 50) return 'warn';
     return 'danger';
   }
 

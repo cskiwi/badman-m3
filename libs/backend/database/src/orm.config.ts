@@ -1,90 +1,20 @@
-import {
-  Availability,
-  Claim,
-  Club,
-  ClubPlayerMembership,
-  Comment,
-  CompetitionAssembly,
-  CompetitionDraw,
-  CompetitionEncounter,
-  CompetitionEncounterChange,
-  CompetitionEncounterChangeDate,
-  CompetitionEvent,
-  CompetitionSubEvent,
-  Court,
-  Entry,
-  Faq,
-  Game,
-  GamePlayerMembership,
-  Location,
-  Notification,
-  Player,
-  PlayerClaimMembership,
-  PlayerRoleMembership,
-  RankingGroup,
-  RankingLastPlace,
-  RankingPlace,
-  RankingPoint,
-  RankingSystem,
-  RankingSystemRankingGroupMembership,
-  RequestLink,
-  Role,
-  RoleClaimMembership,
-  Setting,
-  Standing,
-  Team,
-  TeamPlayerMembership,
-  TournamentDraw,
-  TournamentEvent,
-  TournamentSubEvent,
-} from '@app/models';
+import * as Models from '@app/models';
 import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-const entities = [
-  Player,
-  RankingSystem,
-  RankingGroup,
-  RankingSystemRankingGroupMembership,
-  RankingLastPlace,
-  RankingPoint,
-  RankingPlace,
-  Club,
-  ClubPlayerMembership,
-  Game,
-  GamePlayerMembership,
-  Team,
-  TeamPlayerMembership,
+// Extract all entity classes from the models package
+// An entity class extends BaseEntity and is decorated with @Entity
+const entities = Object.values(Models).filter((value) => {
+  if (typeof value !== 'function' || !value.prototype) return false;
 
-  CompetitionEvent,
-  TournamentEvent,
-  TournamentSubEvent,
-  TournamentDraw,
-  Entry,
-  Standing,
-  CompetitionEncounter,
-  CompetitionEncounterChange,
-  CompetitionEncounterChangeDate,
-  CompetitionDraw,
-  CompetitionSubEvent,
-  CompetitionAssembly,
-
-  Location,
-  Court,
-  Availability,
-
-  Comment,
-  Faq,
-  Notification,
-  RequestLink,
-  Setting,
-
-  Role,
-  Claim,
-  PlayerRoleMembership,
-  RoleClaimMembership,
-  PlayerClaimMembership,
-];
+  // Check if it extends BaseEntity (TypeORM entity base class)
+  let proto = value.prototype;
+  while (proto) {
+    if (proto.constructor.name === 'BaseEntity') return true;
+    proto = Object.getPrototypeOf(proto);
+  }
+  return false;
+});
 
 export function getDbConfig(configService?: ConfigService): DataSourceOptions {
   const getEnvVar = (key: string, defaultValue?: string) => (configService ? configService.get<string>(key) : process.env[key] || defaultValue);
@@ -118,7 +48,7 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
       synchronize: false,
       migrationsRun: false,
       cli: {
-        migrationsDir: 'libs/backend/database/src/migrations'
+        migrationsDir: 'libs/backend/database/src/migrations',
       },
       // logging: true,
     } as DataSourceOptions;

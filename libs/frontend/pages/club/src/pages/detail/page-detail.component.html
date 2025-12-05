@@ -114,13 +114,29 @@
     </div>
 
     <!-- Main Content Tabs -->
-    <p-tabview>
-      <!-- Teams Tab -->
-      <p-tabpanel>
-        <ng-template pTemplate="header">
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">
           <i class="pi pi-users mr-2"></i>
           {{ 'all.team.overview.title' | translate }}
-        </ng-template>
+        </p-tab>
+        <p-tab value="1">
+          <i class="pi pi-user mr-2"></i>
+          {{ 'all.club.playerRoster' | translate }}
+        </p-tab>
+        <p-tab value="2">
+          <i class="pi pi-chart-line mr-2"></i>
+          {{ 'all.club.performance' | translate }}
+        </p-tab>
+        <p-tab value="3">
+          <i class="pi pi-calendar mr-2"></i>
+          {{ 'all.club.schedule' | translate }}
+        </p-tab>
+      </p-tablist>
+
+      <p-tabpanels>
+        <!-- Teams Tab -->
+        <p-tabpanel value="0">
         
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <h3 class="flex items-center gap-2 text-xl font-semibold">
@@ -265,14 +281,10 @@
             <p>{{ 'all.team.noTeams' | translate }}</p>
           </div>
         }
-      </p-tabpanel>
+        </p-tabpanel>
 
-      <!-- Player Roster Tab -->
-      <p-tabpanel>
-        <ng-template pTemplate="header">
-          <i class="pi pi-user mr-2"></i>
-          {{ 'all.club.playerRoster' | translate }}
-        </ng-template>
+        <!-- Player Roster Tab -->
+        <p-tabpanel value="1">
         
         <p-card>
           <ng-template pTemplate="header">
@@ -284,7 +296,8 @@
             </div>
           </ng-template>
           
-          <p-dataTable 
+          <p-table 
+            #dt
             [value]="allPlayers()" 
             [paginator]="true" 
             [rows]="10" 
@@ -300,7 +313,7 @@
                 <h4 class="m-0">{{ 'all.club.managePlayers' | translate }}</h4>
                 <span class="p-input-icon-left">
                   <i class="pi pi-search"></i>
-                  <input pInputText type="text" #dt placeholder="{{ 'all.common.search' | translate }}..." (input)="dt.filterGlobal($any($event.target).value, 'contains')" class="ml-auto" />
+                  <input pInputText type="text" placeholder="{{ 'all.common.search' | translate }}..." (input)="dt.filterGlobal($any($event.target).value, 'contains')" class="ml-auto" />
                 </span>
               </div>
             </ng-template>
@@ -372,16 +385,12 @@
                 </td>
               </tr>
             </ng-template>
-          </p-dataTable>
+          </p-table>
         </p-card>
-      </p-tabpanel>
+        </p-tabpanel>
       
-      <!-- Performance Charts Tab -->
-      <p-tabpanel>
-        <ng-template pTemplate="header">
-          <i class="pi pi-chart-line mr-2"></i>
-          {{ 'all.club.performance' | translate }}
-        </ng-template>
+        <!-- Performance Charts Tab -->
+        <p-tabpanel value="2">
         
         <div class="grid gap-6 lg:grid-cols-2">
           <!-- Win Rate Trend Chart -->
@@ -395,7 +404,7 @@
               type="line" 
               [data]="winRateChartData()" 
               [options]="chartOptions"
-              [height]="300">
+              height="300">
             </p-chart>
           </p-card>
           
@@ -410,7 +419,7 @@
               type="bar" 
               [data]="teamComparisonChartData()" 
               [options]="chartOptions"
-              [height]="300">
+              height="300">
             </p-chart>
           </p-card>
           
@@ -425,7 +434,7 @@
               type="doughnut" 
               [data]="gamesDistributionChartData()" 
               [options]="doughnutChartOptions"
-              [height]="300">
+              height="300">
             </p-chart>
           </p-card>
           
@@ -440,18 +449,14 @@
               type="radar" 
               [data]="seasonalPerformanceChartData()" 
               [options]="radarChartOptions"
-              [height]="300">
+              height="300">
             </p-chart>
           </p-card>
         </div>
-      </p-tabpanel>
+        </p-tabpanel>
       
-      <!-- Match Schedule & Results Tab -->
-      <p-tabpanel>
-        <ng-template pTemplate="header">
-          <i class="pi pi-calendar mr-2"></i>
-          {{ 'all.club.schedule' | translate }}
-        </ng-template>
+        <!-- Match Schedule & Results Tab -->
+        <p-tabpanel value="3">
         
         @if (teamIds(); as teamIds) {
           <div class="grid gap-6">
@@ -482,8 +487,9 @@
             </p-card>
           </div>
         }
-      </p-tabpanel>
-    </p-tabview>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
   }
 } @else {
   <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />

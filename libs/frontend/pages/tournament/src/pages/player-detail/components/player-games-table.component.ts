@@ -249,15 +249,15 @@ export class PlayerGamesTableComponent {
   }
 
   getGameLink(game: Game): string[] | null {
-    if (!game.draw?.subEvent?.tournament) return null;
+    if (!game.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.slug) return null;
     
     return [
       '/tournament',
-      game.draw.subEvent.tournament.slug,
+      game.tournamentDraw.tournamentSubEvent.tournamentEvent.slug,
       'sub-events',
-      game.draw.subEvent.id,
+      game.tournamentDraw.tournamentSubEvent.id,
       'draws',
-      game.draw.id
+      game.tournamentDraw.id
     ];
   }
 }
