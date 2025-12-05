@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsManipulateType } from '@app/frontend-utils';
-import { Dayjs } from 'dayjs';
+import { Pipe, PipeTransform } from '@angular/core';
+import { DayjsInput, DayjsManipulateType } from '@app/frontend-utils';
+import dayjs, { Dayjs } from 'dayjs';
 
 @Pipe({
   name: 'dayjsSubtract',
@@ -8,8 +8,6 @@ import { Dayjs } from 'dayjs';
   standalone: true
 })
 export class DayjsSubtractPipe implements PipeTransform {
-  private readonly dayjsService = inject(DayjsService);
-
   transform(
     value: DayjsInput,
     amount: number,
@@ -19,12 +17,12 @@ export class DayjsSubtractPipe implements PipeTransform {
       return null;
     }
 
-    const date = this.dayjsService.parse(value);
-    
-    if (!this.dayjsService.isValid(date)) {
+    const date = dayjs(value);
+
+    if (!date.isValid()) {
       return null;
     }
 
-    return this.dayjsService.subtract(date, amount, unit);
+    return date.subtract(amount, unit);
   }
 }

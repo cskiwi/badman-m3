@@ -22,7 +22,7 @@ services:
       - ./database/scripts:/home/scripts
 
   redis:
-    image: 'redis:7.2.4-alpine'
+    image: 'redis:8.2.1-alpine'
     ports:
       - '0.0.0.0:6379:6379'
     networks:
@@ -45,7 +45,7 @@ services:
   # Tools
   pgadmin:
     container_name: pgadmin
-    image: dpage/pgadmin4:8.9
+    image: dpage/pgadmin4:9.8
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}

@@ -1,10 +1,18 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsCalendarReference } from '@app/frontend-utils';
+import {
+  DayjsService,
+  DayjsInput,
+  DayjsCalendarReference,
+} from '@app/frontend-utils';
+import dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
+
+dayjs.extend(calendar);
 
 @Pipe({
   name: 'dayjsCalendar',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsCalendarPipe implements PipeTransform {
   private readonly dayjsService = inject(DayjsService);
@@ -15,11 +23,11 @@ export class DayjsCalendarPipe implements PipeTransform {
     }
 
     const date = this.dayjsService.parse(value);
-    
-    if (!this.dayjsService.isValid(date)) {
+
+    if (!date.isValid()) {
       return '';
     }
 
-    return this.dayjsService.calendar(date, reference);
+    return date.calendar(reference);
   }
 }

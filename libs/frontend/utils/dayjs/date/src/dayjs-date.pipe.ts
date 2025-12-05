@@ -20,7 +20,7 @@ export class DayjsDatePipe implements PipeTransform {
 
     const date = this.dayjsService.parse(value);
     
-    if (!this.dayjsService.isValid(date)) {
+    if (!date.isValid()) {
       return '';
     }
 

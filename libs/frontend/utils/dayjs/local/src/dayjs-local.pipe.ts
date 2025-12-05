@@ -1,11 +1,16 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput } from '@app/frontend-utils';
+import { DayjsInput, DayjsService } from '@app/frontend-utils';
 import { Dayjs } from 'dayjs';
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 @Pipe({
   name: 'dayjsLocal',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsLocalPipe implements PipeTransform {
   private readonly dayjsService = inject(DayjsService);
@@ -15,12 +20,12 @@ export class DayjsLocalPipe implements PipeTransform {
       return null;
     }
 
-    const date = this.dayjsService.parse(value);
-    
-    if (!this.dayjsService.isValid(date)) {
+    const date = this.dayjsService.parse(value) as Dayjs;
+
+    if (!date.isValid()) {
       return null;
     }
 
-    return this.dayjsService.local(date);
+    return date.local();
   }
 }

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <section class="standings">
+    <section class="max-w-[1200px] mx-auto px-4">
       <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
         <i class="pi pi-chart-bar text-primary-500"></i>
         Standings

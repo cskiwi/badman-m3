@@ -1,5 +1,6 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DayjsService, DayjsInput, DayjsOpUnitType } from '@app/frontend-utils';
+import { Pipe, PipeTransform } from '@angular/core';
+import { DayjsInput, DayjsOpUnitType } from '@app/frontend-utils';
+import dayjs from 'dayjs';
 
 @Pipe({
   name: 'dayjsIsBefore',
@@ -7,8 +8,6 @@ import { DayjsService, DayjsInput, DayjsOpUnitType } from '@app/frontend-utils';
   standalone: true
 })
 export class DayjsIsBeforePipe implements PipeTransform {
-  private readonly dayjsService = inject(DayjsService);
-
   transform(
     value: DayjsInput,
     compareValue: DayjsInput,
@@ -18,13 +17,13 @@ export class DayjsIsBeforePipe implements PipeTransform {
       return false;
     }
 
-    const date1 = this.dayjsService.parse(value);
-    const date2 = this.dayjsService.parse(compareValue);
-    
-    if (!this.dayjsService.isValid(date1) || !this.dayjsService.isValid(date2)) {
+    const date1 = dayjs(value);
+    const date2 = dayjs(compareValue);
+
+    if (!date1.isValid() || !date2.isValid()) {
       return false;
     }
 
-    return this.dayjsService.isBefore(date1, date2, unit);
+    return date1.isBefore(date2, unit);
   }
 }
