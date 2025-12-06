@@ -109,22 +109,22 @@ export class Entry extends BaseEntity {
   declare team?: Relation<Team>;
 
   @Field(() => TournamentSubEvent, { nullable: true })
-  @ManyToOne(() => TournamentSubEvent, { nullable: true })
+  @ManyToOne(() => TournamentSubEvent, { nullable: true, createForeignKeyConstraints: false })
   @JoinColumn({ name: 'subEventId' })
   declare tournamentSubEvent?: Relation<TournamentSubEvent>;
 
   @Field(() => CompetitionSubEvent, { nullable: true })
-  @ManyToOne(() => CompetitionSubEvent, { nullable: true })
+  @ManyToOne(() => CompetitionSubEvent, { nullable: true, createForeignKeyConstraints: false })
   @JoinColumn({ name: 'subEventId' })
   declare competitionSubEvent?: Relation<CompetitionSubEvent>;
 
   @Field(() => TournamentDraw, { nullable: true })
-  @ManyToOne(() => TournamentDraw, { nullable: true })
+  @ManyToOne(() => TournamentDraw, { nullable: true, createForeignKeyConstraints: false })
   @JoinColumn({ name: 'drawId' })
   declare tournamentDraw?: Relation<TournamentDraw>;
 
   @Field(() => CompetitionDraw, { nullable: true })
-  @ManyToOne(() => CompetitionDraw, { nullable: true })
+  @ManyToOne(() => CompetitionDraw, { nullable: true, createForeignKeyConstraints: false })
   @JoinColumn({ name: 'drawId' })
   declare competitionDraw?: Relation<CompetitionDraw>;
 }

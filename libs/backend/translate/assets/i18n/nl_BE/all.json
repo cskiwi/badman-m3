@@ -25,6 +25,23 @@
       "title": "Admin Paneel"
     }
   },
+  "club": {
+    "allPlayers": "Alle Spelers",
+    "avgRanking": "Gem. Ranking",
+    "gamesDistribution": "Wedstrijdverdeling",
+    "managePlayers": "Spelers Beheren",
+    "performance": "Prestaties",
+    "playerRoster": "Spelerslijst",
+    "schedule": "Programma",
+    "seasonalPerformance": "Seizoensprestaties",
+    "stats": "Club Statistieken",
+    "teamComparison": "Team Vergelijking",
+    "totalGames": "Wedstrijden",
+    "totalPlayers": "Spelers",
+    "totalTeams": "Teams",
+    "winRate": "Win %",
+    "winRateTrend": "Win % Trend"
+  },
   "clubs": {
     "membershipType": {
       "loan": "Uitlening",
@@ -33,15 +50,18 @@
     "search": "Zoek club"
   },
   "common": {
+    "actions": "Acties",
     "cancel": "Annuleren",
     "error": "Fout",
     "name": "Naam",
     "no": "Nee",
     "save": "Opslaan",
+    "search": "Zoeken",
     "season": "Seizoen",
     "selectSeason": "Selecteer seizoen",
     "success": "Succes",
     "viewAll": "Bekijk Alle",
+    "viewDetails": "Details bekijken",
     "yes": "Ja"
   },
   "competition": {
@@ -212,6 +232,12 @@
     "searchPlayersDescription": "Ontdek spelers, rankings en statistieken"
   },
   "player": {
+    "games": "Wedstrijden",
+    "name": "Naam",
+    "ranking": "Ranking",
+    "stats": "Statistieken",
+    "winRate": "Win %",
+    "wins": "Overwinningen",
     "edit": {
       "actions": {
         "cancel": "Annuleren",
@@ -519,6 +545,10 @@
   },
   "team": {
     "captain": "Kapitein",
+    "games": "Wedstrijden",
+    "wins": "Overwinningen",
+    "winRate": "Win %",
+    "name": "Teamnaam",
     "edit": {
       "abbreviation": {
         "label": "Afkorting",

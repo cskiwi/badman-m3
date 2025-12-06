@@ -25,6 +25,23 @@
       "title": "Panneau d'administration"
     }
   },
+  "club": {
+    "allPlayers": "Tous les Joueurs",
+    "avgRanking": "Classement Moy.",
+    "gamesDistribution": "Répartition des Matchs",
+    "managePlayers": "Gérer les Joueurs",
+    "performance": "Performance",
+    "playerRoster": "Liste des Joueurs",
+    "schedule": "Calendrier",
+    "seasonalPerformance": "Performance Saisonnière",
+    "stats": "Statistiques du Club",
+    "teamComparison": "Comparaison des Équipes",
+    "totalGames": "Matchs",
+    "totalPlayers": "Joueurs",
+    "totalTeams": "Équipes",
+    "winRate": "% Vict.",
+    "winRateTrend": "Tendance % Vict."
+  },
   "clubs": {
     "membershipType": {
       "loan": "Prêt",
@@ -33,15 +50,18 @@
     "search": "Chercher club"
   },
   "common": {
+    "actions": "Actions",
     "cancel": "Annuler",
     "error": "Erreur",
     "name": "Nom",
     "no": "Non",
     "save": "Enregistrer",
+    "search": "Rechercher",
     "season": "Saison",
     "selectSeason": "Sélectionner la saison",
     "success": "Succès",
     "viewAll": "Voir Tout",
+    "viewDetails": "Voir Détails",
     "yes": "Oui"
   },
   "competition": {
@@ -212,6 +232,12 @@
     "searchPlayersDescription": "Découvrez les joueurs, les classements et les statistiques"
   },
   "player": {
+    "games": "Matchs",
+    "name": "Nom",
+    "ranking": "Classement",
+    "stats": "Statistiques",
+    "winRate": "% Vict.",
+    "wins": "Victoires",
     "edit": {
       "actions": {
         "cancel": "Annuler",
@@ -519,6 +545,10 @@
   },
   "team": {
     "captain": "Capitaine",
+    "games": "Matchs",
+    "wins": "Victoires",
+    "winRate": "% Vict.",
+    "name": "Nom de l'équipe",
     "edit": {
       "abbreviation": {
         "label": "Abréviation",

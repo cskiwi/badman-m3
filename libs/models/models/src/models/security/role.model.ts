@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, InputType, ObjectType, OmitType, PartialType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -15,7 +15,7 @@ import {
 import { Club } from '../club.model';
 import { Player } from '../player.model';
 import { Team } from '../team.model';
-import { Claim } from './claim.model';
+import { Claim, ClaimUpdateInput } from './claim.model';
 import { CompetitionEvent, TournamentEvent } from '../event';
 import { SortableField, WhereField } from '@app/utils';
 import { LinkType } from '@app/models-enum';
@@ -118,3 +118,12 @@ export class Role extends BaseEntity {
   @Column({ type: 'simple-enum', enum: LinkType })
   linkType?: LinkType;
 }
+
+@InputType()
+export class RoleUpdateInput extends PartialType(OmitType(Role, ['createdAt', 'updatedAt', 'claims'] as const), InputType) {
+  @Field(() => [ClaimUpdateInput], { nullable: true })
+  claims?: Relation<Claim[]>;
+}
+
+@InputType()
+export class RoleNewInput extends PartialType(OmitType(RoleUpdateInput, ['id'] as const), InputType) {}

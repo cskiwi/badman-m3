@@ -1,117 +1,30 @@
 @if (!loading()) {
   @if (this.club(); as club) {
+    <!-- Club Header -->
     <app-page-header>
-      <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-      <ng-content title>{{ club.fullName }}</ng-content>
-      <ng-content subTitle>
-        <div class="info">
-          <div class="sub-text">
-            <ng-container
-              ><a [routerLink]="['/', 'club', club.slug]">{{ club.name }}</a></ng-container
-            >
-            @if (club.name && club.clubId) {
-              -
-            }
-            {{ club.clubId }}
-          </div>
-        </div>
-      </ng-content>
-      <ng-content actions> </ng-content>
+      <i avatar class="pi pi-building text-2xl"></i>
+      <span title>{{ club.fullName || club.name }}</span>
+      <ng-container subTitle>
+        @if (club.clubId) {
+          <span>{{ club.clubId }}</span>
+        }
+        @if (club.state || club.country) {
+          <span>•</span>
+          <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
+        }
+      </ng-container>
+      <ng-container rightSide>
+        <p-select
+          id="season-select"
+          [formControl]="seasonControl"
+          [options]="availableSeasons()"
+          optionLabel="label"
+          optionValue="value"
+          [style]="{ 'min-width': '140px' }"
+          placeholder="{{ 'all.common.selectSeason' | translate }}"
+        />
+      </ng-container>
     </app-page-header>
-
-    <!-- Club Profile & Overview Cards -->
-    <div class="grid gap-6 lg:grid-cols-12 mb-8">
-      <!-- Club Profile Card -->
-      <div class="lg:col-span-4">
-        <p-card styleClass="h-full">
-          <ng-template pTemplate="header">
-            <div class="bg-gradient-to-r from-primary-500 to-primary-600 p-6 text-white">
-              <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <i class="pi pi-building text-2xl"></i>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold mb-1">{{ club.fullName || club.name }}</h2>
-                  <p class="text-primary-100">{{ 'all.club.established' | translate }}: {{ establishedYear() || 'N/A' }}</p>
-                </div>
-              </div>
-            </div>
-          </ng-template>
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div class="text-center p-3 bg-highlight rounded-lg">
-                <div class="text-2xl font-bold text-primary-600">{{ totalTeams() }}</div>
-                <div class="text-sm text-surface-600">{{ 'all.club.totalTeams' | translate }}</div>
-              </div>
-              <div class="text-center p-3 bg-highlight rounded-lg">
-                <div class="text-2xl font-bold text-primary-600">{{ totalPlayers() }}</div>
-                <div class="text-sm text-surface-600">{{ 'all.club.totalPlayers' | translate }}</div>
-              </div>
-            </div>
-            <div class="space-y-2">
-              <div class="flex items-center gap-2 text-sm">
-                <i class="pi pi-map-marker text-surface-500"></i>
-                <span>{{ club.state }}, {{ club.country }}</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm">
-                <i class="pi pi-id-card text-surface-500"></i>
-                <span>{{ 'all.club.id' | translate }}: {{ club.clubId || 'N/A' }}</span>
-              </div>
-              @if (club.contactCompetition) {
-                <div class="flex items-center gap-2 text-sm">
-                  <i class="pi pi-user text-surface-500"></i>
-                  <span>{{ club.contactCompetition }}</span>
-                </div>
-              }
-            </div>
-          </div>
-        </p-card>
-      </div>
-
-      <!-- Tournament Statistics Card -->
-      <div class="lg:col-span-8">
-        <p-card styleClass="h-full">
-          <ng-template pTemplate="header">
-            <div class="p-4 border-b border-surface-200">
-              <h3 class="text-lg font-semibold flex items-center gap-2">
-                <i class="pi pi-chart-line text-primary-500"></i>
-                {{ 'all.club.tournamentStats' | translate }}
-              </h3>
-            </div>
-          </ng-template>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="text-center p-4">
-              <div class="text-3xl font-bold text-green-600 mb-2">{{ clubStatsComputed().totalGames || 0 }}</div>
-              <div class="text-sm text-surface-600">{{ 'all.club.totalGames' | translate }}</div>
-              <div class="mt-2">
-                <p-progressbar [value]="100" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
-              </div>
-            </div>
-            <div class="text-center p-4">
-              <div class="text-3xl font-bold text-blue-600 mb-2">{{ clubStatsComputed().winRate || 0 }}%</div>
-              <div class="text-sm text-surface-600">{{ 'all.club.winRate' | translate }}</div>
-              <div class="mt-2">
-                <p-progressbar [value]="clubStatsComputed().winRate || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
-              </div>
-            </div>
-            <div class="text-center p-4">
-              <div class="text-3xl font-bold text-purple-600 mb-2">{{ clubStatsComputed().averageRanking || 'N/A' }}</div>
-              <div class="text-sm text-surface-600">{{ 'all.club.avgRanking' | translate }}</div>
-              <div class="mt-2">
-                <p-progressbar [value]="clubStatsComputed().rankingProgress || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
-              </div>
-            </div>
-            <div class="text-center p-4">
-              <div class="text-3xl font-bold text-orange-600 mb-2">{{ clubStatsComputed().activeSeasons || 0 }}</div>
-              <div class="text-sm text-surface-600">{{ 'all.club.activeSeasons' | translate }}</div>
-              <div class="mt-2">
-                <p-progressbar [value]="clubStatsComputed().seasonProgress || 0" [style]="{ height: '6px' }" styleClass="mb-2"></p-progressbar>
-              </div>
-            </div>
-          </div>
-        </p-card>
-      </div>
-    </div>
 
     <!-- Main Content Tabs -->
     <p-tabs value="0">
@@ -137,356 +50,27 @@
       <p-tabpanels>
         <!-- Teams Tab -->
         <p-tabpanel value="0">
-        
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-          <h3 class="flex items-center gap-2 text-xl font-semibold">
-            <i class="pi pi-users text-primary-500"></i>
-            {{ 'all.team.overview.title' | translate }}
-          </h3>
-
-          <!-- Season selector -->
-          <div class="flex items-center gap-2">
-            <label for="season-select" class="text-sm font-medium text-surface-600"> {{ 'all.common.season' | translate }}: </label>
-            <p-select
-              id="season-select"
-              [formControl]="seasonControl"
-              [options]="availableSeasons()"
-              optionLabel="label"
-              optionValue="value"
-              [style]="{ 'min-width': '120px' }"
-              placeholder="{{ 'all.common.selectSeason' | translate }}"
-            />
-          </div>
-        </div>
-
-        @if (teamsLoading()) {
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-              <div class="rounded-border bg-highlight p-4 space-y-3">
-                <div class="flex items-center justify-between">
-                  <p-skeleton width="8rem" height="1.25rem"></p-skeleton>
-                  <p-skeleton width="3rem" height="1rem" borderRadius="1rem"></p-skeleton>
-                </div>
-                <div class="space-y-2">
-                  <p-skeleton width="6rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="7rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="5rem" height="1rem"></p-skeleton>
-                </div>
-                <div class="flex gap-2">
-                  <p-skeleton width="4rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
-                  <p-skeleton width="3rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
-                </div>
-              </div>
-            }
-          </div>
-        } @else if (teams().length > 0) {
-          <p-dataview [value]="teams()" [rows]="9" [paginator]="teams().length > 9" styleClass="dataview-teams">
-            <ng-template pTemplate="list" let-teams>
-              <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                @for (team of teams; track team.id) {
-                  <p-card styleClass="team-card h-full">
-                    <ng-template pTemplate="header">
-                      <div class="p-4 border-b border-surface-200">
-                        <div class="flex items-center justify-between">
-                          <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                              <i class="pi pi-users text-primary-600"></i>
-                            </div>
-                            <div>
-                              <h4 class="font-semibold text-lg">{{ team.name }}</h4>
-                              @if (team.abbreviation) {
-                                <p-badge [value]="team.abbreviation" severity="secondary"></p-badge>
-                              }
-                            </div>
-                          </div>
-                          @if (canEditTeam(team)) {
-                            <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-sm" (click)="editTeam(team)"></button>
-                          }
-                        </div>
-                      </div>
-                    </ng-template>
-                    
-                    <div class="space-y-4">
-                      <!-- Team Stats -->
-                      <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="p-2 bg-highlight rounded">
-                          <div class="font-bold text-primary-600">{{ getTeamStats(team.id).gamesPlayed || 0 }}</div>
-                          <div class="text-xs text-surface-600">{{ 'all.team.games' | translate }}</div>
-                        </div>
-                        <div class="p-2 bg-highlight rounded">
-                          <div class="font-bold text-green-600">{{ getTeamStats(team.id).wins || 0 }}</div>
-                          <div class="text-xs text-surface-600">{{ 'all.team.wins' | translate }}</div>
-                        </div>
-                        <div class="p-2 bg-highlight rounded">
-                          <div class="font-bold text-blue-600">{{ getTeamWinRate(team.id) }}%</div>
-                          <div class="text-xs text-surface-600">{{ 'all.team.winRate' | translate }}</div>
-                        </div>
-                      </div>
-                      
-                      <!-- Team Info -->
-                      <div class="space-y-2 text-sm">
-                        @if (team.captain) {
-                          <div class="flex items-center gap-2">
-                            <i class="pi pi-user text-surface-500"></i>
-                            <span class="font-medium">{{ team.captain.fullName }}</span>
-                            <p-badge value="Captain" severity="info" size="small"></p-badge>
-                          </div>
-                        }
-                        @if (team.email) {
-                          <div class="flex items-center gap-2">
-                            <i class="pi pi-envelope text-surface-500"></i>
-                            <a [href]="'mailto:' + team.email" class="hover:text-primary-600 hover:underline no-underline text-surface-700">{{ team.email }}</a>
-                          </div>
-                        }
-                        @if (team.phone) {
-                          <div class="flex items-center gap-2">
-                            <i class="pi pi-phone text-surface-500"></i>
-                            <a [href]="'tel:' + team.phone" class="hover:text-primary-600 hover:underline no-underline text-surface-700">{{ team.phone | phoneNumber }}</a>
-                          </div>
-                        }
-                      </div>
-
-                      <!-- Players List -->
-                      @if (team.teamPlayerMemberships && team.teamPlayerMemberships.length > 0) {
-                        <div class="border-t border-surface-200 pt-3">
-                          <div (click)="toggleTeamPlayers(team.id)" class="flex items-center gap-2 cursor-pointer hover:bg-surface-100 p-2 rounded transition-colors">
-                            <i class="pi" [class.pi-chevron-right]="!isTeamExpanded(team.id)" [class.pi-chevron-down]="isTeamExpanded(team.id)"></i>
-                            <span class="font-medium">{{ 'all.team.players' | translate }} ({{ team.teamPlayerMemberships.length }})</span>
-                          </div>
-                          
-                          @if (isTeamExpanded(team.id)) {
-                            <div class="grid grid-cols-2 gap-1 mt-2">
-                              @for (membership of team.teamPlayerMemberships; track membership.id) {
-                                @if (membership.player) {
-                                  <a [routerLink]="['/players', membership.player.id]" 
-                                     class="flex items-center gap-2 p-2 rounded hover:bg-primary-50 transition-colors text-sm">
-                                    <i class="pi pi-user text-xs text-surface-500"></i>
-                                    <span class="truncate">{{ membership.player.firstName }} {{ membership.player.lastName }}</span>
-                                  </a>
-                                }
-                              }
-                            </div>
-                          }
-                        </div>
-                      }
-                    </div>
-                  </p-card>
-                }
-              </div>
-            </ng-template>
-          </p-dataview>
-        } @else {
-          <div class="text-center py-8 text-surface-500">
-            <i class="pi pi-users text-4xl mb-2 block"></i>
-            <p>{{ 'all.team.noTeams' | translate }}</p>
-          </div>
-        }
+          <app-club-teams-tab
+            [clubId]="club.id"
+            [season]="currentSeason()"
+            [canEditTeamFn]="canEditTeam.bind(this)"
+            (editTeamClicked)="editTeam($event)"
+          />
         </p-tabpanel>
 
         <!-- Player Roster Tab -->
         <p-tabpanel value="1">
-        
-        <p-card>
-          <ng-template pTemplate="header">
-            <div class="p-4 border-b border-surface-200">
-              <h3 class="text-lg font-semibold flex items-center gap-2">
-                <i class="pi pi-users text-primary-500"></i>
-                {{ 'all.club.allPlayers' | translate }}
-              </h3>
-            </div>
-          </ng-template>
-          
-          <p-table 
-            #dt
-            [value]="allPlayers()" 
-            [paginator]="true" 
-            [rows]="10" 
-            [rowsPerPageOptions]="[10, 25, 50]"
-            [sortField]="'fullName'"
-            [sortOrder]="1"
-            [globalFilterFields]="['fullName', 'team.name']"
-            [scrollable]="true"
-            responsiveLayout="scroll">
-            
-            <ng-template pTemplate="caption">
-              <div class="flex justify-between items-center">
-                <h4 class="m-0">{{ 'all.club.managePlayers' | translate }}</h4>
-                <span class="p-input-icon-left">
-                  <i class="pi pi-search"></i>
-                  <input pInputText type="text" placeholder="{{ 'all.common.search' | translate }}..." (input)="dt.filterGlobal($any($event.target).value, 'contains')" class="ml-auto" />
-                </span>
-              </div>
-            </ng-template>
-            
-            <ng-template pTemplate="header">
-              <tr>
-                <th pSortableColumn="fullName">{{ 'all.player.name' | translate }} <p-sortIcon field="fullName"></p-sortIcon></th>
-                <th pSortableColumn="team.name">{{ 'all.team.name' | translate }} <p-sortIcon field="team.name"></p-sortIcon></th>
-                <th>{{ 'all.player.stats' | translate }}</th>
-                <th>{{ 'all.player.ranking' | translate }}</th>
-                <th>{{ 'all.common.actions' | translate }}</th>
-              </tr>
-            </ng-template>
-            
-            <ng-template pTemplate="body" let-player>
-              <tr>
-                <td>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                      <i class="pi pi-user text-primary-600 text-sm"></i>
-                    </div>
-                    <div>
-                      <div class="font-medium">{{ player.fullName }}</div>
-                      <div class="text-sm text-surface-500">ID: {{ player.id.substring(0, 8) }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex items-center gap-2">
-                    <span>{{ player.team?.name || 'N/A' }}</span>
-                    @if (player.team?.abbreviation) {
-                      <p-badge [value]="player.team.abbreviation" severity="secondary" size="small"></p-badge>
-                    }
-                  </div>
-                </td>
-                <td>
-                  <div class="flex gap-2">
-                    <div class="text-center">
-                      <div class="font-bold text-primary-600">{{ getPlayerStats(player.id).gamesPlayed || 0 }}</div>
-                      <div class="text-xs text-surface-500">{{ 'all.player.games' | translate }}</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="font-bold text-green-600">{{ getPlayerStats(player.id).wins || 0 }}</div>
-                      <div class="text-xs text-surface-500">{{ 'all.player.wins' | translate }}</div>
-                    </div>
-                    <div class="text-center">
-                      <div class="font-bold text-blue-600">{{ getPlayerWinRate(player.id) }}%</div>
-                      <div class="text-xs text-surface-500">{{ 'all.player.winRate' | translate }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex items-center gap-2">
-                    <p-badge [value]="getPlayerRanking(player.id) || 'Unranked'" [severity]="getRankingSeverity(getPlayerRanking(player.id))"></p-badge>
-                    @if (getPlayerRankingChange(player.id) !== 0) {
-                      <i class="pi" [class.pi-arrow-up]="getPlayerRankingChange(player.id) > 0" [class.pi-arrow-down]="getPlayerRankingChange(player.id) < 0" 
-                         [class.text-green-500]="getPlayerRankingChange(player.id) > 0" [class.text-red-500]="getPlayerRankingChange(player.id) < 0"></i>
-                    }
-                  </div>
-                </td>
-                <td>
-                  <button 
-                    pButton 
-                    icon="pi pi-eye" 
-                    class="p-button-text p-button-rounded p-button-sm" 
-                    [routerLink]="['/players', player.id]"
-                    [pTooltip]="'all.common.viewDetails' | translate">
-                  </button>
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </p-card>
+          <!-- <app-club-players-tab [clubId]="club.id" [season]="currentSeason()" /> -->
         </p-tabpanel>
-      
+
         <!-- Performance Charts Tab -->
         <p-tabpanel value="2">
-        
-        <div class="grid gap-6 lg:grid-cols-2">
-          <!-- Win Rate Trend Chart -->
-          <p-card>
-            <ng-template pTemplate="header">
-              <div class="p-4 border-b border-surface-200">
-                <h4 class="font-semibold">{{ 'all.club.winRateTrend' | translate }}</h4>
-              </div>
-            </ng-template>
-            <p-chart 
-              type="line" 
-              [data]="winRateChartData()" 
-              [options]="chartOptions"
-              height="300">
-            </p-chart>
-          </p-card>
-          
-          <!-- Team Performance Comparison -->
-          <p-card>
-            <ng-template pTemplate="header">
-              <div class="p-4 border-b border-surface-200">
-                <h4 class="font-semibold">{{ 'all.club.teamComparison' | translate }}</h4>
-              </div>
-            </ng-template>
-            <p-chart 
-              type="bar" 
-              [data]="teamComparisonChartData()" 
-              [options]="chartOptions"
-              height="300">
-            </p-chart>
-          </p-card>
-          
-          <!-- Games Distribution -->
-          <p-card>
-            <ng-template pTemplate="header">
-              <div class="p-4 border-b border-surface-200">
-                <h4 class="font-semibold">{{ 'all.club.gamesDistribution' | translate }}</h4>
-              </div>
-            </ng-template>
-            <p-chart 
-              type="doughnut" 
-              [data]="gamesDistributionChartData()" 
-              [options]="doughnutChartOptions"
-              height="300">
-            </p-chart>
-          </p-card>
-          
-          <!-- Seasonal Performance -->
-          <p-card>
-            <ng-template pTemplate="header">
-              <div class="p-4 border-b border-surface-200">
-                <h4 class="font-semibold">{{ 'all.club.seasonalPerformance' | translate }}</h4>
-              </div>
-            </ng-template>
-            <p-chart 
-              type="radar" 
-              [data]="seasonalPerformanceChartData()" 
-              [options]="radarChartOptions"
-              height="300">
-            </p-chart>
-          </p-card>
-        </div>
+          <app-club-performance-tab [clubId]="club.id" [season]="currentSeason()" />
         </p-tabpanel>
-      
+
         <!-- Match Schedule & Results Tab -->
         <p-tabpanel value="3">
-        
-        @if (teamIds(); as teamIds) {
-          <div class="grid gap-6">
-            <!-- Recent Games -->
-            <p-card>
-              <ng-template pTemplate="header">
-                <div class="p-4 border-b border-surface-200">
-                  <h4 class="font-semibold flex items-center gap-2">
-                    <i class="pi pi-history text-primary-500"></i>
-                    {{ 'all.game.recent.title' | translate }}
-                  </h4>
-                </div>
-              </ng-template>
-              <app-recent-games [for]="teamIds" [type]="'team'" />
-            </p-card>
-            
-            <!-- Upcoming Games -->
-            <p-card>
-              <ng-template pTemplate="header">
-                <div class="p-4 border-b border-surface-200">
-                  <h4 class="font-semibold flex items-center gap-2">
-                    <i class="pi pi-calendar text-primary-500"></i>
-                    {{ 'all.game.upcoming.title' | translate }}
-                  </h4>
-                </div>
-              </ng-template>
-              <app-upcoming-games [for]="teamIds" [type]="'team'" />
-            </p-card>
-          </div>
-        }
+          <app-club-schedule-tab [clubId]="club.id" [season]="currentSeason()" />
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

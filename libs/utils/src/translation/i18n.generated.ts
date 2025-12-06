@@ -32,6 +32,23 @@ export type I18nTranslations = {
                 "title": string;
             };
         };
+        "club": {
+            "allPlayers": string;
+            "avgRanking": string;
+            "gamesDistribution": string;
+            "managePlayers": string;
+            "performance": string;
+            "playerRoster": string;
+            "schedule": string;
+            "seasonalPerformance": string;
+            "stats": string;
+            "teamComparison": string;
+            "totalGames": string;
+            "totalPlayers": string;
+            "totalTeams": string;
+            "winRate": string;
+            "winRateTrend": string;
+        };
         "clubs": {
             "membershipType": {
                 "loan": string;
@@ -40,15 +57,18 @@ export type I18nTranslations = {
             "search": string;
         };
         "common": {
+            "actions": string;
             "cancel": string;
             "error": string;
             "name": string;
             "no": string;
             "save": string;
+            "search": string;
             "season": string;
             "selectSeason": string;
             "success": string;
             "viewAll": string;
+            "viewDetails": string;
             "yes": string;
         };
         "competition": {
@@ -219,6 +239,12 @@ export type I18nTranslations = {
             "searchPlayersDescription": string;
         };
         "player": {
+            "games": string;
+            "name": string;
+            "ranking": string;
+            "stats": string;
+            "winRate": string;
+            "wins": string;
             "edit": {
                 "actions": {
                     "cancel": string;
@@ -526,6 +552,10 @@ export type I18nTranslations = {
         };
         "team": {
             "captain": string;
+            "games": string;
+            "wins": string;
+            "winRate": string;
+            "name": string;
             "edit": {
                 "abbreviation": {
                     "label": string;

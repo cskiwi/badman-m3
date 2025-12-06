@@ -126,15 +126,23 @@ export class OverviewService {
     return err.statusText || 'An error occurred';
   }
 
-  private _buildWhereClause(params: any) {
-    const where: any = {
+  private _buildWhereClause(params: Partial<{
+    query: string | null;
+    state: string | null;
+    country: string | null;
+    minPlayers: number | null;
+    maxPlayers: number | null;
+    minTeams: number | null;
+    maxTeams: number | null;
+  }> | undefined) {
+    const where: Record<string, unknown> = {
       clubId: { ne: null }
     };
 
     if (params?.query) {
       const searchTerms = this._parseSearchQuery(params.query);
       if (searchTerms.length > 0) {
-        where.OR = [
+        where['OR'] = [
           ...searchTerms.map(term => ({ name: { ilike: `%${term}%` } })),
           ...searchTerms.map(term => ({ fullName: { ilike: `%${term}%` } })),
           ...searchTerms.map(term => ({ abbreviation: { ilike: `%${term}%` } })),
@@ -144,11 +152,11 @@ export class OverviewService {
     }
 
     if (params?.state) {
-      where.state = { eq: params.state };
+      where['state'] = { eq: params.state };
     }
 
     if (params?.country) {
-      where.country = { eq: params.country };
+      where['country'] = { eq: params.country };
     }
 
     // Note: Player and team count filtering would require more complex GraphQL queries

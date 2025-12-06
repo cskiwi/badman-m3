@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, InputType, ObjectType, OmitType, PartialType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
@@ -78,3 +78,9 @@ export class Claim extends BaseEntity {
   })
   roles?: Relation<Role[]>;
 }
+
+@InputType()
+export class ClaimUpdateInput extends PartialType(OmitType(Claim, ['createdAt', 'updatedAt'] as const), InputType) {}
+
+@InputType()
+export class ClaimNewInput extends PartialType(OmitType(ClaimUpdateInput, ['id'] as const), InputType) {}

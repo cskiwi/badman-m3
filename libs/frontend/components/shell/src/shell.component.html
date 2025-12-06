@@ -13,13 +13,14 @@
                 @if (user()?.slug) {
                   <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/players', user()?.slug]" [text]="true" size="small" />
                   @if (clubs().length === 1) {
-                    <p-button [label]="'all.players.my-club' | translate" [routerLink]="['/clubs', clubs()[0].club.slug]" [text]="true" size="small" />
+                    <p-button
+                      [label]="'all.players.my-club' | translate"
+                      [routerLink]="['/clubs', clubs()[0].club.slug]"
+                      [text]="true"
+                      size="small"
+                    />
                   }
                 }
-                <!-- Main Navigation Links -->
-                <p-button label="Players" routerLink="/players" [text]="true" size="small" />
-                <p-button label="Clubs" routerLink="/clubs" [text]="true" size="small" />
-                <p-button label="Tournaments" routerLink="/tournament" [text]="true" size="small" />
               </nav>
             </div>
           </ng-template>
@@ -31,11 +32,11 @@
           <ng-template #end>
             <div class="flex items-center space-x-2">
               <!-- Theme Toggle Icon Button -->
-              <p-button 
-                [icon]="themeToggleIcon()" 
-                [outlined]="true" 
+              <p-button
+                [icon]="themeToggleIcon()"
+                [outlined]="true"
                 [rounded]="true"
-                (click)="toggleTheme()" 
+                (click)="toggleTheme()"
                 [ariaLabel]="themeToggleLabel()"
                 size="small"
               />
@@ -59,11 +60,11 @@
             </div>
             <div class="flex items-center space-x-2">
               <!-- Theme Toggle Icon Button -->
-              <p-button 
-                [icon]="themeToggleIcon()" 
-                [outlined]="true" 
+              <p-button
+                [icon]="themeToggleIcon()"
+                [outlined]="true"
                 [rounded]="true"
-                (click)="toggleTheme()" 
+                (click)="toggleTheme()"
                 [ariaLabel]="themeToggleLabel()"
                 size="small"
               />
@@ -134,7 +135,11 @@
           <a routerLink="/clubs" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             {{ 'all.navigation.clubs' | translate }}
           </a>
-          <a routerLink="/tournament" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
+          <a
+            routerLink="/tournament"
+            class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
+            (click)="sidebarVisible = false"
+          >
             {{ 'all.navigation.tournaments' | translate }}
           </a>
           <a

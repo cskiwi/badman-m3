@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
-import { debounceTime, distinctUntilChanged, lastValueFrom, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, lastValueFrom } from 'rxjs';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -223,8 +223,8 @@ export class TeamEditComponent {
       });
   }
 
-  onCaptainSelect(event: any): void {
-    const player = event.value || event;
+  onCaptainSelect(event: Player | { value: Player }): void {
+    const player = 'value' in event ? event.value : event;
     this.selectedCaptain.set(player);
     this.teamForm.markAsDirty();
   }

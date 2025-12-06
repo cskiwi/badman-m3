@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { TranslateModule } from '@ngx-translate/core';
-import { OverviewService } from './page-overview.service';
+import { ClubWithStats, OverviewService } from './page-overview.service';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -84,12 +84,12 @@ export class PageOverviewComponent {
     this.dataService.filter.reset();
   }
 
-  getPlayersCountLabel(club: any): string {
+  getPlayersCountLabel(club: ClubWithStats): string {
     const count = club.playersCount || 0;
     return count === 1 ? '1 player' : `${count} players`;
   }
 
-  getTeamsCountLabel(club: any): string {
+  getTeamsCountLabel(club: ClubWithStats): string {
     const count = club.teamsCount || 0;
     return count === 1 ? '1 team' : `${count} teams`;
   }

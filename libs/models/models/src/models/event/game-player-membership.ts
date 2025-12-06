@@ -14,6 +14,7 @@ import { Player } from '../player.model';
 import { Game } from './game.model';
 
 @Index(["playerId", "gameId"])
+@Index(['gameId'])
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
 export class GamePlayerMembership extends BaseEntity {
