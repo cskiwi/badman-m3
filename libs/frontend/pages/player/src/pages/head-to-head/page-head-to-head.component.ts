@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '@app/frontend-modules-auth/service';
+import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-head-to-head.service';
@@ -30,6 +31,7 @@ import { IftaLabelModule } from 'primeng/iftalabel';
     DatePickerModule,
     SelectModule,
     IftaLabelModule,
+    PageHeaderComponent,
   ],
   templateUrl: './page-head-to-head.component.html',
   styleUrl: './page-head-to-head.component.scss',

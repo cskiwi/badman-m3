@@ -1,30 +1,23 @@
 <section class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
   <div class="bg-highlight rounded-lg p-6 inline-block">
-    <div class="header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <div class="avatar w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-2xl [&:empty]:hidden">
-          <ng-content select="[avatar]"></ng-content>
-        </div>
-        <!-- Name and info -->
-        <div class="info flex flex-col justify-center">
-          <h1 class="title text-2xl font-bold mb-1">
-            <ng-content select="[title]"></ng-content>
-          </h1>
-          <div class="sub-title flex items-center gap-2 text-muted-color">
-            <ng-content select="[subTitle]"></ng-content>
-          </div>
-        </div>
+    <div class="header flex items-center gap-4">
+      <div class="avatar w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-2xl [&:empty]:hidden">
+        <ng-content select="[avatar]"></ng-content>
       </div>
-
-      <!-- Actions inside the header background -->
-      <div class="actions flex flex-row items-center justify-end [&:empty]:hidden">
-        <ng-content select="[actions]"></ng-content>
+      <!-- Name and info -->
+      <div class="info flex flex-col justify-center">
+        <h1 class="title text-2xl font-bold mb-1">
+          <ng-content select="[title]"></ng-content>
+        </h1>
+        <div class="sub-title flex items-center gap-2 text-muted-color">
+          <ng-content select="[subTitle]"></ng-content>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Right side content outside the background -->
-  <div class="flex items-center sm:pt-6 [&:empty]:hidden">
-    <ng-content select="[rightSide]"></ng-content>
+  <!-- Actions outside the background, right-aligned -->
+  <div class="flex flex-row items-center gap-4 sm:pt-6 [&:empty]:hidden">
+    <ng-content select="[actions]"></ng-content>
   </div>
 </section>

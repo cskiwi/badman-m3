@@ -1,20 +1,15 @@
 @if (!loading()) {
   @if (this.competition(); as competition) {
     <app-page-header>
-      <ng-content title>{{ competition.name }} - {{ 'all.competition.subEvents' | translate }}</ng-content>
-      <ng-content subTitle>
-        <div class="info">
-          <div class="sub-text">
-            <ng-container>
-              <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
-            </ng-container>
-            @if (competition.season) {
-              - {{ 'all.competition.season' | translate }} {{ competition.season }}
-            }
-          </div>
-        </div>
-      </ng-content>
-      <ng-content actions> </ng-content>
+      <i avatar class="pi pi-th-large text-2xl"></i>
+      <span title>{{ competition.name }} - {{ 'all.competition.subEvents' | translate }}</span>
+      <ng-container subTitle>
+        <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
+        @if (competition.season) {
+          <span>•</span>
+          <span>{{ 'all.competition.season' | translate }} {{ competition.season }}</span>
+        }
+      </ng-container>
     </app-page-header>
 
     <!-- Sub Events Section -->

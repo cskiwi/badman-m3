@@ -1,22 +1,20 @@
 @if (false) {
   <app-page-header>
-    <ng-content title>{{ 'all.admin.accessRequired' | translate }}</ng-content>
-    <ng-content subTitle>
-      <div class="info">
-        <div class="sub-text">{{ 'all.admin.noPermission' | translate }}</div>
-      </div>
-    </ng-content>
+    <i avatar class="pi pi-lock text-2xl"></i>
+    <span title>{{ 'all.admin.accessRequired' | translate }}</span>
+    <ng-container subTitle>
+      <span>{{ 'all.admin.noPermission' | translate }}</span>
+    </ng-container>
   </app-page-header>
 
   <p-message severity="error" [text]="'You need administrator permissions to access this page.'"></p-message>
 } @else {
   <app-page-header>
-    <ng-content title>{{ 'all.admin.panel.title' | translate }}</ng-content>
-    <ng-content subTitle>
-      <div class="info">
-        <div class="sub-text">{{ 'all.admin.panel.description' | translate }}</div>
-      </div>
-    </ng-content>
+    <i avatar class="pi pi-cog text-2xl"></i>
+    <span title>{{ 'all.admin.panel.title' | translate }}</span>
+    <ng-container subTitle>
+      <span>{{ 'all.admin.panel.description' | translate }}</span>
+    </ng-container>
   </app-page-header>
 
   <p-tabs [(value)]="activeTabIndex" [lazy]="true">

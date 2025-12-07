@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { SeoService } from '@app/frontend-modules-seo/service';
+import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { MenuItem } from 'primeng/api';
@@ -29,6 +30,7 @@ import { PlayerDetailService } from './page-player-detail.service';
     CardModule,
     TabsModule,
     BreadcrumbModule,
+    PageHeaderComponent,
     PlayerStatisticsCardComponent,
     PlayerGamesTableComponent,
     PlayerTournamentHistoryComponent,

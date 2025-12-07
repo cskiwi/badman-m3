@@ -13,7 +13,7 @@
           <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
         }
       </ng-container>
-      <ng-container rightSide>
+      <ng-container actions>
         <p-select
           id="season-select"
           [formControl]="seasonControl"

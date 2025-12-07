@@ -3,39 +3,32 @@
     @if (this.subEvent(); as subEvent) {
       @if (this.draw(); as draw) {
         <app-page-header>
-          <ng-content title>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</ng-content>
-          <ng-content subTitle>
-            <div class="info">
-              <div class="sub-text">
-                <ng-container>
-                  <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
-                  <span class="mx-2">></span>
-                  <span>{{ subEvent.name }}</span>
-                  <span class="mx-2">></span>
-                  <span>{{ draw.name || ('all.competition.draw' | translate) }}</span>
-                </ng-container>
-              </div>
-            </div>
-          </ng-content>
-          <ng-content actions>
-            <div class="flex items-center gap-2">
-              @if (competition.visualCode && draw.visualCode) {
-                <a
-                  [href]="'https://www.toernooi.nl/sport/league/draw?id=' + competition.visualCode + '&draw=' + draw.visualCode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
-                  title="View draw on toernooi.nl"
-                >
-                  <i class="pi pi-external-link text-xs"></i>
-                  <span>toernooi.nl</span>
-                </a>
-              }
-              @if (syncConfig(); as config) {
-                <app-sync-button [config]="config" />
-              }
-            </div>
-          </ng-content>
+          <i avatar class="pi pi-sitemap text-2xl"></i>
+          <span title>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</span>
+          <ng-container subTitle>
+            <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
+            <span>›</span>
+            <span>{{ subEvent.name }}</span>
+            <span>›</span>
+            <span>{{ draw.name || ('all.competition.draw' | translate) }}</span>
+          </ng-container>
+          <ng-container actions>
+            @if (competition.visualCode && draw.visualCode) {
+              <a
+                [href]="'https://www.toernooi.nl/sport/league/draw?id=' + competition.visualCode + '&draw=' + draw.visualCode"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
+                title="View draw on toernooi.nl"
+              >
+                <i class="pi pi-external-link text-xs"></i>
+                <span>toernooi.nl</span>
+              </a>
+            }
+            @if (syncConfig(); as config) {
+              <app-sync-button [config]="config" />
+            }
+          </ng-container>
         </app-page-header>
 
         <!-- Draw Information Section -->
