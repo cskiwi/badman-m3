@@ -1,4 +1,12 @@
 {
+  "env": {
+    "CLAUDE_FLOW_AUTO_COMMIT": "false",
+    "CLAUDE_FLOW_AUTO_PUSH": "false",
+    "CLAUDE_FLOW_HOOKS_ENABLED": "true",
+    "CLAUDE_FLOW_TELEMETRY_ENABLED": "true",
+    "CLAUDE_FLOW_REMOTE_EXECUTION": "true",
+    "CLAUDE_FLOW_CHECKPOINTS_ENABLED": "true"
+  },
   "permissions": {
     "allow": [
       "mcp__ruv-swarm",
@@ -7,8 +15,88 @@
       "Bash(npm rebuild:*)",
       "Bash(npx nx build:*)",
       "Bash(npx nx show:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm rebuild:*)",
+      "Bash(npx claude-flow:*)"
     ],
-    "deny": []
-  }
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"INPUT=$(cat); CMD=$(echo \\\"$INPUT\\\" | node -pe 'JSON.parse(require(\\\"fs\\\").readFileSync(\\\"/dev/stdin\\\")).tool_input.command || \\\"\\\"'); npx claude-flow@alpha hooks pre-command --command \\\"$CMD\\\" --validate-safety true --prepare-resources true\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"INPUT=$(cat); FILE=$(echo \\\"$INPUT\\\" | node -pe 'const data=JSON.parse(require(\\\"fs\\\").readFileSync(\\\"/dev/stdin\\\")); data.tool_input.file_path || data.tool_input.path || \\\"\\\"'); npx claude-flow@alpha hooks pre-edit --file \\\"$FILE\\\" --auto-assign-agents true --load-context true\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"INPUT=$(cat); CMD=$(echo \\\"$INPUT\\\" | node -pe 'JSON.parse(require(\\\"fs\\\").readFileSync(\\\"/dev/stdin\\\")).tool_input.command || \\\"\\\"'); npx claude-flow@alpha hooks post-command --command \\\"$CMD\\\" --track-metrics true --store-results true\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c \"INPUT=$(cat); FILE=$(echo \\\"$INPUT\\\" | node -pe 'const data=JSON.parse(require(\\\"fs\\\").readFileSync(\\\"/dev/stdin\\\")); data.tool_input.file_path || data.tool_input.path || \\\"\\\"'); npx claude-flow@alpha hooks post-edit --file \\\"$FILE\\\" --format true --update-memory true\""
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'INPUT=$(cat); CUSTOM=$(echo \"$INPUT\" | node -pe \"try{const data=JSON.parse(require(\\\"fs\\\").readFileSync(\\\"/dev/stdin\\\"));data.custom_instructions||\\\"\\\"}catch{\\\"\\\"}\"); echo \"🔄 PreCompact Guidance:\"; echo \"📋 IMPORTANT: Review CLAUDE.md in project root for:\"; echo \"   • 54 available agents and concurrent usage patterns\"; echo \"   • Swarm coordination strategies (hierarchical, mesh, adaptive)\"; echo \"   • SPARC methodology workflows with batchtools optimization\"; echo \"   • Critical concurrent execution rules (GOLDEN RULE: 1 MESSAGE = ALL OPERATIONS)\"; if [ -n \"$CUSTOM\" ]; then echo \"🎯 Custom compact instructions: $CUSTOM\"; fi; echo \"✅ Ready for compact operation\"'"
+          }
+        ]
+      },
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"🔄 Auto-Compact Guidance (Context Window Full):\"; echo \"📋 CRITICAL: Before compacting, ensure you understand:\"; echo \"   • All 54 agents available in .claude/agents/ directory\"; echo \"   • Concurrent execution patterns from CLAUDE.md\"; echo \"   • Batchtools optimization for 300% performance gains\"; echo \"   • Swarm coordination strategies for complex tasks\"; echo \"⚡ Apply GOLDEN RULE: Always batch operations in single messages\"; echo \"✅ Auto-compact proceeding with full agent context\"'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude-flow@alpha hooks session-end --generate-summary true --persist-state true --export-metrics true"
+          }
+        ]
+      }
+    ]
+  },
+  "includeCoAuthoredBy": true,
+  "enabledMcpjsonServers": [
+    "claude-flow",
+    "ruv-swarm"
+  ]
 }

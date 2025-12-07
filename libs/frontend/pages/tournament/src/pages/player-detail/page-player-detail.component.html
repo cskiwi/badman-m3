@@ -1,0 +1,246 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="space-y-6">
+    <div class="w-full">
+      <p-progressBar mode="indeterminate" styleClass="h-1"></p-progressBar>
+    </div>
+
+    <!-- Loading Header -->
+    <div class="bg-highlight rounded-lg p-6">
+      <div class="flex flex-col md:flex-row gap-6">
+        <p-skeleton shape="circle" size="4rem"></p-skeleton>
+        <div class="flex-1 space-y-3">
+          <p-skeleton height="2rem" width="60%"></p-skeleton>
+          <p-skeleton height="1rem" width="40%"></p-skeleton>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <p-skeleton height="8rem" styleClass="border-round"></p-skeleton>
+      }
+    </div>
+
+    <!-- Loading Content -->
+    <p-skeleton height="20rem" styleClass="border-round"></p-skeleton>
+  </div>
+}
+
+<!-- Error State -->
+@if (error() && !loading()) {
+  <div class="flex items-center justify-center min-h-96">
+    <div class="max-w-md w-full bg-highlight rounded-lg p-6">
+      <div class="flex flex-col items-center text-center space-y-4">
+        <i class="pi pi-exclamation-triangle text-6xl text-red-500"></i>
+        <h3 class="text-xl font-semibold">
+          {{ 'ERROR.GENERIC_TITLE' | translate }}
+        </h3>
+        <p class="text-muted-color">
+          {{ error() }}
+        </p>
+        <div class="flex gap-3 pt-2">
+          <p-button
+            (click)="goBack()"
+            [label]="'COMMON.BACK' | translate"
+            icon="pi pi-arrow-left"
+            severity="secondary"
+            size="small">
+          </p-button>
+          <p-button
+            (click)="dataService.filter.updateValueAndValidity()"
+            [label]="'COMMON.RETRY' | translate"
+            icon="pi pi-refresh"
+            size="small">
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Main Content -->
+@if (player() && !loading()) {
+  <div class="space-y-6">
+    <!-- Navigation Breadcrumb -->
+    <p-breadcrumb
+      [model]="breadcrumbItems()"
+      [home]="homeItem"
+      styleClass="bg-transparent border-0 p-0">
+    </p-breadcrumb>
+
+    <!-- Player Header -->
+    <app-page-header>
+      <app-player-avatar avatar [player]="player()" size="large"></app-player-avatar>
+      <span title>{{ playerDisplayName() }}</span>
+      <ng-container subTitle>
+        @if (player()?.memberId) {
+          <span>{{ player()?.memberId }}</span>
+        }
+        @if (playerAge()) {
+          <span>•</span>
+          <span>{{ playerAge() }} {{ 'PLAYER.YEARS_OLD' | translate }}</span>
+        }
+        @if (player()?.gender) {
+          <span>•</span>
+          <span>{{ player()?.gender === 'M' ? ('GENDER.MALE' | translate) : ('GENDER.FEMALE' | translate) }}</span>
+        }
+      </ng-container>
+      <ng-container actions>
+        @if (player()?.competitionPlayer) {
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium">
+            <i class="pi pi-star-fill text-xs"></i>
+            {{ 'PLAYER.COMPETITION_PLAYER' | translate }}
+          </div>
+        }
+        <p-button
+          (click)="goBack()"
+          [label]="'COMMON.BACK' | translate"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          size="small"
+          [text]="true">
+        </p-button>
+      </ng-container>
+    </app-page-header>
+
+        <!-- Statistics Cards -->
+        @if (statistics()) {
+          <app-player-statistics-card 
+            [statistics]="statistics()!">
+          </app-player-statistics-card>
+        }
+
+        <!-- Main Content Tabs -->
+        <div class="bg-surface-0 dark:bg-surface-900 rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden">
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">
+                <i class="pi pi-list mr-2"></i>
+                {{ 'PLAYER.RECENT_GAMES' | translate }}
+              </p-tab>
+              <p-tab value="1">
+                <i class="pi pi-trophy mr-2"></i>
+                {{ 'PLAYER.TOURNAMENT_HISTORY' | translate }}
+              </p-tab>
+              <p-tab value="2">
+                <i class="pi pi-chart-line mr-2"></i>
+                {{ 'PLAYER.PERFORMANCE' | translate }}
+              </p-tab>
+              <p-tab value="3">
+                <i class="pi pi-users mr-2"></i>
+                {{ 'PLAYER.HEAD_TO_HEAD' | translate }}
+              </p-tab>
+              <p-tab value="4">
+                <i class="pi pi-database mr-2"></i>
+                {{ 'PLAYER.ALL_GAMES' | translate }}
+              </p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+              <!-- Recent Games Tab -->
+              <p-tabpanel value="0">
+                <div class="p-6">
+                  @if (recentGames().length > 0) {
+                    <app-player-games-table 
+                      [games]="recentGames()" 
+                      [playerId]="player()?.id!"
+                      [showTournamentInfo]="true">
+                    </app-player-games-table>
+                  } @else {
+                    <div class="flex flex-col items-center justify-center py-16 text-center">
+                      <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
+                      <h3 class="text-lg font-semibold text-surface-600 dark:text-surface-400 mb-2">
+                        {{ 'PLAYER.NO_RECENT_GAMES' | translate }}
+                      </h3>
+                      <p class="text-surface-500 dark:text-surface-400">
+                        {{ 'PLAYER.NO_RECENT_GAMES_DESCRIPTION' | translate }}
+                      </p>
+                    </div>
+                  }
+                </div>
+              </p-tabpanel>
+
+              <!-- Tournament History Tab -->
+              <p-tabpanel value="1">
+                <div class="p-6">
+                  @if (tournamentHistory().length > 0) {
+                    <app-player-tournament-history 
+                      [tournamentHistory]="tournamentHistory()"
+                      [playerId]="player()?.id!">
+                    </app-player-tournament-history>
+                  } @else {
+                    <div class="flex flex-col items-center justify-center py-16 text-center">
+                      <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
+                      <h3 class="text-lg font-semibold text-surface-600 dark:text-surface-400 mb-2">
+                        {{ 'PLAYER.NO_TOURNAMENT_HISTORY' | translate }}
+                      </h3>
+                      <p class="text-surface-500 dark:text-surface-400">
+                        {{ 'PLAYER.NO_TOURNAMENT_HISTORY_DESCRIPTION' | translate }}
+                      </p>
+                    </div>
+                  }
+                </div>
+              </p-tabpanel>
+
+              <!-- Performance Chart Tab -->
+              <p-tabpanel value="2">
+                <div class="p-6">
+                  @if (allGames().length > 0) {
+                    <app-player-performance-chart 
+                      [games]="allGames()" 
+                      [playerId]="player()?.id!">
+                    </app-player-performance-chart>
+                  } @else {
+                    <div class="flex flex-col items-center justify-center py-16 text-center">
+                      <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
+                      <h3 class="text-lg font-semibold text-surface-600 dark:text-surface-400 mb-2">
+                        {{ 'PLAYER.NO_PERFORMANCE_DATA' | translate }}
+                      </h3>
+                      <p class="text-surface-500 dark:text-surface-400">
+                        {{ 'PLAYER.NO_PERFORMANCE_DATA_DESCRIPTION' | translate }}
+                      </p>
+                    </div>
+                  }
+                </div>
+              </p-tabpanel>
+
+              <!-- Head-to-Head Tab -->
+              <p-tabpanel value="3">
+                <div class="p-6">
+                  <app-player-head-to-head 
+                    [games]="allGames()" 
+                    [playerId]="player()?.id!">
+                  </app-player-head-to-head>
+                </div>
+              </p-tabpanel>
+
+              <!-- All Games Tab -->
+              <p-tabpanel value="4">
+                <div class="p-6">
+                  @if (allGames().length > 0) {
+                    <app-player-games-table 
+                      [games]="allGames()" 
+                      [playerId]="player()?.id!"
+                      [showTournamentInfo]="true"
+                      [showPagination]="true">
+                    </app-player-games-table>
+                  } @else {
+                    <div class="flex flex-col items-center justify-center py-16 text-center">
+                      <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
+                      <h3 class="text-lg font-semibold text-surface-600 dark:text-surface-400 mb-2">
+                        {{ 'PLAYER.NO_GAMES' | translate }}
+                      </h3>
+                      <p class="text-surface-500 dark:text-surface-400">
+                        {{ 'PLAYER.NO_GAMES_DESCRIPTION' | translate }}
+                      </p>
+                    </div>
+                  }
+                </div>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    }

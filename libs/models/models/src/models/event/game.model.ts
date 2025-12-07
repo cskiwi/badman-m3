@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -20,6 +21,8 @@ import { GameStatus, GameType } from '@app/models-enum';
 
 @ObjectType('Game', { description: 'A Game' })
 @Entity('Games', { schema: 'event' })
+@Index(['linkId', 'linkType'])
+@Index(['playedAt'])
 export class Game extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')

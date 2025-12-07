@@ -1,172 +1,79 @@
 @if (!loading()) {
   @if (this.club(); as club) {
+    <!-- Club Header -->
     <app-page-header>
-      <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-      <ng-content title>{{ club.fullName }}</ng-content>
-      <ng-content subTitle>
-        <div class="info">
-          <div class="sub-text">
-            <ng-container
-              ><a [routerLink]="['/', 'club', club.slug]">{{ club.name }}</a></ng-container
-            >
-            @if (club.name && club.clubId) {
-              -
-            }
-            {{ club.clubId }}
-          </div>
-        </div>
-      </ng-content>
-      <ng-content actions> </ng-content>
+      <i avatar class="pi pi-building text-2xl"></i>
+      <span title>{{ club.fullName || club.name }}</span>
+      <ng-container subTitle>
+        @if (club.clubId) {
+          <span>{{ club.clubId }}</span>
+        }
+        @if (club.state || club.country) {
+          <span>•</span>
+          <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
+        }
+      </ng-container>
+      <ng-container actions>
+        <p-select
+          id="season-select"
+          [formControl]="seasonControl"
+          [options]="availableSeasons()"
+          optionLabel="label"
+          optionValue="value"
+          [style]="{ 'min-width': '140px' }"
+          placeholder="{{ 'all.common.selectSeason' | translate }}"
+        />
+      </ng-container>
     </app-page-header>
 
-    <!-- Teams overview section -->
-    <section class="teams-overview">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h3 class="flex items-center gap-2 text-xl font-semibold">
-          <i class="pi pi-users text-primary-500"></i>
+    <!-- Main Content Tabs -->
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">
+          <i class="pi pi-users mr-2"></i>
           {{ 'all.team.overview.title' | translate }}
-        </h3>
+        </p-tab>
+        <p-tab value="1">
+          <i class="pi pi-user mr-2"></i>
+          {{ 'all.club.playerRoster' | translate }}
+        </p-tab>
+        <p-tab value="2">
+          <i class="pi pi-chart-line mr-2"></i>
+          {{ 'all.club.performance' | translate }}
+        </p-tab>
+        <p-tab value="3">
+          <i class="pi pi-calendar mr-2"></i>
+          {{ 'all.club.schedule' | translate }}
+        </p-tab>
+      </p-tablist>
 
-        <!-- Season selector -->
-        <div class="flex items-center gap-2">
-          <label for="season-select" class="text-sm font-medium text-surface-600"> {{ 'all.common.season' | translate }}: </label>
-          <p-select
-            id="season-select"
-            [formControl]="seasonControl"
-            [options]="availableSeasons()"
-            optionLabel="label"
-            optionValue="value"
-            [style]="{ 'min-width': '120px' }"
-            placeholder="{{ 'all.common.selectSeason' | translate }}"
+      <p-tabpanels>
+        <!-- Teams Tab -->
+        <p-tabpanel value="0">
+          <app-club-teams-tab
+            [clubId]="club.id"
+            [season]="currentSeason()"
+            [canEditTeamFn]="canEditTeam.bind(this)"
+            (editTeamClicked)="editTeam($event)"
           />
-        </div>
-      </div>
+        </p-tabpanel>
 
-      @if (teamsLoading()) {
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-            <div class="rounded-border bg-highlight p-4 space-y-3">
-              <div class="flex items-center justify-between">
-                <p-skeleton width="8rem" height="1.25rem"></p-skeleton>
-                <p-skeleton width="3rem" height="1rem" borderRadius="1rem"></p-skeleton>
-              </div>
-              <div class="space-y-2">
-                <p-skeleton width="6rem" height="1rem"></p-skeleton>
-                <p-skeleton width="7rem" height="1rem"></p-skeleton>
-                <p-skeleton width="5rem" height="1rem"></p-skeleton>
-              </div>
-              <div class="flex gap-2">
-                <p-skeleton width="4rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
-                <p-skeleton width="3rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
-              </div>
-            </div>
-          }
-        </div>
-      } @else if (teams().length > 0) {
-        <div class="grid gap-4 md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2">
-          @for (team of teams(); track team.id) {
-            <div class="rounded-border bg-highlight p-4">
-              <div class="flex items-center justify-between">
-                <span class="font-semibold text-primary my-2">{{ team.name }}</span>
-                <div class="flex items-center gap-2">
-                  @if (team.abbreviation) {
-                    <p-badge [value]="team.abbreviation" />
-                  }
-                  @if (canEditTeam(team)) {
-                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-sm" (click)="editTeam(team)"></button>
-                  }
-                </div>
-              </div>
+        <!-- Player Roster Tab -->
+        <p-tabpanel value="1">
+          <!-- <app-club-players-tab [clubId]="club.id" [season]="currentSeason()" /> -->
+        </p-tabpanel>
 
-              <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
-                @if (team.captain) {
-                  <div class="flex items-center font-semibold gap-1">
-                    <i class="pi pi-user text-xs"></i>
-                    <span> {{ team.captain.fullName }}</span>
-                  </div>
-                }
-                @if (team.email) {
-                  <div class="flex items-center gap-1">
-                    <i class="pi pi-envelope text-xs"></i>
-                    <a [href]="'mailto:' + team.email" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{
-                      team.email
-                    }}</a>
-                  </div>
-                }
-                @if (team.phone) {
-                  <div class="flex items-center gap-1">
-                    <i class="pi pi-phone text-xs"></i>
-                    <a [href]="'tel:' + team.phone" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{
-                      team.phone | phoneNumber
-                    }}</a>
-                  </div>
-                }
-              </div>
+        <!-- Performance Charts Tab -->
+        <p-tabpanel value="2">
+          <app-club-performance-tab [clubId]="club.id" [season]="currentSeason()" />
+        </p-tabpanel>
 
-              <!-- Players List -->
-              <div>
-                @if (team.teamPlayerMemberships && team.teamPlayerMemberships.length > 0) {
-                  <div class="text-sm text-muted-color-emphasis">
-                    <!-- Clickable header -->
-                    <div (click)="toggleTeamPlayers(team.id)" class="w-full flex items-center gap-2 rounded-lg cursor-pointer">
-                      <i class="pi" [class.pi-chevron-right]="!isTeamExpanded(team.id)" [class.pi-chevron-down]="isTeamExpanded(team.id)"></i>
-                      {{ 'all.team.players' | translate }} ({{ team.teamPlayerMemberships.length }})
-                    </div>
-
-                    <!-- Expandable content -->
-                    <div
-                      class="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-300"
-                      [class.h-0]="!isTeamExpanded(team.id)"
-                      [class.opacity-0]="!isTeamExpanded(team.id)"
-                      [class.h-auto]="isTeamExpanded(team.id)"
-                      [class.opacity-100]="isTeamExpanded(team.id)"
-                      [class.mt-2]="isTeamExpanded(team.id)"
-                    >
-                      @for (membership of team.teamPlayerMemberships; track membership.id) {
-                        @if (membership.player) {
-                          <a
-                            [routerLink]="['/player', membership.player.id]"
-                            class="flex items-center gap-2 p-1 rounded-lg hover:bg-highlight-emphasis text-color transition-colors cursor-pointer"
-                          >
-                            <i class="pi pi-user text-xs text-muted-color"></i>
-                            <span class="truncate">{{ membership.player.firstName }} {{ membership.player.lastName[0] }}.</span>
-                          </a>
-                        }
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      } @else {
-        <div class="text-center py-8 text-surface-500">
-          <i class="pi pi-users text-4xl mb-2 block"></i>
-          <p>{{ 'all.team.noTeams' | translate }}</p>
-        </div>
-      }
-    </section>
-
-    @if (teamIds(); as teamIds) {
-      <section class="games">
-        <section class="recent-games">
-          <h3 class="flex items-center gap-2 text-xl font-semibold">
-            <i class="pi pi-history text-primary-500"></i>
-            {{ 'all.game.recent.title' | translate }}
-          </h3>
-          <app-recent-games [for]="teamIds" [type]="'team'" />
-        </section>
-        <section class="upcoming-games">
-          <h3 class="flex items-center gap-2 text-xl font-semibold">
-            <i class="pi pi-calendar text-primary-500"></i>
-            {{ 'all.game.upcoming.title' | translate }}
-          </h3>
-          <!-- @if (this.hasTeams()) { -->
-          <app-upcoming-games [for]="teamIds" [type]="'team'" />
-        </section>
-      </section>
-    }
+        <!-- Match Schedule & Results Tab -->
+        <p-tabpanel value="3">
+          <app-club-schedule-tab [clubId]="club.id" [season]="currentSeason()" />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
   }
 } @else {
   <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
@@ -178,4 +85,3 @@
     {{ error() }}
   </div>
 }
-

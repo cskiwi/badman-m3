@@ -25,6 +25,23 @@
       "title": "Admin Panel"
     }
   },
+  "club": {
+    "allPlayers": "All Players",
+    "avgRanking": "Avg. Ranking",
+    "gamesDistribution": "Games Distribution",
+    "managePlayers": "Manage Players",
+    "performance": "Performance",
+    "playerRoster": "Player Roster",
+    "schedule": "Schedule",
+    "seasonalPerformance": "Seasonal Performance",
+    "stats": "Club Statistics",
+    "teamComparison": "Team Comparison",
+    "totalGames": "Games",
+    "totalPlayers": "Players",
+    "totalTeams": "Teams",
+    "winRate": "Win %",
+    "winRateTrend": "Win % Trend"
+  },
   "clubs": {
     "membershipType": {
       "loan": "Loan",
@@ -33,18 +50,23 @@
     "search": "Find a club"
   },
   "common": {
+    "actions": "Actions",
     "cancel": "Cancel",
     "error": "Error",
     "name": "Name",
     "no": "No",
     "save": "Save",
+    "search": "Search",
     "season": "Season",
     "selectSeason": "Select season",
     "success": "Success",
     "viewAll": "View All",
+    "viewDetails": "View Details",
     "yes": "Yes"
   },
   "competition": {
+    "title": "Tournaments & Competitions",
+    "search": "Search tournaments and competitions",
     "bracket_view": "Bracket View",
     "bracket_view_description": "Visual bracket representation coming soon",
     "changeClosePeriod1": "Changes Close (Period 1)",
@@ -203,9 +225,19 @@
     "competitions": "Competitions",
     "home": "Home",
     "login": "Log in",
-    "players": "Players"
+    "players": "Players",
+    "searchClubs": "Search Clubs",
+    "searchClubsDescription": "Find and explore badminton clubs in your area",
+    "searchPlayers": "Search Players",
+    "searchPlayersDescription": "Discover players, rankings and statistics"
   },
   "player": {
+    "games": "Games",
+    "name": "Name",
+    "ranking": "Ranking",
+    "stats": "Statistics",
+    "winRate": "Win %",
+    "wins": "Wins",
     "edit": {
       "actions": {
         "cancel": "Cancel",
@@ -513,6 +545,10 @@
   },
   "team": {
     "captain": "Captain",
+    "games": "Games",
+    "wins": "Wins",
+    "winRate": "Win %",
+    "name": "Team Name",
     "edit": {
       "abbreviation": {
         "label": "Abbreviation",

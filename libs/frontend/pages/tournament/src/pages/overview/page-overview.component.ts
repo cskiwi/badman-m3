@@ -9,6 +9,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'app-page-overview',
@@ -21,6 +22,7 @@ import { CardModule } from 'primeng/card';
     InputTextModule,
     FloatLabelModule,
     CardModule,
+    ButtonModule,
     PageHeaderComponent
 ],
     templateUrl: './page-overview.component.html',

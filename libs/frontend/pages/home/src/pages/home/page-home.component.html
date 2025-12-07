@@ -1,15 +1,3 @@
-<app-page-header>
-  <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-  <ng-content title>{{ 'all.navigation.home' | translate }}</ng-content>
-  <ng-content subTitle>
-    <div class="info">
-      <!-- <div class="click-for-breakdown">
-      {{ 'all.ranking.breakdown.hint' | translate }}
-    </div> -->
-    </div>
-  </ng-content>
-</app-page-header>
-
 <section class="flex flex-col gap-2 ">
   <p-card>
     <p-table [value]="dataSource()" [loading]="loading()" [sortField]="'level'" [sortOrder]="1" styleClass="p-datatable-sm">

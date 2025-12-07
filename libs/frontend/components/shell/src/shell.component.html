@@ -11,9 +11,14 @@
               <!-- Desktop Navigation Links -->
               <nav class="flex items-center space-x-2">
                 @if (user()?.slug) {
-                  <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/player', user()?.slug]" [text]="true" size="small" />
+                  <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/players', user()?.slug]" [text]="true" size="small" />
                   @if (clubs().length === 1) {
-                    <p-button [label]="'all.players.my-club' | translate" [routerLink]="['/club', clubs()[0].club.slug]" [text]="true" size="small" />
+                    <p-button
+                      [label]="'all.players.my-club' | translate"
+                      [routerLink]="['/clubs', clubs()[0].club.slug]"
+                      [text]="true"
+                      size="small"
+                    />
                   }
                 }
               </nav>
@@ -27,11 +32,11 @@
           <ng-template #end>
             <div class="flex items-center space-x-2">
               <!-- Theme Toggle Icon Button -->
-              <p-button 
-                [icon]="themeToggleIcon()" 
-                [outlined]="true" 
+              <p-button
+                [icon]="themeToggleIcon()"
+                [outlined]="true"
                 [rounded]="true"
-                (click)="toggleTheme()" 
+                (click)="toggleTheme()"
                 [ariaLabel]="themeToggleLabel()"
                 size="small"
               />
@@ -55,11 +60,11 @@
             </div>
             <div class="flex items-center space-x-2">
               <!-- Theme Toggle Icon Button -->
-              <p-button 
-                [icon]="themeToggleIcon()" 
-                [outlined]="true" 
+              <p-button
+                [icon]="themeToggleIcon()"
+                [outlined]="true"
                 [rounded]="true"
-                (click)="toggleTheme()" 
+                (click)="toggleTheme()"
                 [ariaLabel]="themeToggleLabel()"
                 size="small"
               />
@@ -102,7 +107,7 @@
         <nav class="space-y-2 mt-20">
           @if (user()?.slug) {
             <a
-              [routerLink]="['/player', user()?.slug]"
+              [routerLink]="['/players', user()?.slug]"
               class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
               (click)="sidebarVisible = false"
             >
@@ -111,7 +116,7 @@
 
             @if (clubs().length === 1) {
               <a
-                [routerLink]="['/club', clubs()[0].club.slug]"
+                [routerLink]="['/clubs', clubs()[0].club.slug]"
                 class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
                 (click)="sidebarVisible = false"
               >
@@ -124,11 +129,18 @@
           <a routerLink="." class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             {{ 'all.navigation.home' | translate }}
           </a>
-          <a routerLink="player" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
+          <a routerLink="/players" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             {{ 'all.navigation.players' | translate }}
           </a>
-          <a routerLink="club" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
+          <a routerLink="/clubs" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
             {{ 'all.navigation.clubs' | translate }}
+          </a>
+          <a
+            routerLink="/tournament"
+            class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
+            (click)="sidebarVisible = false"
+          >
+            {{ 'all.navigation.tournaments' | translate }}
           </a>
           <a
             routerLink="competition"

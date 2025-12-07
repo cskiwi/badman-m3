@@ -1,10 +1,11 @@
-import { Field, ID, ObjectType, InputType, PartialType, OmitType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -17,6 +18,7 @@ import { TeamPlayerMembership } from './team-player-membership';
 import { Club } from './club.model';
 import { SortableField, WhereField } from '@app/utils';
 import { Days } from '@app/models-enum';
+import { Entry } from './event';
 
 @ObjectType('Team', { description: 'A Team' })
 @Entity('Teams')
@@ -52,7 +54,7 @@ export class Team extends BaseEntity {
   declare preferredTime?: string;
 
   @SortableField(() => String, { nullable: true })
-  @WhereField(() => String,{ nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: Days, nullable: true })
   declare preferredDay?: Days;
 
@@ -117,8 +119,8 @@ export class Team extends BaseEntity {
   @Column({ type: 'time', nullable: true })
   declare preferredTime2?: string;
 
-  @SortableField(() => String,{ nullable: true })
-  @WhereField(() => String,{ nullable: true })
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({ type: 'simple-enum', enum: Days, nullable: true })
   declare preferredDay2?: Days;
 
@@ -146,20 +148,8 @@ export class Team extends BaseEntity {
   @ManyToOne(() => Club, (club) => club.teams)
   declare club?: Relation<Club>;
 
-  // @SortableField({ nullable: true })
-  // @Column({ nullable: true })
-  // homeEncounters?: Relation<EncounterCompetition>;
-
-  // @SortableField({ nullable: true })
-  // @Column({ nullable: true })
-  // awayEncounters?: Relation<EncounterCompetition>;
+  // belongs to club
+  @SortableField(() => Entry, { nullable: true })
+  @OneToMany(() => Entry, (entry) => entry.team)
+  declare entries?: Relation<Entry[]>;
 }
-
-@InputType()
-export class TeamUpdateInput extends PartialType(
-  OmitType(Team, ['createdAt', 'updatedAt', 'captain', 'teamPlayerMemberships', 'club'] as const),
-  InputType,
-) {}
-
-@InputType()
-export class TeamNewInput extends PartialType(OmitType(TeamUpdateInput, ['id'] as const), InputType) {}

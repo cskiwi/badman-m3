@@ -20,7 +20,7 @@ import { SEO_CONFIG } from '@app/frontend-modules-seo';
 import { langulageInitializer, provideTranslation } from '@app/frontend-modules-translation';
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
-import { provideTranslateService, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import Aura from '@primeuix/themes/aura';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { providePrimeNG } from 'primeng/config';

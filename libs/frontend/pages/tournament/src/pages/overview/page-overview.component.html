@@ -1,18 +1,72 @@
 @if (!loading()) {
   <app-page-header>
-    <ng-content title>{{ 'all.navigation.competitions' | translate }}</ng-content>
+    <i avatar class="pi pi-trophy text-2xl"></i>
+    <span title>{{ 'all.navigation.competitions' | translate }}</span>
   </app-page-header>
   <section class="competitions p-4">
+    <!-- Navigation Cards Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <p-card 
+        [routerLink]="['/players']" 
+        class="cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-l-blue-500"
+        role="button"
+        tabindex="0"
+        [attr.aria-label]="'all.navigation.searchPlayers' | translate">
+        <ng-template pTemplate="header">
+          <div class="flex items-center gap-4 p-4">
+            <div class="bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center">
+              <i class="pi pi-users text-xl" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-blue-800 mb-1">{{ 'all.navigation.searchPlayers' | translate }}</h3>
+              <p class="text-blue-600 text-sm">{{ 'all.navigation.searchPlayersDescription' | translate }}</p>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+      
+      <p-card 
+        [routerLink]="['/clubs']" 
+        class="cursor-pointer hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-l-green-500"
+        role="button"
+        tabindex="0"
+        [attr.aria-label]="'all.navigation.searchClubs' | translate">
+        <ng-template pTemplate="header">
+          <div class="flex items-center gap-4 p-4">
+            <div class="bg-green-500 text-white rounded-full w-12 h-12 flex items-center justify-center">
+              <i class="pi pi-building text-xl" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-green-800 mb-1">{{ 'all.navigation.searchClubs' | translate }}</h3>
+              <p class="text-green-600 text-sm">{{ 'all.navigation.searchClubsDescription' | translate }}</p>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+    
+    <!-- Tournaments Section -->
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">{{ 'all.competition.title' | translate }}</h2>
     <p-floatlabel class="mb-6">
       <input type="text" [formControl]="this.query" id="competition-search" pInputText class="w-full" />
-      <label for="competition-search">{{ 'all.competitions.search' | translate }}</label>
+      <label for="competition-search">{{ 'all.competition.search' | translate }}</label>
     </p-floatlabel>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (competition of competitions(); track competition.id) {
-        <p-card [routerLink]="competition.slug" class="cursor-pointer hover:shadow-lg transition-shadow">
-          <ng-template pTemplate="title">
-            <h3 class="text-lg font-semibold">{{ competition.name }}</h3>
+        <p-card 
+          [routerLink]="competition.slug" 
+          class="cursor-pointer hover:shadow-lg transition-shadow bg-white border-l-4 border-l-purple-400 hover:border-l-purple-600"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="'View tournament: ' + competition.name">
+          <ng-template pTemplate="header">
+            <div class="p-4">
+              <div class="flex items-center gap-3 mb-2">
+                <i class="pi pi-trophy text-purple-600" aria-hidden="true"></i>
+                <h3 class="text-lg font-semibold text-gray-800">{{ competition.name }}</h3>
+              </div>
+            </div>
           </ng-template>
         </p-card>
       }

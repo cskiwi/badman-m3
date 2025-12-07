@@ -1,0 +1,251 @@
+@if (!loading()) {
+  <app-page-header>
+    <i avatar class="pi pi-building text-2xl"></i>
+    <span title>{{ 'all.navigation.clubs' | translate }}</span>
+  </app-page-header>
+  
+  <section class="clubs p-4">
+    <!-- Search and Filter Section -->
+    <div class="filters-section mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- Search Input -->
+        <div class="col-span-1 md:col-span-2">
+          <p-floatlabel>
+            <input type="text" [formControl]="query" id="club-search" pInputText class="w-full" />
+            <label for="club-search">{{ 'all.clubs.search' | translate }}</label>
+          </p-floatlabel>
+        </div>
+        
+        <!-- State Filter -->
+        <p-floatlabel>
+          <p-select
+            [formControl]="state"
+            [options]="stateOptions"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true"
+            id="state-filter"
+            class="w-full">
+          </p-select>
+          <label for="state-filter">{{ 'all.clubs.state' | translate }}</label>
+        </p-floatlabel>
+
+        <!-- Country Filter -->
+        <p-floatlabel>
+          <p-select
+            [formControl]="country"
+            [options]="countryOptions"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true"
+            id="country-filter"
+            class="w-full">
+          </p-select>
+          <label for="country-filter">{{ 'all.clubs.country' | translate }}</label>
+        </p-floatlabel>
+      </div>
+      
+      <!-- Advanced Filters Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+        <!-- Min Players -->
+        <p-floatlabel>
+          <p-inputNumber 
+            [formControl]="minPlayers" 
+            [min]="0"
+            [showButtons]="true"
+            [step]="1"
+            id="min-players"
+            class="w-full">
+          </p-inputNumber>
+          <label for="min-players">{{ 'all.clubs.minPlayers' | translate }}</label>
+        </p-floatlabel>
+        
+        <!-- Max Players -->
+        <p-floatlabel>
+          <p-inputNumber 
+            [formControl]="maxPlayers" 
+            [min]="0"
+            [showButtons]="true"
+            [step]="1"
+            id="max-players"
+            class="w-full">
+          </p-inputNumber>
+          <label for="max-players">{{ 'all.clubs.maxPlayers' | translate }}</label>
+        </p-floatlabel>
+        
+        <!-- Min Teams -->
+        <p-floatlabel>
+          <p-inputNumber 
+            [formControl]="minTeams" 
+            [min]="0"
+            [showButtons]="true"
+            [step]="1"
+            id="min-teams"
+            class="w-full">
+          </p-inputNumber>
+          <label for="min-teams">{{ 'all.clubs.minTeams' | translate }}</label>
+        </p-floatlabel>
+        
+        <!-- Max Teams -->
+        <p-floatlabel>
+          <p-inputNumber 
+            [formControl]="maxTeams" 
+            [min]="0"
+            [showButtons]="true"
+            [step]="1"
+            id="max-teams"
+            class="w-full">
+          </p-inputNumber>
+          <label for="max-teams">{{ 'all.clubs.maxTeams' | translate }}</label>
+        </p-floatlabel>
+      </div>
+      
+      <!-- Clear Filters Button -->
+      <div class="flex justify-end mt-4">
+        <p-button 
+          label="{{ 'all.clubs.clearFilters' | translate }}" 
+          [outlined]="true" 
+          icon="pi pi-times"
+          (onClick)="clearFilters()"
+          size="small">
+        </p-button>
+      </div>
+    </div>
+    
+    <!-- Statistics Summary -->
+    @if (clubStats()) {
+      <div class="stats-summary mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="stat-card">
+            <h3 class="text-2xl font-bold text-primary">{{ clubStats().totalClubs }}</h3>
+            <p class="text-sm text-muted-foreground">{{ 'all.clubs.totalClubs' | translate }}</p>
+          </div>
+          <div class="stat-card">
+            <h3 class="text-2xl font-bold text-primary">{{ clubStats().totalPlayers }}</h3>
+            <p class="text-sm text-muted-foreground">{{ 'all.clubs.totalPlayers' | translate }}</p>
+          </div>
+          <div class="stat-card">
+            <h3 class="text-2xl font-bold text-primary">{{ clubStats().totalTeams }}</h3>
+            <p class="text-sm text-muted-foreground">{{ 'all.clubs.totalTeams' | translate }}</p>
+          </div>
+          <div class="stat-card">
+            <h3 class="text-2xl font-bold text-primary">{{ clubStats().averagePlayersPerClub }}</h3>
+            <p class="text-sm text-muted-foreground">{{ 'all.clubs.avgPlayersPerClub' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    }
+    
+    <p-divider></p-divider>
+
+    <!-- Clubs Grid -->
+    <div class="clubs-grid mt-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (club of clubs(); track club.id) {
+          <p-card [routerLink]="['/clubs', club.slug]" class="club-card cursor-pointer hover:shadow-lg transition-all duration-200 h-full">
+            <ng-template pTemplate="header">
+              <div class="club-header p-4">
+                <h3 class="text-lg font-semibold text-primary mb-1 truncate" [title]="club.fullName || club.name">
+                  {{ club.name }}
+                </h3>
+                @if (club.fullName && club.fullName !== club.name) {
+                  <p class="text-sm text-muted-foreground truncate" [title]="club.fullName">
+                    {{ club.fullName }}
+                  </p>
+                }
+              </div>
+            </ng-template>
+            
+            <ng-template pTemplate="content">
+              <div class="club-content space-y-3">
+                <!-- Club Details -->
+                <div class="club-details">
+                  @if (club.abbreviation) {
+                    <div class="flex items-center gap-2 mb-2">
+                      <p-tag [value]="club.abbreviation" severity="info" class="text-xs"></p-tag>
+                    </div>
+                  }
+                  
+                  @if (club.state || club.country) {
+                    <div class="location text-sm text-muted-foreground mb-2">
+                      <i class="pi pi-map-marker mr-1"></i>
+                      @if (club.state && club.country) {
+                        {{ club.state }}, {{ club.country }}
+                      } @else if (club.state) {
+                        {{ club.state }}
+                      } @else if (club.country) {
+                        {{ club.country }}
+                      }
+                    </div>
+                  }
+                  
+                  @if (club.contactCompetition) {
+                    <div class="contact text-sm text-muted-foreground mb-2">
+                      <i class="pi pi-user mr-1"></i>
+                      {{ club.contactCompetition }}
+                    </div>
+                  }
+                </div>
+                
+                <!-- Statistics -->
+                <div class="club-stats">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="stat-item text-center p-2 bg-surface-100 rounded">
+                      <div class="text-lg font-semibold text-primary">{{ club.playersCount || 0 }}</div>
+                      <div class="text-xs text-muted-foreground">{{ getPlayersCountLabel(club) }}</div>
+                    </div>
+                    <div class="stat-item text-center p-2 bg-surface-100 rounded">
+                      <div class="text-lg font-semibold text-primary">{{ club.teamsCount || 0 }}</div>
+                      <div class="text-xs text-muted-foreground">{{ getTeamsCountLabel(club) }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            
+            <ng-template pTemplate="footer">
+              <div class="club-footer flex justify-between items-center">
+                <span class="text-xs text-muted-foreground">ID: {{ club.id || 'N/A' }}</span>
+                <i class="pi pi-arrow-right text-primary"></i>
+              </div>
+            </ng-template>
+          </p-card>
+        }
+      </div>
+      
+      @if (clubs().length === 0 && !loading()) {
+        <div class="no-results text-center py-12">
+          <div class="mb-4">
+            <i class="pi pi-search text-4xl text-muted-foreground"></i>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">{{ 'all.clubs.noResults' | translate }}</h3>
+          <p class="text-muted-foreground mb-4">{{ 'all.clubs.noResultsDescription' | translate }}</p>
+          <p-button 
+            label="{{ 'all.clubs.clearFilters' | translate }}" 
+            [outlined]="true" 
+            icon="pi pi-times"
+            (onClick)="clearFilters()"
+            size="small">
+          </p-button>
+        </div>
+      }
+    </div>
+  </section>
+} @else {
+  <p-progressbar mode="indeterminate" [style]="{'height': '6px'}" />
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600 bg-red-50 border border-red-200 rounded">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>{{ error() }}</span>
+    <p-button 
+      label="{{ 'all.common.retry' | translate }}" 
+      [text]="true" 
+      icon="pi pi-refresh"
+      size="small"
+      (onClick)="clearFilters()"
+      class="ml-auto">
+    </p-button>
+  </div>
+}

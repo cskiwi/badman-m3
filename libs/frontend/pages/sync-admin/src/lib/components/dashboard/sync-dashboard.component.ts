@@ -186,14 +186,14 @@ export class SyncDashboardComponent implements OnDestroy {
     });
   }
 
-  getJobStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
+  getJobStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' {
     switch (status) {
       case 'completed':
         return 'success';
       case 'active':
         return 'info';
       case 'waiting':
-        return 'warning';
+        return 'warn';
       case 'failed':
         return 'danger';
       default:
@@ -201,7 +201,7 @@ export class SyncDashboardComponent implements OnDestroy {
     }
   }
 
-  getTournamentStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
+  getTournamentStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' {
     switch (status) {
       case 'active':
         return 'success';
@@ -210,13 +210,13 @@ export class SyncDashboardComponent implements OnDestroy {
       case 'cancelled':
         return 'danger';
       case 'postponed':
-        return 'warning';
+        return 'warn';
       default:
         return 'info';
     }
   }
 
-  getSyncStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' {
+  getSyncStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' {
     switch (status) {
       case 'success':
         return 'success';
@@ -225,7 +225,7 @@ export class SyncDashboardComponent implements OnDestroy {
       case 'error':
         return 'danger';
       case 'never':
-        return 'warning';
+        return 'warn';
       default:
         return 'info';
     }

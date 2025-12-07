@@ -56,8 +56,6 @@ export function appendSortableObjects<T>(classRef: Type<T>, name: string) {
       throw new Error(`2. SortOrderType for ${propertyName} not found`);
     }
 
-    Logger.debug(`Appending ${propertyName} for ${propertyKey} in ${className}`);
-
     // Dynamically add a decorated field to the SortOrder class
     Object.defineProperty(SortOrder.prototype, propertyKey, {
       value: undefined,

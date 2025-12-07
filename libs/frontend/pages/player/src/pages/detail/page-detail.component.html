@@ -25,6 +25,12 @@
           <!-- Mobile edit actions below ranking levels -->
           <div class="lg:hidden flex items-center gap-2 mt-4">
             <p-button 
+              icon="pi pi-trophy" 
+              [outlined]="true" 
+              [routerLink]="['tournaments']" 
+              pTooltip="{{ 'PLAYER.TOURNAMENT_HISTORY' | translate }}" 
+              tooltipPosition="bottom" />
+            <p-button 
               icon="pi pi-users" 
               [outlined]="true" 
               [routerLink]="['head-to-head']" 
@@ -42,6 +48,12 @@
       </ng-content>
       <ng-content actions>
         <div class="hidden lg:flex items-center gap-2">
+          <p-button 
+            icon="pi pi-trophy" 
+            [outlined]="true" 
+            [routerLink]="['tournaments']" 
+            pTooltip="{{ 'PLAYER.TOURNAMENT_HISTORY' | translate }}" 
+            tooltipPosition="bottom" />
           <p-button 
             icon="pi pi-users" 
             [outlined]="true" 

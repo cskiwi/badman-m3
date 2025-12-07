@@ -1,6 +1,5 @@
-import { Logger } from '@nestjs/common';
 
-import { getServer, createWinstonLogger } from '@apps/shared';
+import { createWinstonLogger, getServer } from '@apps/shared';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {

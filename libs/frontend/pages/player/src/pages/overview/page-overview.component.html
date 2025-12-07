@@ -1,41 +1,339 @@
-@if (!loading()) {
-  <app-page-header>
-    <!-- <ng-content avatar>{{ this.initials() }}</ng-content> -->
-    <ng-content title>{{ 'all.navigation.players' | translate }}</ng-content>
-  </app-page-header>
-  <section class="players p-4">
-    <!-- Search Input -->
-    <div class="mb-6">
-      <label for="search" class="block text-sm font-medium text-color mb-2">
-        {{ 'all.players.search' | translate }}
-      </label>
-      <input pInputText id="search" [formControl]="this.query" placeholder="{{ 'all.players.search' | translate }}" class="w-full" />
-    </div>
+<!-- Page Header -->
+<app-page-header>
+  <i avatar class="pi pi-users text-2xl"></i>
+  <span title>{{ 'all.navigation.players' | translate }}</span>
+</app-page-header>
 
-    <!-- Players List -->
-    <div class="grid gap-4">
-      @for (player of players(); track player.id) {
-        <p-card [routerLink]="player.slug" class="cursor-pointer hover:shadow-lg transition-shadow duration-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-lg font-semibold text-color">{{ player.fullName }}</h3>
-              <p class="text-muted-color">{{ player.memberId }}</p>
-            </div>
-            <i class="pi pi-chevron-right text-muted-color"></i>
+@if (!loading()) {
+  <!-- Search and Filters Section -->
+  <div class="bg-surface-0 border-b sticky top-0 z-10">
+    <div class="p-4 max-w-7xl mx-auto">
+      <!-- Search Bar with AutoComplete -->
+      <div class="mb-6">
+        <label for="search" class="block text-sm font-medium text-surface-900 dark:text-surface-0 mb-2">
+          {{ 'all.players.search' | translate }}
+        </label>
+        <p-autoComplete
+          id="search"
+          [formControl]="searchQuery"
+          [suggestions]="suggestions()"
+          (completeMethod)="onSearch($event)"
+          [placeholder]="'all.players.search' | translate"
+          [showClear]="true"
+          class="w-full"
+          inputStyleClass="w-full"
+        />
+      </div>
+
+      <!-- Filters Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-4">
+        <!-- Sort By -->
+        <div>
+          <label class="block text-xs font-medium text-surface-600 dark:text-surface-300 mb-1"> Sort By </label>
+          <p-select
+            [formControl]="sortBy"
+            [options]="sortOptions"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="false"
+            class="w-full"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Sort Order -->
+        <div>
+          <label class="block text-xs font-medium text-surface-600 dark:text-surface-300 mb-1"> Order </label>
+          <p-select
+            [formControl]="sortOrder"
+            [options]="sortOrderOptions"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="false"
+            class="w-full"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Min Age -->
+        <div>
+          <label class="block text-xs font-medium text-surface-600 dark:text-surface-300 mb-1"> Min Age </label>
+          <input pInputText [formControl]="minAge" type="number" placeholder="18" class="w-full" />
+        </div>
+
+        <!-- Max Age -->
+        <div>
+          <label class="block text-xs font-medium text-surface-600 dark:text-surface-300 mb-1"> Max Age </label>
+          <input pInputText [formControl]="maxAge" type="number" placeholder="65" class="w-full" />
+        </div>
+
+        <!-- Club -->
+        <div>
+          <label class="block text-xs font-medium text-surface-600 dark:text-surface-300 mb-1"> Club </label>
+          <input pInputText [formControl]="club" placeholder="Club name..." class="w-full" />
+        </div>
+
+        <!-- Active Players Only -->
+        <div class="flex items-end">
+          <div class="flex items-center gap-2 pb-1">
+            <p-toggleswitch [formControl]="showOnlyActive" />
+            <label class="text-xs font-medium text-surface-600 dark:text-surface-300"> Active Only </label>
           </div>
-        </p-card>
-      }
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- Results Count and Filters Badge -->
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-surface-600 dark:text-surface-300">
+            {{ totalPlayers() }} {{ totalPlayers() === 1 ? 'player' : 'players' }} found
+          </span>
+          @if (hasFilters()) {
+            <p-tag value="Filters Applied" severity="info" icon="pi pi-filter" [style]="{ cursor: 'pointer' }" (click)="clearFilters()" />
+          }
+        </div>
+
+        <!-- Layout Toggle and Page Size -->
+        <div class="flex items-center gap-4">
+          <p-select [formControl]="pageSize" [options]="pageSizeOptions" optionLabel="label" optionValue="value" class="w-20" />
+
+          <!-- Layout Toggle Buttons -->
+          <div class="flex border border-surface-300 rounded-lg overflow-hidden">
+            <button
+              class="px-3 py-2 text-xs font-medium transition-colors duration-200"
+              [class.bg-primary-500]="layout === 'grid'"
+              [class.text-primary-contrast]="layout === 'grid'"
+              [class.bg-surface-0]="layout !== 'grid'"
+              [class.text-surface-600]="layout !== 'grid'"
+              [class.hover:bg-surface-100]="layout !== 'grid'"
+              (click)="layout = 'grid'"
+            >
+              <i class="pi pi-th-large"></i>
+            </button>
+            <button
+              class="px-3 py-2 text-xs font-medium border-l border-surface-300 transition-colors duration-200"
+              [class.bg-primary-500]="layout === 'list'"
+              [class.text-primary-contrast]="layout === 'list'"
+              [class.bg-surface-0]="layout !== 'list'"
+              [class.text-surface-600]="layout !== 'list'"
+              [class.hover:bg-surface-100]="layout !== 'list'"
+              (click)="layout = 'list'"
+            >
+              <i class="pi pi-bars"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
+
+  <!-- Players DataView -->
+  <div class="p-4 max-w-7xl mx-auto">
+    <p-dataView
+      [value]="paginatedPlayers()"
+      [layout]="layout"
+      [paginator]="false"
+      [sortField]="sortBy.value"
+      [sortOrder]="sortOrder.value === 'asc' ? 1 : -1"
+    >
+      <!-- Grid Layout Template -->
+      <ng-template pTemplate="gridItem" let-player>
+        <div class="col-12 sm:col-6 md:col-4 lg:col-3 xl:col-2 p-2">
+          <p-card
+            [routerLink]="[player.slug]"
+            class="cursor-pointer h-full hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            styleClass="h-full border border-surface-200 hover:border-primary-300"
+          >
+            <ng-template pTemplate="header">
+              <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-800 p-4 text-center">
+                <div
+                  class="w-16 h-16 bg-primary-500 text-primary-contrast rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold"
+                >
+                  {{ player.firstName?.[0] || '?' }}{{ player.lastName?.[0] || '?' }}
+                </div>
+                @if (getPlayerRanking(player)) {
+                  <p-tag [value]="'#' + getPlayerRanking(player)" [severity]="getRankingColor(getPlayerRanking(player)!)" class="text-xs" />
+                }
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="content">
+              <div class="text-center p-2">
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1 truncate">
+                  {{ player.fullName }}
+                </h3>
+                <p class="text-surface-600 dark:text-surface-300 text-sm mb-2">
+                  {{ player.memberId }}
+                </p>
+
+                @if (getPlayerAge(player)) {
+                  <p-tag [value]="getAgeGroup(getPlayerAge(player)!) + ' (' + getPlayerAge(player) + ')'" severity="secondary" class="text-xs mb-2" />
+                }
+
+                @if (getPlayerClub(player)?.name) {
+                  <div class="text-xs text-surface-500 dark:text-surface-400 truncate">
+                    <i class="pi pi-building mr-1"></i>
+                    {{ getPlayerClub(player).name }}
+                  </div>
+                }
+
+                @if (!isPlayerActive(player)) {
+                  <p-tag value="Inactive" severity="warn" class="text-xs mt-2" />
+                }
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+              <div class="flex justify-center">
+                <p-button icon="pi pi-arrow-right" size="small" text="true" class="p-0" />
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      </ng-template>
+
+      <!-- List Layout Template -->
+      <ng-template pTemplate="listItem" let-player>
+        <div class="col-12 p-2">
+          <p-card
+            [routerLink]="[player.slug]"
+            class="cursor-pointer hover:shadow-lg transition-all duration-200"
+            styleClass="border border-surface-200 hover:border-primary-300"
+          >
+            <ng-template pTemplate="content">
+              <div class="flex items-center justify-between p-2">
+                <div class="flex items-center gap-4 flex-1">
+                  <!-- Avatar -->
+                  <div class="w-12 h-12 bg-primary-500 text-primary-contrast rounded-full flex items-center justify-center font-semibold">
+                    {{ player.firstName?.[0] || '?' }}{{ player.lastName?.[0] || '?' }}
+                  </div>
+
+                  <!-- Player Info -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 truncate">
+                        {{ player.fullName }}
+                      </h3>
+                      @if (getPlayerRanking(player)) {
+                        <p-tag [value]="'#' + getPlayerRanking(player)" [severity]="getRankingColor(getPlayerRanking(player)!)" class="text-xs" />
+                      }
+                      @if (!isPlayerActive(player)) {
+                        <p-tag value="Inactive" severity="warn" class="text-xs" />
+                      }
+                    </div>
+
+                    <div class="flex items-center gap-4 text-sm text-surface-600 dark:text-surface-300">
+                      <span>
+                        <i class="pi pi-id-card mr-1"></i>
+                        {{ player.memberId }}
+                      </span>
+
+                      @if (getPlayerAge(player)) {
+                        <span>
+                          <i class="pi pi-calendar mr-1"></i>
+                          {{ getAgeGroup(getPlayerAge(player)!) }} ({{ getPlayerAge(player) }})
+                        </span>
+                      }
+
+                      @if (getPlayerClub(player)?.name) {
+                        <span class="truncate">
+                          <i class="pi pi-building mr-1"></i>
+                          {{ getPlayerClub(player).name }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Action -->
+                  <div class="flex-shrink-0">
+                    <i class="pi pi-chevron-right text-surface-400"></i>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      </ng-template>
+
+      <!-- Empty State -->
+      <ng-template pTemplate="empty">
+        <div class="text-center py-16">
+          <div class="mb-4">
+            <i class="pi pi-search text-6xl text-surface-300 dark:text-surface-600"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-surface-600 dark:text-surface-300 mb-2">No players found</h3>
+          <p class="text-surface-500 dark:text-surface-400 mb-4">Try adjusting your search criteria or filters</p>
+          @if (hasFilters()) {
+            <p-button label="Clear Filters" icon="pi pi-times" size="small" outlined="true" (click)="clearFilters()" />
+          }
+        </div>
+      </ng-template>
+    </p-dataView>
+
+    <!-- Pagination -->
+    @if (totalPlayers() > pageSize.value) {
+      <div class="mt-8 flex justify-center">
+        <p-paginator
+          [rows]="pageSize.value"
+          [totalRecords]="totalPlayers()"
+          [first]="currentPage.value * pageSize.value"
+          (onPageChange)="onPageChange($event)"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} players"
+          [showPageLinks]="true"
+          [showJumpToPageDropdown]="true"
+          [showFirstLastIcon]="true"
+          styleClass="border-0 bg-transparent"
+        />
+      </div>
+    }
+  </div>
 } @else {
-  <div class="p-4">
-    <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
+  <!-- Loading State -->
+  <div class="p-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header Skeleton -->
+      <p-skeleton height="2rem" class="mb-4" />
+
+      <!-- Filters Skeleton -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
+        @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+          <p-skeleton height="3rem" />
+        }
+      </div>
+
+      <!-- Cards Skeleton -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        @for (item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track item) {
+          <p-card styleClass="border border-surface-200">
+            <ng-template pTemplate="header">
+              <p-skeleton height="8rem" />
+            </ng-template>
+            <ng-template pTemplate="content">
+              <p-skeleton height="1rem" class="mb-2" />
+              <p-skeleton height="1rem" class="mb-2" />
+              <p-skeleton height="0.8rem" />
+            </ng-template>
+          </p-card>
+        }
+      </div>
+    </div>
   </div>
 }
 
+<!-- Error State -->
 @if (error()) {
-  <div class="flex items-center justify-center p-8 text-red-600">
-    <i class="pi pi-exclamation-triangle mr-2"></i>
-    <span>{{ error() }}</span>
+  <div class="flex items-center justify-center p-16">
+    <div class="text-center">
+      <div class="mb-4">
+        <i class="pi pi-exclamation-triangle text-6xl text-red-500"></i>
+      </div>
+      <h3 class="text-xl font-semibold text-red-600 mb-2">Error Loading Players</h3>
+      <p class="text-surface-600 dark:text-surface-300 mb-4">
+        {{ error() }}
+      </p>
+      <p-button label="Try Again" icon="pi pi-refresh" size="small" (click)="dataService.reload()" />
+    </div>
   </div>
 }

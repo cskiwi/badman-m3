@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -19,6 +20,10 @@ import { CompetitionAssembly } from './competition-assembly.model';
 
 @ObjectType('CompetitionEncounter', { description: 'A Competition Encounter' })
 @Entity('EncounterCompetitions', { schema: 'event' })
+@Index(['homeTeamId'])
+@Index(['awayTeamId'])
+@Index(['drawId'])
+@Index(['date'])
 export class CompetitionEncounter extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')

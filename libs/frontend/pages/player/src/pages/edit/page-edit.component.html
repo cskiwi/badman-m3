@@ -1,15 +1,12 @@
 @if (!loading()) {
   @if (this.player(); as player) {
     <app-page-header>
-      <ng-content title>{{ 'all.player.edit.title' | translate }} - {{ player.fullName }}</ng-content>
-      <ng-content subTitle>
-        <div class="info">
-          <div class="sub-text">{{ 'all.player.edit.subtitle' | translate }}</div>
-        </div>
-      </ng-content>
-
-      <!-- Action buttons in header -->
-      <ng-content actions>
+      <i avatar class="pi pi-user-edit text-2xl"></i>
+      <span title>{{ 'all.player.edit.title' | translate }} - {{ player.fullName }}</span>
+      <ng-container subTitle>
+        <span>{{ 'all.player.edit.subtitle' | translate }}</span>
+      </ng-container>
+      <ng-container actions>
         <div class="flex gap-3">
           <p-button
             [label]="'all.player.edit.actions.save-all' | translate"
@@ -34,7 +31,7 @@
             (click)="cancel()"
           />
         </div>
-      </ng-content>
+      </ng-container>
     </app-page-header>
 
     <div class="p-4">

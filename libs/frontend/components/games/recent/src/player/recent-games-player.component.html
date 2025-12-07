@@ -154,7 +154,7 @@
                       @if (membership?.team === 1) {
                         @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
                           <div
-                            [routerLink]="['/player', membership?.gamePlayer?.id]"
+                            [routerLink]="['/players', membership?.gamePlayer?.id]"
                             class="text-base font-medium text-color cursor-pointer truncate hover:underline focus:outline-none"
                             tabindex="0"
                           >
@@ -207,7 +207,7 @@
                       @if (membership?.team === 2) {
                         @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
                           <div
-                            [routerLink]="['/player', membership?.gamePlayer?.id]"
+                            [routerLink]="['/players', membership?.gamePlayer?.id]"
                             class="text-base font-medium text-color cursor-pointer truncate hover:underline focus:outline-none"
                             tabindex="0"
                           >
@@ -242,7 +242,7 @@
                         @if (membership?.team === 1) {
                           @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
                             <div
-                              [routerLink]="['/player', membership?.gamePlayer?.id]"
+                              [routerLink]="['/players', membership?.gamePlayer?.id]"
                               class="text-sm font-medium text-color cursor-pointer truncate hover:underline"
                             >
                               {{ membership?.gamePlayer?.fullName }}
@@ -282,7 +282,7 @@
                         @if (membership?.team === 2) {
                           @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
                             <div
-                              [routerLink]="['/player', membership?.gamePlayer?.id]"
+                              [routerLink]="['/players', membership?.gamePlayer?.id]"
                               class="text-sm font-medium text-color cursor-pointer truncate hover:underline"
                             >
                               {{ membership?.gamePlayer?.fullName }}

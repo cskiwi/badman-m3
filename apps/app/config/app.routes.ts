@@ -8,12 +8,12 @@ export const appRoutes: Route[] = [
   },
 
   {
-    path: 'player',
+    path: 'players',
     loadChildren: () =>
       import('@app/frontend-pages-player').then((m) => m.routes),
   },
   {
-    path: 'club',
+    path: 'clubs',
     loadChildren: () =>
       import('@app/frontend-pages-club').then((m) => m.routes),
   },

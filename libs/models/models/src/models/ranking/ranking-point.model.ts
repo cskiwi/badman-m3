@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -17,6 +18,8 @@ import { RankingSystem } from './ranking-system.model';
 
 @ObjectType('RankingPoint', { description: 'A RankingPoint' })
 @Entity('RankingPoints', { schema: 'ranking' })
+@Index(['gameId'])
+@Index(['playerId'])
 export class RankingPoint extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
