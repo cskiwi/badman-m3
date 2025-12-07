@@ -16,7 +16,7 @@ import { BracketTree } from '@app/frontend-components/bracket-tree';
       .ko-tree-container {
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
       }
     `,
   ],

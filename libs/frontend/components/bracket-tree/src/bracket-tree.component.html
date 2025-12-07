@@ -1,10 +1,10 @@
 <section class="block w-full">
-  <div class="tournament-bracket overflow-auto p-6 rounded-lg">
+  <div class="overflow-auto p-6 rounded-lg">
     <!-- Tournament Bracket Layout inspired by Toernooi.nl -->
-    <div class="flex items-start justify-start">
-      <div class="flex justify-start items-start min-w-max" [style.gap]="columnGap() + 'px'">
+    <div class="inline-flex items-start justify-start">
+      <div class="inline-flex justify-start items-start" [style.gap]="columnGap() + 'px'">
         @for (round of bracketRounds(); track round.name; let roundIndex = $index; let isLast = $last) {
-          <div class="flex flex-col items-center" [style.width.px]="columnWidth()">
+          <div class="flex flex-col items-center flex-shrink-0" [style.width.px]="columnWidth()">
             <!-- Round Header -->
             <div class="text-center mb-8">
               <h4 class="text-base font-semibold text-primary-700 px-4 py-2 bg-primary-50 rounded-lg border border-primary-200">
@@ -13,9 +13,9 @@
             </div>
 
             <!-- Round Matches -->
-            <div class="flex flex-col items-center relative" [style.margin-top.px]="getVerticalOffset(roundIndex)">
-              @for (game of round.games; track game.id; let gameIndex = $index) {
-                <div class="relative" [style.margin-bottom.px]="spacing()[roundIndex]">
+            <div class="flex flex-col items-center" [style.margin-top.px]="getVerticalOffset(roundIndex)">
+              @for (game of round.games; track game.id; let gameIndex = $index; let isLastGame = $last) {
+                <div class="relative" [style.margin-bottom.px]="isLastGame ? 0 : spacing()[roundIndex]">
                   <!-- Match Box -->
                   <div
                     class="border-2 border-surface rounded-lg overflow-hidden transition-all duration-200"
