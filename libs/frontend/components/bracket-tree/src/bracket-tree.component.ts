@@ -2,6 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import { Game } from '@app/models';
 
+// Extended game type with bracket ordering information
+export type BracketGame = Game & { bracketOrder: number };
+
+export interface BracketRound {
+  name: string;
+  games: BracketGame[];
+}
+
 @Component({
   standalone: true,
   selector: 'app-bracket-tree',
@@ -42,7 +50,7 @@ export class BracketTree {
   });
 
   // Transform games into round-based structure for horizontal bracket display
-  bracketRounds = computed(() => {
+  bracketRounds = computed<BracketRound[] | null>(() => {
     const gamesList = this.games();
     if (!gamesList || gamesList.length === 0) return null;
 
@@ -57,29 +65,41 @@ export class BracketTree {
       roundsMap.get(roundName)?.push(game);
     });
 
-    // Define all possible tournament rounds from largest to smallest
-    const allPossibleRounds = ['R256', 'R128', 'R64', 'R32', 'R16', 'R8', 'QF', 'SF', 'Final', 'Third'];
-
-    // Filter to only include rounds that actually exist in the data
-    const existingRounds = allPossibleRounds.filter((round) => roundsMap.has(round));
-    const rounds: { name: string; games: Game[] }[] = [];
-
-    // Sort each round's games by bracket position and arrange by player progression
-    existingRounds.forEach((roundKey) => {
-      const roundGames = roundsMap.get(roundKey);
-      if (!roundGames) return;
-
-      // Sort games within the round by bracket position
-      const sortedGames = this.sortGamesByBracketPosition(roundGames);
-      
-      rounds.push({
-        name: this.formatRoundName(roundKey),
-        games: sortedGames,
-      });
+    // Get all round keys and sort them dynamically by tournament progression
+    // (larger round numbers = earlier in tournament, special rounds at the end)
+    const roundKeys = Array.from(roundsMap.keys()).sort((a, b) => {
+      const orderA = this.getRoundSortOrder(a);
+      const orderB = this.getRoundSortOrder(b);
+      return orderA - orderB;
     });
 
-    // Apply player progression logic to ensure winners flow correctly
-    return this.arrangeGamesByPlayerProgression(rounds);
+    if (roundKeys.length === 0) return null;
+
+    // Calculate bracket orders by tracing player progression from final backwards
+    const bracketOrders = this.calculateBracketOrders(roundKeys, roundsMap);
+
+    // Build the result with sorted games
+    const result: BracketRound[] = roundKeys.map((roundKey) => {
+      const roundGames = roundsMap.get(roundKey) || [];
+
+      // Create new BracketGame objects with bracket order (don't mutate original objects)
+      const bracketGames: BracketGame[] = roundGames.map((game) => {
+        return {
+          ...game,
+          bracketOrder: bracketOrders.get(game.id) ?? 999,
+        } as BracketGame;
+      });
+
+      // Sort by bracket order
+      bracketGames.sort((a, b) => a.bracketOrder - b.bracketOrder);
+
+      return {
+        name: this.formatRoundName(roundKey),
+        games: bracketGames,
+      };
+    });
+
+    return result;
   });
 
   spacing = computed(() => {
@@ -97,63 +117,164 @@ export class BracketTree {
     return game.round || 'Unknown';
   }
 
-  private sortGamesByBracketPosition(games: Game[]): Game[] {
-    return games.sort((a, b) => {
-      // Primary sort: by order field if available (most reliable for bracket position)
-      if (a.order !== undefined && b.order !== undefined) {
-        return a.order - b.order;
-      }
-      
-      // Secondary sort: by visualCode if available (often contains bracket position info)
-      if (a.visualCode && b.visualCode) {
-        return a.visualCode.localeCompare(b.visualCode, undefined, { numeric: true, sensitivity: 'base' });
-      }
-      
-      // Tertiary: Try to extract numeric info from game IDs or other identifiers
-      const aId = this.extractNumericFromId(a.id);
-      const bId = this.extractNumericFromId(b.id);
-      if (aId !== null && bId !== null) {
-        return aId - bId;
-      }
-      
-      // Fallback: sort by playedAt time (original behavior)
-      return new Date(a.playedAt || 0).getTime() - new Date(b.playedAt || 0).getTime();
+  /**
+   * Calculate bracket order for each game by tracing player progression from the final backwards.
+   * Returns a Map of gameId -> bracketOrder
+   *
+   * Algorithm:
+   * 1. Start from the final round (fewest games)
+   * 2. Assign bracketOrder 0 to final game(s)
+   * 3. Go backwards through rounds
+   * 4. For each game in the current round (sorted by bracketOrder):
+   *    - Look at team 1 players, find the game in previous round where one of them won
+   *    - Assign that game bracketOrder = parentOrder * 2
+   *    - Look at team 2 players, find the game in previous round where one of them won
+   *    - Assign that game bracketOrder = parentOrder * 2 + 1
+   */
+  private calculateBracketOrders(roundKeys: string[], roundsMap: Map<string, Game[]>): Map<string, number> {
+    const bracketOrders = new Map<string, number>();
+
+    if (roundKeys.length === 0) return bracketOrders;
+
+    // Start from the final round (last in the sorted array = fewest games)
+    const finalRoundKey = roundKeys[roundKeys.length - 1];
+    const finalRoundGames = roundsMap.get(finalRoundKey) || [];
+
+    // Assign order 0 to final game(s)
+    finalRoundGames.forEach((game, index) => {
+      bracketOrders.set(game.id, index);
     });
+
+    // Work backwards through rounds (from final towards earlier rounds)
+    for (let roundIdx = roundKeys.length - 1; roundIdx > 0; roundIdx--) {
+      const currentRoundKey = roundKeys[roundIdx];
+      const previousRoundKey = roundKeys[roundIdx - 1];
+
+      const currentRoundGames = roundsMap.get(currentRoundKey) || [];
+      const previousRoundGames = roundsMap.get(previousRoundKey) || [];
+
+      // Sort current round games by their bracket order (top to bottom)
+      const sortedCurrentGames = [...currentRoundGames].sort((a, b) => {
+        const orderA = bracketOrders.get(a.id) ?? 999;
+        const orderB = bracketOrders.get(b.id) ?? 999;
+        return orderA - orderB;
+      });
+
+      // Track which games in the previous round have been assigned
+      const assignedGameIds = new Set<string>();
+
+      // For each game in the current round, find feeder games from previous round
+      for (const currentGame of sortedCurrentGames) {
+        const currentOrder = bracketOrders.get(currentGame.id) ?? 0;
+
+        // Get players for team 1 and team 2 in the current game
+        const team1PlayerIds = this.getPlayerIdsByTeam(currentGame, 1);
+        const team2PlayerIds = this.getPlayerIdsByTeam(currentGame, 2);
+
+        // Find the game in previous round where team 1's player(s) won
+        const team1FeederGame = this.findFeederGame(previousRoundGames, team1PlayerIds, assignedGameIds);
+
+        // Find the game in previous round where team 2's player(s) won
+        const team2FeederGame = this.findFeederGame(previousRoundGames, team2PlayerIds, assignedGameIds);
+
+        // Assign bracket orders: team 1 feeder gets even, team 2 feeder gets odd
+        if (team1FeederGame) {
+          bracketOrders.set(team1FeederGame.id, currentOrder * 2);
+          assignedGameIds.add(team1FeederGame.id);
+        }
+
+        if (team2FeederGame) {
+          bracketOrders.set(team2FeederGame.id, currentOrder * 2 + 1);
+          assignedGameIds.add(team2FeederGame.id);
+        }
+      }
+
+      // Assign orders to any remaining unassigned games in previous round
+      let nextOrder = previousRoundGames.length;
+      for (const game of previousRoundGames) {
+        if (!bracketOrders.has(game.id)) {
+          bracketOrders.set(game.id, nextOrder++);
+        }
+      }
+    }
+
+    return bracketOrders;
   }
 
-  private extractNumericFromId(id: string): number | null {
-    const match = id.match(/(\d+)$/);
-    return match ? parseInt(match[1], 10) : null;
+  /**
+   * Find the game in a round where one of the given player IDs won
+   */
+  private findFeederGame(roundGames: Game[], playerIds: string[], excludeGameIds: Set<string>): Game | null {
+    for (const game of roundGames) {
+      if (excludeGameIds.has(game.id)) continue;
+
+      const winnerPlayerIds = this.getWinnerPlayerIds(game);
+
+      // Check if any of the target players won this game
+      if (winnerPlayerIds.some((winnerId) => playerIds.includes(winnerId))) {
+        return game;
+      }
+    }
+
+    return null;
   }
 
   private formatRoundName(roundKey: string): string {
-    switch (roundKey) {
-      case 'R256':
-        return 'Round of 256';
-      case 'R128':
-        return 'Round of 128';
-      case 'R64':
-        return 'Round of 64';
-      case 'R32':
-        return 'Round of 32';
-      case 'R16':
-        return 'Round of 16';
-      case 'R8':
-        return 'Round of 8';
-      case 'QF':
-        return 'Quarter Final';
-      case 'SF':
-        return 'Semi Final';
-      case 'Final':
-        return 'Final';
-      default:
-        // Handle any Rxx format dynamically
-        if (roundKey.startsWith('R') && /^R\d+$/.test(roundKey)) {
-          const number = roundKey.substring(1);
-          return `Round of ${number}`;
-        }
-        return roundKey;
+    // Handle "Rxx" format dynamically (e.g., R256, R128, R64, R32, R16, R8, R4, R2)
+    if (/^R\d+$/i.test(roundKey)) {
+      const number = parseInt(roundKey.substring(1), 10);
+      // R2 is the final, R4 is semi-final, R8 is quarter-final
+      if (number === 2) return 'Final';
+      if (number === 4) return 'Semi Final';
+      if (number === 8) return 'Quarter Final';
+      return `Round of ${number}`;
     }
+
+    // Handle special named rounds
+    const upperKey = roundKey.toUpperCase();
+    if (upperKey === 'QF' || upperKey === 'QUARTERFINAL' || upperKey === 'QUARTER-FINAL') {
+      return 'Quarter Final';
+    }
+    if (upperKey === 'SF' || upperKey === 'SEMIFINAL' || upperKey === 'SEMI-FINAL') {
+      return 'Semi Final';
+    }
+    if (upperKey === 'FINAL' || upperKey === 'F') {
+      return 'Final';
+    }
+
+    return roundKey;
+  }
+
+  /**
+   * Get a numeric sort order for a round key.
+   * Lower numbers = earlier in tournament (more games), higher = later (fewer games).
+   * This allows dynamic sorting of any round format.
+   */
+  private getRoundSortOrder(roundKey: string): number {
+    // Handle "Rxx" format - larger numbers come first (R256 before R128 before R64, etc.)
+    if (/^R\d+$/i.test(roundKey)) {
+      const number = parseInt(roundKey.substring(1), 10);
+      // Invert so larger numbers get lower sort order (come first)
+      // Use a large base to ensure Rxx rounds sort before special rounds
+      return 10000 - number;
+    }
+
+    // Handle special named rounds - these come after Rxx rounds
+    const upperKey = roundKey.toUpperCase();
+
+    // Quarter Final = 8 remaining, Semi Final = 4 remaining, Final = 2 remaining
+    if (upperKey === 'QF' || upperKey === 'QUARTERFINAL' || upperKey === 'QUARTER-FINAL') {
+      return 10000 - 8; // Same as R8
+    }
+    if (upperKey === 'SF' || upperKey === 'SEMIFINAL' || upperKey === 'SEMI-FINAL') {
+      return 10000 - 4; // Same as R4
+    }
+    if (upperKey === 'FINAL' || upperKey === 'F') {
+      return 10000 - 2; // Same as R2
+    }
+
+    // Unknown rounds go to the very end
+    return 99999;
   }
 
   getTeamName(game: Game, teamNumber: 1 | 2): string {
@@ -270,98 +391,19 @@ export class BracketTree {
   }
 
   /**
-   * Arrange games by player progression to ensure winners from previous rounds
-   * correctly appear in subsequent rounds based on player IDs
+   * Get the player IDs of the winning team from a game
    */
-  private arrangeGamesByPlayerProgression(rounds: { name: string; games: Game[] }[]): { name: string; games: Game[] }[] | null {
-    if (!rounds || rounds.length <= 1) return rounds;
-
-    // Work backwards from the final round to establish player connections
-    for (let roundIndex = rounds.length - 1; roundIndex > 0; roundIndex--) {
-      const currentRound = rounds[roundIndex];
-      const previousRound = rounds[roundIndex - 1];
-      
-      // For each game in the current round, find the corresponding games in the previous round
-      currentRound.games = currentRound.games.map((currentGame, gameIndex) => {
-        const correspondingPreviousGames = this.findCorrespondingPreviousGames(
-          currentGame, 
-          previousRound.games
-        );
-        
-        // If we found corresponding games, use their arrangement to guide current game positioning
-        if (correspondingPreviousGames.length > 0) {
-          return currentGame; // Keep current game but validate its position
-        }
-        
-        return currentGame;
-      });
-      
-      // Rearrange previous round games based on player connections
-      previousRound.games = this.rearrangePreviousRoundGames(
-        previousRound.games,
-        currentRound.games
-      );
+  private getWinnerPlayerIds(game: Game): string[] {
+    if (!game.gamePlayerMemberships || game.winner === null || game.winner === 0) {
+      // If no winner yet, return all player IDs (game might be a bye or not played)
+      return this.getPlayerIdsFromGame(game);
     }
 
-    return rounds;
-  }
-
-  /**
-   * Find games in the previous round that correspond to a current round game
-   * based on player IDs that appear in the current game
-   */
-  private findCorrespondingPreviousGames(currentGame: Game, previousGames: Game[]): Game[] {
-    const currentPlayerIds = this.getPlayerIdsFromGame(currentGame);
-    
-    if (currentPlayerIds.length === 0) {
-      return [];
-    }
-
-    // Find previous round games that contain any of the current game's players
-    const correspondingGames = previousGames.filter(prevGame => {
-      const prevPlayerIds = this.getPlayerIdsFromGame(prevGame);
-      return prevPlayerIds.some(playerId => currentPlayerIds.includes(playerId));
-    });
-
-    return correspondingGames;
-  }
-
-  /**
-   * Rearrange previous round games to better align with current round player progression
-   */
-  private rearrangePreviousRoundGames(previousGames: Game[], currentGames: Game[]): Game[] {
-    const rearranged = [...previousGames];
-    
-    // For each current game, try to position its source games optimally in the previous round
-    currentGames.forEach((currentGame, currentIndex) => {
-      const currentPlayerIds = this.getPlayerIdsFromGame(currentGame);
-      
-      // Find which previous games feed into this current game
-      const sourceGames = previousGames.filter(prevGame => {
-        const prevPlayerIds = this.getPlayerIdsFromGame(prevGame);
-        return prevPlayerIds.some(playerId => currentPlayerIds.includes(playerId));
-      });
-      
-      // Try to position source games in pairs that feed into the current game
-      if (sourceGames.length >= 2) {
-        const targetStartIndex = currentIndex * 2;
-        
-        // Move the source games to the target positions if possible
-        sourceGames.slice(0, 2).forEach((sourceGame, sourceIndex) => {
-          const currentPos = rearranged.indexOf(sourceGame);
-          const targetPos = Math.min(targetStartIndex + sourceIndex, rearranged.length - 1);
-          
-          if (currentPos !== -1 && targetPos < rearranged.length && currentPos !== targetPos) {
-            // Swap games to better position
-            const temp = rearranged[targetPos];
-            rearranged[targetPos] = sourceGame;
-            rearranged[currentPos] = temp;
-          }
-        });
-      }
-    });
-    
-    return rearranged;
+    const winningTeam = game.winner;
+    return game.gamePlayerMemberships
+      .filter((membership) => membership.team === winningTeam)
+      .map((membership) => membership.gamePlayer.id)
+      .filter((id): id is string => id != null);
   }
 
   /**
@@ -372,8 +414,20 @@ export class BracketTree {
       return [];
     }
 
+    return game.gamePlayerMemberships.map((membership) => membership.playerId).filter((playerId): playerId is string => playerId != null);
+  }
+
+  /**
+   * Get player IDs for a specific team in a game
+   */
+  private getPlayerIdsByTeam(game: Game, team: 1 | 2): string[] {
+    if (!game.gamePlayerMemberships) {
+      return [];
+    }
+
     return game.gamePlayerMemberships
-      .map(membership => membership.playerId)
-      .filter(playerId => playerId != null) as string[];
+      .filter((membership) => membership.team === team)
+      .map((membership) => membership.gamePlayer.id)
+      .filter((playerId): playerId is string => playerId != null);
   }
 }
