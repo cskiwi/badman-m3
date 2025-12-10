@@ -13,12 +13,7 @@
                 @if (user()?.slug) {
                   <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/players', user()?.slug]" [text]="true" size="small" />
                   @if (clubs().length === 1) {
-                    <p-button
-                      [label]="'all.players.my-club' | translate"
-                      [routerLink]="['/clubs', clubs()[0].club.slug]"
-                      [text]="true"
-                      size="small"
-                    />
+                    <p-button [label]="'all.players.my-club' | translate" [routerLink]="['/clubs', clubs()[0].club.id]" [text]="true" size="small" />
                   }
                 }
               </nav>

@@ -39,6 +39,17 @@
     "totalGames": "Matchs",
     "totalPlayers": "Joueurs",
     "totalTeams": "Équipes",
+    "tournaments": {
+      "create": "Créer un tournoi",
+      "createFirst": "Créez votre premier tournoi",
+      "date": "Date",
+      "noTournaments": "Aucun tournoi trouvé pour ce club",
+      "official": "Officiel",
+      "officialTooltip": "Tournoi officiel",
+      "phase": "Phase",
+      "tab": "Tournois",
+      "title": "Tournois du Club"
+    },
     "winRate": "% Vict.",
     "winRateTrend": "Tendance % Vict."
   },
@@ -655,6 +666,22 @@
   },
   "tournament": {
     "closeDate": "Clôture des inscriptions",
+    "create": {
+      "closeDate": "Date de clôture des inscriptions",
+      "closeDatePlaceholder": "Sélectionnez la date de clôture",
+      "name": "Nom du tournoi",
+      "namePlaceholder": "Entrez le nom du tournoi",
+      "nameRequired": "Le nom du tournoi est requis",
+      "noClub": "Aucun club sélectionné. Veuillez naviguer depuis une page de club.",
+      "official": "Tournoi officiel",
+      "openDate": "Date d'ouverture des inscriptions",
+      "openDatePlaceholder": "Sélectionnez la date d'ouverture",
+      "submit": "Créer le tournoi",
+      "title": "Créer un tournoi",
+      "tournamentDays": "Jours du tournoi",
+      "tournamentDaysPlaceholder": "Sélectionnez les dates de début et de fin",
+      "tournamentDaysHelp": "Sélectionnez le premier et le dernier jour du tournoi"
+    },
     "dates": "Dates du tournoi",
     "details": "Détails du tournoi",
     "draws": "Série",
@@ -689,6 +716,32 @@
         "title": "Matchs",
         "no-games": "Aucun match trouvé pour ce tableau"
       }
+    },
+    "live": {
+      "nowPlaying": "En Cours",
+      "recentResults": "Résultats Récents",
+      "upcomingGames": "Matchs À Venir",
+      "comingUp": "À Venir",
+      "announcements": "Annonces",
+      "tournament": "Tournoi En Direct",
+      "inProgress": "En Cours",
+      "completed": "Terminé",
+      "remaining": "Restant",
+      "courtsInUse": "Terrains En Utilisation",
+      "playing": "En Jeu",
+      "available": "Disponible",
+      "blocked": "Bloqué",
+      "startedAt": "Commencé à",
+      "courtAvailable": "Le terrain est disponible",
+      "courtBlocked": "Le terrain est temporairement bloqué",
+      "noCourts": "Aucun terrain configuré",
+      "justFinished": "Vient De Se Terminer",
+      "noResultsYet": "Pas encore de résultats",
+      "next": "Suivant",
+      "gamesRemaining": "matchs restants",
+      "allGamesCompleted": "Tous les matchs sont terminés!",
+      "checkSchedule": "Consultez le programme pour les prochains matchs",
+      "noAnnouncements": "Aucune annonce"
     }
   }
 }

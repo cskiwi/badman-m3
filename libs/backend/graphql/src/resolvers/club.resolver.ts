@@ -1,9 +1,9 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { ClubPlayerMembership, Club, Team, Player } from '@app/models';
+import { ClubPlayerMembership, Club, Team, Player, TournamentEvent } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { ClubArgs, TeamArgs } from '../args';
+import { ClubArgs, TeamArgs, TournamentEventArgs } from '../args';
 
 @Resolver(() => Club)
 export class ClubResolver {
@@ -73,5 +73,25 @@ export class ClubResolver {
       .getRawMany();
 
     return result.map(row => row.season);
+  }
+
+  @ResolveField(() => [TournamentEvent], { nullable: true })
+  async tournamentEvents(
+    @Parent() { id }: Club,
+    @Args('args', { type: () => TournamentEventArgs, nullable: true })
+    inputArgs?: InstanceType<typeof TournamentEventArgs>,
+  ): Promise<TournamentEvent[]> {
+    const args = TournamentEventArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        clubId: id,
+      }));
+    } else {
+      args.where = [{ clubId: id }];
+    }
+
+    return TournamentEvent.find(args);
   }
 }

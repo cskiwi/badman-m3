@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 import { BullModule } from '@nestjs/bullmq';
 import { SyncGateway } from './gateways/sync.gateway';
+import { TournamentLiveGateway } from './gateways/tournament-live.gateway';
 import { SyncService } from './services/sync.service';
 import {
   SyncEventsListener,
@@ -68,12 +69,13 @@ import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from
   providers: [
     SyncService,
     SyncGateway,
+    TournamentLiveGateway,
     SyncEventsListener,
     TournamentDiscoveryEventsListener,
     CompetitionEventEventsListener,
     TournamentEventEventsListener,
     TeamMatchingEventsListener,
   ],
-  exports: [SyncService, SyncGateway],
+  exports: [SyncService, SyncGateway, TournamentLiveGateway],
 })
 export class SyncModule {}

@@ -1,0 +1,104 @@
+<app-page-header>
+  <i avatar class="pi pi-trophy text-2xl"></i>
+  <span title>{{ 'all.tournament.create.title' | translate }}</span>
+  <ng-container subTitle>
+    @if (club(); as club) {
+      <span>{{ club.fullName || club.name }}</span>
+    }
+  </ng-container>
+</app-page-header>
+
+@if (loading()) {
+  <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+} @else if (error()) {
+  <p-message severity="error" [text]="error()!" />
+} @else if (!club()) {
+  <p-message severity="warn" [text]="'all.tournament.create.noClub' | translate" />
+} @else {
+  <p-card>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="flex flex-col gap-4">
+        <!-- Tournament Name -->
+        <div class="flex flex-col gap-2">
+          <label for="name">{{ 'all.tournament.create.name' | translate }} *</label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            class="max-w-md"
+            [placeholder]="'all.tournament.create.namePlaceholder' | translate"
+          />
+          @if (form.get('name')?.invalid && form.get('name')?.touched) {
+            <small class="text-red-500">{{ 'all.tournament.create.nameRequired' | translate }}</small>
+          }
+        </div>
+
+        <!-- Tournament Days (Range Selection) -->
+        <div class="flex flex-col gap-2">
+          <label for="tournamentDays">{{ 'all.tournament.create.tournamentDays' | translate }}</label>
+          <p-datepicker
+            id="tournamentDays"
+            formControlName="tournamentDays"
+            selectionMode="range"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            [placeholder]="'all.tournament.create.tournamentDaysPlaceholder' | translate"
+            styleClass="w-64"
+          />
+          <small class="text-muted-color">{{ 'all.tournament.create.tournamentDaysHelp' | translate }}</small>
+        </div>
+
+        <!-- Registration Dates -->
+        <div class="flex flex-row gap-4">
+          <div class="flex flex-col gap-2">
+            <label for="openDate">{{ 'all.tournament.create.openDate' | translate }}</label>
+            <p-datepicker
+              id="openDate"
+              formControlName="openDate"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              [placeholder]="'all.tournament.create.openDatePlaceholder' | translate"
+              styleClass="w-48"
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="closeDate">{{ 'all.tournament.create.closeDate' | translate }}</label>
+            <p-datepicker
+              id="closeDate"
+              formControlName="closeDate"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              [placeholder]="'all.tournament.create.closeDatePlaceholder' | translate"
+              styleClass="w-48"
+            />
+          </div>
+        </div>
+
+        <!-- Official Toggle -->
+        <div class="flex items-center gap-2">
+          <p-checkbox formControlName="official" [binary]="true" inputId="official" />
+          <label for="official">{{ 'all.tournament.create.official' | translate }}</label>
+        </div>
+
+        @if (createError()) {
+          <p-message severity="error" [text]="createError()!" />
+        }
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 mt-4">
+          <p-button
+            [label]="'all.common.cancel' | translate"
+            severity="secondary"
+            (onClick)="cancel()"
+          />
+          <p-button
+            type="submit"
+            [label]="'all.tournament.create.submit' | translate"
+            [loading]="creating()"
+            [disabled]="form.invalid || creating()"
+          />
+        </div>
+      </div>
+    </form>
+  </p-card>
+}

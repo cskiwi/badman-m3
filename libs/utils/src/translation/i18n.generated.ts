@@ -46,6 +46,17 @@ export type I18nTranslations = {
             "totalGames": string;
             "totalPlayers": string;
             "totalTeams": string;
+            "tournaments": {
+                "create": string;
+                "createFirst": string;
+                "date": string;
+                "noTournaments": string;
+                "official": string;
+                "officialTooltip": string;
+                "phase": string;
+                "tab": string;
+                "title": string;
+            };
             "winRate": string;
             "winRateTrend": string;
         };
@@ -662,6 +673,22 @@ export type I18nTranslations = {
         };
         "tournament": {
             "closeDate": string;
+            "create": {
+                "closeDate": string;
+                "closeDatePlaceholder": string;
+                "name": string;
+                "namePlaceholder": string;
+                "nameRequired": string;
+                "noClub": string;
+                "official": string;
+                "openDate": string;
+                "openDatePlaceholder": string;
+                "submit": string;
+                "title": string;
+                "tournamentDays": string;
+                "tournamentDaysPlaceholder": string;
+                "tournamentDaysHelp": string;
+            };
             "dates": string;
             "details": string;
             "draws": string;
@@ -696,6 +723,32 @@ export type I18nTranslations = {
                     "title": string;
                     "no-games": string;
                 };
+            };
+            "live": {
+                "nowPlaying": string;
+                "recentResults": string;
+                "upcomingGames": string;
+                "comingUp": string;
+                "announcements": string;
+                "tournament": string;
+                "inProgress": string;
+                "completed": string;
+                "remaining": string;
+                "courtsInUse": string;
+                "playing": string;
+                "available": string;
+                "blocked": string;
+                "startedAt": string;
+                "courtAvailable": string;
+                "courtBlocked": string;
+                "noCourts": string;
+                "justFinished": string;
+                "noResultsYet": string;
+                "next": string;
+                "gamesRemaining": string;
+                "allGamesCompleted": string;
+                "checkSchedule": string;
+                "noAnnouncements": string;
             };
         };
     };

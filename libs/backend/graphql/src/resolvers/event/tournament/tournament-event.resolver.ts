@@ -1,8 +1,11 @@
-import { TournamentEvent, TournamentSubEvent } from '@app/models';
-import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { PermGuard, User } from '@app/backend-authorization';
+import { TournamentEvent, TournamentSubEvent, Club, Player } from '@app/models';
+import { TournamentPhase } from '@app/models-enum';
+import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { IsUUID } from '@app/utils';
 import { TournamentEventArgs, TournamentSubEventArgs } from '../../../args';
+import { TournamentEventCreateInput, TournamentEventUpdateInput } from '../../../inputs';
 
 @Resolver(() => TournamentEvent)
 export class TournamentEventResolver {
@@ -63,5 +66,140 @@ export class TournamentEventResolver {
     }
 
     return TournamentSubEvent.find(args);
+  }
+
+  @ResolveField(() => Club, { nullable: true })
+  async club(@Parent() { clubId }: TournamentEvent): Promise<Club | null> {
+    if (!clubId) {
+      return null;
+    }
+    return Club.findOne({ where: { id: clubId } });
+  }
+
+  // ============ MUTATIONS ============
+
+  @Mutation(() => TournamentEvent, { description: 'Create a new tournament event' })
+  @UseGuards(PermGuard)
+  async createTournamentEvent(
+    @User() user: Player,
+    @Args('data') data: TournamentEventCreateInput,
+  ): Promise<TournamentEvent> {
+    // Check permission - user must have create permission for tournaments
+    const hasPermission = user.hasAnyPermission([
+      'create-any:tournament',
+      'edit-any:club',
+      `${data.clubId}_edit:club`,
+      `${data.clubId}_create:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to create tournaments for this club');
+    }
+
+    // Validate club exists
+    const club = await Club.findOne({ where: { id: data.clubId } });
+    if (!club) {
+      throw new NotFoundException(`Club with ID ${data.clubId} not found`);
+    }
+
+    // Create the tournament event
+    const tournament = new TournamentEvent();
+    tournament.name = data.name;
+    tournament.clubId = data.clubId;
+    tournament.firstDay = data.firstDay;
+    tournament.openDate = data.openDate;
+    tournament.closeDate = data.closeDate;
+    tournament.official = data.official ?? false;
+    tournament.phase = TournamentPhase.DRAFT;
+
+    // Generate slug from name
+    tournament.slug = this.generateSlug(data.name);
+
+    await tournament.save();
+
+    return tournament;
+  }
+
+  @Mutation(() => TournamentEvent, { description: 'Update a tournament event' })
+  @UseGuards(PermGuard)
+  async updateTournamentEvent(
+    @User() user: Player,
+    @Args('id', { type: () => ID }) id: string,
+    @Args('data') data: TournamentEventUpdateInput,
+  ): Promise<TournamentEvent> {
+    const tournament = await TournamentEvent.findOne({ where: { id } });
+
+    if (!tournament) {
+      throw new NotFoundException(`Tournament with ID ${id} not found`);
+    }
+
+    // Check permission
+    const hasPermission = user.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.clubId}_edit:club`,
+      `${tournament.clubId}_edit:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to update this tournament');
+    }
+
+    // Update fields
+    if (data.name !== undefined) {
+      tournament.name = data.name;
+      tournament.slug = this.generateSlug(data.name);
+    }
+    if (data.clubId !== undefined) tournament.clubId = data.clubId;
+    if (data.firstDay !== undefined) tournament.firstDay = data.firstDay;
+    if (data.openDate !== undefined) tournament.openDate = data.openDate;
+    if (data.closeDate !== undefined) tournament.closeDate = data.closeDate;
+    if (data.official !== undefined) tournament.official = data.official;
+    if (data.enrollmentOpenDate !== undefined) tournament.enrollmentOpenDate = data.enrollmentOpenDate;
+    if (data.enrollmentCloseDate !== undefined) tournament.enrollmentCloseDate = data.enrollmentCloseDate;
+    if (data.allowGuestEnrollments !== undefined) tournament.allowGuestEnrollments = data.allowGuestEnrollments;
+    if (data.schedulePublished !== undefined) tournament.schedulePublished = data.schedulePublished;
+
+    await tournament.save();
+
+    return tournament;
+  }
+
+  @Mutation(() => Boolean, { description: 'Delete a tournament event' })
+  @UseGuards(PermGuard)
+  async deleteTournamentEvent(
+    @User() user: Player,
+    @Args('id', { type: () => ID }) id: string,
+  ): Promise<boolean> {
+    const tournament = await TournamentEvent.findOne({ where: { id } });
+
+    if (!tournament) {
+      throw new NotFoundException(`Tournament with ID ${id} not found`);
+    }
+
+    // Check permission
+    const hasPermission = user.hasAnyPermission([
+      'delete-any:tournament',
+      'edit-any:club',
+      `${tournament.clubId}_edit:club`,
+      `${tournament.clubId}_delete:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to delete this tournament');
+    }
+
+    await tournament.remove();
+
+    return true;
+  }
+
+  // ============ HELPER METHODS ============
+
+  private generateSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
   }
 }

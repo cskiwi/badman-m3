@@ -39,6 +39,17 @@
     "totalGames": "Wedstrijden",
     "totalPlayers": "Spelers",
     "totalTeams": "Teams",
+    "tournaments": {
+      "create": "Toernooi Aanmaken",
+      "createFirst": "Maak je eerste toernooi aan",
+      "date": "Datum",
+      "noTournaments": "Geen toernooien gevonden voor deze club",
+      "official": "Officieel",
+      "officialTooltip": "Officieel toernooi",
+      "phase": "Fase",
+      "tab": "Toernooien",
+      "title": "Club Toernooien"
+    },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
   },
@@ -655,6 +666,22 @@
   },
   "tournament": {
     "closeDate": "Inschrijvingen Sluiten",
+    "create": {
+      "closeDate": "Sluitingsdatum Inschrijvingen",
+      "closeDatePlaceholder": "Selecteer sluitingsdatum",
+      "name": "Toernooinaam",
+      "namePlaceholder": "Voer toernooinaam in",
+      "nameRequired": "Toernooinaam is verplicht",
+      "noClub": "Geen club geselecteerd. Navigeer vanaf een clubpagina.",
+      "official": "Officieel toernooi",
+      "openDate": "Openingsdatum Inschrijvingen",
+      "openDatePlaceholder": "Selecteer openingsdatum",
+      "submit": "Toernooi Aanmaken",
+      "title": "Toernooi Aanmaken",
+      "tournamentDays": "Toernooidagen",
+      "tournamentDaysPlaceholder": "Selecteer begin- en einddatum",
+      "tournamentDaysHelp": "Selecteer de eerste en laatste dag van het toernooi"
+    },
     "dates": "Toernooi Data",
     "details": "Toernooi Details",
     "draws": "Reeks",
@@ -689,6 +716,32 @@
         "title": "Wedstrijden",
         "no-games": "Geen wedstrijden gevonden voor dit schema"
       }
+    },
+    "live": {
+      "nowPlaying": "Nu Aan Het Spelen",
+      "recentResults": "Recente Resultaten",
+      "upcomingGames": "Volgende Wedstrijden",
+      "comingUp": "Volgende",
+      "announcements": "Aankondigingen",
+      "tournament": "Toernooi Live",
+      "inProgress": "Bezig",
+      "completed": "Voltooid",
+      "remaining": "Resterend",
+      "courtsInUse": "Velden In Gebruik",
+      "playing": "Spelend",
+      "available": "Beschikbaar",
+      "blocked": "Geblokkeerd",
+      "startedAt": "Gestart om",
+      "courtAvailable": "Veld is beschikbaar",
+      "courtBlocked": "Veld is tijdelijk geblokkeerd",
+      "noCourts": "Geen velden geconfigureerd",
+      "justFinished": "Net Afgelopen",
+      "noResultsYet": "Nog geen resultaten",
+      "next": "Volgende",
+      "gamesRemaining": "wedstrijden resterend",
+      "allGamesCompleted": "Alle wedstrijden zijn voltooid!",
+      "checkSchedule": "Bekijk het programma voor de volgende wedstrijden",
+      "noAnnouncements": "Geen aankondigingen"
     }
   }
 }

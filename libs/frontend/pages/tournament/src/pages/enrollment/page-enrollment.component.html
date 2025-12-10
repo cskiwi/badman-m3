@@ -1,0 +1,394 @@
+@if (!loading()) {
+  @if (subEvent(); as subEvent) {
+    <app-page-header>
+      <ng-content title>{{ 'all.enrollment.title' | translate }}</ng-content>
+      <ng-content subTitle>
+        <div class="flex items-center gap-2 text-sm text-muted-color">
+          <a [routerLink]="['/', 'tournament', tournamentId()]">{{ tournamentEvent()?.name }}</a>
+          <i class="pi pi-angle-right text-xs"></i>
+          <span>{{ subEvent.name }}</span>
+        </div>
+      </ng-content>
+    </app-page-header>
+
+    <!-- Enrollment Status Banner -->
+    @if (!isEnrollmentOpen()) {
+      <p-message severity="warn" class="w-full mb-4">
+        <ng-template pTemplate="content">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-lock"></i>
+            <span>{{ 'all.enrollment.closed' | translate }}</span>
+          </div>
+        </ng-template>
+      </p-message>
+    }
+
+    @if (isFull() && subEvent.waitingListEnabled) {
+      <p-message severity="info" class="w-full mb-4">
+        <ng-template pTemplate="content">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-info-circle"></i>
+            <span>{{ 'all.enrollment.fullWithWaitingList' | translate }}</span>
+          </div>
+        </ng-template>
+      </p-message>
+    }
+
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- Left Column: Enrollment Form -->
+      <div class="lg:col-span-1">
+        <!-- Current User Enrollment Status -->
+        @if (currentUserEnrollment(); as myEnrollment) {
+          <p-card header="{{ 'all.enrollment.yourEnrollment' | translate }}" class="mb-4">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="font-medium">{{ 'all.enrollment.status' | translate }}:</span>
+                <p-tag [severity]="getStatusSeverity(myEnrollment.status)" [value]="myEnrollment.status" />
+              </div>
+
+              @if (isDoubles()) {
+                <div class="flex items-center justify-between">
+                  <span class="font-medium">{{ 'all.enrollment.partner' | translate }}:</span>
+                  @if (myEnrollment.confirmedPartner) {
+                    <span class="text-green-600">{{ myEnrollment.confirmedPartner.fullName }}</span>
+                  } @else if (myEnrollment.preferredPartner) {
+                    <span class="text-orange-600">
+                      {{ myEnrollment.preferredPartner.fullName }}
+                      <span class="text-xs">({{ 'all.enrollment.pending' | translate }})</span>
+                    </span>
+                  } @else {
+                    <span class="text-muted-color">{{ 'all.enrollment.noPartner' | translate }}</span>
+                  }
+                </div>
+              }
+
+              @if (myEnrollment.status === 'WAITING_LIST') {
+                <div class="flex items-center justify-between">
+                  <span class="font-medium">{{ 'all.enrollment.waitingListPosition' | translate }}:</span>
+                  <span>#{{ myEnrollment.waitingListPosition }}</span>
+                </div>
+              }
+
+              <p-button
+                label="{{ 'all.enrollment.cancel' | translate }}"
+                severity="danger"
+                [outlined]="true"
+                size="small"
+                (onClick)="cancelEnrollment(myEnrollment.id)"
+                [loading]="enrolling()"
+              />
+            </div>
+          </p-card>
+        } @else if (isEnrollmentOpen() && isLoggedIn()) {
+          <!-- Enrollment Form for Logged-in Users -->
+          <p-card header="{{ 'all.enrollment.enrollNow' | translate }}" class="mb-4">
+            <form [formGroup]="enrollForm" (ngSubmit)="enroll()" class="space-y-4">
+              @if (isDoubles()) {
+                <div class="field">
+                  <label for="preferredPartner" class="block font-medium mb-2">
+                    {{ 'all.enrollment.preferredPartner' | translate }}
+                  </label>
+                  <p-autoComplete
+                    formControlName="preferredPartner"
+                    [suggestions]="playerSuggestions()"
+                    (completeMethod)="searchPartners($event)"
+                    field="fullName"
+                    [dropdown]="false"
+                    placeholder="{{ 'all.enrollment.searchPartner' | translate }}"
+                    class="w-full"
+                    [showClear]="true"
+                  />
+                  <small class="text-muted-color">
+                    {{ 'all.enrollment.partnerHint' | translate }}
+                  </small>
+                </div>
+              }
+
+              <div class="field">
+                <label for="notes" class="block font-medium mb-2">
+                  {{ 'all.enrollment.notes' | translate }}
+                </label>
+                <textarea pTextarea formControlName="notes" rows="3" class="w-full"></textarea>
+              </div>
+
+              @if (enrollError()) {
+                <p-message severity="error" [text]="enrollError()!" class="w-full" />
+              }
+
+              <div class="flex gap-2">
+                <p-button
+                  type="submit"
+                  label="{{ 'all.enrollment.enroll' | translate }}"
+                  [loading]="enrolling()"
+                  [disabled]="isFull() && !subEvent.waitingListEnabled"
+                />
+              </div>
+            </form>
+          </p-card>
+        } @else if (!isLoggedIn()) {
+          <!-- Not Logged In -->
+          <p-card header="{{ 'all.enrollment.enrollNow' | translate }}" class="mb-4">
+            <div class="text-center space-y-4">
+              <i class="pi pi-user text-4xl text-muted-color"></i>
+              <p>{{ 'all.enrollment.loginRequired' | translate }}</p>
+              <p-button label="{{ 'all.auth.login' | translate }}" [routerLink]="['/auth/login']" />
+            </div>
+          </p-card>
+        }
+
+        <!-- Guest Enrollment Button -->
+        @if (isEnrollmentOpen() && allowsGuests()) {
+          <p-card class="mb-4">
+            <div class="text-center space-y-2">
+              <p class="text-sm text-muted-color">{{ 'all.enrollment.guestInfo' | translate }}</p>
+              <p-button
+                label="{{ 'all.enrollment.enrollAsGuest' | translate }}"
+                [outlined]="true"
+                (onClick)="openGuestDialog()"
+              />
+            </div>
+          </p-card>
+        }
+
+        <!-- Sub-event Info -->
+        <p-card header="{{ 'all.enrollment.info' | translate }}">
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-muted-color">{{ 'all.enrollment.type' | translate }}:</span>
+              <span>{{ isDoubles() ? 'Doubles' : 'Singles' }}</span>
+            </div>
+
+            @if (subEvent.maxEntries) {
+              <div class="flex justify-between">
+                <span class="text-muted-color">{{ 'all.enrollment.maxEntries' | translate }}:</span>
+                <span>{{ subEvent.maxEntries }}</span>
+              </div>
+            }
+
+            <div class="flex justify-between">
+              <span class="text-muted-color">{{ 'all.enrollment.confirmed' | translate }}:</span>
+              <span>{{ subEvent.confirmedEnrollmentCount }}</span>
+            </div>
+
+            <div class="flex justify-between">
+              <span class="text-muted-color">{{ 'all.enrollment.pending' | translate }}:</span>
+              <span>{{ subEvent.pendingEnrollmentCount }}</span>
+            </div>
+
+            @if (subEvent.waitingListEnabled) {
+              <div class="flex justify-between">
+                <span class="text-muted-color">{{ 'all.enrollment.waitingList' | translate }}:</span>
+                <span>{{ subEvent.waitingListCount }}</span>
+              </div>
+            }
+          </div>
+        </p-card>
+      </div>
+
+      <!-- Right Column: Enrollment Lists -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Confirmed Enrollments -->
+        <p-card header="{{ 'all.enrollment.confirmedEntries' | translate }} ({{ confirmedEnrollments().length }})">
+          @if (confirmedEnrollments().length > 0) {
+            <p-table [value]="confirmedEnrollments()" [scrollable]="true" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{ 'all.enrollment.player' | translate }}</th>
+                  @if (isDoubles()) {
+                    <th>{{ 'all.enrollment.partner' | translate }}</th>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-enrollment>
+                <tr>
+                  <td>
+                    @if (enrollment.isGuest) {
+                      <span class="flex items-center gap-2">
+                        <i class="pi pi-user text-muted-color" pTooltip="Guest"></i>
+                        {{ enrollment.guestName }}
+                      </span>
+                    } @else {
+                      {{ enrollment.player?.fullName }}
+                    }
+                  </td>
+                  @if (isDoubles()) {
+                    <td>{{ enrollment.confirmedPartner?.fullName || '-' }}</td>
+                  }
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [attr.colspan]="isDoubles() ? 2 : 1" class="text-center text-muted-color">
+                    {{ 'all.enrollment.noConfirmed' | translate }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          } @else {
+            <div class="text-center text-muted-color py-4">
+              {{ 'all.enrollment.noConfirmed' | translate }}
+            </div>
+          }
+        </p-card>
+
+        <!-- Looking for Partner (only for doubles) -->
+        @if (isDoubles() && lookingForPartner().length > 0) {
+          <p-card header="{{ 'all.enrollment.lookingForPartner' | translate }} ({{ lookingForPartner().length }})">
+            <p-table [value]="lookingForPartner()" [scrollable]="true" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>{{ 'all.enrollment.player' | translate }}</th>
+                  <th>{{ 'all.enrollment.preferredPartner' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-enrollment>
+                <tr>
+                  <td>{{ enrollment.player?.fullName }}</td>
+                  <td>
+                    @if (enrollment.preferredPartner) {
+                      <span class="text-orange-600">
+                        {{ enrollment.preferredPartner.fullName }}
+                        <span class="text-xs">({{ 'all.enrollment.awaitingConfirmation' | translate }})</span>
+                      </span>
+                    } @else {
+                      <span class="text-muted-color">{{ 'all.enrollment.anyPartner' | translate }}</span>
+                    }
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-card>
+        }
+
+        <!-- Waiting List -->
+        @if (subEvent.waitingListEnabled && waitingListEnrollments().length > 0) {
+          <p-card header="{{ 'all.enrollment.waitingList' | translate }} ({{ waitingListEnrollments().length }})">
+            <p-table [value]="waitingListEnrollments()" [scrollable]="true" styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 3rem">#</th>
+                  <th>{{ 'all.enrollment.player' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-enrollment>
+                <tr>
+                  <td>{{ enrollment.waitingListPosition }}</td>
+                  <td>
+                    @if (enrollment.isGuest) {
+                      <span class="flex items-center gap-2">
+                        <i class="pi pi-user text-muted-color" pTooltip="Guest"></i>
+                        {{ enrollment.guestName }}
+                      </span>
+                    } @else {
+                      {{ enrollment.player?.fullName }}
+                    }
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-card>
+        }
+      </div>
+    </div>
+  }
+} @else {
+  <!-- Loading State -->
+  <div class="space-y-6">
+    <div class="space-y-2">
+      <p-skeleton width="20rem" height="2rem" />
+      <p-skeleton width="15rem" height="1rem" />
+    </div>
+    <div class="grid gap-6 lg:grid-cols-3">
+      <div class="space-y-4">
+        <p-skeleton height="12rem" />
+        <p-skeleton height="10rem" />
+      </div>
+      <div class="lg:col-span-2 space-y-4">
+        <p-skeleton height="15rem" />
+        <p-skeleton height="10rem" />
+      </div>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="error flex items-center gap-2 p-4 text-red-600 mt-4">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
+}
+
+<!-- Guest Enrollment Dialog -->
+<p-dialog
+  header="{{ 'all.enrollment.enrollAsGuest' | translate }}"
+  [(visible)]="showGuestDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <form [formGroup]="guestForm" (ngSubmit)="enrollGuest()" class="space-y-4">
+    <div class="field">
+      <label for="guestName" class="block font-medium mb-2">
+        {{ 'all.enrollment.guestName' | translate }} *
+      </label>
+      <input pInputText formControlName="guestName" id="guestName" class="w-full" />
+    </div>
+
+    <div class="field">
+      <label for="guestEmail" class="block font-medium mb-2">
+        {{ 'all.enrollment.guestEmail' | translate }} *
+      </label>
+      <input pInputText formControlName="guestEmail" id="guestEmail" type="email" class="w-full" />
+    </div>
+
+    <div class="field">
+      <label for="guestPhone" class="block font-medium mb-2">
+        {{ 'all.enrollment.guestPhone' | translate }}
+      </label>
+      <input pInputText formControlName="guestPhone" id="guestPhone" class="w-full" />
+    </div>
+
+    @if (isDoubles()) {
+      <div class="field">
+        <label for="guestPartner" class="block font-medium mb-2">
+          {{ 'all.enrollment.preferredPartner' | translate }}
+        </label>
+        <p-autoComplete
+          formControlName="preferredPartner"
+          [suggestions]="playerSuggestions()"
+          (completeMethod)="searchPartners($event)"
+          field="fullName"
+          [dropdown]="false"
+          placeholder="{{ 'all.enrollment.searchPartner' | translate }}"
+          class="w-full"
+        />
+      </div>
+    }
+
+    <div class="field">
+      <label for="guestNotes" class="block font-medium mb-2">
+        {{ 'all.enrollment.notes' | translate }}
+      </label>
+      <textarea pTextarea formControlName="notes" rows="2" class="w-full"></textarea>
+    </div>
+
+    @if (enrollError()) {
+      <p-message severity="error" [text]="enrollError()!" class="w-full" />
+    }
+
+    <div class="flex justify-end gap-2 pt-4">
+      <p-button
+        type="button"
+        label="{{ 'all.common.cancel' | translate }}"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="showGuestDialog.set(false)"
+      />
+      <p-button
+        type="submit"
+        label="{{ 'all.enrollment.enroll' | translate }}"
+        [loading]="enrolling()"
+        [disabled]="guestForm.invalid"
+      />
+    </div>
+  </form>
+</p-dialog>

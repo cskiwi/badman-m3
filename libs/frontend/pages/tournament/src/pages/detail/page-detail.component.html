@@ -16,6 +16,13 @@
       </ng-content>
       <ng-content actions>
         <div class="flex items-center gap-2">
+          <a
+            [routerLink]="['/', 'tournament', tournament.id, 'my-enrollments']"
+            class="flex items-center gap-1 px-3 py-1.5 rounded bg-primary-100 text-primary-700 hover:bg-primary-200 transition-colors text-sm no-underline"
+          >
+            <i class="pi pi-list text-xs"></i>
+            <span>{{ 'all.enrollment.myEnrollments' | translate }}</span>
+          </a>
           @if (tournament.visualCode) {
             <a
               [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode"
@@ -225,6 +232,17 @@
                                 No draws configured for this event yet
                               </div>
                             }
+
+                            <!-- Enroll Button -->
+                            <div class="mt-4 pt-4 border-t border-surface-200">
+                              <a
+                                [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'enroll']"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded bg-primary text-primary-contrast hover:bg-primary-emphasis transition-colors no-underline font-medium"
+                              >
+                                <i class="pi pi-user-plus"></i>
+                                <span>{{ 'all.enrollment.enrollNow' | translate }}</span>
+                              </a>
+                            </div>
                           </div>
                         }
                       </div>
@@ -317,6 +335,17 @@
                           No draws configured for this event yet
                         </div>
                       }
+
+                      <!-- Enroll Button -->
+                      <div class="mt-4 pt-4 border-t border-surface-200">
+                        <a
+                          [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'enroll']"
+                          class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded bg-primary text-primary-contrast hover:bg-primary-emphasis transition-colors no-underline font-medium"
+                        >
+                          <i class="pi pi-user-plus"></i>
+                          <span>{{ 'all.enrollment.enrollNow' | translate }}</span>
+                        </a>
+                      </div>
                     </div>
                   }
                 </div>

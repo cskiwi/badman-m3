@@ -10,6 +10,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TabsModule } from 'primeng/tabs';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-page-detail',
@@ -23,6 +24,7 @@ import { TabsModule } from 'primeng/tabs';
     SyncButtonComponent,
     SyncStatusIndicatorComponent,
     TabsModule,
+    ButtonModule,
   ],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',

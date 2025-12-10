@@ -89,6 +89,17 @@ export class TournamentSubEvent extends BaseEntity {
   @Column({ type: 'integer', nullable: true })
   declare paraClassId?: number; // 0=Standard
 
+  // Tournament management fields
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  declare maxEntries?: number;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: true })
+  declare waitingListEnabled: boolean;
+
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, (eventEntry) => eventEntry.subEventTournament, { cascade: true, onDelete: 'CASCADE' })
   // eventEntries?: EventEntry[];

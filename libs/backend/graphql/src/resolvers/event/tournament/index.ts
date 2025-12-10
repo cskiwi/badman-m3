@@ -3,3 +3,7 @@ export * from './tournament-sub-event.resolver';
 export * from './tournament-draw.resolver';
 export * from './location-event-membership.resolver';
 export * from './group-subevent-membership.resolver';
+export * from './tournament-enrollment.resolver';
+export * from './tournament-schedule.resolver';
+export * from './tournament-checkin.resolver';
+export * from './tournament-court.resolver';

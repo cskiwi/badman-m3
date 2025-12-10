@@ -39,6 +39,17 @@
     "totalGames": "Games",
     "totalPlayers": "Players",
     "totalTeams": "Teams",
+    "tournaments": {
+      "create": "Create Tournament",
+      "createFirst": "Create your first tournament",
+      "date": "Date",
+      "noTournaments": "No tournaments found for this club",
+      "official": "Official",
+      "officialTooltip": "Official tournament",
+      "phase": "Phase",
+      "tab": "Tournaments",
+      "title": "Club Tournaments"
+    },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
   },
@@ -655,6 +666,22 @@
   },
   "tournament": {
     "closeDate": "Registration Closes",
+    "create": {
+      "closeDate": "Registration Close Date",
+      "closeDatePlaceholder": "Select close date",
+      "name": "Tournament Name",
+      "namePlaceholder": "Enter tournament name",
+      "nameRequired": "Tournament name is required",
+      "noClub": "No club selected. Please navigate from a club page.",
+      "official": "Official tournament",
+      "openDate": "Registration Open Date",
+      "openDatePlaceholder": "Select open date",
+      "submit": "Create Tournament",
+      "title": "Create Tournament",
+      "tournamentDays": "Tournament Days",
+      "tournamentDaysPlaceholder": "Select start and end date",
+      "tournamentDaysHelp": "Select the first and last day of the tournament"
+    },
     "dates": "Tournament Dates",
     "details": "Tournament Details",
     "draws": "Draws",
@@ -689,6 +716,32 @@
         "title": "Games",
         "no-games": "No games found for this draw"
       }
+    },
+    "live": {
+      "nowPlaying": "Now Playing",
+      "recentResults": "Recent Results",
+      "upcomingGames": "Upcoming Games",
+      "comingUp": "Coming Up",
+      "announcements": "Announcements",
+      "tournament": "Tournament Live",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "remaining": "Remaining",
+      "courtsInUse": "Courts In Use",
+      "playing": "Playing",
+      "available": "Available",
+      "blocked": "Blocked",
+      "startedAt": "Started at",
+      "courtAvailable": "Court is available",
+      "courtBlocked": "Court is temporarily blocked",
+      "noCourts": "No courts configured",
+      "justFinished": "Just Finished",
+      "noResultsYet": "No results yet",
+      "next": "Next",
+      "gamesRemaining": "games remaining",
+      "allGamesCompleted": "All games have been completed!",
+      "checkSchedule": "Check the schedule for upcoming games",
+      "noAnnouncements": "No announcements"
     }
   }
 }

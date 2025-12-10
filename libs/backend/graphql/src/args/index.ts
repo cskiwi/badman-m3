@@ -92,8 +92,11 @@ export const {
   StandingArgs,
   TeamArgs,
   TeamPlayerMembershipArgs,
+  TournamentCheckInArgs,
   TournamentDrawArgs,
+  TournamentEnrollmentArgs,
   TournamentEventArgs,
   TournamentGroupSubEventMembershipArgs,
+  TournamentScheduleSlotArgs,
   TournamentSubEventArgs,
 } = argsMap;

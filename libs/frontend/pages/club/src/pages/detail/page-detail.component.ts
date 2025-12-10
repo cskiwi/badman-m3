@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -13,7 +14,7 @@ import { SelectModule } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 import { TeamEditComponent } from '../../components/team-edit/team-edit.component';
 import { DetailService } from './page-detail.service';
-import { ClubPerformanceTabComponent, ClubScheduleTabComponent, ClubTeamsTabComponent } from './tabs';
+import { ClubPerformanceTabComponent, ClubScheduleTabComponent, ClubTeamsTabComponent, ClubTournamentsTabComponent } from './tabs';
 
 @Component({
   selector: 'app-page-detail',
@@ -29,6 +30,7 @@ import { ClubPerformanceTabComponent, ClubScheduleTabComponent, ClubTeamsTabComp
     // ClubPlayersTabComponent,
     ClubPerformanceTabComponent,
     ClubScheduleTabComponent,
+    ClubTournamentsTabComponent,
   ],
   providers: [DialogService],
   templateUrl: './page-detail.component.html',
@@ -37,6 +39,7 @@ import { ClubPerformanceTabComponent, ClubScheduleTabComponent, ClubTeamsTabComp
 export class PageDetailComponent {
   readonly dataService = new DetailService();
   private readonly seoService = inject(SeoService);
+  private readonly router = inject(Router);
   private readonly clubId = injectParams('clubId');
 
   // selectors
@@ -58,6 +61,22 @@ export class PageDetailComponent {
 
   canEditTeam(team: Team): boolean {
     return this.auth.hasAnyPermission(['edit-any:team', 'edit-any:club', `${team.id}_edit:team`]);
+  }
+
+  canCreateTournament(): boolean {
+    const clubId = this.clubId();
+    return this.auth.hasAnyPermission([
+      'create-any:tournament',
+      'edit-any:club',
+      `${clubId}_edit:club`,
+      `${clubId}_create:tournament`,
+    ]);
+  }
+
+  createTournament(): void {
+    const clubId = this.clubId();
+    // Navigate to tournament creation page with club context
+    this.router.navigate(['/tournament', 'create'], { queryParams: { clubId } });
   }
 
   editTeam(team: Team): void {

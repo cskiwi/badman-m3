@@ -5,3 +5,5 @@ export * from './club-players-tab.service';
 export * from './club-performance-tab.component';
 export * from './club-performance-tab.service';
 export * from './club-schedule-tab.component';
+export * from './club-tournaments-tab.component';
+export * from './club-tournaments-tab.service';

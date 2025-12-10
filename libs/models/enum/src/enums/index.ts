@@ -17,5 +17,6 @@ export * from './security-types.enum';
 export * from './startingType.enum';
 export * from './subEventType.enum';
 export * from './teamMembershipType.enum';
+export * from './tournament-management.enum';
 export * from './usedRankingTiming.enum';
 export * from './useForTeams.enum';
