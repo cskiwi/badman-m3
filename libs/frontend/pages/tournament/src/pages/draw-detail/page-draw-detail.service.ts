@@ -130,7 +130,7 @@ export class DrawDetailService {
           }),
         );
 
-        if (!result?.data.tournamentEvent || !result?.data.tournamentSubEvent || !result?.data.tournamentDraw) {
+        if (!result?.data?.tournamentEvent || !result?.data?.tournamentSubEvent || !result?.data?.tournamentDraw) {
           throw new Error('No tournament, sub event, or draw found');
         }
 

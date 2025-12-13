@@ -72,7 +72,7 @@ export class DetailService {
           }),
         );
 
-        if (!result?.data.tournamentEvent) {
+        if (!result?.data?.tournamentEvent) {
           throw new Error('No tournament found');
         }
         return result.data.tournamentEvent;

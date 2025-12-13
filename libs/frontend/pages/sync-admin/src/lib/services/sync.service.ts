@@ -78,7 +78,7 @@ export class SyncApiService {
       .query<{ syncStatus: SyncStatus }>({
         query: GET_SYNC_STATUS,
       })
-      .pipe(map((result) => result.data.syncStatus));
+      .pipe(map((result) => result.data?.syncStatus!));
   }
 
   /**
@@ -125,6 +125,6 @@ export class SyncApiService {
         query: GET_SYNC_JOBS,
         variables: { limit, status },
       })
-      .pipe(map((result) => result.data.syncJobs));
+      .pipe(map((result) => result.data?.syncJobs!));
   }
 }

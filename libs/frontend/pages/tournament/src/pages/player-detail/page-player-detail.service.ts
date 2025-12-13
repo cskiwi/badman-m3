@@ -197,7 +197,7 @@ export class PlayerDetailService {
           }),
         );
 
-        if (!result?.data.player) {
+        if (!result?.data?.player) {
           throw new Error('Player not found');
         }
 

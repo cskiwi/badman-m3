@@ -679,6 +679,114 @@
     "winRate": "Win %",
     "wins": "Wins"
   },
+  "enrollment": {
+    "myEnrollments": "My Enrollments"
+  },
+  "errors": {
+    "title": "Error"
+  },
+  "loading": {
+    "players": "Loading players..."
+  },
+  "clubSearch": {
+    "title": "Search Clubs",
+    "subtitle": "Discover badminton clubs in your area",
+    "searchPlaceholder": "Search clubs...",
+    "loading": "Loading...",
+    "stats": {
+      "totalClubs": "Total Clubs",
+      "totalPlayers": "Total Players",
+      "totalTeams": "Total Teams",
+      "avgPlayersPerClub": "Avg. Players per Club"
+    },
+    "filters": {
+      "title": "Filters",
+      "location": "Location",
+      "country": "Country",
+      "state": "State",
+      "division": "Division",
+      "searchCountries": "Search countries...",
+      "searchStates": "Search states...",
+      "searchDivisions": "Search divisions...",
+      "memberCounts": "Member Counts",
+      "minPlayers": "Min. Players",
+      "maxPlayers": "Max. Players",
+      "minTeams": "Min. Teams",
+      "maxTeams": "Max. Teams",
+      "additional": "Additional",
+      "foundedAfter": "Founded after",
+      "foundedBefore": "Founded before",
+      "activeOnly": "Active clubs only",
+      "hasWebsite": "Has website",
+      "resultCount": "{{count}} results",
+      "clear": "Clear",
+      "apply": "Apply"
+    },
+    "results": {
+      "showing": "Showing {{start}} - {{end}} of {{total}} clubs"
+    },
+    "sort": {
+      "placeholder": "Sort by..."
+    },
+    "card": {
+      "founded": "Founded in {{year}}"
+    },
+    "pagination": {
+      "template": "Showing {{first}} to {{last}} of {{totalRecords}} results"
+    },
+    "noResults": {
+      "title": "No clubs found",
+      "description": "Try different filters or search terms",
+      "clearFilters": "Clear filters",
+      "searchAgain": "Search again"
+    }
+  },
+  "games": {
+    "totalGames": "Total Games",
+    "wins": "Wins",
+    "losses": "Losses",
+    "winRate": "Win Rate",
+    "filters": "Filters",
+    "tournament": "Tournament",
+    "selectTournament": "Select tournament",
+    "dateFrom": "Date from",
+    "dateTo": "Date to",
+    "selectDate": "Select date",
+    "result": "Result",
+    "allResults": "All results",
+    "gameType": "Game type",
+    "allTypes": "All types",
+    "gamesList": "Games list",
+    "showingCount": "{{count}} games shown",
+    "export": "Export"
+  },
+  "error": {
+    "genericTitle": "An error occurred"
+  },
+  "player": {
+    "yearsOld": "years old",
+    "competitionPlayer": "Competition Player",
+    "recentGames": "Recent Games",
+    "tournamentHistory": "Tournament History",
+    "performance": "Performance",
+    "headToHead": "Head to Head",
+    "allGames": "All Games",
+    "noRecentGames": "No recent games",
+    "noRecentGamesDescription": "This player hasn't played any recent games yet",
+    "noTournamentHistory": "No tournament history",
+    "noTournamentHistoryDescription": "This player hasn't participated in any tournaments yet",
+    "noPerformanceData": "No performance data",
+    "noPerformanceDataDescription": "No performance data is available yet",
+    "noGames": "No games",
+    "noGamesDescription": "This player hasn't played any games yet",
+    "gender": "Gender",
+    "playerType": "Player type",
+    "minRating": "Min. Rating",
+    "maxRating": "Max. Rating",
+    "resultsFound": "{{count}} results found",
+    "noResults": "No results",
+    "tryDifferentFilters": "Try different filters"
+  },
   "tournament": {
     "admin": {
       "checkin": {

@@ -124,7 +124,7 @@ export class DrawsService {
           }),
         );
 
-        if (!result?.data.competitionEvent || !result?.data.competitionSubEvent || !result?.data.competitionDraw) {
+        if (!result?.data?.competitionEvent || !result?.data?.competitionSubEvent || !result?.data?.competitionDraw) {
           throw new Error('No competition, sub event, or draw found');
         }
 
@@ -214,7 +214,7 @@ export class DrawsService {
         // Update the signal with the loaded games
         this.encounterGames.update((currentGames) => ({
           ...currentGames,
-          [encounterId]: result.data.competitionEncounter.games,
+          [encounterId]: result.data?.competitionEncounter?.games || [],
         }));
       } else {
         // Set empty array if no games found

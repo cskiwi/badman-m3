@@ -51,7 +51,7 @@ export class ClubTournamentsTabService {
           }),
         );
 
-        return result.data.club?.tournamentEvents || [];
+        return result.data?.club?.tournamentEvents || [];
       } catch (err) {
         console.error(err);
         throw new Error(this.handleError(err as HttpErrorResponse));

@@ -679,6 +679,114 @@
     "winRate": "Win %",
     "wins": "Overwinningen"
   },
+  "enrollment": {
+    "myEnrollments": "Mijn Inschrijvingen"
+  },
+  "errors": {
+    "title": "Fout"
+  },
+  "loading": {
+    "players": "Spelers laden..."
+  },
+  "clubSearch": {
+    "title": "Clubs Zoeken",
+    "subtitle": "Ontdek badmintonclubs in je buurt",
+    "searchPlaceholder": "Zoek clubs...",
+    "loading": "Laden...",
+    "stats": {
+      "totalClubs": "Totaal Clubs",
+      "totalPlayers": "Totaal Spelers",
+      "totalTeams": "Totaal Teams",
+      "avgPlayersPerClub": "Gem. Spelers per Club"
+    },
+    "filters": {
+      "title": "Filters",
+      "location": "Locatie",
+      "country": "Land",
+      "state": "Provincie",
+      "division": "Divisie",
+      "searchCountries": "Zoek landen...",
+      "searchStates": "Zoek provincies...",
+      "searchDivisions": "Zoek divisies...",
+      "memberCounts": "Ledenaantallen",
+      "minPlayers": "Min. Spelers",
+      "maxPlayers": "Max. Spelers",
+      "minTeams": "Min. Teams",
+      "maxTeams": "Max. Teams",
+      "additional": "Aanvullend",
+      "foundedAfter": "Opgericht na",
+      "foundedBefore": "Opgericht voor",
+      "activeOnly": "Alleen actieve clubs",
+      "hasWebsite": "Heeft website",
+      "resultCount": "{{count}} resultaten",
+      "clear": "Wissen",
+      "apply": "Toepassen"
+    },
+    "results": {
+      "showing": "Toont {{start}} - {{end}} van {{total}} clubs"
+    },
+    "sort": {
+      "placeholder": "Sorteer op..."
+    },
+    "card": {
+      "founded": "Opgericht in {{year}}"
+    },
+    "pagination": {
+      "template": "Toont {{first}} tot {{last}} van {{totalRecords}} resultaten"
+    },
+    "noResults": {
+      "title": "Geen clubs gevonden",
+      "description": "Probeer andere filters of zoektermen",
+      "clearFilters": "Filters wissen",
+      "searchAgain": "Opnieuw zoeken"
+    }
+  },
+  "games": {
+    "totalGames": "Totaal Wedstrijden",
+    "wins": "Overwinningen",
+    "losses": "Nederlagen",
+    "winRate": "Winpercentage",
+    "filters": "Filters",
+    "tournament": "Toernooi",
+    "selectTournament": "Selecteer toernooi",
+    "dateFrom": "Van datum",
+    "dateTo": "Tot datum",
+    "selectDate": "Selecteer datum",
+    "result": "Resultaat",
+    "allResults": "Alle resultaten",
+    "gameType": "Speltype",
+    "allTypes": "Alle types",
+    "gamesList": "Wedstrijdlijst",
+    "showingCount": "{{count}} wedstrijden getoond",
+    "export": "Exporteren"
+  },
+  "error": {
+    "genericTitle": "Er is een fout opgetreden"
+  },
+  "player": {
+    "yearsOld": "jaar oud",
+    "competitionPlayer": "Competitiespeler",
+    "recentGames": "Recente Wedstrijden",
+    "tournamentHistory": "Toernooi Geschiedenis",
+    "performance": "Prestaties",
+    "headToHead": "Onderlinge Duels",
+    "allGames": "Alle Wedstrijden",
+    "noRecentGames": "Geen recente wedstrijden",
+    "noRecentGamesDescription": "Deze speler heeft nog geen recente wedstrijden gespeeld",
+    "noTournamentHistory": "Geen toernooi geschiedenis",
+    "noTournamentHistoryDescription": "Deze speler heeft nog geen toernooien gespeeld",
+    "noPerformanceData": "Geen prestatie gegevens",
+    "noPerformanceDataDescription": "Er zijn nog geen prestatie gegevens beschikbaar",
+    "noGames": "Geen wedstrijden",
+    "noGamesDescription": "Deze speler heeft nog geen wedstrijden gespeeld",
+    "gender": "Geslacht",
+    "playerType": "Spelertype",
+    "minRating": "Min. Rating",
+    "maxRating": "Max. Rating",
+    "resultsFound": "{{count}} resultaten gevonden",
+    "noResults": "Geen resultaten",
+    "tryDifferentFilters": "Probeer andere filters"
+  },
   "tournament": {
     "admin": {
       "checkin": {

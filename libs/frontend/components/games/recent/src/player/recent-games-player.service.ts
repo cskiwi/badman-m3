@@ -167,7 +167,7 @@ export class PlayerRecentGamesService {
           }),
         );
 
-        if (!result?.data.player?.gamePlayerMemberships) {
+        if (!result?.data?.player?.gamePlayerMemberships) {
           throw new Error('No player found');
         }
 
@@ -286,7 +286,7 @@ export class PlayerRecentGamesService {
       })
     );
 
-    if (!result?.data.player?.gamePlayerMemberships) {
+    if (!result?.data?.player?.gamePlayerMemberships) {
       throw new Error('No player found');
     }
 

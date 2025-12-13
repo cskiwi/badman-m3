@@ -38,7 +38,7 @@ export class CreateTournamentService {
           }),
         );
 
-        return result.data.club;
+        return result.data?.club;
       } catch (err) {
         console.error(err);
         throw new Error(this.handleError(err as HttpErrorResponse));

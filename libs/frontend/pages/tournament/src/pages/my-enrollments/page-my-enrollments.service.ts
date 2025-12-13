@@ -95,7 +95,7 @@ export class MyEnrollmentsService {
           }),
         );
 
-        if (!result?.data.tournamentEvent) {
+        if (!result?.data?.tournamentEvent) {
           throw new Error('Tournament not found');
         }
 

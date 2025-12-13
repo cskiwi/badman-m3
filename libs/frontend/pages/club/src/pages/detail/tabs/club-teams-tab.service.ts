@@ -66,7 +66,7 @@ export class ClubTeamsTabService {
           }),
         );
 
-        const teams = teamsResult.data.club?.teams || [];
+        const teams = teamsResult.data?.club?.teams || [];
         return [...teams].sort(sortTeams);
       } catch (err) {
         console.error(err);

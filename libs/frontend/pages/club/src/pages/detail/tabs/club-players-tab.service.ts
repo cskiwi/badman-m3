@@ -87,7 +87,7 @@ export class ClubPlayersTabService {
           }),
         );
 
-        return [...(result.data.club?.teams || [])].sort(sortTeams);
+        return [...(result.data?.club?.teams || [])].sort(sortTeams);
       } catch (err) {
         console.error(err);
         throw new Error(this.handleError(err as HttpErrorResponse));

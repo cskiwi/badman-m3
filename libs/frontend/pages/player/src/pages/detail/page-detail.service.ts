@@ -52,7 +52,7 @@ export class DetailService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.player) {
+        if (!result?.data?.player) {
           throw new Error('No player found');
         }
         return result.data.player;

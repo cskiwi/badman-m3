@@ -679,6 +679,114 @@
     "winRate": "% Vict.",
     "wins": "Victoires"
   },
+  "enrollment": {
+    "myEnrollments": "Mes Inscriptions"
+  },
+  "errors": {
+    "title": "Erreur"
+  },
+  "loading": {
+    "players": "Chargement des joueurs..."
+  },
+  "clubSearch": {
+    "title": "Rechercher des Clubs",
+    "subtitle": "Découvrez les clubs de badminton dans votre région",
+    "searchPlaceholder": "Rechercher des clubs...",
+    "loading": "Chargement...",
+    "stats": {
+      "totalClubs": "Total Clubs",
+      "totalPlayers": "Total Joueurs",
+      "totalTeams": "Total Équipes",
+      "avgPlayersPerClub": "Moy. Joueurs par Club"
+    },
+    "filters": {
+      "title": "Filtres",
+      "location": "Localisation",
+      "country": "Pays",
+      "state": "Province",
+      "division": "Division",
+      "searchCountries": "Rechercher pays...",
+      "searchStates": "Rechercher provinces...",
+      "searchDivisions": "Rechercher divisions...",
+      "memberCounts": "Nombre de membres",
+      "minPlayers": "Min. Joueurs",
+      "maxPlayers": "Max. Joueurs",
+      "minTeams": "Min. Équipes",
+      "maxTeams": "Max. Équipes",
+      "additional": "Supplémentaire",
+      "foundedAfter": "Fondé après",
+      "foundedBefore": "Fondé avant",
+      "activeOnly": "Clubs actifs uniquement",
+      "hasWebsite": "A un site web",
+      "resultCount": "{{count}} résultats",
+      "clear": "Effacer",
+      "apply": "Appliquer"
+    },
+    "results": {
+      "showing": "Affichage de {{start}} - {{end}} sur {{total}} clubs"
+    },
+    "sort": {
+      "placeholder": "Trier par..."
+    },
+    "card": {
+      "founded": "Fondé en {{year}}"
+    },
+    "pagination": {
+      "template": "Affichage de {{first}} à {{last}} sur {{totalRecords}} résultats"
+    },
+    "noResults": {
+      "title": "Aucun club trouvé",
+      "description": "Essayez d'autres filtres ou termes de recherche",
+      "clearFilters": "Effacer les filtres",
+      "searchAgain": "Rechercher à nouveau"
+    }
+  },
+  "games": {
+    "totalGames": "Total Matchs",
+    "wins": "Victoires",
+    "losses": "Défaites",
+    "winRate": "Taux de victoire",
+    "filters": "Filtres",
+    "tournament": "Tournoi",
+    "selectTournament": "Sélectionner un tournoi",
+    "dateFrom": "Date de début",
+    "dateTo": "Date de fin",
+    "selectDate": "Sélectionner une date",
+    "result": "Résultat",
+    "allResults": "Tous les résultats",
+    "gameType": "Type de jeu",
+    "allTypes": "Tous les types",
+    "gamesList": "Liste des matchs",
+    "showingCount": "{{count}} matchs affichés",
+    "export": "Exporter"
+  },
+  "error": {
+    "genericTitle": "Une erreur s'est produite"
+  },
+  "player": {
+    "yearsOld": "ans",
+    "competitionPlayer": "Joueur de compétition",
+    "recentGames": "Matchs Récents",
+    "tournamentHistory": "Historique des Tournois",
+    "performance": "Performance",
+    "headToHead": "Confrontations Directes",
+    "allGames": "Tous les Matchs",
+    "noRecentGames": "Aucun match récent",
+    "noRecentGamesDescription": "Ce joueur n'a pas encore joué de matchs récents",
+    "noTournamentHistory": "Aucun historique de tournoi",
+    "noTournamentHistoryDescription": "Ce joueur n'a pas encore participé à des tournois",
+    "noPerformanceData": "Aucune donnée de performance",
+    "noPerformanceDataDescription": "Aucune donnée de performance n'est encore disponible",
+    "noGames": "Aucun match",
+    "noGamesDescription": "Ce joueur n'a pas encore joué de matchs",
+    "gender": "Genre",
+    "playerType": "Type de joueur",
+    "minRating": "Rating min.",
+    "maxRating": "Rating max.",
+    "resultsFound": "{{count}} résultats trouvés",
+    "noResults": "Aucun résultat",
+    "tryDifferentFilters": "Essayez d'autres filtres"
+  },
   "tournament": {
     "admin": {
       "checkin": {

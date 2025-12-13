@@ -75,7 +75,7 @@ export class DetailService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.competitionEvent) {
+        if (!result?.data?.competitionEvent) {
           throw new Error('No competition found');
         }
         return result.data.competitionEvent;

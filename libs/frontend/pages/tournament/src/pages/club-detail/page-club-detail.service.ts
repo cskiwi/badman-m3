@@ -59,7 +59,7 @@ export class ClubDetailService {
           }),
         );
 
-        if (!result?.data.club) {
+        if (!result?.data?.club) {
           throw new Error('No club found');
         }
         return result.data.club;
@@ -138,7 +138,7 @@ export class ClubDetailService {
           }),
         );
 
-        return result.data.club?.teams || [];
+        return result.data?.club?.teams || [];
       } catch (err) {
         console.error(err);
         throw new Error(this.handleError(err as HttpErrorResponse));
@@ -211,7 +211,7 @@ export class ClubDetailService {
           }),
         );
 
-        return result.data.club?.teams || [];
+        return result.data?.club?.teams || [];
       } catch (err) {
         console.error(err);
         throw new Error(this.handleError(err as HttpErrorResponse));
@@ -278,7 +278,7 @@ export class ClubDetailService {
           }),
         );
 
-        const teams = result.data.club?.teams || [];
+        const teams = result.data?.club?.teams || [];
         return this.calculateStatistics(teams);
       } catch (err) {
         console.error(err);

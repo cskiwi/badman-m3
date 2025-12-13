@@ -90,7 +90,7 @@ export class PlayerUpcommingGamesService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.player?.teamPlayerMemberships) {
+        if (!result?.data?.player?.teamPlayerMemberships) {
           return [];
         }
 

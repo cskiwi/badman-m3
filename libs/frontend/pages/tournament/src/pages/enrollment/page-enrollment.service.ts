@@ -99,7 +99,7 @@ export class EnrollmentService {
           }),
         );
 
-        if (!result?.data.tournamentSubEvent) {
+        if (!result?.data?.tournamentSubEvent) {
           throw new Error('Sub-event not found');
         }
         return result.data.tournamentSubEvent;
