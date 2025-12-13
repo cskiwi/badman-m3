@@ -1,0 +1,338 @@
+<div class="settings-tab">
+  <!-- Phase Stepper Section -->
+  <p-card styleClass="mb-4">
+    <ng-template pTemplate="header">
+      <div class="p-3 flex justify-between items-center">
+        <h3 class="m-0">{{ 'all.tournament.admin.settings.phase' | translate }}</h3>
+        <p-tag [value]="tournament().phase" [severity]="getPhaseTagSeverity(tournament().phase)" />
+      </div>
+    </ng-template>
+
+    <div class="phase-stepper">
+      <p-stepper [value]="currentPhaseIndex() + 1" [linear]="true">
+        <p-step-list>
+          @for (step of phaseSteps; track step.phase; let i = $index) {
+            <p-step [value]="i + 1">
+              <ng-template #content let-activateCallback="activateCallback" let-value="value">
+                <button
+                  class="bg-transparent border-0 inline-flex flex-col items-center gap-2 cursor-default"
+                  [pTooltip]="step.description | translate"
+                  tooltipPosition="bottom"
+                >
+                  <span
+                    class="rounded-full border-2 w-10 h-10 inline-flex items-center justify-center"
+                    [ngClass]="{
+                      'bg-primary text-primary-contrast border-primary': value <= currentPhaseIndex() + 1,
+                      'border-surface-300 dark:border-surface-600': value > currentPhaseIndex() + 1
+                    }"
+                  >
+                    <i [class]="step.icon"></i>
+                  </span>
+                  <span
+                    class="text-xs font-medium text-center max-w-20"
+                    [ngClass]="{
+                      'text-primary': value <= currentPhaseIndex() + 1,
+                      'text-muted-color': value > currentPhaseIndex() + 1
+                    }"
+                  >
+                    {{ step.label | translate }}
+                  </span>
+                </button>
+              </ng-template>
+            </p-step>
+          }
+        </p-step-list>
+      </p-stepper>
+
+      <div class="flex gap-2 mt-4 justify-center">
+        <p-button
+          [label]="'all.tournament.admin.settings.previousPhase' | translate"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          [disabled]="!canGoBack() || updating()"
+          [loading]="updating()"
+          (click)="goBackPhase()"
+        />
+        <p-button
+          [label]="'all.tournament.admin.settings.nextPhase' | translate"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [disabled]="!canAdvance() || updating()"
+          [loading]="updating()"
+          (click)="advancePhase()"
+        />
+      </div>
+    </div>
+  </p-card>
+
+  <!-- Tournament Settings Form -->
+  <p-card styleClass="mb-4">
+    <ng-template pTemplate="header">
+      <div class="p-3">
+        <h3 class="m-0">{{ 'all.tournament.admin.settings.general' | translate }}</h3>
+      </div>
+    </ng-template>
+
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Tournament Name -->
+        <div class="flex flex-col gap-2 md:col-span-2">
+          <label for="name">{{ 'all.tournament.admin.settings.name' | translate }} *</label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            class="w-full max-w-md"
+            [placeholder]="'all.tournament.admin.settings.namePlaceholder' | translate"
+          />
+        </div>
+
+        <!-- First Day -->
+        <div class="flex flex-col gap-2">
+          <label for="firstDay">{{ 'all.tournament.admin.settings.firstDay' | translate }}</label>
+          <p-datepicker
+            id="firstDay"
+            formControlName="firstDay"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Empty cell for alignment -->
+        <div></div>
+
+        <!-- Tournament Open/Close Dates -->
+        <div class="flex flex-col gap-2">
+          <label for="openDate">{{ 'all.tournament.admin.settings.openDate' | translate }}</label>
+          <p-datepicker
+            id="openDate"
+            formControlName="openDate"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            styleClass="w-full"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="closeDate">{{ 'all.tournament.admin.settings.closeDate' | translate }}</label>
+          <p-datepicker
+            id="closeDate"
+            formControlName="closeDate"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Enrollment Open/Close Dates -->
+        <div class="flex flex-col gap-2">
+          <label for="enrollmentOpenDate">{{ 'all.tournament.admin.settings.enrollmentOpenDate' | translate }}</label>
+          <p-datepicker
+            id="enrollmentOpenDate"
+            formControlName="enrollmentOpenDate"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            styleClass="w-full"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="enrollmentCloseDate">{{ 'all.tournament.admin.settings.enrollmentCloseDate' | translate }}</label>
+          <p-datepicker
+            id="enrollmentCloseDate"
+            formControlName="enrollmentCloseDate"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Toggles -->
+        <div class="flex flex-col gap-4 md:col-span-2">
+          <p-divider />
+
+          <div class="flex items-center gap-2">
+            <p-checkbox formControlName="official" [binary]="true" inputId="official" />
+            <label for="official">{{ 'all.tournament.admin.settings.official' | translate }}</label>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <p-checkbox formControlName="allowGuestEnrollments" [binary]="true" inputId="allowGuestEnrollments" />
+            <label for="allowGuestEnrollments">{{ 'all.tournament.admin.settings.allowGuestEnrollments' | translate }}</label>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <p-checkbox formControlName="schedulePublished" [binary]="true" inputId="schedulePublished" />
+            <label for="schedulePublished">{{ 'all.tournament.admin.settings.schedulePublished' | translate }}</label>
+          </div>
+        </div>
+      </div>
+
+      @if (updateError()) {
+        <p-message severity="error" [text]="updateError()!" styleClass="mt-4" />
+      }
+
+      <div class="flex justify-end mt-4">
+        <p-button
+          type="submit"
+          [label]="'all.button.save' | translate"
+          icon="pi pi-save"
+          [loading]="updating()"
+          [disabled]="settingsForm.invalid || updating()"
+        />
+      </div>
+    </form>
+  </p-card>
+
+  <!-- Sub-Events Management -->
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="p-3 flex justify-between items-center">
+        <h3 class="m-0">{{ 'all.tournament.admin.settings.subEvents' | translate }}</h3>
+        <p-button
+          [label]="'all.tournament.admin.settings.addSubEvent' | translate"
+          icon="pi pi-plus"
+          size="small"
+          (click)="openAddSubEvent()"
+        />
+      </div>
+    </ng-template>
+
+    @if (tournament().tournamentSubEvents?.length) {
+      <p-table [value]="tournament().tournamentSubEvents!" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>{{ 'all.tournament.admin.settings.subEventName' | translate }}</th>
+            <th>{{ 'all.tournament.admin.settings.gameType' | translate }}</th>
+            <th>{{ 'all.tournament.admin.settings.level' | translate }}</th>
+            <th>{{ 'all.tournament.admin.settings.maxEntries' | translate }}</th>
+            <th>{{ 'all.tournament.admin.settings.waitingList' | translate }}</th>
+            <th style="width: 8rem">{{ 'all.tournament.admin.settings.actions' | translate }}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-subEvent>
+          <tr>
+            <td>{{ subEvent.name }}</td>
+            <td>
+              <p-tag [value]="getGameTypeLabel(subEvent.gameType)" severity="info" />
+            </td>
+            <td>{{ subEvent.level ?? '-' }}</td>
+            <td>{{ subEvent.maxEntries ?? 'Unlimited' }}</td>
+            <td>
+              @if (subEvent.waitingListEnabled) {
+                <i class="pi pi-check text-green-500 dark:text-green-400"></i>
+              } @else {
+                <i class="pi pi-times text-red-500 dark:text-red-400"></i>
+              }
+            </td>
+            <td>
+              <div class="flex gap-2">
+                <p-button
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  pTooltip="Edit"
+                  (click)="openEditSubEvent(subEvent)"
+                />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [text]="true"
+                  [rounded]="true"
+                  size="small"
+                  pTooltip="Delete"
+                  (click)="deleteSubEvent(subEvent)"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <p-message
+        severity="info"
+        [text]="'all.tournament.admin.settings.noSubEvents' | translate"
+        styleClass="w-full"
+      />
+    }
+  </p-card>
+
+  <!-- Sub-Event Dialog -->
+  <p-dialog
+    [(visible)]="showSubEventDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    [header]="(editingSubEvent() ? 'all.tournament.admin.settings.editSubEvent' : 'all.tournament.admin.settings.addSubEvent') | translate"
+  >
+    <form [formGroup]="subEventForm">
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="subEventName">{{ 'all.tournament.admin.settings.subEventName' | translate }} *</label>
+          <input
+            pInputText
+            id="subEventName"
+            formControlName="name"
+            class="w-full"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="gameType">{{ 'all.tournament.admin.settings.gameType' | translate }} *</label>
+          <p-select
+            id="gameType"
+            formControlName="gameType"
+            [options]="gameTypeOptions"
+            optionLabel="label"
+            optionValue="value"
+            [disabled]="!!editingSubEvent()"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="level">{{ 'all.tournament.admin.settings.level' | translate }}</label>
+          <p-inputNumber
+            id="level"
+            formControlName="level"
+            [min]="1"
+            [max]="12"
+            [showButtons]="true"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="maxEntries">{{ 'all.tournament.admin.settings.maxEntries' | translate }}</label>
+          <p-inputNumber
+            id="maxEntries"
+            formControlName="maxEntries"
+            [min]="2"
+            [showButtons]="true"
+            styleClass="w-full"
+          />
+          <small class="text-muted-color">{{ 'all.tournament.admin.settings.maxEntriesHelp' | translate }}</small>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <p-checkbox formControlName="waitingListEnabled" [binary]="true" inputId="waitingListEnabled" />
+          <label for="waitingListEnabled">{{ 'all.tournament.admin.settings.waitingListEnabled' | translate }}</label>
+        </div>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        [label]="'all.button.cancel' | translate"
+        severity="secondary"
+        (click)="showSubEventDialog.set(false)"
+      />
+      <p-button
+        [label]="'all.button.save' | translate"
+        (click)="saveSubEvent()"
+        [loading]="updating()"
+        [disabled]="subEventForm.invalid || updating()"
+      />
+    </ng-template>
+  </p-dialog>
+</div>

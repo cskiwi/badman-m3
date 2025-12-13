@@ -1,3 +1,4 @@
+export * from './admin';
 export * from './club-detail';
 export * from './clubs';
 export * from './create';

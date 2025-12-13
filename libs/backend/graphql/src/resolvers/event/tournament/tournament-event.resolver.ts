@@ -2,10 +2,16 @@ import { PermGuard, User } from '@app/backend-authorization';
 import { TournamentEvent, TournamentSubEvent, Club, Player } from '@app/models';
 import { TournamentPhase } from '@app/models-enum';
 import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver, registerEnumType } from '@nestjs/graphql';
 import { IsUUID } from '@app/utils';
 import { TournamentEventArgs, TournamentSubEventArgs } from '../../../args';
-import { TournamentEventCreateInput, TournamentEventUpdateInput } from '../../../inputs';
+import { TournamentEventNewInput, TournamentEventUpdateInput } from '../../../inputs';
+
+// Register TournamentPhase enum for GraphQL
+registerEnumType(TournamentPhase, {
+  name: 'TournamentPhase',
+  description: 'Phase of a tournament event',
+});
 
 @Resolver(() => TournamentEvent)
 export class TournamentEventResolver {
@@ -82,7 +88,7 @@ export class TournamentEventResolver {
   @UseGuards(PermGuard)
   async createTournamentEvent(
     @User() user: Player,
-    @Args('data') data: TournamentEventCreateInput,
+    @Args('data') data: TournamentEventNewInput,
   ): Promise<TournamentEvent> {
     // Check permission - user must have create permission for tournaments
     const hasPermission = user.hasAnyPermission([
@@ -150,7 +156,6 @@ export class TournamentEventResolver {
       tournament.name = data.name;
       tournament.slug = this.generateSlug(data.name);
     }
-    if (data.clubId !== undefined) tournament.clubId = data.clubId;
     if (data.firstDay !== undefined) tournament.firstDay = data.firstDay;
     if (data.openDate !== undefined) tournament.openDate = data.openDate;
     if (data.closeDate !== undefined) tournament.closeDate = data.closeDate;
@@ -192,6 +197,38 @@ export class TournamentEventResolver {
     await tournament.remove();
 
     return true;
+  }
+
+  @Mutation(() => TournamentEvent, { description: 'Update tournament phase' })
+  @UseGuards(PermGuard)
+  async updateTournamentPhase(
+    @User() user: Player,
+    @Args('id', { type: () => ID }) id: string,
+    @Args('phase', { type: () => TournamentPhase }) phase: TournamentPhase,
+  ): Promise<TournamentEvent> {
+    const tournament = await TournamentEvent.findOne({ where: { id } });
+
+    if (!tournament) {
+      throw new NotFoundException(`Tournament with ID ${id} not found`);
+    }
+
+    // Check permission
+    const hasPermission = user.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.clubId}_edit:club`,
+      `${tournament.clubId}_edit:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to update this tournament phase');
+    }
+
+    // Update phase
+    tournament.phase = phase;
+    await tournament.save();
+
+    return tournament;
   }
 
   // ============ HELPER METHODS ============

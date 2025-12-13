@@ -1,4 +1,5 @@
-import { Field, ID, InputType, Int } from '@nestjs/graphql';
+import { Field, ID, InputType, PartialType, OmitType } from '@nestjs/graphql';
+import { Game } from '@app/models';
 
 @InputType('StartGameInput')
 export class StartGameInput {
@@ -9,56 +10,11 @@ export class StartGameInput {
   courtId?: string;
 }
 
-@InputType('UpdateGameScoreInput')
-export class UpdateGameScoreInput {
-  @Field(() => ID, { description: 'Game ID' })
-  gameId!: string;
-
-  @Field(() => Int, { nullable: true })
-  set1Team1?: number;
-
-  @Field(() => Int, { nullable: true })
-  set1Team2?: number;
-
-  @Field(() => Int, { nullable: true })
-  set2Team1?: number;
-
-  @Field(() => Int, { nullable: true })
-  set2Team2?: number;
-
-  @Field(() => Int, { nullable: true })
-  set3Team1?: number;
-
-  @Field(() => Int, { nullable: true })
-  set3Team2?: number;
-}
-
-@InputType('CompleteGameInput')
-export class CompleteGameInput {
-  @Field(() => ID, { description: 'Game ID' })
-  gameId!: string;
-
-  @Field(() => Int, { nullable: true })
-  set1Team1?: number;
-
-  @Field(() => Int, { nullable: true })
-  set1Team2?: number;
-
-  @Field(() => Int, { nullable: true })
-  set2Team1?: number;
-
-  @Field(() => Int, { nullable: true })
-  set2Team2?: number;
-
-  @Field(() => Int, { nullable: true })
-  set3Team1?: number;
-
-  @Field(() => Int, { nullable: true })
-  set3Team2?: number;
-
-  @Field(() => Int, { description: 'Winner (1 or 2)' })
-  winner!: number;
-}
+@InputType()
+export class GameUpdateInput extends PartialType(
+  OmitType(Game, ['id', 'createdAt', 'updatedAt', 'gamePlayerMemberships', 'rankingPoints', 'tournamentDraw', 'competitionEncounter'] as const),
+  InputType,
+) {}
 
 @InputType('AssignNextGameInput')
 export class AssignNextGameInput {

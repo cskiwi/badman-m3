@@ -33,6 +33,18 @@ import { ButtonModule } from 'primeng/button';
 export class PageDetailComponent {
   private readonly auth = inject(AuthService);
 
+  // Permission check for admin access
+  canEdit = computed(() => {
+    const tournament = this.tournament();
+    if (!tournament || !this.auth.loggedIn()) return false;
+    return this.auth.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.club?.id}_edit:club`,
+      `${tournament.club?.id}_edit:tournament`,
+    ]);
+  });
+
   // Helper function to extract event type and level
   private getEventTypeAndLevel = (eventType: string) => {
     if (!eventType) return { type: 'Other', level: 999 };

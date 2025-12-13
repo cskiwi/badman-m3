@@ -16,9 +16,18 @@
       </ng-content>
       <ng-content actions>
         <div class="flex items-center gap-2">
+          @if (canEdit()) {
+            <a
+              [routerLink]="['/', 'tournament', tournament.id, 'admin']"
+              class="flex items-center gap-1 px-3 py-1.5 rounded bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors text-sm no-underline"
+            >
+              <i class="pi pi-cog text-xs"></i>
+              <span>{{ 'all.tournament.admin.title' | translate }}</span>
+            </a>
+          }
           <a
             [routerLink]="['/', 'tournament', tournament.id, 'my-enrollments']"
-            class="flex items-center gap-1 px-3 py-1.5 rounded bg-primary-100 text-primary-700 hover:bg-primary-200 transition-colors text-sm no-underline"
+            class="flex items-center gap-1 px-3 py-1.5 rounded bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors text-sm no-underline"
           >
             <i class="pi pi-list text-xs"></i>
             <span>{{ 'all.enrollment.myEnrollments' | translate }}</span>
@@ -123,12 +132,58 @@
             <div class="flex items-center gap-2">
               <i class="pi pi-shield text-muted-color"></i>
               <span class="font-medium">{{ 'all.tournament.official' | translate }}:</span>
-              <span [class]="tournament.official ? 'text-green-600' : 'text-orange-600'">
+              <span [class]="tournament.official ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'">
                 {{ (tournament.official ? 'all.common.yes' : 'all.common.no') | translate }}
               </span>
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Live Pages Section -->
+    <section class="live-pages">
+      <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+        <i class="pi pi-desktop text-primary-500"></i>
+        {{ 'all.tournament.live.title' | translate }}
+      </h3>
+
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'courts']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-th-large text-2xl text-primary-500"></i>
+          <span class="font-medium">{{ 'all.tournament.live.courts' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.courtsDesc' | translate }}</span>
+        </a>
+
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'results']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-check-circle text-2xl text-green-500 dark:text-green-400"></i>
+          <span class="font-medium">{{ 'all.tournament.live.results' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.resultsDesc' | translate }}</span>
+        </a>
+
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'upcoming']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-clock text-2xl text-orange-500 dark:text-orange-400"></i>
+          <span class="font-medium">{{ 'all.tournament.live.upcoming' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.upcomingDesc' | translate }}</span>
+        </a>
+
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'kiosk']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-window-maximize text-2xl text-blue-500 dark:text-blue-400"></i>
+          <span class="font-medium">{{ 'all.tournament.live.kiosk' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.kioskDesc' | translate }}</span>
+        </a>
       </div>
     </section>
 
@@ -403,7 +458,7 @@
 }
 
 @if (error()) {
-  <div class="error flex items-center gap-2 p-4 text-red-600">
+  <div class="error flex items-center gap-2 p-4 text-red-600 dark:text-red-400">
     <i class="pi pi-exclamation-triangle"></i>
     {{ error() }}
   </div>

@@ -6,6 +6,7 @@ import { PageClubDetailComponent } from './pages/club-detail/page-club-detail.co
 import { PageCreateComponent } from './pages/create/page-create.component';
 import { PageEnrollmentComponent } from './pages/enrollment/page-enrollment.component';
 import { PageMyEnrollmentsComponent } from './pages/my-enrollments/page-my-enrollments.component';
+import { PageAdminComponent } from './pages/admin/page-admin.component';
 import { PageLiveCourtsComponent } from './pages/live-courts/page-live-courts.component';
 import { PageLiveResultsComponent } from './pages/live-results/page-live-results.component';
 import { PageLiveUpcomingComponent } from './pages/live-upcoming/page-live-upcoming.component';
@@ -32,6 +33,10 @@ export const routes: Route[] = [
           {
             path: '',
             component: PageDetailComponent,
+          },
+          {
+            path: 'admin',
+            component: PageAdminComponent,
           },
           {
             path: 'my-enrollments',

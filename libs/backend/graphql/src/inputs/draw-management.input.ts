@@ -1,4 +1,5 @@
-import { Field, ID, InputType, Int, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, InputType, Int, OmitType, PartialType, PickType, registerEnumType } from '@nestjs/graphql';
+import { TournamentDraw } from '@app/models';
 
 export enum SeedingMethod {
   BY_RANKING = 'BY_RANKING',
@@ -64,37 +65,20 @@ export class AutoSeedDrawInput {
 }
 
 @InputType('CreateTournamentDrawInput')
-export class CreateTournamentDrawInput {
+export class CreateTournamentDrawInput extends PickType(
+  TournamentDraw,
+  ['name', 'type', 'size'] as const,
+  InputType,
+) {
   @Field(() => ID, { description: 'Sub-event ID this draw belongs to' })
   subEventId!: string;
-
-  @Field(() => String, { description: 'Name of the draw' })
-  name!: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'Type of draw (KO, POULE, QUALIFICATION)',
-  })
-  type?: 'KO' | 'POULE' | 'QUALIFICATION';
-
-  @Field(() => Int, { nullable: true, description: 'Draw size (number of entries)' })
-  size?: number;
 }
 
 @InputType('UpdateTournamentDrawInput')
-export class UpdateTournamentDrawInput {
-  @Field(() => String, { nullable: true, description: 'Name of the draw' })
-  name?: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'Type of draw (KO, POULE, QUALIFICATION)',
-  })
-  type?: 'KO' | 'POULE' | 'QUALIFICATION';
-
-  @Field(() => Int, { nullable: true, description: 'Draw size (number of entries)' })
-  size?: number;
-}
+export class UpdateTournamentDrawInput extends PartialType(
+  PickType(TournamentDraw, ['name', 'type', 'size'] as const, InputType),
+  InputType,
+) {}
 
 @InputType('RemoveEntryFromDrawInput')
 export class RemoveEntryFromDrawInput {

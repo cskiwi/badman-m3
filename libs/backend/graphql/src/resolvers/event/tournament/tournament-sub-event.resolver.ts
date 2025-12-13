@@ -1,8 +1,10 @@
-import { TournamentSubEvent, TournamentDraw, TournamentEvent, TournamentEnrollment, Entry } from '@app/models';
+import { PermGuard, User } from '@app/backend-authorization';
+import { TournamentSubEvent, TournamentDraw, TournamentEvent, TournamentEnrollment, Entry, Player } from '@app/models';
 import { EnrollmentStatus } from '@app/models-enum';
-import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Int, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TournamentSubEventArgs, TournamentDrawArgs, TournamentEnrollmentArgs, EntryArgs } from '../../../args';
+import { CreateTournamentSubEventInput, UpdateTournamentSubEventInput } from '../../../inputs';
 import { IsNull } from 'typeorm';
 
 @Resolver(() => TournamentSubEvent)
@@ -166,5 +168,139 @@ export class TournamentSubEventResolver {
         drawId: IsNull(),
       },
     });
+  }
+
+  // ============ MUTATIONS ============
+
+  @Mutation(() => TournamentSubEvent, { description: 'Create a new tournament sub-event' })
+  @UseGuards(PermGuard)
+  async createTournamentSubEvent(
+    @User() user: Player,
+    @Args('data') data: CreateTournamentSubEventInput,
+  ): Promise<TournamentSubEvent> {
+    // Find the tournament event
+    const tournament = await TournamentEvent.findOne({ where: { id: data.tournamentEventId } });
+
+    if (!tournament) {
+      throw new NotFoundException(`Tournament with ID ${data.tournamentEventId} not found`);
+    }
+
+    // Check permission
+    const hasPermission = user.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.clubId}_edit:club`,
+      `${tournament.clubId}_edit:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to create sub-events for this tournament');
+    }
+
+    // Create the sub-event
+    const subEvent = new TournamentSubEvent();
+    subEvent.eventId = data.tournamentEventId;
+    subEvent.name = data.name;
+    subEvent.gameType = data.gameType;
+    subEvent.level = data.level ?? undefined;
+    subEvent.maxEntries = data.maxEntries ?? undefined;
+    subEvent.waitingListEnabled = data.waitingListEnabled ?? true;
+
+    await subEvent.save();
+
+    return subEvent;
+  }
+
+  @Mutation(() => TournamentSubEvent, { description: 'Update a tournament sub-event' })
+  @UseGuards(PermGuard)
+  async updateTournamentSubEvent(
+    @User() user: Player,
+    @Args('subEventId', { type: () => ID }) subEventId: string,
+    @Args('data') data: UpdateTournamentSubEventInput,
+  ): Promise<TournamentSubEvent> {
+    const subEvent = await TournamentSubEvent.findOne({
+      where: { id: subEventId },
+      relations: ['tournamentEvent'],
+    });
+
+    if (!subEvent) {
+      throw new NotFoundException(`Sub-event with ID ${subEventId} not found`);
+    }
+
+    // Get the tournament for permission check
+    const tournament = await TournamentEvent.findOne({ where: { id: subEvent.eventId } });
+
+    if (!tournament) {
+      throw new NotFoundException('Tournament not found');
+    }
+
+    // Check permission
+    const hasPermission = user.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.clubId}_edit:club`,
+      `${tournament.clubId}_edit:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to update this sub-event');
+    }
+
+    // Update fields
+    if (data.name !== undefined) subEvent.name = data.name;
+    if (data.level !== undefined) subEvent.level = data.level;
+    if (data.maxEntries !== undefined) subEvent.maxEntries = data.maxEntries;
+    if (data.waitingListEnabled !== undefined) subEvent.waitingListEnabled = data.waitingListEnabled;
+
+    await subEvent.save();
+
+    return subEvent;
+  }
+
+  @Mutation(() => Boolean, { description: 'Delete a tournament sub-event' })
+  @UseGuards(PermGuard)
+  async deleteTournamentSubEvent(
+    @User() user: Player,
+    @Args('subEventId', { type: () => ID }) subEventId: string,
+  ): Promise<boolean> {
+    const subEvent = await TournamentSubEvent.findOne({
+      where: { id: subEventId },
+    });
+
+    if (!subEvent) {
+      throw new NotFoundException(`Sub-event with ID ${subEventId} not found`);
+    }
+
+    // Get the tournament for permission check
+    const tournament = await TournamentEvent.findOne({ where: { id: subEvent.eventId } });
+
+    if (!tournament) {
+      throw new NotFoundException('Tournament not found');
+    }
+
+    // Check permission
+    const hasPermission = user.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.clubId}_edit:club`,
+      `${tournament.clubId}_delete:tournament`,
+    ]);
+
+    if (!hasPermission) {
+      throw new ForbiddenException('You do not have permission to delete this sub-event');
+    }
+
+    // Check if there are enrollments
+    const enrollmentCount = await TournamentEnrollment.count({
+      where: { tournamentSubEventId: subEventId },
+    });
+
+    if (enrollmentCount > 0) {
+      throw new ForbiddenException('Cannot delete sub-event with existing enrollments');
+    }
+
+    await subEvent.remove();
+
+    return true;
   }
 }

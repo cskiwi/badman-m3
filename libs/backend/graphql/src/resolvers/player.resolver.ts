@@ -5,7 +5,7 @@ import { NotFoundException, UseGuards, UnauthorizedException, BadRequestExceptio
 import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql';
 import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs, TeamPlayerMembershipArgs, ClaimArgs } from '../args';
 import dayjs from 'dayjs';
-import { UpdatePlayerInput } from '../inputs/update-player.input';
+import { PlayerUpdateInput } from '../inputs';
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -228,7 +228,7 @@ export class PlayerResolver {
   @UseGuards(PermGuard)
   async updatePlayer(
     @Args('playerId', { type: () => ID }) playerId: string,
-    @Args('input') input: UpdatePlayerInput,
+    @Args('input') input: PlayerUpdateInput,
     @User() user: Player,
   ): Promise<Player> {
     // Find the player to update

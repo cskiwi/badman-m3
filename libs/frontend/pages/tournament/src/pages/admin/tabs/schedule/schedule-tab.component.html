@@ -1,0 +1,397 @@
+<div class="schedule-tab">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-4">
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold">{{ stats().totalSlots }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.schedule.totalSlots' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-green-500">{{ stats().available }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.schedule.available' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-blue-500">{{ stats().scheduled }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.schedule.scheduled' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-orange-500">{{ stats().inProgress }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.schedule.inProgress' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-red-500">{{ stats().blocked }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.schedule.blocked' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-purple-500">{{ stats().unscheduledGames }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.schedule.unscheduled' | translate }}</div>
+    </p-card>
+  </div>
+
+  <!-- Actions Bar -->
+  <p-card styleClass="mb-4">
+    <div class="flex flex-wrap gap-4 items-end">
+      <div class="flex flex-col gap-2">
+        <label for="dateFilter">{{ 'all.tournament.admin.schedule.date' | translate }}</label>
+        <p-select
+          id="dateFilter"
+          [options]="availableDates()"
+          [ngModel]="selectedDate()"
+          (ngModelChange)="onDateChange($event)"
+          [placeholder]="'all.tournament.admin.schedule.allDates' | translate"
+          [showClear]="true"
+          styleClass="w-48"
+        >
+          <ng-template let-date pTemplate="item">
+            {{ date | date : 'EEE, MMM d' }}
+          </ng-template>
+          <ng-template let-date pTemplate="selectedItem">
+            {{ date | date : 'EEE, MMM d' }}
+          </ng-template>
+        </p-select>
+      </div>
+
+      <p-button
+        icon="pi pi-clock"
+        [label]="'all.tournament.admin.schedule.generateSlots' | translate"
+        severity="secondary"
+        (click)="openGenerateSlotsDialog()"
+        [loading]="updating()"
+      />
+
+      <p-button
+        icon="pi pi-bolt"
+        [label]="'all.tournament.admin.schedule.autoSchedule' | translate"
+        (click)="openAutoScheduleDialog()"
+        [loading]="updating()"
+        [disabled]="stats().unscheduledGames === 0 || stats().available === 0"
+      />
+
+      <p-button
+        icon="pi pi-check-circle"
+        [label]="'all.tournament.admin.schedule.publish' | translate"
+        severity="success"
+        (click)="publishSchedule()"
+        [loading]="updating()"
+        [disabled]="stats().scheduled === 0"
+      />
+
+      <p-button
+        icon="pi pi-refresh"
+        [label]="'all.button.refresh' | translate"
+        severity="secondary"
+        (click)="refetch()"
+        [loading]="loading()"
+      />
+
+      <p-button
+        [icon]="showUnscheduledPanel() ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"
+        [label]="
+          showUnscheduledPanel()
+            ? ('all.tournament.admin.schedule.hideUnscheduled' | translate)
+            : ('all.tournament.admin.schedule.showUnscheduled' | translate)
+        "
+        severity="secondary"
+        [text]="true"
+        (click)="showUnscheduledPanel.set(!showUnscheduledPanel())"
+      />
+    </div>
+  </p-card>
+
+  @if (updateError()) {
+    <p-message severity="error" [text]="updateError()!" styleClass="mb-4 w-full" />
+  }
+
+  @if (loading()) {
+    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+  }
+
+  <div class="flex gap-4" cdkDropListGroup>
+    <!-- Schedule Grid -->
+    <div class="flex-1 overflow-x-auto">
+      @if (slotsGroupedByTime().length > 0) {
+        <div class="schedule-grid">
+          <!-- Header Row (Courts) -->
+          <div class="grid-header">
+            <div class="time-column font-bold">{{ 'all.tournament.admin.schedule.time' | translate }}</div>
+            @for (court of gridCourts(); track trackByCourt($index, court)) {
+              <div class="court-column font-bold text-center">{{ court.name ?? 'Court' }}</div>
+            }
+          </div>
+
+          <!-- Time Rows -->
+          @for (timeGroup of slotsGroupedByTime(); track trackByTime($index, timeGroup)) {
+            <div class="grid-row">
+              <div class="time-column font-medium">
+                {{ formatTime(timeGroup.time) }}
+              </div>
+              @for (court of gridCourts(); track trackByCourt($index, court)) {
+                @if (getSlotForCourt(timeGroup.slots, court.id); as slot) {
+                  <div
+                    class="slot-cell"
+                    [class.slot-available]="slot.status === 'AVAILABLE'"
+                    [class.slot-scheduled]="slot.status === 'SCHEDULED'"
+                    [class.slot-in-progress]="slot.status === 'IN_PROGRESS'"
+                    [class.slot-completed]="slot.status === 'COMPLETED'"
+                    [class.slot-blocked]="slot.status === 'BLOCKED'"
+                    cdkDropList
+                    [cdkDropListData]="slot"
+                    (cdkDropListDropped)="onDropOnSlot($event, slot)"
+                  >
+                    @if (slot.game) {
+                      <div class="game-card">
+                        <div class="game-info text-xs">
+                          <span class="font-medium">{{ getGameDisplayName(slot.game) }}</span>
+                          @if (slot.game.tournamentDraw?.tournamentSubEvent) {
+                            <span class="text-muted-color block">{{
+                              slot.game.tournamentDraw!.tournamentSubEvent!.name
+                            }}</span>
+                          }
+                        </div>
+                        <p-button
+                          size="small"
+                          [text]="true"
+                          severity="danger"
+                          icon="pi pi-times"
+                          pTooltip="Remove from slot"
+                          (click)="removeFromSlot(slot); $event.stopPropagation()"
+                          [loading]="updating()"
+                        />
+                      </div>
+                    } @else if (slot.status === 'BLOCKED') {
+                      <div class="blocked-slot flex items-center justify-center gap-2">
+                        <i class="pi pi-ban text-red-500"></i>
+                        <span class="text-red-500 text-xs">Blocked</span>
+                        <p-button
+                          size="small"
+                          [text]="true"
+                          icon="pi pi-unlock"
+                          pTooltip="Unblock"
+                          (click)="toggleBlockSlot(slot); $event.stopPropagation()"
+                          [loading]="updating()"
+                        />
+                      </div>
+                    } @else {
+                      <div class="empty-slot flex items-center justify-center gap-1">
+                        <span class="text-muted-color text-xs">Drop game here</span>
+                        <p-button
+                          size="small"
+                          [text]="true"
+                          severity="secondary"
+                          icon="pi pi-ban"
+                          pTooltip="Block slot"
+                          (click)="toggleBlockSlot(slot); $event.stopPropagation()"
+                          [loading]="updating()"
+                        />
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="slot-cell slot-empty">-</div>
+                }
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <p-message
+          severity="info"
+          [text]="'all.tournament.admin.schedule.noSlots' | translate"
+          styleClass="w-full"
+        />
+      }
+    </div>
+
+    <!-- Unscheduled Games Panel -->
+    @if (showUnscheduledPanel()) {
+      <div class="unscheduled-panel w-80 flex-shrink-0">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="p-3">
+              <h4 class="m-0">
+                {{ 'all.tournament.admin.schedule.unscheduledGames' | translate }}
+                <span class="text-muted-color font-normal">({{ unscheduledGames().length }})</span>
+              </h4>
+            </div>
+          </ng-template>
+
+          @if (unscheduledGames().length > 0) {
+            <div class="game-list max-h-[600px] overflow-y-auto">
+              @for (game of unscheduledGames(); track trackByGame($index, game)) {
+                <div
+                  class="game-item p-2 mb-2 border border-surface-200 rounded cursor-move hover:bg-surface-100"
+                  cdkDrag
+                  [cdkDragData]="game"
+                  (cdkDragStarted)="onGameDragStart(game)"
+                  (cdkDragEnded)="onGameDragEnd()"
+                >
+                  <div class="font-medium text-sm">{{ getGameDisplayName(game) }}</div>
+                  @if (game.tournamentDraw) {
+                    <div class="text-muted-color text-xs">{{ game.tournamentDraw.name }}</div>
+                  }
+                  @if (game.round) {
+                    <p-tag [value]="game.round" [severity]="'secondary'" size="small" />
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <p-message severity="success" text="All games scheduled!" styleClass="w-full" />
+          }
+        </p-card>
+      </div>
+    }
+  </div>
+
+  <!-- Generate Slots Dialog -->
+  <p-dialog
+    [header]="'all.tournament.admin.schedule.generateSlots' | translate"
+    [(visible)]="showGenerateSlotsDialog"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+  >
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="courts">{{ 'all.tournament.admin.schedule.courts' | translate }} *</label>
+        <p-multiselect
+          id="courts"
+          [formControl]="generateSlotsForm.controls.courtIds"
+          [options]="courts()"
+          optionLabel="name"
+          optionValue="id"
+          [placeholder]="'all.tournament.admin.schedule.selectCourts' | translate"
+          styleClass="w-full"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="dates">{{ 'all.tournament.admin.schedule.dates' | translate }} *</label>
+        <p-datepicker
+          id="dates"
+          [formControl]="generateSlotsForm.controls.dates"
+          selectionMode="multiple"
+          dateFormat="yy-mm-dd"
+          styleClass="w-full"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="startTime">{{ 'all.tournament.admin.schedule.startTime' | translate }} *</label>
+          <input
+            pInputText
+            id="startTime"
+            [formControl]="generateSlotsForm.controls.startTime"
+            placeholder="09:00"
+            class="w-full"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="endTime">{{ 'all.tournament.admin.schedule.endTime' | translate }} *</label>
+          <input
+            pInputText
+            id="endTime"
+            [formControl]="generateSlotsForm.controls.endTime"
+            placeholder="18:00"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="slotDuration">{{ 'all.tournament.admin.schedule.slotDuration' | translate }} *</label>
+          <p-select
+            id="slotDuration"
+            [formControl]="generateSlotsForm.controls.slotDurationMinutes"
+            [options]="slotDurationOptions"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="breakMinutes">{{ 'all.tournament.admin.schedule.breakBetween' | translate }}</label>
+          <p-inputNumber id="breakMinutes" [formControl]="generateSlotsForm.controls.breakMinutes" suffix=" min" />
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        [label]="'all.button.cancel' | translate"
+        severity="secondary"
+        (click)="showGenerateSlotsDialog.set(false)"
+      />
+      <p-button
+        [label]="'all.button.generate' | translate"
+        (click)="generateSlots()"
+        [disabled]="!generateSlotsForm.valid"
+        [loading]="updating()"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <!-- Auto-Schedule Dialog -->
+  <p-dialog
+    [header]="'all.tournament.admin.schedule.autoSchedule' | translate"
+    [(visible)]="showAutoScheduleDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+  >
+    <div class="flex flex-col gap-4">
+      <p class="text-muted-color">
+        {{ 'all.tournament.admin.schedule.autoScheduleDescription' | translate }}
+      </p>
+
+      <div class="flex flex-col gap-2">
+        <label for="strategy">{{ 'all.tournament.admin.schedule.strategy' | translate }} *</label>
+        <p-select
+          id="strategy"
+          [formControl]="autoScheduleForm.controls.strategy"
+          [options]="strategyOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="minRest">{{ 'all.tournament.admin.schedule.minRestTime' | translate }}</label>
+        <p-inputNumber id="minRest" [formControl]="autoScheduleForm.controls.minRestMinutes" suffix=" min" />
+      </div>
+
+      @if (lastScheduleResult()) {
+        <div class="border border-surface-200 rounded p-3">
+          <h5 class="m-0 mb-2">{{ 'all.tournament.admin.schedule.results' | translate }}</h5>
+          <div class="text-green-500">Scheduled: {{ lastScheduleResult()!.scheduledCount }} games</div>
+          <div class="text-orange-500">Skipped: {{ lastScheduleResult()!.skippedCount }} games</div>
+          @if (lastScheduleResult()!.conflicts.length > 0) {
+            <div class="text-red-500 mt-2">
+              <strong>Conflicts:</strong>
+              @for (conflict of lastScheduleResult()!.conflicts.slice(0, 5); track conflict.gameId) {
+                <div class="text-sm">{{ conflict.message }}</div>
+              }
+              @if (lastScheduleResult()!.conflicts.length > 5) {
+                <div class="text-sm">... and {{ lastScheduleResult()!.conflicts.length - 5 }} more</div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        [label]="'all.button.close' | translate"
+        severity="secondary"
+        (click)="showAutoScheduleDialog.set(false)"
+      />
+      <p-button
+        [label]="'all.tournament.admin.schedule.runScheduler' | translate"
+        (click)="autoSchedule()"
+        [disabled]="!autoScheduleForm.valid"
+        [loading]="updating()"
+      />
+    </ng-template>
+  </p-dialog>
+</div>

@@ -27,8 +27,7 @@ import {
 } from '@nestjs/graphql';
 import {
   StartGameInput,
-  UpdateGameScoreInput,
-  CompleteGameInput,
+  GameUpdateInput,
   AssignNextGameInput,
 } from '../../../inputs';
 import { In, IsNull, Not } from 'typeorm';
@@ -358,105 +357,58 @@ export class TournamentCourtResolver {
     return game;
   }
 
-  @Mutation(() => Game, { description: 'Update game score' })
+  @Mutation(() => Game, { description: 'Update a game (scores, court, winner)' })
   @UseGuards(PermGuard)
-  async updateGameScore(
+  async updateGame(
     @User() user: Player,
-    @Args('input') input: UpdateGameScoreInput,
+    @Args('gameId', { type: () => ID }) gameId: string,
+    @Args('input') input: GameUpdateInput,
   ): Promise<Game> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
-      throw new ForbiddenException('You do not have permission to update scores');
+      throw new ForbiddenException('You do not have permission to update games');
     }
 
     const game = await Game.findOne({
-      where: { id: input.gameId },
+      where: { id: gameId },
     });
 
     if (!game) {
-      throw new NotFoundException(`Game with ID ${input.gameId} not found`);
+      throw new NotFoundException(`Game with ID ${gameId} not found`);
     }
 
-    // Update scores
-    if (input.set1Team1 !== undefined) game.set1Team1 = input.set1Team1;
-    if (input.set1Team2 !== undefined) game.set1Team2 = input.set1Team2;
-    if (input.set2Team1 !== undefined) game.set2Team1 = input.set2Team1;
-    if (input.set2Team2 !== undefined) game.set2Team2 = input.set2Team2;
-    if (input.set3Team1 !== undefined) game.set3Team1 = input.set3Team1;
-    if (input.set3Team2 !== undefined) game.set3Team2 = input.set3Team2;
-
-    await game.save();
-
-    // Emit WebSocket event for score update
-    if (this.liveGateway && game.scheduleSlotId) {
-      const slot = await TournamentScheduleSlot.findOne({
-        where: { id: game.scheduleSlotId },
-      });
-
-      if (slot?.tournamentEventId) {
-        this.liveGateway.emitScoreUpdated(slot.tournamentEventId, {
-          gameId: game.id,
-          courtId: game.courtId,
-          status: 'in_progress',
-          set1Team1: game.set1Team1,
-          set1Team2: game.set1Team2,
-          set2Team1: game.set2Team1,
-          set2Team2: game.set2Team2,
-          set3Team1: game.set3Team1,
-          set3Team2: game.set3Team2,
-        });
-      }
-    }
-
-    return game;
-  }
-
-  @Mutation(() => Game, { description: 'Complete a game' })
-  @UseGuards(PermGuard)
-  async completeGame(
-    @User() user: Player,
-    @Args('input') input: CompleteGameInput,
-  ): Promise<Game> {
-    // Check permission
-    if (!user.hasAnyPermission(['edit-any:tournament'])) {
-      throw new ForbiddenException('You do not have permission to complete games');
-    }
-
-    const game = await Game.findOne({
-      where: { id: input.gameId },
-    });
-
-    if (!game) {
-      throw new NotFoundException(`Game with ID ${input.gameId} not found`);
-    }
-
-    // Check if game has already been completed
-    if (game.playedAt) {
+    // If setting winner on a game that's already completed, throw error
+    if (input.winner !== undefined && game.playedAt) {
       throw new BadRequestException('Game has already been completed');
     }
 
-    // Validate winner
-    if (input.winner !== 1 && input.winner !== 2) {
+    // Validate winner if provided
+    if (input.winner !== undefined && input.winner !== 1 && input.winner !== 2) {
       throw new BadRequestException('Winner must be 1 or 2');
     }
 
-    // Update scores
+    // Update fields from input
     if (input.set1Team1 !== undefined) game.set1Team1 = input.set1Team1;
     if (input.set1Team2 !== undefined) game.set1Team2 = input.set1Team2;
     if (input.set2Team1 !== undefined) game.set2Team1 = input.set2Team1;
     if (input.set2Team2 !== undefined) game.set2Team2 = input.set2Team2;
     if (input.set3Team1 !== undefined) game.set3Team1 = input.set3Team1;
     if (input.set3Team2 !== undefined) game.set3Team2 = input.set3Team2;
+    if (input.courtId !== undefined) game.courtId = input.courtId;
 
-    // Mark game as completed
-    game.winner = input.winner;
-    game.playedAt = new Date();
-    game.actualEndTime = new Date();
+    // If winner is set, mark game as completed
+    const isCompleting = input.winner !== undefined && !game.playedAt;
+    if (isCompleting) {
+      game.winner = input.winner;
+      game.playedAt = new Date();
+      game.actualEndTime = new Date();
+    }
+
     await game.save();
 
-    // Update schedule slot if exists
+    // Update schedule slot if completing
     let tournamentEventId: string | undefined;
-    if (game.scheduleSlotId) {
+    if (isCompleting && game.scheduleSlotId) {
       const slot = await TournamentScheduleSlot.findOne({
         where: { id: game.scheduleSlotId },
       });
@@ -468,43 +420,67 @@ export class TournamentCourtResolver {
       }
     }
 
-    // Emit WebSocket event
-    if (this.liveGateway && tournamentEventId) {
-      this.liveGateway.emitGameCompleted(tournamentEventId, {
-        gameId: game.id,
-        courtId: game.courtId,
-        status: 'completed',
-        set1Team1: game.set1Team1,
-        set1Team2: game.set1Team2,
-        set2Team1: game.set2Team1,
-        set2Team2: game.set2Team2,
-        set3Team1: game.set3Team1,
-        set3Team2: game.set3Team2,
-        winner: game.winner,
-        endTime: game.actualEndTime,
+    // Emit WebSocket events
+    if (this.liveGateway && game.scheduleSlotId) {
+      const slot = await TournamentScheduleSlot.findOne({
+        where: { id: game.scheduleSlotId },
       });
 
-      // Emit court status update (now available)
-      if (game.courtId) {
-        const court = await Court.findOne({ where: { id: game.courtId } });
+      if (slot?.tournamentEventId) {
+        tournamentEventId = slot.tournamentEventId;
 
-        // Find next scheduled game for this court
-        const nextSlot = await TournamentScheduleSlot.findOne({
-          where: {
-            tournamentEventId,
+        if (isCompleting) {
+          // Game completed
+          this.liveGateway.emitGameCompleted(tournamentEventId, {
+            gameId: game.id,
             courtId: game.courtId,
-            status: ScheduleSlotStatus.SCHEDULED,
-            gameId: Not(IsNull()),
-          },
-          order: { startTime: 'ASC' },
-        });
+            status: 'completed',
+            set1Team1: game.set1Team1,
+            set1Team2: game.set1Team2,
+            set2Team1: game.set2Team1,
+            set2Team2: game.set2Team2,
+            set3Team1: game.set3Team1,
+            set3Team2: game.set3Team2,
+            winner: game.winner,
+            endTime: game.actualEndTime,
+          });
 
-        this.liveGateway.emitCourtStatusUpdate(tournamentEventId, {
-          courtId: game.courtId,
-          courtName: court?.name ?? `Court ${game.courtId.slice(0, 8)}`,
-          status: 'available',
-          nextGameId: nextSlot?.gameId ?? undefined,
-        });
+          // Emit court status update (now available)
+          if (game.courtId) {
+            const court = await Court.findOne({ where: { id: game.courtId } });
+
+            // Find next scheduled game for this court
+            const nextSlot = await TournamentScheduleSlot.findOne({
+              where: {
+                tournamentEventId,
+                courtId: game.courtId,
+                status: ScheduleSlotStatus.SCHEDULED,
+                gameId: Not(IsNull()),
+              },
+              order: { startTime: 'ASC' },
+            });
+
+            this.liveGateway.emitCourtStatusUpdate(tournamentEventId, {
+              courtId: game.courtId,
+              courtName: court?.name ?? `Court ${game.courtId.slice(0, 8)}`,
+              status: 'available',
+              nextGameId: nextSlot?.gameId ?? undefined,
+            });
+          }
+        } else {
+          // Score update only
+          this.liveGateway.emitScoreUpdated(tournamentEventId, {
+            gameId: game.id,
+            courtId: game.courtId,
+            status: 'in_progress',
+            set1Team1: game.set1Team1,
+            set1Team2: game.set1Team2,
+            set2Team1: game.set2Team1,
+            set2Team2: game.set2Team2,
+            set3Team1: game.set3Team1,
+            set3Team2: game.set3Team2,
+          });
+        }
       }
     }
 

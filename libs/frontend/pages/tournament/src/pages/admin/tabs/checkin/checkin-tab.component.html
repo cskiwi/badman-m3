@@ -1,0 +1,225 @@
+<div class="checkin-tab">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold">{{ stats().total }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.checkin.total' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-green-500">{{ stats().checkedIn }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.checkin.checkedIn' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-orange-500">{{ stats().pending }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.checkin.pending' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-red-500">{{ stats().noShow }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.checkin.noShow' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-blue-500">{{ stats().checkInRate | number : '1.0-1' }}%</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.checkin.rate' | translate }}</div>
+    </p-card>
+  </div>
+
+  <!-- Actions Bar -->
+  <p-card styleClass="mb-4">
+    <div class="flex flex-wrap gap-4 items-end">
+      <div class="flex flex-col gap-2">
+        <label for="status">{{ 'all.tournament.admin.checkin.status' | translate }}</label>
+        <p-select
+          id="status"
+          [formControl]="statusFilter"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-48"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="search">{{ 'all.tournament.admin.checkin.search' | translate }}</label>
+        <input
+          pInputText
+          id="search"
+          [formControl]="searchControl"
+          [placeholder]="'all.tournament.admin.checkin.searchPlaceholder' | translate"
+          class="w-64"
+        />
+      </div>
+
+      <p-button
+        icon="pi pi-play"
+        [label]="'all.tournament.admin.checkin.initialize' | translate"
+        severity="secondary"
+        (click)="initializeCheckIns()"
+        [loading]="updating()"
+        pTooltip="Create check-in records for all confirmed enrollments"
+      />
+
+      <p-button
+        icon="pi pi-refresh"
+        [label]="'all.button.refresh' | translate"
+        severity="secondary"
+        (click)="refetch()"
+        [loading]="loading()"
+      />
+    </div>
+  </p-card>
+
+  @if (updateError()) {
+    <p-message severity="error" [text]="updateError()!" styleClass="mb-4 w-full" />
+  }
+
+  @if (loading()) {
+    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+  }
+
+  <!-- Check-in List -->
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="p-3 flex justify-between items-center">
+        <h3 class="m-0">
+          {{ 'all.tournament.admin.checkin.players' | translate }}
+          <span class="text-muted-color font-normal ml-2">({{ checkIns().length }})</span>
+        </h3>
+        <div class="flex gap-2">
+          <p-button
+            size="small"
+            [text]="true"
+            icon="pi pi-check-square"
+            pTooltip="Select all pending"
+            (click)="selectAllPending()"
+          />
+          <p-button
+            size="small"
+            [text]="true"
+            icon="pi pi-times"
+            pTooltip="Clear selection"
+            (click)="clearSelection()"
+            [disabled]="selectedCheckIns().length === 0"
+          />
+          @if (selectedCheckIns().length > 0) {
+            <p-button
+              size="small"
+              icon="pi pi-check"
+              [label]="'all.tournament.admin.checkin.bulkCheckIn' | translate"
+              (click)="bulkCheckIn()"
+              [loading]="updating()"
+            />
+          }
+        </div>
+      </div>
+    </ng-template>
+
+    @if (checkIns().length > 0) {
+      <p-table
+        [value]="checkIns()"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [paginator]="checkIns().length > 10"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem"></th>
+            <th>{{ 'all.tournament.admin.checkin.player' | translate }}</th>
+            <th>{{ 'all.tournament.admin.checkin.subEvent' | translate }}</th>
+            <th>{{ 'all.tournament.admin.checkin.status' | translate }}</th>
+            <th>{{ 'all.tournament.admin.checkin.checkedInAt' | translate }}</th>
+            <th style="width: 12rem">{{ 'all.tournament.admin.checkin.actions' | translate }}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-checkIn>
+          <tr [class.bg-green-50]="checkIn.status === 'CHECKED_IN'" [class.bg-red-50]="checkIn.status === 'NO_SHOW'">
+            <td>
+              @if (checkIn.status === 'PENDING') {
+                <p-checkbox [binary]="true" [ngModel]="isSelected(checkIn)" (onChange)="toggleSelection(checkIn)" />
+              }
+            </td>
+            <td>
+              <div class="flex flex-col">
+                <span class="font-medium">{{ getPlayerName(checkIn) }}</span>
+                @if (checkIn.player?.memberId) {
+                  <small class="text-muted-color">{{ checkIn.player.memberId }}</small>
+                }
+              </div>
+            </td>
+            <td>
+              @if (checkIn.enrollment?.tournamentSubEvent?.name) {
+                <span>{{ checkIn.enrollment.tournamentSubEvent.name }}</span>
+              } @else {
+                <span class="text-muted-color">-</span>
+              }
+            </td>
+            <td>
+              <p-tag [value]="checkIn.status" [severity]="getStatusSeverity(checkIn.status)" />
+            </td>
+            <td>
+              @if (checkIn.checkedInAt) {
+                {{ checkIn.checkedInAt | date : 'HH:mm' }}
+              } @else {
+                <span class="text-muted-color">-</span>
+              }
+            </td>
+            <td>
+              <div class="flex gap-2">
+                @if (checkIn.status === 'PENDING') {
+                  <p-button
+                    icon="pi pi-check"
+                    severity="success"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    pTooltip="Check in"
+                    (click)="checkIn(checkIn)"
+                    [loading]="updating()"
+                  />
+                  <p-button
+                    icon="pi pi-times"
+                    severity="danger"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    pTooltip="Mark no-show"
+                    (click)="markNoShow(checkIn)"
+                    [loading]="updating()"
+                  />
+                }
+                @if (checkIn.status === 'CHECKED_IN' || checkIn.status === 'NO_SHOW') {
+                  <p-button
+                    icon="pi pi-undo"
+                    severity="secondary"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    pTooltip="Undo"
+                    (click)="undoCheckIn(checkIn)"
+                    [loading]="updating()"
+                  />
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center p-4">
+              {{ 'all.tournament.admin.checkin.noCheckIns' | translate }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <p-message
+        severity="info"
+        [text]="'all.tournament.admin.checkin.noCheckIns' | translate"
+        styleClass="w-full"
+      />
+      <p class="text-muted-color mt-4">
+        {{ 'all.tournament.admin.checkin.initializeHint' | translate }}
+      </p>
+    }
+  </p-card>
+</div>

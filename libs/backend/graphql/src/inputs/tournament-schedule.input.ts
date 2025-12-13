@@ -1,5 +1,6 @@
-import { Field, ID, InputType, Int, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, InputType, Int, PartialType, PickType, registerEnumType } from '@nestjs/graphql';
 import { ScheduleStrategy } from '@app/models-enum';
+import { TournamentScheduleSlot } from '@app/models';
 
 // Register the ScheduleStrategy enum for GraphQL
 registerEnumType(ScheduleStrategy, {
@@ -78,16 +79,10 @@ export class AssignGameToSlotInput {
 }
 
 @InputType('UpdateScheduleSlotInput')
-export class UpdateScheduleSlotInput {
-  @Field(() => Date, { nullable: true, description: 'New start time' })
-  startTime?: Date;
-
-  @Field(() => Date, { nullable: true, description: 'New end time' })
-  endTime?: Date;
-
-  @Field(() => ID, { nullable: true, description: 'New court ID' })
-  courtId?: string;
-}
+export class UpdateScheduleSlotInput extends PartialType(
+  PickType(TournamentScheduleSlot, ['startTime', 'endTime', 'courtId'] as const, InputType),
+  InputType,
+) {}
 
 @InputType('BlockSlotInput')
 export class BlockSlotInput {
@@ -99,16 +94,8 @@ export class BlockSlotInput {
 }
 
 @InputType('CreateScheduleSlotInput')
-export class CreateScheduleSlotInput {
-  @Field(() => ID, { description: 'Tournament event ID' })
-  tournamentEventId!: string;
-
-  @Field(() => ID, { description: 'Court ID' })
-  courtId!: string;
-
-  @Field(() => Date, { description: 'Start time' })
-  startTime!: Date;
-
-  @Field(() => Date, { description: 'End time' })
-  endTime!: Date;
-}
+export class CreateScheduleSlotInput extends PickType(
+  TournamentScheduleSlot,
+  ['tournamentEventId', 'courtId', 'startTime', 'endTime'] as const,
+  InputType,
+) {}

@@ -1,0 +1,355 @@
+<div class="draws-tab">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold">{{ stats().total }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.draws.totalEntries' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-green-500">{{ stats().assigned }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.draws.assigned' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-orange-500">{{ stats().unassigned }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.draws.unassigned' | translate }}</div>
+    </p-card>
+    <p-card styleClass="text-center">
+      <div class="text-3xl font-bold text-blue-500">{{ stats().draws }}</div>
+      <div class="text-muted-color">{{ 'all.tournament.admin.draws.drawCount' | translate }}</div>
+    </p-card>
+  </div>
+
+  <!-- Sub-event Selector and Actions -->
+  <p-card styleClass="mb-4">
+    <div class="flex flex-wrap gap-4 items-end">
+      <div class="flex flex-col gap-2">
+        <label for="subEvent">{{ 'all.tournament.admin.draws.subEvent' | translate }}</label>
+        <p-select
+          id="subEvent"
+          [formControl]="subEventControl"
+          [options]="subEvents()"
+          optionLabel="name"
+          [placeholder]="'all.tournament.admin.draws.selectSubEvent' | translate"
+          styleClass="w-64"
+        />
+      </div>
+
+      <p-button
+        icon="pi pi-cog"
+        [label]="'all.tournament.admin.draws.generateEntries' | translate"
+        severity="secondary"
+        (click)="generateEntries()"
+        [loading]="updating()"
+        [disabled]="!selectedSubEvent()"
+      />
+
+      <p-button
+        icon="pi pi-plus"
+        [label]="'all.tournament.admin.draws.createDraw' | translate"
+        (click)="openCreateDrawDialog()"
+        [disabled]="!selectedSubEvent()"
+      />
+
+      <p-button
+        icon="pi pi-refresh"
+        [label]="'all.button.refresh' | translate"
+        severity="secondary"
+        (click)="refetch()"
+        [loading]="loading()"
+      />
+    </div>
+  </p-card>
+
+  @if (updateError()) {
+    <p-message severity="error" [text]="updateError()!" styleClass="mb-4 w-full" />
+  }
+
+  @if (loading()) {
+    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+  }
+
+  @if (selectedSubEvent()) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Unassigned Entries Panel -->
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="p-3 flex justify-between items-center">
+            <h3 class="m-0">
+              {{ 'all.tournament.admin.draws.unassignedEntries' | translate }}
+              <span class="text-muted-color font-normal ml-2">({{ unassignedEntries().length }})</span>
+            </h3>
+            <div class="flex gap-2">
+              <p-button
+                size="small"
+                [text]="true"
+                icon="pi pi-check-square"
+                pTooltip="Select all"
+                (click)="selectAllUnassigned()"
+                [disabled]="unassignedEntries().length === 0"
+              />
+              <p-button
+                size="small"
+                [text]="true"
+                icon="pi pi-times"
+                pTooltip="Clear selection"
+                (click)="clearSelection()"
+                [disabled]="selectedEntries().length === 0"
+              />
+            </div>
+          </div>
+        </ng-template>
+
+        @if (unassignedEntries().length > 0) {
+          <div class="max-h-96 overflow-y-auto">
+            <p-table [value]="unassignedEntries()" [scrollable]="true" scrollHeight="350px">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 3rem"></th>
+                  <th>{{ 'all.tournament.admin.draws.entry' | translate }}</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-entry>
+                <tr
+                  [class.bg-primary-50]="isEntrySelected(entry)"
+                  class="cursor-pointer"
+                  (click)="toggleEntrySelection(entry)"
+                >
+                  <td>
+                    <p-checkbox [binary]="true" [ngModel]="isEntrySelected(entry)" />
+                  </td>
+                  <td>{{ getEntryName(entry) }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+          <!-- Assignment Controls -->
+          @if (selectedEntries().length > 0) {
+            <div class="mt-4 p-3 bg-surface-100 rounded-lg flex flex-wrap gap-3 items-center">
+              <span class="font-medium">{{ selectedEntries().length }} selected</span>
+              <p-select
+                [options]="draws()"
+                optionLabel="name"
+                optionValue="id"
+                [placeholder]="'all.tournament.admin.draws.selectDraw' | translate"
+                (onChange)="targetDrawId.set($event.value)"
+                styleClass="w-48"
+              />
+              <p-button
+                icon="pi pi-arrow-right"
+                [label]="'all.tournament.admin.draws.assign' | translate"
+                (click)="assignSelectedToDraw()"
+                [disabled]="!targetDrawId()"
+                [loading]="updating()"
+              />
+            </div>
+          }
+        } @else {
+          <p-message
+            severity="info"
+            [text]="
+              entries().length > 0
+                ? ('all.tournament.admin.draws.allEntriesAssigned' | translate)
+                : ('all.tournament.admin.draws.noEntriesYet' | translate)
+            "
+            styleClass="w-full"
+          />
+        }
+      </p-card>
+
+      <!-- Draws Panel -->
+      <div class="flex flex-col gap-4">
+        @for (draw of draws(); track draw.id) {
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="p-3 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <h4 class="m-0">{{ draw.name }}</h4>
+                  <p-tag [value]="draw.type ?? 'N/A'" [severity]="getDrawTypeSeverity(draw.type)" />
+                  @if (draw.size) {
+                    <span class="text-muted-color text-sm">Size: {{ draw.size }}</span>
+                  }
+                </div>
+                <div class="flex gap-1">
+                  <p-button
+                    size="small"
+                    [text]="true"
+                    icon="pi pi-sort-numeric-up"
+                    pTooltip="Auto-seed"
+                    (click)="openSeedingDialog(draw)"
+                    [disabled]="!draw.entries?.length"
+                  />
+                  <p-button
+                    size="small"
+                    [text]="true"
+                    icon="pi pi-eraser"
+                    pTooltip="Clear seeds"
+                    (click)="clearSeeds(draw)"
+                    [disabled]="!draw.entries?.length"
+                  />
+                  <p-button
+                    size="small"
+                    [text]="true"
+                    severity="danger"
+                    icon="pi pi-trash"
+                    pTooltip="Delete draw"
+                    (click)="deleteDraw(draw)"
+                  />
+                </div>
+              </div>
+            </ng-template>
+
+            @if (draw.entries?.length) {
+              <p-table [value]="draw.entries!" [scrollable]="true" scrollHeight="200px">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 4rem">{{ 'all.tournament.admin.draws.seed' | translate }}</th>
+                    <th>{{ 'all.tournament.admin.draws.entry' | translate }}</th>
+                    <th style="width: 4rem"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-entry>
+                  <tr>
+                    <td class="text-center">
+                      @if (entry.seed) {
+                        <span class="font-bold">{{ entry.seed }}</span>
+                      } @else {
+                        <span class="text-muted-color">-</span>
+                      }
+                    </td>
+                    <td>{{ getEntryName(entry) }}</td>
+                    <td>
+                      <p-button
+                        size="small"
+                        [text]="true"
+                        severity="danger"
+                        icon="pi pi-minus"
+                        pTooltip="Remove from draw"
+                        (click)="removeFromDraw(entry)"
+                        [loading]="updating()"
+                      />
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            } @else {
+              <p-message severity="info" text="No entries assigned yet" styleClass="w-full" />
+            }
+
+            <ng-template pTemplate="footer">
+              <div class="text-muted-color text-sm">
+                {{ draw.entries?.length ?? 0 }} / {{ draw.size ?? '∞' }} entries
+              </div>
+            </ng-template>
+          </p-card>
+        } @empty {
+          <p-message
+            severity="info"
+            [text]="'all.tournament.admin.draws.noDrawsYet' | translate"
+            styleClass="w-full"
+          />
+        }
+      </div>
+    </div>
+  } @else {
+    <p-message
+      severity="info"
+      [text]="'all.tournament.admin.draws.selectSubEventFirst' | translate"
+      styleClass="w-full"
+    />
+  }
+
+  <!-- Create Draw Dialog -->
+  <p-dialog
+    [header]="'all.tournament.admin.draws.createDraw' | translate"
+    [(visible)]="showCreateDrawDialog"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+  >
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="drawName">{{ 'all.tournament.admin.draws.drawName' | translate }} *</label>
+        <input pInputText id="drawName" [formControl]="drawForm.controls.name" class="w-full" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="drawType">{{ 'all.tournament.admin.draws.drawType' | translate }} *</label>
+        <p-select
+          id="drawType"
+          [formControl]="drawForm.controls.type"
+          [options]="drawTypeOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="drawSize">{{ 'all.tournament.admin.draws.drawSize' | translate }}</label>
+        <p-select
+          id="drawSize"
+          [formControl]="drawForm.controls.size"
+          [options]="drawSizeOptions"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'all.tournament.admin.draws.selectSize' | translate"
+          [showClear]="true"
+          styleClass="w-full"
+        />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        [label]="'all.button.cancel' | translate"
+        severity="secondary"
+        (click)="showCreateDrawDialog.set(false)"
+      />
+      <p-button
+        [label]="'all.button.create' | translate"
+        (click)="createDraw()"
+        [disabled]="!drawForm.valid"
+        [loading]="updating()"
+      />
+    </ng-template>
+  </p-dialog>
+
+  <!-- Seeding Dialog -->
+  <p-dialog
+    [header]="'all.tournament.admin.draws.seedingOptions' | translate"
+    [(visible)]="showSeedingDialog"
+    [modal]="true"
+    [style]="{ width: '400px' }"
+  >
+    <div class="flex flex-col gap-4">
+      <p class="text-muted-color">
+        {{ 'all.tournament.admin.draws.seedingDescription' | translate }}
+      </p>
+
+      <div class="flex flex-col gap-2">
+        <label for="seedingMethod">{{ 'all.tournament.admin.draws.seedingMethod' | translate }}</label>
+        <p-select
+          id="seedingMethod"
+          [formControl]="seedingMethod"
+          [options]="seedingMethodOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        [label]="'all.button.cancel' | translate"
+        severity="secondary"
+        (click)="showSeedingDialog.set(false)"
+      />
+      <p-button
+        [label]="'all.tournament.admin.draws.applySeeding' | translate"
+        (click)="applySeeding()"
+        [loading]="updating()"
+      />
+    </ng-template>
+  </p-dialog>
+</div>
