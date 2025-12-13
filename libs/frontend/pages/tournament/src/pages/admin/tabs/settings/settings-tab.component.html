@@ -4,7 +4,6 @@
     <ng-template pTemplate="header">
       <div class="p-3 flex justify-between items-center">
         <h3 class="m-0">{{ 'all.tournament.admin.settings.phase' | translate }}</h3>
-        <p-tag [value]="tournament().phase" [severity]="getPhaseTagSeverity(tournament().phase)" />
       </div>
     </ng-template>
 
@@ -87,63 +86,44 @@
           />
         </div>
 
-        <!-- First Day -->
+        <!-- Tournament Dates (Range) -->
         <div class="flex flex-col gap-2">
-          <label for="firstDay">{{ 'all.tournament.admin.settings.firstDay' | translate }}</label>
+          <label for="tournamentDates">
+            {{ 'all.tournament.admin.settings.tournamentDates' | translate }}
+          </label>
           <p-datepicker
-            id="firstDay"
-            formControlName="firstDay"
+            id="tournamentDates"
+            formControlName="tournamentDates"
             [showIcon]="true"
             dateFormat="dd/mm/yy"
+            selectionMode="range"
+            [readonlyInput]="true"
             styleClass="w-full"
+            [placeholder]="'all.tournament.admin.settings.tournamentDatesPlaceholder' | translate"
           />
+          <small class="text-muted-color">
+            {{ 'all.tournament.admin.settings.tournamentDatesHelp' | translate }}
+          </small>
         </div>
 
-        <!-- Empty cell for alignment -->
-        <div></div>
-
-        <!-- Tournament Open/Close Dates -->
+        <!-- Enrollment Dates (Range) -->
         <div class="flex flex-col gap-2">
-          <label for="openDate">{{ 'all.tournament.admin.settings.openDate' | translate }}</label>
+          <label for="enrollmentDates">
+            {{ 'all.tournament.admin.settings.enrollmentDates' | translate }}
+          </label>
           <p-datepicker
-            id="openDate"
-            formControlName="openDate"
+            id="enrollmentDates"
+            formControlName="enrollmentDates"
             [showIcon]="true"
             dateFormat="dd/mm/yy"
+            selectionMode="range"
+            [readonlyInput]="true"
             styleClass="w-full"
+            [placeholder]="'all.tournament.admin.settings.enrollmentDatesPlaceholder' | translate"
           />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="closeDate">{{ 'all.tournament.admin.settings.closeDate' | translate }}</label>
-          <p-datepicker
-            id="closeDate"
-            formControlName="closeDate"
-            [showIcon]="true"
-            dateFormat="dd/mm/yy"
-            styleClass="w-full"
-          />
-        </div>
-
-        <!-- Enrollment Open/Close Dates -->
-        <div class="flex flex-col gap-2">
-          <label for="enrollmentOpenDate">{{ 'all.tournament.admin.settings.enrollmentOpenDate' | translate }}</label>
-          <p-datepicker
-            id="enrollmentOpenDate"
-            formControlName="enrollmentOpenDate"
-            [showIcon]="true"
-            dateFormat="dd/mm/yy"
-            styleClass="w-full"
-          />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="enrollmentCloseDate">{{ 'all.tournament.admin.settings.enrollmentCloseDate' | translate }}</label>
-          <p-datepicker
-            id="enrollmentCloseDate"
-            formControlName="enrollmentCloseDate"
-            [showIcon]="true"
-            dateFormat="dd/mm/yy"
-            styleClass="w-full"
-          />
+          <small class="text-muted-color">
+            {{ 'all.tournament.admin.settings.enrollmentDatesHelp' | translate }}
+          </small>
         </div>
 
         <!-- Toggles -->
@@ -285,7 +265,6 @@
             [options]="gameTypeOptions"
             optionLabel="label"
             optionValue="value"
-            [disabled]="!!editingSubEvent()"
             styleClass="w-full"
           />
         </div>

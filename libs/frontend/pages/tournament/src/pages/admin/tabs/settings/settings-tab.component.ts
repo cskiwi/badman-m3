@@ -121,11 +121,8 @@ export class SettingsTabComponent {
   // Tournament settings form
   settingsForm = new FormGroup({
     name: new FormControl<string>('', [Validators.required, Validators.maxLength(255)]),
-    firstDay: new FormControl<Date | null>(null),
-    openDate: new FormControl<Date | null>(null),
-    closeDate: new FormControl<Date | null>(null),
-    enrollmentOpenDate: new FormControl<Date | null>(null),
-    enrollmentCloseDate: new FormControl<Date | null>(null),
+    tournamentDates: new FormControl<Date[] | null>(null),
+    enrollmentDates: new FormControl<Date[] | null>(null),
     official: new FormControl<boolean>(false),
     allowGuestEnrollments: new FormControl<boolean>(false),
     schedulePublished: new FormControl<boolean>(false),
@@ -163,13 +160,24 @@ export class SettingsTabComponent {
     effect(() => {
       const t = this.tournament();
       if (t) {
+        // Tournament dates (firstDay to last day)
+        const tournamentDates =
+          t.firstDay && t.closeDate
+            ? [new Date(t.firstDay), new Date(t.closeDate)]
+            : t.firstDay
+              ? [new Date(t.firstDay)]
+              : null;
+
+        // Enrollment open/close dates
+        const enrollmentDates =
+          t.enrollmentOpenDate && t.enrollmentCloseDate
+            ? [new Date(t.enrollmentOpenDate), new Date(t.enrollmentCloseDate)]
+            : null;
+
         this.settingsForm.patchValue({
           name: t.name,
-          firstDay: t.firstDay ? new Date(t.firstDay) : null,
-          openDate: t.openDate ? new Date(t.openDate) : null,
-          closeDate: t.closeDate ? new Date(t.closeDate) : null,
-          enrollmentOpenDate: t.enrollmentOpenDate ? new Date(t.enrollmentOpenDate) : null,
-          enrollmentCloseDate: t.enrollmentCloseDate ? new Date(t.enrollmentCloseDate) : null,
+          tournamentDates,
+          enrollmentDates,
           official: t.official ?? false,
           allowGuestEnrollments: t.allowGuestEnrollments ?? false,
           schedulePublished: t.schedulePublished ?? false,
@@ -184,13 +192,16 @@ export class SettingsTabComponent {
     const t = this.tournament();
     const values = this.settingsForm.value;
 
+    // Extract dates from range pickers
+    const tournamentDates = values.tournamentDates as Date[] | null;
+    const enrollmentDates = values.enrollmentDates as Date[] | null;
+
     const result = await this.dataService.updateTournament(t.id, {
       name: values.name ?? undefined,
-      firstDay: values.firstDay ?? undefined,
-      openDate: values.openDate ?? undefined,
-      closeDate: values.closeDate ?? undefined,
-      enrollmentOpenDate: values.enrollmentOpenDate ?? undefined,
-      enrollmentCloseDate: values.enrollmentCloseDate ?? undefined,
+      firstDay: tournamentDates?.[0] ?? undefined,
+      closeDate: tournamentDates?.[1] ?? tournamentDates?.[0] ?? undefined,
+      enrollmentOpenDate: enrollmentDates?.[0] ?? undefined,
+      enrollmentCloseDate: enrollmentDates?.[1] ?? undefined,
       official: values.official ?? undefined,
       allowGuestEnrollments: values.allowGuestEnrollments ?? undefined,
       schedulePublished: values.schedulePublished ?? undefined,
@@ -234,6 +245,7 @@ export class SettingsTabComponent {
       maxEntries: null,
       waitingListEnabled: true,
     });
+    this.subEventForm.get('gameType')?.enable();
     this.showSubEventDialog.set(true);
   }
 
@@ -246,6 +258,7 @@ export class SettingsTabComponent {
       maxEntries: subEvent.maxEntries ?? null,
       waitingListEnabled: subEvent.waitingListEnabled ?? true,
     });
+    this.subEventForm.get('gameType')?.disable();
     this.showSubEventDialog.set(true);
   }
 
