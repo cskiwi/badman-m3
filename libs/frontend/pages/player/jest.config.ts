@@ -1,5 +1,4 @@
- 
-export default {
+module.exports = {
   displayName: 'frontend-pages-players',
   preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
