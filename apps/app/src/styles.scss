@@ -92,3 +92,30 @@ small {
 .p-toolbar-end{
   justify-content: flex-end;
 }
+
+// Card Utility Classes
+.bg-card {
+  background: var(--p-surface-0);
+}
+
+.bg-card-header {
+  background: var(--p-surface-50);
+}
+
+.border-card {
+  border-color: var(--p-surface-200);
+}
+
+html.dark-theme {
+  .bg-card {
+    background: var(--p-surface-900);
+  }
+
+  .bg-card-header {
+    background: var(--p-surface-800);
+  }
+
+  .border-card {
+    border-color: var(--p-surface-700);
+  }
+}

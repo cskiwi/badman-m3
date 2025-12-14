@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEnrollment, TournamentEvent, TournamentSubEvent } from '@app/models';
 import { EnrollmentStatus } from '@app/models-enum';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +15,8 @@ import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TextareaModule } from 'primeng/textarea';
 import { ConfirmationService } from 'primeng/api';
 import { EnrollmentsTabService } from './enrollments-tab.service';
 
@@ -36,10 +38,11 @@ import { EnrollmentsTabService } from './enrollments-tab.service';
     ConfirmDialogModule,
     TabsModule,
     TooltipModule,
+    CheckboxModule,
+    TextareaModule,
   ],
   providers: [ConfirmationService],
   templateUrl: './enrollments-tab.component.html',
-  styleUrl: './enrollments-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnrollmentsTabComponent {
@@ -52,6 +55,17 @@ export class EnrollmentsTabComponent {
   subEventControl = new FormControl<TournamentSubEvent | null>(null);
   statusFilter = new FormControl<EnrollmentStatus | null>(null);
   searchControl = new FormControl<string>('');
+
+  // Manual enrollment dialog
+  showManualEnrollmentDialog = signal(false);
+  manualEnrollmentForm = new FormGroup({
+    playerSearch: new FormControl<string>('', Validators.required),
+    partnerSearch: new FormControl<string>(''),
+    isGuest: new FormControl<boolean>(false),
+    guestName: new FormControl<string>(''),
+    guestEmail: new FormControl<string>(''),
+    notes: new FormControl<string>(''),
+  });
 
   // Status options
   readonly statusOptions = [
@@ -168,5 +182,33 @@ export class EnrollmentsTabComponent {
 
   refetch(): void {
     this.dataService.refetch();
+  }
+
+  openManualEnrollmentDialog(): void {
+    this.manualEnrollmentForm.reset({ isGuest: false });
+    this.showManualEnrollmentDialog.set(true);
+  }
+
+  async createManualEnrollment(): Promise<void> {
+    if (!this.manualEnrollmentForm.valid) return;
+
+    const subEvent = this.selectedSubEvent();
+    if (!subEvent) return;
+
+    const formValue = this.manualEnrollmentForm.value;
+
+    // TODO: Implement the actual enrollment creation logic
+    // This would call the data service to create a manual enrollment
+    // await this.dataService.createManualEnrollment(subEvent.id, {
+    //   playerSearch: formValue.playerSearch,
+    //   partnerSearch: formValue.partnerSearch,
+    //   isGuest: formValue.isGuest,
+    //   guestName: formValue.guestName,
+    //   guestEmail: formValue.guestEmail,
+    //   notes: formValue.notes,
+    // });
+
+    console.log('Creating manual enrollment:', formValue);
+    this.showManualEnrollmentDialog.set(false);
   }
 }

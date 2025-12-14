@@ -38,7 +38,8 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
               name
               eventType
               gameType
-              level
+              minLevel
+              maxLevel
               tournamentEvent {
                 id
                 name

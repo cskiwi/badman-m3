@@ -50,7 +50,6 @@ interface PhaseStep {
     StepperModule,
   ],
   templateUrl: './settings-tab.component.html',
-  styleUrl: './settings-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsTabComponent {
@@ -132,7 +131,8 @@ export class SettingsTabComponent {
   subEventForm = new FormGroup({
     name: new FormControl<string>('', [Validators.required]),
     gameType: new FormControl<string>('D', [Validators.required]),
-    level: new FormControl<number | null>(null),
+    minLevel: new FormControl<number | null>(null),
+    maxLevel: new FormControl<number | null>(null),
     maxEntries: new FormControl<number | null>(null),
     waitingListEnabled: new FormControl<boolean>(true),
   });
@@ -241,7 +241,8 @@ export class SettingsTabComponent {
     this.subEventForm.reset({
       name: '',
       gameType: 'D',
-      level: null,
+      minLevel: null,
+      maxLevel: null,
       maxEntries: null,
       waitingListEnabled: true,
     });
@@ -254,7 +255,8 @@ export class SettingsTabComponent {
     this.subEventForm.patchValue({
       name: subEvent.name,
       gameType: subEvent.gameType || 'D',
-      level: subEvent.level ?? null,
+      minLevel: subEvent.minLevel ?? null,
+      maxLevel: subEvent.maxLevel ?? null,
       maxEntries: subEvent.maxEntries ?? null,
       waitingListEnabled: subEvent.waitingListEnabled ?? true,
     });
@@ -274,7 +276,8 @@ export class SettingsTabComponent {
         name: values.name ?? undefined,
         maxEntries: values.maxEntries ?? undefined,
         waitingListEnabled: values.waitingListEnabled ?? undefined,
-        level: values.level ?? undefined,
+        minLevel: values.minLevel ?? undefined,
+        maxLevel: values.maxLevel ?? undefined,
       });
 
       if (result) {
@@ -284,10 +287,11 @@ export class SettingsTabComponent {
     } else {
       // Create new
       const result = await this.dataService.createSubEvent({
-        tournamentEventId: this.tournament().id,
+        eventId: this.tournament().id,
         name: values.name!,
         gameType: values.gameType!,
-        level: values.level ?? undefined,
+        minLevel: values.minLevel ?? undefined,
+        maxLevel: values.maxLevel ?? undefined,
         maxEntries: values.maxEntries ?? undefined,
         waitingListEnabled: values.waitingListEnabled ?? true,
       });

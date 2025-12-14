@@ -46,7 +46,6 @@ import { ScheduleResult, ScheduleTabService } from './schedule-tab.service';
     CdkDrag,
   ],
   templateUrl: './schedule-tab.component.html',
-  styleUrl: './schedule-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScheduleTabComponent {

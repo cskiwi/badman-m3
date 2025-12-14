@@ -1,202 +1,425 @@
-<div class="enrollments-tab">
-  <!-- Stats Cards -->
-  <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold">{{ stats().total }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.enrollments.total' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-green-500">{{ stats().confirmed }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.enrollments.confirmed' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-blue-500">{{ stats().pending }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.enrollments.pending' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-orange-500">{{ stats().waitingList }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.enrollments.waitingList' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-red-500">{{ stats().cancelled }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.enrollments.cancelled' | translate }}</div>
-    </p-card>
+<div class="flex flex-col gap-6">
+  <!-- Stats Cards - Distinctive Design -->
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <!-- Total -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600"
+    >
+      <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
+        <i class="pi pi-users text-xl text-surface-700 dark:text-surface-300"></i>
+      </div>
+      <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 tracking-tight">{{ stats().total }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.enrollments.total' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.enrollments.totalDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Confirmed -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-green-200 dark:border-green-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-green-300 dark:hover:border-green-800"
+    >
+      <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-check-circle text-xl text-green-600 dark:text-green-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-green-600 dark:text-green-400 tracking-tight">{{ stats().confirmed }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.enrollments.confirmed' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.enrollments.confirmedDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Pending -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-blue-200 dark:border-blue-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-800"
+    >
+      <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-clock text-xl text-blue-600 dark:text-blue-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">{{ stats().pending }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.enrollments.pending' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.enrollments.pendingDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Waiting List -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-orange-200 dark:border-orange-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800"
+    >
+      <div class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-list text-xl text-orange-600 dark:text-orange-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-orange-600 dark:text-orange-400 tracking-tight">{{ stats().waitingList }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.enrollments.waitingList' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.enrollments.waitingListDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Cancelled -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-red-200 dark:border-red-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-red-300 dark:hover:border-red-800"
+    >
+      <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-times-circle text-xl text-red-600 dark:text-red-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-red-600 dark:text-red-400 tracking-tight">{{ stats().cancelled }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.enrollments.cancelled' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.enrollments.cancelledDescription' | translate }}
+      </div>
+    </div>
   </div>
 
-  <!-- Filters -->
-  <p-card styleClass="mb-4">
-    <div class="flex flex-wrap gap-4 items-end">
-      <div class="flex flex-col gap-2">
-        <label for="subEvent">{{ 'all.tournament.admin.enrollments.subEvent' | translate }}</label>
+  <!-- Filters Section -->
+  <div class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-5">
+    <div class="flex flex-wrap gap-5 items-end">
+      <div class="flex flex-col gap-2 flex-1 min-w-56">
+        <label for="subEvent" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.enrollments.subEvent' | translate }}
+        </label>
         <p-select
           id="subEvent"
           [formControl]="subEventControl"
           [options]="subEvents()"
           optionLabel="name"
           [placeholder]="'all.tournament.admin.enrollments.selectSubEvent' | translate"
-          styleClass="w-64"
+          styleClass="w-full"
         />
       </div>
 
       <div class="flex flex-col gap-2">
-        <label for="status">{{ 'all.tournament.admin.enrollments.status' | translate }}</label>
-        <p-select
-          id="status"
-          [formControl]="statusFilter"
-          [options]="statusOptions"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="w-48"
-        />
+        <label for="status" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.enrollments.status' | translate }}
+        </label>
+        <p-select id="status" [formControl]="statusFilter" [options]="statusOptions" optionLabel="label" optionValue="value" styleClass="w-44" />
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label for="search">{{ 'all.tournament.admin.enrollments.search' | translate }}</label>
-        <input
-          pInputText
-          id="search"
-          [formControl]="searchControl"
-          [placeholder]="'all.tournament.admin.enrollments.searchPlaceholder' | translate"
-          class="w-64"
-        />
+      <div class="flex flex-col gap-2 flex-1 min-w-56">
+        <label for="search" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.enrollments.search' | translate }}
+        </label>
+        <span class="p-input-icon-left w-full">
+          <i class="pi pi-search text-muted-color"></i>
+          <input
+            pInputText
+            id="search"
+            [formControl]="searchControl"
+            [placeholder]="'all.tournament.admin.enrollments.searchPlaceholder' | translate"
+            class="w-full pl-10"
+          />
+        </span>
       </div>
 
       <p-button
         icon="pi pi-refresh"
-        [label]="'all.button.refresh' | translate"
         severity="secondary"
+        [outlined]="true"
+        pTooltip="Refresh"
+        tooltipPosition="top"
         (click)="refetch()"
         [loading]="loading()"
       />
     </div>
-  </p-card>
+  </div>
 
   @if (updateError()) {
-    <p-message severity="error" [text]="updateError()!" styleClass="mb-4 w-full" />
+    <p-message severity="error" [text]="updateError()!" styleClass="w-full" />
   }
 
   @if (loading()) {
-    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+    <div class="h-1 w-full overflow-hidden rounded-full bg-surface-200 dark:bg-surface-700">
+      <div class="h-full bg-primary animate-pulse" style="width: 100%"></div>
+    </div>
   }
 
   <!-- Enrollments Table -->
   @if (selectedSubEvent()) {
-    <p-card>
-      <ng-template pTemplate="header">
-        <div class="p-3">
-          <h3 class="m-0">
-            {{ selectedSubEvent()!.name }}
-            <span class="text-muted-color font-normal ml-2">({{ enrollments().length }} enrollments)</span>
-          </h3>
+    <div class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 overflow-hidden">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <i class="pi pi-users text-primary text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-color m-0">{{ selectedSubEvent()!.name }}</h3>
+              <p class="text-sm text-muted-color m-0">
+                {{ enrollments().length }} {{ 'all.tournament.admin.enrollments.enrollmentsCount' | translate }}
+              </p>
+            </div>
+          </div>
+          <p-button
+            icon="pi pi-user-plus"
+            [label]="'all.tournament.admin.enrollments.addManualEnrollment' | translate"
+            size="small"
+            (click)="openManualEnrollmentDialog()"
+          />
         </div>
-      </ng-template>
+      </div>
 
-      @if (enrollments().length > 0) {
-        <p-table
-          [value]="enrollments()"
-          [tableStyle]="{ 'min-width': '60rem' }"
-          [paginator]="enrollments().length > 10"
-          [rows]="10"
-          [rowsPerPageOptions]="[10, 25, 50]"
-        >
-          <ng-template pTemplate="header">
-            <tr>
-              <th>{{ 'all.tournament.admin.enrollments.player' | translate }}</th>
-              @if (isDoublesEvent()) {
-                <th>{{ 'all.tournament.admin.enrollments.partner' | translate }}</th>
-              }
-              <th>{{ 'all.tournament.admin.enrollments.status' | translate }}</th>
-              <th>{{ 'all.tournament.admin.enrollments.position' | translate }}</th>
-              <th>{{ 'all.tournament.admin.enrollments.notes' | translate }}</th>
-              <th style="width: 10rem">{{ 'all.tournament.admin.enrollments.actions' | translate }}</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-enrollment>
-            <tr>
-              <td>
-                <div class="flex flex-col">
-                  <span class="font-medium">{{ getPlayerName(enrollment) }}</span>
-                  @if (enrollment.isGuest && enrollment.guestEmail) {
-                    <small class="text-muted-color">{{ enrollment.guestEmail }}</small>
-                  }
-                  @if (enrollment.player?.memberId) {
-                    <small class="text-muted-color">{{ enrollment.player.memberId }}</small>
-                  }
-                </div>
-              </td>
-              @if (isDoublesEvent()) {
-                <td>{{ getPartnerName(enrollment) }}</td>
-              }
-              <td>
-                <p-tag [value]="enrollment.status" [severity]="getStatusSeverity(enrollment.status)" />
-              </td>
-              <td>
-                @if (enrollment.status === 'WAITING_LIST') {
-                  #{{ enrollment.waitingListPosition }}
-                } @else {
-                  -
+      <!-- Table Content -->
+      <div class="p-0">
+        @if (enrollments().length > 0) {
+          <p-table
+            [value]="enrollments()"
+            [tableStyle]="{ 'min-width': '60rem' }"
+            [paginator]="enrollments().length > 10"
+            [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50]"
+            styleClass="p-datatable-sm"
+          >
+            <ng-template pTemplate="header">
+              <tr class="text-sm">
+                <th class="font-semibold">{{ 'all.tournament.admin.enrollments.player' | translate }}</th>
+                @if (isDoublesEvent()) {
+                  <th class="font-semibold">{{ 'all.tournament.admin.enrollments.partner' | translate }}</th>
                 }
-              </td>
-              <td>
-                @if (enrollment.notes) {
-                  <span [pTooltip]="enrollment.notes" tooltipPosition="top">
-                    <i class="pi pi-comment"></i>
-                  </span>
-                } @else {
-                  -
+                <th class="font-semibold">{{ 'all.tournament.admin.enrollments.status' | translate }}</th>
+                <th class="font-semibold text-center">{{ 'all.tournament.admin.enrollments.position' | translate }}</th>
+                <th class="font-semibold text-center">{{ 'all.tournament.admin.enrollments.notes' | translate }}</th>
+                <th class="font-semibold text-center" style="width: 8rem">{{ 'all.tournament.admin.enrollments.actions' | translate }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-enrollment>
+              <tr class="hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0">
+                      <i class="pi pi-user text-muted-color text-sm"></i>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-medium text-color">{{ getPlayerName(enrollment) }}</span>
+                      @if (enrollment.isGuest && enrollment.guestEmail) {
+                        <small class="text-muted-color text-xs">{{ enrollment.guestEmail }}</small>
+                      }
+                      @if (enrollment.player?.memberId) {
+                        <small class="text-muted-color text-xs font-mono">{{ enrollment.player.memberId }}</small>
+                      }
+                    </div>
+                  </div>
+                </td>
+                @if (isDoublesEvent()) {
+                  <td>
+                    <span class="text-color">{{ getPartnerName(enrollment) }}</span>
+                  </td>
                 }
-              </td>
-              <td>
-                <div class="flex gap-2">
+                <td>
+                  <p-tag [value]="enrollment.status" [severity]="getStatusSeverity(enrollment.status)" [rounded]="true" />
+                </td>
+                <td class="text-center">
                   @if (enrollment.status === 'WAITING_LIST') {
-                    <p-button
-                      icon="pi pi-arrow-up"
-                      severity="success"
-                      [text]="true"
-                      [rounded]="true"
-                      size="small"
-                      pTooltip="Promote from waiting list"
-                      (click)="promoteFromWaitingList(enrollment)"
-                      [loading]="updating()"
-                    />
+                    <span
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm font-bold"
+                    >
+                      {{ enrollment.waitingListPosition }}
+                    </span>
+                  } @else {
+                    <span class="text-muted-color">—</span>
                   }
-                  @if (enrollment.status !== 'CANCELLED' && enrollment.status !== 'WITHDRAWN') {
-                    <p-button
-                      icon="pi pi-times"
-                      severity="danger"
-                      [text]="true"
-                      [rounded]="true"
-                      size="small"
-                      pTooltip="Cancel enrollment"
-                      (click)="cancelEnrollment(enrollment)"
-                      [loading]="updating()"
-                    />
+                </td>
+                <td class="text-center">
+                  @if (enrollment.notes) {
+                    <span
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-700 cursor-pointer hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors"
+                      [pTooltip]="enrollment.notes"
+                      tooltipPosition="top"
+                    >
+                      <i class="pi pi-comment text-muted-color text-sm"></i>
+                    </span>
+                  } @else {
+                    <span class="text-muted-color">—</span>
                   }
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td [attr.colspan]="isDoublesEvent() ? 6 : 5" class="text-center p-4">
-                {{ 'all.tournament.admin.enrollments.noEnrollments' | translate }}
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      } @else {
-        <p-message
-          severity="info"
-          [text]="'all.tournament.admin.enrollments.noEnrollments' | translate"
-          styleClass="w-full"
-        />
-      }
-    </p-card>
+                </td>
+                <td>
+                  <div class="flex gap-1 justify-center">
+                    @if (enrollment.status === 'WAITING_LIST') {
+                      <p-button
+                        icon="pi pi-arrow-up"
+                        severity="success"
+                        [text]="true"
+                        [rounded]="true"
+                        size="small"
+                        pTooltip="Promote from waiting list"
+                        tooltipPosition="top"
+                        (click)="promoteFromWaitingList(enrollment)"
+                        [loading]="updating()"
+                      />
+                    }
+                    @if (enrollment.status !== 'CANCELLED' && enrollment.status !== 'WITHDRAWN') {
+                      <p-button
+                        icon="pi pi-times"
+                        severity="danger"
+                        [text]="true"
+                        [rounded]="true"
+                        size="small"
+                        pTooltip="Cancel enrollment"
+                        tooltipPosition="top"
+                        (click)="cancelEnrollment(enrollment)"
+                        [loading]="updating()"
+                      />
+                    }
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td [attr.colspan]="isDoublesEvent() ? 6 : 5" class="text-center py-12">
+                  <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-4">
+                      <i class="pi pi-inbox text-2xl text-muted-color"></i>
+                    </div>
+                    <p class="text-muted-color">{{ 'all.tournament.admin.enrollments.noEnrollments' | translate }}</p>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        } @else {
+          <div class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-4">
+              <i class="pi pi-inbox text-2xl text-muted-color"></i>
+            </div>
+            <p class="text-muted-color">{{ 'all.tournament.admin.enrollments.noEnrollments' | translate }}</p>
+          </div>
+        }
+      </div>
+    </div>
   } @else {
-    <p-message
-      severity="info"
-      [text]="'all.tournament.admin.enrollments.selectSubEventFirst' | translate"
-      styleClass="w-full"
-    />
+    <div class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-12 text-center">
+      <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-4 mx-auto">
+        <i class="pi pi-arrow-up text-2xl text-surface-400 dark:text-surface-500"></i>
+      </div>
+      <p class="text-surface-500 dark:text-surface-400 text-lg">{{ 'all.tournament.admin.enrollments.selectSubEventFirst' | translate }}</p>
+    </div>
   }
+
+  <!-- Manual Enrollment Dialog -->
+  <p-dialog
+    [header]="'all.tournament.admin.enrollments.addManualEnrollment' | translate"
+    [(visible)]="showManualEnrollmentDialog"
+    [modal]="true"
+    [style]="{ width: '500px' }"
+    [draggable]="false"
+    [resizable]="false"
+  >
+    <form [formGroup]="manualEnrollmentForm" class="flex flex-col gap-5">
+      <p class="text-sm text-surface-500 dark:text-surface-400 m-0">
+        {{ 'all.tournament.admin.enrollments.manualEnrollmentDescription' | translate }}
+      </p>
+
+      <!-- Player Search -->
+      <div class="flex flex-col gap-2">
+        <label for="playerSearch" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.enrollments.playerSearch' | translate }}
+          <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-color text-sm"></i>
+          <input
+            pInputText
+            id="playerSearch"
+            formControlName="playerSearch"
+            [placeholder]="'all.tournament.admin.enrollments.playerSearchPlaceholder' | translate"
+            class="w-full pl-9"
+          />
+        </div>
+        <small class="text-surface-400 dark:text-surface-500 text-xs">
+          {{ 'all.tournament.admin.enrollments.playerSearchHelp' | translate }}
+        </small>
+      </div>
+
+      @if (isDoublesEvent()) {
+        <!-- Partner Search (for doubles) -->
+        <div class="flex flex-col gap-2">
+          <label for="partnerSearch" class="text-sm font-medium text-color">
+            {{ 'all.tournament.admin.enrollments.partnerSearch' | translate }}
+          </label>
+          <div class="relative">
+            <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-color text-sm"></i>
+            <input
+              pInputText
+              id="partnerSearch"
+              formControlName="partnerSearch"
+              [placeholder]="'all.tournament.admin.enrollments.partnerSearchPlaceholder' | translate"
+              class="w-full pl-9"
+            />
+          </div>
+        </div>
+      }
+
+      <!-- Guest Enrollment Option -->
+      <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+        <p-checkbox formControlName="isGuest" [binary]="true" inputId="isGuest" />
+        <label for="isGuest" class="text-sm text-color cursor-pointer">
+          {{ 'all.tournament.admin.enrollments.enrollAsGuest' | translate }}
+        </label>
+      </div>
+
+      @if (manualEnrollmentForm.get('isGuest')?.value) {
+        <!-- Guest Details -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-2">
+            <label for="guestName" class="text-sm font-medium text-color">
+              {{ 'all.tournament.admin.enrollments.guestName' | translate }}
+              <span class="text-red-500">*</span>
+            </label>
+            <input pInputText id="guestName" formControlName="guestName" class="w-full" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="guestEmail" class="text-sm font-medium text-color">
+              {{ 'all.tournament.admin.enrollments.guestEmail' | translate }}
+            </label>
+            <input pInputText id="guestEmail" formControlName="guestEmail" type="email" class="w-full" />
+          </div>
+        </div>
+      }
+
+      <!-- Notes -->
+      <div class="flex flex-col gap-2">
+        <label for="notes" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.enrollments.notes' | translate }}
+        </label>
+        <textarea
+          pInputTextarea
+          id="notes"
+          formControlName="notes"
+          [rows]="3"
+          class="w-full"
+          [placeholder]="'all.tournament.admin.enrollments.notesPlaceholder' | translate"
+        ></textarea>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 justify-end">
+        <p-button
+          [label]="'all.button.cancel' | translate"
+          severity="secondary"
+          [outlined]="true"
+          (click)="showManualEnrollmentDialog.set(false)"
+        />
+        <p-button
+          [label]="'all.tournament.admin.enrollments.addEnrollment' | translate"
+          icon="pi pi-user-plus"
+          (click)="createManualEnrollment()"
+          [loading]="updating()"
+          [disabled]="manualEnrollmentForm.invalid || updating()"
+        />
+      </div>
+    </ng-template>
+  </p-dialog>
 </div>

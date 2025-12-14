@@ -28,6 +28,7 @@
   "button": {
     "add": "Ajouter",
     "apply": "Appliquer",
+    "back": "Retour",
     "cancel": "Annuler",
     "close": "Fermer",
     "confirm": "Confirmer",
@@ -74,6 +75,59 @@
       "normal": "Normal"
     },
     "search": "Chercher club"
+  },
+  "clubSearch": {
+    "card": {
+      "founded": "Fondé en {{year}}"
+    },
+    "filters": {
+      "activeOnly": "Clubs actifs uniquement",
+      "additional": "Supplémentaire",
+      "apply": "Appliquer",
+      "clear": "Effacer",
+      "country": "Pays",
+      "division": "Division",
+      "foundedAfter": "Fondé après",
+      "foundedBefore": "Fondé avant",
+      "hasWebsite": "A un site web",
+      "location": "Localisation",
+      "maxPlayers": "Max. Joueurs",
+      "maxTeams": "Max. Équipes",
+      "memberCounts": "Nombre de membres",
+      "minPlayers": "Min. Joueurs",
+      "minTeams": "Min. Équipes",
+      "resultCount": "{{count}} résultats",
+      "searchCountries": "Rechercher pays...",
+      "searchDivisions": "Rechercher divisions...",
+      "searchStates": "Rechercher provinces...",
+      "state": "Province",
+      "title": "Filtres"
+    },
+    "loading": "Chargement...",
+    "noResults": {
+      "clearFilters": "Effacer les filtres",
+      "description": "Essayez d'autres filtres ou termes de recherche",
+      "searchAgain": "Rechercher à nouveau",
+      "title": "Aucun club trouvé"
+    },
+    "pagination": {
+      "template": "Affichage de {{first}} à {{last}} sur {{totalRecords}} résultats"
+    },
+    "results": {
+      "showing": "Affichage de {{start}} - {{end}} sur {{total}} clubs"
+    },
+    "searchPlaceholder": "Rechercher des clubs...",
+    "sort": {
+      "placeholder": "Trier par..."
+    },
+    "stats": {
+      "avgPlayersPerClub": "Moy. Joueurs par Club",
+      "totalClubs": "Total Clubs",
+      "totalPlayers": "Total Joueurs",
+      "totalTeams": "Total Équipes"
+    },
+    "subtitle": "Découvrez les clubs de badminton dans votre région",
+    "title": "Rechercher des Clubs"
   },
   "common": {
     "actions": "Actions",
@@ -175,6 +229,15 @@
     "tuesday": "Mardi",
     "wednesday": "Mercredi"
   },
+  "enrollment": {
+    "myEnrollments": "Mes Inscriptions"
+  },
+  "error": {
+    "genericTitle": "Une erreur s'est produite"
+  },
+  "errors": {
+    "title": "Erreur"
+  },
   "game": {
     "common": {
       "loadMore": "Charger plus de matchs",
@@ -194,6 +257,25 @@
       "noGamesFound": "Aucun match à venir trouvé",
       "title": "Prochains matches"
     }
+  },
+  "games": {
+    "allResults": "Tous les résultats",
+    "allTypes": "Tous les types",
+    "dateFrom": "Date de début",
+    "dateTo": "Date de fin",
+    "export": "Exporter",
+    "filters": "Filtres",
+    "gamesList": "Liste des matchs",
+    "gameType": "Type de jeu",
+    "losses": "Défaites",
+    "result": "Résultat",
+    "selectDate": "Sélectionner une date",
+    "selectTournament": "Sélectionner un tournoi",
+    "showingCount": "{{count}} matchs affichés",
+    "totalGames": "Total Matchs",
+    "tournament": "Tournoi",
+    "winRate": "Taux de victoire",
+    "wins": "Victoires"
   },
   "head-to-head": {
     "amount-of-games": "Nombre de correspondances",
@@ -246,6 +328,9 @@
     "win-rate": "Pourcentage de victoire",
     "win-rate-against": "Taux de victoire contre"
   },
+  "loading": {
+    "players": "Chargement des joueurs..."
+  },
   "navigation": {
     "clubs": "Clubs",
     "competitions": "Compétitions",
@@ -258,85 +343,28 @@
     "searchPlayersDescription": "Découvrez les joueurs, les classements et les statistiques"
   },
   "player": {
-    "edit": {
-      "actions": {
-        "cancel": "Annuler",
-        "save-all": "Enregistrer toutes les modifications",
-        "save-current": "Enregistrer l'onglet actuel"
-      },
-      "claims": {
-        "actions": {
-          "cancel": "Annuler",
-          "save": "Enregistrer les modifications",
-          "select-all": "Tout sélectionner",
-          "select-none": "Ne rien sélectionner"
-        },
-        "description": "Sélectionnez les droits globaux que vous souhaitez attribuer à ce joueur. Ces permissions s'appliquent à l'ensemble du système.",
-        "messages": {
-          "loading": "Chargement des données du joueur et des droits...",
-          "no-claims": "Aucun droit global disponible",
-          "no-permission": "Vous n'avez pas la permission de modifier les droits du joueur",
-          "saving": "Enregistrement des modifications..."
-        },
-        "subtitle": "Gérer les permissions globales pour ce joueur",
-        "title": "Modifier les droits"
-      },
-      "messages": {
-        "loading": "Chargement des données du joueur...",
-        "unsaved-changes": "Vous avez des modifications non enregistrées"
-      },
-      "profile": {
-        "birthDate": "Date de naissance",
-        "birthDate.placeholder": "Sélectionner la date de naissance",
-        "competition": {
-          "title": "Paramètres de compétition"
-        },
-        "competitionPlayer": "Joueur de compétition",
-        "competitionPlayer.description": "Permettre à ce joueur de participer aux compétitions et tournois.",
-        "contact": {
-          "title": "Informations de contact"
-        },
-        "description": "Mettre à jour les informations et paramètres du profil du joueur.",
-        "editable": "modifiable",
-        "email": "E-mail",
-        "email.invalid": "Veuillez entrer une adresse e-mail valide",
-        "email.placeholder": "Entrer l'adresse e-mail",
-        "firstName": "Prénom",
-        "firstName.placeholder": "Entrer le prénom",
-        "firstName.required": "Le prénom est requis",
-        "gender": "Genre",
-        "gender.placeholder": "Sélectionner le genre",
-        "lastName": "Nom de famille",
-        "lastName.placeholder": "Entrer le nom de famille",
-        "lastName.required": "Le nom de famille est requis",
-        "messages": {
-          "saving": "Enregistrement des modifications du profil..."
-        },
-        "permissions": {
-          "canEditAdmin": "Vous pouvez modifier les champs administratifs (paramètres de compétition)",
-          "canEditContact": "Vous pouvez modifier les informations de contact (e-mail, téléphone)",
-          "description": "Vous pouvez modifier certains champs selon vos permissions :",
-          "title": "Permissions de modification"
-        },
-        "personal": {
-          "title": "Informations personnelles"
-        },
-        "phone": "Téléphone",
-        "phone.placeholder": "Entrer le numéro de téléphone"
-      },
-      "subtitle": "Mettre à jour les informations et permissions du joueur",
-      "tabs": {
-        "claims": "Permissions",
-        "profile": "Profil"
-      },
-      "title": "Modifier le joueur"
-    },
-    "games": "Matchs",
-    "name": "Nom",
-    "ranking": "Classement",
-    "stats": "Statistiques",
-    "winRate": "% Vict.",
-    "wins": "Victoires"
+    "allGames": "Tous les Matchs",
+    "competitionPlayer": "Joueur de compétition",
+    "gender": "Genre",
+    "headToHead": "Confrontations Directes",
+    "maxRating": "Rating max.",
+    "minRating": "Rating min.",
+    "noGames": "Aucun match",
+    "noGamesDescription": "Ce joueur n'a pas encore joué de matchs",
+    "noPerformanceData": "Aucune donnée de performance",
+    "noPerformanceDataDescription": "Aucune donnée de performance n'est encore disponible",
+    "noRecentGames": "Aucun match récent",
+    "noRecentGamesDescription": "Ce joueur n'a pas encore joué de matchs récents",
+    "noResults": "Aucun résultat",
+    "noTournamentHistory": "Aucun historique de tournoi",
+    "noTournamentHistoryDescription": "Ce joueur n'a pas encore participé à des tournois",
+    "performance": "Performance",
+    "playerType": "Type de joueur",
+    "recentGames": "Matchs Récents",
+    "resultsFound": "{{count}} résultats trouvés",
+    "tournamentHistory": "Historique des Tournois",
+    "tryDifferentFilters": "Essayez d'autres filtres",
+    "yearsOld": "ans"
   },
   "players": {
     "my-club": "Mon club",
@@ -679,114 +707,6 @@
     "winRate": "% Vict.",
     "wins": "Victoires"
   },
-  "enrollment": {
-    "myEnrollments": "Mes Inscriptions"
-  },
-  "errors": {
-    "title": "Erreur"
-  },
-  "loading": {
-    "players": "Chargement des joueurs..."
-  },
-  "clubSearch": {
-    "title": "Rechercher des Clubs",
-    "subtitle": "Découvrez les clubs de badminton dans votre région",
-    "searchPlaceholder": "Rechercher des clubs...",
-    "loading": "Chargement...",
-    "stats": {
-      "totalClubs": "Total Clubs",
-      "totalPlayers": "Total Joueurs",
-      "totalTeams": "Total Équipes",
-      "avgPlayersPerClub": "Moy. Joueurs par Club"
-    },
-    "filters": {
-      "title": "Filtres",
-      "location": "Localisation",
-      "country": "Pays",
-      "state": "Province",
-      "division": "Division",
-      "searchCountries": "Rechercher pays...",
-      "searchStates": "Rechercher provinces...",
-      "searchDivisions": "Rechercher divisions...",
-      "memberCounts": "Nombre de membres",
-      "minPlayers": "Min. Joueurs",
-      "maxPlayers": "Max. Joueurs",
-      "minTeams": "Min. Équipes",
-      "maxTeams": "Max. Équipes",
-      "additional": "Supplémentaire",
-      "foundedAfter": "Fondé après",
-      "foundedBefore": "Fondé avant",
-      "activeOnly": "Clubs actifs uniquement",
-      "hasWebsite": "A un site web",
-      "resultCount": "{{count}} résultats",
-      "clear": "Effacer",
-      "apply": "Appliquer"
-    },
-    "results": {
-      "showing": "Affichage de {{start}} - {{end}} sur {{total}} clubs"
-    },
-    "sort": {
-      "placeholder": "Trier par..."
-    },
-    "card": {
-      "founded": "Fondé en {{year}}"
-    },
-    "pagination": {
-      "template": "Affichage de {{first}} à {{last}} sur {{totalRecords}} résultats"
-    },
-    "noResults": {
-      "title": "Aucun club trouvé",
-      "description": "Essayez d'autres filtres ou termes de recherche",
-      "clearFilters": "Effacer les filtres",
-      "searchAgain": "Rechercher à nouveau"
-    }
-  },
-  "games": {
-    "totalGames": "Total Matchs",
-    "wins": "Victoires",
-    "losses": "Défaites",
-    "winRate": "Taux de victoire",
-    "filters": "Filtres",
-    "tournament": "Tournoi",
-    "selectTournament": "Sélectionner un tournoi",
-    "dateFrom": "Date de début",
-    "dateTo": "Date de fin",
-    "selectDate": "Sélectionner une date",
-    "result": "Résultat",
-    "allResults": "Tous les résultats",
-    "gameType": "Type de jeu",
-    "allTypes": "Tous les types",
-    "gamesList": "Liste des matchs",
-    "showingCount": "{{count}} matchs affichés",
-    "export": "Exporter"
-  },
-  "error": {
-    "genericTitle": "Une erreur s'est produite"
-  },
-  "player": {
-    "yearsOld": "ans",
-    "competitionPlayer": "Joueur de compétition",
-    "recentGames": "Matchs Récents",
-    "tournamentHistory": "Historique des Tournois",
-    "performance": "Performance",
-    "headToHead": "Confrontations Directes",
-    "allGames": "Tous les Matchs",
-    "noRecentGames": "Aucun match récent",
-    "noRecentGamesDescription": "Ce joueur n'a pas encore joué de matchs récents",
-    "noTournamentHistory": "Aucun historique de tournoi",
-    "noTournamentHistoryDescription": "Ce joueur n'a pas encore participé à des tournois",
-    "noPerformanceData": "Aucune donnée de performance",
-    "noPerformanceDataDescription": "Aucune donnée de performance n'est encore disponible",
-    "noGames": "Aucun match",
-    "noGamesDescription": "Ce joueur n'a pas encore joué de matchs",
-    "gender": "Genre",
-    "playerType": "Type de joueur",
-    "minRating": "Rating min.",
-    "maxRating": "Rating max.",
-    "resultsFound": "{{count}} résultats trouvés",
-    "noResults": "Aucun résultat",
-    "tryDifferentFilters": "Essayez d'autres filtres"
-  },
   "tournament": {
     "admin": {
       "checkin": {
@@ -898,6 +818,7 @@
         "player": "Joueur",
         "promote": "",
         "promoteFromWaitingList": "Promouvoir de la liste d'attente",
+        "schedulePublished": "Inscriptions visibles",
         "search": "",
         "searchPlaceholder": "",
         "searchPlayers": "Rechercher des joueurs...",
@@ -972,6 +893,7 @@
         "unscheduledGames": "Matchs non planifiés"
       },
       "settings": {
+        "actions": "Actions",
         "addSubEvent": "Ajouter une épreuve",
         "advancePhase": "Passer à la phase suivante",
         "allowGuests": "Sans partenaire",
@@ -994,10 +916,15 @@
         "firstDay": "Premier jour",
         "gameType": "Type de jeu",
         "general": "Paramètres généraux",
+        "generalDescription": "Configurer les informations de base du tournoi et les dates",
         "guestEnrollment": "Inscriptions invités autorisées",
         "lastDay": "Dernier jour",
         "level": "Niveau",
+        "levelHelp": "Spécifiez la plage de niveaux de joueurs autorisés pour cette épreuve",
         "maxEntries": "Inscriptions maximum",
+        "maxEntriesHelp": "Laissez vide pour des inscriptions illimitées",
+        "maxLevel": "Niveau Max",
+        "minLevel": "Niveau Min",
         "name": "Nom du tournoi",
         "namePlaceholder": "Entrez le nom du tournoi",
         "nextPhase": "Phase suivante",
@@ -1006,6 +933,7 @@
         "openDate": "Ouverture des inscriptions",
         "options": "Options",
         "phase": "Phase du tournoi",
+        "phaseDescription": "Gérer la phase actuelle de votre tournoi",
         "phases": {
           "COMPLETED": "Terminé",
           "DRAFT": "Brouillon",
@@ -1025,6 +953,7 @@
         "subEventMaxEntries": "Inscriptions max",
         "subEventName": "Nom de l'épreuve",
         "subEvents": "Épreuves",
+        "subEventsDescription": "Configurer les épreuves pour différents types de jeu et niveaux",
         "subEventWaitingList": "Activer la liste d'attente",
         "title": "Paramètres du Tournoi",
         "tournamentDates": "Dates du tournoi",

@@ -1,89 +1,146 @@
-<div class="draws-tab">
+<div class="flex flex-col gap-6">
   <!-- Stats Cards -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold">{{ stats().total }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.draws.totalEntries' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-green-500">{{ stats().assigned }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.draws.assigned' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-orange-500">{{ stats().unassigned }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.draws.unassigned' | translate }}</div>
-    </p-card>
-    <p-card styleClass="text-center">
-      <div class="text-3xl font-bold text-blue-500">{{ stats().draws }}</div>
-      <div class="text-muted-color">{{ 'all.tournament.admin.draws.drawCount' | translate }}</div>
-    </p-card>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- Total Entries -->
+    <div class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600">
+      <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
+        <i class="pi pi-users text-xl text-surface-700 dark:text-surface-300"></i>
+      </div>
+      <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 tracking-tight">{{ stats().total }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.draws.totalEntries' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.draws.totalEntriesDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Assigned -->
+    <div class="bg-white dark:bg-surface-900 rounded-border border border-green-200 dark:border-green-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-green-300 dark:hover:border-green-800">
+      <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-check text-xl text-green-600 dark:text-green-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-green-600 dark:text-green-400 tracking-tight">{{ stats().assigned }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.draws.assigned' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.draws.assignedDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Unassigned -->
+    <div class="bg-white dark:bg-surface-900 rounded-border border border-orange-200 dark:border-orange-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800">
+      <div class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-clock text-xl text-orange-600 dark:text-orange-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-orange-600 dark:text-orange-400 tracking-tight">{{ stats().unassigned }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.draws.unassigned' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.draws.unassignedDescription' | translate }}
+      </div>
+    </div>
+
+    <!-- Draw Count -->
+    <div class="bg-white dark:bg-surface-900 rounded-border border border-blue-200 dark:border-blue-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-800">
+      <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3">
+        <i class="pi pi-sitemap text-xl text-blue-600 dark:text-blue-400"></i>
+      </div>
+      <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">{{ stats().draws }}</div>
+      <div class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider mt-1">
+        {{ 'all.tournament.admin.draws.drawCount' | translate }}
+      </div>
+      <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+        {{ 'all.tournament.admin.draws.drawCountDescription' | translate }}
+      </div>
+    </div>
   </div>
 
-  <!-- Sub-event Selector and Actions -->
-  <p-card styleClass="mb-4">
+  <!-- Actions Bar -->
+  <div class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-5">
     <div class="flex flex-wrap gap-4 items-end">
-      <div class="flex flex-col gap-2">
-        <label for="subEvent">{{ 'all.tournament.admin.draws.subEvent' | translate }}</label>
+      <div class="flex flex-col gap-2 flex-1 min-w-56">
+        <label for="subEvent" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.draws.subEvent' | translate }}
+        </label>
         <p-select
           id="subEvent"
           [formControl]="subEventControl"
           [options]="subEvents()"
           optionLabel="name"
           [placeholder]="'all.tournament.admin.draws.selectSubEvent' | translate"
-          styleClass="w-64"
+          styleClass="w-full"
         />
       </div>
 
-      <p-button
-        icon="pi pi-cog"
-        [label]="'all.tournament.admin.draws.generateEntries' | translate"
-        severity="secondary"
-        (click)="generateEntries()"
-        [loading]="updating()"
-        [disabled]="!selectedSubEvent()"
-      />
+      <div class="flex gap-2 flex-wrap">
+        <p-button
+          icon="pi pi-cog"
+          [label]="'all.tournament.admin.draws.generateEntries' | translate"
+          severity="secondary"
+          [outlined]="true"
+          (click)="generateEntries()"
+          [loading]="updating()"
+          [disabled]="!selectedSubEvent()"
+        />
 
-      <p-button
-        icon="pi pi-plus"
-        [label]="'all.tournament.admin.draws.createDraw' | translate"
-        (click)="openCreateDrawDialog()"
-        [disabled]="!selectedSubEvent()"
-      />
+        <p-button
+          icon="pi pi-plus"
+          [label]="'all.tournament.admin.draws.createDraw' | translate"
+          (click)="openCreateDrawDialog()"
+          [disabled]="!selectedSubEvent()"
+        />
 
-      <p-button
-        icon="pi pi-refresh"
-        [label]="'all.button.refresh' | translate"
-        severity="secondary"
-        (click)="refetch()"
-        [loading]="loading()"
-      />
+        <p-button
+          icon="pi pi-refresh"
+          severity="secondary"
+          [outlined]="true"
+          pTooltip="Refresh"
+          tooltipPosition="top"
+          (click)="refetch()"
+          [loading]="loading()"
+        />
+      </div>
     </div>
-  </p-card>
+  </div>
 
   @if (updateError()) {
-    <p-message severity="error" [text]="updateError()!" styleClass="mb-4 w-full" />
+    <p-message severity="error" [text]="updateError()!" styleClass="w-full" />
   }
 
   @if (loading()) {
-    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+    <div class="h-1 w-full overflow-hidden rounded-full bg-surface-200 dark:bg-surface-700">
+      <div class="h-full bg-primary animate-pulse" style="width: 100%"></div>
+    </div>
   }
 
   @if (selectedSubEvent()) {
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Unassigned Entries Panel -->
-      <p-card>
-        <ng-template pTemplate="header">
-          <div class="p-3 flex justify-between items-center">
-            <h3 class="m-0">
-              {{ 'all.tournament.admin.draws.unassignedEntries' | translate }}
-              <span class="text-muted-color font-normal ml-2">({{ unassignedEntries().length }})</span>
-            </h3>
-            <div class="flex gap-2">
+      <div class="bg-surface-0 dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 overflow-hidden">
+        <!-- Header -->
+        <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <i class="pi pi-inbox text-orange-600 dark:text-orange-400"></i>
+              </div>
+              <div>
+                <h4 class="text-base font-semibold text-color m-0">
+                  {{ 'all.tournament.admin.draws.unassignedEntries' | translate }}
+                </h4>
+                <p class="text-xs text-muted-color m-0">{{ unassignedEntries().length }} entries</p>
+              </div>
+            </div>
+            <div class="flex gap-1">
               <p-button
                 size="small"
                 [text]="true"
                 icon="pi pi-check-square"
                 pTooltip="Select all"
+                tooltipPosition="top"
                 (click)="selectAllUnassigned()"
                 [disabled]="unassignedEntries().length === 0"
               />
@@ -92,83 +149,104 @@
                 [text]="true"
                 icon="pi pi-times"
                 pTooltip="Clear selection"
+                tooltipPosition="top"
                 (click)="clearSelection()"
                 [disabled]="selectedEntries().length === 0"
               />
             </div>
           </div>
-        </ng-template>
+        </div>
 
-        @if (unassignedEntries().length > 0) {
-          <div class="max-h-96 overflow-y-auto">
-            <p-table [value]="unassignedEntries()" [scrollable]="true" scrollHeight="350px">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th style="width: 3rem"></th>
-                  <th>{{ 'all.tournament.admin.draws.entry' | translate }}</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-entry>
-                <tr
+        <!-- Content -->
+        <div class="p-0">
+          @if (unassignedEntries().length > 0) {
+            <div class="max-h-80 overflow-y-auto">
+              @for (entry of unassignedEntries(); track entry.id) {
+                <div
+                  class="flex items-center gap-3 px-5 py-3 border-b border-surface-100 dark:border-surface-800 cursor-pointer transition-colors"
                   [class.bg-primary-50]="isEntrySelected(entry)"
-                  class="cursor-pointer"
+                  [class.dark:bg-primary-900/20]="isEntrySelected(entry)"
+                  [class.hover:bg-surface-50]="!isEntrySelected(entry)"
+                  [class.dark:hover:bg-surface-800]="!isEntrySelected(entry)"
                   (click)="toggleEntrySelection(entry)"
                 >
-                  <td>
-                    <p-checkbox [binary]="true" [ngModel]="isEntrySelected(entry)" />
-                  </td>
-                  <td>{{ getEntryName(entry) }}</td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
+                  <p-checkbox [binary]="true" [ngModel]="isEntrySelected(entry)" />
+                  <div class="w-8 h-8 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0">
+                    <i class="pi pi-user text-muted-color text-xs"></i>
+                  </div>
+                  <span class="text-sm font-medium text-color">{{ getEntryName(entry) }}</span>
+                </div>
+              }
+            </div>
 
-          <!-- Assignment Controls -->
-          @if (selectedEntries().length > 0) {
-            <div class="mt-4 p-3 bg-surface-100 rounded-lg flex flex-wrap gap-3 items-center">
-              <span class="font-medium">{{ selectedEntries().length }} selected</span>
-              <p-select
-                [options]="draws()"
-                optionLabel="name"
-                optionValue="id"
-                [placeholder]="'all.tournament.admin.draws.selectDraw' | translate"
-                (onChange)="targetDrawId.set($event.value)"
-                styleClass="w-48"
-              />
-              <p-button
-                icon="pi pi-arrow-right"
-                [label]="'all.tournament.admin.draws.assign' | translate"
-                (click)="assignSelectedToDraw()"
-                [disabled]="!targetDrawId()"
-                [loading]="updating()"
-              />
+            <!-- Assignment Controls -->
+            @if (selectedEntries().length > 0) {
+              <div class="px-5 py-4 bg-surface-50 dark:bg-surface-800 border-t border-surface-200 dark:border-surface-700">
+                <div class="flex flex-wrap gap-3 items-center">
+                  <span class="text-sm font-medium text-color bg-primary/10 px-3 py-1 rounded-full">
+                    {{ selectedEntries().length }} selected
+                  </span>
+                  <p-select
+                    [options]="draws()"
+                    optionLabel="name"
+                    optionValue="id"
+                    [placeholder]="'all.tournament.admin.draws.selectDraw' | translate"
+                    (onChange)="targetDrawId.set($event.value)"
+                    styleClass="flex-1 min-w-40"
+                  />
+                  <p-button
+                    icon="pi pi-arrow-right"
+                    [label]="'all.tournament.admin.draws.assign' | translate"
+                    size="small"
+                    (click)="assignSelectedToDraw()"
+                    [disabled]="!targetDrawId()"
+                    [loading]="updating()"
+                  />
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+              <div class="w-14 h-14 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-4">
+                <i class="pi pi-check-circle text-2xl text-green-500"></i>
+              </div>
+              <p class="text-muted-color text-sm">
+                @if (entries().length > 0) {
+                  {{ 'all.tournament.admin.draws.allEntriesAssigned' | translate }}
+                } @else {
+                  {{ 'all.tournament.admin.draws.noEntriesYet' | translate }}
+                }
+              </p>
             </div>
           }
-        } @else {
-          <p-message
-            severity="info"
-            [text]="
-              entries().length > 0
-                ? ('all.tournament.admin.draws.allEntriesAssigned' | translate)
-                : ('all.tournament.admin.draws.noEntriesYet' | translate)
-            "
-            styleClass="w-full"
-          />
-        }
-      </p-card>
+        </div>
+      </div>
 
       <!-- Draws Panel -->
       <div class="flex flex-col gap-4">
         @for (draw of draws(); track draw.id) {
-          <p-card>
-            <ng-template pTemplate="header">
-              <div class="p-3 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                  <h4 class="m-0">{{ draw.name }}</h4>
-                  <p-tag [value]="draw.type ?? 'N/A'" [severity]="getDrawTypeSeverity(draw.type)" />
-                  @if (draw.size) {
-                    <span class="text-muted-color text-sm">Size: {{ draw.size }}</span>
-                  }
+          <div class="bg-surface-0 dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 overflow-hidden">
+            <!-- Draw Header -->
+            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <i class="pi pi-sitemap text-primary"></i>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h4 class="text-base font-semibold text-color m-0">{{ draw.name }}</h4>
+                      <p-tag
+                        [value]="draw.type ?? 'N/A'"
+                        [severity]="getDrawTypeSeverity(draw.type)"
+                        [rounded]="true"
+                        styleClass="text-xs"
+                      />
+                    </div>
+                    <p class="text-xs text-muted-color m-0">
+                      {{ draw.entries?.length ?? 0 }} / {{ draw.size ?? '∞' }} entries
+                    </p>
+                  </div>
                 </div>
                 <div class="flex gap-1">
                   <p-button
@@ -176,6 +254,7 @@
                     [text]="true"
                     icon="pi pi-sort-numeric-up"
                     pTooltip="Auto-seed"
+                    tooltipPosition="top"
                     (click)="openSeedingDialog(draw)"
                     [disabled]="!draw.entries?.length"
                   />
@@ -184,6 +263,7 @@
                     [text]="true"
                     icon="pi pi-eraser"
                     pTooltip="Clear seeds"
+                    tooltipPosition="top"
                     (click)="clearSeeds(draw)"
                     [disabled]="!draw.entries?.length"
                   />
@@ -193,70 +273,79 @@
                     severity="danger"
                     icon="pi pi-trash"
                     pTooltip="Delete draw"
+                    tooltipPosition="top"
                     (click)="deleteDraw(draw)"
                   />
                 </div>
               </div>
-            </ng-template>
+            </div>
 
-            @if (draw.entries?.length) {
-              <p-table [value]="draw.entries!" [scrollable]="true" scrollHeight="200px">
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th style="width: 4rem">{{ 'all.tournament.admin.draws.seed' | translate }}</th>
-                    <th>{{ 'all.tournament.admin.draws.entry' | translate }}</th>
-                    <th style="width: 4rem"></th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-entry>
-                  <tr>
-                    <td class="text-center">
-                      @if (entry.seed) {
-                        <span class="font-bold">{{ entry.seed }}</span>
-                      } @else {
-                        <span class="text-muted-color">-</span>
-                      }
-                    </td>
-                    <td>{{ getEntryName(entry) }}</td>
-                    <td>
+            <!-- Draw Entries -->
+            <div class="p-0">
+              @if (draw.entries?.length) {
+                <div class="max-h-56 overflow-y-auto">
+                  @for (entry of draw.entries; track entry.id) {
+                    <div class="flex items-center gap-3 px-5 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                      <!-- Seed Badge -->
+                      <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                           [class.bg-primary]="entry.seed"
+                           [class.text-primary-contrast]="entry.seed"
+                           [class.bg-surface-100]="!entry.seed"
+                           [class.dark:bg-surface-700]="!entry.seed">
+                        @if (entry.seed) {
+                          <span class="text-xs font-bold">{{ entry.seed }}</span>
+                        } @else {
+                          <span class="text-xs text-muted-color">—</span>
+                        }
+                      </div>
+                      <span class="text-sm font-medium text-color flex-1">{{ getEntryName(entry) }}</span>
                       <p-button
                         size="small"
                         [text]="true"
                         severity="danger"
                         icon="pi pi-minus"
                         pTooltip="Remove from draw"
+                        tooltipPosition="top"
                         (click)="removeFromDraw(entry)"
                         [loading]="updating()"
                       />
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            } @else {
-              <p-message severity="info" text="No entries assigned yet" styleClass="w-full" />
-            }
-
-            <ng-template pTemplate="footer">
-              <div class="text-muted-color text-sm">
-                {{ draw.entries?.length ?? 0 }} / {{ draw.size ?? '∞' }} entries
-              </div>
-            </ng-template>
-          </p-card>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="flex flex-col items-center justify-center py-8 text-center">
+                  <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-3">
+                    <i class="pi pi-inbox text-xl text-muted-color"></i>
+                  </div>
+                  <p class="text-sm text-muted-color">No entries assigned yet</p>
+                </div>
+              }
+            </div>
+          </div>
         } @empty {
-          <p-message
-            severity="info"
-            [text]="'all.tournament.admin.draws.noDrawsYet' | translate"
-            styleClass="w-full"
-          />
+          <div class="bg-surface-0 dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-12 text-center">
+            <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-4 mx-auto">
+              <i class="pi pi-sitemap text-2xl text-muted-color"></i>
+            </div>
+            <p class="text-muted-color mb-4">{{ 'all.tournament.admin.draws.noDrawsYet' | translate }}</p>
+            <p-button
+              [label]="'all.tournament.admin.draws.createDraw' | translate"
+              icon="pi pi-plus"
+              size="small"
+              [outlined]="true"
+              (click)="openCreateDrawDialog()"
+            />
+          </div>
         }
       </div>
     </div>
   } @else {
-    <p-message
-      severity="info"
-      [text]="'all.tournament.admin.draws.selectSubEventFirst' | translate"
-      styleClass="w-full"
-    />
+    <div class="bg-surface-0 dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-12 text-center">
+      <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center mb-4 mx-auto">
+        <i class="pi pi-arrow-up text-2xl text-muted-color"></i>
+      </div>
+      <p class="text-muted-color text-lg">{{ 'all.tournament.admin.draws.selectSubEventFirst' | translate }}</p>
+    </div>
   }
 
   <!-- Create Draw Dialog -->
@@ -264,28 +353,55 @@
     [header]="'all.tournament.admin.draws.createDraw' | translate"
     [(visible)]="showCreateDrawDialog"
     [modal]="true"
-    [style]="{ width: '450px' }"
+    [style]="{ width: '500px' }"
+    [draggable]="false"
+    [resizable]="false"
   >
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-5">
       <div class="flex flex-col gap-2">
-        <label for="drawName">{{ 'all.tournament.admin.draws.drawName' | translate }} *</label>
+        <label for="drawName" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.draws.drawName' | translate }}
+          <span class="text-red-500">*</span>
+        </label>
         <input pInputText id="drawName" [formControl]="drawForm.controls.name" class="w-full" />
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label for="drawType">{{ 'all.tournament.admin.draws.drawType' | translate }} *</label>
-        <p-select
-          id="drawType"
-          [formControl]="drawForm.controls.type"
-          [options]="drawTypeOptions"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="w-full"
-        />
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="drawType" class="text-sm font-medium text-color">
+            {{ 'all.tournament.admin.draws.drawType' | translate }}
+            <span class="text-red-500">*</span>
+          </label>
+          <p-select
+            id="drawType"
+            [formControl]="drawForm.controls.type"
+            [options]="drawTypeOptions"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="subEventType" class="text-sm font-medium text-color">
+            {{ 'all.tournament.admin.draws.subEventType' | translate }}
+            <span class="text-red-500">*</span>
+          </label>
+          <p-select
+            id="subEventType"
+            [formControl]="drawForm.controls.subEventType"
+            [options]="subEventTypeOptions"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+        </div>
       </div>
 
       <div class="flex flex-col gap-2">
-        <label for="drawSize">{{ 'all.tournament.admin.draws.drawSize' | translate }}</label>
+        <label for="drawSize" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.draws.drawSize' | translate }}
+        </label>
         <p-select
           id="drawSize"
           [formControl]="drawForm.controls.size"
@@ -297,20 +413,62 @@
           styleClass="w-full"
         />
       </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="minLevel" class="text-sm font-medium text-color">
+            {{ 'all.tournament.admin.draws.minLevel' | translate }}
+          </label>
+          <p-inputNumber
+            id="minLevel"
+            [formControl]="drawForm.controls.minLevel"
+            [min]="1"
+            [max]="12"
+            [showButtons]="true"
+            styleClass="w-full"
+            [placeholder]="'all.tournament.admin.draws.minLevelPlaceholder' | translate"
+          />
+          <small class="text-surface-400 dark:text-surface-500 text-xs">
+            {{ 'all.tournament.admin.draws.minLevelHelp' | translate }}
+          </small>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="maxLevel" class="text-sm font-medium text-color">
+            {{ 'all.tournament.admin.draws.maxLevel' | translate }}
+          </label>
+          <p-inputNumber
+            id="maxLevel"
+            [formControl]="drawForm.controls.maxLevel"
+            [min]="1"
+            [max]="12"
+            [showButtons]="true"
+            styleClass="w-full"
+            [placeholder]="'all.tournament.admin.draws.maxLevelPlaceholder' | translate"
+          />
+          <small class="text-surface-400 dark:text-surface-500 text-xs">
+            {{ 'all.tournament.admin.draws.maxLevelHelp' | translate }}
+          </small>
+        </div>
+      </div>
     </div>
 
     <ng-template pTemplate="footer">
-      <p-button
-        [label]="'all.button.cancel' | translate"
-        severity="secondary"
-        (click)="showCreateDrawDialog.set(false)"
-      />
-      <p-button
-        [label]="'all.button.create' | translate"
-        (click)="createDraw()"
-        [disabled]="!drawForm.valid"
-        [loading]="updating()"
-      />
+      <div class="flex gap-3 justify-end">
+        <p-button
+          [label]="'all.button.cancel' | translate"
+          severity="secondary"
+          [outlined]="true"
+          (click)="showCreateDrawDialog.set(false)"
+        />
+        <p-button
+          [label]="'all.button.create' | translate"
+          icon="pi pi-plus"
+          (click)="createDraw()"
+          [disabled]="!drawForm.valid"
+          [loading]="updating()"
+        />
+      </div>
     </ng-template>
   </p-dialog>
 
@@ -320,14 +478,18 @@
     [(visible)]="showSeedingDialog"
     [modal]="true"
     [style]="{ width: '400px' }"
+    [draggable]="false"
+    [resizable]="false"
   >
-    <div class="flex flex-col gap-4">
-      <p class="text-muted-color">
+    <div class="flex flex-col gap-5">
+      <p class="text-sm text-muted-color m-0">
         {{ 'all.tournament.admin.draws.seedingDescription' | translate }}
       </p>
 
       <div class="flex flex-col gap-2">
-        <label for="seedingMethod">{{ 'all.tournament.admin.draws.seedingMethod' | translate }}</label>
+        <label for="seedingMethod" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.draws.seedingMethod' | translate }}
+        </label>
         <p-select
           id="seedingMethod"
           [formControl]="seedingMethod"
@@ -340,16 +502,20 @@
     </div>
 
     <ng-template pTemplate="footer">
-      <p-button
-        [label]="'all.button.cancel' | translate"
-        severity="secondary"
-        (click)="showSeedingDialog.set(false)"
-      />
-      <p-button
-        [label]="'all.tournament.admin.draws.applySeeding' | translate"
-        (click)="applySeeding()"
-        [loading]="updating()"
-      />
+      <div class="flex gap-3 justify-end">
+        <p-button
+          [label]="'all.button.cancel' | translate"
+          severity="secondary"
+          [outlined]="true"
+          (click)="showSeedingDialog.set(false)"
+        />
+        <p-button
+          [label]="'all.tournament.admin.draws.applySeeding' | translate"
+          icon="pi pi-check"
+          (click)="applySeeding()"
+          [loading]="updating()"
+        />
+      </div>
     </ng-template>
   </p-dialog>
 </div>

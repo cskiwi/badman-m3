@@ -28,6 +28,7 @@
   "button": {
     "add": "Add",
     "apply": "Apply",
+    "back": "Back",
     "cancel": "Cancel",
     "close": "Close",
     "confirm": "Confirm",
@@ -74,6 +75,59 @@
       "normal": "Normal"
     },
     "search": "Find a club"
+  },
+  "clubSearch": {
+    "card": {
+      "founded": "Founded in {{year}}"
+    },
+    "filters": {
+      "activeOnly": "Active clubs only",
+      "additional": "Additional",
+      "apply": "Apply",
+      "clear": "Clear",
+      "country": "Country",
+      "division": "Division",
+      "foundedAfter": "Founded after",
+      "foundedBefore": "Founded before",
+      "hasWebsite": "Has website",
+      "location": "Location",
+      "maxPlayers": "Max. Players",
+      "maxTeams": "Max. Teams",
+      "memberCounts": "Member Counts",
+      "minPlayers": "Min. Players",
+      "minTeams": "Min. Teams",
+      "resultCount": "{{count}} results",
+      "searchCountries": "Search countries...",
+      "searchDivisions": "Search divisions...",
+      "searchStates": "Search states...",
+      "state": "State",
+      "title": "Filters"
+    },
+    "loading": "Loading...",
+    "noResults": {
+      "clearFilters": "Clear filters",
+      "description": "Try different filters or search terms",
+      "searchAgain": "Search again",
+      "title": "No clubs found"
+    },
+    "pagination": {
+      "template": "Showing {{first}} to {{last}} of {{totalRecords}} results"
+    },
+    "results": {
+      "showing": "Showing {{start}} - {{end}} of {{total}} clubs"
+    },
+    "searchPlaceholder": "Search clubs...",
+    "sort": {
+      "placeholder": "Sort by..."
+    },
+    "stats": {
+      "avgPlayersPerClub": "Avg. Players per Club",
+      "totalClubs": "Total Clubs",
+      "totalPlayers": "Total Players",
+      "totalTeams": "Total Teams"
+    },
+    "subtitle": "Discover badminton clubs in your area",
+    "title": "Search Clubs"
   },
   "common": {
     "actions": "Actions",
@@ -175,6 +229,18 @@
     "tuesday": "Tuesday",
     "wednesday": "Wednesday"
   },
+  "enrollment": {
+    "closed": "Enrollment Closed",
+    "enrollNow": "Enroll Now",
+    "myEnrollments": "My Enrollments",
+    "notYetOpen": "Not Yet Open"
+  },
+  "error": {
+    "genericTitle": "An error occurred"
+  },
+  "errors": {
+    "title": "Error"
+  },
   "game": {
     "common": {
       "loadMore": "Load More Games",
@@ -194,6 +260,25 @@
       "noGamesFound": "No upcoming games found",
       "title": "Upcoming games"
     }
+  },
+  "games": {
+    "allResults": "All results",
+    "allTypes": "All types",
+    "dateFrom": "Date from",
+    "dateTo": "Date to",
+    "export": "Export",
+    "filters": "Filters",
+    "gamesList": "Games list",
+    "gameType": "Game type",
+    "losses": "Losses",
+    "result": "Result",
+    "selectDate": "Select date",
+    "selectTournament": "Select tournament",
+    "showingCount": "{{count}} games shown",
+    "totalGames": "Total Games",
+    "tournament": "Tournament",
+    "winRate": "Win Rate",
+    "wins": "Wins"
   },
   "head-to-head": {
     "amount-of-games": "Number of contests",
@@ -246,6 +331,9 @@
     "win-rate": "Win percentage",
     "win-rate-against": "Win rate against"
   },
+  "loading": {
+    "players": "Loading players..."
+  },
   "navigation": {
     "clubs": "Clubs",
     "competitions": "Competitions",
@@ -258,85 +346,28 @@
     "searchPlayersDescription": "Discover players, rankings and statistics"
   },
   "player": {
-    "edit": {
-      "actions": {
-        "cancel": "Cancel",
-        "save-all": "Save All Changes",
-        "save-current": "Save Current Tab"
-      },
-      "claims": {
-        "actions": {
-          "cancel": "Cancel",
-          "save": "Save Changes",
-          "select-all": "Select All",
-          "select-none": "Select None"
-        },
-        "description": "Select the global claims you want to assign to this player. These permissions apply across the entire system.",
-        "messages": {
-          "loading": "Loading player and claims data...",
-          "no-claims": "No global claims available",
-          "no-permission": "You do not have permission to edit player claims",
-          "saving": "Saving changes..."
-        },
-        "subtitle": "Manage global permissions for this player",
-        "title": "Edit Claims"
-      },
-      "messages": {
-        "loading": "Loading player data...",
-        "unsaved-changes": "You have unsaved changes"
-      },
-      "profile": {
-        "birthDate": "Birth Date",
-        "birthDate.placeholder": "Select birth date",
-        "competition": {
-          "title": "Competition Settings"
-        },
-        "competitionPlayer": "Competition Player",
-        "competitionPlayer.description": "Enable this player to participate in competitions and tournaments.",
-        "contact": {
-          "title": "Contact Information"
-        },
-        "description": "Update player profile information and settings.",
-        "editable": "editable",
-        "email": "Email",
-        "email.invalid": "Please enter a valid email address",
-        "email.placeholder": "Enter email address",
-        "firstName": "First Name",
-        "firstName.placeholder": "Enter first name",
-        "firstName.required": "First name is required",
-        "gender": "Gender",
-        "gender.placeholder": "Select gender",
-        "lastName": "Last Name",
-        "lastName.placeholder": "Enter last name",
-        "lastName.required": "Last name is required",
-        "messages": {
-          "saving": "Saving profile changes..."
-        },
-        "permissions": {
-          "canEditAdmin": "You can edit administrative fields (competition settings)",
-          "canEditContact": "You can edit contact information (email, phone)",
-          "description": "You can edit certain fields based on your permissions:",
-          "title": "Edit Permissions"
-        },
-        "personal": {
-          "title": "Personal Information"
-        },
-        "phone": "Phone",
-        "phone.placeholder": "Enter phone number"
-      },
-      "subtitle": "Update player information and permissions",
-      "tabs": {
-        "claims": "Permissions",
-        "profile": "Profile"
-      },
-      "title": "Edit Player"
-    },
-    "games": "Games",
-    "name": "Name",
-    "ranking": "Ranking",
-    "stats": "Statistics",
-    "winRate": "Win %",
-    "wins": "Wins"
+    "allGames": "All Games",
+    "competitionPlayer": "Competition Player",
+    "gender": "Gender",
+    "headToHead": "Head to Head",
+    "maxRating": "Max. Rating",
+    "minRating": "Min. Rating",
+    "noGames": "No games",
+    "noGamesDescription": "This player hasn't played any games yet",
+    "noPerformanceData": "No performance data",
+    "noPerformanceDataDescription": "No performance data is available yet",
+    "noRecentGames": "No recent games",
+    "noRecentGamesDescription": "This player hasn't played any recent games yet",
+    "noResults": "No results",
+    "noTournamentHistory": "No tournament history",
+    "noTournamentHistoryDescription": "This player hasn't participated in any tournaments yet",
+    "performance": "Performance",
+    "playerType": "Player type",
+    "recentGames": "Recent Games",
+    "resultsFound": "{{count}} results found",
+    "tournamentHistory": "Tournament History",
+    "tryDifferentFilters": "Try different filters",
+    "yearsOld": "years old"
   },
   "players": {
     "my-club": "My club",
@@ -679,114 +710,6 @@
     "winRate": "Win %",
     "wins": "Wins"
   },
-  "enrollment": {
-    "myEnrollments": "My Enrollments"
-  },
-  "errors": {
-    "title": "Error"
-  },
-  "loading": {
-    "players": "Loading players..."
-  },
-  "clubSearch": {
-    "title": "Search Clubs",
-    "subtitle": "Discover badminton clubs in your area",
-    "searchPlaceholder": "Search clubs...",
-    "loading": "Loading...",
-    "stats": {
-      "totalClubs": "Total Clubs",
-      "totalPlayers": "Total Players",
-      "totalTeams": "Total Teams",
-      "avgPlayersPerClub": "Avg. Players per Club"
-    },
-    "filters": {
-      "title": "Filters",
-      "location": "Location",
-      "country": "Country",
-      "state": "State",
-      "division": "Division",
-      "searchCountries": "Search countries...",
-      "searchStates": "Search states...",
-      "searchDivisions": "Search divisions...",
-      "memberCounts": "Member Counts",
-      "minPlayers": "Min. Players",
-      "maxPlayers": "Max. Players",
-      "minTeams": "Min. Teams",
-      "maxTeams": "Max. Teams",
-      "additional": "Additional",
-      "foundedAfter": "Founded after",
-      "foundedBefore": "Founded before",
-      "activeOnly": "Active clubs only",
-      "hasWebsite": "Has website",
-      "resultCount": "{{count}} results",
-      "clear": "Clear",
-      "apply": "Apply"
-    },
-    "results": {
-      "showing": "Showing {{start}} - {{end}} of {{total}} clubs"
-    },
-    "sort": {
-      "placeholder": "Sort by..."
-    },
-    "card": {
-      "founded": "Founded in {{year}}"
-    },
-    "pagination": {
-      "template": "Showing {{first}} to {{last}} of {{totalRecords}} results"
-    },
-    "noResults": {
-      "title": "No clubs found",
-      "description": "Try different filters or search terms",
-      "clearFilters": "Clear filters",
-      "searchAgain": "Search again"
-    }
-  },
-  "games": {
-    "totalGames": "Total Games",
-    "wins": "Wins",
-    "losses": "Losses",
-    "winRate": "Win Rate",
-    "filters": "Filters",
-    "tournament": "Tournament",
-    "selectTournament": "Select tournament",
-    "dateFrom": "Date from",
-    "dateTo": "Date to",
-    "selectDate": "Select date",
-    "result": "Result",
-    "allResults": "All results",
-    "gameType": "Game type",
-    "allTypes": "All types",
-    "gamesList": "Games list",
-    "showingCount": "{{count}} games shown",
-    "export": "Export"
-  },
-  "error": {
-    "genericTitle": "An error occurred"
-  },
-  "player": {
-    "yearsOld": "years old",
-    "competitionPlayer": "Competition Player",
-    "recentGames": "Recent Games",
-    "tournamentHistory": "Tournament History",
-    "performance": "Performance",
-    "headToHead": "Head to Head",
-    "allGames": "All Games",
-    "noRecentGames": "No recent games",
-    "noRecentGamesDescription": "This player hasn't played any recent games yet",
-    "noTournamentHistory": "No tournament history",
-    "noTournamentHistoryDescription": "This player hasn't participated in any tournaments yet",
-    "noPerformanceData": "No performance data",
-    "noPerformanceDataDescription": "No performance data is available yet",
-    "noGames": "No games",
-    "noGamesDescription": "This player hasn't played any games yet",
-    "gender": "Gender",
-    "playerType": "Player type",
-    "minRating": "Min. Rating",
-    "maxRating": "Max. Rating",
-    "resultsFound": "{{count}} results found",
-    "noResults": "No results",
-    "tryDifferentFilters": "Try different filters"
-  },
   "tournament": {
     "admin": {
       "checkin": {
@@ -795,6 +718,7 @@
         "bulkCheckIn": "Check In Selected",
         "checkedIn": "Checked In",
         "checkedInAt": "Checked In At",
+        "checkedInDescription": "Players who have arrived",
         "checkIn": "Check In",
         "checkinRate": "Check-in rate",
         "checkInSelected": "Selection check-in",
@@ -809,10 +733,13 @@
         "noCheckIns": "No check-in records found",
         "noPlayersYet": "No players to check in yet",
         "noShow": "No Show",
+        "noShowDescription": "Players who did not arrive",
         "pending": "Pending",
+        "pendingDescription": "Awaiting check-in",
         "player": "Player",
         "players": "Players",
         "rate": "Check-in Rate",
+        "rateDescription": "Percentage checked in",
         "search": "Search",
         "searchPlaceholder": "Search by player name...",
         "searchPlayers": "Find players...",
@@ -821,6 +748,7 @@
         "subEvent": "Sub-Event",
         "title": "Check-in",
         "total": "Total",
+        "totalDescription": "All expected players",
         "totalPlayers": "Total players",
         "undo": "Undo"
       },
@@ -829,6 +757,7 @@
         "applySeeding": "Apply Seeding",
         "assign": "Assign",
         "assigned": "Assigned",
+        "assignedDescription": "Placed in a draw",
         "assignSelected": "Assign Selected",
         "autoSeed": "Auto Seed",
         "clearSeeds": "Clear Seeds",
@@ -836,7 +765,8 @@
         "confirmDeleteDraw": "Are you sure you want to delete this draw?",
         "createDraw": "Create Draw",
         "deleteDraw": "Delete Draw",
-        "drawCount": "Number of draws",
+        "drawCount": "Draws",
+        "drawCountDescription": "Active draws created",
         "drawName": "Draw Name",
         "drawSize": "Size",
         "drawType": "Draw Type",
@@ -844,6 +774,12 @@
         "entry": "Registration",
         "generateEntries": "Generate Entries",
         "generateEntriesDescription": "Create entries from confirmed enrollments",
+        "maxLevel": "Max Level",
+        "maxLevelHelp": "Highest player level allowed",
+        "maxLevelPlaceholder": "e.g. 8",
+        "minLevel": "Min Level",
+        "minLevelHelp": "Lowest player level allowed",
+        "minLevelPlaceholder": "e.g. 1",
         "noDraws": "No draws created",
         "noDrawsHint": "Create a draw to start assigning entries",
         "noDrawsYet": "No draws created yet",
@@ -866,47 +802,71 @@
         "selectSubEventFirst": "Select a part first",
         "setSeed": "Set Seed",
         "subEvent": "Sub-Event",
+        "subEventType": "Category",
         "title": "Draws",
         "totalDraws": "Total Draws",
-        "totalEntries": "Total Entries",
+        "totalEntries": "Total",
+        "totalEntriesDescription": "All entries generated",
         "unassigned": "Unassigned",
+        "unassignedDescription": "Not yet in a draw",
         "unassignedEntries": "Unassigned Entries",
         "viewDraw": "View Draw"
       },
       "enrollments": {
         "actions": "Actions",
+        "addEnrollment": "Add Enrollment",
+        "addManualEnrollment": "Add Manual Enrollment",
         "allStatuses": "All Statuses",
         "allSubEvents": "All Sub-Events",
         "assignPartner": "Assign partner",
         "bulkActions": "Bulk actions",
         "cancel": "Cancel",
         "cancelled": "Cancelled",
+        "cancelledDescription": "Withdrawn or cancelled",
         "cancelSelected": "Cancel selection",
         "confirm": "Confirm",
         "confirmCancel": "Are you sure you want to cancel this enrollment?",
         "confirmed": "Confirmed",
+        "confirmedDescription": "Ready to play",
         "confirmSelected": "Confirm selection",
+        "enrollAsGuest": "Enroll as guest (non-member)",
         "enrolledAt": "Enrolled At",
+        "enrollmentsCount": "enrollments",
         "filterByStatus": "Filter by status",
         "filterBySubEvent": "Filter by part",
+        "guestEmail": "Guest Email",
+        "guestName": "Guest Name",
         "lookingForPartner": "Seeks partner",
+        "manualEnrollmentDescription": "Add a player directly to this event. You can search for existing members or add a guest.",
         "noEnrollments": "No enrollments found",
         "noEnrollmentsHint": "Enrollments will appear here once players register",
         "notes": "Notes",
+        "notesPlaceholder": "Optional notes about this enrollment...",
         "partner": "Partner",
+        "partnerSearch": "Partner",
+        "partnerSearchPlaceholder": "Search for partner...",
         "pending": "Pending",
+        "pendingDescription": "Awaiting confirmation",
         "player": "Player",
+        "playerSearch": "Player",
+        "playerSearchHelp": "Search by name or member ID",
+        "playerSearchPlaceholder": "Search for player...",
+        "position": "Position",
         "promote": "Promote from Waiting List",
         "promoteFromWaitingList": "Promote from waiting list",
+        "schedulePublished": "Registrations visible",
         "search": "Search",
         "searchPlaceholder": "Search by player name...",
         "searchPlayers": "Find players...",
+        "selectSubEventFirst": "Select a sub-event to view enrollments",
         "status": "Status",
         "subEvent": "Sub-Event",
         "title": "Enrollments",
         "total": "Total",
+        "totalDescription": "All enrollments",
         "totalEntries": "Total enrollments",
-        "waitingList": "Waiting List",
+        "waitingList": "Waiting",
+        "waitingListDescription": "On waiting list",
         "withdraw": "Withdraw"
       },
       "noPermission": "You do not have permission to manage this tournament",
@@ -972,6 +932,7 @@
         "unscheduledGames": "Unscheduled Games"
       },
       "settings": {
+        "actions": "Actions",
         "addSubEvent": "Add Sub-Event",
         "advancePhase": "Advance Phase",
         "allowGuests": "Without a partner",
@@ -994,10 +955,15 @@
         "firstDay": "First Day",
         "gameType": "Game Type",
         "general": "General Settings",
+        "generalDescription": "Configure basic tournament information and dates",
         "guestEnrollment": "Guest registrations allowed",
         "lastDay": "Last Day",
         "level": "Level",
+        "levelHelp": "Specify the player level range allowed for this sub-event",
         "maxEntries": "Maximum entries",
+        "maxEntriesHelp": "Leave empty for unlimited entries",
+        "maxLevel": "Max Level",
+        "minLevel": "Min Level",
         "name": "Tournament Name",
         "namePlaceholder": "Enter tournament name",
         "nextPhase": "Next phase",
@@ -1006,6 +972,7 @@
         "openDate": "Opening entries",
         "options": "Options",
         "phase": "Tournament Phase",
+        "phaseDescription": "Manage the current phase of your tournament",
         "phases": {
           "COMPLETED": "Completed",
           "DRAFT": "Draft",
@@ -1025,6 +992,7 @@
         "subEventMaxEntries": "Max Entries",
         "subEventName": "Name",
         "subEvents": "Sub-Events",
+        "subEventsDescription": "Configure sub-events for different game types and levels",
         "subEventWaitingList": "Enable Waiting List",
         "title": "Tournament Settings",
         "tournamentDates": "Tournament Dates",

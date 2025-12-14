@@ -42,7 +42,12 @@ export class TournamentSubEvent extends BaseEntity {
   @SortableField(() => Int, { nullable: true })
   @WhereField(() => Int, { nullable: true })
   @Column({ nullable: true })
-  declare level?: number;
+  declare minLevel?: number;
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  declare maxLevel?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })

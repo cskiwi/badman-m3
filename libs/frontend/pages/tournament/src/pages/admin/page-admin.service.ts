@@ -56,7 +56,8 @@ export class AdminService {
                     name
                     eventType
                     gameType
-                    level
+                    minLevel
+                    maxLevel
                     visualCode
                     maxEntries
                     waitingListEnabled

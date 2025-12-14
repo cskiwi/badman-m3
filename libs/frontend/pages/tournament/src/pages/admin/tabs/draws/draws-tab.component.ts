@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Entry, TournamentDraw, TournamentEvent, TournamentSubEvent } from '@app/models';
+import { SubEventTypeEnum } from '@app/models-enum';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -37,7 +38,6 @@ import { DrawsTabService, SeedingMethod } from './draws-tab.service';
     CheckboxModule,
   ],
   templateUrl: './draws-tab.component.html',
-  styleUrl: './draws-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawsTabComponent {
@@ -53,7 +53,10 @@ export class DrawsTabComponent {
   drawForm = new FormGroup({
     name: new FormControl<string>('', Validators.required),
     type: new FormControl<string>('KO', Validators.required),
+    subEventType: new FormControl<SubEventTypeEnum>(SubEventTypeEnum.M, Validators.required),
     size: new FormControl<number | null>(null),
+    minLevel: new FormControl<number | null>(null),
+    maxLevel: new FormControl<number | null>(null),
   });
 
   // Seeding dialog
@@ -97,6 +100,13 @@ export class DrawsTabComponent {
 
   // Draw size options for KO
   readonly drawSizeOptions = [4, 8, 16, 32, 64].map((size) => ({ label: `${size} entries`, value: size }));
+
+  // Sub-event type options (M, F, MX only - NATIONAL is not used for tournaments)
+  readonly subEventTypeOptions = [
+    { label: 'Men (M)', value: SubEventTypeEnum.M },
+    { label: 'Women (F)', value: SubEventTypeEnum.F },
+    { label: 'Mixed (MX)', value: SubEventTypeEnum.MX },
+  ];
 
   constructor() {
     // Watch sub-event selection
@@ -186,7 +196,7 @@ export class DrawsTabComponent {
   }
 
   openCreateDrawDialog(): void {
-    this.drawForm.reset({ type: 'KO' });
+    this.drawForm.reset({ type: 'KO', subEventType: SubEventTypeEnum.M });
     this.showCreateDrawDialog.set(true);
   }
 

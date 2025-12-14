@@ -47,7 +47,8 @@ export class DetailService {
                     name
                     eventType
                     gameType
-                    level
+                    minLevel
+                    maxLevel
                     visualCode
                     lastSync
                     drawTournaments {
@@ -64,7 +65,7 @@ export class DetailService {
               id: params.tournamentId,
               args: {
                 order: {
-                  level: 'ASC',
+                  minLevel: 'ASC',
                 },
               },
             },

@@ -131,8 +131,8 @@
                   <div class="font-medium">{{ subEvent.name }}</div>
                   <div class="text-xs text-muted-color">
                     {{ subEvent.eventType }}
-                    @if (subEvent.level) {
-                      - Level {{ subEvent.level }}
+                    @if (subEvent.minLevel || subEvent.maxLevel) {
+                      - Level {{ subEvent.minLevel }} - {{ subEvent.maxLevel }}
                     }
                   </div>
                 </div>

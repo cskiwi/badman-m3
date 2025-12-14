@@ -4,15 +4,13 @@ import { EnrollmentStatus } from '@app/models-enum';
 import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TournamentSubEventArgs, TournamentDrawArgs, TournamentEnrollmentArgs, EntryArgs } from '../../../args';
-import { CreateTournamentSubEventInput, UpdateTournamentSubEventInput } from '../../../inputs';
+import { TournamentSubEventNewInput, TournamentSubEventUpdateInput } from '../../../inputs';
 import { IsNull } from 'typeorm';
 
 @Resolver(() => TournamentSubEvent)
 export class TournamentSubEventResolver {
   @Query(() => TournamentSubEvent)
-  async tournamentSubEvent(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<TournamentSubEvent> {
+  async tournamentSubEvent(@Args('id', { type: () => ID }) id: string): Promise<TournamentSubEvent> {
     const comp = await TournamentSubEvent.findOne({
       where: {
         id,
@@ -28,7 +26,7 @@ export class TournamentSubEventResolver {
 
   @Query(() => [TournamentSubEvent])
   async tournamentSubEvents(
-    @Args('args',  { type: () => TournamentSubEventArgs, nullable: true  })
+    @Args('args', { type: () => TournamentSubEventArgs, nullable: true })
     inputArgs?: InstanceType<typeof TournamentSubEventArgs>,
   ): Promise<TournamentSubEvent[]> {
     const args = TournamentSubEventArgs.toFindOneOptions(inputArgs);
@@ -174,15 +172,12 @@ export class TournamentSubEventResolver {
 
   @Mutation(() => TournamentSubEvent, { description: 'Create a new tournament sub-event' })
   @UseGuards(PermGuard)
-  async createTournamentSubEvent(
-    @User() user: Player,
-    @Args('data') data: CreateTournamentSubEventInput,
-  ): Promise<TournamentSubEvent> {
+  async createTournamentSubEvent(@User() user: Player, @Args('data') data: TournamentSubEventNewInput): Promise<TournamentSubEvent> {
     // Find the tournament event
-    const tournament = await TournamentEvent.findOne({ where: { id: data.tournamentEventId } });
+    const tournament = await TournamentEvent.findOne({ where: { id: data.eventId } });
 
     if (!tournament) {
-      throw new NotFoundException(`Tournament with ID ${data.tournamentEventId} not found`);
+      throw new NotFoundException(`Tournament with ID ${data.eventId} not found`);
     }
 
     // Check permission
@@ -199,10 +194,11 @@ export class TournamentSubEventResolver {
 
     // Create the sub-event
     const subEvent = new TournamentSubEvent();
-    subEvent.eventId = data.tournamentEventId;
+    subEvent.eventId = data.eventId;
     subEvent.name = data.name;
     subEvent.gameType = data.gameType;
-    subEvent.level = data.level ?? undefined;
+    subEvent.minLevel = data.minLevel ?? undefined;
+    subEvent.maxLevel = data.maxLevel ?? undefined;
     subEvent.maxEntries = data.maxEntries ?? undefined;
     subEvent.waitingListEnabled = data.waitingListEnabled ?? true;
 
@@ -216,7 +212,7 @@ export class TournamentSubEventResolver {
   async updateTournamentSubEvent(
     @User() user: Player,
     @Args('subEventId', { type: () => ID }) subEventId: string,
-    @Args('data') data: UpdateTournamentSubEventInput,
+    @Args('data') data: TournamentSubEventUpdateInput,
   ): Promise<TournamentSubEvent> {
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: subEventId },
@@ -248,7 +244,8 @@ export class TournamentSubEventResolver {
 
     // Update fields
     if (data.name !== undefined) subEvent.name = data.name;
-    if (data.level !== undefined) subEvent.level = data.level;
+    if (data.minLevel !== undefined) subEvent.minLevel = data.minLevel;
+    if (data.maxLevel !== undefined) subEvent.maxLevel = data.maxLevel;
     if (data.maxEntries !== undefined) subEvent.maxEntries = data.maxEntries;
     if (data.waitingListEnabled !== undefined) subEvent.waitingListEnabled = data.waitingListEnabled;
 
@@ -259,10 +256,7 @@ export class TournamentSubEventResolver {
 
   @Mutation(() => Boolean, { description: 'Delete a tournament sub-event' })
   @UseGuards(PermGuard)
-  async deleteTournamentSubEvent(
-    @User() user: Player,
-    @Args('subEventId', { type: () => ID }) subEventId: string,
-  ): Promise<boolean> {
+  async deleteTournamentSubEvent(@User() user: Player, @Args('subEventId', { type: () => ID }) subEventId: string): Promise<boolean> {
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: subEventId },
     });

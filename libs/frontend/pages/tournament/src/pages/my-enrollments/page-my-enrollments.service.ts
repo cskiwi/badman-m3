@@ -78,7 +78,8 @@ export class MyEnrollmentsService {
                     name
                     eventType
                     gameType
-                    level
+                    minLevel
+                    maxLevel
                   }
                 }
                 myTournamentEnrollments(tournamentEventId: $tournamentEventId) {

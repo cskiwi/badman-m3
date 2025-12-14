@@ -158,7 +158,8 @@ export class TournamentSubEventSyncService {
       existingEvent.name = event.Name;
       existingEvent.eventType = this.mapSubEventType(event.GenderID);
       existingEvent.gameType = this.mapGameType(event.GameTypeID);
-      existingEvent.level = event.LevelID;
+      existingEvent.minLevel = event.LevelID;
+      existingEvent.maxLevel = event.LevelID;
       existingEvent.lastSync = new Date();
       await existingEvent.save();
       this.logger.debug(`Updated existing sub-event ${event.Code} for tournament ${tournamentCode}`);
@@ -167,7 +168,8 @@ export class TournamentSubEventSyncService {
       newEvent.name = event.Name;
       newEvent.eventType = this.mapSubEventType(event.GenderID);
       newEvent.gameType = this.mapGameType(event.GameTypeID);
-      newEvent.level = event.LevelID;
+      newEvent.minLevel = event.LevelID;
+      newEvent.maxLevel = event.LevelID;
       newEvent.visualCode = event.Code;
       newEvent.eventId = tournamentEvent.id; // Link to parent tournament
       newEvent.lastSync = new Date();

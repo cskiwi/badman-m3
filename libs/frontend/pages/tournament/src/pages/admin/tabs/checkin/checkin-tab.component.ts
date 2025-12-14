@@ -37,7 +37,6 @@ import { CheckInWithDetails, CheckinTabService } from './checkin-tab.service';
     DecimalPipe,
   ],
   templateUrl: './checkin-tab.component.html',
-  styleUrl: './checkin-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckinTabComponent {

@@ -90,7 +90,7 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                         {{ 'TOURNAMENT.LEVEL' | translate }}
                       </div>
                       <div class="text-surface-900 dark:text-surface-50 font-semibold">
-                        {{ history.subEvent?.level }}
+                        {{ history.subEvent?.minLevel }} - {{ history.subEvent?.maxLevel }}
                       </div>
                     </div>
                   </div>

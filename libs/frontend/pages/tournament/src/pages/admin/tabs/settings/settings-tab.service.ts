@@ -90,10 +90,11 @@ export class SettingsTabService {
   }
 
   async createSubEvent(data: {
-    tournamentEventId: string;
+    eventId: string;
     name: string;
     gameType: string;
-    level?: number;
+    minLevel?: number;
+    maxLevel?: number;
     maxEntries?: number;
     waitingListEnabled?: boolean;
   }): Promise<TournamentSubEvent | null> {
@@ -104,12 +105,13 @@ export class SettingsTabService {
       const result = await lastValueFrom(
         this.apollo.mutate<{ createTournamentSubEvent: TournamentSubEvent }>({
           mutation: gql`
-            mutation CreateTournamentSubEvent($data: CreateTournamentSubEventInput!) {
+            mutation CreateTournamentSubEvent($data: TournamentSubEventNewInput!) {
               createTournamentSubEvent(data: $data) {
                 id
                 name
                 gameType
-                level
+                minLevel
+                maxLevel
                 maxEntries
                 waitingListEnabled
               }
@@ -134,7 +136,8 @@ export class SettingsTabService {
       name?: string;
       maxEntries?: number;
       waitingListEnabled?: boolean;
-      level?: number;
+      minLevel?: number;
+      maxLevel?: number;
     },
   ): Promise<TournamentSubEvent | null> {
     this.updating.set(true);
@@ -150,7 +153,8 @@ export class SettingsTabService {
                 name
                 maxEntries
                 waitingListEnabled
-                level
+                minLevel
+                maxLevel
               }
             }
           `,
