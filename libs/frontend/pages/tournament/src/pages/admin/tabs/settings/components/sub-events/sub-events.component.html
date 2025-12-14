@@ -25,23 +25,25 @@
     @if (tournament().tournamentSubEvents?.length) {
       <div class="overflow-x-auto">
         <p-table
-          [value]="tournament().tournamentSubEvents!"
+          [value]="subEvents()"
           [tableStyle]="{ 'min-width': '50rem' }"
           class="p-datatable-sm"
-          [globalFilterFields]="['name', 'eventType', 'gameType']"
-          #dt
+          sortMode="multiple"
+          [multiSortMeta]="multiSortMeta"
         >
           <ng-template pTemplate="header">
             <tr class="text-sm">
-              <th class="font-semibold">
+              <th pSortableColumn="name" class="font-semibold">
                 <div class="flex items-center justify-between gap-2">
                   {{ 'all.tournament.admin.settings.subEventName' | translate }}
+                  <p-sortIcon field="name" />
                   <p-columnFilter type="text" field="name" display="menu" class="ml-auto" />
                 </div>
               </th>
-              <th class="font-semibold">
+              <th pSortableColumn="eventType" class="font-semibold">
                 <div class="flex items-center justify-between gap-2">
                   {{ 'all.tournament.admin.settings.eventType' | translate }}
+                  <p-sortIcon field="eventType" />
                   <p-columnFilter field="eventType" matchMode="equals" display="menu" class="ml-auto">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                       <p-select
@@ -63,9 +65,10 @@
                   </p-columnFilter>
                 </div>
               </th>
-              <th class="font-semibold">
+              <th pSortableColumn="gameType" class="font-semibold">
                 <div class="flex items-center justify-between gap-2">
                   {{ 'all.tournament.admin.settings.gameType' | translate }}
+                  <p-sortIcon field="gameType" />
                   <p-columnFilter field="gameType" matchMode="equals" display="menu" class="ml-auto">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                       <p-select
@@ -87,27 +90,31 @@
                   </p-columnFilter>
                 </div>
               </th>
-              <th class="font-semibold text-center">
+              <th pSortableColumn="minLevel" class="font-semibold text-center">
                 <div class="flex items-center justify-center gap-2">
                   {{ 'all.tournament.admin.settings.minLevel' | translate }}
+                  <p-sortIcon field="minLevel" />
                   <p-columnFilter type="numeric" field="minLevel" display="menu" />
                 </div>
               </th>
-              <th class="font-semibold text-center">
+              <th pSortableColumn="maxLevel" class="font-semibold text-center">
                 <div class="flex items-center justify-center gap-2">
                   {{ 'all.tournament.admin.settings.maxLevel' | translate }}
+                  <p-sortIcon field="maxLevel" />
                   <p-columnFilter type="numeric" field="maxLevel" display="menu" />
                 </div>
               </th>
-              <th class="font-semibold text-center">
+              <th pSortableColumn="maxEntries" class="font-semibold text-center">
                 <div class="flex items-center justify-center gap-2">
                   {{ 'all.tournament.admin.settings.maxEntries' | translate }}
+                  <p-sortIcon field="maxEntries" />
                   <p-columnFilter type="numeric" field="maxEntries" display="menu" />
                 </div>
               </th>
-              <th class="font-semibold text-center">
+              <th pSortableColumn="waitingListEnabled" class="font-semibold text-center">
                 <div class="flex items-center justify-between gap-2">
                   {{ 'all.tournament.admin.settings.waitingList' | translate }}
+                  <p-sortIcon field="waitingListEnabled" />
                   <p-columnFilter field="waitingListEnabled" matchMode="equals" display="menu" [showMatchModes]="false" class="ml-auto">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                       <p-select

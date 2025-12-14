@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent, TournamentSubEvent } from '@app/models';
 import { SubEventTypeEnum } from '@app/models-enum';
@@ -13,6 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { SortMeta } from 'primeng/api';
 
 @Component({
   selector: 'app-sub-events',
@@ -38,6 +39,12 @@ import { TooltipModule } from 'primeng/tooltip';
 export class SubEventsComponent {
   tournament = input.required<TournamentEvent>();
   updating = input<boolean>(false);
+
+  // Create a mutable copy of sub-events for sorting/filtering
+  subEvents = computed(() => {
+    const events = this.tournament().tournamentSubEvents;
+    return events ? [...events] : [];
+  });
 
   createSubEventRequested = output<{
     eventId: string;
@@ -67,6 +74,13 @@ export class SubEventsComponent {
 
   showSubEventDialog = signal(false);
   editingSubEvent = signal<TournamentSubEvent | null>(null);
+
+  // Default sort order: eventType -> gameType -> minLevel
+  multiSortMeta: SortMeta[] = [
+    { field: 'eventType', order: 1 },
+    { field: 'gameType', order: 1 },
+    { field: 'minLevel', order: 1 }
+  ];
 
   // Game type options
   readonly gameTypeOptions = [
