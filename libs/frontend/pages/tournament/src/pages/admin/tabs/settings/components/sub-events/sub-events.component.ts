@@ -54,6 +54,7 @@ export class SubEventsComponent {
     data: {
       name?: string;
       eventType?: string;
+      gameType?: string;
       maxEntries?: number;
       waitingListEnabled?: boolean;
       minLevel?: number;
@@ -117,7 +118,7 @@ export class SubEventsComponent {
       maxEntries: subEvent.maxEntries ?? null,
       waitingListEnabled: subEvent.waitingListEnabled ?? true,
     });
-    this.subEventForm.get('gameType')?.disable();
+    this.subEventForm.get('gameType');
     this.showSubEventDialog.set(true);
   }
 
@@ -127,6 +128,8 @@ export class SubEventsComponent {
     const values = this.subEventForm.value;
     const editing = this.editingSubEvent();
 
+    console.log('Saving sub-event', values, editing);
+
     if (editing) {
       // Update existing
       this.updateSubEventRequested.emit({
@@ -134,6 +137,7 @@ export class SubEventsComponent {
         data: {
           name: values.name ?? undefined,
           eventType: values.eventType ?? undefined,
+          gameType: values.gameType ?? undefined,
           maxEntries: values.maxEntries ?? undefined,
           waitingListEnabled: values.waitingListEnabled ?? undefined,
           minLevel: values.minLevel ?? undefined,

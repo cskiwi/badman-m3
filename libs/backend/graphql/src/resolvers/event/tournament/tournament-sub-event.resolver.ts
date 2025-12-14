@@ -248,6 +248,8 @@ export class TournamentSubEventResolver {
     if (data.maxLevel !== undefined) subEvent.maxLevel = data.maxLevel;
     if (data.maxEntries !== undefined) subEvent.maxEntries = data.maxEntries;
     if (data.waitingListEnabled !== undefined) subEvent.waitingListEnabled = data.waitingListEnabled;
+    if (data.gameType !== undefined) subEvent.gameType = data.gameType;
+    if (data.eventType !== undefined) subEvent.eventType = data.eventType;
 
     await subEvent.save();
 

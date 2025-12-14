@@ -1,6 +1,6 @@
 import { inject, signal } from '@angular/core';
 import { TournamentEvent, TournamentSubEvent } from '@app/models';
-import { TournamentPhase } from '@app/models-enum';
+import { SubEventTypeEnum, TournamentPhase } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 
@@ -188,6 +188,7 @@ export class SettingsTabService {
     data: {
       name?: string;
       eventType?: string;
+      gameType?: SubEventTypeEnum;
       maxEntries?: number;
       waitingListEnabled?: boolean;
       minLevel?: number;
@@ -201,7 +202,7 @@ export class SettingsTabService {
       const result = await lastValueFrom(
         this.apollo.mutate<{ updateTournamentSubEvent: TournamentSubEvent }>({
           mutation: gql`
-            mutation UpdateTournamentSubEvent($subEventId: ID!, $data: UpdateTournamentSubEventInput!) {
+            mutation UpdateTournamentSubEvent($subEventId: ID!, $data: TournamentSubEventUpdateInput!) {
               updateTournamentSubEvent(subEventId: $subEventId, data: $data) {
                 id
                 name
