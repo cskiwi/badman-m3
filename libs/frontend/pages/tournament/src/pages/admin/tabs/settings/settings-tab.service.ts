@@ -93,6 +93,7 @@ export class SettingsTabService {
     eventId: string;
     name: string;
     gameType: string;
+    eventType?: string;
     minLevel?: number;
     maxLevel?: number;
     maxEntries?: number;
@@ -134,6 +135,7 @@ export class SettingsTabService {
     subEventId: string,
     data: {
       name?: string;
+      eventType?: string;
       maxEntries?: number;
       waitingListEnabled?: boolean;
       minLevel?: number;

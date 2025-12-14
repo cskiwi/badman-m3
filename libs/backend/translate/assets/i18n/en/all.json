@@ -952,6 +952,7 @@
         "enrollmentDatesHelp": "When can players enroll for this tournament",
         "enrollmentDatesPlaceholder": "Select enrollment start and end date",
         "enrollmentOpen": "Enrollment Open",
+        "eventType": "Event Type",
         "firstDay": "First Day",
         "gameType": "Game Type",
         "general": "General Settings",
@@ -998,7 +999,8 @@
         "tournamentDates": "Tournament Dates",
         "tournamentDatesHelp": "Select the first and last day of the tournament",
         "tournamentDatesPlaceholder": "Select start and end date",
-        "waitingList": "Enable waiting list"
+        "waitingList": "Enable waiting list",
+        "waitingListEnabled": "Enable Waiting List"
       },
       "tabs": {
         "checkin": "Check-in",
@@ -1038,6 +1040,12 @@
     "entries": "Entries",
     "events": "Tournament Events",
     "eventType": "Event Type",
+    "eventTypes": {
+      "men": "Men",
+      "women": "Women",
+      "mixed": "Mixed",
+      "national": "National"
+    },
     "firstDay": "First Day",
     "gameType": "Game Type",
     "gameTypes": {

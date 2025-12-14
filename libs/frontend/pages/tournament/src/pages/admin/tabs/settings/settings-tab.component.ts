@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent, TournamentSubEvent } from '@app/models';
-import { TournamentPhase } from '@app/models-enum';
+import { TournamentPhase, SubEventTypeEnum } from '@app/models-enum';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -112,9 +112,16 @@ export class SettingsTabComponent {
 
   // Game type options
   readonly gameTypeOptions = [
-    { label: 'Singles', value: 'S' },
-    { label: 'Doubles', value: 'D' },
-    { label: 'Mixed Doubles', value: 'MX' },
+    { label: 'all.tournament.gameTypes.singles', value: 'S' },
+    { label: 'all.tournament.gameTypes.doubles', value: 'D' },
+    { label: 'all.tournament.gameTypes.mixed', value: 'MX' },
+  ];
+
+  // Event type options
+  readonly eventTypeOptions = [
+    { label: 'all.tournament.eventTypes.men', value: SubEventTypeEnum.M },
+    { label: 'all.tournament.eventTypes.women', value: SubEventTypeEnum.F },
+    { label: 'all.tournament.eventTypes.mixed', value: SubEventTypeEnum.MX }
   ];
 
   // Tournament settings form
@@ -130,6 +137,7 @@ export class SettingsTabComponent {
   // Sub-event form
   subEventForm = new FormGroup({
     name: new FormControl<string>('', [Validators.required]),
+    eventType: new FormControl<SubEventTypeEnum>(SubEventTypeEnum.MX, [Validators.required]),
     gameType: new FormControl<string>('D', [Validators.required]),
     minLevel: new FormControl<number | null>(null),
     maxLevel: new FormControl<number | null>(null),
@@ -240,6 +248,7 @@ export class SettingsTabComponent {
     this.editingSubEvent.set(null);
     this.subEventForm.reset({
       name: '',
+      eventType: SubEventTypeEnum.MX,
       gameType: 'D',
       minLevel: null,
       maxLevel: null,
@@ -254,6 +263,7 @@ export class SettingsTabComponent {
     this.editingSubEvent.set(subEvent);
     this.subEventForm.patchValue({
       name: subEvent.name,
+      eventType: subEvent.eventType || SubEventTypeEnum.MX,
       gameType: subEvent.gameType || 'D',
       minLevel: subEvent.minLevel ?? null,
       maxLevel: subEvent.maxLevel ?? null,
@@ -274,6 +284,7 @@ export class SettingsTabComponent {
       // Update existing
       const result = await this.dataService.updateSubEvent(editing.id, {
         name: values.name ?? undefined,
+        eventType: values.eventType ?? undefined,
         maxEntries: values.maxEntries ?? undefined,
         waitingListEnabled: values.waitingListEnabled ?? undefined,
         minLevel: values.minLevel ?? undefined,
@@ -289,6 +300,7 @@ export class SettingsTabComponent {
       const result = await this.dataService.createSubEvent({
         eventId: this.tournament().id,
         name: values.name!,
+        eventType: values.eventType!,
         gameType: values.gameType!,
         minLevel: values.minLevel ?? undefined,
         maxLevel: values.maxLevel ?? undefined,
@@ -313,6 +325,10 @@ export class SettingsTabComponent {
 
   getGameTypeLabel(gameType: string): string {
     return this.gameTypeOptions.find((o) => o.value === gameType)?.label ?? gameType;
+  }
+
+  getEventTypeLabel(eventType: SubEventTypeEnum): string {
+    return this.eventTypeOptions.find((o) => o.value === eventType)?.label ?? eventType;
   }
 
   getPhaseTagSeverity(phase: TournamentPhase): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {

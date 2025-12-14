@@ -913,6 +913,7 @@
         "enrollmentDatesHelp": "Quand les joueurs peuvent-ils s'inscrire pour ce tournoi",
         "enrollmentDatesPlaceholder": "Sélectionnez la date de début et de fin d'inscription",
         "enrollmentOpen": "Ouverture des inscriptions",
+        "eventType": "Type d'épreuve",
         "firstDay": "Premier jour",
         "gameType": "Type de jeu",
         "general": "Paramètres généraux",
@@ -959,7 +960,8 @@
         "tournamentDates": "Dates du tournoi",
         "tournamentDatesHelp": "Sélectionnez le premier et le dernier jour du tournoi",
         "tournamentDatesPlaceholder": "Sélectionnez la date de début et de fin",
-        "waitingList": "Activer la liste d'attente"
+        "waitingList": "Activer la liste d'attente",
+        "waitingListEnabled": "Activer la liste d'attente"
       },
       "tabs": {
         "checkin": "Check-in",
@@ -999,6 +1001,12 @@
     "entries": "Inscriptions",
     "events": "Épreuves du tournoi",
     "eventType": "Type d'épreuve",
+    "eventTypes": {
+      "men": "Hommes",
+      "women": "Femmes",
+      "mixed": "Mixte",
+      "national": "National"
+    },
     "firstDay": "Premier jour",
     "gameType": "Type de jeu",
     "gameTypes": {

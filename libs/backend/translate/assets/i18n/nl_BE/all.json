@@ -913,6 +913,7 @@
         "enrollmentDatesHelp": "Wanneer kunnen spelers zich inschrijven voor dit toernooi",
         "enrollmentDatesPlaceholder": "Selecteer start- en einddatum voor inschrijvingen",
         "enrollmentOpen": "Inschrijvingen openen",
+        "eventType": "Event Type",
         "firstDay": "Eerste dag",
         "gameType": "Speltype",
         "general": "Algemene instellingen",
@@ -959,7 +960,8 @@
         "tournamentDates": "Toernooidata",
         "tournamentDatesHelp": "Selecteer de eerste en laatste dag van het toernooi",
         "tournamentDatesPlaceholder": "Selecteer start- en einddatum",
-        "waitingList": "Wachtlijst inschakelen"
+        "waitingList": "Wachtlijst inschakelen",
+        "waitingListEnabled": "Wachtlijst inschakelen"
       },
       "tabs": {
         "checkin": "Check-in",
@@ -999,6 +1001,12 @@
     "entries": "Inschrijvingen",
     "events": "Toernooi Events",
     "eventType": "Event Type",
+    "eventTypes": {
+      "men": "Heren",
+      "women": "Dames",
+      "mixed": "Gemengd",
+      "national": "Nationaal"
+    },
     "firstDay": "Eerste Dag",
     "gameType": "Spel Type",
     "gameTypes": {

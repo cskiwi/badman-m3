@@ -959,6 +959,7 @@ export type I18nTranslations = {
                     "enrollmentDatesHelp": string;
                     "enrollmentDatesPlaceholder": string;
                     "enrollmentOpen": string;
+                    "eventType": string;
                     "firstDay": string;
                     "gameType": string;
                     "general": string;
@@ -1006,6 +1007,7 @@ export type I18nTranslations = {
                     "tournamentDatesHelp": string;
                     "tournamentDatesPlaceholder": string;
                     "waitingList": string;
+                    "waitingListEnabled": string;
                 };
                 "tabs": {
                     "checkin": string;
@@ -1045,6 +1047,12 @@ export type I18nTranslations = {
             "entries": string;
             "events": string;
             "eventType": string;
+            "eventTypes": {
+                "men": string;
+                "women": string;
+                "mixed": string;
+                "national": string;
+            };
             "firstDay": string;
             "gameType": string;
             "gameTypes": {
