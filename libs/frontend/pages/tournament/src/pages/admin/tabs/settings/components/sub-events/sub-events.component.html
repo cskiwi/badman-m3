@@ -28,16 +28,100 @@
           [value]="tournament().tournamentSubEvents!"
           [tableStyle]="{ 'min-width': '50rem' }"
           class="p-datatable-sm"
+          [globalFilterFields]="['name', 'eventType', 'gameType']"
+          #dt
         >
           <ng-template pTemplate="header">
             <tr class="text-sm">
-              <th class="font-semibold">{{ 'all.tournament.admin.settings.subEventName' | translate }}</th>
-              <th class="font-semibold">{{ 'all.tournament.admin.settings.eventType' | translate }}</th>
-              <th class="font-semibold">{{ 'all.tournament.admin.settings.gameType' | translate }}</th>
-              <th class="font-semibold text-center">{{ 'all.tournament.admin.settings.minLevel' | translate }}</th>
-              <th class="font-semibold text-center">{{ 'all.tournament.admin.settings.maxLevel' | translate }}</th>
-              <th class="font-semibold text-center">{{ 'all.tournament.admin.settings.maxEntries' | translate }}</th>
-              <th class="font-semibold text-center">{{ 'all.tournament.admin.settings.waitingList' | translate }}</th>
+              <th class="font-semibold">
+                <div class="flex items-center justify-between gap-2">
+                  {{ 'all.tournament.admin.settings.subEventName' | translate }}
+                  <p-columnFilter type="text" field="name" display="menu" class="ml-auto" />
+                </div>
+              </th>
+              <th class="font-semibold">
+                <div class="flex items-center justify-between gap-2">
+                  {{ 'all.tournament.admin.settings.eventType' | translate }}
+                  <p-columnFilter field="eventType" matchMode="equals" display="menu" class="ml-auto">
+                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                      <p-select
+                        [ngModel]="value"
+                        [options]="eventTypeOptions"
+                        (ngModelChange)="filter($event)"
+                        placeholder="Any"
+                        optionLabel="label"
+                        optionValue="value"
+                      >
+                        <ng-template let-option pTemplate="item">
+                          {{ option.label | translate }}
+                        </ng-template>
+                        <ng-template let-option pTemplate="selectedItem">
+                          {{ option.label | translate }}
+                        </ng-template>
+                      </p-select>
+                    </ng-template>
+                  </p-columnFilter>
+                </div>
+              </th>
+              <th class="font-semibold">
+                <div class="flex items-center justify-between gap-2">
+                  {{ 'all.tournament.admin.settings.gameType' | translate }}
+                  <p-columnFilter field="gameType" matchMode="equals" display="menu" class="ml-auto">
+                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                      <p-select
+                        [ngModel]="value"
+                        [options]="gameTypeOptions"
+                        (ngModelChange)="filter($event)"
+                        placeholder="Any"
+                        optionLabel="label"
+                        optionValue="value"
+                      >
+                        <ng-template let-option pTemplate="item">
+                          {{ option.label | translate }}
+                        </ng-template>
+                        <ng-template let-option pTemplate="selectedItem">
+                          {{ option.label | translate }}
+                        </ng-template>
+                      </p-select>
+                    </ng-template>
+                  </p-columnFilter>
+                </div>
+              </th>
+              <th class="font-semibold text-center">
+                <div class="flex items-center justify-center gap-2">
+                  {{ 'all.tournament.admin.settings.minLevel' | translate }}
+                  <p-columnFilter type="numeric" field="minLevel" display="menu" />
+                </div>
+              </th>
+              <th class="font-semibold text-center">
+                <div class="flex items-center justify-center gap-2">
+                  {{ 'all.tournament.admin.settings.maxLevel' | translate }}
+                  <p-columnFilter type="numeric" field="maxLevel" display="menu" />
+                </div>
+              </th>
+              <th class="font-semibold text-center">
+                <div class="flex items-center justify-center gap-2">
+                  {{ 'all.tournament.admin.settings.maxEntries' | translate }}
+                  <p-columnFilter type="numeric" field="maxEntries" display="menu" />
+                </div>
+              </th>
+              <th class="font-semibold text-center">
+                <div class="flex items-center justify-between gap-2">
+                  {{ 'all.tournament.admin.settings.waitingList' | translate }}
+                  <p-columnFilter field="waitingListEnabled" matchMode="equals" display="menu" [showMatchModes]="false" class="ml-auto">
+                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                      <p-select
+                        [ngModel]="value"
+                        [options]="[{label: 'Yes', value: true}, {label: 'No', value: false}]"
+                        (ngModelChange)="filter($event)"
+                        placeholder="Any"
+                        optionLabel="label"
+                        optionValue="value"
+                      />
+                    </ng-template>
+                  </p-columnFilter>
+                </div>
+              </th>
               <th class="font-semibold text-center" style="width: 7rem">{{ 'all.tournament.admin.settings.actions' | translate }}</th>
             </tr>
           </ng-template>
@@ -50,7 +134,7 @@
                 @if (subEvent.eventType) {
                   <p-tag
                     [value]="getEventTypeLabel(subEvent.eventType) | translate"
-                    [severity]="subEvent.eventType === 'M' ? 'info' : subEvent.eventType === 'F' ? 'danger' : subEvent.eventType === 'MX' ? 'success' : 'contrast'"
+                    severity="contrast"
                     [rounded]="true"
                   />
                 } @else {
@@ -60,7 +144,7 @@
               <td>
                 <p-tag
                   [value]="getGameTypeLabel(subEvent.gameType) | translate"
-                  [severity]="subEvent.gameType === 'S' ? 'info' : subEvent.gameType === 'D' ? 'success' : 'warn'"
+                  severity="contrast"
                   [rounded]="true"
                 />
               </td>

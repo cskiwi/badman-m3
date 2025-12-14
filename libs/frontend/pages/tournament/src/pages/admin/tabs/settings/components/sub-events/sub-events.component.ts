@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent, TournamentSubEvent } from '@app/models';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { TranslateModule } from '@ngx-translate/core';
@@ -19,6 +19,7 @@ import { TooltipModule } from 'primeng/tooltip';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     TranslateModule,
     ButtonModule,
