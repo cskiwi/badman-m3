@@ -28,15 +28,16 @@
 
 @if (error(); as err) {
   <p-message severity="error" [text]="err" />
+} @else if (loading()) {
+  <div class="p-4">
+    <p-skeleton height="4rem" styleClass="mb-4" />
+    <p-skeleton height="3rem" styleClass="mb-3" />
+    <p-skeleton height="20rem" />
+  </div>
 } @else if (!canEdit()) {
   <p-message severity="warn" [text]="'all.tournament.admin.noPermission' | translate" />
-} @else {
-  @if (loading()) {
-    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
-  }
-
-  @if (tournament(); as tournament) {
-    <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
+} @else if (tournament(); as tournament) {
+  <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
       <p-tablist>
         <p-tab [value]="0">
           <i class="pi pi-cog mr-2"></i>
@@ -86,5 +87,4 @@
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
-  }
 }
