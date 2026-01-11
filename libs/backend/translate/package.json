@@ -7,7 +7,7 @@
     "@app/utils": "*",
     "@nestjs/common": "^11.1.5",
     "nestjs-i18n": "^10.5.1",
-    "express": "5.1.0",
+    "express": "5.2.1",
     "@nestjs/config": "4.0.2"
   },
   "type": "commonjs",

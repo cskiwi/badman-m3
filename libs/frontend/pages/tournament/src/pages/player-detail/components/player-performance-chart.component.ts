@@ -42,25 +42,21 @@ interface ChartTimeframe {
           </h3>
         </div>
 
-        <p-select
-          [(ngModel)]="selectedTimeframe"
+        <p-select [(ngModel)]="selectedTimeframe"
           [options]="timeframeOptions"
           optionLabel="label"
           optionValue="value"
           styleClass="min-w-36"
-          (onChange)="updateChartData()">
-        </p-select>
+          (onChange)="updateChartData()" />
       </div>
 
       <!-- Performance Chart -->
       <p-card class="border border-surface-200 dark:border-surface-700">
         @if (chartData()) {
-          <p-chart
-            type="line"
+          <p-chart type="line"
             [data]="chartData()"
             [options]="chartOptions"
-            [style]="{ height: '400px' }">
-          </p-chart>
+            [style]="{ height: '400px' }" />
         } @else {
           <div class="flex flex-col items-center justify-center py-16">
             <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>

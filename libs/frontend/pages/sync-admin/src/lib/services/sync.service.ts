@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Apollo, gql } from 'apollo-angular';
-import { QueueStats, SyncJob, SyncStatus, SyncTriggerResponse } from '../models/sync.models';
+import { SyncJob, SyncStatus, SyncTriggerResponse } from '../models/sync.models';
 
 // GraphQL Queries and Mutations
 const GET_SYNC_STATUS = gql`
@@ -78,7 +78,7 @@ export class SyncApiService {
       .query<{ syncStatus: SyncStatus }>({
         query: GET_SYNC_STATUS,
       })
-      .pipe(map((result) => result.data?.syncStatus!));
+      .pipe(map((result) => result.data?.syncStatus ?? {} as SyncStatus));
   }
 
   /**
@@ -89,7 +89,7 @@ export class SyncApiService {
       .mutate<{ triggerDiscoverySync: SyncTriggerResponse }>({
         mutation: TRIGGER_DISCOVERY_SYNC,
       })
-      .pipe(map((result) => result.data!.triggerDiscoverySync));
+      .pipe(map((result) => result.data?.triggerDiscoverySync ?? {} as SyncTriggerResponse));
   }
 
   /**
@@ -100,7 +100,7 @@ export class SyncApiService {
       .mutate<{ triggerCompetitionSync: SyncTriggerResponse }>({
         mutation: TRIGGER_COMPETITION_SYNC,
       })
-      .pipe(map((result) => result.data!.triggerCompetitionSync));
+      .pipe(map((result) => result.data?.triggerCompetitionSync ?? {} as SyncTriggerResponse));
   }
 
   /**
@@ -111,7 +111,7 @@ export class SyncApiService {
       .mutate<{ triggerTournamentSync: SyncTriggerResponse }>({
         mutation: TRIGGER_TOURNAMENT_SYNC,
       })
-      .pipe(map((result) => result.data!.triggerTournamentSync));
+      .pipe(map((result) => result.data?.triggerTournamentSync ?? {} as SyncTriggerResponse));
   }
 
   /**
@@ -125,6 +125,6 @@ export class SyncApiService {
         query: GET_SYNC_JOBS,
         variables: { limit, status },
       })
-      .pipe(map((result) => result.data?.syncJobs!));
+      .pipe(map((result) => result.data?.syncJobs ?? []));
   }
 }

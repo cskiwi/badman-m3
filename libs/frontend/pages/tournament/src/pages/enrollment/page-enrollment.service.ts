@@ -75,7 +75,8 @@ export class EnrollmentService {
                   name
                   eventType
                   gameType
-                  level
+                  minLevel
+                  maxLevel
                   maxEntries
                   waitingListEnabled
                   confirmedEnrollmentCount

@@ -3,11 +3,11 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@app/frontend-utils": "*",
-    "@angular/core": "20.2.4",
-    "apollo-angular": "^11.0.0",
-    "@angular/common": "20.2.4",
+    "@angular/core": "20.3.15",
+    "apollo-angular": "^13.0.0",
+    "@angular/common": "20.3.15",
     "rxjs": "~7.8.2",
-    "@apollo/client": "^3.13.8"
+    "@apollo/client": "^4.0.10"
   },
   "sideEffects": false
 }

@@ -7,3 +7,6 @@ export * from './tournament-enrollment.resolver';
 export * from './tournament-schedule.resolver';
 export * from './tournament-checkin.resolver';
 export * from './tournament-court.resolver';
+export * from './enrollment-queries.resolver';
+export * from './enrollment-mutations.resolver';
+export * from './enrollment-field.resolver';

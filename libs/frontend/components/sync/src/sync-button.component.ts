@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
@@ -65,7 +65,6 @@ export interface SyncButtonConfig {
   selector: 'app-sync-button',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     TranslateModule,
     ButtonModule,
@@ -74,8 +73,8 @@ export interface SyncButtonConfig {
     DialogModule,
     InputTextModule,
     ToastModule,
-    ConfirmDialogModule,
-  ],
+    ConfirmDialogModule
+],
   providers: [MessageService, ConfirmationService],
   template: `
     @if (config(); as cfg) {

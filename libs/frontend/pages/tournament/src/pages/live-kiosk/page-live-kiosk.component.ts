@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common';
 import { injectParams } from 'ngxtension/inject-params';
 import { TranslateModule } from '@ngx-translate/core';
 import { TagModule } from 'primeng/tag';
-import { TournamentLiveService, CourtStatusUpdate, GameUpdate } from '../../services';
+import { TournamentLiveService, GameUpdate } from '../../services';
 import { interval, Subscription } from 'rxjs';
 
 type KioskView = 'courts' | 'results' | 'upcoming' | 'announcements';
@@ -508,23 +508,23 @@ export class PageLiveKioskComponent implements OnDestroy {
   private viewCycleSubscription?: Subscription;
   private clockSubscription?: Subscription;
 
-  currentView = computed(() => {
+  readonly currentView = computed(() => {
     const hasAnnouncements = this.liveService.announcements().length > 0;
     const allViews = hasAnnouncements ? [...this.views, 'announcements' as KioskView] : this.views;
     return allViews[this.viewIndex() % allViews.length];
   });
 
-  currentTime = signal(this.formatTime());
+  readonly currentTime = signal(this.formatTime());
 
-  courts = computed(() => this.liveService.courtStatuses());
-  gamesMap = computed(() => {
+  readonly courts = computed(() => this.liveService.courtStatuses());
+  readonly gamesMap = computed(() => {
     const games = this.liveService.gamesInProgress();
     const map = new Map<string, GameUpdate>();
     games.forEach((g) => map.set(g.gameId, g));
     return map;
   });
-  recentGames = computed(() => this.liveService.recentCompletedGames().slice(0, 8));
-  stats = computed(() => this.liveService.tournamentStats());
+  readonly recentGames = computed(() => this.liveService.recentCompletedGames().slice(0, 8));
+  readonly stats = computed(() => this.liveService.tournamentStats());
 
   constructor() {
     // Connect when tournament ID is available

@@ -12,13 +12,14 @@
     "ngxtension": "^5.1.0",
     "primeng": "^20.0.0-rc.3",
     "@angular/forms": "20.1.0",
-    "@angular/common": "20.2.4",
-    "apollo-angular": "^11.0.0",
+    "@angular/common": "20.3.15",
+    "apollo-angular": "^13.0.0",
     "rxjs": "~7.8.2",
     "@app/frontend-modules-auth": "*",
-    "@app/frontend-pages-club": "*",
     "@app/utils": "0.0.1",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "@angular/cdk": "20.2.14",
+    "ngx-cookie-service-ssr": "^20.1.1"
   },
   "sideEffects": false
 }

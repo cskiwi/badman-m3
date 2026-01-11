@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
-import { TournamentLiveService, GameUpdate } from '../../services';
+import { TournamentLiveService } from '../../services';
 
 @Component({
   selector: 'app-page-live-results',

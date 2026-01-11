@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -16,7 +16,7 @@ import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 
 import {
@@ -94,7 +94,6 @@ const GET_MATCHED_TEAMS = gql`
   selector: 'app-team-matching-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     CardModule,
@@ -107,8 +106,8 @@ const GET_MATCHED_TEAMS = gql`
     ProgressBarModule,
     DialogModule,
     MessageModule,
-    ConfirmDialogModule,
-  ],
+    ConfirmDialogModule
+],
   providers: [ConfirmationService],
   template: `
     <div class="p-4">
@@ -117,8 +116,8 @@ const GET_MATCHED_TEAMS = gql`
         @if (statsLoading()) {
           @for (i of [1, 2, 3, 4, 5, 6]; track i) {
             <p-card>
-              <p-skeleton width="100%" height="1rem" class="mb-2"></p-skeleton>
-              <p-skeleton width="60%" height="2rem"></p-skeleton>
+              <p-skeleton width="100%" height="1rem" class="mb-2" />
+              <p-skeleton width="60%" height="2rem" />
             </p-card>
           }
         } @else if (stats()) {
@@ -163,17 +162,14 @@ const GET_MATCHED_TEAMS = gql`
 
       <!-- Action Buttons -->
       <div class="flex gap-4 mb-6">
-        <p-button label="Run Auto-Matching" icon="pi pi-cog" [loading]="autoMatchingLoading()" (onClick)="runAutoMatching()" severity="info">
-        </p-button>
-        <p-button
-          label="Bulk Approve High Confidence"
+        <p-button label="Run Auto-Matching" icon="pi pi-cog" [loading]="autoMatchingLoading()" (onClick)="runAutoMatching()" severity="info" />
+        <p-button label="Bulk Approve High Confidence"
           icon="pi pi-check"
           [loading]="bulkApproveLoading()"
           (onClick)="bulkApproveHighConfidence()"
           severity="success"
-        >
-        </p-button>
-        <p-button label="Export Unmatched" icon="pi pi-download" (onClick)="exportUnmatched()" severity="secondary"> </p-button>
+         />
+        <p-button label="Export Unmatched" icon="pi pi-download" (onClick)="exportUnmatched()" severity="secondary" />
       </div>
 
       <!-- Tabs for Unmatched and Matched Teams -->
@@ -185,15 +181,13 @@ const GET_MATCHED_TEAMS = gql`
               <h3 class="text-xl font-bold m-0">Unmatched Teams</h3>
               <div class="flex gap-2">
                 <input pInputText [formControl]="unmatchedSearchControl" placeholder="Search unmatched..." class="w-48" />
-                <p-select
-                  [formControl]="unmatchedTournamentControl"
+                <p-select [formControl]="unmatchedTournamentControl"
                   [options]="tournamentOptions"
                   placeholder="All Tournaments"
                   optionLabel="label"
                   optionValue="value"
                   class="w-48"
-                >
-                </p-select>
+                 />
               </div>
             </div>
           </ng-template>
@@ -203,9 +197,9 @@ const GET_MATCHED_TEAMS = gql`
               <div class="space-y-4">
                 @for (i of [1, 2, 3]; track i) {
                   <div class="border rounded-lg p-4">
-                    <p-skeleton width="200px" height="1.5rem" class="mb-2"></p-skeleton>
-                    <p-skeleton width="150px" height="1rem" class="mb-2"></p-skeleton>
-                    <p-skeleton width="100%" height="1rem"></p-skeleton>
+                    <p-skeleton width="200px" height="1.5rem" class="mb-2" />
+                    <p-skeleton width="150px" height="1rem" class="mb-2" />
+                    <p-skeleton width="100%" height="1rem" />
                   </div>
                 }
               </div>
@@ -254,7 +248,7 @@ const GET_MATCHED_TEAMS = gql`
                           <div class="font-semibold text-sm">{{ team.suggestions[0].teamName }}</div>
                           <div class="text-xs text-gray-600">{{ team.suggestions[0].clubName }}</div>
                           <div class="flex items-center gap-2 mt-1">
-                            <p-progressBar [value]="team.suggestions[0].score * 100" [style]="{ height: '6px', width: '60px' }"> </p-progressBar>
+                            <p-progressBar [value]="team.suggestions[0].score * 100" [style]="{ height: '6px', width: '60px' }" />
                             <span class="text-xs">{{ (team.suggestions[0].score * 100).toFixed(1) }}%</span>
                           </div>
                         </div>
@@ -264,18 +258,16 @@ const GET_MATCHED_TEAMS = gql`
                     </td>
                     <td>
                       <div class="flex gap-1">
-                        <p-button icon="pi pi-eye" size="small" (onClick)="reviewTeam(team)" pTooltip="Review Matches"> </p-button>
+                        <p-button icon="pi pi-eye" size="small" (onClick)="reviewTeam(team)" pTooltip="Review Matches" />
                         @if (team.suggestions && team.suggestions.length > 0) {
-                          <p-button
-                            icon="pi pi-check"
+                          <p-button icon="pi pi-check"
                             size="small"
                             severity="success"
                             (onClick)="quickMatch(team, team.suggestions[0])"
                             pTooltip="Quick Match"
-                          >
-                          </p-button>
+                           />
                         }
-                        <p-button icon="pi pi-times" size="small" severity="secondary" (onClick)="skipTeam(team)" pTooltip="Skip"> </p-button>
+                        <p-button icon="pi pi-times" size="small" severity="secondary" (onClick)="skipTeam(team)" pTooltip="Skip" />
                       </div>
                     </td>
                   </tr>
@@ -301,9 +293,9 @@ const GET_MATCHED_TEAMS = gql`
               <div class="space-y-4">
                 @for (i of [1, 2, 3]; track i) {
                   <div class="border rounded-lg p-4">
-                    <p-skeleton width="200px" height="1.5rem" class="mb-2"></p-skeleton>
-                    <p-skeleton width="150px" height="1rem" class="mb-2"></p-skeleton>
-                    <p-skeleton width="100%" height="1rem"></p-skeleton>
+                    <p-skeleton width="200px" height="1.5rem" class="mb-2" />
+                    <p-skeleton width="150px" height="1rem" class="mb-2" />
+                    <p-skeleton width="100%" height="1rem" />
                   </div>
                 }
               </div>
@@ -343,14 +335,14 @@ const GET_MATCHED_TEAMS = gql`
                     <td>
                       <div>
                         <div class="flex items-center gap-2 mb-1">
-                          <p-progressBar [value]="match.matchScore * 100" [style]="{ height: '6px', width: '50px' }"> </p-progressBar>
+                          <p-progressBar [value]="match.matchScore * 100" [style]="{ height: '6px', width: '50px' }" />
                           <span class="text-xs">{{ (match.matchScore * 100).toFixed(1) }}%</span>
                         </div>
-                        <p-tag [value]="match.matchType" [severity]="getMatchTypeSeverity(match.matchType)" class="text-xs"> </p-tag>
+                        <p-tag [value]="match.matchType" [severity]="getMatchTypeSeverity(match.matchType)" class="text-xs" />
                       </div>
                     </td>
                     <td>
-                      <p-button icon="pi pi-times" size="small" severity="danger" (onClick)="unmatchTeam(match)" pTooltip="Unmatch"> </p-button>
+                      <p-button icon="pi pi-times" size="small" severity="danger" (onClick)="unmatchTeam(match)" pTooltip="Unmatch" />
                     </td>
                   </tr>
                 </ng-template>
@@ -392,7 +384,7 @@ const GET_MATCHED_TEAMS = gql`
               <td>{{ suggestion.clubName }}</td>
               <td>
                 <div class="flex items-center gap-2">
-                  <p-progressBar [value]="suggestion.score * 100" [style]="{ height: '8px', width: '80px' }"> </p-progressBar>
+                  <p-progressBar [value]="suggestion.score * 100" [style]="{ height: '8px', width: '80px' }" />
                   <span class="text-sm">{{ (suggestion.score * 100).toFixed(1) }}%</span>
                 </div>
               </td>
@@ -407,20 +399,20 @@ const GET_MATCHED_TEAMS = gql`
                 </div>
               </td>
               <td>
-                <p-button label="Match" size="small" (onClick)="matchTeamInDialog(selectedTeam()!, suggestion)"> </p-button>
+                <p-button label="Match" size="small" (onClick)="matchTeamInDialog(selectedTeam()!, suggestion)" />
               </td>
             </tr>
           </ng-template>
         </p-table>
 
         <div class="flex justify-end gap-2 mt-4">
-          <p-button label="Create New Team" severity="secondary" (onClick)="createNewTeam(selectedTeam()!)"> </p-button>
-          <p-button label="Skip for Now" severity="secondary" (onClick)="closeReviewDialog()"> </p-button>
+          <p-button label="Create New Team" severity="secondary" (onClick)="createNewTeam(selectedTeam()!)" />
+          <p-button label="Skip for Now" severity="secondary" (onClick)="closeReviewDialog()" />
         </div>
       }
     </p-dialog>
 
-    <p-confirmDialog></p-confirmDialog>
+    <p-confirmDialog />
   `,
 })
 export class TeamMatchingDashboardComponent {
@@ -512,12 +504,12 @@ export class TeamMatchingDashboardComponent {
     // TODO: Load from API
   ];
 
-  onUnmatchedLazyLoad(event: any) {
-    this.unmatchedCurrentPage.set(Math.floor(event.first / event.rows));
+  onUnmatchedLazyLoad(event: TableLazyLoadEvent) {
+    this.unmatchedCurrentPage.set(Math.floor((event.first ?? 0) / (event.rows ?? 1)));
   }
 
-  onMatchedLazyLoad(event: any) {
-    this.matchedCurrentPage.set(Math.floor(event.first / event.rows));
+  onMatchedLazyLoad(event: TableLazyLoadEvent) {
+    this.matchedCurrentPage.set(Math.floor((event.first ?? 0) / (event.rows ?? 1)));
   }
 
   async runAutoMatching() {
@@ -562,7 +554,8 @@ export class TeamMatchingDashboardComponent {
     this.showReviewDialog = true;
   }
 
-  async quickMatch(team: UnmatchedTeam, suggestion: TeamSuggestion) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async quickMatch(_team: UnmatchedTeam, _suggestion: TeamSuggestion) {
     try {
       // TODO: Implement quick match API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -580,7 +573,8 @@ export class TeamMatchingDashboardComponent {
     console.log('Skip team:', team);
   }
 
-  async matchTeamInDialog(team: UnmatchedTeam, suggestion: TeamSuggestion) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async matchTeamInDialog(_team: UnmatchedTeam, _suggestion: TeamSuggestion) {
     try {
       // TODO: Implement match team API call
       await new Promise((resolve) => setTimeout(resolve, 1000));

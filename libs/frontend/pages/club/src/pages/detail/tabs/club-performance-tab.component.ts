@@ -22,11 +22,11 @@ import { ClubPerformanceTabService } from './club-performance-tab.service';
           <p-card>
             <ng-template pTemplate="header">
               <div class="p-4 border-b border-surface-200">
-                <p-skeleton width="10rem" height="1.25rem"></p-skeleton>
+                <p-skeleton width="10rem" height="1.25rem" />
               </div>
             </ng-template>
             <div class="h-[300px] flex items-center justify-center">
-              <p-skeleton width="100%" height="250px"></p-skeleton>
+              <p-skeleton width="100%" height="250px" />
             </div>
           </p-card>
         }
@@ -40,7 +40,7 @@ import { ClubPerformanceTabService } from './club-performance-tab.service';
               <h4 class="font-semibold">{{ 'all.club.winRateTrend' | translate }}</h4>
             </div>
           </ng-template>
-          <p-chart type="line" [data]="service.winRateChartData()" [options]="chartOptions" height="300"> </p-chart>
+          <p-chart type="line" [data]="service.winRateChartData()" [options]="chartOptions" height="300" />
         </p-card>
 
         <!-- Team Performance Comparison -->
@@ -50,7 +50,7 @@ import { ClubPerformanceTabService } from './club-performance-tab.service';
               <h4 class="font-semibold">{{ 'all.club.teamComparison' | translate }}</h4>
             </div>
           </ng-template>
-          <p-chart type="bar" [data]="service.teamComparisonChartData()" [options]="chartOptions" height="300"> </p-chart>
+          <p-chart type="bar" [data]="service.teamComparisonChartData()" [options]="chartOptions" height="300" />
         </p-card>
 
         <!-- Games Distribution -->
@@ -60,7 +60,7 @@ import { ClubPerformanceTabService } from './club-performance-tab.service';
               <h4 class="font-semibold">{{ 'all.club.gamesDistribution' | translate }}</h4>
             </div>
           </ng-template>
-          <p-chart type="doughnut" [data]="service.gamesDistributionChartData()" [options]="doughnutChartOptions" height="300"> </p-chart>
+          <p-chart type="doughnut" [data]="service.gamesDistributionChartData()" [options]="doughnutChartOptions" height="300" />
         </p-card>
 
         <!-- Seasonal Performance -->
@@ -70,7 +70,7 @@ import { ClubPerformanceTabService } from './club-performance-tab.service';
               <h4 class="font-semibold">{{ 'all.club.seasonalPerformance' | translate }}</h4>
             </div>
           </ng-template>
-          <p-chart type="radar" [data]="service.seasonalPerformanceChartData()" [options]="radarChartOptions" height="300"> </p-chart>
+          <p-chart type="radar" [data]="service.seasonalPerformanceChartData()" [options]="radarChartOptions" height="300" />
         </p-card>
       </div>
     }

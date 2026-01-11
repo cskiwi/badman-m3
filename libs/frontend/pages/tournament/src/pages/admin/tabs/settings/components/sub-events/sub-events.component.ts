@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent, TournamentSubEvent } from '@app/models';
@@ -19,7 +19,6 @@ import { SortMeta } from 'primeng/api';
   selector: 'app-sub-events',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     TranslateModule,
@@ -31,8 +30,8 @@ import { SortMeta } from 'primeng/api';
     InputTextModule,
     InputNumberModule,
     CheckboxModule,
-    TooltipModule,
-  ],
+    TooltipModule
+],
   templateUrl: './sub-events.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

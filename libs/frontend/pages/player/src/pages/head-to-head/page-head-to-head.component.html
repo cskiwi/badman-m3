@@ -137,15 +137,13 @@
       <ng-template pTemplate="header">
         <div class="px-3 py-1 flex justify-between items-center">
           <h3 class="text-base font-medium m-0">{{ 'all.head-to-head.info.title' | translate }}</h3>
-          <p-button 
-            [text]="true" 
+          <p-button [text]="true" 
             [rounded]="true" 
             size="small"
             icon="pi pi-times"
             (onClick)="dismissExplanation()"
             [ariaLabel]="'Close explanation'"
-            styleClass="!w-8 !h-8 !p-0 text-gray-400 hover:text-gray-600">
-          </p-button>
+            styleClass="!w-8 !h-8 !p-0 text-gray-400 hover:text-gray-600" />
         </div>
       </ng-template>
       <div class="px-3 pb-3 -mt-1 text-gray-600 space-y-2">
@@ -163,7 +161,7 @@
 
 <div class="head-to-heads">
   <p-card>
-    <app-head-to-head-grid [dataSource]="data()" [loading]="loading()" [viewMode]="filter.get('viewMode')?.value ?? 'partners'"></app-head-to-head-grid>
+    <app-head-to-head-grid [dataSource]="data()" [loading]="loading()" [viewMode]="filter.get('viewMode')?.value ?? 'partners'" />
   </p-card>
 </div>
 

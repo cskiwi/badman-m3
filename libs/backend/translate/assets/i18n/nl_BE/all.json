@@ -133,6 +133,7 @@
     "actions": "Acties",
     "cancel": "Annuleren",
     "error": "Fout",
+    "level": "Niveau",
     "name": "Naam",
     "no": "Nee",
     "save": "Opslaan",
@@ -140,6 +141,7 @@
     "season": "Seizoen",
     "selectSeason": "Selecteer seizoen",
     "success": "Succes",
+    "unknown": "Onbekend",
     "viewAll": "Bekijk Alle",
     "viewDetails": "Details bekijken",
     "yes": "Ja"
@@ -230,7 +232,70 @@
     "wednesday": "Woensdag"
   },
   "enrollment": {
-    "myEnrollments": "Mijn Inschrijvingen"
+    "addToCart": "Toevoegen aan Winkelwagen",
+    "additionalNotes": "Aanvullende Opmerkingen",
+    "availableEvents": "Beschikbare Evenementen",
+    "cart": {
+      "clear": "Winkelwagen Legen",
+      "empty": "Je winkelwagen is leeg",
+      "emptyDescription": "Selecteer evenementen uit de lijst om ze toe te voegen aan je winkelwagen",
+      "enrollNow": "Nu Inschrijven",
+      "eventsSelected": "evenementen geselecteerd",
+      "eventSelected": "evenement geselecteerd",
+      "partnerSelected": "Partner geselecteerd",
+      "title": "Inschrijvingswinkelwagen",
+      "totalEvents": "Totaal Evenementen:"
+    },
+    "characters": "karakters",
+    "closed": "Inschrijving Gesloten",
+    "continue": "Doorgaan",
+    "enrollNow": "Schrijf Nu In",
+    "filters": {
+      "category": "Categorie",
+      "clear": "Wissen",
+      "double": "Dubbel:",
+      "eventType": "Evenement Type",
+      "level": "Niveau",
+      "maxLevel": "Max",
+      "minLevel": "Min",
+      "mixed": "Gemengd:",
+      "showOnlyMyLevel": "Alleen mijn niveau tonen",
+      "single": "Enkel:",
+      "status": "Status",
+      "statusOptions": {
+        "all": "Alle Evenementen",
+        "available": "Alleen Beschikbaar",
+        "open": "Open Inschrijving"
+      },
+      "yourRankings": "Jouw Rankings"
+    },
+    "loading": "Beschikbare evenementen laden...",
+    "messages": {
+      "addedToCart": "Toegevoegd aan winkelwagen",
+      "addedWithPartner": "Toegevoegd aan winkelwagen met partnervoorkeur",
+      "cartCleared": "Winkelwagen geleegd",
+      "cartEmpty": "Winkelwagen is leeg",
+      "enrollmentFailed": "Inschrijving mislukt. Probeer het opnieuw.",
+      "enrollmentSuccess": "Succesvol ingeschreven voor {{count}} evenementen!",
+      "partialEnrollment": "Gedeeltelijk ingeschreven. {{count}} evenementen mislukt.",
+      "removedFromCart": "Verwijderd uit winkelwagen",
+      "submitFailed": "Inschrijving indienen mislukt"
+    },
+    "myEnrollments": "Mijn Inschrijvingen",
+    "noEventsMatch": "Geen evenementen komen overeen met je filters",
+    "notEligible": "Niet In Aanmerking",
+    "notYetOpen": "Nog Niet Open",
+    "optional": "(Optioneel)",
+    "partnerSelection": {
+      "description": "Zoek en selecteer je voorkeurspartner voor dubbel",
+      "notes": "Aanvullende informatie of voorkeuren...",
+      "placeholder": "Begin met typen van de partnernaam...",
+      "title": "Partner Selectie"
+    },
+    "removeFromCart": "Verwijderen uit Winkelwagen",
+    "subtitle": "Selecteer één of meer evenementen om in te schrijven",
+    "title": "Toernooi Inschrijving",
+    "tryAdjustingFilters": "Probeer je filterinstellingen aan te passen"
   },
   "error": {
     "genericTitle": "Er is een fout opgetreden"
@@ -972,6 +1037,7 @@
       },
       "title": "Toernooi Admin"
     },
+    "capacity": "Capaciteit",
     "closeDate": "Inschrijvingen Sluiten",
     "create": {
       "closeDate": "Sluitingsdatum Inschrijvingen",
@@ -997,6 +1063,7 @@
         "title": "Wedstrijden"
       }
     },
+    "double": "Dubbel",
     "draws": "Reeks",
     "entries": "Inschrijvingen",
     "events": "Toernooi Events",
@@ -1008,6 +1075,8 @@
       "national": "Nationaal"
     },
     "firstDay": "Eerste Dag",
+    "full": "Vol",
+    "fullWaitingList": "Vol (Wachtlijst)",
     "gameType": "Spel Type",
     "gameTypes": {
       "doubles": "Dubbelspel",
@@ -1016,6 +1085,7 @@
       "singles": "Enkelspel"
     },
     "information": "Toernooi Informatie",
+    "inWaitingList": "op wachtlijst",
     "level": "Niveau",
     "live": {
       "allGamesCompleted": "Alle wedstrijden zijn voltooid!",
@@ -1054,6 +1124,8 @@
     },
     "location": "Locatie",
     "matches": "Wedstrijden",
+    "men": "Heren",
+    "mixed": "Gemengd",
     "number": "Toernooi Nummer",
     "official": "Officieel Toernooi",
     "openDate": "Inschrijvingen Open",
@@ -1074,6 +1146,8 @@
       "scheduledDesc": "Wedstrijden zijn ingepland op velden"
     },
     "registration": "Inschrijving Informatie",
+    "single": "Enkel",
+    "spotsLeft": "{{count}} plaatsen over",
     "title": "Toernooien",
     "types": {
       "men": "Heren",
@@ -1081,6 +1155,8 @@
       "other": "Andere",
       "women": "Dames"
     },
-    "visualCode": "Visuele Code"
+    "unlimited": "Onbeperkt",
+    "visualCode": "Visuele Code",
+    "women": "Dames"
   }
 }

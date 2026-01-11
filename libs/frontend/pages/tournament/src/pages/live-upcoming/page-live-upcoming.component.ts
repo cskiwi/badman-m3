@@ -4,7 +4,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
-import { TournamentLiveService, ScheduleUpdate } from '../../services';
+import { TournamentLiveService } from '../../services';
 
 interface UpcomingGame {
   gameId: string;

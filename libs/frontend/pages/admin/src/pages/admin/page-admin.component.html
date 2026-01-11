@@ -7,7 +7,7 @@
     </ng-container>
   </app-page-header>
 
-  <p-message severity="error" [text]="'You need administrator permissions to access this page.'"></p-message>
+  <p-message severity="error" [text]="'You need administrator permissions to access this page.'" />
 } @else {
   <app-page-header>
     <i avatar class="pi pi-cog text-2xl"></i>
@@ -43,7 +43,7 @@
 
                 @for (indexType of indexTypes; track indexType.key) {
                   <div class="flex items-center space-x-2">
-                    <p-checkbox [formControlName]="indexType.key" [inputId]="indexType.key" [binary]="true"> </p-checkbox>
+                    <p-checkbox [formControlName]="indexType.key" [inputId]="indexType.key" [binary]="true" />
                     <label [for]="indexType.key" class="text-color cursor-pointer">
                       {{ indexType.label }}
                     </label>
@@ -53,34 +53,28 @@
 
               <!-- Quick Actions -->
               <div class="flex gap-2 pt-2">
-                <p-button
-                  [label]="'all.admin.panel.searchIndex.selectAll' | translate"
+                <p-button [label]="'all.admin.panel.searchIndex.selectAll' | translate"
                   [outlined]="true"
                   size="small"
                   type="button"
                   (click)="selectAll()"
-                >
-                </p-button>
-                <p-button
-                  [label]="'all.admin.panel.searchIndex.selectNone' | translate"
+                 />
+                <p-button [label]="'all.admin.panel.searchIndex.selectNone' | translate"
                   [outlined]="true"
                   size="small"
                   type="button"
                   (click)="selectNone()"
-                >
-                </p-button>
+                 />
               </div>
 
               <!-- Submit Button -->
               <div class="pt-4 border-t border-surface-200">
-                <p-button
-                  [label]="'all.admin.panel.searchIndex.startIndexing' | translate"
+                <p-button [label]="'all.admin.panel.searchIndex.startIndexing' | translate"
                   icon="pi pi-refresh"
                   type="submit"
                   [loading]="loading()"
                   [disabled]="loading()"
-                >
-                </p-button>
+                 />
               </div>
 
               <!-- Loading Indicator -->
@@ -93,7 +87,7 @@
 
               <!-- Error Message -->
               @if (error(); as errorMessage) {
-                <p-message severity="error" [text]="errorMessage"></p-message>
+                <p-message severity="error" [text]="errorMessage" />
               }
             </form>
           </p-card>
@@ -119,7 +113,7 @@
       </p-tabpanel>
 
       <p-tabpanel value="1">
-        <app-sync-dashboard></app-sync-dashboard>
+        <app-sync-dashboard />
       </p-tabpanel>
 
       <p-tabpanel value="2">
@@ -129,5 +123,5 @@
   </p-tabs>
 
   <!-- Toast Messages -->
-  <p-toast position="top-right"></p-toast>
+  <p-toast position="top-right" />
 }

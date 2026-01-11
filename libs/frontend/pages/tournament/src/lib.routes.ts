@@ -1,50 +1,55 @@
 import { Route } from '@angular/router';
-import { PageOverviewComponent } from './pages/overview/page-overview.component';
-import { PageDetailComponent } from './pages/detail/page-detail.component';
-import { PageDrawDetailComponent } from './pages/draw-detail/page-draw-detail.component';
-import { PageClubDetailComponent } from './pages/club-detail/page-club-detail.component';
-import { PageCreateComponent } from './pages/create/page-create.component';
-import { PageEnrollmentComponent } from './pages/enrollment/page-enrollment.component';
-import { PageMyEnrollmentsComponent } from './pages/my-enrollments/page-my-enrollments.component';
-import { PageAdminComponent } from './pages/admin/page-admin.component';
-import { PageLiveCourtsComponent } from './pages/live-courts/page-live-courts.component';
-import { PageLiveResultsComponent } from './pages/live-results/page-live-results.component';
-import { PageLiveUpcomingComponent } from './pages/live-upcoming/page-live-upcoming.component';
-import { PageLiveKioskComponent } from './pages/live-kiosk/page-live-kiosk.component';
-import { CenterLayoutComponent, FullWidthLayoutComponent } from '@app/frontend-components/layout';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const routes: Route[] = [
   {
     path: '',
-    component: CenterLayoutComponent,
+    loadComponent: () => import('@app/frontend-components/layout').then(m => m.CenterLayoutComponent),
     children: [
-      { path: '', component: PageOverviewComponent },
+      { path: '', loadComponent: () => import('./pages/overview/page-overview.component').then(m => m.PageOverviewComponent) },
       {
         path: 'club/:clubId',
-        component: PageClubDetailComponent,
+        loadComponent: () => import('./pages/club-detail/page-club-detail.component').then(m => m.PageClubDetailComponent),
       },
       {
         path: 'create',
-        component: PageCreateComponent,
+        loadComponent: () => import('./pages/create/page-create.component').then(m => m.PageCreateComponent),
       },
       {
         path: ':tournamentId',
         children: [
           {
             path: '',
-            component: PageDetailComponent,
+            loadComponent: () => import('./pages/detail/page-detail.component').then(m => m.PageDetailComponent),
           },
           {
             path: 'admin',
-            component: PageAdminComponent,
+            loadComponent: () => import('./pages/admin/page-admin.component').then(m => m.PageAdminComponent),
           },
           {
             path: 'my-enrollments',
-            component: PageMyEnrollmentsComponent,
+            loadComponent: () => import('./pages/my-enrollments/page-my-enrollments.component').then(m => m.PageMyEnrollmentsComponent),
+          },
+          {
+            path: 'enroll',
+            loadComponent: () => import('./pages/general-enrollment/page-general-enrollment.component').then(m => m.PageGeneralEnrollmentComponent),
           },
           {
             path: 'sub-events/:subEventId/enroll',
-            component: PageEnrollmentComponent,
+            loadComponent: () => import('./pages/enrollment/page-enrollment.component').then(m => m.PageEnrollmentComponent),
           },
         ],
       },
@@ -52,18 +57,18 @@ export const routes: Route[] = [
   },
   {
     path: ':tournamentId/sub-events/:subEventId/draws/:drawId',
-    component: FullWidthLayoutComponent,
+    loadComponent: () => import('@app/frontend-components/layout').then(m => m.FullWidthLayoutComponent),
     children: [
       {
         path: '',
-        component: PageDrawDetailComponent,
+        loadComponent: () => import('./pages/draw-detail/page-draw-detail.component').then(m => m.PageDrawDetailComponent),
       },
     ],
   },
   // Live display routes - public, no authentication required
   {
     path: ':tournamentId/live',
-    component: FullWidthLayoutComponent,
+    loadComponent: () => import('@app/frontend-components/layout').then(m => m.FullWidthLayoutComponent),
     children: [
       {
         path: '',
@@ -72,19 +77,19 @@ export const routes: Route[] = [
       },
       {
         path: 'courts',
-        component: PageLiveCourtsComponent,
+        loadComponent: () => import('./pages/live-courts/page-live-courts.component').then(m => m.PageLiveCourtsComponent),
       },
       {
         path: 'results',
-        component: PageLiveResultsComponent,
+        loadComponent: () => import('./pages/live-results/page-live-results.component').then(m => m.PageLiveResultsComponent),
       },
       {
         path: 'upcoming',
-        component: PageLiveUpcomingComponent,
+        loadComponent: () => import('./pages/live-upcoming/page-live-upcoming.component').then(m => m.PageLiveUpcomingComponent),
       },
       {
         path: 'kiosk',
-        component: PageLiveKioskComponent,
+        loadComponent: () => import('./pages/live-kiosk/page-live-kiosk.component').then(m => m.PageLiveKioskComponent),
       },
     ],
   },

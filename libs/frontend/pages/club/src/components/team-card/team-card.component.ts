@@ -98,16 +98,16 @@ import { TeamCardService } from './team-card.service';
         <div class="grid grid-cols-3 gap-2 text-center my-3 border-t border-surface pt-3">
           @if (service.loading()) {
             <div class="p-2">
-              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1"></p-skeleton>
-              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto"></p-skeleton>
+              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1" />
+              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto" />
             </div>
             <div class="p-2">
-              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1"></p-skeleton>
-              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto"></p-skeleton>
+              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1" />
+              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto" />
             </div>
             <div class="p-2">
-              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1"></p-skeleton>
-              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto"></p-skeleton>
+              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1" />
+              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto" />
             </div>
           } @else {
             <div class="p-2">

@@ -48,7 +48,7 @@
                     }
                   </div>
                   @if (club.abbreviation) {
-                    <p-tag [value]="club.abbreviation" severity="info" size="small"></p-tag>
+                    <p-tag [value]="club.abbreviation" severity="info" size="small" />
                   }
                 </div>
               </ng-template>
@@ -57,7 +57,7 @@
                 <div class="flex items-center gap-2">
                   <span>{{ club.name }}</span>
                   @if (club.abbreviation) {
-                    <p-tag [value]="club.abbreviation" severity="info" size="small"></p-tag>
+                    <p-tag [value]="club.abbreviation" severity="info" size="small" />
                   }
                 </div>
               </ng-template>
@@ -128,8 +128,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <!-- Country Filter -->
                 <p-floatlabel>
-                  <p-dropdown 
-                    [formControl]="country" 
+                  <p-dropdown [formControl]="country" 
                     [options]="countryOptions()" 
                     optionLabel="label" 
                     optionValue="value"
@@ -137,15 +136,13 @@
                     [filter]="true"
                     filterPlaceholder="{{ 'clubSearch.filters.searchCountries' | translate }}"
                     id="country-filter"
-                    styleClass="w-full">
-                  </p-dropdown>
+                    styleClass="w-full" />
                   <label for="country-filter">{{ 'clubSearch.filters.country' | translate }}</label>
                 </p-floatlabel>
                 
                 <!-- State Filter -->
                 <p-floatlabel>
-                  <p-dropdown 
-                    [formControl]="state" 
+                  <p-dropdown [formControl]="state" 
                     [options]="stateOptions()" 
                     optionLabel="label" 
                     optionValue="value"
@@ -153,15 +150,13 @@
                     [filter]="true"
                     filterPlaceholder="{{ 'clubSearch.filters.searchStates' | translate }}"
                     id="state-filter"
-                    styleClass="w-full">
-                  </p-dropdown>
+                    styleClass="w-full" />
                   <label for="state-filter">{{ 'clubSearch.filters.state' | translate }}</label>
                 </p-floatlabel>
                 
                 <!-- Division Filter -->
                 <p-floatlabel>
-                  <p-dropdown 
-                    [formControl]="division" 
+                  <p-dropdown [formControl]="division" 
                     [options]="divisionOptions()" 
                     optionLabel="label" 
                     optionValue="value"
@@ -169,14 +164,13 @@
                     [filter]="true"
                     filterPlaceholder="{{ 'clubSearch.filters.searchDivisions' | translate }}"
                     id="division-filter"
-                    styleClass="w-full">
-                  </p-dropdown>
+                    styleClass="w-full" />
                   <label for="division-filter">{{ 'clubSearch.filters.division' | translate }}</label>
                 </p-floatlabel>
               </div>
             </div>
 
-            <p-divider></p-divider>
+            <p-divider />
 
             <!-- Member Count Filters -->
             <div class="filter-section">
@@ -186,57 +180,49 @@
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Player Count Range -->
                 <p-floatlabel>
-                  <p-inputNumber 
-                    [formControl]="minPlayers" 
+                  <p-inputNumber [formControl]="minPlayers" 
                     [min]="0"
                     [showButtons]="true"
                     [step]="1"
                     id="min-players"
-                    styleClass="w-full">
-                  </p-inputNumber>
+                    styleClass="w-full" />
                   <label for="min-players">{{ 'clubSearch.filters.minPlayers' | translate }}</label>
                 </p-floatlabel>
                 
                 <p-floatlabel>
-                  <p-inputNumber 
-                    [formControl]="maxPlayers" 
+                  <p-inputNumber [formControl]="maxPlayers" 
                     [min]="0"
                     [showButtons]="true"
                     [step]="1"
                     id="max-players"
-                    styleClass="w-full">
-                  </p-inputNumber>
+                    styleClass="w-full" />
                   <label for="max-players">{{ 'clubSearch.filters.maxPlayers' | translate }}</label>
                 </p-floatlabel>
                 
                 <!-- Team Count Range -->
                 <p-floatlabel>
-                  <p-inputNumber 
-                    [formControl]="minTeams" 
+                  <p-inputNumber [formControl]="minTeams" 
                     [min]="0"
                     [showButtons]="true"
                     [step]="1"
                     id="min-teams"
-                    styleClass="w-full">
-                  </p-inputNumber>
+                    styleClass="w-full" />
                   <label for="min-teams">{{ 'clubSearch.filters.minTeams' | translate }}</label>
                 </p-floatlabel>
                 
                 <p-floatlabel>
-                  <p-inputNumber 
-                    [formControl]="maxTeams" 
+                  <p-inputNumber [formControl]="maxTeams" 
                     [min]="0"
                     [showButtons]="true"
                     [step]="1"
                     id="max-teams"
-                    styleClass="w-full">
-                  </p-inputNumber>
+                    styleClass="w-full" />
                   <label for="max-teams">{{ 'clubSearch.filters.maxTeams' | translate }}</label>
                 </p-floatlabel>
               </div>
             </div>
 
-            <p-divider></p-divider>
+            <p-divider />
 
             <!-- Additional Filters -->
             <div class="filter-section">
@@ -246,46 +232,38 @@
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Founded Year Range -->
                 <p-floatlabel>
-                  <p-inputNumber 
-                    [formControl]="foundedAfter" 
+                  <p-inputNumber [formControl]="foundedAfter" 
                     [min]="1800"
                     [max]="2024"
                     [showButtons]="true"
                     [step]="1"
                     id="founded-after"
-                    styleClass="w-full">
-                  </p-inputNumber>
+                    styleClass="w-full" />
                   <label for="founded-after">{{ 'clubSearch.filters.foundedAfter' | translate }}</label>
                 </p-floatlabel>
                 
                 <p-floatlabel>
-                  <p-inputNumber 
-                    [formControl]="foundedBefore" 
+                  <p-inputNumber [formControl]="foundedBefore" 
                     [min]="1800"
                     [max]="2024"
                     [showButtons]="true"
                     [step]="1"
                     id="founded-before"
-                    styleClass="w-full">
-                  </p-inputNumber>
+                    styleClass="w-full" />
                   <label for="founded-before">{{ 'clubSearch.filters.foundedBefore' | translate }}</label>
                 </p-floatlabel>
 
                 <!-- Boolean Filters -->
                 <div class="flex flex-col gap-3">
-                  <p-checkbox 
-                    [formControl]="isActive" 
+                  <p-checkbox [formControl]="isActive" 
                     [binary]="true"
                     label="{{ 'clubSearch.filters.activeOnly' | translate }}"
-                    id="active-only">
-                  </p-checkbox>
+                    id="active-only" />
                   
-                  <p-checkbox 
-                    [formControl]="hasWebsite" 
+                  <p-checkbox [formControl]="hasWebsite" 
                     [binary]="true"
                     label="{{ 'clubSearch.filters.hasWebsite' | translate }}"
-                    id="has-website">
-                  </p-checkbox>
+                    id="has-website" />
                 </div>
               </div>
             </div>
@@ -297,20 +275,16 @@
                 <span>{{ 'clubSearch.filters.resultCount' | translate: {count: totalCount()} }}</span>
               </div>
               <div class="flex gap-2">
-                <p-button 
-                  label="{{ 'clubSearch.filters.clear' | translate }}" 
+                <p-button label="{{ 'clubSearch.filters.clear' | translate }}" 
                   [outlined]="true" 
                   icon="pi pi-times"
                   size="small"
                   severity="secondary"
-                  (onClick)="clearFilters()">
-                </p-button>
-                <p-button 
-                  label="{{ 'clubSearch.filters.apply' | translate }}" 
+                  (onClick)="clearFilters()" />
+                <p-button label="{{ 'clubSearch.filters.apply' | translate }}" 
                   icon="pi pi-check"
                   size="small"
-                  (onClick)="applyFilters()">
-                </p-button>
+                  (onClick)="applyFilters()" />
               </div>
             </div>
           </div>
@@ -332,24 +306,20 @@
           <!-- Right: Controls -->
           <div class="controls flex flex-wrap items-center gap-4">
             <!-- Sort Dropdown -->
-            <p-dropdown 
-              [value]="sortBy()" 
+            <p-dropdown [value]="sortBy()" 
               [options]="sortOptions" 
               optionLabel="label"
               (onChange)="onSortChange($event.value)"
               placeholder="{{ 'clubSearch.sort.placeholder' | translate }}"
-              styleClass="min-w-40">
-            </p-dropdown>
+              styleClass="min-w-40" />
 
             <!-- Page Size -->
-            <p-dropdown 
-              [value]="pagination().rows" 
+            <p-dropdown [value]="pagination().rows" 
               [options]="pageSizeOptions" 
               optionLabel="label"
               optionValue="value"
               (onChange)="onPageSizeChange($event.value)"
-              styleClass="min-w-32">
-            </p-dropdown>
+              styleClass="min-w-32" />
 
             <!-- View Mode Toggle -->
             <p-selectButton 
@@ -394,11 +364,9 @@
                           {{ club.name }}
                         </h3>
                         @if (club.isActive !== undefined) {
-                          <p-tag 
-                            [value]="getClubStatusBadge(club).label"
+                          <p-tag [value]="getClubStatusBadge(club).label"
                             [severity]="getClubStatusBadge(club).severity"
-                            size="small">
-                          </p-tag>
+                            size="small" />
                         }
                       </div>
                       
@@ -409,7 +377,7 @@
                       }
                       
                       @if (club.abbreviation) {
-                        <p-tag [value]="club.abbreviation" severity="info" size="small" styleClass="mb-2"></p-tag>
+                        <p-tag [value]="club.abbreviation" severity="info" size="small" styleClass="mb-2" />
                       }
                     </div>
                   </ng-template>
@@ -496,14 +464,12 @@
                           {{ club.name }}
                         </h3>
                         @if (club.abbreviation) {
-                          <p-tag [value]="club.abbreviation" severity="info" size="small"></p-tag>
+                          <p-tag [value]="club.abbreviation" severity="info" size="small" />
                         }
                         @if (club.isActive !== undefined) {
-                          <p-tag 
-                            [value]="getClubStatusBadge(club).label"
+                          <p-tag [value]="getClubStatusBadge(club).label"
                             [severity]="getClubStatusBadge(club).severity"
-                            size="small">
-                          </p-tag>
+                            size="small" />
                         }
                       </div>
                       
@@ -576,15 +542,13 @@
 
           <!-- Pagination -->
           <div class="pagination-container mt-8 flex justify-center">
-            <p-paginator 
-              [first]="pagination().first"
+            <p-paginator [first]="pagination().first"
               [rows]="pagination().rows"
               [totalRecords]="totalCount()"
               [showCurrentPageReport]="true"
               [rowsPerPageOptions]="[12, 24, 48, 96]"
               currentPageReportTemplate="{{ 'clubSearch.pagination.template' | translate }}"
-              (onPageChange)="onPageChange($event)">
-            </p-paginator>
+              (onPageChange)="onPageChange($event)" />
           </div>
 
         } @else {
@@ -602,17 +566,13 @@
               </p>
               
               <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <p-button 
-                  label="{{ 'clubSearch.noResults.clearFilters' | translate }}" 
+                <p-button label="{{ 'clubSearch.noResults.clearFilters' | translate }}" 
                   icon="pi pi-times"
                   [outlined]="true"
-                  (onClick)="clearFilters()">
-                </p-button>
-                <p-button 
-                  label="{{ 'clubSearch.noResults.searchAgain' | translate }}" 
+                  (onClick)="clearFilters()" />
+                <p-button label="{{ 'clubSearch.noResults.searchAgain' | translate }}" 
                   icon="pi pi-search"
-                  (onClick)="focusSearch()">
-                </p-button>
+                  (onClick)="focusSearch()" />
               </div>
             </div>
           </div>
@@ -625,7 +585,7 @@
   <!-- Loading State -->
   <div class="loading-container min-h-screen bg-surface-0 dark:bg-surface-900 flex items-center justify-center">
     <div class="text-center">
-      <p-progressSpinner strokeWidth="3" animationDuration="1s"></p-progressSpinner>
+      <p-progressSpinner strokeWidth="3" animationDuration="1s" />
       <p class="text-surface-600 dark:text-surface-300 mt-4">
         {{ 'clubSearch.loading' | translate }}
       </p>
@@ -642,14 +602,12 @@
         <div class="font-semibold mb-1">Error Loading Clubs</div>
         <div class="text-sm">{{ error() }}</div>
       </div>
-      <p-button 
-        icon="pi pi-times" 
+      <p-button icon="pi pi-times" 
         [text]="true" 
         size="small"
         severity="secondary"
         (onClick)="clearError()"
-        styleClass="text-red-600 dark:text-red-400">
-      </p-button>
+        styleClass="text-red-600 dark:text-red-400" />
     </div>
   </div>
 }

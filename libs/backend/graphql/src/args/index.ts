@@ -28,9 +28,12 @@ entities.forEach(([name, EntityClass]) => {
   appendWhereObjects(EntityClass, name);
 });
 
-// Create typed args map
+// Helper type to check if a type is constructable
+type IsConstructable<T> = T extends abstract new (...args: any) => any ? T : never;
+
+// Create typed args map (only for constructable entity types, excluding enums)
 type EntityArgsMap = {
-  [K in keyof typeof Models as `${K & string}Args`]: ReturnType<typeof args<InstanceType<(typeof Models)[K]>>>;
+  [K in keyof typeof Models as IsConstructable<(typeof Models)[K]> extends never ? never : `${K & string}Args`]: ReturnType<typeof args<InstanceType<IsConstructable<(typeof Models)[K]>>>>;
 };
 
 // Dynamically create args for all entities with proper typing

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -58,7 +58,7 @@ import {
   providers: [ClubSearchService]
 })
 export class ClubSearchComponent {
-  @ViewChild('searchInput') searchInput!: ElementRef;
+  readonly searchInput = viewChild.required<ElementRef>('searchInput');
 
   private readonly clubService = new ClubSearchService();
   private readonly router = Router;
@@ -152,8 +152,9 @@ export class ClubSearchComponent {
   }
 
   focusSearch(): void {
-    if (this.searchInput?.nativeElement) {
-      this.searchInput.nativeElement.focus();
+    const searchInput = this.searchInput();
+    if (searchInput?.nativeElement) {
+      searchInput.nativeElement.focus();
     }
   }
 

@@ -24,16 +24,16 @@ import { ClubTeamsTabService } from './club-teams-tab.service';
           <p-card>
             <ng-template pTemplate="header">
               <div class="p-4 border-b border-surface-200">
-                <p-skeleton width="10rem" height="1.25rem"></p-skeleton>
+                <p-skeleton width="10rem" height="1.25rem" />
               </div>
             </ng-template>
             <div class="space-y-4 p-4">
               @for (j of [1, 2, 3]; track j) {
                 <div class="flex items-center gap-4">
-                  <p-skeleton width="4rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="8rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="2rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="8rem" height="1rem"></p-skeleton>
+                  <p-skeleton width="4rem" height="1rem" />
+                  <p-skeleton width="8rem" height="1rem" />
+                  <p-skeleton width="2rem" height="1rem" />
+                  <p-skeleton width="8rem" height="1rem" />
                 </div>
               }
             </div>

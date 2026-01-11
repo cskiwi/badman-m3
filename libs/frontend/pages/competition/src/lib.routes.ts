@@ -1,25 +1,25 @@
 import { Route } from '@angular/router';
-import { PageOverviewComponent } from './pages/overview/page-overview.component';
-import { PageDetailComponent } from './pages/detail/page-detail.component';
-import { PageDrawsComponent } from './pages/draws/page-draws.component';
-import { CenterLayoutComponent } from '@app/frontend-components/layout';
+
+
+
+
 
 export const routes: Route[] = [
   {
     path: '',
-    component: CenterLayoutComponent,
+    loadComponent: () => import('@app/frontend-components/layout').then(m => m.CenterLayoutComponent),
     children: [
-      { path: '', component: PageOverviewComponent },
+      { path: '', loadComponent: () => import('./pages/overview/page-overview.component').then(m => m.PageOverviewComponent) },
       {
         path: ':competitionId',
         children: [
           {
             path: '',
-            component: PageDetailComponent,
+            loadComponent: () => import('./pages/detail/page-detail.component').then(m => m.PageDetailComponent),
           },
           {
             path: 'sub-events/:subEventId/draws/:drawId',
-            component: PageDrawsComponent,
+            loadComponent: () => import('./pages/draws/page-draws.component').then(m => m.PageDrawsComponent),
           },
         ],
       },

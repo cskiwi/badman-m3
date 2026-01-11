@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "tslib": "^2.0.0",
-    "@nx/devkit": "21.4.1"
+    "@nx/devkit": "22.2.3"
   },
   "type": "commonjs",
   "main": "./src/index.js",

@@ -97,11 +97,10 @@
 
             <!-- Right: Game Type -->
             <div class="min-w-0">
-              <p-chip
-                [label]="game?.gameType"
+              <p-chip [label]="game?.gameType"
                 [style]="{ background: 'var(--primary-100)', color: 'var(--primary-700)' }"
                 class="text-xs font-medium"
-              ></p-chip>
+               />
             </div>
           </div>
         </div>
@@ -436,18 +435,18 @@
               <!-- Left: Date skeleton -->
               <div class="flex items-center gap-3">
                 <div class="flex flex-col gap-1">
-                  <p-skeleton width="4rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
+                  <p-skeleton width="4rem" height="1rem" />
+                  <p-skeleton width="3rem" height="0.75rem" />
                 </div>
               </div>
 
               <!-- Center: Tournament skeleton -->
               <div class="flex-1 text-center px-4">
-                <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
+                <p-skeleton width="8rem" height="1rem" class="mx-auto" />
               </div>
 
               <!-- Right: Game type skeleton -->
-              <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
+              <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem" />
             </div>
           </div>
 
@@ -457,23 +456,23 @@
             <div class="flex items-center justify-between gap-6 mb-4">
               <!-- Team 1 -->
               <div class="flex-1 text-right space-y-2">
-                <p-skeleton width="6rem" height="1rem" class="ml-auto"></p-skeleton>
-                <p-skeleton width="5rem" height="1rem" class="ml-auto"></p-skeleton>
+                <p-skeleton width="6rem" height="1rem" class="ml-auto" />
+                <p-skeleton width="5rem" height="1rem" class="ml-auto" />
               </div>
 
               <!-- VS section -->
               <div class="flex items-center gap-4">
-                <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
+                <p-skeleton width="1rem" height="1rem" borderRadius="50%" />
                 <div class="bg-surface-200 dark:bg-surface-700 px-3 py-1 rounded-full">
-                  <p-skeleton width="1.5rem" height="0.75rem"></p-skeleton>
+                  <p-skeleton width="1.5rem" height="0.75rem" />
                 </div>
-                <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
+                <p-skeleton width="1rem" height="1rem" borderRadius="50%" />
               </div>
 
               <!-- Team 2 -->
               <div class="flex-1 text-left space-y-2">
-                <p-skeleton width="6rem" height="1rem"></p-skeleton>
-                <p-skeleton width="5rem" height="1rem"></p-skeleton>
+                <p-skeleton width="6rem" height="1rem" />
+                <p-skeleton width="5rem" height="1rem" />
               </div>
             </div>
 
@@ -481,8 +480,8 @@
             <div class="flex justify-center gap-4">
               @for (set of [1, 2]; track set) {
                 <div class="rounded-lg px-4 py-3 text-center min-w-20">
-                  <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3"></p-skeleton>
-                  <p-skeleton width="3rem" height="1.5rem" class="mx-auto"></p-skeleton>
+                  <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3" />
+                  <p-skeleton width="3rem" height="1.5rem" class="mx-auto" />
                 </div>
               }
             </div>
@@ -499,18 +498,18 @@
             <!-- Left: Date skeleton -->
             <div class="flex items-center gap-3">
               <div class="flex flex-col gap-1">
-                <p-skeleton width="4rem" height="1rem"></p-skeleton>
-                <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
+                <p-skeleton width="4rem" height="1rem" />
+                <p-skeleton width="3rem" height="0.75rem" />
               </div>
             </div>
 
             <!-- Center: Tournament skeleton -->
             <div class="flex-1 text-center px-4">
-              <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
+              <p-skeleton width="8rem" height="1rem" class="mx-auto" />
             </div>
 
             <!-- Right: Game type skeleton -->
-            <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
+            <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem" />
           </div>
         </div>
 
@@ -520,23 +519,23 @@
           <div class="flex items-center justify-between gap-6 mb-4">
             <!-- Team 1 -->
             <div class="flex-1 text-right space-y-2">
-              <p-skeleton width="6rem" height="1rem" class="ml-auto"></p-skeleton>
-              <p-skeleton width="5rem" height="1rem" class="ml-auto"></p-skeleton>
+              <p-skeleton width="6rem" height="1rem" class="ml-auto" />
+              <p-skeleton width="5rem" height="1rem" class="ml-auto" />
             </div>
 
             <!-- VS section -->
             <div class="flex items-center gap-4">
-              <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
+              <p-skeleton width="1rem" height="1rem" borderRadius="50%" />
               <div class="bg-surface-200 dark:bg-surface-700 px-3 py-1 rounded-full">
-                <p-skeleton width="1.5rem" height="0.75rem"></p-skeleton>
+                <p-skeleton width="1.5rem" height="0.75rem" />
               </div>
-              <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
+              <p-skeleton width="1rem" height="1rem" borderRadius="50%" />
             </div>
 
             <!-- Team 2 -->
             <div class="flex-1 text-left space-y-2">
-              <p-skeleton width="6rem" height="1rem"></p-skeleton>
-              <p-skeleton width="5rem" height="1rem"></p-skeleton>
+              <p-skeleton width="6rem" height="1rem" />
+              <p-skeleton width="5rem" height="1rem" />
             </div>
           </div>
 
@@ -544,8 +543,8 @@
           <div class="flex justify-center gap-4">
             @for (set of [1, 2]; track set) {
               <div class="rounded-lg px-4 py-3 text-center min-w-20">
-                <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3"></p-skeleton>
-                <p-skeleton width="3rem" height="1.5rem" class="mx-auto"></p-skeleton>
+                <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3" />
+                <p-skeleton width="3rem" height="1.5rem" class="mx-auto" />
               </div>
             }
           </div>

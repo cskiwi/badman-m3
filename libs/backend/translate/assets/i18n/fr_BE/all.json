@@ -133,6 +133,7 @@
     "actions": "Actions",
     "cancel": "Annuler",
     "error": "Erreur",
+    "level": "Niveau",
     "name": "Nom",
     "no": "Non",
     "save": "Enregistrer",
@@ -140,6 +141,7 @@
     "season": "Saison",
     "selectSeason": "Sélectionner la saison",
     "success": "Succès",
+    "unknown": "Inconnu",
     "viewAll": "Voir Tout",
     "viewDetails": "Voir Détails",
     "yes": "Oui"
@@ -230,7 +232,70 @@
     "wednesday": "Mercredi"
   },
   "enrollment": {
-    "myEnrollments": "Mes Inscriptions"
+    "addToCart": "Ajouter au Panier",
+    "additionalNotes": "Notes Supplémentaires",
+    "availableEvents": "Événements Disponibles",
+    "cart": {
+      "clear": "Vider le Panier",
+      "empty": "Votre panier est vide",
+      "emptyDescription": "Sélectionnez des événements dans la liste pour les ajouter à votre panier",
+      "enrollNow": "S'inscrire Maintenant",
+      "eventsSelected": "événements sélectionnés",
+      "eventSelected": "événement sélectionné",
+      "partnerSelected": "Partenaire sélectionné",
+      "title": "Panier d'Inscription",
+      "totalEvents": "Total Événements:"
+    },
+    "characters": "caractères",
+    "closed": "Inscription Fermée",
+    "continue": "Continuer",
+    "enrollNow": "S'inscrire Maintenant",
+    "filters": {
+      "category": "Catégorie",
+      "clear": "Effacer",
+      "double": "Double:",
+      "eventType": "Type d'Événement",
+      "level": "Niveau",
+      "maxLevel": "Max",
+      "minLevel": "Min",
+      "mixed": "Mixte:",
+      "showOnlyMyLevel": "Afficher uniquement mon niveau",
+      "single": "Simple:",
+      "status": "Statut",
+      "statusOptions": {
+        "all": "Tous les Événements",
+        "available": "Disponible Uniquement",
+        "open": "Inscription Ouverte"
+      },
+      "yourRankings": "Vos Classements"
+    },
+    "loading": "Chargement des événements disponibles...",
+    "messages": {
+      "addedToCart": "Ajouté au panier",
+      "addedWithPartner": "Ajouté au panier avec préférence de partenaire",
+      "cartCleared": "Panier vidé",
+      "cartEmpty": "Le panier est vide",
+      "enrollmentFailed": "Inscription échouée. Veuillez réessayer.",
+      "enrollmentSuccess": "Inscrit avec succès à {{count}} événements!",
+      "partialEnrollment": "Inscription partielle. {{count}} événements ont échoué.",
+      "removedFromCart": "Retiré du panier",
+      "submitFailed": "Échec de l'envoi de l'inscription"
+    },
+    "myEnrollments": "Mes Inscriptions",
+    "noEventsMatch": "Aucun événement ne correspond à vos filtres",
+    "notEligible": "Non Éligible",
+    "notYetOpen": "Pas Encore Ouvert",
+    "optional": "(Optionnel)",
+    "partnerSelection": {
+      "description": "Recherchez et sélectionnez votre partenaire préféré pour le double",
+      "notes": "Informations ou préférences supplémentaires...",
+      "placeholder": "Commencez à taper le nom du partenaire...",
+      "title": "Sélection de Partenaire"
+    },
+    "removeFromCart": "Retirer du Panier",
+    "subtitle": "Sélectionnez un ou plusieurs événements pour vous inscrire",
+    "title": "Inscription au Tournoi",
+    "tryAdjustingFilters": "Essayez d'ajuster vos paramètres de filtre"
   },
   "error": {
     "genericTitle": "Une erreur s'est produite"
@@ -972,6 +1037,7 @@
       },
       "title": "Admin Tournoi"
     },
+    "capacity": "Capacité",
     "closeDate": "Clôture des inscriptions",
     "create": {
       "closeDate": "Date de clôture des inscriptions",
@@ -997,6 +1063,7 @@
         "title": "Matchs"
       }
     },
+    "double": "Double",
     "draws": "Série",
     "entries": "Inscriptions",
     "events": "Épreuves du tournoi",

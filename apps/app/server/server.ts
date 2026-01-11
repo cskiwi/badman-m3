@@ -27,26 +27,25 @@ export async function app() {
   server.use(cookieParser());
 
   // Serve static files from /browser
-  server.get(
-    /(.*)/,
+  server.use(
     express.static(browserDistFolder, {
       maxAge: '1y',
-      index: 'index.html',
+      index: false,
     }),
   );
 
   // All regular routes use the Angular engine for rendering
   // except for /api/** routes
-  server.get(/(.*)/, (req, res, next) => {
+  server.use(async (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
     if (shouldSkip(req.originalUrl)) {
       // Handle API routes separately
       next();
     } else {
-      const userAgent = req.headers['user-agent'];
-      commonEngine
-        .render({
+      try {
+        const userAgent = req.headers['user-agent'];
+        const html = await commonEngine.render({
           bootstrap,
           documentFilePath: indexHtml,
           url: `${protocol}://${headers.host}${originalUrl}`,
@@ -69,9 +68,11 @@ export async function app() {
             { provide: 'RESPONSE', useValue: res },
             { provide: NAVIGATOR, useValue: userAgent },
           ],
-        })
-        .then((html) => res.send(html))
-        .catch((err) => next(err));
+        });
+        res.send(html);
+      } catch (err) {
+        next(err);
+      }
     }
   });
 

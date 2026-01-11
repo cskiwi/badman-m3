@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Club, Team, Player, Game } from '@app/models';
+import { Club, Team } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { getSeason } from '@app/utils/comp';

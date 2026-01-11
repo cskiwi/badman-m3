@@ -99,8 +99,8 @@ export const appConfig: ApplicationConfig = {
     {
       provide: SEO_CONFIG,
       useFactory: (baseUrl: string) => ({
-        siteName: 'Badminton',
-        siteUrl: 'https://badman.app',
+        siteName: 'Gladman',
+        siteUrl: 'https://gladman.purr.dev',
         imageEndpoint: `${baseUrl}/api/v1/images`,
       }),
       deps: [BASE_URL],

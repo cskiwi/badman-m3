@@ -140,6 +140,7 @@ export type I18nTranslations = {
             "actions": string;
             "cancel": string;
             "error": string;
+            "level": string;
             "name": string;
             "no": string;
             "save": string;
@@ -147,6 +148,7 @@ export type I18nTranslations = {
             "season": string;
             "selectSeason": string;
             "success": string;
+            "unknown": string;
             "viewAll": string;
             "viewDetails": string;
             "yes": string;
@@ -237,10 +239,70 @@ export type I18nTranslations = {
             "wednesday": string;
         };
         "enrollment": {
+            "addToCart": string;
+            "additionalNotes": string;
+            "availableEvents": string;
+            "cart": {
+                "clear": string;
+                "empty": string;
+                "emptyDescription": string;
+                "enrollNow": string;
+                "eventsSelected": string;
+                "eventSelected": string;
+                "partnerSelected": string;
+                "title": string;
+                "totalEvents": string;
+            };
+            "characters": string;
             "closed": string;
+            "continue": string;
             "enrollNow": string;
+            "filters": {
+                "category": string;
+                "clear": string;
+                "double": string;
+                "eventType": string;
+                "level": string;
+                "maxLevel": string;
+                "minLevel": string;
+                "mixed": string;
+                "showOnlyMyLevel": string;
+                "single": string;
+                "status": string;
+                "statusOptions": {
+                    "all": string;
+                    "available": string;
+                    "open": string;
+                };
+                "yourRankings": string;
+            };
+            "loading": string;
+            "messages": {
+                "addedToCart": string;
+                "addedWithPartner": string;
+                "cartCleared": string;
+                "cartEmpty": string;
+                "enrollmentFailed": string;
+                "enrollmentSuccess": string;
+                "partialEnrollment": string;
+                "removedFromCart": string;
+                "submitFailed": string;
+            };
             "myEnrollments": string;
+            "noEventsMatch": string;
+            "notEligible": string;
             "notYetOpen": string;
+            "optional": string;
+            "partnerSelection": {
+                "description": string;
+                "notes": string;
+                "placeholder": string;
+                "title": string;
+            };
+            "removeFromCart": string;
+            "subtitle": string;
+            "title": string;
+            "tryAdjustingFilters": string;
         };
         "error": {
             "genericTitle": string;
@@ -1018,6 +1080,7 @@ export type I18nTranslations = {
                 };
                 "title": string;
             };
+            "capacity": string;
             "closeDate": string;
             "create": {
                 "closeDate": string;
@@ -1044,6 +1107,7 @@ export type I18nTranslations = {
                 };
             };
             "draws": string;
+            "double": string;
             "entries": string;
             "events": string;
             "eventType": string;
@@ -1055,6 +1119,8 @@ export type I18nTranslations = {
             };
             "firstDay": string;
             "gameType": string;
+            "full": string;
+            "fullWaitingList": string;
             "gameTypes": {
                 "doubles": string;
                 "mixed": string;
@@ -1062,6 +1128,7 @@ export type I18nTranslations = {
                 "singles": string;
             };
             "information": string;
+            "inWaitingList": string;
             "level": string;
             "live": {
                 "allGamesCompleted": string;
@@ -1100,6 +1167,8 @@ export type I18nTranslations = {
             };
             "location": string;
             "matches": string;
+            "men": string;
+            "mixed": string;
             "number": string;
             "official": string;
             "openDate": string;
@@ -1120,6 +1189,8 @@ export type I18nTranslations = {
                 "scheduledDesc": string;
             };
             "registration": string;
+            "single": string;
+            "spotsLeft": string;
             "title": string;
             "types": {
                 "men": string;
@@ -1127,7 +1198,9 @@ export type I18nTranslations = {
                 "other": string;
                 "women": string;
             };
+            "unlimited": string;
             "visualCode": string;
+            "women": string;
         };
     };
 };

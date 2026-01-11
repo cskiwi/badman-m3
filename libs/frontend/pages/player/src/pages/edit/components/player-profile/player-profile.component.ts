@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, effect, input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
+
 import { lastValueFrom } from 'rxjs';
 
 import { CardModule } from 'primeng/card';
@@ -38,7 +38,6 @@ const UPDATE_PLAYER_PROFILE = gql`
   selector: 'app-player-profile',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     CardModule,
     ButtonModule,
@@ -48,8 +47,8 @@ const UPDATE_PLAYER_PROFILE = gql`
     CheckboxModule,
     MessageModule,
     ProgressBarModule,
-    TranslateModule,
-  ],
+    TranslateModule
+],
   templateUrl: './player-profile.component.html',
 })
 export class PlayerProfileComponent {

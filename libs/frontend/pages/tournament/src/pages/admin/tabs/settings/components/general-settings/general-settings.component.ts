@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent } from '@app/models';
@@ -13,15 +13,14 @@ import { MessageModule } from 'primeng/message';
   selector: 'app-general-settings',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     TranslateModule,
     ButtonModule,
     InputTextModule,
     DatePickerModule,
     CheckboxModule,
-    MessageModule,
-  ],
+    MessageModule
+],
   templateUrl: './general-settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

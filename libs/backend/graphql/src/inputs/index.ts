@@ -10,3 +10,5 @@ export * from './draw-management.input';
 export * from './tournament-schedule.input';
 export * from './tournament-checkin.input';
 export * from './tournament-court.input';
+export * from './enrollment.input';
+export * from './enrollment-output';

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TournamentEvent } from '@app/models';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,12 +11,11 @@ import { SettingsTabService } from './settings-tab.service';
   selector: 'app-settings-tab',
   standalone: true,
   imports: [
-    CommonModule,
     TranslateModule,
     PhaseStepperComponent,
     GeneralSettingsComponent,
-    SubEventsComponent,
-  ],
+    SubEventsComponent
+],
   templateUrl: './settings-tab.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

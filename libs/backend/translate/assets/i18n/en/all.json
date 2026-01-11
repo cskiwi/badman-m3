@@ -133,6 +133,7 @@
     "actions": "Actions",
     "cancel": "Cancel",
     "error": "Error",
+    "level": "Level",
     "name": "Name",
     "no": "No",
     "save": "Save",
@@ -140,6 +141,7 @@
     "season": "Season",
     "selectSeason": "Select season",
     "success": "Success",
+    "unknown": "Unknown",
     "viewAll": "View All",
     "viewDetails": "View Details",
     "yes": "Yes"
@@ -230,10 +232,70 @@
     "wednesday": "Wednesday"
   },
   "enrollment": {
+    "addToCart": "Add to Cart",
+    "additionalNotes": "Additional Notes",
+    "availableEvents": "Available Events",
+    "cart": {
+      "clear": "Clear Cart",
+      "empty": "Your cart is empty",
+      "emptyDescription": "Select events from the list to add them to your cart",
+      "enrollNow": "Enroll Now",
+      "eventsSelected": "events selected",
+      "eventSelected": "event selected",
+      "partnerSelected": "Partner selected",
+      "title": "Enrollment Cart",
+      "totalEvents": "Total Events:"
+    },
+    "characters": "characters",
     "closed": "Enrollment Closed",
+    "continue": "Continue",
     "enrollNow": "Enroll Now",
+    "filters": {
+      "category": "Category",
+      "clear": "Clear",
+      "double": "Double:",
+      "eventType": "Event Type",
+      "level": "Level",
+      "maxLevel": "Max",
+      "minLevel": "Min",
+      "mixed": "Mixed:",
+      "showOnlyMyLevel": "Show only my level",
+      "single": "Single:",
+      "status": "Status",
+      "statusOptions": {
+        "all": "All Events",
+        "available": "Available Only",
+        "open": "Open Enrollment"
+      },
+      "yourRankings": "Your Rankings"
+    },
+    "loading": "Loading available events...",
+    "messages": {
+      "addedToCart": "Added to cart",
+      "addedWithPartner": "Added to cart with partner preference",
+      "cartCleared": "Cart cleared",
+      "cartEmpty": "Cart is empty",
+      "enrollmentFailed": "Enrollment failed. Please try again.",
+      "enrollmentSuccess": "Successfully enrolled in {{count}} events!",
+      "partialEnrollment": "Partially enrolled. {{count}} events failed.",
+      "removedFromCart": "Removed from cart",
+      "submitFailed": "Failed to submit enrollment"
+    },
     "myEnrollments": "My Enrollments",
-    "notYetOpen": "Not Yet Open"
+    "noEventsMatch": "No events match your filters",
+    "notEligible": "Not Eligible",
+    "notYetOpen": "Not Yet Open",
+    "optional": "(Optional)",
+    "partnerSelection": {
+      "description": "Search and select your preferred doubles partner",
+      "notes": "Any additional information or preferences...",
+      "placeholder": "Start typing partner name...",
+      "title": "Partner Selection"
+    },
+    "removeFromCart": "Remove from Cart",
+    "subtitle": "Select one or more events to enroll in",
+    "title": "Tournament Enrollment",
+    "tryAdjustingFilters": "Try adjusting your filter settings"
   },
   "error": {
     "genericTitle": "An error occurred"
@@ -1011,6 +1073,7 @@
       },
       "title": "Tournament Admin"
     },
+    "capacity": "Capacity",
     "closeDate": "Registration Closes",
     "create": {
       "closeDate": "Registration Close Date",
@@ -1037,6 +1100,7 @@
       }
     },
     "draws": "Draws",
+    "double": "Double",
     "entries": "Entries",
     "events": "Tournament Events",
     "eventType": "Event Type",
@@ -1048,6 +1112,8 @@
     },
     "firstDay": "First Day",
     "gameType": "Game Type",
+    "full": "Full",
+    "fullWaitingList": "Full (Waiting List)",
     "gameTypes": {
       "doubles": "Doubles",
       "mixed": "Mixed",
@@ -1055,6 +1121,7 @@
       "singles": "Singles"
     },
     "information": "Tournament Information",
+    "inWaitingList": "in waiting list",
     "level": "Level",
     "live": {
       "allGamesCompleted": "All games have been completed!",
@@ -1093,6 +1160,8 @@
     },
     "location": "Location",
     "matches": "Matches",
+    "men": "Men",
+    "mixed": "Mixed",
     "number": "Tournament Number",
     "official": "Official Tournament",
     "openDate": "Registration Opens",
@@ -1113,6 +1182,8 @@
       "scheduledDesc": "Games have been scheduled to courts"
     },
     "registration": "Registration Information",
+    "single": "Single",
+    "spotsLeft": "{{count}} spots left",
     "title": "Tournaments",
     "types": {
       "men": "Men's",
@@ -1120,6 +1191,8 @@
       "other": "Other",
       "women": "Ladies"
     },
-    "visualCode": "Visual Code"
+    "unlimited": "Unlimited",
+    "visualCode": "Visual Code",
+    "women": "Women"
   }
 }

@@ -4,12 +4,12 @@ import {
   effect,
   inject,
   input,
-  ViewChild,
   ElementRef,
   AfterViewInit,
   OnDestroy,
   afterRenderEffect,
   signal,
+  viewChild
 } from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';
@@ -34,7 +34,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
 
-  @ViewChild('scrollSentinel', { static: false }) scrollSentinel?: ElementRef;
+  readonly scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private intersectionObserver?: IntersectionObserver;
 
   // Track when we should scroll and animate new games
@@ -87,7 +87,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Set up intersection observer for infinite scroll on large screens
     setTimeout(() => {
-      if (!this.isMobile() && this.scrollSentinel) {
+      if (!this.isMobile() && this.scrollSentinel()) {
         this.setupIntersectionObserver();
       }
     });
@@ -98,7 +98,8 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   private setupIntersectionObserver(): void {
-    if (!this.scrollSentinel) return;
+    const scrollSentinel = this.scrollSentinel();
+    if (!scrollSentinel) return;
 
     this.intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -113,7 +114,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
       },
     );
 
-    this.intersectionObserver.observe(this.scrollSentinel.nativeElement);
+    this.intersectionObserver.observe(scrollSentinel.nativeElement);
   }
 
   /**

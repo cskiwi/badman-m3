@@ -27,15 +27,15 @@ export class IndexService implements OnModuleInit {
     const currentCollection = await this.typeSenseClient.collections().retrieve();
 
     if (!currentCollection.some((collection) => collection.name === 'players')) {
-      await this.typeSenseClient.collections().create<{}>(PlayerDocument);
+      await this.typeSenseClient.collections().create<Record<string, unknown>>(PlayerDocument);
     }
 
     if (!currentCollection.some((collection) => collection.name === 'clubs')) {
-      await this.typeSenseClient.collections().create<{}>(ClubDocument);
+      await this.typeSenseClient.collections().create<Record<string, unknown>>(ClubDocument);
     }
 
     if (!currentCollection.some((collection) => collection.name === 'events')) {
-      await this.typeSenseClient.collections().create<{}>(EventDocument);
+      await this.typeSenseClient.collections().create<Record<string, unknown>>(EventDocument);
     }
     this._logger.log('Schemas made... check: https://bfritscher.github.io/typesense-dashboard/#/collections!');
   }

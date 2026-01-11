@@ -42,6 +42,7 @@ export class DetailService {
                   official
                   state
                   country
+                  phase
                   tournamentSubEvents(args: $args) {
                     id
                     name

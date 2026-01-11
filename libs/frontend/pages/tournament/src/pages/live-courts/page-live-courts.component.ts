@@ -5,7 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { TournamentLiveService, CourtStatusUpdate, GameUpdate } from '../../services';
+import { TournamentLiveService, GameUpdate } from '../../services';
 
 @Component({
   selector: 'app-page-live-courts',
@@ -281,14 +281,14 @@ export class PageLiveCourtsComponent implements OnDestroy {
   private readonly tournamentId = injectParams('tournamentId');
 
   // Local state combining court statuses with game data
-  courts = computed(() => this.liveService.courtStatuses());
-  gamesMap = computed(() => {
+  readonly courts = computed(() => this.liveService.courtStatuses());
+  readonly gamesMap = computed(() => {
     const games = this.liveService.gamesInProgress();
     const map = new Map<string, GameUpdate>();
     games.forEach((g) => map.set(g.gameId, g));
     return map;
   });
-  stats = computed(() => this.liveService.tournamentStats());
+  readonly stats = computed(() => this.liveService.tournamentStats());
 
   constructor() {
     // Connect when tournament ID is available

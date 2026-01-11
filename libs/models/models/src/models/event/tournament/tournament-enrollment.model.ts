@@ -98,6 +98,70 @@ export class TournamentEnrollment extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   declare notes?: string;
 
+  // ===================================================================
+  // New enrollment tracking fields for general enrollment page
+  // ===================================================================
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare sessionId?: string;
+
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'character varying', length: 50, default: 'MANUAL' })
+  declare enrollmentSource: string;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare promotedAt?: Date;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: false })
+  declare promotedFromWaitingList: boolean;
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ nullable: true, type: 'integer' })
+  declare originalWaitingListPosition?: number;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: false })
+  declare requiresApproval: boolean;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  declare approvedBy?: string;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare approvedAt?: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
+  declare rejectionReason?: string;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare confirmedAt?: Date;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare cancelledAt?: Date;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare withdrawnAt?: Date;
+
   // Relations
   @Field(() => TournamentSubEvent, { nullable: true })
   @ManyToOne(() => TournamentSubEvent, { onDelete: 'CASCADE' })
@@ -118,4 +182,9 @@ export class TournamentEnrollment extends BaseEntity {
   @ManyToOne(() => Player, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'confirmedPartnerId' })
   declare confirmedPartner?: Relation<Player>;
+
+  @Field(() => Player, { nullable: true })
+  @ManyToOne(() => Player, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'approvedBy' })
+  declare approver?: Relation<Player>;
 }

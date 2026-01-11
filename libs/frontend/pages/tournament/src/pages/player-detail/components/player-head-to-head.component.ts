@@ -152,13 +152,11 @@ interface HeadToHeadRecord {
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-4">
                   <div class="flex items-center gap-3">
-                    <p-avatar
-                      [label]="getInitials(record.opponentName)"
+                    <p-avatar [label]="getInitials(record.opponentName)"
                       size="large"
                       shape="circle"
                       styleClass="bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 font-semibold"
-                    >
-                    </p-avatar>
+                     />
                     <div>
                       <div class="text-surface-900 dark:text-surface-50 font-semibold text-base">
                         {{ record.opponentName }}
@@ -171,7 +169,7 @@ interface HeadToHeadRecord {
                   </div>
 
                   <!-- Win Rate Badge -->
-                  <p-badge [value]="record.winRate | number: '1.0-0'" [severity]="getWinRateSeverity(record.winRate)" size="large"> </p-badge>
+                  <p-badge [value]="record.winRate | number: '1.0-0'" [severity]="getWinRateSeverity(record.winRate)" size="large" />
                 </div>
 
                 <!-- Game Record -->
@@ -206,7 +204,7 @@ interface HeadToHeadRecord {
                     </span>
                     <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ record.winRate | number: '1.1-1' }}% </span>
                   </div>
-                  <p-progressBar [value]="record.winRate" [style]="{ height: '6px' }" [showValue]="false" styleClass="mb-2"> </p-progressBar>
+                  <p-progressBar [value]="record.winRate" [style]="{ height: '6px' }" [showValue]="false" styleClass="mb-2" />
                 </div>
 
                 <!-- Recent Form -->
