@@ -5,13 +5,12 @@ import {
   EnrollmentSession,
   Player,
 } from '@app/models';
+import { EnrollmentStatus } from '@app/models-enum';
 import { User, PermGuard, AllowAnonymous } from '@app/backend-authorization';
 import {
   CartItemInput,
-  BulkEnrollmentInput,
   AddToCartInput,
 } from '../../../inputs/enrollment.input';
-import { BulkEnrollmentResult } from '../../../inputs/enrollment-output';
 import { EnrollmentService } from '../../../services/tournament/enrollment.service';
 import { EnrollmentCartService } from '../../../services/tournament/enrollment-cart.service';
 
@@ -62,60 +61,45 @@ export class EnrollmentMutationsResolver {
   }
 
   /**
-   * Submit enrollment cart
+   * Enroll in a single sub-event - simple direct enrollment
    */
-  @Mutation(() => BulkEnrollmentResult, { name: 'submitEnrollmentCart' })
+  @Mutation(() => TournamentEnrollment, { name: 'enrollInSubEvent' })
+  @UseGuards(PermGuard)
+  async enrollInSubEvent(
+    @Args('subEventId', { type: () => ID }) subEventId: string,
+    @Args('preferredPartnerId', { type: () => ID, nullable: true }) preferredPartnerId?: string,
+    @Args('notes', { type: () => String, nullable: true }) notes?: string,
+    @User() user?: Player,
+  ): Promise<TournamentEnrollment> {
+    if (!user?.id) {
+      throw new BadRequestException('Player profile required');
+    }
+
+    // Simple direct enrollment creation - DB → Model → GraphQL pattern
+    const enrollment = new TournamentEnrollment();
+    enrollment.tournamentSubEventId = subEventId;
+    enrollment.playerId = user.id;
+    enrollment.preferredPartnerId = preferredPartnerId;
+    enrollment.notes = notes;
+    enrollment.status = EnrollmentStatus.PENDING;
+    enrollment.isGuest = false;
+
+    return await enrollment.save();
+  }
+
+  /**
+   * Submit enrollment cart - simple for loop approach
+   */
+  @Mutation(() => [TournamentEnrollment], { name: 'submitEnrollmentCart' })
   @UseGuards(PermGuard)
   async submitEnrollmentCart(
     @Args('cartId', { type: () => ID }) cartId: string,
     @User() user: Player,
-  ): Promise<BulkEnrollmentResult> {
+  ): Promise<TournamentEnrollment[]> {
     if (!user?.id) {
       throw new BadRequestException('Player profile required');
     }
 
     return this.enrollmentService.submitCart(cartId);
-  }
-
-  /**
-   * Direct bulk enrollment without cart (shortcut for simple cases)
-   */
-  @Mutation(() => BulkEnrollmentResult, { name: 'bulkEnrollInTournament' })
-  @UseGuards(PermGuard)
-  async bulkEnrollInTournament(
-    @Args('input', { type: () => BulkEnrollmentInput }) input: BulkEnrollmentInput,
-    @User() user: Player,
-  ): Promise<BulkEnrollmentResult> {
-    if (!user?.id) {
-      throw new BadRequestException('Player profile required');
-    }
-
-    const partnerMap = new Map(
-      input.partnerPreferences?.map((p: { subEventId: string; preferredPartnerId: string }) => [
-        p.subEventId,
-        p.preferredPartnerId,
-      ]) || [],
-    );
-
-    return this.enrollmentService.bulkEnroll(
-      input.tournamentId,
-      user.id,
-      input.subEventIds,
-      partnerMap,
-      input.notes,
-    );
-  }
-
-  /**
-   * Cancel enrollment
-   */
-  @Mutation(() => TournamentEnrollment, { name: 'cancelTournamentEnrollment' })
-  @UseGuards(PermGuard)
-  async cancelTournamentEnrollment(
-    @Args('enrollmentId', { type: () => ID }) enrollmentId: string,
-    @User() user: Player,
-  ): Promise<TournamentEnrollment> {
-    // TODO: Add authorization check to ensure user owns this enrollment
-    return this.enrollmentService.cancelEnrollment(enrollmentId);
   }
 }

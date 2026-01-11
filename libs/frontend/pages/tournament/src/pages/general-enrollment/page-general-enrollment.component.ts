@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { BadgeModule } from 'primeng/badge';
@@ -10,6 +10,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import type { TournamentSubEvent } from '@app/models';
 import { GameType } from '@app/models-enum';
+import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { PageGeneralEnrollmentService } from './page-general-enrollment.service';
 import { SubEventSelectionGridComponent } from './components/sub-event-selection-grid/sub-event-selection-grid.component';
 import { EnrollmentCartComponent } from './components/enrollment-cart/enrollment-cart.component';
@@ -21,11 +22,13 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'app-page-general-enrollment',
   standalone: true,
   imports: [
+    RouterModule,
     ProgressSpinnerModule,
     ButtonModule,
     BadgeModule,
     ToastModule,
     TranslateModule,
+    PageHeaderComponent,
     SubEventSelectionGridComponent,
     EnrollmentCartComponent,
     EnrollmentFiltersComponent
@@ -38,6 +41,7 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
 
   // Inject dependencies first
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly service = inject(PageGeneralEnrollmentService);
   private readonly messageService = inject(MessageService);
   private readonly dialogService = inject(DialogService);
@@ -49,6 +53,7 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
   readonly filteredSubEvents = this.service.filteredSubEvents;
   readonly cartItems = this.service.cartItems;
   readonly cartCount = this.service.cartCount;
+  readonly cartId = this.service.cartId;
   readonly filters = this.service.filters;
   readonly userRanking = this.service.userRanking;
   readonly userGender = this.service.userGender;
@@ -58,7 +63,6 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
 
   // Local state
   readonly tournamentId = signal<string | null>(null);
-  readonly cartId = signal<string | null>(null);
   readonly isSubmitting = signal(false);
 
   ngOnInit(): void {
@@ -157,19 +161,13 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
       .submitCart(cartId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (result) => {
+        next: (enrollments) => {
           this.isSubmitting.set(false);
 
-          if (result.success) {
+          if (enrollments && enrollments.length > 0) {
             this.showMessage(
-              this.translate.instant('all.enrollment.messages.enrollmentSuccess', { count: result.enrollments.length }),
+              this.translate.instant('all.enrollment.messages.enrollmentSuccess', { count: enrollments.length }),
               'success',
-            );
-            this.cartId.set(null);
-          } else if (result.partialSuccess) {
-            this.showMessage(
-              this.translate.instant('all.enrollment.messages.partialEnrollment', { count: result.errors.length }),
-              'warn',
             );
           } else {
             this.showMessage(this.translate.instant('all.enrollment.messages.enrollmentFailed'), 'error');
@@ -196,5 +194,17 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
       detail: message,
       life: 3000,
     });
+  }
+
+  /**
+   * Navigate back to tournament detail
+   */
+  goBack(): void {
+    const id = this.tournamentId();
+    if (id) {
+      this.router.navigate(['/tournament', id]);
+    } else {
+      this.router.navigate(['/tournament']);
+    }
   }
 }

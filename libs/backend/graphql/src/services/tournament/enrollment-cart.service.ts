@@ -44,7 +44,6 @@ export class EnrollmentCartService {
 
     let cart = await EnrollmentSession.findOne({
       where: whereClause,
-      relations: ['items', 'items.tournamentSubEvent'],
     });
 
     if (!cart) {
@@ -125,10 +124,9 @@ export class EnrollmentCartService {
     cart.totalSubEvents = existingItems.length + newItems.length;
     await EnrollmentSession.save(cart);
 
-    // Reload with relations
+    // Return cart - client will use field resolvers to load relations as needed
     return EnrollmentSession.findOne({
       where: { id: cart.id },
-      relations: ['items', 'items.tournamentSubEvent', 'items.preferredPartner'],
     }) as Promise<EnrollmentSession>;
   }
 
@@ -141,7 +139,6 @@ export class EnrollmentCartService {
   ): Promise<EnrollmentSession> {
     const cart = await EnrollmentSession.findOne({
       where: { id: cartId },
-      relations: ['items'],
     });
 
     if (!cart) {
@@ -158,19 +155,25 @@ export class EnrollmentCartService {
       tournamentSubEventId: In(subEventIds),
     });
 
-    // Update totals
+    // Count remaining items
     const remainingItems = await EnrollmentSessionItem.count({
       where: { sessionId: cartId },
     });
 
+    // Update totals
     cart.totalSubEvents = remainingItems;
     await EnrollmentSession.save(cart);
 
-    // Reload with relations
-    return EnrollmentSession.findOne({
+    // Return cart - client will use field resolvers to load relations as needed
+    const reloadedCart = await EnrollmentSession.findOne({
       where: { id: cartId },
-      relations: ['items', 'items.tournamentSubEvent', 'items.preferredPartner'],
-    }) as Promise<EnrollmentSession>;
+    });
+
+    if (!reloadedCart) {
+      throw new NotFoundException('Cart not found after reload');
+    }
+
+    return reloadedCart;
   }
 
   /**
@@ -205,12 +208,6 @@ export class EnrollmentCartService {
   async getCart(cartId: string): Promise<EnrollmentSession> {
     const cart = await EnrollmentSession.findOne({
       where: { id: cartId },
-      relations: [
-        'items',
-        'items.tournamentSubEvent',
-        'items.preferredPartner',
-        'tournamentEvent',
-      ],
     });
 
     if (!cart) {
@@ -243,12 +240,6 @@ export class EnrollmentCartService {
 
     return EnrollmentSession.findOne({
       where: whereClause,
-      relations: [
-        'items',
-        'items.tournamentSubEvent',
-        'items.preferredPartner',
-        'tournamentEvent',
-      ],
     });
   }
 

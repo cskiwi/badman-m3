@@ -1,7 +1,6 @@
 import { Component, OnInit, output, input, inject } from '@angular/core';
 
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
@@ -15,7 +14,6 @@ import type { RankingLastPlace } from '@app/models';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    InputTextModule,
     MultiSelectModule,
     SelectModule,
     ButtonModule,
@@ -85,7 +83,6 @@ export class EnrollmentFiltersComponent implements OnInit {
     if (filters) {
       this.eventTypeControl.setValue(filters.eventType || []);
       this.gameTypeControl.setValue(filters.gameType || []);
-      // Handle level filter - convert array to range [min, max]
       if (filters.level && filters.level.length > 0) {
         const min = Math.min(...filters.level);
         const max = Math.max(...filters.level);
@@ -107,7 +104,6 @@ export class EnrollmentFiltersComponent implements OnInit {
       // Default: prefill level range based on user's ranking
       const ranking = this.userRanking();
       if (ranking) {
-        // Get min and max from all available rankings
         const levels: number[] = [];
         if (ranking.single) levels.push(ranking.single);
         if (ranking.double) levels.push(ranking.double);
@@ -127,7 +123,6 @@ export class EnrollmentFiltersComponent implements OnInit {
     // Subscribe to form changes
     this.eventTypeControl.valueChanges.subscribe(() => this.emitFilters());
     this.gameTypeControl.valueChanges.subscribe(() => this.emitFilters());
-    // Level range is handled by onSlideEnd to prevent losing drag
     this.enrollmentStatusControl.valueChanges.subscribe(() => this.emitFilters());
     this.showOnlyMyLevelControl.valueChanges.subscribe(() => this.emitFilters());
   }
@@ -249,5 +244,12 @@ export class EnrollmentFiltersComponent implements OnInit {
   hasRanking(): boolean {
     const userRanking = this.userRanking();
     return !!(userRanking && (userRanking.single || userRanking.double || userRanking.mix));
+  }
+
+  /**
+   * Handle level slider end - emit filters when user releases the slider
+   */
+  onLevelSlideEnd(): void {
+    this.emitFilters();
   }
 }

@@ -35,7 +35,7 @@
             <i [class]="'pi ' + getEventTypeIcon(item.eventType) + ' text-xl text-primary-500'"></i>
             <div class="flex-1 min-w-0">
               <div class="font-medium text-color mb-1">{{ item.subEventName }}</div>
-              <div class="flex items-center gap-2 text-sm text-muted-color">
+              <div class="flex items-center gap-2 text-sm text-muted-color" >
                 <span class="capitalize">{{ item.gameType }}</span>
                 @if (item.preferredPartnerId) {
                   <span class="flex items-center gap-1">

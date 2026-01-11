@@ -1,39 +1,39 @@
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-  @for (item of subEvents(); track item.subEvent.id) {
+  @for (item of subEvents(); track item.id) {
     <div
       [class]="'rounded-border border-2 transition-all cursor-pointer bg-surface-0 dark:bg-surface-900 ' +
-        (isSelected(item.subEvent.id)
+        (isSelected(item.id)
           ? 'border-primary-500 shadow-lg shadow-primary-500/20'
           : 'border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700') +
-        (!item.eligibility.eligible ? ' opacity-60' : ' hover:shadow-md')"
-      (click)="item.eligibility.eligible && toggleSelection(item)"
+        (!item._isEligible ? ' opacity-60' : ' hover:shadow-md')"
+      (click)="item._isEligible && toggleSelection(item)"
     >
       <!-- Header -->
       <div class="flex items-center gap-3 p-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800">
         <div [class]="'flex items-center justify-center w-12 h-12 rounded-lg ' +
-          (isSelected(item.subEvent.id)
+          (isSelected(item.id)
             ? 'bg-primary-100 dark:bg-primary-900/50'
             : 'bg-surface-100 dark:bg-surface-700')">
-          <i [class]="'pi ' + getEventTypeIcon(item.subEvent.gameType) + ' text-2xl ' +
-            (isSelected(item.subEvent.id)
+          <i [class]="'pi ' + getEventTypeIcon(item.gameType) + ' text-2xl ' +
+            (isSelected(item.id)
               ? 'text-primary-600 dark:text-primary-400'
               : 'text-muted-color')"></i>
         </div>
         <div class="flex-1 min-w-0">
-          <span class="font-semibold text-base text-color mb-1 truncate block">{{ item.subEvent.name }}</span>
+          <span class="font-semibold text-base text-color mb-1 truncate block">{{ item.name }}</span>
           <div class="flex items-center gap-2 text-sm text-muted-color">
-            @if (item.subEvent.eventType) {
-              <span class="font-medium">{{ getEventTypeDisplay(item.subEvent.eventType) }}</span>
+            @if (item.eventType) {
+              <span class="font-medium">{{ getEventTypeDisplay(item.eventType) }}</span>
             }
-            @if (item.subEvent.eventType && item.subEvent.gameType) {
+            @if (item.eventType && item.gameType) {
               <span class="text-muted-color">•</span>
             }
-            @if (item.subEvent.gameType) {
-              <span>{{ getGameTypeDisplay(item.subEvent.gameType) }}</span>
+            @if (item.gameType) {
+              <span>{{ getGameTypeDisplay(item.gameType) }}</span>
             }
           </div>
         </div>
-        @if (isSelected(item.subEvent.id)) {
+        @if (isSelected(item.id)) {
           <i class="pi pi-check-circle text-2xl text-primary-600 dark:text-primary-400 flex-shrink-0"></i>
         }
       </div>
@@ -41,11 +41,11 @@
       <!-- Content -->
       <div class="p-4 space-y-3">
         <!-- Level Range -->
-        @if (item.subEvent.minLevel || item.subEvent.maxLevel) {
+        @if (item.minLevel || item.maxLevel) {
           <div class="flex items-center gap-2 text-sm">
             <i class="pi pi-chart-line text-primary-500"></i>
             <span class="text-color">
-              <strong>{{ 'all.common.level' | translate }}:</strong> {{ item.subEvent.minLevel || 'Any' }} - {{ item.subEvent.maxLevel || 'Any' }}
+              <strong>{{ 'all.common.level' | translate }}:</strong> {{ item.minLevel || 'Any' }} - {{ item.maxLevel || 'Any' }}
             </span>
           </div>
         }
@@ -55,47 +55,53 @@
           <i class="pi pi-users text-primary-500"></i>
           <span class="text-color"><strong>{{ 'all.tournament.capacity' | translate }}:</strong></span>
           <p-tag
-            [severity]="getCapacitySeverity(item.capacity)"
-            [value]="getCapacityText(item.capacity)"
+            [severity]="getCapacitySeverity(item)"
+            [value]="getCapacityText(item)"
             styleClass="text-xs"
           />
         </div>
 
         <!-- Eligibility Warnings -->
-        @if (!item.eligibility.eligible) {
+        @if (item._isAlreadyEnrolled) {
           <div class="flex flex-wrap gap-2 pt-2">
-            @for (reason of item.eligibility.reasons; track reason) {
-              <p-chip
-                [label]="reason"
-                styleClass="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-              />
-            }
+            <p-chip
+              [label]="'Already enrolled' | translate"
+              styleClass="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+            />
+          </div>
+        }
+        @if (!item._isEligible && !item._isAlreadyEnrolled) {
+          <div class="flex flex-wrap gap-2 pt-2">
+            <p-chip
+              [label]="'Not eligible' | translate"
+              styleClass="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+            />
           </div>
         }
 
         <!-- Waiting List Info -->
-        @if (item.capacity.isFull && item.capacity.hasWaitingList) {
+        @if (item._availableSpots === 0 && item.waitingListEnabled) {
           <div class="flex items-center gap-2 p-2 bg-orange-50 dark:bg-orange-900/20 rounded text-sm border border-orange-200 dark:border-orange-800">
             <i class="pi pi-hourglass text-orange-600 dark:text-orange-400"></i>
-            <span class="text-orange-700 dark:text-orange-300">{{ item.capacity.waitingListCount }} {{ 'all.tournament.inWaitingList' | translate }}</span>
+            <span class="text-orange-700 dark:text-orange-300">{{ item.waitingListCount }} {{ 'all.tournament.inWaitingList' | translate }}</span>
           </div>
         }
       </div>
 
       <!-- Footer -->
       <div class="p-4 pt-0">
-        @if (item.eligibility.eligible) {
+        @if (item._isEligible) {
           <p-button
-            [label]="(isSelected(item.subEvent.id) ? 'all.enrollment.removeFromCart' : 'all.enrollment.addToCart') | translate"
-            [icon]="'pi pi-' + (isSelected(item.subEvent.id) ? 'minus' : 'plus')"
-            [severity]="isSelected(item.subEvent.id) ? 'secondary' : 'primary'"
-            [outlined]="!isSelected(item.subEvent.id)"
+            [label]="(isSelected(item.id) ? 'all.enrollment.removeFromCart' : 'all.enrollment.addToCart') | translate"
+            [icon]="'pi pi-' + (isSelected(item.id) ? 'minus' : 'plus')"
+            [severity]="isSelected(item.id) ? 'secondary' : 'primary'"
+            [outlined]="!isSelected(item.id)"
             (onClick)="toggleSelection(item); $event.stopPropagation()"
             styleClass="w-full"
           />
         } @else {
           <p-button
-            [label]="'all.enrollment.notEligible' | translate"
+            [label]="(item._isAlreadyEnrolled ? 'all.enrollment.alreadyEnrolled' : 'all.enrollment.notEligible') | translate"
             icon="pi pi-ban"
             severity="danger"
             [disabled]="true"

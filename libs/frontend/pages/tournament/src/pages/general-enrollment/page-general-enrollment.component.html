@@ -1,12 +1,28 @@
 <p-toast />
 
-<div class="max-w-[1600px] mx-auto px-4 py-6">
-  <!-- Header -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-semibold mb-2 text-color">{{ 'all.enrollment.title' | translate }}</h1>
-    <p class="text-muted-color">{{ 'all.enrollment.subtitle' | translate }}</p>
-  </div>
+<app-page-header>
+  <span breadcrumb>
+    <a routerLink="/tournament">{{ 'all.tournament.title' | translate }}</a>
+    @if (tournamentId(); as id) {
+      <span> / </span>
+      <a [routerLink]="['/tournament', id]">{{ 'all.tournament.detail.title' | translate }}</a>
+      <span> / </span>
+      <span>{{ 'all.enrollment.title' | translate }}</span>
+    }
+  </span>
+  <span title>
+    {{ 'all.enrollment.title' | translate }}
+  </span>
 
+  <span subTitle>
+    {{ 'all.enrollment.subtitle' | translate }}
+  </span>
+  <span actions>
+    <p-button icon="pi pi-arrow-left" [label]="'all.button.back' | translate" severity="secondary" [text]="true" (click)="goBack()" />
+  </span>
+</app-page-header>
+
+<div class="max-w-[1600px] mx-auto px-4 py-6">
   <!-- Loading State -->
   @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 gap-4">

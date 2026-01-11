@@ -10,3 +10,5 @@ export * from './tournament-court.resolver';
 export * from './enrollment-queries.resolver';
 export * from './enrollment-mutations.resolver';
 export * from './enrollment-field.resolver';
+export * from './enrollment-session.resolver';
+export * from './enrollment-session-item.resolver';

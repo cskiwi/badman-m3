@@ -6,7 +6,7 @@ import { ChipModule } from 'primeng/chip';
 import { TagModule } from 'primeng/tag';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import type { TournamentSubEvent } from '@app/models';
-import type { SubEventWithEligibility } from '../../page-general-enrollment.service';
+import type { SubEventWithCalculations } from '../../page-general-enrollment.service';
 
 @Component({
   selector: 'app-sub-event-selection-grid',
@@ -22,7 +22,7 @@ import type { SubEventWithEligibility } from '../../page-general-enrollment.serv
 })
 export class SubEventSelectionGridComponent {
   private readonly translate = inject(TranslateService);
-  readonly subEvents = input<SubEventWithEligibility[]>([]);
+  readonly subEvents = input<SubEventWithCalculations[]>([]);
   readonly selectedIds = input<string[]>([]);
   readonly subEventSelect = output<TournamentSubEvent>();
   readonly subEventRemove = output<string>();
@@ -37,12 +37,13 @@ export class SubEventSelectionGridComponent {
   /**
    * Toggle sub-event selection
    */
-  toggleSelection(item: SubEventWithEligibility): void {
-    const subEvent = item.subEvent;
-    if (this.isSelected(subEvent.id!)) {
-      this.subEventRemove.emit(subEvent.id!);
+  toggleSelection(item: SubEventWithCalculations): void {
+    if (this.isSelected(item.id!)) {
+      this.subEventRemove.emit(item.id!);
     } else {
-      this.subEventSelect.emit(subEvent);
+      // Emit the base TournamentSubEvent (without calculated properties)
+      const { _availableSpots, _isEnrollmentOpen, _isAlreadyEnrolled, _isEligible, ...subEvent } = item;
+      this.subEventSelect.emit(subEvent as TournamentSubEvent);
     }
   }
 
@@ -56,25 +57,31 @@ export class SubEventSelectionGridComponent {
   /**
    * Get capacity tag severity
    */
-  getCapacitySeverity(capacity: { isFull: boolean; availableSpots: number; hasWaitingList: boolean }): 'success' | 'warn' | 'danger' {
-    if (capacity.isFull) return 'danger';
-    if (capacity.availableSpots < 5) return 'warn';
+  getCapacitySeverity(subEvent: SubEventWithCalculations): 'success' | 'warn' | 'danger' {
+    const availableSpots = subEvent._availableSpots ?? 0;
+    const isFull = availableSpots === 0;
+
+    if (isFull) return 'danger';
+    if (availableSpots > 0 && availableSpots < 5) return 'warn';
     return 'success';
   }
 
   /**
    * Format capacity text
    */
-  getCapacityText(capacity: { isFull: boolean; availableSpots: number; hasWaitingList: boolean }): string {
-    if (capacity.availableSpots === -1) {
+  getCapacityText(subEvent: SubEventWithCalculations): string {
+    const availableSpots = subEvent._availableSpots ?? 0;
+    const isFull = availableSpots === 0;
+
+    if (availableSpots === -1) {
       return this.translate.instant('all.tournament.unlimited');
     }
-    if (capacity.isFull) {
-      return capacity.hasWaitingList
+    if (isFull) {
+      return subEvent.waitingListEnabled
         ? this.translate.instant('all.tournament.fullWaitingList')
         : this.translate.instant('all.tournament.full');
     }
-    return this.translate.instant('all.tournament.spotsLeft', { count: capacity.availableSpots });
+    return this.translate.instant('all.tournament.spotsLeft', { count: availableSpots });
   }
 
   /**

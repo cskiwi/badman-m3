@@ -33,7 +33,9 @@ type IsConstructable<T> = T extends abstract new (...args: any) => any ? T : nev
 
 // Create typed args map (only for constructable entity types, excluding enums)
 type EntityArgsMap = {
-  [K in keyof typeof Models as IsConstructable<(typeof Models)[K]> extends never ? never : `${K & string}Args`]: ReturnType<typeof args<InstanceType<IsConstructable<(typeof Models)[K]>>>>;
+  [K in keyof typeof Models as IsConstructable<(typeof Models)[K]> extends never ? never : `${K & string}Args`]: ReturnType<
+    typeof args<InstanceType<IsConstructable<(typeof Models)[K]>>>
+  >;
 };
 
 // Dynamically create args for all entities with proper typing
@@ -50,6 +52,8 @@ const argsMap = createEntityArgs();
 export const {
   AvailabilityArgs,
   ClaimArgs,
+  ClaimNewInputArgs,
+  ClaimUpdateInputArgs,
   ClubArgs,
   ClubPlayerMembershipArgs,
   CommentArgs,
@@ -63,6 +67,8 @@ export const {
   CompetitionSubEventArgs,
   CourtArgs,
   CronJobArgs,
+  EnrollmentSessionArgs,
+  EnrollmentSessionItemArgs,
   EntryArgs,
   EntryCompetitionArgs,
   EntryCompetitionPlayerArgs,
@@ -88,6 +94,8 @@ export const {
   RankingSystemRankingGroupMembershipArgs,
   RequestLinkArgs,
   RoleArgs,
+  RoleNewInputArgs,
+  RoleUpdateInputArgs,
   RuleArgs,
   SearchArgs,
   ServiceArgs,
@@ -102,4 +110,5 @@ export const {
   TournamentGroupSubEventMembershipArgs,
   TournamentScheduleSlotArgs,
   TournamentSubEventArgs,
+  WaitingListLogArgs,
 } = argsMap;
