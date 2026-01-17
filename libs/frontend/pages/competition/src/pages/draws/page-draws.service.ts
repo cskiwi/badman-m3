@@ -43,6 +43,7 @@ export class DrawsService {
                   name
                   slug
                   season
+                  visualCode
                 }
                 competitionSubEvent(id: $subEventId) {
                   id

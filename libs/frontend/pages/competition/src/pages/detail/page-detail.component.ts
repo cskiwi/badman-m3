@@ -109,11 +109,15 @@ export class PageDetailComponent {
       return null;
     }
 
+    if (!competition.visualCode) {
+      throw new Error('Competition visual code is missing');
+    }
+
     return {
       level: 'tournament', // Use tournament level for competition events
-      tournamentCode: competition.visualCode || competition.id,
+      tournamentCode: competition.visualCode,
       tournamentName: competition.name,
-      eventCode: competition.visualCode || competition.id, // Use competition code as event code
+      eventCode: competition.visualCode, // Use competition code as event code
       eventName: competition.name,
     };
   });
@@ -126,9 +130,13 @@ export class PageDetailComponent {
       return null;
     }
 
+    if (!competition.visualCode) {
+      throw new Error('Competition visual code is missing');
+    }
+
     return {
       entityType: 'competition',
-      entityCode: competition.visualCode || competition.id,
+      entityCode: competition.visualCode,
       entityName: competition.name,
       lastSync: competition.lastSync,
     };
@@ -142,9 +150,13 @@ export class PageDetailComponent {
       return null;
     }
 
+    if (!competition.visualCode) {
+      throw new Error('Competition visual code is missing');
+    }
+
     return {
       level: 'sub-event',
-      tournamentCode: competition.visualCode || competition.id,
+      tournamentCode: competition.visualCode,
       tournamentName: competition.name,
       eventCode: subEvent.visualCode || subEvent.id,
       eventName: subEvent.name,
@@ -159,9 +171,13 @@ export class PageDetailComponent {
       return null;
     }
 
+    if (!subEvent.visualCode) {
+      throw new Error('Competition visual code is missing');
+    }
+
     return {
       entityType: 'event',
-      entityCode: subEvent.visualCode || subEvent.id,
+      entityCode: subEvent.visualCode,
       entityName: subEvent.name,
       lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
     };

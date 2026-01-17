@@ -14,6 +14,7 @@ import {
   CompetitionStandingSyncService,
   CompetitionSubEventSyncService,
   TeamMatchingProcessor,
+  TeamMatchingService,
   TeamSyncService,
   DiscoveryProcessor,
   TournamentDrawSyncService,
@@ -100,6 +101,7 @@ import { SyncService } from './services/sync.service';
     TournamentStandingSyncService,
     TournamentPlanningService,
     // Shared sync services
+    TeamMatchingService,
     TeamSyncService,
   ],
 })

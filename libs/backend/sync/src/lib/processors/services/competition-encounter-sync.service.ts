@@ -1,11 +1,12 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, CompetitionEncounter, Team as TeamModel } from '@app/models';
+import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
+import { TeamMatchingService } from './team-matching.service';
 
 export interface CompetitionEncounterSyncData {
   tournamentCode: string;
@@ -23,6 +24,7 @@ export class CompetitionEncounterSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly competitionPlanningService: CompetitionPlanningService,
+    private readonly teamMatchingService: TeamMatchingService,
     @InjectFlowProducer(COMPETITION_EVENT_QUEUE) private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
@@ -189,15 +191,28 @@ export class CompetitionEncounterSyncService {
       return;
     }
 
-    // Find or create teams
+    // Get competition event for team matching context
+    const competitionEvent = draw.competitionSubEvent?.competitionEvent || null;
+
+    // Find teams using flexible matching
     let homeTeam: TeamModel | null = null;
     let awayTeam: TeamModel | null = null;
 
     if (encounterData.HomeTeam) {
-      homeTeam = await this.findOrCreateTeamFromEntry(encounterData.HomeTeam);
+      const homeTeamData = encounterData.HomeTeam as { Code?: string; Name?: string };
+      const result = await this.teamMatchingService.findTeam(homeTeamData.Code, homeTeamData.Name, competitionEvent);
+      homeTeam = result.team;
+      if (result.team) {
+        this.logger.debug(`Home team matched: "${homeTeamData.Name}" -> "${result.team.name}" (${result.confidence})`);
+      }
     }
     if (encounterData.AwayTeam) {
-      awayTeam = await this.findOrCreateTeamFromEntry(encounterData.AwayTeam);
+      const awayTeamData = encounterData.AwayTeam as { Code?: string; Name?: string };
+      const result = await this.teamMatchingService.findTeam(awayTeamData.Code, awayTeamData.Name, competitionEvent);
+      awayTeam = result.team;
+      if (result.team) {
+        this.logger.debug(`Away team matched: "${awayTeamData.Name}" -> "${result.team.name}" (${result.confidence})`);
+      }
     }
 
     const existingEncounter = await CompetitionEncounter.findOne({
@@ -247,29 +262,5 @@ export class CompetitionEncounterSyncService {
     // This would delegate to the game sync service
     // For now, just log it
     this.logger.debug(`Processing game from encounter: ${JSON.stringify(game)}`);
-  }
-
-  private async findOrCreateTeamFromEntry(teamData: unknown): Promise<TeamModel | null> {
-    const team = teamData as { Code?: string; Name?: string };
-
-    if (!team || !team.Code) {
-      return null;
-    }
-
-    const existingTeam = await TeamModel.findOne({
-      where: { name: team.Name },
-    });
-
-    if (existingTeam) {
-      return existingTeam;
-    }
-
-    // Create minimal team record for API reference
-    const newTeam = new TeamModel();
-    newTeam.name = team.Name || `Team ${team.Code}`;
-    // Note: Team model doesn't have visualCode, using name as identifier
-    await newTeam.save();
-
-    return newTeam;
   }
 }
