@@ -26,7 +26,15 @@ export class TournamentEventSyncService {
 
   async processEventSync(job: Job<TournamentEventSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament event sync`);
-    const { tournamentCode, includeSubComponents, workPlan, childJobsCreated } = job.data;
+    const { tournamentCode, includeSubComponents, childJobsCreated } = job.data;
+
+    // Calculate work plan if not provided
+    let workPlan = job.data.workPlan;
+    if (!workPlan && includeSubComponents) {
+      workPlan = await this.tournamentPlanningService.calculateTournamentWorkPlan(tournamentCode, undefined, includeSubComponents);
+      // Update job data with the calculated work plan
+      await job.updateData({ ...job.data, workPlan });
+    }
 
     try {
       let completedSteps = 0;
@@ -35,7 +43,9 @@ export class TournamentEventSyncService {
       // Always do the actual work first (create/update event)
       completedSteps++;
       await updateProgress(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.log(`Work plan: ${workPlan?.totalJobs} total jobs needed`);
+      if (workPlan) {
+        this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
+      }
 
       const tournament = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
       if (!tournament) {

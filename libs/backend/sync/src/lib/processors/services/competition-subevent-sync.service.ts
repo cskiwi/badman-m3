@@ -41,7 +41,9 @@ export class CompetitionSubEventSyncService {
       // Always do the actual work first (create/update sub-event)
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.log(`Work plan: ${workPlan?.totalJobs} total jobs needed`);
+      if (workPlan) {
+        this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
+      }
 
       // Create/update sub-events (primary responsibility of SubEvent service)
       await this.createOrUpdateSubEvents(tournamentCode, eventCode);

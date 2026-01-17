@@ -38,7 +38,9 @@ export class CompetitionDrawSyncService {
       // Always do the actual work first (create/update draw)
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.log(`Work plan: ${workPlan?.totalJobs} total jobs needed`);
+      if (workPlan) {
+        this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
+      }
 
       // Update/create the draw record
       await this.createOrUpdateDrawFromApi(tournamentCode, drawCode);

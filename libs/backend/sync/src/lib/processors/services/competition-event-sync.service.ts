@@ -29,7 +29,19 @@ export class CompetitionEventSyncService {
 
   async processEventSync(job: Job<CompetitionEventSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition event sync`);
-    const { tournamentCode, eventCode, includeSubComponents, workPlan, childJobsCreated } = job.data;
+    const { tournamentCode, eventCode, includeSubComponents, childJobsCreated } = job.data;
+
+    // Calculate work plan if not provided
+    let workPlan = job.data.workPlan;
+    if (!workPlan && includeSubComponents) {
+      workPlan = await this.competitionPlanningService.calculateCompetitionWorkPlan(
+        tournamentCode,
+        eventCode ? [eventCode] : undefined,
+        includeSubComponents,
+      );
+      // Update job data with the calculated work plan
+      await job.updateData({ ...job.data, workPlan });
+    }
 
     try {
       let completedSteps = 0;
@@ -38,7 +50,9 @@ export class CompetitionEventSyncService {
       // Always do the actual work first (create/update event)
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.log(`Work plan: ${workPlan?.totalJobs} total jobs needed`);
+      if (workPlan) {
+        this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
+      }
 
       // Create/update events (primary responsibility of Event service)
       await this.createOrUpdateEvents(tournamentCode, eventCode);
