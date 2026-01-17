@@ -57,6 +57,7 @@ export class DetailService {
                     minBaseIndex
                     maxBaseIndex
                     lastSync
+                    visualCode
                     competitionDraws {
                       id
                       name
@@ -64,6 +65,7 @@ export class DetailService {
                       size
                       risers
                       fallers
+                      visualCode
                     }
                   }
                 }
