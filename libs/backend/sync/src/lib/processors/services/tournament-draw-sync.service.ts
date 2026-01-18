@@ -64,6 +64,7 @@ export class TournamentDrawSyncService {
             queueName: TOURNAMENT_EVENT_QUEUE,
             data: {
               tournamentCode,
+              eventCode,
               drawCode,
               metadata: {
                 displayName: `Games: ${drawName}`,
@@ -84,6 +85,7 @@ export class TournamentDrawSyncService {
             queueName: TOURNAMENT_EVENT_QUEUE,
             data: {
               tournamentCode,
+              eventCode,
               drawCode,
               metadata: {
                 displayName: `Entries: ${drawName}`,
@@ -105,6 +107,7 @@ export class TournamentDrawSyncService {
             queueName: TOURNAMENT_EVENT_QUEUE,
             data: {
               tournamentCode,
+              eventCode,
               drawCode,
               metadata: {
                 displayName: `Standing: ${drawName}`,

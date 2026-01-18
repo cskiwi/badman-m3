@@ -1,11 +1,12 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, Entry, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
+import { CompetitionDraw, Entry, Team as TeamModel, CompetitionEvent as CompetitionEventModel, CompetitionSubEvent } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
 
 export interface CompetitionEntrySyncData {
   tournamentCode: string;
+  eventCode?: string;
   drawCode: string;
 }
 
@@ -26,7 +27,7 @@ export class CompetitionEntrySyncService {
   async processEntrySync(job: Job<CompetitionEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
     await updateProgress(10);
-    const { tournamentCode, drawCode } = job.data;
+    const { tournamentCode, eventCode, drawCode } = job.data;
 
     try {
       // Find the competition event first to get proper context
@@ -43,16 +44,33 @@ export class CompetitionEntrySyncService {
 
       this.logger.debug(`Found competition: ${competitionEvent.id} with code ${tournamentCode}`);
 
+      // Use eventCode to find the specific sub-event when available, avoiding ambiguity
+      // when multiple sub-events have draws with the same visualCode
+      const subEvent = eventCode
+        ? await CompetitionSubEvent.findOne({
+            where: {
+              visualCode: eventCode,
+              competitionEvent: {
+                id: competitionEvent.id,
+              },
+            },
+          })
+        : null;
+
       // Find the draw with competition context to avoid visualCode ambiguity
       await updateProgress(25);
       const draw = await CompetitionDraw.findOne({
         where: {
           visualCode: drawCode,
-          competitionSubEvent: {
-            competitionEvent: {
-              id: competitionEvent.id,
-            },
-          },
+          ...(subEvent
+            ? { subeventId: subEvent.id }
+            : {
+                competitionSubEvent: {
+                  competitionEvent: {
+                    id: competitionEvent.id,
+                  },
+                },
+              }),
         },
         relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
       });

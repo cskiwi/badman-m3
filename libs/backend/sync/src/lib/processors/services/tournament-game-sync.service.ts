@@ -3,6 +3,7 @@ import {
   Game,
   Player,
   TournamentEvent as TournamentEventModel,
+  TournamentSubEvent as TournamentSubEventModel,
   TournamentDraw as TournamentDrawModel,
   GamePlayerMembership,
   RankingSystem,
@@ -134,14 +135,31 @@ export class TournamentGameSyncService {
       });
 
       if (tournamentEvent) {
+        // Use match.EventCode to find the specific sub-event, avoiding ambiguity
+        // when multiple sub-events have draws with the same visualCode
+        const subEvent = match.EventCode
+          ? await TournamentSubEventModel.findOne({
+              where: {
+                visualCode: match.EventCode,
+                tournamentEvent: {
+                  id: tournamentEvent.id,
+                },
+              },
+            })
+          : null;
+
         const draw = await TournamentDrawModel.findOne({
           where: {
             visualCode: match.DrawCode,
-            tournamentSubEvent: {
-              tournamentEvent: {
-                id: tournamentEvent.id,
-              },
-            },
+            ...(subEvent
+              ? { subeventId: subEvent.id }
+              : {
+                  tournamentSubEvent: {
+                    tournamentEvent: {
+                      id: tournamentEvent.id,
+                    },
+                  },
+                }),
           },
           relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
         });

@@ -63,6 +63,7 @@ export class CompetitionDrawSyncService {
           queueName: COMPETITION_EVENT_QUEUE,
           data: {
             tournamentCode,
+            eventCode,
             drawCode,
             metadata: {
               displayName: `Entries: ${drawName}`,
@@ -88,6 +89,7 @@ export class CompetitionDrawSyncService {
             queueName: COMPETITION_EVENT_QUEUE,
             data: {
               tournamentCode,
+              eventCode,
               drawCode,
               includeSubComponents: true,
               workPlan, // Pass the work plan to child jobs

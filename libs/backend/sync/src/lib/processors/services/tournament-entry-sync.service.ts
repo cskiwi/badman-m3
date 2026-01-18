@@ -4,6 +4,7 @@ import { Job, WaitingChildrenError } from 'bullmq';
 
 export interface TournamentEntrySyncData {
   tournamentCode: string;
+  eventCode?: string;
   drawCode: string;
 }
 
@@ -14,7 +15,7 @@ export class TournamentEntrySyncService {
   async processEntrySync(job: Job<TournamentEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament entry sync`);
     await updateProgress(10);
-    const { tournamentCode, drawCode } = job.data;
+    const { tournamentCode, eventCode, drawCode } = job.data;
 
     try {
       // Find the tournament event first to get proper context
@@ -31,16 +32,33 @@ export class TournamentEntrySyncService {
 
       this.logger.debug(`Found tournament: ${tournamentEvent.id} with code ${tournamentCode}`);
 
+      // Use eventCode to find the specific sub-event when available, avoiding ambiguity
+      // when multiple sub-events have draws with the same visualCode
+      const subEvent = eventCode
+        ? await TournamentSubEvent.findOne({
+            where: {
+              visualCode: eventCode,
+              tournamentEvent: {
+                id: tournamentEvent.id,
+              },
+            },
+          })
+        : null;
+
       // Find the draw with tournament context to avoid visualCode ambiguity
       await updateProgress(30);
       const draw = await TournamentDraw.findOne({
         where: {
           visualCode: drawCode,
-          tournamentSubEvent: {
-            tournamentEvent: {
-              id: tournamentEvent.id,
-            },
-          },
+          ...(subEvent
+            ? { subeventId: subEvent.id }
+            : {
+                tournamentSubEvent: {
+                  tournamentEvent: {
+                    id: tournamentEvent.id,
+                  },
+                },
+              }),
         },
         relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
       });

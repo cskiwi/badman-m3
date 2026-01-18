@@ -3,6 +3,7 @@ import {
   Game,
   Player,
   CompetitionEvent,
+  CompetitionSubEvent,
   CompetitionDraw,
 } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
@@ -182,14 +183,31 @@ export class CompetitionGameSyncService {
       });
 
       if (competitionEvent) {
+        // Use match.EventCode to find the specific sub-event, avoiding ambiguity
+        // when multiple sub-events have draws with the same visualCode
+        const subEvent = match.EventCode
+          ? await CompetitionSubEvent.findOne({
+              where: {
+                visualCode: match.EventCode,
+                competitionEvent: {
+                  id: competitionEvent.id,
+                },
+              },
+            })
+          : null;
+
         const draw = await CompetitionDraw.findOne({
           where: {
             visualCode: match.DrawCode,
-            competitionSubEvent: {
-              competitionEvent: {
-                id: competitionEvent.id,
-              },
-            },
+            ...(subEvent
+              ? { subeventId: subEvent.id }
+              : {
+                  competitionSubEvent: {
+                    competitionEvent: {
+                      id: competitionEvent.id,
+                    },
+                  },
+                }),
           },
           relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
         });

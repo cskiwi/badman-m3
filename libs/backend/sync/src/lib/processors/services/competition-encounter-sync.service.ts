@@ -11,6 +11,7 @@ import { TeamMatchingService } from './team-matching.service';
 
 export interface CompetitionEncounterSyncData {
   tournamentCode: string;
+  eventCode?: string;
   drawCode: string;
   encounterCodes?: string[];
   includeSubComponents?: boolean;
@@ -35,7 +36,7 @@ export class CompetitionEncounterSyncService {
     token: string
   ): Promise<void> {
     this.logger.log(`Processing competition encounter sync`);
-    const { tournamentCode, drawCode, encounterCodes, includeSubComponents, childJobsCreated } = job.data;
+    const { tournamentCode, eventCode, drawCode, encounterCodes, includeSubComponents, childJobsCreated } = job.data;
 
     try {
       let completedSteps = 0;
@@ -59,6 +60,7 @@ export class CompetitionEncounterSyncService {
             queueName: COMPETITION_EVENT_QUEUE,
             data: {
               tournamentCode,
+              eventCode,
               drawCode,
               metadata: {
                 displayName: `Standing Sync: ${drawCode}`,
