@@ -156,10 +156,10 @@ export class PageDetailComponent {
     }
 
     return {
-      level: 'tournament',
-      tournamentCode: tournament.visualCode || tournament.id,
+      level: 'event',
+      tournamentCode: tournament.visualCode,
       tournamentName: tournament?.name,
-      eventCode: tournament.visualCode || tournament.id, // Use tournament code as event code for tournament-level sync
+      eventCode: tournament.visualCode, // Use tournament code as event code for tournament-level sync
       eventName: tournament.name,
     };
   });
@@ -173,8 +173,8 @@ export class PageDetailComponent {
     }
 
     return {
-      entityType: 'tournament',
-      entityCode: tournament.visualCode || tournament.id,
+      entityType: 'event',
+      entityCode: tournament.visualCode!,
       entityName: tournament?.name,
       lastSync: tournament.lastSync,
     };
@@ -190,9 +190,9 @@ export class PageDetailComponent {
 
     return {
       level: 'sub-event',
-      tournamentCode: tournament.visualCode || tournament.id,
+      tournamentCode: tournament.visualCode,
       tournamentName: tournament?.name,
-      eventCode: subEvent.visualCode || subEvent.id,
+      eventCode: subEvent.visualCode,
       eventName: subEvent.name,
     };
   }
@@ -207,7 +207,7 @@ export class PageDetailComponent {
 
     return {
       entityType: 'event',
-      entityCode: subEvent.visualCode || subEvent.id,
+      entityCode: subEvent.visualCode,
       entityName: subEvent.name,
       lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
     };
@@ -229,5 +229,4 @@ export class PageDetailComponent {
       }
     });
   }
-
 }

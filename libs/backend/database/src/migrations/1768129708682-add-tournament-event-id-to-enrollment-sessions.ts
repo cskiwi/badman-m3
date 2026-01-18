@@ -17,9 +17,6 @@ export class AddTournamentEventIdToEnrollmentSessions1768129708682 implements Mi
             ALTER TABLE "event"."EnrollmentSessions" DROP CONSTRAINT "EnrollmentSessions_playerId_fkey"
         `);
         await queryRunner.query(`
-            ALTER TABLE "event"."EnrollmentSessions" DROP CONSTRAINT "FK_enrollment_sessions_tournament"
-        `);
-        await queryRunner.query(`
             ALTER TABLE "event"."TournamentEnrollments" DROP CONSTRAINT "FK_enrollment_approved_by"
         `);
         await queryRunner.query(`
@@ -72,9 +69,6 @@ export class AddTournamentEventIdToEnrollmentSessions1768129708682 implements Mi
         `);
         await queryRunner.query(`
             DROP INDEX "event"."IDX_enrollment_sessions_created"
-        `);
-        await queryRunner.query(`
-            DROP INDEX "event"."IDX_enrollment_sessions_tournament"
         `);
         await queryRunner.query(`
             DROP INDEX "event"."IDX_enrollment_player_status"
@@ -215,10 +209,6 @@ export class AddTournamentEventIdToEnrollmentSessions1768129708682 implements Mi
             ADD CONSTRAINT "FK_2b0154230ffeaa2074702a481d1" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
-            ALTER TABLE "event"."EnrollmentSessions"
-            ADD CONSTRAINT "FK_46ad60e62c4ea0152aa9bd1fa56" FOREIGN KEY ("tournamentEventId") REFERENCES "event"."EventTournaments"("id") ON DELETE CASCADE ON UPDATE NO ACTION
-        `);
-        await queryRunner.query(`
             ALTER TABLE "event"."TournamentEnrollments"
             ADD CONSTRAINT "FK_2ceed0a643f53f587a1d00c88a0" FOREIGN KEY ("approvedBy") REFERENCES "Players"("id") ON DELETE
             SET NULL ON UPDATE NO ACTION
@@ -270,9 +260,6 @@ export class AddTournamentEventIdToEnrollmentSessions1768129708682 implements Mi
         `);
         await queryRunner.query(`
             ALTER TABLE "event"."TournamentEnrollments" DROP CONSTRAINT "FK_2ceed0a643f53f587a1d00c88a0"
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "event"."EnrollmentSessions" DROP CONSTRAINT "FK_46ad60e62c4ea0152aa9bd1fa56"
         `);
         await queryRunner.query(`
             ALTER TABLE "event"."EnrollmentSessions" DROP CONSTRAINT "FK_2b0154230ffeaa2074702a481d1"
@@ -449,9 +436,6 @@ export class AddTournamentEventIdToEnrollmentSessions1768129708682 implements Mi
             CREATE INDEX "IDX_enrollment_player_status" ON "event"."TournamentEnrollments" ("playerId", "status")
         `);
         await queryRunner.query(`
-            CREATE INDEX "IDX_enrollment_sessions_tournament" ON "event"."EnrollmentSessions" ("status", "tournamentEventId")
-        `);
-        await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_sessions_created" ON "event"."EnrollmentSessions" ("createdAt")
         `);
         await queryRunner.query(`
@@ -515,10 +499,6 @@ export class AddTournamentEventIdToEnrollmentSessions1768129708682 implements Mi
             ALTER TABLE "event"."TournamentEnrollments"
             ADD CONSTRAINT "FK_enrollment_approved_by" FOREIGN KEY ("approvedBy") REFERENCES "Players"("id") ON DELETE
             SET NULL ON UPDATE NO ACTION
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "event"."EnrollmentSessions"
-            ADD CONSTRAINT "FK_enrollment_sessions_tournament" FOREIGN KEY ("tournamentEventId") REFERENCES "event"."EventTournaments"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
         await queryRunner.query(`
             ALTER TABLE "event"."EnrollmentSessions"

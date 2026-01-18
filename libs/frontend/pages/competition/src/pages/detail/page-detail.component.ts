@@ -114,11 +114,9 @@ export class PageDetailComponent {
     }
 
     return {
-      level: 'tournament', // Use tournament level for competition events
+      level: 'event', // Use tournament level for competition events
       tournamentCode: competition.visualCode,
       tournamentName: competition.name,
-      eventCode: competition.visualCode, // Use competition code as event code
-      eventName: competition.name,
     };
   });
 
@@ -154,11 +152,15 @@ export class PageDetailComponent {
       throw new Error('Competition visual code is missing');
     }
 
+    if (!subEvent.visualCode) {
+      throw new Error('Sub-event visual code is missing');
+    }
+
     return {
       level: 'sub-event',
       tournamentCode: competition.visualCode,
       tournamentName: competition.name,
-      eventCode: subEvent.visualCode || subEvent.id,
+      eventCode: subEvent.visualCode,
       eventName: subEvent.name,
     };
   }

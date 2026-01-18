@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw } from '@app/models';
+import { CompetitionDraw, CompetitionSubEvent } from '@app/models';
 import { DrawType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -43,7 +43,7 @@ export class CompetitionDrawSyncService {
       }
 
       // Update/create the draw record
-      await this.createOrUpdateDrawFromApi(tournamentCode, drawCode);
+      await this.createOrUpdateDrawFromApi(tournamentCode, eventCode, drawCode);
 
       // Get draw name for metadata
       const drawName = await this.getDrawName(tournamentCode, drawCode);
@@ -79,10 +79,9 @@ export class CompetitionDrawSyncService {
           },
         });
 
-        // If includeSubComponents, add encounter sync (with standing as its child)
+        // If includeSubComponents, add encounter sync (encounter will create game + standing as its children)
         if (includeSubComponents) {
           const encounterJobName = generateJobId('competition', 'encounter', tournamentCode, drawCode);
-          const standingJobName = generateJobId('competition', 'standing', tournamentCode, drawCode);
 
           children.push({
             name: encounterJobName,
@@ -100,24 +99,6 @@ export class CompetitionDrawSyncService {
                 breakdown: workPlan?.breakdown,
               },
             },
-            children: [
-              {
-                name: standingJobName,
-                queueName: COMPETITION_EVENT_QUEUE,
-                data: {
-                  tournamentCode,
-                  drawCode,
-                  metadata: {
-                    displayName: `Standing: ${drawName}`,
-                    drawName: drawName,
-                    description: `Standing synchronization for draw ${drawName}`,
-                  },
-                },
-                opts: {
-                  jobId: standingJobName,
-                },
-              },
-            ],
             opts: {
               jobId: encounterJobName,
               parent: {
@@ -166,21 +147,32 @@ export class CompetitionDrawSyncService {
     }
   }
 
-  private async createOrUpdateDrawFromApi(tournamentCode: string, drawCode: string): Promise<void> {
+  private async createOrUpdateDrawFromApi(tournamentCode: string, eventCode: string, drawCode: string): Promise<void> {
     try {
       const drawData = await this.tournamentApiClient.getDrawDetails?.(tournamentCode, drawCode);
       if (drawData) {
-        // Find the draw with competition context to avoid visualCode ambiguity
+        // Find the parent sub-event with competition context
+        const subEvent = await CompetitionSubEvent.findOne({
+          where: {
+            visualCode: eventCode,
+            competitionEvent: {
+              visualCode: tournamentCode,
+            },
+          },
+          relations: ['competitionEvent'],
+        });
+
+        if (!subEvent) {
+          this.logger.warn(`Sub-event with code ${eventCode} not found for competition ${tournamentCode}, skipping draw ${drawCode}`);
+          return;
+        }
+
+        // Find the draw with sub-event context to avoid visualCode ambiguity
         const existingDraw = await CompetitionDraw.findOne({
           where: {
             visualCode: drawCode,
-            competitionSubEvent: {
-              competitionEvent: {
-                visualCode: tournamentCode,
-              },
-            },
+            subeventId: subEvent.id,
           },
-          relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
         });
 
         if (existingDraw) {
@@ -189,6 +181,7 @@ export class CompetitionDrawSyncService {
           existingDraw.size = drawData.Size;
           existingDraw.lastSync = new Date();
           await existingDraw.save();
+          this.logger.debug(`Updated existing draw ${drawCode} for sub-event ${eventCode}`);
         } else {
           // Create new competition draw
           const newDraw = new CompetitionDraw();
@@ -196,8 +189,10 @@ export class CompetitionDrawSyncService {
           newDraw.type = this.mapDrawType(drawData.TypeID) as DrawType;
           newDraw.size = drawData.Size;
           newDraw.visualCode = drawCode;
+          newDraw.subeventId = subEvent.id; // Link to parent sub-event
           newDraw.lastSync = new Date();
           await newDraw.save();
+          this.logger.debug(`Created new draw ${drawCode} for sub-event ${eventCode}`);
         }
       }
     } catch {

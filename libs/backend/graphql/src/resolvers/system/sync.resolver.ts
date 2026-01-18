@@ -183,61 +183,17 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async triggerCompetitionSync(
-    @User() user: Player,
-    @Args('tournamentCode', { nullable: true }) tournamentCode?: string,
-    @Args('eventCode', { type: () => [String], nullable: true }) eventCode?: string,
-    @Args('forceUpdate', { type: () => Boolean, defaultValue: false }) forceUpdate?: boolean,
-    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
-  ): Promise<SyncTriggerResponse> {
-    if (!(await user.hasAnyPermission(['change:job']))) {
-      throw new ForbiddenException('Insufficient permissions to trigger competition sync');
-    }
-
-    const data = tournamentCode ? { tournamentCode, eventCode, forceUpdate, includeSubComponents } : undefined;
-    await this.syncService.queueCompetitionStructureSync(data);
-
-    return {
-      message: 'Competition structure sync queued successfully',
-      success: true,
-    };
-  }
-
-  @Mutation(() => SyncTriggerResponse)
-  @UseGuards(PermGuard)
-  async triggerTournamentSync(
-    @User() user: Player,
-    @Args('tournamentCode', { nullable: true }) tournamentCode?: string,
-    @Args('eventCode', { type: () => [String], nullable: true }) eventCode?: string,
-    @Args('forceUpdate', { type: () => Boolean, defaultValue: false }) forceUpdate?: boolean,
-    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
-  ): Promise<SyncTriggerResponse> {
-    if (!(await user.hasAnyPermission(['change:job']))) {
-      throw new ForbiddenException('Insufficient permissions to trigger tournament sync');
-    }
-
-    const data = tournamentCode ? { tournamentCode, eventCode, forceUpdate, includeSubComponents } : undefined;
-    await this.syncService.queueTournamentStructureSync(data);
-
-    return {
-      message: 'Tournament structure sync queued successfully',
-      success: true,
-    };
-  }
-
-  @Mutation(() => SyncTriggerResponse)
-  @UseGuards(PermGuard)
   async triggerEventSync(
     @User() user: Player,
     @Args('tournamentCode') tournamentCode: string,
-    @Args('eventCode') eventCode: string,
     @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
+    @Args('eventCode', { type: () => String, nullable: true }) eventCode?: string,
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
-      throw new ForbiddenException('Insufficient permissions to trigger event sync');
+      throw new ForbiddenException('Insufficient permissions to trigger event sync!');
     }
 
-    await this.syncService.queueEventSync(tournamentCode, eventCode, includeSubComponents);
+    await this.syncService.queueEventSync(tournamentCode, includeSubComponents, eventCode);
 
     return {
       message: `Event sync queued successfully for ${eventCode}`,

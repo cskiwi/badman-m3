@@ -1,26 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
 import { firstValueFrom } from 'rxjs';
 import { parseStringPromise } from 'xml2js';
-import Redis from 'ioredis';
 import {
-  Tournament,
-  TournamentEvent,
-  Team,
   Entry,
-  TournamentDraw,
   Match,
-  Stage,
-  TournamentListResponse,
-  TournamentDetailsResponse,
-  TournamentEventsResponse,
-  TournamentTeamsResponse,
-  TournamentEntriesResponse,
-  TournamentDrawResponse,
   MatchResponse,
   MatchesResponse,
+  Stage,
   StagesResponse,
+  Team,
+  TeamMatch,
+  TeamMatchesResponse,
+  Tournament,
+  TournamentDetailsResponse,
+  TournamentDraw,
+  TournamentDrawResponse,
+  TournamentEntriesResponse,
+  TournamentEvent,
+  TournamentEventsResponse,
+  TournamentListResponse,
+  TournamentTeamsResponse,
 } from '../types/tournament.types';
 
 @Injectable()
@@ -283,11 +285,12 @@ export class TournamentApiClient {
   }
 
   /**
-   * Get team match details (for competitions)
+   * Get all individual matches within a team encounter (for competitions)
+   * Returns all games played in one encounter (e.g., 8 games: 4 doubles + 4 singles)
    */
-  async getTeamMatch(tournamentCode: string, matchCode: string): Promise<Match> {
-    const response = await this.makeRequest<MatchResponse>(`/1.0/Tournament/${tournamentCode}/TeamMatch/${matchCode}`);
-    return response.Result.Match;
+  async getTeamMatchGames(tournamentCode: string, encounterCode: string): Promise<Match[]> {
+    const response = await this.makeRequest<MatchesResponse>(`/1.0/Tournament/${tournamentCode}/TeamMatch/${encounterCode}`);
+    return Array.isArray(response.Result.Match) ? response.Result.Match : response.Result.Match ? [response.Result.Match] : [];
   }
 
   /**
@@ -327,19 +330,20 @@ export class TournamentApiClient {
   }
 
   /**
-   * Get encounter details
+   * Get encounter details (individual match within an encounter - returns player-level data)
    */
   async getEncounterDetails(tournamentCode: string, encounterCode: string): Promise<Match> {
-    const response = await this.makeRequest<MatchResponse>(`/1.0/Tournament/${tournamentCode}/EncounterDetail/${encounterCode}`);
+    const response = await this.makeRequest<MatchResponse>(`/1.0/Tournament/${tournamentCode}/TeamMatch/${encounterCode}`);
     return response.Result.Match;
   }
 
   /**
-   * Get encounters by draw
+   * Get encounters (team matches) by draw for competitions
+   * Returns TeamMatch[] with team-level data (not individual player data)
    */
-  async getEncountersByDraw(tournamentCode: string, drawCode: string): Promise<Match[]> {
-    const response = await this.makeRequest<MatchesResponse>(`/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Encounter`);
-    return Array.isArray(response.Result.Match) ? response.Result.Match : [response.Result.Match];
+  async getEncountersByDraw(tournamentCode: string, drawCode: string): Promise<TeamMatch[]> {
+    const response = await this.makeRequest<TeamMatchesResponse>(`/1.0/Tournament/${tournamentCode}/Draw/${drawCode}/Match`);
+    return Array.isArray(response.Result.TeamMatch) ? response.Result.TeamMatch : response.Result.TeamMatch ? [response.Result.TeamMatch] : [];
   }
 
   /**

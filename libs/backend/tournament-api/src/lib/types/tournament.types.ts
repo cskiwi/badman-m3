@@ -141,6 +141,35 @@ export interface Match {
   };
 }
 
+/**
+ * TeamMatch represents a competition encounter between two teams
+ * This is different from Match which is for individual/doubles matches
+ */
+export interface TeamMatch {
+  Code: string;
+  Winner: MatchWinner;
+  ScoreStatus: number;
+  RoundName?: string;
+  MatchTime?: string;
+  EventCode: string;
+  EventName: string;
+  DrawCode: string;
+  DrawName: string;
+  Team1: {
+    Code: string;
+    Name: string;
+    CountryCode?: string;
+  };
+  Team2: {
+    Code: string;
+    Name: string;
+    CountryCode?: string;
+  };
+  Sets?: {
+    Set: MatchSet[];
+  };
+}
+
 export interface MatchSet {
   Team1: number;
   Team2: number;
@@ -255,5 +284,19 @@ export interface StagesResponse {
   Result: {
     Version: string;
     Stage: Stage[];
+  };
+}
+
+export interface TeamMatchesResponse {
+  Result: {
+    Version: string;
+    TeamMatch: TeamMatch[];
+  };
+}
+
+export interface TeamMatchResponse {
+  Result: {
+    Version: string;
+    TeamMatch: TeamMatch;
   };
 }

@@ -228,13 +228,13 @@ export class SyncService {
   /**
    * Queue sync for a specific event with granular control
    */
-  async queueEventSync(tournamentCode: string, eventCode: string, includeSubComponents = false): Promise<void> {
+  async queueEventSync(tournamentCode: string, includeSubComponents = false, eventCode?: string): Promise<void> {
     const data = { tournamentCode, eventCode, includeSubComponents };
 
     // Determine if it's a tournament or competition by checking the database
     const eventType = await this.getEventType(tournamentCode);
-    const jobId = generateJobId(eventType, 'event', tournamentCode, eventCode);
-    const jobName = generateJobId(eventType, 'event', tournamentCode, eventCode);
+    const jobId = generateJobId(eventType, 'event', tournamentCode, eventCode || '');
+    const jobName = generateJobId(eventType, 'event', tournamentCode, eventCode || '');
 
     if (includeSubComponents) {
       // Use FlowProducer when creating jobs that will have children

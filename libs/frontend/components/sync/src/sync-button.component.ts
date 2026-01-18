@@ -1,4 +1,3 @@
-
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
@@ -14,8 +13,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { lastValueFrom } from 'rxjs';
 
 const TRIGGER_EVENT_SYNC_MUTATION = gql`
-  mutation TriggerEventSync($tournamentCode: String!, $eventCode: String!, $includeSubComponents: Boolean!) {
-    triggerEventSync(tournamentCode: $tournamentCode, eventCode: $eventCode, includeSubComponents: $includeSubComponents) {
+  mutation TriggerEventSync($tournamentCode: String!, $includeSubComponents: Boolean!, $eventCode: String,) {
+    triggerEventSync(tournamentCode: $tournamentCode, includeSubComponents: $includeSubComponents, eventCode: $eventCode,) {
       message
       success
     }
@@ -49,7 +48,7 @@ const TRIGGER_GAME_SYNC_MUTATION = gql`
   }
 `;
 
-export type SyncLevel = 'tournament' | 'event' | 'sub-event' | 'draw' | 'game';
+export type SyncLevel = 'event' | 'sub-event' | 'draw' | 'game';
 
 export interface SyncButtonConfig {
   tournamentCode?: string;
@@ -73,12 +72,12 @@ export interface SyncButtonConfig {
     DialogModule,
     InputTextModule,
     ToastModule,
-    ConfirmDialogModule
-],
+    ConfirmDialogModule,
+  ],
   providers: [MessageService, ConfirmationService],
   template: `
     @if (config(); as cfg) {
-      <p-splitButton
+      <p-splitbutton
         [icon]="getSyncIcon(cfg.level)"
         size="small"
         severity="secondary"
@@ -146,15 +145,8 @@ export interface SyncButtonConfig {
     <p-toast />
 
     <!-- Confirmation Dialog -->
-    <p-confirmDialog />
+    <p-confirmdialog />
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-      }
-    `,
-  ],
 })
 export class SyncButtonComponent {
   private readonly apollo = inject(Apollo);
@@ -176,7 +168,6 @@ export class SyncButtonComponent {
 
   getSyncLabel(level: SyncLevel): string {
     const labels = {
-      tournament: 'all.sync.dashboard.actions.fullSync',
       event: 'all.sync.dashboard.actions.fullSync',
       'sub-event': 'all.sync.dashboard.actions.fullSync',
       draw: 'all.sync.dashboard.actions.fullSync',
@@ -187,18 +178,14 @@ export class SyncButtonComponent {
 
   getSyncItems(level: SyncLevel): any[] {
     const baseItems = {
-      tournament: [
-        {
-          label: this.translate.instant('all.sync.dashboard.actions.sync'),
-          icon: 'pi pi-refresh',
-          command: () => this.syncTournament(),
-        },
-      ],
       event: [
         {
           label: this.translate.instant('all.sync.dashboard.actions.sync'),
           icon: 'pi pi-refresh',
-          command: () => this.syncEvent(),
+          command: () => {
+            console.log('Full event sync selected');
+            this.syncEvent();
+          },
         },
       ],
       'sub-event': [
@@ -219,7 +206,7 @@ export class SyncButtonComponent {
         {
           label: this.translate.instant('all.sync.dashboard.actions.sync'),
           icon: 'pi pi-download',
-          command: () => this.syncAllGames(),
+          command: () => this.syncGames(),
         },
         {
           label: this.translate.instant('all.sync.dashboard.actions.sync'),
@@ -228,14 +215,12 @@ export class SyncButtonComponent {
         },
       ],
     };
+
     return baseItems[level] || [];
   }
 
   handleSyncClick(level: SyncLevel): void {
     switch (level) {
-      case 'tournament':
-        this.syncTournament(true);
-        break;
       case 'event':
         this.syncEvent(true);
         break;
@@ -246,15 +231,16 @@ export class SyncButtonComponent {
         this.syncDraw(true);
         break;
       case 'game':
-        this.syncAllGames();
+        this.syncGames();
         break;
     }
   }
 
   // Sync methods
-  async syncTournament(includeSubComponents = false): Promise<void> {
+  async syncEvent(includeSubComponents = false): Promise<void> {
+    console.log('syncTournament called with includeSubComponents:', includeSubComponents);
     const cfg = this.config();
-    if (!cfg || !cfg.eventCode) return;
+    if (!cfg || !cfg.tournamentCode) return;
 
     this.loading.set(true);
     try {
@@ -263,7 +249,6 @@ export class SyncButtonComponent {
           mutation: TRIGGER_EVENT_SYNC_MUTATION,
           variables: {
             tournamentCode: cfg.tournamentCode,
-            eventCode: cfg.eventCode,
             includeSubComponents,
           },
         }),
@@ -286,41 +271,8 @@ export class SyncButtonComponent {
     }
   }
 
-  async syncEvent(includeSubComponents = false): Promise<void> {
-    const cfg = this.config();
-    if (!cfg || !cfg.eventCode) return;
-
-    this.loading.set(true);
-    try {
-      const result = await lastValueFrom(
-        this.apollo.mutate<{ triggerEventSync: { message: string; success: boolean } }>({
-          mutation: TRIGGER_EVENT_SYNC_MUTATION,
-          variables: {
-            tournamentCode: cfg.tournamentCode,
-            eventCode: cfg.eventCode,
-            includeSubComponents,
-          },
-        }),
-      );
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: result.data?.triggerEventSync.message || `Event sync started for ${cfg.eventName}`,
-      });
-    } catch (e: unknown) {
-      console.error('syncEvent error', e);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Failed to sync event ${cfg.eventName}`,
-      });
-    } finally {
-      this.loading.set(false);
-    }
-  }
-
   async syncSubEvent(includeSubComponents = false): Promise<void> {
+    console.log('syncSubEvent called with includeSubComponents:', includeSubComponents);
     const cfg = this.config();
     if (!cfg || !cfg.eventCode) return;
 
@@ -395,6 +347,7 @@ export class SyncButtonComponent {
   }
 
   async syncGames(): Promise<void> {
+    console.log('syncGames called');
     const cfg = this.config();
     if (!cfg) return;
 
@@ -427,27 +380,6 @@ export class SyncButtonComponent {
     } finally {
       this.loading.set(false);
     }
-  }
-
-  async syncEventGames(): Promise<void> {
-    await this.syncGames();
-  }
-
-  async syncDrawGames(): Promise<void> {
-    await this.syncGames();
-  }
-
-  async syncAllGames(): Promise<void> {
-    await this.syncGames();
-  }
-
-  // Event handlers for debugging
-  onDropdownClick(event: MouseEvent): void {
-    console.log('Dropdown button clicked:', event);
-  }
-
-  onMenuShow(event?: Event | CustomEvent): void {
-    console.log('Menu shown:', event);
   }
 
   // Dialog methods

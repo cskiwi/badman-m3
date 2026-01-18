@@ -1,5 +1,6 @@
-import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
+import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
+import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, Game, Player } from '@app/models';
+import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
@@ -34,51 +35,27 @@ export class CompetitionEncounterSyncService {
     token: string
   ): Promise<void> {
     this.logger.log(`Processing competition encounter sync`);
-    const { tournamentCode, drawCode, encounterCodes, includeSubComponents, workPlan } = job.data;
+    const { tournamentCode, drawCode, encounterCodes, includeSubComponents, childJobsCreated } = job.data;
 
     try {
-      // Check if this job has already created child jobs and handle different resume scenarios
-
       let completedSteps = 0;
       const totalSteps = includeSubComponents ? 3 : 2; // encounter sync + (optional child job creation)
 
-      // Only do the actual work if we're not resuming after children
-      if (!includeSubComponents) {
-        // Create/update encounters (primary responsibility of Encounter service)
-        await this.createOrUpdateEncounters(tournamentCode, drawCode, encounterCodes);
+      // Always create/update encounters first (primary responsibility of Encounter service)
+      await this.createOrUpdateEncounters(tournamentCode, drawCode, encounterCodes);
 
-        completedSteps++;
-        await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-        this.logger.debug(`Completed encounter creation/update`);
+      completedSteps++;
+      await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      this.logger.debug(`Completed encounter creation/update`);
 
-        // If includeSubComponents, add game-level sync jobs
-        if (includeSubComponents) {
-          const gameJobName = generateJobId('competition', 'game', tournamentCode, drawCode);
-          const standingJobName = generateJobId('competition', 'standing', tournamentCode, drawCode);
+      // If includeSubComponents and child jobs haven't been created yet, add standing sync job
+      // Note: Games are already processed during encounter sync (via getTeamMatchGames)
+      if (includeSubComponents && !childJobsCreated) {
+        const standingJobName = generateJobId('competition', 'standing', tournamentCode, drawCode);
 
-          await this.competitionSyncFlow.add({
-            name: generateJobId('competition', 'game', tournamentCode, drawCode),
-            queueName: COMPETITION_EVENT_QUEUE,
-            data: {
-              tournamentCode,
-              drawCode,
-              includeSubComponents: true,
-              metadata: {
-                displayName: `Game Sync: ${drawCode}`,
-                description: `Game synchronization for draw ${drawCode} in competition ${tournamentCode}`,
-              },
-            },
-            opts: {
-              jobId: gameJobName,
-              parent: {
-                id: job.id!,
-                queue: job.queueQualifiedName,
-              },
-            },
-          });
-
-          await this.competitionSyncFlow.add({
-            name: generateJobId('competition', 'standing', tournamentCode, drawCode),
+        const children = [
+          {
+            name: standingJobName,
             queueName: COMPETITION_EVENT_QUEUE,
             data: {
               tournamentCode,
@@ -95,17 +72,40 @@ export class CompetitionEncounterSyncService {
                 queue: job.queueQualifiedName,
               },
             },
-          });
+          },
+        ];
 
-          // Complete this job's work (encounter sync + child job creation)
-          completedSteps++;
-          const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
-          await updateProgress(finalProgress);
+        await job.updateData({
+          ...job.data,
+          childJobsCreated: true,
+        });
+
+        await this.competitionSyncFlow.addBulk(children);
+
+        this.logger.log(`Added standing job for encounter sync`);
+
+        // Move to waiting for children and throw WaitingChildrenError
+        const shouldWait = await job.moveToWaitingChildren(token);
+        if (shouldWait) {
+          this.logger.log(`Moving to waiting for children - standing job pending`);
+          throw new WaitingChildrenError();
         }
+
+        // If we reach here, all children have completed
+        this.logger.log(`All child jobs completed, continuing`);
       }
+
+      completedSteps++;
+      const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
+      await updateProgress(finalProgress);
 
       this.logger.log(`Completed competition encounter sync`);
     } catch (error: unknown) {
+      // Re-throw WaitingChildrenError as expected
+      if (error instanceof WaitingChildrenError) {
+        throw error;
+      }
+
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process competition encounter sync: ${errorMessage}`, error);
       await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
@@ -117,38 +117,30 @@ export class CompetitionEncounterSyncService {
     this.logger.log(`Creating/updating encounters for competition ${tournamentCode}, draw ${drawCode}`);
 
     try {
-      let encounters: unknown[] = [];
+      // Fetch all team matches (encounters) in the draw
+      const drawTeamMatches = await this.tournamentApiClient.getEncountersByDraw(tournamentCode, drawCode);
+      let teamMatches: TeamMatch[] = drawTeamMatches?.filter((match) => match != null) || [];
 
+      // Filter to specific encounters if codes are provided
       if (encounterCodes && encounterCodes.length > 0) {
-        // Sync specific encounters
-        for (const encounterCode of encounterCodes) {
-          try {
-            const encounter = await this.tournamentApiClient.getEncounterDetails?.(tournamentCode, encounterCode);
-            if (encounter) {
-              encounters.push(encounter);
-            }
-          } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            this.logger.warn(`Failed to get encounter ${encounterCode}: ${errorMessage}`, error);
-          }
-        }
-      } else {
-        // Sync all encounters in a draw
-        const drawEncounters = await this.tournamentApiClient.getEncountersByDraw?.(tournamentCode, drawCode);
-        encounters = drawEncounters?.filter((encounter: unknown) => encounter != null) || [];
+        const encounterCodeSet = new Set(encounterCodes);
+        teamMatches = teamMatches.filter((match) => encounterCodeSet.has(match.Code));
+        this.logger.debug(`Filtered to ${teamMatches.length} specific encounters from ${drawTeamMatches?.length || 0} total`);
       }
 
-      // Process encounters
-      for (const encounter of encounters) {
-        if (!encounter) {
-          this.logger.warn(`Skipping undefined encounter`);
+      this.logger.log(`Found ${teamMatches.length} team matches to process`);
+
+      // Process team matches
+      for (const teamMatch of teamMatches) {
+        if (!teamMatch) {
+          this.logger.warn(`Skipping undefined team match`);
           continue;
         }
 
-        await this.createOrUpdateEncounter(tournamentCode, encounter);
+        await this.createOrUpdateEncounter(tournamentCode, teamMatch);
       }
 
-      this.logger.log(`Created/updated ${encounters.length} encounters`);
+      this.logger.log(`Created/updated ${teamMatches.length} encounters`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to create/update encounters: ${errorMessage}`, error);
@@ -156,27 +148,13 @@ export class CompetitionEncounterSyncService {
     }
   }
 
-  private async createOrUpdateEncounter(tournamentCode: string, encounter: unknown): Promise<void> {
-    const encounterData = encounter as {
-      Code: string;
-      DrawCode: string;
-      Date?: string;
-      OriginalDate?: string;
-      HomeTeam?: unknown;
-      AwayTeam?: unknown;
-      HomeScore?: number;
-      AwayScore?: number;
-      StartHour?: string;
-      EndHour?: string;
-      Shuttle?: number;
-    };
-
-    this.logger.debug(`Processing encounter: ${encounterData.Code}`);
+  private async createOrUpdateEncounter(tournamentCode: string, teamMatch: TeamMatch): Promise<void> {
+    this.logger.debug(`Processing encounter: ${teamMatch.Code}`);
 
     // Find the draw this encounter belongs to with competition context
     const draw = await CompetitionDraw.findOne({
       where: {
-        visualCode: encounterData.DrawCode,
+        visualCode: teamMatch.DrawCode,
         competitionSubEvent: {
           competitionEvent: {
             visualCode: tournamentCode,
@@ -187,37 +165,43 @@ export class CompetitionEncounterSyncService {
     });
 
     if (!draw) {
-      this.logger.warn(`Competition draw with code ${encounterData.DrawCode} not found, skipping encounter ${encounterData.Code}`);
+      this.logger.warn(`Competition draw with code ${teamMatch.DrawCode} not found, skipping encounter ${teamMatch.Code}`);
       return;
     }
 
     // Get competition event for team matching context
     const competitionEvent = draw.competitionSubEvent?.competitionEvent || null;
 
-    // Find teams using flexible matching
+    // Find teams using flexible matching (Team1 = Home, Team2 = Away)
     let homeTeam: TeamModel | null = null;
     let awayTeam: TeamModel | null = null;
 
-    if (encounterData.HomeTeam) {
-      const homeTeamData = encounterData.HomeTeam as { Code?: string; Name?: string };
-      const result = await this.teamMatchingService.findTeam(homeTeamData.Code, homeTeamData.Name, competitionEvent);
+    if (teamMatch.Team1) {
+      const result = await this.teamMatchingService.findTeam(teamMatch.Team1.Code, teamMatch.Team1.Name, competitionEvent);
       homeTeam = result.team;
       if (result.team) {
-        this.logger.debug(`Home team matched: "${homeTeamData.Name}" -> "${result.team.name}" (${result.confidence})`);
+        this.logger.debug(`Home team matched: "${teamMatch.Team1.Name}" -> "${result.team.name}" (${result.confidence})`);
       }
     }
-    if (encounterData.AwayTeam) {
-      const awayTeamData = encounterData.AwayTeam as { Code?: string; Name?: string };
-      const result = await this.teamMatchingService.findTeam(awayTeamData.Code, awayTeamData.Name, competitionEvent);
+    if (teamMatch.Team2) {
+      const result = await this.teamMatchingService.findTeam(teamMatch.Team2.Code, teamMatch.Team2.Name, competitionEvent);
       awayTeam = result.team;
       if (result.team) {
-        this.logger.debug(`Away team matched: "${awayTeamData.Name}" -> "${result.team.name}" (${result.confidence})`);
+        this.logger.debug(`Away team matched: "${teamMatch.Team2.Name}" -> "${result.team.name}" (${result.confidence})`);
       }
+    }
+
+    // Calculate scores from Sets if available (sum of set scores)
+    let homeScore: number | undefined;
+    let awayScore: number | undefined;
+    if (teamMatch.Sets?.Set && teamMatch.Sets.Set.length > 0) {
+      homeScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (set.Team1 || 0), 0);
+      awayScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (set.Team2 || 0), 0);
     }
 
     const existingEncounter = await CompetitionEncounter.findOne({
       where: {
-        visualCode: encounterData.Code,
+        visualCode: teamMatch.Code,
         drawCompetition: {
           competitionSubEvent: {
             competitionEvent: {
@@ -229,38 +213,166 @@ export class CompetitionEncounterSyncService {
       relations: ['drawCompetition', 'drawCompetition.competitionSubEvent', 'drawCompetition.competitionSubEvent.competitionEvent'],
     });
 
+    let encounter: CompetitionEncounter;
     if (existingEncounter) {
-      existingEncounter.date = encounterData.Date ? new Date(encounterData.Date) : undefined;
-      existingEncounter.originalDate = encounterData.OriginalDate ? new Date(encounterData.OriginalDate) : undefined;
+      existingEncounter.date = teamMatch.MatchTime ? new Date(teamMatch.MatchTime) : undefined;
       existingEncounter.drawId = draw.id;
       existingEncounter.homeTeamId = homeTeam?.id;
       existingEncounter.awayTeamId = awayTeam?.id;
-      existingEncounter.homeScore = encounterData.HomeScore;
-      existingEncounter.awayScore = encounterData.AwayScore;
-      existingEncounter.startHour = encounterData.StartHour;
-      existingEncounter.endHour = encounterData.EndHour;
-      existingEncounter.shuttle = `${encounterData.Shuttle}`;
+      existingEncounter.homeScore = homeScore;
+      existingEncounter.awayScore = awayScore;
       await existingEncounter.save();
+      encounter = existingEncounter;
     } else {
       const newEncounter = new CompetitionEncounter();
-      newEncounter.visualCode = encounterData.Code;
-      newEncounter.date = encounterData.Date ? new Date(encounterData.Date) : undefined;
-      newEncounter.originalDate = encounterData.OriginalDate ? new Date(encounterData.OriginalDate) : undefined;
+      newEncounter.visualCode = teamMatch.Code;
+      newEncounter.date = teamMatch.MatchTime ? new Date(teamMatch.MatchTime) : undefined;
       newEncounter.drawId = draw.id;
       newEncounter.homeTeamId = homeTeam?.id;
       newEncounter.awayTeamId = awayTeam?.id;
-      newEncounter.homeScore = encounterData.HomeScore;
-      newEncounter.awayScore = encounterData.AwayScore;
-      newEncounter.startHour = encounterData.StartHour;
-      newEncounter.endHour = encounterData.EndHour;
-      newEncounter.shuttle = `${encounterData.Shuttle}`;
+      newEncounter.homeScore = homeScore;
+      newEncounter.awayScore = awayScore;
       await newEncounter.save();
+      encounter = newEncounter;
+    }
+
+    // Fetch and process all individual games within this encounter
+    // This is more efficient than separate game sync (1 API call instead of 8)
+    await this.syncGamesForEncounter(tournamentCode, teamMatch.Code, encounter.id);
+  }
+
+  /**
+   * Fetch all individual games within an encounter and sync them
+   */
+  private async syncGamesForEncounter(tournamentCode: string, encounterCode: string, encounterId: string): Promise<void> {
+    try {
+      const games = await this.tournamentApiClient.getTeamMatchGames(tournamentCode, encounterCode);
+      this.logger.debug(`Found ${games.length} games for encounter ${encounterCode}`);
+
+      for (const game of games) {
+        if (!game) continue;
+        await this.processGame(game, encounterId);
+      }
+
+      this.logger.debug(`Processed ${games.length} games for encounter ${encounterCode}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.warn(`Failed to sync games for encounter ${encounterCode}: ${errorMessage}`);
+      // Don't throw - we still want the encounter to be saved even if games fail
     }
   }
 
-  private async processGame(tournamentCode: string, game: unknown): Promise<void> {
-    // This would delegate to the game sync service
-    // For now, just log it
-    this.logger.debug(`Processing game from encounter: ${JSON.stringify(game)}`);
+  /**
+   * Process an individual game (match) within an encounter
+   */
+  private async processGame(match: Match, encounterId: string): Promise<void> {
+    this.logger.debug(`Processing game: ${match.Code}`);
+
+    // Check if game already exists
+    const existingGame = await Game.findOne({
+      where: { visualCode: match.Code, linkType: 'competition' },
+    });
+
+    if (existingGame) {
+      existingGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
+      existingGame.gameType = this.mapGameType(match);
+      existingGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
+      existingGame.winner = match.Winner;
+      existingGame.round = match.RoundName;
+      existingGame.linkId = encounterId;
+      existingGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
+      existingGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
+      existingGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
+      existingGame.set2Team2 = match.Sets?.Set?.[1]?.Team2;
+      existingGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
+      existingGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
+      await existingGame.save();
+    } else {
+      const newGame = new Game();
+      newGame.visualCode = match.Code;
+      newGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
+      newGame.gameType = this.mapGameType(match);
+      newGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
+      newGame.winner = match.Winner;
+      newGame.round = match.RoundName;
+      newGame.linkType = 'competition';
+      newGame.linkId = encounterId;
+      newGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
+      newGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
+      newGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
+      newGame.set2Team2 = match.Sets?.Set?.[1]?.Team2;
+      newGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
+      newGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
+      await newGame.save();
+    }
+
+    // Ensure players exist in our system
+    if (match.Team1?.Player1) {
+      await this.createOrUpdatePlayer(match.Team1.Player1);
+    }
+    if (match.Team1?.Player2) {
+      await this.createOrUpdatePlayer(match.Team1.Player2);
+    }
+    if (match.Team2?.Player1) {
+      await this.createOrUpdatePlayer(match.Team2.Player1);
+    }
+    if (match.Team2?.Player2) {
+      await this.createOrUpdatePlayer(match.Team2.Player2);
+    }
+  }
+
+  /**
+   * Map match to game type based on MatchTypeID
+   * MatchTypeID: 1 = Singles, 3 = Doubles
+   */
+  private mapGameType(match: Match & { MatchTypeID?: number }): GameType {
+    const matchTypeId = (match as { MatchTypeID?: number }).MatchTypeID;
+    if (matchTypeId === 1) return GameType.S;
+    if (matchTypeId === 3) return GameType.D;
+    // Fallback to checking event name
+    if (match.EventName?.toLowerCase().includes('single')) return GameType.S;
+    if (match.EventName?.toLowerCase().includes('double')) return GameType.D;
+    if (match.EventName?.toLowerCase().includes('mixed')) return GameType.MX;
+    return GameType.S; // Default to singles
+  }
+
+  private mapMatchStatus(scoreStatus?: string): GameStatus {
+    switch (scoreStatus?.toLowerCase()) {
+      case 'played':
+      case '0': // ScoreStatus 0 typically means played
+        return GameStatus.NORMAL;
+      case 'scheduled':
+        return GameStatus.NORMAL;
+      case 'postponed':
+        return GameStatus.NORMAL;
+      case 'cancelled':
+        return GameStatus.NO_MATCH;
+      default:
+        return GameStatus.NORMAL;
+    }
+  }
+
+  private async createOrUpdatePlayer(player: TournamentPlayer): Promise<void> {
+    if (!player?.MemberID) return;
+
+    const existingPlayer = await Player.findOne({
+      where: { memberId: player.MemberID },
+    });
+
+    if (existingPlayer) {
+      existingPlayer.firstName = player.Firstname;
+      existingPlayer.lastName = player.Lastname;
+      existingPlayer.gender = player.GenderID === 1 ? 'M' : player.GenderID === 2 ? 'F' : 'M';
+      existingPlayer.competitionPlayer = true;
+      await existingPlayer.save();
+    } else {
+      const newPlayer = new Player();
+      newPlayer.memberId = player.MemberID;
+      newPlayer.firstName = player.Firstname;
+      newPlayer.lastName = player.Lastname;
+      newPlayer.gender = player.GenderID === 1 ? 'M' : player.GenderID === 2 ? 'F' : 'M';
+      newPlayer.competitionPlayer = true;
+      await newPlayer.save();
+    }
   }
 }

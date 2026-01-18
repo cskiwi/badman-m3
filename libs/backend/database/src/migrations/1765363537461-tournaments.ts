@@ -16,34 +16,7 @@ export class Tournaments1765363537461 implements MigrationInterface {
         await queryRunner.query(`
             ALTER TABLE "security"."PlayerClaimMemberships" DROP CONSTRAINT "FK_a03d57401ba2f731457db73a67a"
         `);
-        await queryRunner.query(`
-            CREATE TYPE "event"."TournamentEnrollments_status_enum" AS ENUM(
-                'PENDING',
-                'CONFIRMED',
-                'WAITING_LIST',
-                'CANCELLED',
-                'WITHDRAWN'
-            )
-        `);
-        await queryRunner.query(`
-            CREATE TABLE "event"."TournamentEnrollments" (
-                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
-                "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-                "tournamentSubEventId" uuid NOT NULL,
-                "playerId" uuid,
-                "status" "event"."TournamentEnrollments_status_enum" NOT NULL DEFAULT 'PENDING',
-                "preferredPartnerId" uuid,
-                "confirmedPartnerId" uuid,
-                "isGuest" boolean NOT NULL DEFAULT false,
-                "guestName" character varying(255),
-                "guestEmail" character varying(255),
-                "guestPhone" character varying(50),
-                "waitingListPosition" integer,
-                "notes" text,
-                CONSTRAINT "PK_e4947e66b8a389a9c36bbd9ff5d" PRIMARY KEY ("id")
-            )
-        `);
+        
         await queryRunner.query(`
             CREATE INDEX "IDX_14c8636b1865ead77d3c8ecd40" ON "event"."TournamentEnrollments" ("tournamentSubEventId")
         `);
@@ -153,10 +126,6 @@ export class Tournaments1765363537461 implements MigrationInterface {
         await queryRunner.query(`
             ALTER TABLE "event"."EventTournaments"
             ADD "schedulePublished" boolean NOT NULL DEFAULT false
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "event"."SubEventTournaments"
-            ADD "maxEntries" integer
         `);
         await queryRunner.query(`
             ALTER TABLE "event"."SubEventTournaments"
@@ -334,9 +303,6 @@ export class Tournaments1765363537461 implements MigrationInterface {
             ALTER TABLE "event"."SubEventTournaments" DROP COLUMN "waitingListEnabled"
         `);
         await queryRunner.query(`
-            ALTER TABLE "event"."SubEventTournaments" DROP COLUMN "maxEntries"
-        `);
-        await queryRunner.query(`
             ALTER TABLE "event"."EventTournaments" DROP COLUMN "schedulePublished"
         `);
         await queryRunner.query(`
@@ -401,12 +367,6 @@ export class Tournaments1765363537461 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP INDEX "event"."IDX_14c8636b1865ead77d3c8ecd40"
-        `);
-        await queryRunner.query(`
-            DROP TABLE "event"."TournamentEnrollments"
-        `);
-        await queryRunner.query(`
-            DROP TYPE "event"."TournamentEnrollments_status_enum"
         `);
         await queryRunner.query(`
             ALTER TABLE "security"."PlayerClaimMemberships"

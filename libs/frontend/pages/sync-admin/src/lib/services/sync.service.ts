@@ -46,23 +46,6 @@ const TRIGGER_DISCOVERY_SYNC = gql`
   }
 `;
 
-const TRIGGER_COMPETITION_SYNC = gql`
-  mutation TriggerCompetitionSync {
-    triggerCompetitionSync {
-      message
-      success
-    }
-  }
-`;
-
-const TRIGGER_TOURNAMENT_SYNC = gql`
-  mutation TriggerTournamentSync {
-    triggerTournamentSync {
-      message
-      success
-    }
-  }
-`;
 
 @Injectable({
   providedIn: 'root',
@@ -92,27 +75,6 @@ export class SyncApiService {
       .pipe(map((result) => result.data?.triggerDiscoverySync ?? {} as SyncTriggerResponse));
   }
 
-  /**
-   * Trigger competition structure sync
-   */
-  triggerCompetitionSync(): Observable<SyncTriggerResponse> {
-    return this.apollo
-      .mutate<{ triggerCompetitionSync: SyncTriggerResponse }>({
-        mutation: TRIGGER_COMPETITION_SYNC,
-      })
-      .pipe(map((result) => result.data?.triggerCompetitionSync ?? {} as SyncTriggerResponse));
-  }
-
-  /**
-   * Trigger tournament structure sync
-   */
-  triggerTournamentSync(): Observable<SyncTriggerResponse> {
-    return this.apollo
-      .mutate<{ triggerTournamentSync: SyncTriggerResponse }>({
-        mutation: TRIGGER_TOURNAMENT_SYNC,
-      })
-      .pipe(map((result) => result.data?.triggerTournamentSync ?? {} as SyncTriggerResponse));
-  }
 
   /**
    * Get recent jobs from the queue

@@ -11,6 +11,7 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
         // Add new columns for per-event enrollment management
         await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
+            ADD COLUMN "maxEntries" integer,
             ADD COLUMN "enrollmentOpenDate" timestamptz,
             ADD COLUMN "enrollmentCloseDate" timestamptz,
             ADD COLUMN "enrollmentPhase" varchar(50) DEFAULT 'DRAFT',
@@ -150,6 +151,35 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
         // ===================================================================
 
         await queryRunner.query(`
+            CREATE TYPE "event"."TournamentEnrollments_status_enum" AS ENUM(
+                'PENDING',
+                'CONFIRMED',
+                'WAITING_LIST',
+                'CANCELLED',
+                'WITHDRAWN'
+            )
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "event"."TournamentEnrollments" (
+                "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+                "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+                "tournamentSubEventId" uuid NOT NULL,
+                "playerId" uuid,
+                "status" "event"."TournamentEnrollments_status_enum" NOT NULL DEFAULT 'PENDING',
+                "preferredPartnerId" uuid,
+                "confirmedPartnerId" uuid,
+                "isGuest" boolean NOT NULL DEFAULT false,
+                "guestName" character varying(255),
+                "guestEmail" character varying(255),
+                "guestPhone" character varying(50),
+                "waitingListPosition" integer,
+                "notes" text,
+                CONSTRAINT "PK_e4947e66b8a389a9c36bbd9ff5d" PRIMARY KEY ("id")
+            )
+        `);
+
+        await queryRunner.query(`
             CREATE TABLE event."WaitingListLogs" (
                 "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
                 "createdAt" timestamptz NOT NULL DEFAULT now(),
@@ -183,6 +213,7 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             CREATE INDEX "IDX_waitlist_log_action"
             ON event."WaitingListLogs"("action", "createdAt")
         `);
+        
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -213,6 +244,7 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
         // Drop columns
         await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
+            DROP COLUMN IF EXISTS "maxEntries",
             DROP COLUMN IF EXISTS "enrollmentNotes",
             DROP COLUMN IF EXISTS "allowGuestEnrollments",
             DROP COLUMN IF EXISTS "requiresApproval",
@@ -224,5 +256,14 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             DROP COLUMN IF EXISTS "enrollmentCloseDate",
             DROP COLUMN IF EXISTS "enrollmentOpenDate"
         `);
+
+       await queryRunner.query(`
+            DROP TABLE "event"."TournamentEnrollments"
+        `);
+        await queryRunner.query(`
+            DROP TYPE "event"."TournamentEnrollments_status_enum"
+        `);
+
+
     }
 }

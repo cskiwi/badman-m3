@@ -9,7 +9,7 @@ import { TournamentPlanningService, TournamentWorkPlan } from './tournament-plan
 
 export interface TournamentDrawSyncData {
   tournamentCode: string;
-  eventCode: string;
+  eventCode?: string;
   drawCode: string;
   includeSubComponents?: boolean;
   workPlan?: TournamentWorkPlan;
@@ -28,14 +28,21 @@ export class TournamentDrawSyncService {
 
   async processDrawSync(job: Job<TournamentDrawSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament draw sync`);
-    const { tournamentCode, eventCode, drawCode, includeSubComponents, childJobsCreated } = job.data;
+    const { tournamentCode, eventCode: providedEventCode, drawCode, includeSubComponents, childJobsCreated } = job.data;
 
     try {
       let completedSteps = 0;
       const totalSteps = includeSubComponents ? 3 : 2; // update draw + get name + (optional child job creation)
 
       // Get draw name for metadata (needed for child job creation)
-      const drawName = await this.getDrawName(tournamentCode, drawCode);
+      const drawInfo = await this.getDraw(tournamentCode, drawCode);
+
+      // Use provided eventCode or the one from the API lookup
+      const eventCode = providedEventCode ?? drawInfo?.eventCode;
+      if (!eventCode) {
+        throw new Error(`Could not find event code for draw ${drawCode} in tournament ${tournamentCode}`);
+      }
+      const drawName = drawInfo?.draw.Name ?? drawCode;
 
       // Always do the actual work first (create/update the draw)
       await this.createOrUpdateDrawFromApi(tournamentCode, eventCode, drawCode);
@@ -185,11 +192,11 @@ export class TournamentDrawSyncService {
   }
 
   /**
-   * Get draw name for display purposes
+   * Find draw and its event code by searching through all tournament events
+   * Returns both the draw data and the event code it belongs to
    */
-  private async getDrawName(tournamentCode: string, drawCode: string): Promise<string> {
+  private async getDraw(tournamentCode: string, drawCode: string): Promise<{ draw: TournamentDraw; eventCode: string } | null> {
     try {
-      // Try to get the draw from the tournament API to get its name
       const events = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
 
       for (const event of events) {
@@ -197,7 +204,8 @@ export class TournamentDrawSyncService {
           const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
           const draw = draws.find((d) => d.Code === drawCode);
           if (draw) {
-            return draw.Name || drawCode;
+            this.logger.debug(`Found draw ${drawCode} in event ${event.Code}`);
+            return { draw, eventCode: event.Code };
           }
         } catch (error) {
           // Continue to next event if this one fails
@@ -205,11 +213,11 @@ export class TournamentDrawSyncService {
         }
       }
 
-      // Fallback to draw code if name not found
-      return drawCode;
+      this.logger.warn(`Could not find draw ${drawCode} in tournament ${tournamentCode}`);
+      return null;
     } catch (error) {
-      // Fallback to draw code if API call fails
-      return drawCode;
+      this.logger.error(`Failed to find draw ${drawCode}`, error);
+      return null;
     }
   }
 

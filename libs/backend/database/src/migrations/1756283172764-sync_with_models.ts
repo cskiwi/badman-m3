@@ -724,6 +724,10 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         `);
         
         await queryRunner.query(`
+            DELETE FROM "ranking"."RankingPlaces" where "rankingDate" IS NULL
+        `);
+        
+        await queryRunner.query(`
             ALTER TABLE "ranking"."RankingPlaces"
             ALTER COLUMN "rankingDate"
             SET NOT NULL

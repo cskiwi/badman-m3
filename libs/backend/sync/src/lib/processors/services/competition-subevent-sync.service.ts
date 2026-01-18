@@ -1,5 +1,5 @@
 import { TournamentApiClient, TournamentEvent } from '@app/backend-tournament-api';
-import { CompetitionSubEvent } from '@app/models';
+import { CompetitionEvent, CompetitionSubEvent } from '@app/models';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -163,24 +163,45 @@ export class CompetitionSubEventSyncService {
   private async createOrUpdateSubEvent(tournamentCode: string, event: TournamentEvent): Promise<void> {
     this.logger.debug(`Creating/updating competition sub-event: ${event.Name} (${event.Code})`);
 
-    // Check if event already exists
+    // Find the parent competition event first
+    const competitionEvent = await CompetitionEvent.findOne({
+      where: { visualCode: tournamentCode },
+    });
+
+    if (!competitionEvent) {
+      this.logger.warn(`Competition with code ${tournamentCode} not found, skipping sub-event creation`);
+      return;
+    }
+
+    // Find the sub-event with competition context to avoid visualCode ambiguity
     const existingEvent = await CompetitionSubEvent.findOne({
-      where: { name: event.Name },
+      where: {
+        visualCode: event.Code,
+        eventId: competitionEvent.id,
+      },
     });
 
     if (existingEvent) {
       existingEvent.name = event.Name;
       existingEvent.eventType = this.mapSubEventType(event.GenderID);
-      existingEvent.level = event.LevelID;
+      existingEvent.genderId = typeof event.GenderID === 'string' ? parseInt(event.GenderID, 10) : event.GenderID;
+      existingEvent.gameTypeId = typeof event.GameTypeID === 'string' ? parseInt(event.GameTypeID, 10) : event.GameTypeID;
+      existingEvent.paraClassId = event.ParaClassID;
       existingEvent.lastSync = new Date();
       await existingEvent.save();
+      this.logger.debug(`Updated existing sub-event ${event.Code} for competition ${tournamentCode}`);
     } else {
       const newEvent = new CompetitionSubEvent();
+      newEvent.visualCode = event.Code;
       newEvent.name = event.Name;
       newEvent.eventType = this.mapSubEventType(event.GenderID);
-      newEvent.level = event.LevelID;
+      newEvent.genderId = typeof event.GenderID === 'string' ? parseInt(event.GenderID, 10) : event.GenderID;
+      newEvent.gameTypeId = typeof event.GameTypeID === 'string' ? parseInt(event.GameTypeID, 10) : event.GameTypeID;
+      newEvent.paraClassId = event.ParaClassID;
+      newEvent.eventId = competitionEvent.id; // Link to parent competition
       newEvent.lastSync = new Date();
       await newEvent.save();
+      this.logger.debug(`Created new sub-event ${event.Code} for competition ${tournamentCode}`);
     }
   }
 

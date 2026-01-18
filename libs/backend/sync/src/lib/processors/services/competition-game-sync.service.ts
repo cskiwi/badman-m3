@@ -1,5 +1,10 @@
 import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
-import { Game, Player } from '@app/models';
+import {
+  Game,
+  Player,
+  CompetitionEvent,
+  CompetitionDraw,
+} from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
@@ -33,10 +38,10 @@ export class CompetitionGameSyncService {
       let matches: Match[] = [];
 
       if (matchCodes && matchCodes.length > 0) {
-        // Sync specific matches
+        // Sync specific matches (individual player matches, not team encounters)
         for (const matchCode of matchCodes) {
           try {
-            const match = await this.tournamentApiClient.getTeamMatch(tournamentCode, matchCode);
+            const match = await this.tournamentApiClient.getMatchDetails(tournamentCode, matchCode);
             matches.push(match);
           } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -106,7 +111,7 @@ export class CompetitionGameSyncService {
         // Sync specific matches
         for (const matchCode of matchCodes) {
           try {
-            const match = await this.tournamentApiClient.getTeamMatch(tournamentCode, matchCode);
+            const match = await this.tournamentApiClient.getMatchDetails(tournamentCode, matchCode);
             if (match) {
               matches.push(match);
             }
@@ -156,11 +161,50 @@ export class CompetitionGameSyncService {
   }
 
   private async processMatch(tournamentCode: string, match: Match): Promise<void> {
-    this.logger.debug(`Processing match: ${match.Code} - ${match.EventName}`);
+    if (!match) {
+      this.logger.warn('Received undefined or null match, skipping processing');
+      return;
+    }
 
-    // Check if game already exists
+    if (!match.Code) {
+      this.logger.warn(`Match missing Code property, skipping: ${JSON.stringify(match)}`);
+      return;
+    }
+
+    this.logger.debug(`Processing competition match: ${match.Code} - ${match.EventName}`);
+
+    // Calculate linkId first for proper game lookup
+    let linkId: string | undefined;
+    if (match.DrawCode) {
+      // Find the competition event first to get proper context
+      const competitionEvent = await CompetitionEvent.findOne({
+        where: { visualCode: tournamentCode },
+      });
+
+      if (competitionEvent) {
+        const draw = await CompetitionDraw.findOne({
+          where: {
+            visualCode: match.DrawCode,
+            competitionSubEvent: {
+              competitionEvent: {
+                id: competitionEvent.id,
+              },
+            },
+          },
+          relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
+        });
+        if (draw) {
+          linkId = draw.id;
+        }
+      }
+    }
+
     const existingGame = await Game.findOne({
-      where: { visualCode: match.Code },
+      where: {
+        visualCode: match.Code,
+        linkId: linkId,
+        linkType: 'competition',
+      },
     });
 
     if (existingGame) {
@@ -169,6 +213,12 @@ export class CompetitionGameSyncService {
       existingGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
       existingGame.winner = match.Winner;
       existingGame.round = match.RoundName;
+
+      // Set linkId to the draw ID for competition games
+      if (linkId) {
+        existingGame.linkId = linkId;
+      }
+
       existingGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
       existingGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
       existingGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
@@ -185,6 +235,12 @@ export class CompetitionGameSyncService {
       newGame.round = match.RoundName;
       newGame.linkType = 'competition';
       newGame.visualCode = match.Code;
+
+      // Set linkId to the draw ID for competition games
+      if (linkId) {
+        newGame.linkId = linkId;
+      }
+
       newGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
       newGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
       newGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;

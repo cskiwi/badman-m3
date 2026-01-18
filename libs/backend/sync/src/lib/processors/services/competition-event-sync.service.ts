@@ -1,12 +1,11 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { CompetitionEvent } from '@app/models';
-import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
+import { Injectable, Logger } from '@nestjs/common';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
-import { CompetitionSubEventSyncService } from './competition-subevent-sync.service';
 
 export interface CompetitionEventSyncData {
   tournamentCode: string;
@@ -23,7 +22,6 @@ export class CompetitionEventSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly competitionPlanningService: CompetitionPlanningService,
-    private readonly competitionSubEventSyncService: CompetitionSubEventSyncService,
     @InjectFlowProducer(COMPETITION_EVENT_QUEUE) private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
@@ -55,7 +53,7 @@ export class CompetitionEventSyncService {
       }
 
       // Create/update events (primary responsibility of Event service)
-      await this.createOrUpdateEvents(tournamentCode, eventCode);
+      await this.createOrUpdateEvents(tournamentCode);
 
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
@@ -104,7 +102,7 @@ export class CompetitionEventSyncService {
             },
           },
         }));
-        
+
         await job.updateData({
           ...job.data,
           childJobsCreated: true,
@@ -143,27 +141,13 @@ export class CompetitionEventSyncService {
     }
   }
 
-  private async createOrUpdateEvents(tournamentCode: string, eventCode?: string): Promise<void> {
+  private async createOrUpdateEvents(tournamentCode: string): Promise<void> {
     this.logger.log(`Creating/updating events for competition ${tournamentCode}`);
 
     try {
-      let events: any[] = [];
+      const event = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
 
-      if (eventCode) {
-        // Sync specific event
-        const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode);
-        events = Array.isArray(eventList) ? eventList : [eventList];
-      } else {
-        // Sync all events
-        const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
-        events = Array.isArray(eventList) ? eventList : [eventList];
-      }
-
-      for (const event of events) {
-        await this.createOrUpdateEvent(tournamentCode, event);
-      }
-
-      this.logger.log(`Created/updated ${events.length} events`);
+      await this.createOrUpdateEvent(tournamentCode, event);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to create/update events: ${errorMessage}`, error);
