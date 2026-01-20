@@ -19,7 +19,7 @@ export function createWinstonLogger(config?: { name?: string; logDir?: string; i
   const logDir = config?.logDir || 'logs';
   const appName = config?.name || 'app';
   // Support PM2 instance ID via config or environment variable
-  const instanceId = config?.instanceId ?? process.env.PM2_INSTANCE_ID ?? process.env.NODE_APP_INSTANCE;
+  const instanceId = config?.instanceId ?? process.env['PM2_INSTANCE_ID'] ?? process.env['NODE_APP_INSTANCE'];
   const suffix = instanceId !== undefined ? `-${instanceId}` : '';
 
   return WinstonModule.createLogger({
