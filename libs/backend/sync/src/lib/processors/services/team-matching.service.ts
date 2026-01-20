@@ -1,6 +1,6 @@
 import { Club, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
-import { Like } from 'typeorm';
+import { ILike } from 'typeorm';
 
 export interface TeamMatchResult {
   team: TeamModel | null;
@@ -99,12 +99,12 @@ export class TeamMatchingService {
         return null;
       }
 
-      // Find clubs matching the extracted name
+      // Find clubs matching the extracted name (case-insensitive)
       const clubs = await Club.find({
         where: [
-          { name: Like(`%${clubName.trim()}%`) },
-          { teamName: Like(`%${clubName.trim()}%`) },
-          { abbreviation: Like(`%${clubName.trim()}%`) },
+          { name: ILike(`%${clubName.trim()}%`) },
+          { teamName: ILike(`%${clubName.trim()}%`) },
+          { abbreviation: ILike(`%${clubName.trim()}%`) },
         ],
         relations: ['teams'],
       });
@@ -178,13 +178,13 @@ export class TeamMatchingService {
 
     this.logger.debug(`Fuzzy matching: "${apiName}" -> normalized: "${normalizedApiName}", parsed: ${JSON.stringify(parsed)}, season: ${season}`);
 
-    // Build club query with optional state filter
+    // Build club query with optional state filter (case-insensitive)
     const clubQuery: Record<string, unknown>[] = [];
     if (parsed.clubName) {
       const searchTerms = [
-        { name: Like(`%${parsed.clubName}%`) },
-        { teamName: Like(`%${parsed.clubName}%`) },
-        { abbreviation: Like(`%${parsed.clubName}%`) },
+        { name: ILike(`%${parsed.clubName}%`) },
+        { teamName: ILike(`%${parsed.clubName}%`) },
+        { abbreviation: ILike(`%${parsed.clubName}%`) },
       ];
 
       if (state) {
@@ -222,9 +222,9 @@ export class TeamMatchingService {
       }
     }
 
-    // Also try direct team name search with season filter
+    // Also try direct team name search with season filter (case-insensitive)
     const directMatches = await TeamModel.find({
-      where: { name: Like(`%${parsed.clubName || normalizedApiName}%`), season },
+      where: { name: ILike(`%${parsed.clubName || normalizedApiName}%`), season },
       relations: ['club'],
     });
 
