@@ -15,28 +15,36 @@ export class TeamMatchingService {
   /**
    * Find a team by visualCode, teamMatcher pattern, or fuzzy name matching
    * Uses multiple strategies in order of preference:
-   * 1. Exact visualCode match
-   * 2. Event's teamMatcher regex pattern
-   * 3. Fuzzy name matching within state-filtered clubs
+   * 1. Exact visualCode match (filtered by season)
+   * 2. Event's teamMatcher regex pattern (filtered by season)
+   * 3. Fuzzy name matching within state and season-filtered clubs
+   *
+   * Season filtering ensures teams are matched within the correct competition season.
    */
   async findTeam(
     visualCode: string | undefined,
     name: string | undefined,
     competitionEvent?: CompetitionEventModel | null,
   ): Promise<TeamMatchResult> {
+    const season = competitionEvent?.season;
+
+    if (!season) {
+      throw new Error('Season is required for team matching. CompetitionEvent must have a valid season.');
+    }
+
     if (!visualCode && !name) {
       return { team: null, confidence: 'none', score: 0 };
     }
 
-    // 1. First try exact visualCode match
+    // 1. First try exact visualCode match (filtered by season)
     if (visualCode) {
       const teamByCode = await TeamModel.findOne({
-        where: { visualCode },
+        where: { visualCode, season },
         relations: ['club'],
       });
 
       if (teamByCode) {
-        this.logger.debug(`Found team by visualCode: ${visualCode}`);
+        this.logger.debug(`Found team by visualCode: ${visualCode} (season: ${season})`);
         return { team: teamByCode, confidence: 'high', score: 1.0 };
       }
     }
@@ -47,7 +55,7 @@ export class TeamMatchingService {
 
     // 2. Try teamMatcher pattern if event has one
     if (competitionEvent?.teamMatcher) {
-      const matchedTeam = await this.matchByTeamMatcher(name, competitionEvent.teamMatcher);
+      const matchedTeam = await this.matchByTeamMatcher(name, competitionEvent.teamMatcher, season);
       if (matchedTeam) {
         // Update visualCode for future matching
         if (visualCode && !matchedTeam.visualCode) {
@@ -59,8 +67,8 @@ export class TeamMatchingService {
       }
     }
 
-    // 3. Fuzzy match with state filtering
-    const result = await this.fuzzyMatch(name, visualCode, competitionEvent?.state);
+    // 3. Fuzzy match with state and season filtering
+    const result = await this.fuzzyMatch(name, visualCode, competitionEvent?.state, season);
 
     // Update visualCode if we found a match
     if (result.team && visualCode && !result.team.visualCode) {
@@ -75,7 +83,7 @@ export class TeamMatchingService {
   /**
    * Match team using the event's teamMatcher regex pattern
    */
-  private async matchByTeamMatcher(apiName: string, teamMatcher: string): Promise<TeamModel | null> {
+  private async matchByTeamMatcher(apiName: string, teamMatcher: string, season: number): Promise<TeamModel | null> {
     try {
       const regex = new RegExp(teamMatcher, 'i');
       const match = apiName.match(regex);
@@ -105,10 +113,15 @@ export class TeamMatchingService {
         if (!club.teams) continue;
 
         for (const team of club.teams) {
+          // Filter by season
+          if (team.season !== season) {
+            continue;
+          }
+
           // Match team number and gender
           const teamMatches = this.matchTeamNumberAndGender(team, teamNumber, gender);
           if (teamMatches) {
-            this.logger.debug(`Matched team via teamMatcher: ${apiName} -> ${team.name}`);
+            this.logger.debug(`Matched team via teamMatcher: ${apiName} -> ${team.name} (season: ${season})`);
             return team;
           }
         }
@@ -152,17 +165,18 @@ export class TeamMatchingService {
   }
 
   /**
-   * Fuzzy match team by name with optional state filtering
+   * Fuzzy match team by name with optional state filtering and required season filtering
    */
   private async fuzzyMatch(
     apiName: string,
     visualCode: string | undefined,
     state: string | undefined,
+    season: number,
   ): Promise<TeamMatchResult> {
     const normalizedApiName = this.normalizeTeamName(apiName);
     const parsed = this.parseTeamName(apiName);
 
-    this.logger.debug(`Fuzzy matching: "${apiName}" -> normalized: "${normalizedApiName}", parsed: ${JSON.stringify(parsed)}`);
+    this.logger.debug(`Fuzzy matching: "${apiName}" -> normalized: "${normalizedApiName}", parsed: ${JSON.stringify(parsed)}, season: ${season}`);
 
     // Build club query with optional state filter
     const clubQuery: Record<string, unknown>[] = [];
@@ -194,6 +208,11 @@ export class TeamMatchingService {
         if (!club.teams) continue;
 
         for (const team of club.teams) {
+          // Filter by season
+          if (team.season !== season) {
+            continue;
+          }
+
           const score = this.calculateMatchScore(apiName, parsed, team, club);
           if (score > bestScore) {
             bestScore = score;
@@ -203,9 +222,9 @@ export class TeamMatchingService {
       }
     }
 
-    // Also try direct team name search
+    // Also try direct team name search with season filter
     const directMatches = await TeamModel.find({
-      where: { name: Like(`%${parsed.clubName || normalizedApiName}%`) },
+      where: { name: Like(`%${parsed.clubName || normalizedApiName}%`), season },
       relations: ['club'],
     });
 
@@ -224,11 +243,11 @@ export class TeamMatchingService {
 
     if (bestMatch) {
       const confidence = bestScore >= 0.8 ? 'high' : bestScore >= 0.6 ? 'medium' : 'low';
-      this.logger.debug(`Fuzzy matched: "${apiName}" -> "${bestMatch.name}" (score: ${bestScore.toFixed(3)}, confidence: ${confidence})`);
+      this.logger.debug(`Fuzzy matched: "${apiName}" -> "${bestMatch.name}" (score: ${bestScore.toFixed(3)}, confidence: ${confidence}, season: ${season})`);
       return { team: bestMatch, confidence, score: bestScore };
     }
 
-    this.logger.warn(`No match found for team: "${apiName}"`);
+    this.logger.warn(`No match found for team: "${apiName}" (season: ${season})`);
     return { team: null, confidence: 'none', score: 0 };
   }
 
