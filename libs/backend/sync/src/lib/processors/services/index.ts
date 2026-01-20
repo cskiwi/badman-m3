@@ -2,7 +2,6 @@ export * from './competition-draw-sync.service';
 export * from './competition-encounter-sync.service';
 export * from './competition-entry-sync.service';
 export * from './competition-event-sync.service';
-export * from './competition-game-sync.service';
 export * from './competition-planning.service';
 export * from './competition-standing-sync.service';
 export * from './competition-subevent-sync.service';

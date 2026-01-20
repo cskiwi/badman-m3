@@ -270,9 +270,10 @@ export class CompetitionEncounterSyncService {
   private async processGame(match: Match, encounterId: string): Promise<void> {
     this.logger.debug(`Processing game: ${match.Code}`);
 
-    // Check if game already exists
+    // Check if game already exists - use linkId (encounterId) to ensure we find the correct game
+    // since visualCode is not unique across encounters (it's just 1, 2, 3, etc.)
     const existingGame = await Game.findOne({
-      where: { visualCode: match.Code, linkType: 'competition' },
+      where: { visualCode: match.Code, linkId: encounterId, linkType: 'competition' },
     });
 
     if (existingGame) {
