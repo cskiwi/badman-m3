@@ -240,20 +240,21 @@ export class CompetitionEncounterSyncService {
 
     // Fetch and process all individual games within this encounter
     // This is more efficient than separate game sync (1 API call instead of 8)
-    await this.syncGamesForEncounter(tournamentCode, teamMatch.Code, encounter.id);
+    const encounterDate = teamMatch.MatchTime ? new Date(teamMatch.MatchTime) : undefined;
+    await this.syncGamesForEncounter(tournamentCode, teamMatch.Code, encounter.id, encounterDate);
   }
 
   /**
    * Fetch all individual games within an encounter and sync them
    */
-  private async syncGamesForEncounter(tournamentCode: string, encounterCode: string, encounterId: string): Promise<void> {
+  private async syncGamesForEncounter(tournamentCode: string, encounterCode: string, encounterId: string, encounterDate?: Date): Promise<void> {
     try {
       const games = await this.tournamentApiClient.getTeamMatchGames(tournamentCode, encounterCode);
       this.logger.debug(`Found ${games.length} games for encounter ${encounterCode}`);
 
       for (const game of games) {
         if (!game) continue;
-        await this.processGame(game, encounterId);
+        await this.processGame(game, encounterId, encounterDate);
       }
 
       this.logger.debug(`Processed ${games.length} games for encounter ${encounterCode}`);
@@ -267,7 +268,7 @@ export class CompetitionEncounterSyncService {
   /**
    * Process an individual game (match) within an encounter
    */
-  private async processGame(match: Match, encounterId: string): Promise<void> {
+  private async processGame(match: Match, encounterId: string, encounterDate?: Date): Promise<void> {
     this.logger.debug(`Processing game: ${match.Code}`);
 
     // Check if game already exists - use linkId (encounterId) to ensure we find the correct game
@@ -277,7 +278,7 @@ export class CompetitionEncounterSyncService {
     });
 
     if (existingGame) {
-      existingGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
+      existingGame.playedAt = encounterDate;
       existingGame.gameType = this.mapGameType(match);
       existingGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
       existingGame.winner = match.Winner;
@@ -293,7 +294,7 @@ export class CompetitionEncounterSyncService {
     } else {
       const newGame = new Game();
       newGame.visualCode = match.Code;
-      newGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
+      newGame.playedAt = encounterDate;
       newGame.gameType = this.mapGameType(match);
       newGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
       newGame.winner = match.Winner;
