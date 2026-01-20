@@ -1,6 +1,7 @@
 import { Club, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
+import { LevelType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
-import { ILike } from 'typeorm';
+import { FindOperator, ILike } from 'typeorm';
 
 export interface TeamMatchResult {
   team: TeamModel | null;
@@ -68,7 +69,10 @@ export class TeamMatchingService {
     }
 
     // 3. Fuzzy match with state and season filtering
-    const result = await this.fuzzyMatch(name, visualCode, competitionEvent?.state, season);
+    // Only apply state filter for provincial (PROV) competitions, not for LIGA or NATIONAL
+    const applyStateFilter = competitionEvent?.type === LevelType.PROV;
+    const state = applyStateFilter ? competitionEvent?.state : undefined;
+    const result = await this.fuzzyMatch(name, visualCode, state, season);
 
     // Update visualCode if we found a match
     if (result.team && visualCode && !result.team.visualCode) {
@@ -223,10 +227,41 @@ export class TeamMatchingService {
     }
 
     // Also try direct team name search with season filter (case-insensitive)
-    const directMatches = await TeamModel.find({
-      where: { name: ILike(`%${parsed.clubName || normalizedApiName}%`), season },
-      relations: ['club'],
-    });
+    // Use multiple OR patterns for better matching
+    const searchPatterns: { name: FindOperator<string>; season: number }[] = [];
+
+    // Search by club name only
+    if (parsed.clubName) {
+      searchPatterns.push({ name: ILike(`%${parsed.clubName}%`), season });
+    }
+
+    // Search by club name + team number (e.g., "Brugse 2")
+    if (parsed.clubName && parsed.teamNumber !== undefined) {
+      searchPatterns.push({ name: ILike(`%${parsed.clubName} ${parsed.teamNumber}%`), season });
+    }
+
+    // Search by full clean name (e.g., "Brugse 2G")
+    const cleanName = apiName.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    if (cleanName && cleanName !== parsed.clubName) {
+      searchPatterns.push({ name: ILike(`%${cleanName}%`), season });
+    }
+
+    const patternStrings = [
+      parsed.clubName ? `%${parsed.clubName}%` : null,
+      parsed.clubName && parsed.teamNumber !== undefined ? `%${parsed.clubName} ${parsed.teamNumber}%` : null,
+      cleanName && cleanName !== parsed.clubName ? `%${cleanName}%` : null,
+    ].filter(Boolean);
+    this.logger.debug(`Direct team search patterns: ${JSON.stringify(patternStrings)}, season: ${season}`);
+
+    const directMatches =
+      searchPatterns.length > 0
+        ? await TeamModel.find({
+            where: searchPatterns,
+            relations: ['club'],
+          })
+        : [];
+
+    this.logger.debug(`Direct team search found ${directMatches.length} matches`);
 
     for (const team of directMatches) {
       // If state filter is set, skip teams from clubs in other states
