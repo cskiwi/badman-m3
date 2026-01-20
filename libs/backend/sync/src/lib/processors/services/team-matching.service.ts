@@ -208,8 +208,16 @@ export class TeamMatchingService {
         relations: ['teams'],
       });
 
+      this.logger.debug(`Club search found ${clubs.length} clubs`);
+
       for (const club of clubs) {
-        if (!club.teams) continue;
+        if (!club.teams) {
+          this.logger.debug(`Club ${club.name} has no teams loaded`);
+          continue;
+        }
+
+        const teamsInSeason = club.teams.filter((t) => t.season === season);
+        this.logger.debug(`Club ${club.name} has ${teamsInSeason.length} teams in season ${season}`);
 
         for (const team of club.teams) {
           // Filter by season
@@ -218,6 +226,7 @@ export class TeamMatchingService {
           }
 
           const score = this.calculateMatchScore(apiName, parsed, team, club);
+          this.logger.debug(`Club search score for ${team.name}: ${score.toFixed(3)}`);
           if (score > bestScore) {
             bestScore = score;
             bestMatch = team;
@@ -266,10 +275,12 @@ export class TeamMatchingService {
     for (const team of directMatches) {
       // If state filter is set, skip teams from clubs in other states
       if (state && team.club?.state && team.club.state !== state) {
+        this.logger.debug(`Skipping team ${team.name} due to state filter (team state: ${team.club?.state}, filter: ${state})`);
         continue;
       }
 
       const score = this.calculateMatchScore(apiName, parsed, team, team.club || undefined);
+      this.logger.debug(`Score for ${team.name}: ${score.toFixed(3)} (teamNumber: ${team.teamNumber}, type: ${team.type}, club: ${team.club?.name || 'none'})`);
       if (score > bestScore) {
         bestScore = score;
         bestMatch = team;
