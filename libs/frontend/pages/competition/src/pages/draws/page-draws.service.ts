@@ -156,7 +156,11 @@ export class DrawsService {
           ...encounter,
           games: gamesData[encounter.id] || null,
         }) as CompetitionEncounter,
-    );
+    ).sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0;
+      const dateB = b.date ? new Date(b.date).getTime() : 0;
+      return dateA - dateB;
+    });
   });
   standings = computed(() => {
     const entries = this.dataResource.value()?.entries || [];
