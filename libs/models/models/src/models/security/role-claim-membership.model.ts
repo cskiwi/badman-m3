@@ -33,9 +33,9 @@ export class RoleClaimMembership extends BaseEntity {
   @Index()
   declare claimId: string;
 
-  @ManyToOne(() => Role)
+  @ManyToOne(() => Role, { createForeignKeyConstraints: false })
   declare role: Relation<Role>;
 
-  @ManyToOne(() => Claim)
+  @ManyToOne(() => Claim, { createForeignKeyConstraints: false })
   declare claim: Relation<Claim>;
 }

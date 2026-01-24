@@ -23,9 +23,9 @@ export class PlayerClaimMembership extends BaseEntity {
   @Index()
   declare claimId: string;
 
-  @ManyToOne(() => Player)
+  @ManyToOne(() => Player, { createForeignKeyConstraints: false })
   declare player: Relation<Player>;
 
-  @ManyToOne(() => Claim)
+  @ManyToOne(() => Claim, { createForeignKeyConstraints: false })
   declare claim: Relation<Claim>;
 }

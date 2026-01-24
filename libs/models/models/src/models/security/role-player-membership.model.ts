@@ -28,9 +28,9 @@ export class PlayerRoleMembership extends BaseEntity {
   @Index()
   declare roleId: string;
 
-  @ManyToOne(() => Player)
+  @ManyToOne(() => Player, { createForeignKeyConstraints: false })
   declare player: Relation<Player>;
 
-  @ManyToOne(() => Role)
+  @ManyToOne(() => Role, { createForeignKeyConstraints: false })
   declare role: Relation<Role>;
 }
