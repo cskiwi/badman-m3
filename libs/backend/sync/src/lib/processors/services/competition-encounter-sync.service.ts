@@ -1,5 +1,5 @@
 import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
-import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, Game, Player } from '@app/models';
+import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, Game, Player, GamePlayerMembership, RankingSystem, RankingPlace } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -8,6 +8,7 @@ import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
 import { TeamMatchingService } from './team-matching.service';
+import { LessThanOrEqual } from 'typeorm';
 
 export interface CompetitionEncounterSyncData {
   tournamentCode: string;
@@ -323,6 +324,17 @@ export class CompetitionEncounterSyncService {
     if (match.Team2?.Player2) {
       await this.createOrUpdatePlayer(match.Team2.Player2);
     }
+
+    // Create game player memberships
+    const game =
+      existingGame ||
+      (await Game.findOne({
+        where: { visualCode: match.Code, linkId: encounterId, linkType: 'competition' },
+      }));
+
+    if (game) {
+      await this.createGamePlayerMemberships(game, match);
+    }
   }
 
   /**
@@ -377,6 +389,73 @@ export class CompetitionEncounterSyncService {
       newPlayer.gender = player.GenderID === 1 ? 'M' : player.GenderID === 2 ? 'F' : 'M';
       newPlayer.competitionPlayer = true;
       await newPlayer.save();
+    }
+  }
+
+  private async createGamePlayerMemberships(game: Game, match: Match): Promise<void> {
+    const createMembershipForPlayer = async (tournamentPlayer: TournamentPlayer, team: number, playerPosition: number): Promise<void> => {
+      if (!tournamentPlayer?.MemberID) return;
+
+      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
+
+      const player = await Player.findOne({
+        where: { memberId: tournamentPlayer.MemberID },
+      });
+
+      if (!player) {
+        this.logger.warn(`Player not found for memberID: ${tournamentPlayer.MemberID}`);
+        return;
+      }
+
+      const rankingplace = await RankingPlace.findOne({
+        where: {
+          playerId: player.id,
+          rankingDate: LessThanOrEqual(game.playedAt || new Date()),
+          systemId: primarySystem!.id,
+        },
+        order: {
+          rankingDate: 'DESC',
+        },
+      });
+
+      const existingMembership = await GamePlayerMembership.findOne({
+        where: {
+          gameId: game.id,
+          playerId: player.id,
+        },
+      });
+
+      if (existingMembership) {
+        existingMembership.team = team;
+        existingMembership.player = playerPosition;
+        existingMembership.single = rankingplace ? rankingplace.single : primarySystem!.amountOfLevels;
+        existingMembership.double = rankingplace ? rankingplace.double : primarySystem!.amountOfLevels;
+        existingMembership.mix = rankingplace ? rankingplace.mix : primarySystem!.amountOfLevels;
+        await existingMembership.save();
+      } else {
+        const membership = new GamePlayerMembership();
+        membership.gameId = game.id;
+        membership.playerId = player.id;
+        membership.team = team;
+        membership.player = playerPosition;
+        membership.single = rankingplace ? rankingplace.single : primarySystem!.amountOfLevels;
+        membership.double = rankingplace ? rankingplace.double : primarySystem!.amountOfLevels;
+        membership.mix = rankingplace ? rankingplace.mix : primarySystem!.amountOfLevels;
+        await membership.save();
+      }
+    };
+
+    if (match.Team1?.Player1) {
+      await createMembershipForPlayer(match.Team1.Player1, 1, 1);
+    }
+    if (match.Team1?.Player2) {
+      await createMembershipForPlayer(match.Team1.Player2, 1, 2);
+    }
+    if (match.Team2?.Player1) {
+      await createMembershipForPlayer(match.Team2.Player1, 2, 1);
+    }
+    if (match.Team2?.Player2) {
+      await createMembershipForPlayer(match.Team2.Player2, 2, 2);
     }
   }
 }
