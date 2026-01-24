@@ -158,33 +158,61 @@
     "draw": "Poule",
     "draws": "Série",
     "edit": {
-      "button": "Modifier",
-      "title": "Modifier la Compétition",
-      "subtitle": "Modifier les paramètres et informations de la compétition",
       "actions": {
+        "cancel": "Annuler",
         "save-all": "Tout Enregistrer",
-        "save-current": "Enregistrer l'actuel",
-        "cancel": "Annuler"
+        "save-current": "Enregistrer l'actuel"
       },
-      "messages": {
-        "unsaved-changes": "Vous avez des modifications non enregistrées",
-        "loading": "Chargement des données de la compétition..."
-      },
-      "tabs": {
-        "info": "Informations",
-        "dates": "Dates",
-        "settings": "Paramètres"
+      "button": "Modifier",
+      "dates": {
+        "changeCloseDatePeriod1": "Date de Clôture Période 1",
+        "changeCloseDatePeriod1.placeholder": "Sélectionnez la date de clôture période 1",
+        "changeCloseDatePeriod2": "Date de Clôture Période 2",
+        "changeCloseDatePeriod2.placeholder": "Sélectionnez la date de clôture période 2",
+        "changeCloseRequestDatePeriod1": "Date Limite de Demande Période 1",
+        "changeCloseRequestDatePeriod1.placeholder": "Sélectionnez la date limite de demande période 1",
+        "changeCloseRequestDatePeriod2": "Date Limite de Demande Période 2",
+        "changeCloseRequestDatePeriod2.placeholder": "Sélectionnez la date limite de demande période 2",
+        "changeOpenDate": "Ouverture des Changements",
+        "changeOpenDate.placeholder": "Sélectionnez la date d'ouverture des changements",
+        "changePeriod1": {
+          "title": "Période de Changement 1"
+        },
+        "changePeriod2": {
+          "title": "Période de Changement 2"
+        },
+        "closeDate": "Clôture des Inscriptions",
+        "closeDate.hint": "Date limite pour l'inscription des joueurs",
+        "closeDate.placeholder": "Sélectionnez la date de clôture des inscriptions",
+        "description": "Configurer les périodes d'inscription et de changement pour cette compétition.",
+        "messages": {
+          "saving": "Enregistrement des dates de la compétition..."
+        },
+        "openDate": "Ouverture des Inscriptions",
+        "openDate.hint": "Quand les joueurs peuvent commencer à s'inscrire",
+        "openDate.placeholder": "Sélectionnez la date d'ouverture des inscriptions",
+        "registration": {
+          "title": "Période d'Inscription"
+        }
       },
       "info": {
-        "description": "Modifier les informations de base de la compétition comme le nom, la saison et l'emplacement.",
         "basic": {
           "title": "Informations de Base"
         },
+        "contact": {
+          "title": "Informations de Contact"
+        },
+        "contactEmail": "E-mail de Contact",
+        "contactEmail.invalid": "Veuillez entrer une adresse e-mail valide",
+        "contactEmail.placeholder": "Entrez l'e-mail de contact",
+        "country": "Pays",
+        "country.placeholder": "Sélectionnez le pays",
+        "description": "Modifier les informations de base de la compétition comme le nom, la saison et l'emplacement.",
         "location": {
           "title": "Emplacement"
         },
-        "contact": {
-          "title": "Informations de Contact"
+        "messages": {
+          "saving": "Enregistrement des informations de la compétition..."
         },
         "name": "Nom de la Compétition",
         "name.placeholder": "Entrez le nom de la compétition",
@@ -192,79 +220,48 @@
         "season": "Saison",
         "season.placeholder": "ex. 2024",
         "season.required": "La saison est requise",
-        "type": "Type de Compétition",
-        "type.placeholder": "Sélectionnez le type de compétition",
         "state": "État/Province",
         "state.placeholder": "Sélectionnez l'état ou la province",
-        "country": "Pays",
-        "country.placeholder": "Sélectionnez le pays",
-        "contactEmail": "E-mail de Contact",
-        "contactEmail.placeholder": "Entrez l'e-mail de contact",
-        "contactEmail.invalid": "Veuillez entrer une adresse e-mail valide",
-        "messages": {
-          "saving": "Enregistrement des informations de la compétition..."
-        }
+        "type": "Type de Compétition",
+        "type.placeholder": "Sélectionnez le type de compétition"
       },
-      "dates": {
-        "description": "Configurer les périodes d'inscription et de changement pour cette compétition.",
-        "registration": {
-          "title": "Période d'Inscription"
-        },
-        "changePeriod1": {
-          "title": "Période de Changement 1"
-        },
-        "changePeriod2": {
-          "title": "Période de Changement 2"
-        },
-        "openDate": "Ouverture des Inscriptions",
-        "openDate.placeholder": "Sélectionnez la date d'ouverture des inscriptions",
-        "openDate.hint": "Quand les joueurs peuvent commencer à s'inscrire",
-        "closeDate": "Clôture des Inscriptions",
-        "closeDate.placeholder": "Sélectionnez la date de clôture des inscriptions",
-        "closeDate.hint": "Date limite pour l'inscription des joueurs",
-        "changeOpenDate": "Ouverture des Changements",
-        "changeOpenDate.placeholder": "Sélectionnez la date d'ouverture des changements",
-        "changeCloseDatePeriod1": "Date de Clôture Période 1",
-        "changeCloseDatePeriod1.placeholder": "Sélectionnez la date de clôture période 1",
-        "changeCloseRequestDatePeriod1": "Date Limite de Demande Période 1",
-        "changeCloseRequestDatePeriod1.placeholder": "Sélectionnez la date limite de demande période 1",
-        "changeCloseDatePeriod2": "Date de Clôture Période 2",
-        "changeCloseDatePeriod2.placeholder": "Sélectionnez la date de clôture période 2",
-        "changeCloseRequestDatePeriod2": "Date Limite de Demande Période 2",
-        "changeCloseRequestDatePeriod2.placeholder": "Sélectionnez la date limite de demande période 2",
-        "messages": {
-          "saving": "Enregistrement des dates de la compétition..."
-        }
+      "messages": {
+        "loading": "Chargement des données de la compétition...",
+        "unsaved-changes": "Vous avez des modifications non enregistrées"
       },
       "settings": {
+        "checkEncounterForFilledIn": "Valider les Données de Rencontre",
+        "checkEncounterForFilledIn.description": "Vérifier que toutes les données de rencontre sont remplies avant de permettre la soumission",
         "description": "Configurer les paramètres de compétition et les règles de validation.",
-        "official": {
-          "title": "Statut Officiel"
-        },
-        "teamMatching": {
-          "title": "Correspondance d'Équipe"
-        },
-        "ranking": {
-          "title": "Paramètres de Classement"
-        },
-        "validation": {
-          "title": "Paramètres de Validation"
+        "messages": {
+          "saving": "Enregistrement des paramètres de la compétition..."
         },
         "official": "Compétition Officielle",
         "official.description": "Marquer comme compétition officielle qui affecte les classements des joueurs",
+        "ranking": {
+          "title": "Paramètres de Classement"
+        },
         "teamMatcher": "Correspondeur d'Équipe",
-        "teamMatcher.placeholder": "Entrez l'identifiant du correspondeur d'équipe",
         "teamMatcher.hint": "Identifiant utilisé pour la correspondance automatique des équipes",
+        "teamMatcher.placeholder": "Entrez l'identifiant du correspondeur d'équipe",
+        "teamMatching": {
+          "title": "Correspondance d'Équipe"
+        },
         "usedRankingAmount": "Montant de la Période de Classement",
         "usedRankingAmount.hint": "Nombre d'unités de temps à regarder en arrière pour les classements",
         "usedRankingUnit": "Unité de la Période de Classement",
         "usedRankingUnit.placeholder": "Sélectionnez l'unité de temps",
-        "checkEncounterForFilledIn": "Valider les Données de Rencontre",
-        "checkEncounterForFilledIn.description": "Vérifier que toutes les données de rencontre sont remplies avant de permettre la soumission",
-        "messages": {
-          "saving": "Enregistrement des paramètres de la compétition..."
+        "validation": {
+          "title": "Paramètres de Validation"
         }
-      }
+      },
+      "subtitle": "Modifier les paramètres et informations de la compétition",
+      "tabs": {
+        "dates": "Dates",
+        "info": "Informations",
+        "settings": "Paramètres"
+      },
+      "title": "Modifier la Compétition"
     },
     "eliminated": "Éliminé",
     "encounters": "Rencontres",
@@ -341,16 +338,16 @@
     "wednesday": "Mercredi"
   },
   "enrollment": {
-    "addToCart": "Ajouter au Panier",
     "additionalNotes": "Notes Supplémentaires",
+    "addToCart": "Ajouter au Panier",
     "availableEvents": "Événements Disponibles",
     "cart": {
       "clear": "Vider le Panier",
       "empty": "Votre panier est vide",
       "emptyDescription": "Sélectionnez des événements dans la liste pour les ajouter à votre panier",
       "enrollNow": "S'inscrire Maintenant",
-      "eventsSelected": "événements sélectionnés",
       "eventSelected": "événement sélectionné",
+      "eventsSelected": "événements sélectionnés",
       "partnerSelected": "Partenaire sélectionné",
       "title": "Panier d'Inscription",
       "totalEvents": "Total Événements:"
@@ -520,62 +517,66 @@
     "allGames": "Tous les Matchs",
     "competitionPlayer": "Joueur de compétition",
     "edit": {
-      "title": "Modifier le Joueur",
-      "subtitle": "Modifier les informations du profil du joueur",
       "actions": {
+        "cancel": "Annuler",
         "save-all": "Tout Enregistrer",
-        "save-current": "Enregistrer l'actuel",
-        "cancel": "Annuler"
+        "save-current": "Enregistrer l'actuel"
+      },
+      "claims": {
+        "actions": {
+          "select-all": "Tous",
+          "select-none": "Rien"
+        },
+        "description": "Gérer les permissions et les droits d'accès du joueur.",
+        "messages": {
+          "saving": "Enregistrement des permissions..."
+        },
+        "noClaims": "Aucune permission attribuée",
+        "title": "Permissions du Joueur"
       },
       "messages": {
-        "unsaved-changes": "Vous avez des modifications non enregistrées",
-        "loading": "Chargement des données du joueur..."
-      },
-      "tabs": {
-        "profile": "Profil",
-        "claims": "Permissions"
+        "loading": "Chargement des données du joueur...",
+        "unsaved-changes": "Vous avez des modifications non enregistrées"
       },
       "profile": {
-        "description": "Modifier les informations du profil du joueur, y compris les détails personnels et de contact.",
-        "personal": {
-          "title": "Informations Personnelles"
-        },
-        "contact": {
-          "title": "Informations de Contact"
-        },
+        "birthDate": "Date de Naissance",
+        "birthDate.placeholder": "Sélectionnez la date de naissance",
         "competition": {
           "title": "Paramètres de Compétition"
         },
+        "competitionPlayer": "Joueur de Compétition",
+        "competitionPlayer.description": "Ce joueur participe aux compétitions officielles",
+        "contact": {
+          "title": "Informations de Contact"
+        },
+        "description": "Modifier les informations du profil du joueur, y compris les détails personnels et de contact.",
+        "editable": "modifiable",
+        "email": "E-mail",
+        "email.invalid": "Veuillez entrer une adresse e-mail valide",
+        "email.placeholder": "Entrez l'adresse e-mail",
         "firstName": "Prénom",
         "firstName.placeholder": "Entrez le prénom",
         "firstName.required": "Le prénom est requis",
+        "gender": "Genre",
+        "gender.placeholder": "Sélectionnez le genre",
         "lastName": "Nom de Famille",
         "lastName.placeholder": "Entrez le nom de famille",
         "lastName.required": "Le nom de famille est requis",
-        "gender": "Genre",
-        "gender.placeholder": "Sélectionnez le genre",
-        "birthDate": "Date de Naissance",
-        "birthDate.placeholder": "Sélectionnez la date de naissance",
-        "email": "E-mail",
-        "email.placeholder": "Entrez l'adresse e-mail",
-        "email.invalid": "Veuillez entrer une adresse e-mail valide",
-        "phone": "Téléphone",
-        "phone.placeholder": "Entrez le numéro de téléphone",
-        "competitionPlayer": "Joueur de Compétition",
-        "competitionPlayer.description": "Ce joueur participe aux compétitions officielles",
-        "editable": "modifiable",
         "messages": {
           "saving": "Enregistrement du profil du joueur..."
-        }
+        },
+        "personal": {
+          "title": "Informations Personnelles"
+        },
+        "phone": "Téléphone",
+        "phone.placeholder": "Entrez le numéro de téléphone"
       },
-      "claims": {
-        "description": "Gérer les permissions et les droits d'accès du joueur.",
-        "title": "Permissions du Joueur",
-        "noClaims": "Aucune permission attribuée",
-        "messages": {
-          "saving": "Enregistrement des permissions..."
-        }
-      }
+      "subtitle": "Modifier les informations du profil du joueur",
+      "tabs": {
+        "claims": "Permissions",
+        "profile": "Profil"
+      },
+      "title": "Modifier le Joueur"
     },
     "gender": "Genre",
     "headToHead": "Confrontations Directes",
@@ -947,6 +948,7 @@
         "bulkCheckIn": "Check-in en masse",
         "checkedIn": "Enregistré",
         "checkedInAt": "",
+        "checkedInDescription": "",
         "checkIn": "Enregistrer",
         "checkinRate": "Taux de check-in",
         "checkInSelected": "Enregistrer la sélection",
@@ -961,10 +963,13 @@
         "noCheckIns": "",
         "noPlayersYet": "Pas encore de joueurs à enregistrer",
         "noShow": "Absent",
+        "noShowDescription": "",
         "pending": "En attente",
+        "pendingDescription": "",
         "player": "Joueur",
         "players": "",
         "rate": "",
+        "rateDescription": "",
         "search": "",
         "searchPlaceholder": "",
         "searchPlayers": "Rechercher des joueurs...",
@@ -973,6 +978,7 @@
         "subEvent": "Épreuve",
         "title": "Gérer le Check-in",
         "total": "",
+        "totalDescription": "",
         "totalPlayers": "Total joueurs",
         "undo": "Annuler"
       },
@@ -981,6 +987,7 @@
         "applySeeding": "Appliquer le classement",
         "assign": "Assigner",
         "assigned": "Assigné",
+        "assignedDescription": "",
         "assignSelected": "",
         "autoSeed": "",
         "clearSeeds": "",
@@ -989,6 +996,7 @@
         "createDraw": "Créer un tirage",
         "deleteDraw": "",
         "drawCount": "Nombre de tirages",
+        "drawCountDescription": "",
         "drawName": "Nom du tirage",
         "drawSize": "Taille du tirage",
         "drawType": "Type de tirage",
@@ -996,6 +1004,12 @@
         "entry": "Inscription",
         "generateEntries": "Générer les inscriptions",
         "generateEntriesDescription": "",
+        "maxLevel": "",
+        "maxLevelHelp": "",
+        "maxLevelPlaceholder": "",
+        "minLevel": "",
+        "minLevelHelp": "",
+        "minLevelPlaceholder": "",
         "noDraws": "",
         "noDrawsHint": "",
         "noDrawsYet": "Pas encore de tirages créés",
@@ -1018,48 +1032,71 @@
         "selectSubEventFirst": "Sélectionnez d'abord une épreuve",
         "setSeed": "",
         "subEvent": "Épreuve",
+        "subEventType": "",
         "title": "Gérer le Tirage",
         "totalDraws": "",
         "totalEntries": "Total inscriptions",
+        "totalEntriesDescription": "",
         "unassigned": "Non assigné",
+        "unassignedDescription": "",
         "unassignedEntries": "Inscriptions non assignées",
         "viewDraw": ""
       },
       "enrollments": {
         "actions": "Actions",
+        "addEnrollment": "",
+        "addManualEnrollment": "",
         "allStatuses": "Tous les statuts",
         "allSubEvents": "Toutes les épreuves",
         "assignPartner": "Assigner un partenaire",
         "bulkActions": "Actions en masse",
         "cancel": "Annuler",
         "cancelled": "Annulé",
+        "cancelledDescription": "",
         "cancelSelected": "Annuler la sélection",
         "confirm": "Confirmer",
         "confirmCancel": "",
         "confirmed": "Confirmé",
+        "confirmedDescription": "",
         "confirmSelected": "Confirmer la sélection",
+        "enrollAsGuest": "",
         "enrolledAt": "",
+        "enrollmentsCount": "",
         "filterByStatus": "Filtrer par statut",
         "filterBySubEvent": "Filtrer par épreuve",
+        "guestEmail": "",
+        "guestName": "",
         "lookingForPartner": "Cherche partenaire",
+        "manualEnrollmentDescription": "",
         "noEnrollments": "Pas encore d'inscriptions",
         "noEnrollmentsHint": "",
         "notes": "Notes",
+        "notesPlaceholder": "",
         "partner": "Partenaire",
+        "partnerSearch": "",
+        "partnerSearchPlaceholder": "",
         "pending": "En attente",
+        "pendingDescription": "",
         "player": "Joueur",
+        "playerSearch": "",
+        "playerSearchHelp": "",
+        "playerSearchPlaceholder": "",
+        "position": "",
         "promote": "",
         "promoteFromWaitingList": "Promouvoir de la liste d'attente",
         "schedulePublished": "Inscriptions visibles",
         "search": "",
         "searchPlaceholder": "",
         "searchPlayers": "Rechercher des joueurs...",
+        "selectSubEventFirst": "",
         "status": "Statut",
         "subEvent": "Épreuve",
         "title": "Gérer les Inscriptions",
         "total": "",
+        "totalDescription": "",
         "totalEntries": "Total inscriptions",
         "waitingList": "Liste d'attente",
+        "waitingListDescription": "",
         "withdraw": ""
       },
       "noPermission": "Vous n'avez pas la permission de gérer ce tournoi",
@@ -1224,24 +1261,26 @@
     },
     "dates": "Dates du tournoi",
     "details": "Détails du tournoi",
+    "double": "Double",
     "draw-detail": {
       "games": {
         "no-games": "Aucun match trouvé pour ce tableau",
         "title": "Matchs"
       }
     },
-    "double": "Double",
     "draws": "Série",
     "entries": "Inscriptions",
     "events": "Épreuves du tournoi",
     "eventType": "Type d'épreuve",
     "eventTypes": {
       "men": "Hommes",
-      "women": "Femmes",
       "mixed": "Mixte",
-      "national": "National"
+      "national": "National",
+      "women": "Femmes"
     },
     "firstDay": "Premier jour",
+    "full": "",
+    "fullWaitingList": "",
     "gameType": "Type de jeu",
     "gameTypes": {
       "doubles": "Double",
@@ -1250,6 +1289,7 @@
       "singles": "Simple"
     },
     "information": "Informations sur le tournoi",
+    "inWaitingList": "",
     "level": "Niveau",
     "live": {
       "allGamesCompleted": "Tous les matchs sont terminés!",
@@ -1288,6 +1328,8 @@
     },
     "location": "Lieu",
     "matches": "Matchs",
+    "men": "",
+    "mixed": "",
     "number": "Numéro de tournoi",
     "official": "Tournoi officiel",
     "openDate": "Ouverture des inscriptions",
@@ -1308,6 +1350,8 @@
       "scheduledDesc": "Les matchs ont été programmés sur les terrains"
     },
     "registration": "Informations d'inscription",
+    "single": "",
+    "spotsLeft": "",
     "title": "Tournois",
     "types": {
       "men": "Hommes",
@@ -1315,6 +1359,8 @@
       "other": "Autres",
       "women": "Femmes"
     },
-    "visualCode": "Code visuel"
+    "unlimited": "",
+    "visualCode": "Code visuel",
+    "women": ""
   }
 }

@@ -165,33 +165,61 @@ export type I18nTranslations = {
             "draw": string;
             "draws": string;
             "edit": {
-                "button": string;
-                "title": string;
-                "subtitle": string;
                 "actions": {
+                    "cancel": string;
                     "save-all": string;
                     "save-current": string;
-                    "cancel": string;
                 };
-                "messages": {
-                    "unsaved-changes": string;
-                    "loading": string;
-                };
-                "tabs": {
-                    "info": string;
-                    "dates": string;
-                    "settings": string;
-                };
-                "info": {
-                    "description": string;
-                    "basic": {
+                "button": string;
+                "dates": {
+                    "changeCloseDatePeriod1": string;
+                    "changeCloseDatePeriod1.placeholder": string;
+                    "changeCloseDatePeriod2": string;
+                    "changeCloseDatePeriod2.placeholder": string;
+                    "changeCloseRequestDatePeriod1": string;
+                    "changeCloseRequestDatePeriod1.placeholder": string;
+                    "changeCloseRequestDatePeriod2": string;
+                    "changeCloseRequestDatePeriod2.placeholder": string;
+                    "changeOpenDate": string;
+                    "changeOpenDate.placeholder": string;
+                    "changePeriod1": {
                         "title": string;
                     };
-                    "location": {
+                    "changePeriod2": {
+                        "title": string;
+                    };
+                    "closeDate": string;
+                    "closeDate.hint": string;
+                    "closeDate.placeholder": string;
+                    "description": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                    "openDate": string;
+                    "openDate.hint": string;
+                    "openDate.placeholder": string;
+                    "registration": {
+                        "title": string;
+                    };
+                };
+                "info": {
+                    "basic": {
                         "title": string;
                     };
                     "contact": {
                         "title": string;
+                    };
+                    "contactEmail": string;
+                    "contactEmail.invalid": string;
+                    "contactEmail.placeholder": string;
+                    "country": string;
+                    "country.placeholder": string;
+                    "description": string;
+                    "location": {
+                        "title": string;
+                    };
+                    "messages": {
+                        "saving": string;
                     };
                     "name": string;
                     "name.placeholder": string;
@@ -199,76 +227,48 @@ export type I18nTranslations = {
                     "season": string;
                     "season.placeholder": string;
                     "season.required": string;
-                    "type": string;
-                    "type.placeholder": string;
                     "state": string;
                     "state.placeholder": string;
-                    "country": string;
-                    "country.placeholder": string;
-                    "contactEmail": string;
-                    "contactEmail.placeholder": string;
-                    "contactEmail.invalid": string;
-                    "messages": {
-                        "saving": string;
-                    };
+                    "type": string;
+                    "type.placeholder": string;
                 };
-                "dates": {
-                    "description": string;
-                    "registration": {
-                        "title": string;
-                    };
-                    "changePeriod1": {
-                        "title": string;
-                    };
-                    "changePeriod2": {
-                        "title": string;
-                    };
-                    "openDate": string;
-                    "openDate.placeholder": string;
-                    "openDate.hint": string;
-                    "closeDate": string;
-                    "closeDate.placeholder": string;
-                    "closeDate.hint": string;
-                    "changeOpenDate": string;
-                    "changeOpenDate.placeholder": string;
-                    "changeCloseDatePeriod1": string;
-                    "changeCloseDatePeriod1.placeholder": string;
-                    "changeCloseRequestDatePeriod1": string;
-                    "changeCloseRequestDatePeriod1.placeholder": string;
-                    "changeCloseDatePeriod2": string;
-                    "changeCloseDatePeriod2.placeholder": string;
-                    "changeCloseRequestDatePeriod2": string;
-                    "changeCloseRequestDatePeriod2.placeholder": string;
-                    "messages": {
-                        "saving": string;
-                    };
+                "messages": {
+                    "loading": string;
+                    "unsaved-changes": string;
                 };
                 "settings": {
+                    "checkEncounterForFilledIn": string;
+                    "checkEncounterForFilledIn.description": string;
                     "description": string;
-                    "official": string;
-                    "teamMatching": {
-                        "title": string;
+                    "messages": {
+                        "saving": string;
                     };
+                    "official": string;
+                    "official.description": string;
                     "ranking": {
                         "title": string;
                     };
-                    "validation": {
+                    "teamMatcher": string;
+                    "teamMatcher.hint": string;
+                    "teamMatcher.placeholder": string;
+                    "teamMatching": {
                         "title": string;
                     };
-                    "official.description": string;
-                    "teamMatcher": string;
-                    "teamMatcher.placeholder": string;
-                    "teamMatcher.hint": string;
                     "usedRankingAmount": string;
                     "usedRankingAmount.hint": string;
                     "usedRankingUnit": string;
                     "usedRankingUnit.placeholder": string;
-                    "checkEncounterForFilledIn": string;
-                    "checkEncounterForFilledIn.description": string;
-                    "messages": {
-                        "saving": string;
+                    "validation": {
+                        "title": string;
                     };
                 };
+                "subtitle": string;
+                "tabs": {
+                    "dates": string;
+                    "info": string;
+                    "settings": string;
+                };
+                "title": string;
             };
             "eliminated": string;
             "encounters": string;
@@ -345,16 +345,16 @@ export type I18nTranslations = {
             "wednesday": string;
         };
         "enrollment": {
-            "addToCart": string;
             "additionalNotes": string;
+            "addToCart": string;
             "availableEvents": string;
             "cart": {
                 "clear": string;
                 "empty": string;
                 "emptyDescription": string;
                 "enrollNow": string;
-                "eventsSelected": string;
                 "eventSelected": string;
+                "eventsSelected": string;
                 "partnerSelected": string;
                 "title": string;
                 "totalEvents": string;
@@ -524,62 +524,66 @@ export type I18nTranslations = {
             "allGames": string;
             "competitionPlayer": string;
             "edit": {
-                "title": string;
-                "subtitle": string;
                 "actions": {
+                    "cancel": string;
                     "save-all": string;
                     "save-current": string;
-                    "cancel": string;
+                };
+                "claims": {
+                    "actions": {
+                        "select-all": string;
+                        "select-none": string;
+                    };
+                    "description": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                    "noClaims": string;
+                    "title": string;
                 };
                 "messages": {
-                    "unsaved-changes": string;
                     "loading": string;
-                };
-                "tabs": {
-                    "profile": string;
-                    "claims": string;
+                    "unsaved-changes": string;
                 };
                 "profile": {
-                    "description": string;
-                    "personal": {
-                        "title": string;
-                    };
-                    "contact": {
-                        "title": string;
-                    };
+                    "birthDate": string;
+                    "birthDate.placeholder": string;
                     "competition": {
                         "title": string;
                     };
+                    "competitionPlayer": string;
+                    "competitionPlayer.description": string;
+                    "contact": {
+                        "title": string;
+                    };
+                    "description": string;
+                    "editable": string;
+                    "email": string;
+                    "email.invalid": string;
+                    "email.placeholder": string;
                     "firstName": string;
                     "firstName.placeholder": string;
                     "firstName.required": string;
+                    "gender": string;
+                    "gender.placeholder": string;
                     "lastName": string;
                     "lastName.placeholder": string;
                     "lastName.required": string;
-                    "gender": string;
-                    "gender.placeholder": string;
-                    "birthDate": string;
-                    "birthDate.placeholder": string;
-                    "email": string;
-                    "email.placeholder": string;
-                    "email.invalid": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                    "personal": {
+                        "title": string;
+                    };
                     "phone": string;
                     "phone.placeholder": string;
-                    "competitionPlayer": string;
-                    "competitionPlayer.description": string;
-                    "editable": string;
-                    "messages": {
-                        "saving": string;
-                    };
                 };
-                "claims": {
-                    "description": string;
-                    "title": string;
-                    "noClaims": string;
-                    "messages": {
-                        "saving": string;
-                    };
+                "subtitle": string;
+                "tabs": {
+                    "claims": string;
+                    "profile": string;
                 };
+                "title": string;
             };
             "gender": string;
             "headToHead": string;
@@ -1264,6 +1268,7 @@ export type I18nTranslations = {
             };
             "dates": string;
             "details": string;
+            "double": string;
             "draw-detail": {
                 "games": {
                     "no-games": string;
@@ -1271,20 +1276,19 @@ export type I18nTranslations = {
                 };
             };
             "draws": string;
-            "double": string;
             "entries": string;
             "events": string;
             "eventType": string;
             "eventTypes": {
                 "men": string;
-                "women": string;
                 "mixed": string;
                 "national": string;
+                "women": string;
             };
             "firstDay": string;
-            "gameType": string;
             "full": string;
             "fullWaitingList": string;
+            "gameType": string;
             "gameTypes": {
                 "doubles": string;
                 "mixed": string;

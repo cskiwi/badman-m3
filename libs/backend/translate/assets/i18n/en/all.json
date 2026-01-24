@@ -158,33 +158,61 @@
     "draw": "Draw",
     "draws": "Draws",
     "edit": {
-      "button": "Edit",
-      "title": "Edit Competition",
-      "subtitle": "Modify competition settings and information",
       "actions": {
+        "cancel": "Cancel",
         "save-all": "Save All",
-        "save-current": "Save Current",
-        "cancel": "Cancel"
+        "save-current": "Save Current"
       },
-      "messages": {
-        "unsaved-changes": "You have unsaved changes",
-        "loading": "Loading competition data..."
-      },
-      "tabs": {
-        "info": "Information",
-        "dates": "Dates",
-        "settings": "Settings"
+      "button": "Edit",
+      "dates": {
+        "changeCloseDatePeriod1": "Period 1 Close Date",
+        "changeCloseDatePeriod1.placeholder": "Select period 1 close date",
+        "changeCloseDatePeriod2": "Period 2 Close Date",
+        "changeCloseDatePeriod2.placeholder": "Select period 2 close date",
+        "changeCloseRequestDatePeriod1": "Period 1 Request Deadline",
+        "changeCloseRequestDatePeriod1.placeholder": "Select period 1 request deadline",
+        "changeCloseRequestDatePeriod2": "Period 2 Request Deadline",
+        "changeCloseRequestDatePeriod2.placeholder": "Select period 2 request deadline",
+        "changeOpenDate": "Changes Open",
+        "changeOpenDate.placeholder": "Select change open date",
+        "changePeriod1": {
+          "title": "Change Period 1"
+        },
+        "changePeriod2": {
+          "title": "Change Period 2"
+        },
+        "closeDate": "Registration Closes",
+        "closeDate.hint": "Deadline for player registration",
+        "closeDate.placeholder": "Select registration close date",
+        "description": "Configure registration and team change periods for this competition.",
+        "messages": {
+          "saving": "Saving competition dates..."
+        },
+        "openDate": "Registration Opens",
+        "openDate.hint": "When players can start registering",
+        "openDate.placeholder": "Select registration open date",
+        "registration": {
+          "title": "Registration Period"
+        }
       },
       "info": {
-        "description": "Edit basic competition information such as name, season, and location.",
         "basic": {
           "title": "Basic Information"
         },
+        "contact": {
+          "title": "Contact Information"
+        },
+        "contactEmail": "Contact Email",
+        "contactEmail.invalid": "Please enter a valid email address",
+        "contactEmail.placeholder": "Enter contact email",
+        "country": "Country",
+        "country.placeholder": "Select country",
+        "description": "Edit basic competition information such as name, season, and location.",
         "location": {
           "title": "Location"
         },
-        "contact": {
-          "title": "Contact Information"
+        "messages": {
+          "saving": "Saving competition info..."
         },
         "name": "Competition Name",
         "name.placeholder": "Enter competition name",
@@ -192,79 +220,48 @@
         "season": "Season",
         "season.placeholder": "e.g. 2024",
         "season.required": "Season is required",
-        "type": "Competition Type",
-        "type.placeholder": "Select competition type",
         "state": "State/Province",
         "state.placeholder": "Select state or province",
-        "country": "Country",
-        "country.placeholder": "Select country",
-        "contactEmail": "Contact Email",
-        "contactEmail.placeholder": "Enter contact email",
-        "contactEmail.invalid": "Please enter a valid email address",
-        "messages": {
-          "saving": "Saving competition info..."
-        }
+        "type": "Competition Type",
+        "type.placeholder": "Select competition type"
       },
-      "dates": {
-        "description": "Configure registration and team change periods for this competition.",
-        "registration": {
-          "title": "Registration Period"
-        },
-        "changePeriod1": {
-          "title": "Change Period 1"
-        },
-        "changePeriod2": {
-          "title": "Change Period 2"
-        },
-        "openDate": "Registration Opens",
-        "openDate.placeholder": "Select registration open date",
-        "openDate.hint": "When players can start registering",
-        "closeDate": "Registration Closes",
-        "closeDate.placeholder": "Select registration close date",
-        "closeDate.hint": "Deadline for player registration",
-        "changeOpenDate": "Changes Open",
-        "changeOpenDate.placeholder": "Select change open date",
-        "changeCloseDatePeriod1": "Period 1 Close Date",
-        "changeCloseDatePeriod1.placeholder": "Select period 1 close date",
-        "changeCloseRequestDatePeriod1": "Period 1 Request Deadline",
-        "changeCloseRequestDatePeriod1.placeholder": "Select period 1 request deadline",
-        "changeCloseDatePeriod2": "Period 2 Close Date",
-        "changeCloseDatePeriod2.placeholder": "Select period 2 close date",
-        "changeCloseRequestDatePeriod2": "Period 2 Request Deadline",
-        "changeCloseRequestDatePeriod2.placeholder": "Select period 2 request deadline",
-        "messages": {
-          "saving": "Saving competition dates..."
-        }
+      "messages": {
+        "loading": "Loading competition data...",
+        "unsaved-changes": "You have unsaved changes"
       },
       "settings": {
+        "checkEncounterForFilledIn": "Validate Encounter Data",
+        "checkEncounterForFilledIn.description": "Check that all encounter data is filled in before allowing submission",
         "description": "Configure competition settings and validation rules.",
-        "official": {
-          "title": "Official Status"
-        },
-        "teamMatching": {
-          "title": "Team Matching"
-        },
-        "ranking": {
-          "title": "Ranking Settings"
-        },
-        "validation": {
-          "title": "Validation Settings"
+        "messages": {
+          "saving": "Saving competition settings..."
         },
         "official": "Official Competition",
         "official.description": "Mark this as an official competition that affects player rankings",
+        "ranking": {
+          "title": "Ranking Settings"
+        },
         "teamMatcher": "Team Matcher",
-        "teamMatcher.placeholder": "Enter team matcher identifier",
         "teamMatcher.hint": "Identifier used for automatic team matching",
+        "teamMatcher.placeholder": "Enter team matcher identifier",
+        "teamMatching": {
+          "title": "Team Matching"
+        },
         "usedRankingAmount": "Ranking Period Amount",
         "usedRankingAmount.hint": "Number of time units to look back for rankings",
         "usedRankingUnit": "Ranking Period Unit",
         "usedRankingUnit.placeholder": "Select time unit",
-        "checkEncounterForFilledIn": "Validate Encounter Data",
-        "checkEncounterForFilledIn.description": "Check that all encounter data is filled in before allowing submission",
-        "messages": {
-          "saving": "Saving competition settings..."
+        "validation": {
+          "title": "Validation Settings"
         }
-      }
+      },
+      "subtitle": "Modify competition settings and information",
+      "tabs": {
+        "dates": "Dates",
+        "info": "Information",
+        "settings": "Settings"
+      },
+      "title": "Edit Competition"
     },
     "eliminated": "Eliminated",
     "encounters": "Encounters",
@@ -341,16 +338,16 @@
     "wednesday": "Wednesday"
   },
   "enrollment": {
-    "addToCart": "Add to Cart",
     "additionalNotes": "Additional Notes",
+    "addToCart": "Add to Cart",
     "availableEvents": "Available Events",
     "cart": {
       "clear": "Clear Cart",
       "empty": "Your cart is empty",
       "emptyDescription": "Select events from the list to add them to your cart",
       "enrollNow": "Enroll Now",
-      "eventsSelected": "events selected",
       "eventSelected": "event selected",
+      "eventsSelected": "events selected",
       "partnerSelected": "Partner selected",
       "title": "Enrollment Cart",
       "totalEvents": "Total Events:"
@@ -520,62 +517,66 @@
     "allGames": "All Games",
     "competitionPlayer": "Competition Player",
     "edit": {
-      "title": "Edit Player",
-      "subtitle": "Modify player profile information",
       "actions": {
+        "cancel": "Cancel",
         "save-all": "Save All",
-        "save-current": "Save Current",
-        "cancel": "Cancel"
+        "save-current": "Save Current"
+      },
+      "claims": {
+        "actions": {
+          "select-all": "All",
+          "select-none": "Nothing"
+        },
+        "description": "Manage player permissions and access rights.",
+        "messages": {
+          "saving": "Saving permissions..."
+        },
+        "noClaims": "No permissions assigned",
+        "title": "Player Permissions"
       },
       "messages": {
-        "unsaved-changes": "You have unsaved changes",
-        "loading": "Loading player data..."
-      },
-      "tabs": {
-        "profile": "Profile",
-        "claims": "Permissions"
+        "loading": "Loading player data...",
+        "unsaved-changes": "You have unsaved changes"
       },
       "profile": {
-        "description": "Edit player profile information including personal and contact details.",
-        "personal": {
-          "title": "Personal Information"
-        },
-        "contact": {
-          "title": "Contact Information"
-        },
+        "birthDate": "Birth Date",
+        "birthDate.placeholder": "Select birth date",
         "competition": {
           "title": "Competition Settings"
         },
+        "competitionPlayer": "Competition Player",
+        "competitionPlayer.description": "This player participates in official competitions",
+        "contact": {
+          "title": "Contact Information"
+        },
+        "description": "Edit player profile information including personal and contact details.",
+        "editable": "editable",
+        "email": "Email",
+        "email.invalid": "Please enter a valid email address",
+        "email.placeholder": "Enter email address",
         "firstName": "First Name",
         "firstName.placeholder": "Enter first name",
         "firstName.required": "First name is required",
+        "gender": "Gender",
+        "gender.placeholder": "Select gender",
         "lastName": "Last Name",
         "lastName.placeholder": "Enter last name",
         "lastName.required": "Last name is required",
-        "gender": "Gender",
-        "gender.placeholder": "Select gender",
-        "birthDate": "Birth Date",
-        "birthDate.placeholder": "Select birth date",
-        "email": "Email",
-        "email.placeholder": "Enter email address",
-        "email.invalid": "Please enter a valid email address",
-        "phone": "Phone",
-        "phone.placeholder": "Enter phone number",
-        "competitionPlayer": "Competition Player",
-        "competitionPlayer.description": "This player participates in official competitions",
-        "editable": "editable",
         "messages": {
           "saving": "Saving player profile..."
-        }
+        },
+        "personal": {
+          "title": "Personal Information"
+        },
+        "phone": "Phone",
+        "phone.placeholder": "Enter phone number"
       },
-      "claims": {
-        "description": "Manage player permissions and access rights.",
-        "title": "Player Permissions",
-        "noClaims": "No permissions assigned",
-        "messages": {
-          "saving": "Saving permissions..."
-        }
-      }
+      "subtitle": "Modify player profile information",
+      "tabs": {
+        "claims": "Permissions",
+        "profile": "Profile"
+      },
+      "title": "Edit Player"
     },
     "gender": "Gender",
     "headToHead": "Head to Head",
@@ -1260,6 +1261,7 @@
     },
     "dates": "Tournament Dates",
     "details": "Tournament Details",
+    "double": "Double",
     "draw-detail": {
       "games": {
         "no-games": "No games found for this draw",
@@ -1267,20 +1269,19 @@
       }
     },
     "draws": "Draws",
-    "double": "Double",
     "entries": "Entries",
     "events": "Tournament Events",
     "eventType": "Event Type",
     "eventTypes": {
       "men": "Men",
-      "women": "Women",
       "mixed": "Mixed",
-      "national": "National"
+      "national": "National",
+      "women": "Women"
     },
     "firstDay": "First Day",
-    "gameType": "Game Type",
     "full": "Full",
     "fullWaitingList": "Full (Waiting List)",
+    "gameType": "Game Type",
     "gameTypes": {
       "doubles": "Doubles",
       "mixed": "Mixed",
