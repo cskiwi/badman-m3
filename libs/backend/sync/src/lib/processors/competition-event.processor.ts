@@ -1,4 +1,4 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE, GameSyncJobData, StructureSyncJobData, JOB_TYPES } from '../queues/sync.queue';
@@ -17,7 +17,9 @@ import {
 } from './services';
 
 @Injectable()
-@Processor(COMPETITION_EVENT_QUEUE)
+@Processor(COMPETITION_EVENT_QUEUE, {
+  lockDuration: 120000, // 2 minutes - API calls can take 30-60s
+})
 export class CompetitionEventProcessor extends WorkerHost {
   private readonly logger = new Logger(CompetitionEventProcessor.name);
 
@@ -108,5 +110,15 @@ export class CompetitionEventProcessor extends WorkerHost {
     // Note: job names may have a prefix, so don't anchor at the start
     const match = jobName.match(/competition-(\w+)-/);
     return match ? match[1] : 'unknown';
+  }
+
+  @OnWorkerEvent('error')
+  onError(error: Error) {
+    this.logger.error(`Worker error: ${error.message}`, error.stack);
+  }
+
+  @OnWorkerEvent('failed')
+  onFailed(job: Job, error: Error) {
+    this.logger.error(`Job ${job.name} (${job.id}) failed: ${error.message}`, error.stack);
   }
 }
