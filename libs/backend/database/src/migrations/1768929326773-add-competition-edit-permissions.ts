@@ -11,7 +11,7 @@ export class AddCompetitionEditPermissions1768929326773 implements MigrationInte
         uuid_generate_v4(),
         'edit-any:competition',
         'Permission to edit any competition',
-        'competition',
+        'competitions',
         'global',
         NOW(),
         NOW()
@@ -24,7 +24,7 @@ export class AddCompetitionEditPermissions1768929326773 implements MigrationInte
     // Remove the edit-any:competition claim
     await queryRunner.query(`
       DELETE FROM "security"."Claims"
-      WHERE "name" = 'edit-any:competition' AND "category" = 'competition'
+      WHERE "name" = 'edit-any:competition' AND "category" = 'competitions'
     `);
   }
 }
