@@ -42,7 +42,7 @@ export class ClaimResolver {
     @Args('claimIds', { type: () => [ID] }) claimIds: string[],
   ): Promise<Player> {
     // Check if user has permission to modify claims
-    const requiredPermission = 'change:claim';
+    const requiredPermission = 'edit:claims';
     if (!(await user.hasAnyPermission([requiredPermission]))) {
       throw new ForbiddenException('You do not have permission to modify player claims');
     }
