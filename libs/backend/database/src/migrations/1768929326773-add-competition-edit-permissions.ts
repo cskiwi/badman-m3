@@ -12,7 +12,7 @@ export class AddCompetitionEditPermissions1768929326773 implements MigrationInte
         'edit-any:competition',
         'Permission to edit any competition',
         'competition',
-        'competition',
+        'global',
         NOW(),
         NOW()
       )
