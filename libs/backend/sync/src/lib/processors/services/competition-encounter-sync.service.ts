@@ -2,11 +2,7 @@ import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer } fro
 import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, Game, Player, GamePlayerMembership, RankingSystem, RankingPlace } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
-import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
-import { generateJobId } from '../../utils/job.utils';
-import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
+import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
 import { LessThanOrEqual } from 'typeorm';
 
@@ -14,10 +10,7 @@ export interface CompetitionEncounterSyncData {
   tournamentCode: string;
   eventCode?: string;
   drawCode: string;
-  encounterCodes?: string[];
-  includeSubComponents?: boolean;
-  workPlan?: CompetitionWorkPlan;
-  childJobsCreated?: boolean;
+  encounterCode: string;
 }
 
 @Injectable()
@@ -26,9 +19,7 @@ export class CompetitionEncounterSyncService {
 
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
-    private readonly competitionPlanningService: CompetitionPlanningService,
     private readonly teamMatchingService: TeamMatchingService,
-    @InjectFlowProducer(COMPETITION_EVENT_QUEUE) private readonly competitionSyncFlow: FlowProducer,
   ) {}
 
   async processEncounterSync(
@@ -36,117 +27,39 @@ export class CompetitionEncounterSyncService {
     updateProgress: (progress: number) => Promise<void>,
     token: string
   ): Promise<void> {
-    this.logger.log(`Processing competition encounter sync`);
-    const { tournamentCode, eventCode, drawCode, encounterCodes, includeSubComponents, childJobsCreated } = job.data;
+    const { tournamentCode, drawCode, encounterCode } = job.data;
+    this.logger.log(`Processing encounter ${encounterCode} for draw ${drawCode}`);
 
     try {
-      let completedSteps = 0;
-      const totalSteps = includeSubComponents ? 3 : 2; // encounter sync + (optional child job creation)
+      await updateProgress(10);
 
-      // Always create/update encounters first (primary responsibility of Encounter service)
-      await this.createOrUpdateEncounters(tournamentCode, drawCode, encounterCodes);
+      await this.processEncounterByCode(tournamentCode, drawCode, encounterCode);
 
-      completedSteps++;
-      await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.debug(`Completed encounter creation/update`);
-
-      // If includeSubComponents and child jobs haven't been created yet, add standing sync job
-      // Note: Games are already processed during encounter sync (via getTeamMatchGames)
-      if (includeSubComponents && !childJobsCreated) {
-        const standingJobName = generateJobId('competition', 'standing', tournamentCode, drawCode);
-
-        const children = [
-          {
-            name: standingJobName,
-            queueName: COMPETITION_EVENT_QUEUE,
-            data: {
-              tournamentCode,
-              eventCode,
-              drawCode,
-              metadata: {
-                displayName: `Standing Sync: ${drawCode}`,
-                description: `Standing synchronization for draw ${drawCode} in competition ${tournamentCode}`,
-              },
-            },
-            opts: {
-              jobId: standingJobName,
-              parent: {
-                id: job.id!,
-                queue: job.queueQualifiedName,
-              },
-            },
-          },
-        ];
-
-        await job.updateData({
-          ...job.data,
-          childJobsCreated: true,
-        });
-
-        await this.competitionSyncFlow.addBulk(children);
-
-        this.logger.log(`Added standing job for encounter sync`);
-
-        // Move to waiting for children and throw WaitingChildrenError
-        const shouldWait = await job.moveToWaitingChildren(token);
-        if (shouldWait) {
-          this.logger.log(`Moving to waiting for children - standing job pending`);
-          throw new WaitingChildrenError();
-        }
-
-        // If we reach here, all children have completed
-        this.logger.log(`All child jobs completed, continuing`);
-      }
-
-      completedSteps++;
-      const finalProgress = this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents);
-      await updateProgress(finalProgress);
-
-      this.logger.log(`Completed competition encounter sync`);
+      await updateProgress(100);
+      this.logger.log(`Completed encounter ${encounterCode}`);
     } catch (error: unknown) {
-      // Re-throw WaitingChildrenError as expected
-      if (error instanceof WaitingChildrenError) {
-        throw error;
-      }
-
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process competition encounter sync: ${errorMessage}`, error);
+      this.logger.error(`Failed to process encounter ${encounterCode}: ${errorMessage}`, error);
       await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
       throw error;
     }
   }
 
-  private async createOrUpdateEncounters(tournamentCode: string, drawCode: string, encounterCodes?: string[]): Promise<void> {
-    this.logger.log(`Creating/updating encounters for competition ${tournamentCode}, draw ${drawCode}`);
-
+  private async processEncounterByCode(tournamentCode: string, drawCode: string, encounterCode: string): Promise<void> {
     try {
-      // Fetch all team matches (encounters) in the draw
+      // Fetch all team matches for the draw (cached across individual encounter jobs)
       const drawTeamMatches = await this.tournamentApiClient.getEncountersByDraw(tournamentCode, drawCode);
-      let teamMatches: TeamMatch[] = drawTeamMatches?.filter((match) => match != null) || [];
+      const teamMatch = drawTeamMatches?.find((match) => match?.Code === encounterCode);
 
-      // Filter to specific encounters if codes are provided
-      if (encounterCodes && encounterCodes.length > 0) {
-        const encounterCodeSet = new Set(encounterCodes);
-        teamMatches = teamMatches.filter((match) => encounterCodeSet.has(match.Code));
-        this.logger.debug(`Filtered to ${teamMatches.length} specific encounters from ${drawTeamMatches?.length || 0} total`);
+      if (!teamMatch) {
+        this.logger.warn(`Encounter ${encounterCode} not found in draw ${drawCode}`);
+        return;
       }
 
-      this.logger.log(`Found ${teamMatches.length} team matches to process`);
-
-      // Process team matches
-      for (const teamMatch of teamMatches) {
-        if (!teamMatch) {
-          this.logger.warn(`Skipping undefined team match`);
-          continue;
-        }
-
-        await this.createOrUpdateEncounter(tournamentCode, teamMatch);
-      }
-
-      this.logger.log(`Created/updated ${teamMatches.length} encounters`);
+      await this.createOrUpdateEncounter(tournamentCode, teamMatch);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create/update encounters: ${errorMessage}`, error);
+      this.logger.error(`Failed to process encounter ${encounterCode}: ${errorMessage}`, error);
       throw error;
     }
   }
