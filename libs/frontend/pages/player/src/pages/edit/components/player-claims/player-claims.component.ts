@@ -105,10 +105,11 @@ export class PlayerClaimsComponent {
       }
     });
 
-    // Update form values when player data changes
+    // Update form values when player data or global claims change
     effect(() => {
       const player = this.player();
-      if (player?.claims) {
+      const claims = this.globalClaims();
+      if (player?.claims && claims.length > 0) {
         this.updateFormValues(player.claims);
       }
     });
