@@ -36,15 +36,17 @@
         <!-- Tournament Days (Range Selection) -->
         <div class="flex flex-col gap-2">
           <label for="tournamentDays">{{ 'all.tournament.create.tournamentDays' | translate }}</label>
-          <p-datepicker
-            id="tournamentDays"
-            formControlName="tournamentDays"
-            selectionMode="range"
-            [showIcon]="true"
-            dateFormat="dd/mm/yy"
-            [placeholder]="'all.tournament.create.tournamentDaysPlaceholder' | translate"
-            styleClass="w-64"
-          />
+          @defer {
+            <p-datepicker
+              id="tournamentDays"
+              formControlName="tournamentDays"
+              selectionMode="range"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              [placeholder]="'all.tournament.create.tournamentDaysPlaceholder' | translate"
+              styleClass="w-64"
+            />
+          }
           <small class="text-muted-color">{{ 'all.tournament.create.tournamentDaysHelp' | translate }}</small>
         </div>
 
@@ -52,25 +54,29 @@
         <div class="flex flex-row gap-4">
           <div class="flex flex-col gap-2">
             <label for="openDate">{{ 'all.tournament.create.openDate' | translate }}</label>
-            <p-datepicker
-              id="openDate"
-              formControlName="openDate"
-              [showIcon]="true"
-              dateFormat="dd/mm/yy"
-              [placeholder]="'all.tournament.create.openDatePlaceholder' | translate"
-              styleClass="w-48"
-            />
+            @defer {
+              <p-datepicker
+                id="openDate"
+                formControlName="openDate"
+                [showIcon]="true"
+                dateFormat="dd/mm/yy"
+                [placeholder]="'all.tournament.create.openDatePlaceholder' | translate"
+                styleClass="w-48"
+              />
+            }
           </div>
           <div class="flex flex-col gap-2">
             <label for="closeDate">{{ 'all.tournament.create.closeDate' | translate }}</label>
-            <p-datepicker
-              id="closeDate"
-              formControlName="closeDate"
-              [showIcon]="true"
-              dateFormat="dd/mm/yy"
-              [placeholder]="'all.tournament.create.closeDatePlaceholder' | translate"
-              styleClass="w-48"
-            />
+            @defer {
+              <p-datepicker
+                id="closeDate"
+                formControlName="closeDate"
+                [showIcon]="true"
+                dateFormat="dd/mm/yy"
+                [placeholder]="'all.tournament.create.closeDatePlaceholder' | translate"
+                styleClass="w-48"
+              />
+            }
           </div>
         </div>
 

@@ -157,6 +157,115 @@
     "details": "Competitie Details",
     "draw": "Schema",
     "draws": "Reeks",
+    "edit": {
+      "button": "Bewerken",
+      "title": "Competitie Bewerken",
+      "subtitle": "Wijzig competitie instellingen en informatie",
+      "actions": {
+        "save-all": "Alles Opslaan",
+        "save-current": "Huidige Opslaan",
+        "cancel": "Annuleren"
+      },
+      "messages": {
+        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen",
+        "loading": "Competitie gegevens laden..."
+      },
+      "tabs": {
+        "info": "Informatie",
+        "dates": "Data",
+        "settings": "Instellingen"
+      },
+      "info": {
+        "description": "Bewerk basis competitie informatie zoals naam, seizoen en locatie.",
+        "basic": {
+          "title": "Basis Informatie"
+        },
+        "location": {
+          "title": "Locatie"
+        },
+        "contact": {
+          "title": "Contact Informatie"
+        },
+        "name": "Competitie Naam",
+        "name.placeholder": "Voer competitie naam in",
+        "name.required": "Competitie naam is verplicht",
+        "season": "Seizoen",
+        "season.placeholder": "bijv. 2024",
+        "season.required": "Seizoen is verplicht",
+        "type": "Competitie Type",
+        "type.placeholder": "Selecteer competitie type",
+        "state": "Staat/Provincie",
+        "state.placeholder": "Selecteer staat of provincie",
+        "country": "Land",
+        "country.placeholder": "Selecteer land",
+        "contactEmail": "Contact E-mail",
+        "contactEmail.placeholder": "Voer contact e-mail in",
+        "contactEmail.invalid": "Voer een geldig e-mailadres in",
+        "messages": {
+          "saving": "Competitie info opslaan..."
+        }
+      },
+      "dates": {
+        "description": "Configureer inschrijvings- en wijzigingsperiodes voor deze competitie.",
+        "registration": {
+          "title": "Inschrijvingsperiode"
+        },
+        "changePeriod1": {
+          "title": "Wijzigingsperiode 1"
+        },
+        "changePeriod2": {
+          "title": "Wijzigingsperiode 2"
+        },
+        "openDate": "Inschrijvingen Openen",
+        "openDate.placeholder": "Selecteer openingsdatum inschrijvingen",
+        "openDate.hint": "Wanneer spelers kunnen beginnen met inschrijven",
+        "closeDate": "Inschrijvingen Sluiten",
+        "closeDate.placeholder": "Selecteer sluitingsdatum inschrijvingen",
+        "closeDate.hint": "Deadline voor speler inschrijvingen",
+        "changeOpenDate": "Wijzigingen Openen",
+        "changeOpenDate.placeholder": "Selecteer openingsdatum wijzigingen",
+        "changeCloseDatePeriod1": "Periode 1 Sluitingsdatum",
+        "changeCloseDatePeriod1.placeholder": "Selecteer periode 1 sluitingsdatum",
+        "changeCloseRequestDatePeriod1": "Periode 1 Aanvraag Deadline",
+        "changeCloseRequestDatePeriod1.placeholder": "Selecteer periode 1 aanvraag deadline",
+        "changeCloseDatePeriod2": "Periode 2 Sluitingsdatum",
+        "changeCloseDatePeriod2.placeholder": "Selecteer periode 2 sluitingsdatum",
+        "changeCloseRequestDatePeriod2": "Periode 2 Aanvraag Deadline",
+        "changeCloseRequestDatePeriod2.placeholder": "Selecteer periode 2 aanvraag deadline",
+        "messages": {
+          "saving": "Competitie data opslaan..."
+        }
+      },
+      "settings": {
+        "description": "Configureer competitie instellingen en validatie regels.",
+        "official": {
+          "title": "Officiële Status"
+        },
+        "teamMatching": {
+          "title": "Team Matching"
+        },
+        "ranking": {
+          "title": "Ranking Instellingen"
+        },
+        "validation": {
+          "title": "Validatie Instellingen"
+        },
+        "official": "Officiële Competitie",
+        "official.description": "Markeer dit als een officiële competitie die speler rankings beïnvloedt",
+        "teamMatcher": "Team Matcher",
+        "teamMatcher.placeholder": "Voer team matcher identificatie in",
+        "teamMatcher.hint": "Identificatie gebruikt voor automatische team matching",
+        "usedRankingAmount": "Ranking Periode Aantal",
+        "usedRankingAmount.hint": "Aantal tijdseenheden om terug te kijken voor rankings",
+        "usedRankingUnit": "Ranking Periode Eenheid",
+        "usedRankingUnit.placeholder": "Selecteer tijdseenheid",
+        "checkEncounterForFilledIn": "Valideer Ontmoeting Gegevens",
+        "checkEncounterForFilledIn.description": "Controleer dat alle ontmoeting gegevens zijn ingevuld voordat verzending wordt toegestaan",
+        "messages": {
+          "saving": "Competitie instellingen opslaan..."
+        }
+      }
+    },
     "eliminated": "Geëlimineerd",
     "encounters": "Ontmoetingen",
     "eventType": "Event Type",
@@ -410,6 +519,64 @@
   "player": {
     "allGames": "Alle Wedstrijden",
     "competitionPlayer": "Competitiespeler",
+    "edit": {
+      "title": "Speler Bewerken",
+      "subtitle": "Wijzig speler profiel informatie",
+      "actions": {
+        "save-all": "Alles Opslaan",
+        "save-current": "Huidige Opslaan",
+        "cancel": "Annuleren"
+      },
+      "messages": {
+        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen",
+        "loading": "Speler gegevens laden..."
+      },
+      "tabs": {
+        "profile": "Profiel",
+        "claims": "Rechten"
+      },
+      "profile": {
+        "description": "Bewerk speler profiel informatie inclusief persoonlijke en contact gegevens.",
+        "personal": {
+          "title": "Persoonlijke Informatie"
+        },
+        "contact": {
+          "title": "Contact Informatie"
+        },
+        "competition": {
+          "title": "Competitie Instellingen"
+        },
+        "firstName": "Voornaam",
+        "firstName.placeholder": "Voer voornaam in",
+        "firstName.required": "Voornaam is verplicht",
+        "lastName": "Achternaam",
+        "lastName.placeholder": "Voer achternaam in",
+        "lastName.required": "Achternaam is verplicht",
+        "gender": "Geslacht",
+        "gender.placeholder": "Selecteer geslacht",
+        "birthDate": "Geboortedatum",
+        "birthDate.placeholder": "Selecteer geboortedatum",
+        "email": "E-mail",
+        "email.placeholder": "Voer e-mailadres in",
+        "email.invalid": "Voer een geldig e-mailadres in",
+        "phone": "Telefoon",
+        "phone.placeholder": "Voer telefoonnummer in",
+        "competitionPlayer": "Competitiespeler",
+        "competitionPlayer.description": "Deze speler neemt deel aan officiële competities",
+        "editable": "bewerkbaar",
+        "messages": {
+          "saving": "Speler profiel opslaan..."
+        }
+      },
+      "claims": {
+        "description": "Beheer speler rechten en toegangsrechten.",
+        "title": "Speler Rechten",
+        "noClaims": "Geen rechten toegewezen",
+        "messages": {
+          "saving": "Rechten opslaan..."
+        }
+      }
+    },
     "gender": "Geslacht",
     "headToHead": "Onderlinge Duels",
     "maxRating": "Max. Rating",

@@ -4,10 +4,12 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-page-detail',
@@ -20,6 +22,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
     PageHeaderComponent,
     SyncButtonComponent,
     SyncStatusIndicatorComponent,
+    ButtonModule,
   ],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
@@ -28,10 +31,21 @@ import { ProgressBarModule } from 'primeng/progressbar';
 export class PageDetailComponent {
   private readonly dataService = new DetailService();
   private readonly seoService = inject(SeoService);
+  private readonly authService = inject(AuthService);
   private readonly competitionId = injectParams('competitionId');
 
   // selectors
   competition = this.dataService.competition;
+
+  // Check if user can edit the competition
+  canEdit = computed(() => {
+    const competition = this.competition();
+    if (!competition) return false;
+    return this.authService.hasAnyPermission([
+      'edit-any:competition',
+      `${competition.id}_edit:competition`,
+    ]);
+  });
 
   // Helper function to extract event type and level
   private getEventTypeAndLevel = (eventType: string) => {

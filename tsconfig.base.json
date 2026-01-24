@@ -11,6 +11,7 @@
     "target": "es2015",
     "module": "esnext",
     "lib": ["es2020", "dom", "ES2021.String"],
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -75,7 +76,8 @@
       "@app/utils": ["libs/utils/src/index.ts"],
       "@app/utils/comp": ["libs/utils/src/lib/comp.ts"],
       "@app/utils/sorts": ["libs/utils/src/sorts/index.ts"],
-      "@apps/shared": ["libs/shared/src/index.ts"]
+      "@apps/shared": ["libs/shared/src/index.ts"],
+      "@app/frontend-components/country-state": ["libs/frontend/components/country-state/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

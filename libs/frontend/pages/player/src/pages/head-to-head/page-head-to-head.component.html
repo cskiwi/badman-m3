@@ -97,7 +97,9 @@
           </span>
           <div class="space-y-2">
             <p-iftalabel>
-              <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
+              @defer {
+                <p-datepicker formControlName="date" inputId="date-filter" showIcon="true" iconDisplay="input" />
+              }
               <label for="date-filter">{{ 'all.head-to-head.filters.start-date' | translate }}</label>
             </p-iftalabel>
 

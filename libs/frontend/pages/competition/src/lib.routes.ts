@@ -18,6 +18,10 @@ export const routes: Route[] = [
             loadComponent: () => import('./pages/detail/page-detail.component').then(m => m.PageDetailComponent),
           },
           {
+            path: 'edit',
+            loadComponent: () => import('./pages/edit/page-edit.component').then(m => m.PageEditComponent),
+          },
+          {
             path: 'sub-events/:subEventId/draws/:drawId',
             loadComponent: () => import('./pages/draws/page-draws.component').then(m => m.PageDrawsComponent),
           },

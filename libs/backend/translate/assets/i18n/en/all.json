@@ -157,6 +157,115 @@
     "details": "Competition Details",
     "draw": "Draw",
     "draws": "Draws",
+    "edit": {
+      "button": "Edit",
+      "title": "Edit Competition",
+      "subtitle": "Modify competition settings and information",
+      "actions": {
+        "save-all": "Save All",
+        "save-current": "Save Current",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "unsaved-changes": "You have unsaved changes",
+        "loading": "Loading competition data..."
+      },
+      "tabs": {
+        "info": "Information",
+        "dates": "Dates",
+        "settings": "Settings"
+      },
+      "info": {
+        "description": "Edit basic competition information such as name, season, and location.",
+        "basic": {
+          "title": "Basic Information"
+        },
+        "location": {
+          "title": "Location"
+        },
+        "contact": {
+          "title": "Contact Information"
+        },
+        "name": "Competition Name",
+        "name.placeholder": "Enter competition name",
+        "name.required": "Competition name is required",
+        "season": "Season",
+        "season.placeholder": "e.g. 2024",
+        "season.required": "Season is required",
+        "type": "Competition Type",
+        "type.placeholder": "Select competition type",
+        "state": "State/Province",
+        "state.placeholder": "Select state or province",
+        "country": "Country",
+        "country.placeholder": "Select country",
+        "contactEmail": "Contact Email",
+        "contactEmail.placeholder": "Enter contact email",
+        "contactEmail.invalid": "Please enter a valid email address",
+        "messages": {
+          "saving": "Saving competition info..."
+        }
+      },
+      "dates": {
+        "description": "Configure registration and team change periods for this competition.",
+        "registration": {
+          "title": "Registration Period"
+        },
+        "changePeriod1": {
+          "title": "Change Period 1"
+        },
+        "changePeriod2": {
+          "title": "Change Period 2"
+        },
+        "openDate": "Registration Opens",
+        "openDate.placeholder": "Select registration open date",
+        "openDate.hint": "When players can start registering",
+        "closeDate": "Registration Closes",
+        "closeDate.placeholder": "Select registration close date",
+        "closeDate.hint": "Deadline for player registration",
+        "changeOpenDate": "Changes Open",
+        "changeOpenDate.placeholder": "Select change open date",
+        "changeCloseDatePeriod1": "Period 1 Close Date",
+        "changeCloseDatePeriod1.placeholder": "Select period 1 close date",
+        "changeCloseRequestDatePeriod1": "Period 1 Request Deadline",
+        "changeCloseRequestDatePeriod1.placeholder": "Select period 1 request deadline",
+        "changeCloseDatePeriod2": "Period 2 Close Date",
+        "changeCloseDatePeriod2.placeholder": "Select period 2 close date",
+        "changeCloseRequestDatePeriod2": "Period 2 Request Deadline",
+        "changeCloseRequestDatePeriod2.placeholder": "Select period 2 request deadline",
+        "messages": {
+          "saving": "Saving competition dates..."
+        }
+      },
+      "settings": {
+        "description": "Configure competition settings and validation rules.",
+        "official": {
+          "title": "Official Status"
+        },
+        "teamMatching": {
+          "title": "Team Matching"
+        },
+        "ranking": {
+          "title": "Ranking Settings"
+        },
+        "validation": {
+          "title": "Validation Settings"
+        },
+        "official": "Official Competition",
+        "official.description": "Mark this as an official competition that affects player rankings",
+        "teamMatcher": "Team Matcher",
+        "teamMatcher.placeholder": "Enter team matcher identifier",
+        "teamMatcher.hint": "Identifier used for automatic team matching",
+        "usedRankingAmount": "Ranking Period Amount",
+        "usedRankingAmount.hint": "Number of time units to look back for rankings",
+        "usedRankingUnit": "Ranking Period Unit",
+        "usedRankingUnit.placeholder": "Select time unit",
+        "checkEncounterForFilledIn": "Validate Encounter Data",
+        "checkEncounterForFilledIn.description": "Check that all encounter data is filled in before allowing submission",
+        "messages": {
+          "saving": "Saving competition settings..."
+        }
+      }
+    },
     "eliminated": "Eliminated",
     "encounters": "Encounters",
     "eventType": "Event Type",
@@ -410,6 +519,64 @@
   "player": {
     "allGames": "All Games",
     "competitionPlayer": "Competition Player",
+    "edit": {
+      "title": "Edit Player",
+      "subtitle": "Modify player profile information",
+      "actions": {
+        "save-all": "Save All",
+        "save-current": "Save Current",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "unsaved-changes": "You have unsaved changes",
+        "loading": "Loading player data..."
+      },
+      "tabs": {
+        "profile": "Profile",
+        "claims": "Permissions"
+      },
+      "profile": {
+        "description": "Edit player profile information including personal and contact details.",
+        "personal": {
+          "title": "Personal Information"
+        },
+        "contact": {
+          "title": "Contact Information"
+        },
+        "competition": {
+          "title": "Competition Settings"
+        },
+        "firstName": "First Name",
+        "firstName.placeholder": "Enter first name",
+        "firstName.required": "First name is required",
+        "lastName": "Last Name",
+        "lastName.placeholder": "Enter last name",
+        "lastName.required": "Last name is required",
+        "gender": "Gender",
+        "gender.placeholder": "Select gender",
+        "birthDate": "Birth Date",
+        "birthDate.placeholder": "Select birth date",
+        "email": "Email",
+        "email.placeholder": "Enter email address",
+        "email.invalid": "Please enter a valid email address",
+        "phone": "Phone",
+        "phone.placeholder": "Enter phone number",
+        "competitionPlayer": "Competition Player",
+        "competitionPlayer.description": "This player participates in official competitions",
+        "editable": "editable",
+        "messages": {
+          "saving": "Saving player profile..."
+        }
+      },
+      "claims": {
+        "description": "Manage player permissions and access rights.",
+        "title": "Player Permissions",
+        "noClaims": "No permissions assigned",
+        "messages": {
+          "saving": "Saving permissions..."
+        }
+      }
+    },
     "gender": "Gender",
     "headToHead": "Head to Head",
     "maxRating": "Max. Rating",

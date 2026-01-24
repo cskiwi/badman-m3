@@ -87,13 +87,15 @@
         <!-- Preferred Time -->
         <div class="flex flex-col gap-1">
           <label for="preferredTime" class="font-medium">{{ 'all.team.edit.preferredTime.label' | translate }}</label>
-          <p-datepicker id="preferredTime"
-            formControlName="preferredTime"
-            [timeOnly]="true"
-            showIcon
-            hourFormat="24"
-            [placeholder]="'all.team.edit.preferredTime.placeholder.text' | translate"
-           />
+          @defer {
+            <p-datepicker id="preferredTime"
+              formControlName="preferredTime"
+              [timeOnly]="true"
+              showIcon
+              hourFormat="24"
+              [placeholder]="'all.team.edit.preferredTime.placeholder.text' | translate"
+            />
+          }
         </div>
 
         <!-- Preferred Day -->

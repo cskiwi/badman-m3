@@ -52,14 +52,16 @@
         <!-- Birth Date -->
         <div class="flex flex-col gap-1">
           <label for="birthDate" class="font-medium">{{ 'all.player.edit.profile.birthDate' | translate }}</label>
-          <p-datepicker
-            id="birthDate"
-            formControlName="birthDate"
-            [maxDate]="maxBirthDate"
-            dateFormat="dd/mm/yy"
-            [showIcon]="true"
-            [placeholder]="'all.player.edit.profile.birthDate.placeholder' | translate"
-          />
+          @defer {
+            <p-datepicker
+              id="birthDate"
+              formControlName="birthDate"
+              [maxDate]="maxBirthDate"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [placeholder]="'all.player.edit.profile.birthDate.placeholder' | translate"
+            />
+          }
         </div>
 
         <!-- sub and memberId in the same row for admin users -->

@@ -1,0 +1,96 @@
+@if (!loading()) {
+  @if (this.competition(); as competition) {
+    <app-page-header>
+      <i avatar class="pi pi-pencil text-2xl"></i>
+      <span title>{{ 'all.competition.edit.title' | translate }} - {{ competition.name }}</span>
+      <ng-container subTitle>
+        <span>{{ 'all.competition.edit.subtitle' | translate }}</span>
+      </ng-container>
+      <ng-container actions>
+        <div class="flex gap-3">
+          <p-button
+            [label]="'all.competition.edit.actions.save-all' | translate"
+            icon="pi pi-save"
+            (click)="saveAll()"
+            [disabled]="!hasUnsavedChanges"
+            [loading]="false"
+          />
+          <p-button
+            [label]="'all.competition.edit.actions.save-current' | translate"
+            icon="pi pi-check"
+            [outlined]="true"
+            (click)="saveCurrentTab()"
+            [disabled]="false"
+            [loading]="false"
+          />
+          <p-button
+            [label]="'all.competition.edit.actions.cancel' | translate"
+            icon="pi pi-times"
+            severity="secondary"
+            [outlined]="true"
+            (click)="cancel()"
+          />
+        </div>
+      </ng-container>
+    </app-page-header>
+
+    <div class="p-4">
+      <!-- Unsaved changes indicator -->
+      @if (hasUnsavedChanges) {
+        <div class="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+          <div class="flex items-center gap-2 text-orange-800">
+            <i class="pi pi-exclamation-triangle"></i>
+            <span class="font-medium">{{ 'all.competition.edit.messages.unsaved-changes' | translate }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Tabbed Interface -->
+      <p-tabs [value]="activeTabIndex()" (activeIndexChange)="onActiveIndexChange($event)">
+        <p-tablist>
+          <p-tab value="0">
+            <i class="pi pi-info-circle mr-2"></i>
+            {{ 'all.competition.edit.tabs.info' | translate }}
+          </p-tab>
+          <p-tab value="1">
+            <i class="pi pi-calendar mr-2"></i>
+            {{ 'all.competition.edit.tabs.dates' | translate }}
+          </p-tab>
+          <p-tab value="2">
+            <i class="pi pi-cog mr-2"></i>
+            {{ 'all.competition.edit.tabs.settings' | translate }}
+          </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+          <p-tabpanel value="0">
+            <app-competition-info [competition]="competition" />
+          </p-tabpanel>
+
+          <p-tabpanel value="1">
+            <app-competition-dates [competition]="competition" />
+          </p-tabpanel>
+
+          <p-tabpanel value="2">
+            <app-competition-settings [competition]="competition" />
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+  }
+} @else {
+  <div class="p-4">
+    <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
+    <p class="text-center text-surface-500 mt-4">{{ 'all.competition.edit.messages.loading' | translate }}</p>
+  </div>
+}
+
+@if (error(); as errorMessage) {
+  <div class="flex items-center justify-center p-8 text-red-600">
+    <i class="pi pi-exclamation-triangle mr-2"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
+}
+
+<!-- Toast Messages -->
+<p-toast position="top-right" />

@@ -164,6 +164,112 @@ export type I18nTranslations = {
             "details": string;
             "draw": string;
             "draws": string;
+            "edit": {
+                "button": string;
+                "title": string;
+                "subtitle": string;
+                "actions": {
+                    "save-all": string;
+                    "save-current": string;
+                    "cancel": string;
+                };
+                "messages": {
+                    "unsaved-changes": string;
+                    "loading": string;
+                };
+                "tabs": {
+                    "info": string;
+                    "dates": string;
+                    "settings": string;
+                };
+                "info": {
+                    "description": string;
+                    "basic": {
+                        "title": string;
+                    };
+                    "location": {
+                        "title": string;
+                    };
+                    "contact": {
+                        "title": string;
+                    };
+                    "name": string;
+                    "name.placeholder": string;
+                    "name.required": string;
+                    "season": string;
+                    "season.placeholder": string;
+                    "season.required": string;
+                    "type": string;
+                    "type.placeholder": string;
+                    "state": string;
+                    "state.placeholder": string;
+                    "country": string;
+                    "country.placeholder": string;
+                    "contactEmail": string;
+                    "contactEmail.placeholder": string;
+                    "contactEmail.invalid": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                };
+                "dates": {
+                    "description": string;
+                    "registration": {
+                        "title": string;
+                    };
+                    "changePeriod1": {
+                        "title": string;
+                    };
+                    "changePeriod2": {
+                        "title": string;
+                    };
+                    "openDate": string;
+                    "openDate.placeholder": string;
+                    "openDate.hint": string;
+                    "closeDate": string;
+                    "closeDate.placeholder": string;
+                    "closeDate.hint": string;
+                    "changeOpenDate": string;
+                    "changeOpenDate.placeholder": string;
+                    "changeCloseDatePeriod1": string;
+                    "changeCloseDatePeriod1.placeholder": string;
+                    "changeCloseRequestDatePeriod1": string;
+                    "changeCloseRequestDatePeriod1.placeholder": string;
+                    "changeCloseDatePeriod2": string;
+                    "changeCloseDatePeriod2.placeholder": string;
+                    "changeCloseRequestDatePeriod2": string;
+                    "changeCloseRequestDatePeriod2.placeholder": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                };
+                "settings": {
+                    "description": string;
+                    "official": string;
+                    "teamMatching": {
+                        "title": string;
+                    };
+                    "ranking": {
+                        "title": string;
+                    };
+                    "validation": {
+                        "title": string;
+                    };
+                    "official.description": string;
+                    "teamMatcher": string;
+                    "teamMatcher.placeholder": string;
+                    "teamMatcher.hint": string;
+                    "usedRankingAmount": string;
+                    "usedRankingAmount.hint": string;
+                    "usedRankingUnit": string;
+                    "usedRankingUnit.placeholder": string;
+                    "checkEncounterForFilledIn": string;
+                    "checkEncounterForFilledIn.description": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                };
+            };
             "eliminated": string;
             "encounters": string;
             "eventType": string;
@@ -417,6 +523,64 @@ export type I18nTranslations = {
         "player": {
             "allGames": string;
             "competitionPlayer": string;
+            "edit": {
+                "title": string;
+                "subtitle": string;
+                "actions": {
+                    "save-all": string;
+                    "save-current": string;
+                    "cancel": string;
+                };
+                "messages": {
+                    "unsaved-changes": string;
+                    "loading": string;
+                };
+                "tabs": {
+                    "profile": string;
+                    "claims": string;
+                };
+                "profile": {
+                    "description": string;
+                    "personal": {
+                        "title": string;
+                    };
+                    "contact": {
+                        "title": string;
+                    };
+                    "competition": {
+                        "title": string;
+                    };
+                    "firstName": string;
+                    "firstName.placeholder": string;
+                    "firstName.required": string;
+                    "lastName": string;
+                    "lastName.placeholder": string;
+                    "lastName.required": string;
+                    "gender": string;
+                    "gender.placeholder": string;
+                    "birthDate": string;
+                    "birthDate.placeholder": string;
+                    "email": string;
+                    "email.placeholder": string;
+                    "email.invalid": string;
+                    "phone": string;
+                    "phone.placeholder": string;
+                    "competitionPlayer": string;
+                    "competitionPlayer.description": string;
+                    "editable": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                };
+                "claims": {
+                    "description": string;
+                    "title": string;
+                    "noClaims": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                };
+            };
             "gender": string;
             "headToHead": string;
             "maxRating": string;

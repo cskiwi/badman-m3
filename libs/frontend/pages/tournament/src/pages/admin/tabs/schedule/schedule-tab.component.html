@@ -386,13 +386,15 @@
           {{ 'all.tournament.admin.schedule.dates' | translate }}
           <span class="text-red-500">*</span>
         </label>
-        <p-datepicker
-          id="dates"
-          [formControl]="generateSlotsForm.controls.dates"
-          selectionMode="multiple"
-          dateFormat="yy-mm-dd"
-          styleClass="w-full"
-        />
+        @defer {
+          <p-datepicker
+            id="dates"
+            [formControl]="generateSlotsForm.controls.dates"
+            selectionMode="multiple"
+            dateFormat="yy-mm-dd"
+            styleClass="w-full"
+          />
+        }
       </div>
 
       <div class="grid grid-cols-2 gap-4">

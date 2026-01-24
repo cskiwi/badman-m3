@@ -1,0 +1,114 @@
+<div class="space-y-6">
+  <p class="text-surface-500 mb-6">
+    {{ 'all.competition.edit.info.description' | translate }}
+  </p>
+
+  <form [formGroup]="infoForm" class="space-y-6">
+    <!-- Basic Information -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.info.basic.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Name -->
+        <div class="flex flex-col gap-1 lg:col-span-2">
+          <label for="name" class="font-medium">{{ 'all.competition.edit.info.name' | translate }}</label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            [placeholder]="'all.competition.edit.info.name.placeholder' | translate"
+          />
+          @if (infoForm.get('name')?.errors?.['required'] && infoForm.get('name')?.touched) {
+            <small class="text-red-500">{{ 'all.competition.edit.info.name.required' | translate }}</small>
+          }
+        </div>
+
+        <!-- Season -->
+        <div class="flex flex-col gap-1">
+          <label for="season" class="font-medium">{{ 'all.competition.edit.info.season' | translate }}</label>
+          <p-inputNumber
+            id="season"
+            formControlName="season"
+            [useGrouping]="false"
+            [min]="2000"
+            [max]="2100"
+            [placeholder]="'all.competition.edit.info.season.placeholder' | translate"
+          />
+          @if (infoForm.get('season')?.errors?.['required'] && infoForm.get('season')?.touched) {
+            <small class="text-red-500">{{ 'all.competition.edit.info.season.required' | translate }}</small>
+          }
+        </div>
+
+        <!-- Type -->
+        <div class="flex flex-col gap-1">
+          <label for="type" class="font-medium">{{ 'all.competition.edit.info.type' | translate }}</label>
+          <p-select
+            id="type"
+            formControlName="type"
+            [options]="typeOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.competition.edit.info.type.placeholder' | translate"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Information -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.info.location.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Country -->
+        <div class="flex flex-col gap-1">
+          <label for="country" class="font-medium">{{ 'all.competition.edit.info.country' | translate }}</label>
+          <app-country-select formControlName="country" />
+        </div>
+
+        <!-- State/Province -->
+        <div class="flex flex-col gap-1">
+          <label for="state" class="font-medium">{{ 'all.competition.edit.info.state' | translate }}</label>
+          <app-state-select formControlName="state" [country]="selectedCountry()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.info.contact.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Contact Email -->
+        <div class="flex flex-col gap-1">
+          <label for="contactEmail" class="font-medium">{{ 'all.competition.edit.info.contactEmail' | translate }}</label>
+          <input
+            pInputText
+            id="contactEmail"
+            formControlName="contactEmail"
+            type="email"
+            [placeholder]="'all.competition.edit.info.contactEmail.placeholder' | translate"
+          />
+          @if (infoForm.get('contactEmail')?.errors?.['email'] && infoForm.get('contactEmail')?.touched) {
+            <small class="text-red-500">{{ 'all.competition.edit.info.contactEmail.invalid' | translate }}</small>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    @if (saving()) {
+      <div class="pt-4">
+        <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+        <p class="text-sm text-surface-500 mt-2">{{ 'all.competition.edit.info.messages.saving' | translate }}</p>
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (error(); as errorMessage) {
+      <p-message severity="error" [text]="errorMessage" />
+    }
+  </form>
+</div>

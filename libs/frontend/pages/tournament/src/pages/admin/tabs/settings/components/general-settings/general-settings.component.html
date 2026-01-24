@@ -37,16 +37,18 @@
             <i class="pi pi-calendar mr-2 text-muted-color"></i>
             {{ 'all.tournament.admin.settings.tournamentDates' | translate }}
           </label>
-          <p-datepicker
-            id="tournamentDates"
-            formControlName="tournamentDates"
-            [showIcon]="true"
-            dateFormat="dd/mm/yy"
-            selectionMode="range"
-            [readonlyInput]="true"
-            styleClass="w-full"
-            [placeholder]="'all.tournament.admin.settings.tournamentDatesPlaceholder' | translate"
-          />
+          @defer {
+            <p-datepicker
+              id="tournamentDates"
+              formControlName="tournamentDates"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              selectionMode="range"
+              [readonlyInput]="true"
+              styleClass="w-full"
+              [placeholder]="'all.tournament.admin.settings.tournamentDatesPlaceholder' | translate"
+            />
+          }
           <small class="text-muted-color text-xs">
             {{ 'all.tournament.admin.settings.tournamentDatesHelp' | translate }}
           </small>
@@ -58,16 +60,18 @@
             <i class="pi pi-user-plus mr-2 text-muted-color"></i>
             {{ 'all.tournament.admin.settings.enrollmentDates' | translate }}
           </label>
-          <p-datepicker
-            id="enrollmentDates"
-            formControlName="enrollmentDates"
-            [showIcon]="true"
-            dateFormat="dd/mm/yy"
-            selectionMode="range"
-            [readonlyInput]="true"
-            styleClass="w-full"
-            [placeholder]="'all.tournament.admin.settings.enrollmentDatesPlaceholder' | translate"
-          />
+          @defer {
+            <p-datepicker
+              id="enrollmentDates"
+              formControlName="enrollmentDates"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              selectionMode="range"
+              [readonlyInput]="true"
+              styleClass="w-full"
+              [placeholder]="'all.tournament.admin.settings.enrollmentDatesPlaceholder' | translate"
+            />
+          }
           <small class="text-muted-color text-xs">
             {{ 'all.tournament.admin.settings.enrollmentDatesHelp' | translate }}
           </small>
