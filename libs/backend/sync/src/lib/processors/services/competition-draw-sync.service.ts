@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw } from '@app/models';
+import { CompetitionDraw, CompetitionSubEvent, CompetitionEvent } from '@app/models';
 import { DrawType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -7,13 +7,29 @@ import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
 import { COMPETITION_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 
-export interface CompetitionDrawSyncData {
-  drawId: string; // Required internal ID
+interface DrawContext {
+  draw: CompetitionDraw;
+  subEvent: CompetitionSubEvent;
+  competitionEvent: CompetitionEvent;
+  tournamentCode: string;
+  eventCode: string;
+  drawCode: string;
+}
+
+/**
+ * Draw sync can be triggered in two ways:
+ * 1. Manual: by drawId (item must exist)
+ * 2. Parent job: by tournamentCode + subEventId + drawCode (item might not exist yet)
+ */
+export type CompetitionDrawSyncData = (
+  | { drawId: string } // Manual trigger
+  | { tournamentCode: string; subEventId: string; drawCode: string } // Parent job trigger
+) & {
   includeSubComponents?: boolean;
   drawName?: string;
   /** Phase 1: entry + encounter children created */
   childJobsCreated?: boolean;
-}
+};
 
 @Injectable()
 export class CompetitionDrawSyncService {
@@ -26,39 +42,11 @@ export class CompetitionDrawSyncService {
 
   async processDrawSync(job: Job<CompetitionDrawSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition draw sync`);
-    const { drawId, includeSubComponents, childJobsCreated } = job.data;
+    const { includeSubComponents, childJobsCreated } = job.data;
 
-    // Step 1: Load the draw by internal ID
-    const draw = await CompetitionDraw.findOne({
-      where: { id: drawId },
-      relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
-    });
-    if (!draw) {
-      throw new Error(`Competition draw with id ${drawId} not found`);
-    }
-
-    const subEvent = draw.competitionSubEvent;
-    if (!subEvent) {
-      throw new Error(`Sub-event not found for draw ${drawId}`);
-    }
-
-    const competitionEvent = subEvent.competitionEvent;
-    if (!competitionEvent) {
-      throw new Error(`Competition event not found for draw ${drawId}`);
-    }
-
-    const tournamentCode = competitionEvent.visualCode;
-    const eventCode = subEvent.visualCode;
-    const drawCode = draw.visualCode;
-    if (!tournamentCode) {
-      throw new Error(`Competition event ${competitionEvent.id} has no visual code`);
-    }
-    if (!eventCode) {
-      throw new Error(`Sub-event ${subEvent.id} has no visual code`);
-    }
-    if (!drawCode) {
-      throw new Error(`Draw ${drawId} has no visual code`);
-    }
+    // Step 1: Resolve context from either input type
+    const context = await this.resolveDrawContext(job.data);
+    const { draw, tournamentCode, drawCode } = context;
     let drawName = job.data.drawName || draw.name || drawCode;
     this.logger.log(`Loaded draw: ${drawName} (${drawCode}) for competition ${tournamentCode}`);
 
@@ -110,7 +98,9 @@ export class CompetitionDrawSyncService {
               name: encounterJobName,
               queueName: COMPETITION_EVENT_QUEUE,
               data: {
-                drawId: draw.id, // Pass internal ID
+                // Parent job trigger format: tournamentCode + drawId + encounterCode
+                tournamentCode,
+                drawId: draw.id,
                 encounterCode: encounter.Code,
                 metadata: {
                   displayName: `Encounter: ${encounter.Code}`,
@@ -238,5 +228,109 @@ export class CompetitionDrawSyncService {
       default:
         return 'POULE'; // Default to round-robin for competitions
     }
+  }
+
+  /**
+   * Resolve draw context from either:
+   * 1. Internal ID (manual trigger) - draw must exist
+   * 2. Parent context (parent job trigger) - draw might not exist yet
+   */
+  private async resolveDrawContext(data: CompetitionDrawSyncData): Promise<DrawContext> {
+    if ('drawId' in data) {
+      return this.resolveFromInternalId(data.drawId);
+    } else {
+      return this.resolveFromParentContext(data.tournamentCode, data.subEventId, data.drawCode);
+    }
+  }
+
+  /**
+   * Load draw context by internal ID (manual trigger)
+   * The draw must exist in the database
+   */
+  private async resolveFromInternalId(drawId: string): Promise<DrawContext> {
+    const draw = await CompetitionDraw.findOne({
+      where: { id: drawId },
+      relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
+    });
+
+    if (!draw) {
+      throw new Error(`Competition draw with id ${drawId} not found`);
+    }
+
+    const subEvent = draw.competitionSubEvent;
+    if (!subEvent) {
+      throw new Error(`Sub-event not found for draw ${drawId}`);
+    }
+
+    const competitionEvent = subEvent.competitionEvent;
+    if (!competitionEvent) {
+      throw new Error(`Competition event not found for draw ${drawId}`);
+    }
+
+    const tournamentCode = competitionEvent.visualCode;
+    const eventCode = subEvent.visualCode;
+    const drawCode = draw.visualCode;
+
+    if (!tournamentCode) {
+      throw new Error(`Competition event ${competitionEvent.id} has no visual code`);
+    }
+    if (!eventCode) {
+      throw new Error(`Sub-event ${subEvent.id} has no visual code`);
+    }
+    if (!drawCode) {
+      throw new Error(`Draw ${drawId} has no visual code`);
+    }
+
+    return { draw, subEvent, competitionEvent, tournamentCode, eventCode, drawCode };
+  }
+
+  /**
+   * Load draw context from parent job data
+   * The draw might not exist yet - we have the codes to fetch from API and create it
+   */
+  private async resolveFromParentContext(
+    tournamentCode: string,
+    subEventId: string,
+    drawCode: string,
+  ): Promise<DrawContext> {
+    // Load the parent sub-event
+    const subEvent = await CompetitionSubEvent.findOne({
+      where: { id: subEventId },
+      relations: ['competitionEvent'],
+    });
+
+    if (!subEvent) {
+      throw new Error(`Competition sub-event with id ${subEventId} not found`);
+    }
+
+    const competitionEvent = subEvent.competitionEvent;
+    if (!competitionEvent) {
+      throw new Error(`Competition event not found for sub-event ${subEventId}`);
+    }
+
+    const eventCode = subEvent.visualCode;
+    if (!eventCode) {
+      throw new Error(`Sub-event ${subEventId} has no visual code`);
+    }
+
+    // Find or create the draw
+    let draw = await CompetitionDraw.findOne({
+      where: { visualCode: drawCode, subeventId: subEventId },
+    });
+
+    if (!draw) {
+      // Create the draw - it will be updated from API in updateDrawFromApi
+      draw = new CompetitionDraw();
+      draw.visualCode = drawCode;
+      draw.subeventId = subEventId;
+      draw.lastSync = new Date();
+      await draw.save();
+      this.logger.debug(`Created new draw ${drawCode} for sub-event ${subEventId}`);
+    }
+
+    // Attach relations for consistent context
+    draw.competitionSubEvent = subEvent;
+
+    return { draw, subEvent, competitionEvent, tournamentCode, eventCode, drawCode };
   }
 }

@@ -9,6 +9,7 @@ import {
   CompetitionSubEvent,
   TournamentDraw,
   CompetitionDraw,
+  CompetitionEncounter,
 } from '@app/models';
 import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
@@ -304,93 +305,39 @@ export class SyncService {
   }
 
   /**
-   * Schedule dynamic game sync based on event dates and type
+   * Queue sync for a specific encounter by its internal ID
    */
-  async scheduleDynamicGameSync(tournamentCode: string, tournamentType: number, startDate: Date, endDate: Date): Promise<void> {
-    const now = new Date();
+  async queueEncounterSync(encounterId: string): Promise<void> {
+    // Look up the encounter by internal ID with all relations needed to get visual codes
+    const encounter = await CompetitionEncounter.findOne({
+      where: { id: encounterId },
+      relations: ['drawCompetition', 'drawCompetition.competitionSubEvent', 'drawCompetition.competitionSubEvent.competitionEvent'],
+    });
 
-    if (tournamentType === 1) {
-      // Competition (TypeID 1) - Every 4 hours after played, then daily for 1 week, then weekly for 1 month
-      if (startDate <= now && now <= endDate) {
-        // During competition - every 4 hours
-        for (let i = 0; i < 6; i++) {
-          await this.competitionEventQueue.add(
-            JOB_TYPES.COMPETITION_GAME_SYNC,
-            { tournamentCode },
-            {
-              delay: i * 4 * 60 * 60 * 1000, // 4 hours in milliseconds
-              priority: 5,
-            },
-          );
-        }
-      } else if (now > endDate) {
-        // After competition - daily for 1 week, then weekly for 1 month
-        const daysSinceEnd = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
-
-        if (daysSinceEnd <= 7) {
-          // Daily sync for first week
-          await this.competitionEventQueue.add(
-            JOB_TYPES.COMPETITION_GAME_SYNC,
-            { tournamentCode },
-            {
-              delay: 24 * 60 * 60 * 1000, // 24 hours
-              priority: 3,
-            },
-          );
-        } else if (daysSinceEnd <= 30) {
-          // Weekly sync for first month
-          await this.competitionEventQueue.add(
-            JOB_TYPES.COMPETITION_GAME_SYNC,
-            { tournamentCode },
-            {
-              delay: 7 * 24 * 60 * 60 * 1000, // 7 days
-              priority: 2,
-            },
-          );
-        }
-      }
-    } else if (tournamentType === 0) {
-      // Tournament (TypeID 0) - Hourly until event end, then daily for 1 week, then weekly for 1 month
-      if (now < endDate) {
-        // Before/during tournament - hourly
-        const hoursUntilEnd = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60));
-
-        for (let i = 0; i < Math.min(hoursUntilEnd, 48); i++) {
-          await this.tournamentEventQueue.add(
-            JOB_TYPES.TOURNAMENT_GAME_SYNC,
-            { tournamentCode },
-            {
-              delay: i * 60 * 60 * 1000, // 1 hour in milliseconds
-              priority: 10,
-            },
-          );
-        }
-      } else {
-        // After tournament - same logic as competitions
-        const daysSinceEnd = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
-
-        if (daysSinceEnd <= 7) {
-          await this.tournamentEventQueue.add(
-            JOB_TYPES.TOURNAMENT_GAME_SYNC,
-            { tournamentCode },
-            {
-              delay: 24 * 60 * 60 * 1000,
-              priority: 3,
-            },
-          );
-        } else if (daysSinceEnd <= 30) {
-          await this.tournamentEventQueue.add(
-            JOB_TYPES.TOURNAMENT_GAME_SYNC,
-            { tournamentCode },
-            {
-              delay: 7 * 24 * 60 * 60 * 1000,
-              priority: 2,
-            },
-          );
-        }
-      }
+    if (!encounter) {
+      throw new NotFoundException(`Encounter with id ${encounterId} not found`);
     }
+
+    const draw = encounter.drawCompetition;
+    const subEvent = draw?.competitionSubEvent;
+    const event = subEvent?.competitionEvent;
+
+    if (!draw || !event || !encounter.visualCode) {
+      throw new NotFoundException(`Encounter ${encounterId} is missing required relations or visual code`);
+    }
+
+    // Build the data structure expected by CompetitionEncounterSyncService
+    const data = {
+      tournamentCode: event.visualCode!,
+      drawCode: draw.visualCode!,
+      drawId: draw.id,
+      encounterCode: encounter.visualCode,
+    };
+
+    const jobId = generateJobId('competition', 'encounter', encounterId);
+    await this.competitionEventQueue.add(jobId, data, { jobId, priority: 7 });
   }
+
 
   /**
    * Get queue statistics

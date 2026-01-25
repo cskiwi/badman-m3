@@ -240,6 +240,24 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
+  async triggerEncounterSync(
+    @User() user: Player,
+    @Args('encounterId', { type: () => ID }) encounterId: string,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger encounter sync');
+    }
+
+    await this.syncService.queueEncounterSync(encounterId);
+
+    return {
+      message: `Encounter sync queued successfully for ${encounterId}`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
   async triggerSubEventSync(
     @User() user: Player,
     @Args('subEventId', { type: () => ID }) subEventId: string,

@@ -6,13 +6,14 @@ import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
 import { LessThanOrEqual } from 'typeorm';
 
-export interface CompetitionEncounterSyncData {
-  tournamentCode: string;
-  eventCode?: string;
-  drawCode: string;
-  drawId?: string;
-  encounterCode: string;
-}
+/**
+ * Encounter sync can be triggered in two ways:
+ * 1. Manual: by encounterId (item must exist)
+ * 2. Parent job: by tournamentCode + drawId + encounterCode (item might not exist yet)
+ */
+export type CompetitionEncounterSyncData =
+  | { encounterId: string } // Manual trigger
+  | { tournamentCode: string; drawId: string; encounterCode: string }; // Parent job trigger
 
 @Injectable()
 export class CompetitionEncounterSyncService {
@@ -26,61 +27,119 @@ export class CompetitionEncounterSyncService {
   async processEncounterSync(
     job: Job<CompetitionEncounterSyncData>,
     updateProgress: (progress: number) => Promise<void>,
-    token: string
+    token: string,
   ): Promise<void> {
-    const { tournamentCode, drawCode, drawId, encounterCode } = job.data;
-    this.logger.log(`Processing encounter ${encounterCode} for draw ${drawId || drawCode}`);
-
     try {
       await updateProgress(10);
 
-      await this.processEncounterByCode(tournamentCode, drawCode, encounterCode, drawId);
+      // Resolve context from either input type
+      const context = await this.resolveEncounterContext(job.data);
+      this.logger.log(`Processing encounter ${context.encounterCode} for draw ${context.draw.id}`);
+
+      await this.processEncounter(context);
 
       await updateProgress(100);
-      this.logger.log(`Completed encounter ${encounterCode}`);
+      this.logger.log(`Completed encounter ${context.encounterCode}`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process encounter ${encounterCode}: ${errorMessage}`, error);
+      this.logger.error(`Failed to process encounter: ${errorMessage}`, error);
       await job.moveToFailed(error instanceof Error ? error : new Error(errorMessage), token);
       throw error;
     }
   }
 
-  private async processEncounterByCode(tournamentCode: string, drawCode: string, encounterCode: string, drawId?: string): Promise<void> {
-    try {
-      // Fetch all team matches for the draw (cached across individual encounter jobs)
-      const drawTeamMatches = await this.tournamentApiClient.getEncountersByDraw(tournamentCode, drawCode);
-      const teamMatch = drawTeamMatches?.find((match) => match?.Code === encounterCode);
-
-      if (!teamMatch) {
-        this.logger.warn(`Encounter ${encounterCode} not found in draw ${drawCode}`);
-        return;
-      }
-
-      await this.createOrUpdateEncounter(tournamentCode, teamMatch, drawId);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to process encounter ${encounterCode}: ${errorMessage}`, error);
-      throw error;
+  /**
+   * Resolve encounter context from either:
+   * 1. Internal ID (manual trigger) - encounter must exist
+   * 2. Parent context (parent job trigger) - encounter might not exist yet
+   */
+  private async resolveEncounterContext(
+    data: CompetitionEncounterSyncData,
+  ): Promise<{ tournamentCode: string; draw: CompetitionDraw; encounterCode: string }> {
+    if ('encounterId' in data) {
+      return this.resolveFromInternalId(data.encounterId);
+    } else {
+      return this.resolveFromParentContext(data.tournamentCode, data.drawId, data.encounterCode);
     }
   }
 
-  private async createOrUpdateEncounter(tournamentCode: string, teamMatch: TeamMatch, drawId?: string): Promise<void> {
-    this.logger.debug(`Processing encounter: ${teamMatch.Code}`);
+  /**
+   * Load encounter context by internal ID (manual trigger)
+   * The encounter must exist in the database
+   */
+  private async resolveFromInternalId(
+    encounterId: string,
+  ): Promise<{ tournamentCode: string; draw: CompetitionDraw; encounterCode: string }> {
+    const encounter = await CompetitionEncounter.findOne({
+      where: { id: encounterId },
+      relations: ['drawCompetition', 'drawCompetition.competitionSubEvent', 'drawCompetition.competitionSubEvent.competitionEvent'],
+    });
 
-    // Require internal drawId for exact match
-    if (!drawId) {
-      throw new Error(`drawId is required for encounter sync (encounter: ${teamMatch.Code})`);
+    if (!encounter) {
+      throw new Error(`Encounter with id ${encounterId} not found`);
     }
 
+    const draw = encounter.drawCompetition;
+    const event = draw?.competitionSubEvent?.competitionEvent;
+
+    if (!draw || !event) {
+      throw new Error(`Encounter ${encounterId} is missing required relations`);
+    }
+
+    const tournamentCode = event.visualCode;
+    if (!tournamentCode || !encounter.visualCode) {
+      throw new Error(`Encounter ${encounterId} or its event is missing visual code`);
+    }
+
+    return { tournamentCode, draw, encounterCode: encounter.visualCode };
+  }
+
+  /**
+   * Load encounter context from parent job data
+   * The encounter might not exist yet - we have the codes to fetch from API
+   */
+  private async resolveFromParentContext(
+    tournamentCode: string,
+    drawId: string,
+    encounterCode: string,
+  ): Promise<{ tournamentCode: string; draw: CompetitionDraw; encounterCode: string }> {
     const draw = await CompetitionDraw.findOne({
       where: { id: drawId },
       relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
     });
 
     if (!draw) {
-      throw new Error(`Competition draw with id ${drawId} not found for encounter ${teamMatch.Code}`);
+      throw new Error(`Competition draw with id ${drawId} not found`);
     }
+
+    return { tournamentCode, draw, encounterCode };
+  }
+
+  /**
+   * Process the encounter using resolved context
+   */
+  private async processEncounter(context: { tournamentCode: string; draw: CompetitionDraw; encounterCode: string }): Promise<void> {
+    const { tournamentCode, draw, encounterCode } = context;
+    const drawCode = draw.visualCode;
+
+    if (!drawCode) {
+      throw new Error(`Draw ${draw.id} has no visual code`);
+    }
+
+    // Fetch all team matches for the draw
+    const drawTeamMatches = await this.tournamentApiClient.getEncountersByDraw(tournamentCode, drawCode);
+    const teamMatch = drawTeamMatches?.find((match) => match?.Code === encounterCode);
+
+    if (!teamMatch) {
+      this.logger.warn(`Encounter ${encounterCode} not found in draw ${drawCode}`);
+      return;
+    }
+
+    await this.createOrUpdateEncounter(tournamentCode, teamMatch, draw);
+  }
+
+  private async createOrUpdateEncounter(tournamentCode: string, teamMatch: TeamMatch, draw: CompetitionDraw): Promise<void> {
+    this.logger.debug(`Processing encounter: ${teamMatch.Code}`);
 
     // Get competition event for team matching context
     const competitionEvent = draw.competitionSubEvent?.competitionEvent || null;

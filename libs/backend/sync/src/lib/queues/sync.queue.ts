@@ -21,9 +21,11 @@ export const JOB_TYPES = {
   // Structure sync jobs (events, draws, entries)
   TOURNAMENT_STRUCTURE_SYNC: 'tournament-structure-sync',
   COMPETITION_STRUCTURE_SYNC: 'competition-structure-sync',
-// Game sync jobs
-  TOURNAMENT_GAME_SYNC: 'tournament-games-sync', 
+  // Game sync jobs
+  TOURNAMENT_GAME_SYNC: 'tournament-games-sync',
   COMPETITION_GAME_SYNC: 'competition-games-sync',
+  // Encounter sync jobs
+  COMPETITION_ENCOUNTER_SYNC: 'competition-encounter-sync',
   // Team matching
   TEAM_MATCHING: 'team-matching',
 } as const;
