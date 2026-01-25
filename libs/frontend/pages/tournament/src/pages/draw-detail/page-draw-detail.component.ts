@@ -94,11 +94,9 @@ export class PageDrawDetailComponent {
 
     return {
       level: 'draw',
-      tournamentCode: tournament.visualCode,
-      tournamentName: tournament.name,
-      eventCode: subEvent.visualCode || subEvent.id,
-      eventName: subEvent.name,
-      drawCode: draw.visualCode || draw.id,
+      drawId: draw.id,
+      eventName: tournament.name,
+      subEventName: subEvent.name,
       drawName: draw.name || 'Draw',
     };
   });

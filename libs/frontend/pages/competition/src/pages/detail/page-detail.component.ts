@@ -123,14 +123,10 @@ export class PageDetailComponent {
       return null;
     }
 
-    if (!competition.visualCode) {
-      throw new Error('Competition visual code is missing');
-    }
-
     return {
-      level: 'event', // Use tournament level for competition events
-      tournamentCode: competition.visualCode,
-      tournamentName: competition.name,
+      level: 'event',
+      eventId: competition.id,
+      eventName: competition.name,
     };
   });
 
@@ -162,20 +158,11 @@ export class PageDetailComponent {
       return null;
     }
 
-    if (!competition.visualCode) {
-      throw new Error('Competition visual code is missing');
-    }
-
-    if (!subEvent.visualCode) {
-      throw new Error('Sub-event visual code is missing');
-    }
-
     return {
       level: 'sub-event',
-      tournamentCode: competition.visualCode,
-      tournamentName: competition.name,
-      eventCode: subEvent.visualCode,
-      eventName: subEvent.name,
+      subEventId: subEvent.id,
+      eventName: competition.name,
+      subEventName: subEvent.name,
     };
   }
 

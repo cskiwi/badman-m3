@@ -120,6 +120,7 @@ export interface GameSyncJobData {
   tournamentCode: string;
   eventCode?: string;
   drawCode?: string;
+  drawId?: string;
   matchCodes?: string[];
   date?: string;
   // Display metadata

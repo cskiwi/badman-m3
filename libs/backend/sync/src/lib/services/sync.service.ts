@@ -1,8 +1,15 @@
 import { InjectQueue, InjectFlowProducer } from '@nestjs/bullmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { Queue, FlowProducer } from 'bullmq';
-import { TournamentEvent, CompetitionEvent } from '@app/models';
+import {
+  TournamentEvent,
+  CompetitionEvent,
+  TournamentSubEvent,
+  CompetitionSubEvent,
+  TournamentDraw,
+  CompetitionDraw,
+} from '@app/models';
 import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
   GameSyncJobData,
@@ -51,56 +58,6 @@ export class SyncService {
     return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue];
   }
 
-  /**
-   * Determine if a tournament code represents a competition or tournament event
-   * by checking the database models
-   */
-  private async determineEventType(tournamentCode: string): Promise<'tournament' | 'competition' | null> {
-    try {
-      // First check if it's a tournament
-      const tournamentEvent = await TournamentEvent.findOne({
-        where: { visualCode: tournamentCode },
-      });
-
-      if (tournamentEvent) {
-        this.logger.debug(`Found tournament event for code: ${tournamentCode}`);
-        return 'tournament';
-      }
-
-      // Then check if it's a competition
-      const competitionEvent = await CompetitionEvent.findOne({
-        where: { visualCode: tournamentCode },
-      });
-
-      if (competitionEvent) {
-        this.logger.debug(`Found competition event for code: ${tournamentCode}`);
-        return 'competition';
-      }
-
-      this.logger.warn(`No event found for tournament code: ${tournamentCode}`);
-      return null;
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to determine event type for ${tournamentCode}: ${errorMessage}`);
-      return null;
-    }
-  }
-
-  /**
-   * Determine event type with fallback to string matching for backward compatibility
-   */
-  private async getEventType(tournamentCode: string): Promise<'tournament' | 'competition'> {
-    const eventType = await this.determineEventType(tournamentCode);
-
-    if (eventType) {
-      return eventType;
-    }
-
-    // Fallback to the old string matching approach for backward compatibility
-    this.logger.warn(`Falling back to string matching for tournament code: ${tournamentCode}`);
-    const isCompetition = tournamentCode.includes('competition') || tournamentCode.includes('comp');
-    return isCompetition ? 'competition' : 'tournament';
-  }
 
   /**
    * Get queue names mapped to their instances
@@ -226,195 +183,123 @@ export class SyncService {
   }
 
   /**
-   * Queue sync for a specific event with granular control
+   * Queue sync for a specific event by its internal ID
    */
-  async queueEventSync(tournamentCode: string, includeSubComponents = false, eventCode?: string): Promise<void> {
-    const data = { tournamentCode, eventCode, includeSubComponents };
+  async queueEventSync(eventId: string, includeSubComponents = false): Promise<void> {
+    // Look up the event by internal ID to determine type
+    const tournamentEvent = await TournamentEvent.findOne({ where: { id: eventId } });
+    const competitionEvent = !tournamentEvent ? await CompetitionEvent.findOne({ where: { id: eventId } }) : null;
 
-    // Determine if it's a tournament or competition by checking the database
-    const eventType = await this.getEventType(tournamentCode);
-    const jobId = generateJobId(eventType, 'event', tournamentCode, eventCode || '');
-    const jobName = generateJobId(eventType, 'event', tournamentCode, eventCode || '');
+    const event = tournamentEvent || competitionEvent;
+    if (!event) {
+      throw new NotFoundException(`Event with id ${eventId} not found`);
+    }
+
+    const eventType = tournamentEvent ? 'tournament' : 'competition';
+    // Only pass internal ID - the service will load visual codes from the model
+    const data = { eventId, includeSubComponents };
+    const jobId = generateJobId(eventType, 'event', eventId);
+    const jobName = jobId;
 
     if (includeSubComponents) {
-      // Use FlowProducer when creating jobs that will have children
       if (eventType === 'competition') {
-        await this.competitionSyncFlow.add({
-          name: jobName,
-          queueName: COMPETITION_EVENT_QUEUE,
-          data,
-          opts: {
-            jobId,
-            priority: 4,
-          },
-        });
+        await this.competitionSyncFlow.add({ name: jobName, queueName: COMPETITION_EVENT_QUEUE, data, opts: { jobId, priority: 4 } });
       } else {
-        await this.tournamentSyncFlow.add({
-          name: jobName,
-          queueName: TOURNAMENT_EVENT_QUEUE,
-          data,
-          opts: {
-            jobId,
-            priority: 4,
-          },
-        });
+        await this.tournamentSyncFlow.add({ name: jobName, queueName: TOURNAMENT_EVENT_QUEUE, data, opts: { jobId, priority: 4 } });
       }
     } else {
-      // Use regular Queue.add() for jobs without children
       if (eventType === 'competition') {
-        await this.competitionEventQueue.add(jobName, data, {
-          jobId,
-          priority: 4,
-        });
+        await this.competitionEventQueue.add(jobName, data, { jobId, priority: 4 });
       } else {
-        await this.tournamentEventQueue.add(jobName, data, {
-          jobId,
-          priority: 4,
-        });
+        await this.tournamentEventQueue.add(jobName, data, { jobId, priority: 4 });
       }
     }
   }
 
   /**
-   * Queue sync for a specific sub-event with granular control
+   * Queue sync for a specific sub-event by its internal ID
    */
-  async queueSubEventSync(tournamentCode: string, eventCode: string, subEventCode?: string, includeSubComponents = false): Promise<void> {
-    const data = {
-      tournamentCode,
-      eventCode,
-      subEventCode,
-      includeSubComponents,
-    };
+  async queueSubEventSync(subEventId: string, includeSubComponents = false): Promise<void> {
+    // Look up the sub-event by internal ID to determine type
+    const tournamentSubEvent = await TournamentSubEvent.findOne({
+      where: { id: subEventId },
+    });
+    const competitionSubEvent = !tournamentSubEvent
+      ? await CompetitionSubEvent.findOne({ where: { id: subEventId } })
+      : null;
 
-    const eventType = await this.getEventType(tournamentCode);
-    const jobId = generateJobId(eventType, 'subevent', tournamentCode, eventCode, subEventCode || '');
-    const jobName = generateJobId(eventType, 'subevent', tournamentCode, eventCode, subEventCode || '');
-
-    if (includeSubComponents) {
-      // Use FlowProducer when creating jobs that will have children
-      if (eventType === 'competition') {
-        await this.competitionSyncFlow.add({
-          name: jobName,
-          queueName: COMPETITION_EVENT_QUEUE,
-          data,
-          opts: {
-            jobId,
-            priority: 5,
-          },
-        });
-      } else {
-        await this.tournamentSyncFlow.add({
-          name: jobName,
-          queueName: TOURNAMENT_EVENT_QUEUE,
-          data,
-          opts: {
-            jobId,
-            priority: 5,
-          },
-        });
-      }
+    if (tournamentSubEvent) {
+      // Only pass internal ID - the service will load visual codes from the model
+      const data = { subEventId, includeSubComponents };
+      const jobId = generateJobId('tournament', 'subevent', subEventId);
+      await (includeSubComponents
+        ? this.tournamentSyncFlow.add({ name: jobId, queueName: TOURNAMENT_EVENT_QUEUE, data, opts: { jobId, priority: 5 } })
+        : this.tournamentEventQueue.add(jobId, data, { jobId, priority: 5 }));
+    } else if (competitionSubEvent) {
+      // Only pass internal ID - the service will load visual codes from the model
+      const data = { subEventId, includeSubComponents };
+      const jobId = generateJobId('competition', 'subevent', subEventId);
+      await (includeSubComponents
+        ? this.competitionSyncFlow.add({ name: jobId, queueName: COMPETITION_EVENT_QUEUE, data, opts: { jobId, priority: 5 } })
+        : this.competitionEventQueue.add(jobId, data, { jobId, priority: 5 }));
     } else {
-      // Use regular Queue.add() for jobs without children
-      if (eventType === 'competition') {
-        await this.competitionEventQueue.add(jobName, data, {
-          jobId,
-          priority: 5,
-        });
-      } else {
-        await this.tournamentEventQueue.add(jobName, data, {
-          jobId,
-          priority: 5,
-        });
-      }
+      throw new NotFoundException(`Sub-event with id ${subEventId} not found`);
     }
   }
 
   /**
-   * Queue sync for a specific draw with its games
+   * Queue sync for a specific draw by its internal ID
    */
-  async queueDrawSync(tournamentCode: string, drawCode: string, includeSubComponents = false): Promise<void> {
-    const data = { tournamentCode, drawCode, includeSubComponents };
+  async queueDrawSync(drawId: string, includeSubComponents = false): Promise<void> {
+    // Look up the draw by internal ID to determine type
+    const tournamentDraw = await TournamentDraw.findOne({
+      where: { id: drawId },
+    });
+    const competitionDraw = !tournamentDraw
+      ? await CompetitionDraw.findOne({ where: { id: drawId } })
+      : null;
 
-    const eventType = await this.getEventType(tournamentCode);
-    const jobId = generateJobId(eventType, 'draw', tournamentCode, drawCode);
-    const jobName = generateJobId(eventType, 'draw', tournamentCode, drawCode);
-
-    if (includeSubComponents) {
-      // Use FlowProducer when creating jobs that will have children
-      if (eventType === 'competition') {
-        await this.competitionSyncFlow.add({
-          name: jobName,
-          queueName: COMPETITION_EVENT_QUEUE,
-          data,
-          opts: {
-            jobId,
-            priority: 6,
-          },
-        });
-      } else {
-        await this.tournamentSyncFlow.add({
-          name: jobName,
-          queueName: TOURNAMENT_EVENT_QUEUE,
-          data,
-          opts: {
-            jobId,
-            priority: 6,
-          },
-        });
-      }
+    if (tournamentDraw) {
+      // Only pass internal ID - the service will load visual codes from the model
+      const data = { drawId, includeSubComponents };
+      const jobId = generateJobId('tournament', 'draw', drawId);
+      await (includeSubComponents
+        ? this.tournamentSyncFlow.add({ name: jobId, queueName: TOURNAMENT_EVENT_QUEUE, data, opts: { jobId, priority: 6 } })
+        : this.tournamentEventQueue.add(jobId, data, { jobId, priority: 6 }));
+    } else if (competitionDraw) {
+      // Only pass internal ID - the service will load visual codes from the model
+      const data = { drawId, includeSubComponents };
+      const jobId = generateJobId('competition', 'draw', drawId);
+      await (includeSubComponents
+        ? this.competitionSyncFlow.add({ name: jobId, queueName: COMPETITION_EVENT_QUEUE, data, opts: { jobId, priority: 6 } })
+        : this.competitionEventQueue.add(jobId, data, { jobId, priority: 6 }));
     } else {
-      // Use regular Queue.add() for jobs without children
-      if (eventType === 'competition') {
-        await this.competitionEventQueue.add(jobName, data, {
-          jobId,
-          priority: 6,
-        });
-      } else {
-        await this.tournamentEventQueue.add(jobName, data, {
-          jobId,
-          priority: 6,
-        });
-      }
+      throw new NotFoundException(`Draw with id ${drawId} not found`);
     }
   }
 
   /**
-   * Queue sync for specific games
+   * Queue sync for specific games by draw internal ID
    */
-  async queueGameSync(tournamentCode: string, eventCodeOrDrawCode?: string, drawCode?: string, matchCodes?: string[]): Promise<void> {
-    // Handle both signatures: (tournamentCode, drawCode, matchCodes) and (tournamentCode, eventCode, drawCode, matchCodes)
-    let eventCode: string | undefined;
-    let finalDrawCode: string | undefined;
-    let finalMatchCodes: string[] | undefined;
+  async queueGameSync(drawId: string, matchCodes?: string[]): Promise<void> {
+    // Look up the draw by internal ID to determine type
+    const tournamentDraw = await TournamentDraw.findOne({
+      where: { id: drawId },
+    });
+    const competitionDraw = !tournamentDraw
+      ? await CompetitionDraw.findOne({ where: { id: drawId } })
+      : null;
 
-    if (typeof drawCode === 'string') {
-      // Full signature: (tournamentCode, eventCode, drawCode, matchCodes)
-      eventCode = eventCodeOrDrawCode;
-      finalDrawCode = drawCode;
-      finalMatchCodes = matchCodes;
+    if (tournamentDraw) {
+      // Only pass internal ID - the service will load visual codes from the model
+      const data = { drawId, matchCodes };
+      await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_GAME_SYNC, data, { priority: 8 });
+    } else if (competitionDraw) {
+      // Only pass internal ID - the service will load visual codes from the model
+      const data = { drawId, matchCodes };
+      await this.competitionEventQueue.add(JOB_TYPES.COMPETITION_GAME_SYNC, data, { priority: 8 });
     } else {
-      // Short signature: (tournamentCode, drawCode, matchCodes)
-      finalDrawCode = eventCodeOrDrawCode;
-      finalMatchCodes = drawCode as string[] | undefined;
-    }
-    const data: GameSyncJobData = {
-      tournamentCode,
-      eventCode,
-      drawCode: finalDrawCode,
-      matchCodes: finalMatchCodes,
-    };
-
-    // Determine if it's a tournament or competition by checking the database
-    const eventType = await this.getEventType(tournamentCode);
-
-    if (eventType === 'competition') {
-      await this.competitionEventQueue.add(JOB_TYPES.COMPETITION_GAME_SYNC, data, {
-        priority: 8,
-      });
-    } else {
-      await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_GAME_SYNC, data, {
-        priority: 8,
-      });
+      throw new NotFoundException(`Draw with id ${drawId} not found`);
     }
   }
 

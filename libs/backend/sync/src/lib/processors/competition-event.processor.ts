@@ -1,7 +1,7 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { COMPETITION_EVENT_QUEUE, GameSyncJobData, StructureSyncJobData, JOB_TYPES } from '../queues/sync.queue';
+import { COMPETITION_EVENT_QUEUE } from '../queues/sync.queue';
 import {
   CompetitionDrawSyncData,
   CompetitionDrawSyncService,
@@ -9,12 +9,22 @@ import {
   CompetitionEncounterSyncService,
   CompetitionEntrySyncData,
   CompetitionEntrySyncService,
+  CompetitionEventSyncData,
   CompetitionEventSyncService,
   CompetitionStandingSyncData,
   CompetitionStandingSyncService,
   CompetitionSubEventSyncData,
   CompetitionSubEventSyncService,
 } from './services';
+
+// Union of all job data types for this processor
+type CompetitionJobData =
+  | CompetitionEventSyncData
+  | CompetitionSubEventSyncData
+  | CompetitionDrawSyncData
+  | CompetitionEntrySyncData
+  | CompetitionEncounterSyncData
+  | CompetitionStandingSyncData;
 
 @Injectable()
 @Processor(COMPETITION_EVENT_QUEUE, {
@@ -34,7 +44,7 @@ export class CompetitionEventProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token: string): Promise<void> {
+  async process(job: Job<CompetitionJobData, void, string>, token: string): Promise<void> {
     const jobType = this.extractJobType(job.name);
     const updateProgress = async (progress: number) => {
       this.logger.debug(`Competition ${jobType} sync progress: ${progress}%`);
@@ -47,7 +57,11 @@ export class CompetitionEventProcessor extends WorkerHost {
         throw new Error('Structure sync jobs should not be processed here - use specialized processors');
 
       case 'event':
-        await this.competitionEventSyncService.processEventSync(job, updateProgress, token);
+        await this.competitionEventSyncService.processEventSync(
+          job as Job<CompetitionEventSyncData>,
+          updateProgress,
+          token,
+        );
         break;
 
       case 'subevent':

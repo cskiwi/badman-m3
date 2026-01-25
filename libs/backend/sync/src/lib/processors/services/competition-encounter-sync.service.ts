@@ -10,6 +10,7 @@ export interface CompetitionEncounterSyncData {
   tournamentCode: string;
   eventCode?: string;
   drawCode: string;
+  drawId?: string;
   encounterCode: string;
 }
 
@@ -27,13 +28,13 @@ export class CompetitionEncounterSyncService {
     updateProgress: (progress: number) => Promise<void>,
     token: string
   ): Promise<void> {
-    const { tournamentCode, drawCode, encounterCode } = job.data;
-    this.logger.log(`Processing encounter ${encounterCode} for draw ${drawCode}`);
+    const { tournamentCode, drawCode, drawId, encounterCode } = job.data;
+    this.logger.log(`Processing encounter ${encounterCode} for draw ${drawId || drawCode}`);
 
     try {
       await updateProgress(10);
 
-      await this.processEncounterByCode(tournamentCode, drawCode, encounterCode);
+      await this.processEncounterByCode(tournamentCode, drawCode, encounterCode, drawId);
 
       await updateProgress(100);
       this.logger.log(`Completed encounter ${encounterCode}`);
@@ -45,7 +46,7 @@ export class CompetitionEncounterSyncService {
     }
   }
 
-  private async processEncounterByCode(tournamentCode: string, drawCode: string, encounterCode: string): Promise<void> {
+  private async processEncounterByCode(tournamentCode: string, drawCode: string, encounterCode: string, drawId?: string): Promise<void> {
     try {
       // Fetch all team matches for the draw (cached across individual encounter jobs)
       const drawTeamMatches = await this.tournamentApiClient.getEncountersByDraw(tournamentCode, drawCode);
@@ -56,7 +57,7 @@ export class CompetitionEncounterSyncService {
         return;
       }
 
-      await this.createOrUpdateEncounter(tournamentCode, teamMatch);
+      await this.createOrUpdateEncounter(tournamentCode, teamMatch, drawId);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process encounter ${encounterCode}: ${errorMessage}`, error);
@@ -64,25 +65,21 @@ export class CompetitionEncounterSyncService {
     }
   }
 
-  private async createOrUpdateEncounter(tournamentCode: string, teamMatch: TeamMatch): Promise<void> {
+  private async createOrUpdateEncounter(tournamentCode: string, teamMatch: TeamMatch, drawId?: string): Promise<void> {
     this.logger.debug(`Processing encounter: ${teamMatch.Code}`);
 
-    // Find the draw this encounter belongs to with competition context
+    // Require internal drawId for exact match
+    if (!drawId) {
+      throw new Error(`drawId is required for encounter sync (encounter: ${teamMatch.Code})`);
+    }
+
     const draw = await CompetitionDraw.findOne({
-      where: {
-        visualCode: teamMatch.DrawCode,
-        competitionSubEvent: {
-          competitionEvent: {
-            visualCode: tournamentCode,
-          },
-        },
-      },
+      where: { id: drawId },
       relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
     });
 
     if (!draw) {
-      this.logger.warn(`Competition draw with code ${teamMatch.DrawCode} not found, skipping encounter ${teamMatch.Code}`);
-      return;
+      throw new Error(`Competition draw with id ${drawId} not found for encounter ${teamMatch.Code}`);
     }
 
     // Get competition event for team matching context

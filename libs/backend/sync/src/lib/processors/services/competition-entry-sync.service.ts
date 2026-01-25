@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, Entry, Team as TeamModel, CompetitionEvent as CompetitionEventModel, CompetitionSubEvent } from '@app/models';
+import { CompetitionDraw, Entry, Team as TeamModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
@@ -8,6 +8,7 @@ export interface CompetitionEntrySyncData {
   tournamentCode: string;
   eventCode?: string;
   drawCode: string;
+  drawId?: string;
 }
 
 interface DrawTeamData {
@@ -27,61 +28,29 @@ export class CompetitionEntrySyncService {
   async processEntrySync(job: Job<CompetitionEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
     await updateProgress(10);
-    const { tournamentCode, eventCode, drawCode } = job.data;
+    const { tournamentCode, eventCode, drawCode, drawId } = job.data;
 
     try {
-      // Find the competition event first to get proper context
+      // Require internal drawId for exact match
       await updateProgress(15);
-      const competitionEvent = await CompetitionEventModel.findOne({
-        where: { visualCode: tournamentCode },
-      });
-      await updateProgress(20);
-
-      if (!competitionEvent) {
-        this.logger.warn(`Competition with code ${tournamentCode} not found, skipping entry sync`);
-        return;
+      if (!drawId) {
+        throw new Error(`drawId is required for competition entry sync (drawCode: ${drawCode})`);
       }
 
-      this.logger.debug(`Found competition: ${competitionEvent.id} with code ${tournamentCode}`);
-
-      // Use eventCode to find the specific sub-event when available, avoiding ambiguity
-      // when multiple sub-events have draws with the same visualCode
-      const subEvent = eventCode
-        ? await CompetitionSubEvent.findOne({
-            where: {
-              visualCode: eventCode,
-              competitionEvent: {
-                id: competitionEvent.id,
-              },
-            },
-          })
-        : null;
-
-      // Find the draw with competition context to avoid visualCode ambiguity
-      await updateProgress(25);
       const draw = await CompetitionDraw.findOne({
-        where: {
-          visualCode: drawCode,
-          ...(subEvent
-            ? { subeventId: subEvent.id }
-            : {
-                competitionSubEvent: {
-                  competitionEvent: {
-                    id: competitionEvent.id,
-                  },
-                },
-              }),
-        },
+        where: { id: drawId },
         relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
       });
       await updateProgress(30);
 
       if (!draw) {
-        this.logger.warn(`Draw with code ${drawCode} not found for competition ${tournamentCode}, skipping entry sync`);
-        return;
+        throw new Error(`Competition draw with id ${drawId} not found for entry sync`);
       }
 
       this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
+
+      // Get competition event from draw relation for team matching context
+      const competitionEvent = draw.competitionSubEvent?.competitionEvent || null;
 
       // Get draw details from API to find teams in the draw structure
       await updateProgress(40);

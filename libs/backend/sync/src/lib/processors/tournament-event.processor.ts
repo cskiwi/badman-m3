@@ -1,19 +1,30 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { GameSyncJobData, StructureSyncJobData, TOURNAMENT_EVENT_QUEUE } from '../queues/sync.queue';
+import { TOURNAMENT_EVENT_QUEUE } from '../queues/sync.queue';
 import {
   TournamentDrawSyncData,
   TournamentDrawSyncService,
   TournamentEntrySyncData,
   TournamentEntrySyncService,
+  TournamentEventSyncData,
   TournamentEventSyncService,
   TournamentGameSyncOptions,
   TournamentGameSyncService,
   TournamentStandingSyncData,
   TournamentStandingSyncService,
+  TournamentSubEventSyncData,
   TournamentSubEventSyncService,
 } from './services';
+
+// Union of all job data types for this processor
+type TournamentJobData =
+  | TournamentEventSyncData
+  | TournamentSubEventSyncData
+  | TournamentDrawSyncData
+  | TournamentEntrySyncData
+  | TournamentStandingSyncData
+  | TournamentGameSyncOptions;
 
 @Injectable()
 @Processor(TOURNAMENT_EVENT_QUEUE, {
@@ -33,7 +44,7 @@ export class TournamentEventProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<StructureSyncJobData | GameSyncJobData, void, string>, token: string): Promise<void> {
+  async process(job: Job<TournamentJobData, void, string>, token: string): Promise<void> {
     const jobType = this.extractJobType(job.name);
     const updateProgress = async (progress: number) => {
       this.logger.debug(`Tournament ${jobType} sync progress: ${progress}%`);
@@ -45,11 +56,19 @@ export class TournamentEventProcessor extends WorkerHost {
         throw new Error('Structure sync jobs should not be processed here - use specialized processors');
 
       case 'event':
-        await this.tournamentEventSyncService.processEventSync(job, updateProgress, token);
+        await this.tournamentEventSyncService.processEventSync(
+          job as Job<TournamentEventSyncData>,
+          updateProgress,
+          token,
+        );
         break;
 
       case 'subevent':
-        await this.tournamentSubEventSyncService.processSubEventSync(job, updateProgress, token);
+        await this.tournamentSubEventSyncService.processSubEventSync(
+          job as Job<TournamentSubEventSyncData>,
+          updateProgress,
+          token,
+        );
         break;
 
       case 'draw':
@@ -76,7 +95,10 @@ export class TournamentEventProcessor extends WorkerHost {
         break;
 
       case 'game':
-        await this.tournamentGameSyncService.processGameSync(job, updateProgress);
+        await this.tournamentGameSyncService.processGameSync(
+          job as Job<TournamentGameSyncOptions>,
+          updateProgress,
+        );
         break;
 
       default:

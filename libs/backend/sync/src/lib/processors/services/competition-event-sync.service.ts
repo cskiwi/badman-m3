@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionEvent } from '@app/models';
+import { CompetitionEvent, CompetitionSubEvent } from '@app/models';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
@@ -8,8 +8,7 @@ import { generateJobId } from '../../utils/job.utils';
 import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
 
 export interface CompetitionEventSyncData {
-  tournamentCode: string;
-  eventCode?: string;
+  eventId: string; // Required internal ID
   includeSubComponents?: boolean;
   workPlan?: CompetitionWorkPlan;
   childJobsCreated?: boolean;
@@ -27,99 +26,118 @@ export class CompetitionEventSyncService {
 
   async processEventSync(job: Job<CompetitionEventSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition event sync`);
-    const { tournamentCode, eventCode, includeSubComponents, childJobsCreated } = job.data;
+    const { eventId, includeSubComponents, childJobsCreated } = job.data;
+
+    // Step 1: Load the competition event by internal ID
+    const competitionEvent = await CompetitionEvent.findOne({ where: { id: eventId } });
+    if (!competitionEvent) {
+      throw new Error(`Competition event with id ${eventId} not found`);
+    }
+
+    const tournamentCode = competitionEvent.visualCode;
+    if (!tournamentCode) {
+      throw new Error(`Competition event ${eventId} has no visual code`);
+    }
+    this.logger.log(`Loaded competition event: ${competitionEvent.name} (${tournamentCode})`);
 
     // Calculate work plan if not provided
     let workPlan = job.data.workPlan;
     if (!workPlan && includeSubComponents) {
       workPlan = await this.competitionPlanningService.calculateCompetitionWorkPlan(
         tournamentCode,
-        eventCode ? [eventCode] : undefined,
+        undefined,
         includeSubComponents,
       );
-      // Update job data with the calculated work plan
       await job.updateData({ ...job.data, workPlan });
     }
 
     try {
       let completedSteps = 0;
-      const totalSteps = includeSubComponents ? 3 : 2; // planning + structure sync + (optional child job creation)
+      const totalSteps = includeSubComponents ? 3 : 2;
 
-      // Always do the actual work first (create/update event)
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
       if (workPlan) {
         this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
       }
 
-      // Create/update events (primary responsibility of Event service)
-      await this.createOrUpdateEvents(tournamentCode);
+      // Step 2: Update event data from API
+      await this.updateEventFromApi(competitionEvent, tournamentCode);
 
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.debug(`Completed event creation/update`);
+      this.logger.debug(`Completed event update`);
 
-      // If includeSubComponents and children haven't been created yet, create them and wait
+      // Step 3: If includeSubComponents, create sub-event child jobs
       if (includeSubComponents && !childJobsCreated) {
-        // get events from api
-        let events: any[] = [];
-        if (eventCode) {
-          // Sync specific event
-          const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode);
-          events = Array.isArray(eventList) ? eventList : [eventList];
-        } else {
-          // Sync all events
-          const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
-          events = Array.isArray(eventList) ? eventList : [eventList];
-        }
+        // Get sub-events from API
+        const apiSubEvents = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
+        const subEventList = Array.isArray(apiSubEvents) ? apiSubEvents : [apiSubEvents];
 
-        if (!events || events.length === 0) {
-          this.logger.log(`No events found for competition ${tournamentCode}`);
+        if (!subEventList || subEventList.length === 0) {
+          this.logger.log(`No sub-events found for competition ${tournamentCode}`);
+          await updateProgress(100);
           return;
         }
 
-        // Create children jobs for the flow
-        const children = events.map((event) => ({
-          name: generateJobId('competition', 'subevent', tournamentCode, event.Code),
-          queueName: COMPETITION_EVENT_QUEUE,
-          data: {
-            tournamentCode,
-            eventCode: event.Code,
-            includeSubComponents: true,
-            workPlan, // Pass the work plan to child jobs
-            metadata: {
-              displayName: `Sub-Event Sync: ${tournamentCode} - ${event.Code}`,
-              description: `Sub-event synchronization for competition ${tournamentCode} and event ${event.Code}`,
-              totalJobs: workPlan?.totalJobs,
-              breakdown: workPlan?.breakdown,
-            },
-          },
-          opts: {
-            jobId: generateJobId('competition', 'subevent', tournamentCode, event.Code),
-            parent: {
-              id: job.id!,
-              queue: job.queueQualifiedName,
-            },
-          },
-        }));
+        // Create sub-events first so we have their IDs
+        for (const apiSubEvent of subEventList) {
+          await this.createOrUpdateSubEvent(competitionEvent, apiSubEvent);
+        }
+
+        // Look up sub-event internal IDs
+        const children = await Promise.all(
+          subEventList.map(async (apiSubEvent) => {
+            const subEvent = await CompetitionSubEvent.findOne({
+              where: { visualCode: apiSubEvent.Code, eventId: competitionEvent.id },
+            });
+
+            if (!subEvent) {
+              this.logger.warn(`Sub-event ${apiSubEvent.Code} not found after creation, skipping`);
+              return null;
+            }
+
+            const subEventJobId = generateJobId('competition', 'subevent', tournamentCode, apiSubEvent.Code);
+            return {
+              name: subEventJobId,
+              queueName: COMPETITION_EVENT_QUEUE,
+              data: {
+                subEventId: subEvent.id, // Pass internal ID
+                includeSubComponents: true,
+                workPlan,
+                metadata: {
+                  displayName: `Sub-Event: ${apiSubEvent.Name || apiSubEvent.Code}`,
+                  description: `Sub-event synchronization for ${apiSubEvent.Name || apiSubEvent.Code}`,
+                },
+              },
+              opts: {
+                jobId: subEventJobId,
+                parent: {
+                  id: job.id!,
+                  queue: job.queueQualifiedName,
+                },
+              },
+            };
+          }),
+        );
+
+        const validChildren = children.filter((c) => c !== null);
 
         await job.updateData({
           ...job.data,
           childJobsCreated: true,
         });
 
-        await this.competitionSyncFlow.addBulk(children);
+        await this.competitionSyncFlow.addBulk(validChildren);
 
-        this.logger.log(`Added ${children.length} child sub-event jobs to flow`);
+        this.logger.log(`Added ${validChildren.length} child sub-event jobs to flow`);
 
-        // Move to waiting for children and throw WaitingChildrenError
         const shouldWait = await job.moveToWaitingChildren(token);
         if (shouldWait) {
-          this.logger.log(`Moving to waiting for children - ${events.length} sub-event jobs pending`);
+          this.logger.log(`Moving to waiting for children - ${validChildren.length} sub-event jobs pending`);
           throw new WaitingChildrenError();
         }
 
-        // If we reach here, all children have completed
         this.logger.log(`All child sub-event jobs completed, continuing`);
       }
 
@@ -129,7 +147,6 @@ export class CompetitionEventSyncService {
 
       this.logger.log(`Completed competition event sync`);
     } catch (error: unknown) {
-      // Re-throw WaitingChildrenError as expected
       if (error instanceof WaitingChildrenError) {
         throw error;
       }
@@ -141,56 +158,51 @@ export class CompetitionEventSyncService {
     }
   }
 
-  private async createOrUpdateEvents(tournamentCode: string): Promise<void> {
-    this.logger.log(`Creating/updating events for competition ${tournamentCode}`);
+  private async updateEventFromApi(competitionEvent: CompetitionEvent, tournamentCode: string): Promise<void> {
+    this.logger.debug(`Updating competition from API: ${competitionEvent.name} (${tournamentCode})`);
 
     try {
-      const event = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
+      const apiEvent = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
 
-      await this.createOrUpdateEvent(tournamentCode, event);
+      competitionEvent.name = apiEvent.Name || competitionEvent.name;
+      competitionEvent.state = apiEvent.TournamentStatus?.toString();
+      competitionEvent.openDate = apiEvent.StartDate ? new Date(apiEvent.StartDate) : competitionEvent.openDate;
+      competitionEvent.closeDate = apiEvent.EndDate ? new Date(apiEvent.EndDate) : competitionEvent.closeDate;
+      competitionEvent.country = apiEvent.Venue?.CountryCode || competitionEvent.country;
+      competitionEvent.lastSync = new Date();
+      await competitionEvent.save();
+      this.logger.debug(`Updated competition ${tournamentCode}`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create/update events: ${errorMessage}`, error);
+      this.logger.error(`Failed to update competition ${tournamentCode}: ${errorMessage}`, error);
       throw error;
     }
   }
 
-  private async createOrUpdateEvent(tournamentCode: string, event: any): Promise<void> {
-    this.logger.debug(`Creating/updating competition: ${event.Name} (${tournamentCode})`);
+  private async createOrUpdateSubEvent(competitionEvent: CompetitionEvent, apiSubEvent: any): Promise<void> {
+    this.logger.debug(`Creating/updating sub-event: ${apiSubEvent.Name} (${apiSubEvent.Code})`);
 
-    try {
-      // Check if competition already exists by tournament code
-      const existingEvent = await CompetitionEvent.findOne({
-        where: { visualCode: tournamentCode },
-      });
+    const existingSubEvent = await CompetitionSubEvent.findOne({
+      where: { visualCode: apiSubEvent.Code, eventId: competitionEvent.id },
+    });
 
-      if (existingEvent) {
-        // Update existing competition with data from <Tournament> XML element
-        existingEvent.name = event.Name || existingEvent.name;
-        existingEvent.state = event.TournamentStatus?.toString();
-        existingEvent.openDate = event.StartDate ? new Date(event.StartDate) : existingEvent.openDate;
-        existingEvent.closeDate = event.EndDate ? new Date(event.EndDate) : existingEvent.closeDate;
-        existingEvent.country = event.Venue?.CountryCode;
-        existingEvent.lastSync = new Date();
-        await existingEvent.save();
-        this.logger.debug(`Updated existing competition ${tournamentCode}`);
-      } else {
-        // Create new competition with data from <Tournament> XML element
-        const newEvent = new CompetitionEvent();
-        newEvent.name = event.Name;
-        newEvent.visualCode = tournamentCode;
-        newEvent.state = event.TournamentStatus?.toString();
-        newEvent.openDate = event.StartDate ? new Date(event.StartDate) : undefined;
-        newEvent.closeDate = event.EndDate ? new Date(event.EndDate) : undefined;
-        newEvent.country = event.Venue?.CountryCode;
-        newEvent.lastSync = new Date();
-        await newEvent.save();
-        this.logger.debug(`Created new competition ${tournamentCode}`);
-      }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create/update competition ${tournamentCode}: ${errorMessage}`, error);
-      throw error;
+    if (existingSubEvent) {
+      existingSubEvent.name = apiSubEvent.Name;
+      existingSubEvent.genderId = typeof apiSubEvent.GenderID === 'string' ? parseInt(apiSubEvent.GenderID, 10) : apiSubEvent.GenderID;
+      existingSubEvent.gameTypeId = typeof apiSubEvent.GameTypeID === 'string' ? parseInt(apiSubEvent.GameTypeID, 10) : apiSubEvent.GameTypeID;
+      existingSubEvent.lastSync = new Date();
+      await existingSubEvent.save();
+      this.logger.debug(`Updated sub-event ${apiSubEvent.Code}`);
+    } else {
+      const newSubEvent = new CompetitionSubEvent();
+      newSubEvent.visualCode = apiSubEvent.Code;
+      newSubEvent.name = apiSubEvent.Name;
+      newSubEvent.eventId = competitionEvent.id;
+      newSubEvent.genderId = typeof apiSubEvent.GenderID === 'string' ? parseInt(apiSubEvent.GenderID, 10) : apiSubEvent.GenderID;
+      newSubEvent.gameTypeId = typeof apiSubEvent.GameTypeID === 'string' ? parseInt(apiSubEvent.GameTypeID, 10) : apiSubEvent.GameTypeID;
+      newSubEvent.lastSync = new Date();
+      await newSubEvent.save();
+      this.logger.debug(`Created sub-event ${apiSubEvent.Code}`);
     }
   }
 }

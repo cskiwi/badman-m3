@@ -157,9 +157,7 @@ export class PageDetailComponent {
 
     return {
       level: 'event',
-      tournamentCode: tournament.visualCode,
-      tournamentName: tournament?.name,
-      eventCode: tournament.visualCode, // Use tournament code as event code for tournament-level sync
+      eventId: tournament.id,
       eventName: tournament.name,
     };
   });
@@ -190,10 +188,9 @@ export class PageDetailComponent {
 
     return {
       level: 'sub-event',
-      tournamentCode: tournament.visualCode,
-      tournamentName: tournament?.name,
-      eventCode: subEvent.visualCode,
-      eventName: subEvent.name,
+      subEventId: subEvent.id,
+      eventName: tournament.name,
+      subEventName: subEvent.name,
     };
   }
 

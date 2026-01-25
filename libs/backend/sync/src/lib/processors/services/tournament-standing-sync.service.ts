@@ -1,7 +1,5 @@
 import {
   TournamentDraw as TournamentDrawModel,
-  TournamentEvent as TournamentEventModel,
-  TournamentSubEvent,
   Entry as EntryModel,
   Game,
   Standing,
@@ -11,9 +9,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { In } from 'typeorm';
 
 export interface TournamentStandingSyncData {
-  tournamentCode: string;
-  eventCode?: string;
-  drawCode: string;
+  drawId: string; // Required internal ID
 }
 
 @Injectable()
@@ -23,89 +19,23 @@ export class TournamentStandingSyncService {
   async processStandingSync(data: TournamentStandingSyncData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     this.logger.log(`Processing tournament standing sync`);
     await updateProgress(10);
-    const { tournamentCode, eventCode, drawCode } = data;
+    const { drawId } = data;
 
     try {
-      // Find the tournament event first to get proper context
-      await updateProgress(10);
-      const tournamentEvent = await TournamentEventModel.findOne({
-        where: { visualCode: tournamentCode },
-      });
-      await updateProgress(20);
-
-      if (!tournamentEvent) {
-        this.logger.warn(`Tournament with code ${tournamentCode} not found, skipping standing sync`);
-        return;
-      }
-
-      this.logger.debug(`Found tournament: ${tournamentEvent.id} with code ${tournamentCode}`);
-
-      // Use eventCode to find the specific sub-event when available, avoiding ambiguity
-      // when multiple sub-events have draws with the same visualCode
-      const subEvent = eventCode
-        ? await TournamentSubEvent.findOne({
-            where: {
-              visualCode: eventCode,
-              tournamentEvent: {
-                id: tournamentEvent.id,
-              },
-            },
-          })
-        : null;
-
-      // Find the draw with tournament context to avoid visualCode ambiguity
-      await updateProgress(30);
+      // Step 1: Load the draw by internal ID
+      await updateProgress(15);
       const draw = await TournamentDrawModel.findOne({
-        where: {
-          visualCode: drawCode,
-          ...(subEvent
-            ? { subeventId: subEvent.id }
-            : {
-                tournamentSubEvent: {
-                  tournamentEvent: {
-                    id: tournamentEvent.id,
-                  },
-                },
-              }),
-        },
+        where: { id: drawId },
         relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
       });
       await updateProgress(40);
 
       if (!draw) {
-        this.logger.warn(`Draw with code ${drawCode} not found for tournament ${tournamentCode}, skipping standing sync`);
-        return;
+        throw new Error(`Tournament draw with id ${drawId} not found`);
       }
 
+      const drawCode = draw.visualCode;
       this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
-
-      // Verify the draw belongs to the correct tournament
-      if (draw.tournamentSubEvent) {
-        // Load the subevent with tournament relation to check eventId
-        const subEvent = await TournamentSubEvent.findOne({
-          where: { id: draw.tournamentSubEvent.id },
-          relations: ['tournamentEvent'],
-        });
-
-        this.logger.debug(`Found subEvent: ${subEvent?.id}, eventId: ${subEvent?.eventId}, tournament eventId: ${tournamentEvent.id}`);
-
-        if (!subEvent || subEvent.eventId !== tournamentEvent.id) {
-          // Try to repair the relationship if the sub-event exists but has wrong eventId
-          if (subEvent && subEvent.eventId !== tournamentEvent.id) {
-            this.logger.log(`Attempting to repair orphaned sub-event relationship for draw ${drawCode}`);
-            await this.repairSubEventRelationship(subEvent, tournamentEvent);
-            // Continue with standing sync after repair
-          } else {
-            this.logger.warn(
-              `Draw ${drawCode} does not belong to tournament ${tournamentCode}. SubEvent eventId: ${subEvent?.eventId}, Tournament id: ${tournamentEvent.id}, skipping standing sync`,
-            );
-            return;
-          }
-        }
-      } else {
-        this.logger.warn(`Draw ${drawCode} has no tournamentSubEvent relation, skipping standing sync`);
-        return;
-      }
 
       // Calculate standings locally from games
       await updateProgress(50);
@@ -338,23 +268,6 @@ export class TournamentStandingSyncService {
       newStanding.tied = standingData.tied;
       newStanding.size = draw.size;
       await newStanding.save();
-    }
-  }
-
-  private async repairSubEventRelationship(subEvent: TournamentSubEvent, tournamentEvent: TournamentEventModel): Promise<void> {
-    try {
-      this.logger.log(
-        `Repairing sub-event ${subEvent.id} (${subEvent.visualCode}) to link to tournament ${tournamentEvent.id} (${tournamentEvent.visualCode})`,
-      );
-
-      subEvent.eventId = tournamentEvent.id;
-      await subEvent.save();
-
-      this.logger.log(`Successfully repaired sub-event relationship`);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to repair sub-event relationship: ${errorMessage}`, error);
-      throw error;
     }
   }
 }

@@ -1,5 +1,5 @@
-import { TournamentApiClient, TournamentEvent } from '@app/backend-tournament-api';
-import { CompetitionEvent, CompetitionSubEvent } from '@app/models';
+import { TournamentApiClient } from '@app/backend-tournament-api';
+import { CompetitionDraw, CompetitionSubEvent } from '@app/models';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -9,8 +9,7 @@ import { generateJobId } from '../../utils/job.utils';
 import { CompetitionPlanningService, CompetitionWorkPlan } from './competition-planning.service';
 
 export interface CompetitionSubEventSyncData {
-  tournamentCode: string;
-  eventCode: string;
+  subEventId: string; // Required internal ID
   includeSubComponents?: boolean;
   workPlan?: CompetitionWorkPlan;
   childJobsCreated?: boolean;
@@ -32,78 +31,117 @@ export class CompetitionSubEventSyncService {
     token: string,
   ): Promise<void> {
     this.logger.log(`Processing competition sub-event sync`);
-    const { tournamentCode, eventCode, includeSubComponents, workPlan, childJobsCreated } = job.data;
+    const { subEventId, includeSubComponents, workPlan, childJobsCreated } = job.data;
+
+    // Step 1: Load the sub-event by internal ID
+    const subEvent = await CompetitionSubEvent.findOne({
+      where: { id: subEventId },
+      relations: ['competitionEvent'],
+    });
+    if (!subEvent) {
+      throw new Error(`Competition sub-event with id ${subEventId} not found`);
+    }
+
+    const competitionEvent = subEvent.competitionEvent;
+    if (!competitionEvent) {
+      throw new Error(`Competition event not found for sub-event ${subEventId}`);
+    }
+
+    const tournamentCode = competitionEvent.visualCode;
+    const eventCode = subEvent.visualCode;
+    if (!tournamentCode) {
+      throw new Error(`Competition event ${competitionEvent.id} has no visual code`);
+    }
+    if (!eventCode) {
+      throw new Error(`Sub-event ${subEventId} has no visual code`);
+    }
+    this.logger.log(`Loaded sub-event: ${subEvent.name} (${eventCode}) for competition ${tournamentCode}`);
 
     try {
       let completedSteps = 0;
-      const totalSteps = includeSubComponents ? 3 : 2; // structure sync + draw sync + (optional child job creation)
+      const totalSteps = includeSubComponents ? 3 : 2;
 
-      // Always do the actual work first (create/update sub-event)
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
       if (workPlan) {
         this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
       }
 
-      // Create/update sub-events (primary responsibility of SubEvent service)
-      await this.createOrUpdateSubEvents(tournamentCode, eventCode);
+      // Step 2: Update sub-event data from API
+      await this.updateSubEventFromApi(subEvent, tournamentCode, eventCode);
 
       completedSteps++;
       await updateProgress(this.competitionPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.debug(`Completed sub-event creation/update`);
+      this.logger.debug(`Completed sub-event update`);
 
-      // If includeSubComponents and children haven't been created yet, create them and wait
+      // Step 3: If includeSubComponents, create draw child jobs
       if (includeSubComponents && !childJobsCreated) {
-        // get draws from api
-        const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, eventCode);
-        if (!draws || draws.length === 0) {
+        // Get draws from API
+        const apiDraws = await this.tournamentApiClient.getEventDraws(tournamentCode, eventCode);
+        if (!apiDraws || apiDraws.length === 0) {
           this.logger.log(`No draws found for competition ${tournamentCode} event ${eventCode}`);
+          await updateProgress(100);
           return;
         }
 
-        // Create children jobs for the flow
-        const children = draws.map((draw) => ({
-          name: generateJobId('competition', 'draw', tournamentCode, eventCode, draw.Code),
-          queueName: COMPETITION_EVENT_QUEUE,
-          data: {
-            tournamentCode,
-            eventCode,
-            drawCode: draw.Code,
-            includeSubComponents: true,
-            workPlan, // Pass the work plan to child jobs
-            metadata: {
-              displayName: `Draw Sync: ${tournamentCode} - ${eventCode} - ${draw.Code}`,
-              description: `Draw synchronization for competition ${tournamentCode}, event ${eventCode}, draw ${draw.Code}`,
-              totalJobs: workPlan?.totalJobs,
-              breakdown: workPlan?.breakdown,
-            },
-          },
-          opts: {
-            jobId: generateJobId('competition', 'draw', tournamentCode, eventCode, draw.Code),
-            parent: {
-              id: job.id!,
-              queue: job.queueQualifiedName,
-            },
-          },
-        }));
+        // Create draws first so we have their IDs
+        for (const apiDraw of apiDraws) {
+          await this.createOrUpdateDraw(subEvent, apiDraw);
+        }
+
+        // Look up draw internal IDs and create child jobs
+        const children = await Promise.all(
+          apiDraws.map(async (apiDraw) => {
+            const draw = await CompetitionDraw.findOne({
+              where: { visualCode: apiDraw.Code, subeventId: subEvent.id },
+            });
+
+            if (!draw) {
+              this.logger.warn(`Draw ${apiDraw.Code} not found after creation, skipping`);
+              return null;
+            }
+
+            const drawJobId = generateJobId('competition', 'draw', tournamentCode, eventCode, apiDraw.Code);
+            return {
+              name: drawJobId,
+              queueName: COMPETITION_EVENT_QUEUE,
+              data: {
+                drawId: draw.id, // Pass internal ID
+                includeSubComponents: true,
+                workPlan,
+                metadata: {
+                  displayName: `Draw: ${apiDraw.Name || apiDraw.Code}`,
+                  description: `Draw synchronization for ${apiDraw.Name || apiDraw.Code}`,
+                },
+              },
+              opts: {
+                jobId: drawJobId,
+                parent: {
+                  id: job.id!,
+                  queue: job.queueQualifiedName,
+                },
+              },
+            };
+          }),
+        );
+
+        const validChildren = children.filter((c) => c !== null);
 
         await job.updateData({
           ...job.data,
           childJobsCreated: true,
         });
 
-        await this.competitionSyncFlow.addBulk(children);
+        await this.competitionSyncFlow.addBulk(validChildren);
 
-        this.logger.log(`Added ${children.length} child draw jobs to flow`);
+        this.logger.log(`Added ${validChildren.length} child draw jobs to flow`);
 
-        // Move to waiting for children and throw WaitingChildrenError
         const shouldWait = await job.moveToWaitingChildren(token!);
         if (shouldWait) {
-          this.logger.log(`Moving to waiting for children - ${draws.length} draw jobs pending`);
+          this.logger.log(`Moving to waiting for children - ${validChildren.length} draw jobs pending`);
           throw new WaitingChildrenError();
         }
 
-        // If we reach here, all children have completed
         this.logger.log(`All child draw jobs completed, continuing`);
       }
 
@@ -113,7 +151,6 @@ export class CompetitionSubEventSyncService {
 
       this.logger.log(`Completed competition sub-event sync`);
     } catch (error: unknown) {
-      // Re-throw WaitingChildrenError as expected
       if (error instanceof WaitingChildrenError) {
         throw error;
       }
@@ -125,111 +162,52 @@ export class CompetitionSubEventSyncService {
     }
   }
 
-  private async syncDraws(tournamentCode: string, eventCode?: string): Promise<void> {
-    this.logger.log(`Syncing draws for tournament ${tournamentCode}`);
+  private async updateSubEventFromApi(subEvent: CompetitionSubEvent, tournamentCode: string, eventCode: string): Promise<void> {
+    this.logger.debug(`Updating sub-event from API: ${subEvent.name} (${eventCode})`);
 
     try {
-      // Get events to sync draws for
-      const events = eventCode
-        ? await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode)
-        : await this.tournamentApiClient.getTournamentEvents(tournamentCode);
+      const apiEvents = await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode);
+      const apiEvent = Array.isArray(apiEvents) ? apiEvents[0] : apiEvents;
 
-      const flatEvents = Array.isArray(events) ? events : [events];
-
-      for (const event of flatEvents) {
-        try {
-          const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
-
-          for (const draw of draws) {
-            this.logger.debug(`Processing competition draw/group: ${draw.Name} (${draw.Code})`);
-            // Competition draws are handled differently - they're more like divisions/groups
-            // For now, we'll log this but not create separate entities as the structure
-            // is captured in the encounter/match relationships
-          }
-        } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this.logger.warn(`Failed to sync draws for event ${event.Code}: ${errorMessage}`, error);
-        }
+      if (apiEvent) {
+        subEvent.name = apiEvent.Name;
+        subEvent.eventType = this.mapSubEventType(apiEvent.GenderID);
+        subEvent.genderId = typeof apiEvent.GenderID === 'string' ? parseInt(apiEvent.GenderID, 10) : apiEvent.GenderID;
+        subEvent.gameTypeId = typeof apiEvent.GameTypeID === 'string' ? parseInt(apiEvent.GameTypeID, 10) : apiEvent.GameTypeID;
+        subEvent.paraClassId = apiEvent.ParaClassID;
+        subEvent.lastSync = new Date();
+        await subEvent.save();
+        this.logger.debug(`Updated sub-event ${eventCode}`);
       }
-
-      this.logger.log(`Synced draws for ${flatEvents.length} events`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to sync draws: ${errorMessage}`, error);
+      this.logger.error(`Failed to update sub-event ${eventCode}: ${errorMessage}`, error);
       throw error;
     }
   }
 
-  private async createOrUpdateSubEvent(tournamentCode: string, event: TournamentEvent): Promise<void> {
-    this.logger.debug(`Creating/updating competition sub-event: ${event.Name} (${event.Code})`);
+  private async createOrUpdateDraw(subEvent: CompetitionSubEvent, apiDraw: any): Promise<void> {
+    this.logger.debug(`Creating/updating draw: ${apiDraw.Name} (${apiDraw.Code})`);
 
-    // Find the parent competition event first
-    const competitionEvent = await CompetitionEvent.findOne({
-      where: { visualCode: tournamentCode },
+    const existingDraw = await CompetitionDraw.findOne({
+      where: { visualCode: apiDraw.Code, subeventId: subEvent.id },
     });
 
-    if (!competitionEvent) {
-      this.logger.warn(`Competition with code ${tournamentCode} not found, skipping sub-event creation`);
-      return;
-    }
-
-    // Find the sub-event with competition context to avoid visualCode ambiguity
-    const existingEvent = await CompetitionSubEvent.findOne({
-      where: {
-        visualCode: event.Code,
-        eventId: competitionEvent.id,
-      },
-    });
-
-    if (existingEvent) {
-      existingEvent.name = event.Name;
-      existingEvent.eventType = this.mapSubEventType(event.GenderID);
-      existingEvent.genderId = typeof event.GenderID === 'string' ? parseInt(event.GenderID, 10) : event.GenderID;
-      existingEvent.gameTypeId = typeof event.GameTypeID === 'string' ? parseInt(event.GameTypeID, 10) : event.GameTypeID;
-      existingEvent.paraClassId = event.ParaClassID;
-      existingEvent.lastSync = new Date();
-      await existingEvent.save();
-      this.logger.debug(`Updated existing sub-event ${event.Code} for competition ${tournamentCode}`);
+    if (existingDraw) {
+      existingDraw.name = apiDraw.Name;
+      existingDraw.size = apiDraw.Size;
+      existingDraw.lastSync = new Date();
+      await existingDraw.save();
+      this.logger.debug(`Updated draw ${apiDraw.Code}`);
     } else {
-      const newEvent = new CompetitionSubEvent();
-      newEvent.visualCode = event.Code;
-      newEvent.name = event.Name;
-      newEvent.eventType = this.mapSubEventType(event.GenderID);
-      newEvent.genderId = typeof event.GenderID === 'string' ? parseInt(event.GenderID, 10) : event.GenderID;
-      newEvent.gameTypeId = typeof event.GameTypeID === 'string' ? parseInt(event.GameTypeID, 10) : event.GameTypeID;
-      newEvent.paraClassId = event.ParaClassID;
-      newEvent.eventId = competitionEvent.id; // Link to parent competition
-      newEvent.lastSync = new Date();
-      await newEvent.save();
-      this.logger.debug(`Created new sub-event ${event.Code} for competition ${tournamentCode}`);
-    }
-  }
-
-  private async createOrUpdateSubEvents(tournamentCode: string, eventCode?: string): Promise<void> {
-    this.logger.log(`Creating/updating sub-events for competition ${tournamentCode}`);
-
-    try {
-      let events: any[] = [];
-
-      if (eventCode) {
-        // Sync specific event
-        const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode);
-        events = Array.isArray(eventList) ? eventList : [eventList];
-      } else {
-        // Sync all events
-        const eventList = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
-        events = Array.isArray(eventList) ? eventList : [eventList];
-      }
-
-      for (const event of events) {
-        await this.createOrUpdateSubEvent(tournamentCode, event);
-      }
-
-      this.logger.log(`Created/updated ${events.length} sub-events`);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to create/update sub-events: ${errorMessage}`, error);
-      throw error;
+      const newDraw = new CompetitionDraw();
+      newDraw.visualCode = apiDraw.Code;
+      newDraw.name = apiDraw.Name;
+      newDraw.subeventId = subEvent.id;
+      newDraw.size = apiDraw.Size;
+      newDraw.lastSync = new Date();
+      await newDraw.save();
+      this.logger.debug(`Created draw ${apiDraw.Code}`);
     }
   }
 

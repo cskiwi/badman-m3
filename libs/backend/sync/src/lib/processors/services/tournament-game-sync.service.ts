@@ -2,12 +2,10 @@ import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/bac
 import {
   Game,
   Player,
-  TournamentEvent as TournamentEventModel,
-  TournamentSubEvent as TournamentSubEventModel,
-  TournamentDraw as TournamentDrawModel,
   GamePlayerMembership,
   RankingSystem,
   RankingPlace,
+  TournamentDraw as TournamentDrawModel,
 } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
@@ -16,9 +14,7 @@ import { Job } from 'bullmq';
 import { LessThanOrEqual } from 'typeorm';
 
 export interface TournamentGameSyncOptions {
-  tournamentCode: string;
-  eventCode?: string;
-  drawCode?: string;
+  drawId: string; // Required internal ID
   matchCodes?: string[];
   metadata?: any; // JobDisplayMetadata from queue
 }
@@ -34,10 +30,42 @@ export class TournamentGameSyncService {
 
   async processGameSync(job: Job<TournamentGameSyncOptions>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     try {
-      const { tournamentCode, drawCode, matchCodes } = job.data;
+      const { drawId, matchCodes } = job.data;
 
       // Initialize progress
       await updateProgress(0);
+
+      // Step 1: Load the draw by internal ID
+      const draw = await TournamentDrawModel.findOne({
+        where: { id: drawId },
+        relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
+      });
+
+      if (!draw) {
+        throw new Error(`Tournament draw with id ${drawId} not found`);
+      }
+
+      const subEvent = draw.tournamentSubEvent;
+      if (!subEvent) {
+        throw new Error(`Sub-event not found for draw ${drawId}`);
+      }
+
+      const tournamentEvent = subEvent.tournamentEvent;
+      if (!tournamentEvent) {
+        throw new Error(`Tournament event not found for draw ${drawId}`);
+      }
+
+      const tournamentCode = tournamentEvent.visualCode;
+      const drawCode = draw.visualCode;
+      if (!tournamentCode) {
+        throw new Error(`Tournament event ${tournamentEvent.id} has no visual code`);
+      }
+      if (!drawCode) {
+        throw new Error(`Draw ${drawId} has no visual code`);
+      }
+      this.logger.log(`Loaded draw: ${draw.name} (${drawCode}) for tournament ${tournamentCode}`);
+
+      await updateProgress(10);
 
       const matches = await this.collectMatches(tournamentCode, drawCode, matchCodes);
 
@@ -50,7 +78,7 @@ export class TournamentGameSyncService {
       }
 
       // Process matches with progress tracking
-      await this.processMatches(matches, tournamentCode, updateProgress);
+      await this.processMatches(matches, tournamentCode, updateProgress, drawId);
 
       this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
     } catch (error: unknown) {
@@ -61,8 +89,12 @@ export class TournamentGameSyncService {
     }
   }
 
-  private async collectMatches(tournamentCode: string, drawCode?: string, matchCodes?: string[]): Promise<Match[]> {
+  private async collectMatches(tournamentCode: string | undefined, drawCode: string | undefined, matchCodes?: string[]): Promise<Match[]> {
     let matches: Match[] = [];
+
+    if (!tournamentCode) {
+      throw new Error('Tournament code is required for match collection');
+    }
 
     if (matchCodes && matchCodes.length > 0) {
       // Sync specific matches
@@ -95,7 +127,7 @@ export class TournamentGameSyncService {
     return matches;
   }
 
-  private async processMatches(matches: Match[], tournamentCode: string, updateProgress: (progress: number) => Promise<void>): Promise<void> {
+  private async processMatches(matches: Match[], tournamentCode: string, updateProgress: (progress: number) => Promise<void>, drawId?: string): Promise<void> {
     for (let i = 0; i < matches.length; i++) {
       const match = matches[i];
 
@@ -104,7 +136,7 @@ export class TournamentGameSyncService {
         continue;
       }
 
-      await this.processMatch(tournamentCode, match);
+      await this.processMatch(tournamentCode, match, drawId);
 
       const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
       await updateProgress(finalProgress);
@@ -113,7 +145,7 @@ export class TournamentGameSyncService {
     }
   }
 
-  private async processMatch(tournamentCode: string, match: Match): Promise<void> {
+  private async processMatch(tournamentCode: string, match: Match, drawId?: string): Promise<void> {
     if (!match) {
       this.logger.warn('Received undefined or null match, skipping processing');
       return;
@@ -126,48 +158,12 @@ export class TournamentGameSyncService {
 
     this.logger.debug(`Processing tournament match: ${match.Code} - ${match.EventName}`);
 
-    // Calculate linkId first for proper game lookup
-    let linkId: string | undefined;
-    if (match.DrawCode) {
-      // Find the tournament event first to get proper context
-      const tournamentEvent = await TournamentEventModel.findOne({
-        where: { visualCode: tournamentCode },
-      });
-
-      if (tournamentEvent) {
-        // Use match.EventCode to find the specific sub-event, avoiding ambiguity
-        // when multiple sub-events have draws with the same visualCode
-        const subEvent = match.EventCode
-          ? await TournamentSubEventModel.findOne({
-              where: {
-                visualCode: match.EventCode,
-                tournamentEvent: {
-                  id: tournamentEvent.id,
-                },
-              },
-            })
-          : null;
-
-        const draw = await TournamentDrawModel.findOne({
-          where: {
-            visualCode: match.DrawCode,
-            ...(subEvent
-              ? { subeventId: subEvent.id }
-              : {
-                  tournamentSubEvent: {
-                    tournamentEvent: {
-                      id: tournamentEvent.id,
-                    },
-                  },
-                }),
-          },
-          relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
-        });
-        if (draw) {
-          linkId = draw.id;
-        }
-      }
+    // Require internal drawId for exact match
+    if (!drawId) {
+      throw new Error(`drawId is required for tournament game sync (match: ${match.Code})`);
     }
+
+    const linkId = drawId;
 
     const existingGame = await Game.findOne({
       where: {
