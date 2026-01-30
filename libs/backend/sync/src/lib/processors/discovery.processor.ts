@@ -75,28 +75,6 @@ export class DiscoveryProcessor extends WorkerHost {
       await this.createTournament(tournament);
 
       this.logger.log(`Created new tournament: ${tournament.Name} (${tournament.Code})`);
-
-      // // Schedule initial structure sync based on tournament type
-      // if (tournament.TypeID === TournamentType.Team) {
-      //   // Competition - schedule structure sync only during May-August
-      //   const now = new Date();
-      //   const month = now.getMonth() + 1; // JavaScript months are 0-based
-
-      //   if (month >= 5 && month <= 8) {
-      //     await this.syncService.queueCompetitionStructureSync({
-      //       tournamentCode: tournament.Code,
-      //     });
-      //     this.logger.log(`Scheduled competition structure sync for ${tournament.Code}`);
-      //   }
-      // } else if (tournament.TypeID === TournamentType.Individual) {
-      //   // Tournament - schedule structure sync immediately if not finished
-      //   if (tournament.TournamentStatus !== 101) { // 101 = Tournament Finished
-      //     await this.syncService.queueTournamentStructureSync({
-      //       tournamentCode: tournament.Code,
-      //     });
-      //     this.logger.log(`Scheduled tournament structure sync for ${tournament.Code}`);
-      //   }
-      // }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process tournament ${tournament.Code}: ${errorMessage}`, error);
