@@ -183,6 +183,27 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
+  async triggerEventsSync(
+    @User() user: Player,
+    @Args('eventId', { type: () => [ID] }) eventIds: string[],
+    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger event sync!');
+    }
+
+    for (const eventId of eventIds) {
+      await this.syncService.queueEventSync(eventId, includeSubComponents);
+    }
+    
+    return {
+      message: `Event sync queued successfully for ${eventIds.length} events`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
   async triggerEventSync(
     @User() user: Player,
     @Args('eventId', { type: () => ID }) eventId: string,
@@ -240,10 +261,7 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async triggerEncounterSync(
-    @User() user: Player,
-    @Args('encounterId', { type: () => ID }) encounterId: string,
-  ): Promise<SyncTriggerResponse> {
+  async triggerEncounterSync(@User() user: Player, @Args('encounterId', { type: () => ID }) encounterId: string): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to trigger encounter sync');
     }
