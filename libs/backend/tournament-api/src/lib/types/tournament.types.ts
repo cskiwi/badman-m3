@@ -166,7 +166,7 @@ export interface TeamMatch {
     CountryCode?: string;
   };
   Sets?: {
-    Set: MatchSet[]
+    Set: MatchSet[] | MatchSet;
   };
 }
 

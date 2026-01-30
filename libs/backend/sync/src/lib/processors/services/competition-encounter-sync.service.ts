@@ -164,11 +164,13 @@ export class CompetitionEncounterSyncService {
     }
 
     // Calculate scores from Sets if available (sum of set scores)
+    // Note: getEncountersByDraw returns a single MatchSet, not an array
     let homeScore: number | undefined;
     let awayScore: number | undefined;
-    if (teamMatch.Sets?.Set && teamMatch.Sets.Set.length > 0) {
-      homeScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (parseInt(set.Team1 || '0', 10)), 0);
-      awayScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (parseInt(set.Team2 || '0', 10)), 0);
+    if (teamMatch.Sets?.Set) {
+      const sets = Array.isArray(teamMatch.Sets.Set) ? teamMatch.Sets.Set : [teamMatch.Sets.Set];
+      homeScore = sets.reduce((sum, set) => sum + (parseInt(set.Team1 || '0', 10)), 0);
+      awayScore = sets.reduce((sum, set) => sum + (parseInt(set.Team2 || '0', 10)), 0);
     }
 
     const existingEncounter = await CompetitionEncounter.findOne({
