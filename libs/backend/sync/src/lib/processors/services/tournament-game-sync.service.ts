@@ -185,12 +185,12 @@ export class TournamentGameSyncService {
         existingGame.linkId = linkId;
       }
 
-      existingGame.set1Team1 = parseInt(match.Sets?.Set?.[0]?.Team1, 10);
-      existingGame.set1Team2 = parseInt(match.Sets?.Set?.[0]?.Team2, 10);
-      existingGame.set2Team1 = parseInt(match.Sets?.Set?.[1]?.Team1, 10);
-      existingGame.set2Team2 = parseInt(match.Sets?.Set?.[1]?.Team2, 10);
-      existingGame.set3Team1 = parseInt(match.Sets?.Set?.[2]?.Team1, 10);
-      existingGame.set3Team2 = parseInt(match.Sets?.Set?.[2]?.Team2, 10);
+      existingGame.set1Team1 = parseInt(match.Sets?.Set?.[0]?.Team1 || '0', 10);
+      existingGame.set1Team2 = parseInt(match.Sets?.Set?.[0]?.Team2 || '0', 10);
+      existingGame.set2Team1 = parseInt(match.Sets?.Set?.[1]?.Team1 || '0', 10);
+      existingGame.set2Team2 = parseInt(match.Sets?.Set?.[1]?.Team2 || '0', 10);
+      existingGame.set3Team1 = parseInt(match.Sets?.Set?.[2]?.Team1 || '0', 10);
+      existingGame.set3Team2 = parseInt(match.Sets?.Set?.[2]?.Team2 || '0', 10);
       await existingGame.save();
     } else {
       const newGame = new Game();
@@ -207,12 +207,12 @@ export class TournamentGameSyncService {
         newGame.linkId = linkId;
       }
 
-      newGame.set1Team1 = parseInt(match.Sets?.Set?.[0]?.Team1, 10);
-      newGame.set1Team2 = parseInt(match.Sets?.Set?.[0]?.Team2, 10);
-      newGame.set2Team1 = parseInt(match.Sets?.Set?.[1]?.Team1, 10);
-      newGame.set2Team2 = parseInt(match.Sets?.Set?.[1]?.Team2, 10);
-      newGame.set3Team1 = parseInt(match.Sets?.Set?.[2]?.Team1, 10);
-      newGame.set3Team2 = parseInt(match.Sets?.Set?.[2]?.Team2, 10);
+      newGame.set1Team1 = parseInt(match.Sets?.Set?.[0]?.Team1 || '0', 10);
+      newGame.set1Team2 = parseInt(match.Sets?.Set?.[0]?.Team2 || '0', 10);
+      newGame.set2Team1 = parseInt(match.Sets?.Set?.[1]?.Team1 || '0', 10);
+      newGame.set2Team2 = parseInt(match.Sets?.Set?.[1]?.Team2 || '0', 10);
+      newGame.set3Team1 = parseInt(match.Sets?.Set?.[2]?.Team1 || '0', 10);
+      newGame.set3Team2 = parseInt(match.Sets?.Set?.[2]?.Team2 || '0', 10);
       await newGame.save();
     }
 
