@@ -2,11 +2,12 @@ import { TournamentDraw, Entry, Game } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
+/**
+ * Entry sync is always triggered from a draw job with the draw's internal ID.
+ * Entries are created from games found in the draw.
+ */
 export interface TournamentEntrySyncData {
-  tournamentCode: string;
-  eventCode?: string;
-  drawCode: string;
-  drawId?: string;
+  drawId: string; // Required internal ID
 }
 
 @Injectable()
@@ -16,15 +17,11 @@ export class TournamentEntrySyncService {
   async processEntrySync(job: Job<TournamentEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament entry sync`);
     await updateProgress(10);
-    const { tournamentCode, eventCode, drawCode, drawId } = job.data;
+    const { drawId } = job.data;
 
     try {
-      // Require internal drawId for exact match
+      // Load draw by internal ID
       await updateProgress(15);
-      if (!drawId) {
-        throw new Error(`drawId is required for tournament entry sync (drawCode: ${drawCode})`);
-      }
-
       const draw = await TournamentDraw.findOne({
         where: { id: drawId },
         relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
@@ -35,7 +32,7 @@ export class TournamentEntrySyncService {
         throw new Error(`Tournament draw with id ${drawId} not found for entry sync`);
       }
 
-      this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
+      this.logger.debug(`Found draw: ${draw.id} (${draw.visualCode}), subeventId: ${draw.subeventId}`);
 
       // Create entries from existing games if entries don't exist
       await updateProgress(40);

@@ -4,63 +4,106 @@ import {
   Entry as EntryModel,
   Game,
   Standing,
+  Team,
 } from '@app/models';
-import { GameStatus } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { In } from 'typeorm';
 
+/**
+ * Standing sync can be triggered in two ways:
+ * 1. Manual: by drawId (draw must exist)
+ * 2. Parent job: by drawId (draw must exist - standings are always calculated after encounters)
+ */
 export interface CompetitionStandingSyncData {
-  tournamentCode: string;
-  eventCode?: string;
-  drawCode: string;
-  drawId?: string;
+  drawId: string;
 }
 
 @Injectable()
 export class CompetitionStandingSyncService {
   private readonly logger = new Logger(CompetitionStandingSyncService.name);
 
-  async processStandingSync(job: Job<CompetitionStandingSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
+  async processStandingSync(
+    job: Job<CompetitionStandingSyncData>,
+    updateProgress: (progress: number) => Promise<void>,
+    token: string,
+  ): Promise<void> {
     this.logger.log(`Processing competition standing sync`);
     await updateProgress(10);
-    const { tournamentCode, eventCode, drawCode, drawId } = job.data;
+    const { drawId } = job.data;
 
     try {
-      // Require internal drawId for exact match
-      await updateProgress(15);
-      if (!drawId) {
-        throw new Error(`drawId is required for competition standing sync (drawCode: ${drawCode})`);
-      }
-
+      // Step 1: Load the draw
       const draw = await CompetitionDraw.findOne({
         where: { id: drawId },
         relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
       });
-      await updateProgress(40);
+      await updateProgress(20);
 
       if (!draw) {
-        throw new Error(`Competition draw with id ${drawId} not found for standing sync`);
+        throw new Error(`Competition draw with id ${drawId} not found`);
       }
 
-      this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
+      this.logger.debug(`Found draw: ${draw.id} (${draw.visualCode}), subeventId: ${draw.subeventId}`);
 
-      // Calculate standings locally from games
+      // Step 2: Get all encounters for this draw
+      const encounters = await CompetitionEncounter.find({
+        where: { drawId: draw.id },
+      });
+      await updateProgress(30);
+
+      this.logger.debug(`Found ${encounters.length} encounters for draw ${draw.id}`);
+
+      if (encounters.length === 0) {
+        this.logger.debug(`No encounters found for draw ${draw.id}`);
+        await updateProgress(100);
+        return;
+      }
+
+      // Step 3: Get all teams from encounters
+      const teams = await this.getTeamsFromEncounters(encounters);
+      await updateProgress(40);
+
+      this.logger.debug(`Found ${teams.size} teams in encounters`);
+
+      if (teams.size === 0) {
+        this.logger.debug(`No teams found in encounters for draw ${draw.id}`);
+        await updateProgress(100);
+        return;
+      }
+
+      // Step 4: Get or create standings for each team
+      const standings = await this.getOrCreateStandings(draw, teams);
       await updateProgress(50);
-      this.logger.debug(`Starting standings calculation for draw ${drawCode}`);
-      const calculatedStandings = await this.calculateStandingsFromGames(draw);
-      await updateProgress(80);
-      this.logger.debug(`Calculated ${calculatedStandings.length} standings for draw ${drawCode}`);
 
-      if (calculatedStandings.length > 0) {
-        this.logger.debug(`Updating ${calculatedStandings.length} standings in database`);
-        await this.updateCalculatedStandings(draw, calculatedStandings);
-        this.logger.log(`Calculated and updated ${calculatedStandings.length} standings for draw ${drawCode}`);
-      } else {
-        this.logger.debug(`No games found for standings calculation for draw ${drawCode}`);
+      // Step 5: Reset standings before recalculating
+      for (const standing of standings.values()) {
+        this.resetStanding(standing);
       }
 
-      this.logger.log(`Completed competition standing sync`);
+      // Step 6: Get all games for the encounters
+      const encounterIds = encounters.map((e) => e.id);
+      const games = await Game.find({
+        where: {
+          linkId: In(encounterIds),
+          linkType: 'competition',
+        },
+      });
+      await updateProgress(60);
+
+      this.logger.debug(`Found ${games.length} games for standings calculation`);
+
+      // Step 7: Process encounters and update standings
+      for (const encounter of encounters) {
+        await this.processEncounter(encounter, teams, standings, games);
+      }
+      await updateProgress(80);
+
+      // Step 8: Calculate positions and save standings
+      await this.finalizeAndSaveStandings(draw, standings);
+      await updateProgress(100);
+
+      this.logger.log(`Completed competition standing sync - updated ${standings.size} standings`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to process competition standing sync: ${errorMessage}`, error);
@@ -69,227 +112,274 @@ export class CompetitionStandingSyncService {
     }
   }
 
-  private async calculateStandingsFromGames(draw: CompetitionDraw): Promise<any[]> {
-    this.logger.debug(`Starting calculateStandingsFromGames for draw ${draw.id} (${draw.visualCode})`);
+  /**
+   * Get all unique teams from encounters
+   */
+  private async getTeamsFromEncounters(encounters: CompetitionEncounter[]): Promise<Map<string, Team>> {
+    const teamIds = new Set<string>();
 
-    // Get all entries for this draw
-    const entries = await EntryModel.find({
-      where: { drawId: draw.id },
-      relations: ['player1', 'player2'],
+    for (const encounter of encounters) {
+      if (encounter.homeTeamId) teamIds.add(encounter.homeTeamId);
+      if (encounter.awayTeamId) teamIds.add(encounter.awayTeamId);
+    }
+
+    if (teamIds.size === 0) {
+      return new Map();
+    }
+
+    const teams = await Team.find({
+      where: { id: In([...teamIds]) },
     });
 
-    this.logger.debug(`Found ${entries.length} entries for draw ${draw.id}`);
-    if (entries.length === 0) {
-      this.logger.debug(`No entries found for draw ${draw.id}`);
-      return [];
+    const teamMap = new Map<string, Team>();
+    for (const team of teams) {
+      teamMap.set(team.id, team);
     }
 
-    // Get all encounters for this draw
-    const encounters = await CompetitionEncounter.find({
-      where: { drawId: draw.id },
-    });
+    return teamMap;
+  }
 
-    this.logger.debug(`Found ${encounters.length} encounters for draw ${draw.id}`);
-    if (encounters.length === 0) {
-      this.logger.debug(`No encounters found for draw ${draw.id}`);
-      return [];
-    }
+  /**
+   * Get or create Entry and Standing for each team
+   */
+  private async getOrCreateStandings(
+    draw: CompetitionDraw,
+    teams: Map<string, Team>,
+  ): Promise<Map<string, Standing>> {
+    const standings = new Map<string, Standing>();
 
-    const encounterIds = encounters.map((e) => e.id);
-
-    // Get all games for the encounters - only count games with a determined winner
-    const games = await Game.find({
-      where: {
-        linkId: In(encounterIds),
-        linkType: 'competition',
-        status: GameStatus.NORMAL, // Only count completed games
-      },
-      relations: ['gamePlayerMemberships'],
-    }).then(games => games.filter(game => game.winner === 1 || game.winner === 2));
-
-    this.logger.debug(`Found ${games.length} completed games with winner for draw ${draw.id}`);
-    if (games.length === 0) {
-      this.logger.debug(`No completed games with winner found for draw ${draw.id}`);
-      return [];
-    }
-
-    this.logger.debug(`Calculating standings for ${entries.length} entries from ${games.length} games`);
-
-    // Initialize standings for each entry
-    const standingsMap = new Map();
-
-    entries.forEach((entry) => {
-      standingsMap.set(entry.id, {
-        entryId: entry.id,
-        played: 0,
-        points: 0,
-        gamesWon: 0,
-        gamesLost: 0,
-        setsWon: 0,
-        setsLost: 0,
-        totalPointsWon: 0,
-        totalPointsLost: 0,
-        won: 0,
-        lost: 0,
-        tied: 0,
+    for (const [teamId, team] of teams) {
+      // Find or create entry for this team in this draw
+      let entry = await EntryModel.findOne({
+        where: {
+          teamId: teamId,
+          drawId: draw.id,
+        },
       });
-    });
 
-    // Process each game
-    for (const game of games) {
-      const playerMemberships = game.gamePlayerMemberships || [];
-
-      if (playerMemberships.length === 0) {
-        this.logger.debug(`No player memberships found for game ${game.id}`);
-        continue;
+      if (!entry) {
+        entry = new EntryModel();
+        entry.teamId = teamId;
+        entry.drawId = draw.id;
+        entry.subEventId = draw.subeventId;
+        await entry.save();
+        this.logger.debug(`Created entry for team ${team.name} (${teamId}) in draw ${draw.id}`);
       }
 
-      // Group players by team
-      const team1PlayerIds = playerMemberships
-        .filter((pm) => pm.team === 1)
-        .map((pm) => pm.playerId)
-        .filter((id): id is string => id !== undefined);
-      const team2PlayerIds = playerMemberships
-        .filter((pm) => pm.team === 2)
-        .map((pm) => pm.playerId)
-        .filter((id): id is string => id !== undefined);
+      // Find or create standing for this entry
+      let standing = await Standing.findOne({
+        where: { entryId: entry.id },
+      });
 
-      // Find corresponding entries
-      const team1Entry = this.findEntryForPlayerIds(entries, team1PlayerIds);
-      const team2Entry = this.findEntryForPlayerIds(entries, team2PlayerIds);
-
-      if (team1Entry && team2Entry) {
-        const team1Stats = standingsMap.get(team1Entry.id);
-        const team2Stats = standingsMap.get(team2Entry.id);
-
-        // Count played games
-        team1Stats.played++;
-        team2Stats.played++;
-
-        // Calculate set results
-        const sets = [
-          { team1: game.set1Team1, team2: game.set1Team2 },
-          { team1: game.set2Team1, team2: game.set2Team2 },
-          { team1: game.set3Team1, team2: game.set3Team2 },
-        ].filter((set) => set.team1 !== null && set.team2 !== null && set.team1 !== undefined && set.team2 !== undefined) as Array<{
-          team1: number;
-          team2: number;
-        }>;
-
-        let team1SetsWon = 0;
-        let team2SetsWon = 0;
-
-        sets.forEach((set) => {
-          team1Stats.totalPointsWon += set.team1;
-          team1Stats.totalPointsLost += set.team2;
-          team2Stats.totalPointsWon += set.team2;
-          team2Stats.totalPointsLost += set.team1;
-
-          if (set.team1 > set.team2) {
-            team1SetsWon++;
-            team1Stats.setsWon++;
-            team2Stats.setsLost++;
-          } else {
-            team2SetsWon++;
-            team2Stats.setsWon++;
-            team1Stats.setsLost++;
-          }
-        });
-
-        // Determine game winner based on the winner field or set count
-        const gameWinner = game.winner || (team1SetsWon > team2SetsWon ? 1 : 2);
-
-        if (gameWinner === 1) {
-          team1Stats.gamesWon++;
-          team1Stats.won++;
-          team1Stats.points += 2; // 2 points for a win
-          team2Stats.gamesLost++;
-          team2Stats.lost++;
-        } else if (gameWinner === 2) {
-          team2Stats.gamesWon++;
-          team2Stats.won++;
-          team2Stats.points += 2;
-          team1Stats.gamesLost++;
-          team1Stats.lost++;
-        } else {
-          // Tie (should be rare in badminton)
-          team1Stats.tied++;
-          team2Stats.tied++;
-          team1Stats.points += 1;
-          team2Stats.points += 1;
-        }
-      } else {
-        this.logger.debug(`Could not find entries for game ${game.id} players`);
+      if (!standing) {
+        standing = new Standing();
+        standing.entryId = entry.id;
+        // Set all required fields with default values
+        standing.position = 0;
+        standing.played = 0;
+        standing.points = 0;
+        standing.gamesWon = 0;
+        standing.gamesLost = 0;
+        standing.setsWon = 0;
+        standing.setsLost = 0;
+        standing.totalPointsWon = 0;
+        standing.totalPointsLost = 0;
+        standing.won = 0;
+        standing.lost = 0;
+        standing.tied = 0;
+        await standing.save();
+        this.logger.debug(`Created standing for entry ${entry.id}`);
       }
+
+      standings.set(teamId, standing);
     }
 
-    // Convert to array and sort
-    const standings = Array.from(standingsMap.values()).filter((s) => s.played > 0);
-    standings.sort((a, b) => {
-      // Sort by points (descending), then by games won, then by sets won, then by total points won
-      if (b.points !== a.points) return b.points - a.points;
-      if (b.gamesWon !== a.gamesWon) return b.gamesWon - a.gamesWon;
-      if (b.setsWon !== a.setsWon) return b.setsWon - a.setsWon;
-      return b.totalPointsWon - a.totalPointsWon;
-    });
-
-    // Assign positions
-    standings.forEach((standing, index) => {
-      standing.position = index + 1;
-    });
-
-    this.logger.debug(`Calculated ${standings.length} standings`);
     return standings;
   }
 
-  private findEntryForPlayerIds(entries: EntryModel[], playerIds: string[]): EntryModel | null {
-    return (
-      entries.find((entry) => {
-        if (playerIds.length === 1) {
-          // Singles match
-          return entry.player1Id === playerIds[0] && !entry.player2Id;
-        } else if (playerIds.length === 2) {
-          // Doubles match
-          const sortedPlayerIds = playerIds.sort();
-          const entryPlayerIds = [entry.player1Id, entry.player2Id].filter(Boolean).sort();
-          return JSON.stringify(sortedPlayerIds) === JSON.stringify(entryPlayerIds);
-        }
-        return null;
-      }) || null
-    );
+  /**
+   * Reset standing counts to zero
+   */
+  private resetStanding(standing: Standing): void {
+    standing.position = 0;
+    standing.played = 0;
+    standing.points = 0;
+    standing.gamesWon = 0;
+    standing.gamesLost = 0;
+    standing.setsWon = 0;
+    standing.setsLost = 0;
+    standing.totalPointsWon = 0;
+    standing.totalPointsLost = 0;
+    standing.won = 0;
+    standing.lost = 0;
+    standing.tied = 0;
   }
 
-  private async updateCalculatedStandings(draw: CompetitionDraw, standings: any[]): Promise<void> {
-    // Clear existing standings for this draw
-    const existingStandings = await Standing.find({
-      where: {
-        entryId: In(standings.map((s) => s.entryId)),
-      },
+  /**
+   * Process a single encounter and update team standings
+   */
+  private async processEncounter(
+    encounter: CompetitionEncounter,
+    teams: Map<string, Team>,
+    standings: Map<string, Standing>,
+    games: Game[],
+  ): Promise<void> {
+    if (!encounter.homeTeamId || !encounter.awayTeamId) {
+      return;
+    }
+
+    const homeStanding = standings.get(encounter.homeTeamId);
+    const awayStanding = standings.get(encounter.awayTeamId);
+
+    if (!homeStanding || !awayStanding) {
+      this.logger.debug(`Missing standing for encounter ${encounter.id}`);
+      return;
+    }
+
+    // Skip if encounter hasn't been played yet (both scores are 0 or null)
+    const homeScore = encounter.homeScore ?? 0;
+    const awayScore = encounter.awayScore ?? 0;
+
+    if (homeScore === 0 && awayScore === 0) {
+      return;
+    }
+
+    // Count played encounters
+    homeStanding.played = (homeStanding.played ?? 0) + 1;
+    awayStanding.played = (awayStanding.played ?? 0) + 1;
+
+    // Determine winner and assign points
+    if (homeScore > awayScore) {
+      homeStanding.won = (homeStanding.won ?? 0) + 1;
+      awayStanding.lost = (awayStanding.lost ?? 0) + 1;
+      homeStanding.points = (homeStanding.points ?? 0) + 2;
+    } else if (homeScore < awayScore) {
+      awayStanding.won = (awayStanding.won ?? 0) + 1;
+      homeStanding.lost = (homeStanding.lost ?? 0) + 1;
+      awayStanding.points = (awayStanding.points ?? 0) + 2;
+    } else {
+      // Draw
+      homeStanding.tied = (homeStanding.tied ?? 0) + 1;
+      awayStanding.tied = (awayStanding.tied ?? 0) + 1;
+      homeStanding.points = (homeStanding.points ?? 0) + 1;
+      awayStanding.points = (awayStanding.points ?? 0) + 1;
+    }
+
+    // Process individual games within this encounter
+    const encounterGames = games.filter((g) => g.linkId === encounter.id);
+
+    for (const game of encounterGames) {
+      // Count games won/lost based on winner
+      if (game.winner === 1) {
+        homeStanding.gamesWon = (homeStanding.gamesWon ?? 0) + 1;
+        awayStanding.gamesLost = (awayStanding.gamesLost ?? 0) + 1;
+      } else if (game.winner === 2) {
+        awayStanding.gamesWon = (awayStanding.gamesWon ?? 0) + 1;
+        homeStanding.gamesLost = (homeStanding.gamesLost ?? 0) + 1;
+      }
+
+      // Process set 1
+      this.processSet(
+        game.set1Team1,
+        game.set1Team2,
+        homeStanding,
+        awayStanding,
+      );
+
+      // Process set 2
+      this.processSet(
+        game.set2Team1,
+        game.set2Team2,
+        homeStanding,
+        awayStanding,
+      );
+
+      // Process set 3 (if played)
+      if ((game.set3Team1 ?? 0) !== 0 || (game.set3Team2 ?? 0) !== 0) {
+        this.processSet(
+          game.set3Team1,
+          game.set3Team2,
+          homeStanding,
+          awayStanding,
+        );
+      }
+    }
+  }
+
+  /**
+   * Process a single set and update standings
+   */
+  private processSet(
+    team1Score: number | null | undefined,
+    team2Score: number | null | undefined,
+    homeStanding: Standing,
+    awayStanding: Standing,
+  ): void {
+    const score1 = team1Score ?? 0;
+    const score2 = team2Score ?? 0;
+
+    if (score1 === 0 && score2 === 0) {
+      return;
+    }
+
+    // Update total points
+    homeStanding.totalPointsWon = (homeStanding.totalPointsWon ?? 0) + score1;
+    homeStanding.totalPointsLost = (homeStanding.totalPointsLost ?? 0) + score2;
+    awayStanding.totalPointsWon = (awayStanding.totalPointsWon ?? 0) + score2;
+    awayStanding.totalPointsLost = (awayStanding.totalPointsLost ?? 0) + score1;
+
+    // Update sets won/lost
+    if (score1 > score2) {
+      homeStanding.setsWon = (homeStanding.setsWon ?? 0) + 1;
+      awayStanding.setsLost = (awayStanding.setsLost ?? 0) + 1;
+    } else if (score1 < score2) {
+      awayStanding.setsWon = (awayStanding.setsWon ?? 0) + 1;
+      homeStanding.setsLost = (homeStanding.setsLost ?? 0) + 1;
+    }
+  }
+
+  /**
+   * Calculate positions and save all standings
+   */
+  private async finalizeAndSaveStandings(
+    draw: CompetitionDraw,
+    standings: Map<string, Standing>,
+  ): Promise<void> {
+    // Convert to array and sort
+    const standingsArray = [...standings.values()];
+
+    // Sort by points (desc), games won (desc), sets won (desc), total points won (desc)
+    standingsArray.sort((a, b) => {
+      // First by points
+      if ((b.points ?? 0) !== (a.points ?? 0)) {
+        return (b.points ?? 0) - (a.points ?? 0);
+      }
+      // Then by games won
+      if ((b.gamesWon ?? 0) !== (a.gamesWon ?? 0)) {
+        return (b.gamesWon ?? 0) - (a.gamesWon ?? 0);
+      }
+      // Then by sets won
+      if ((b.setsWon ?? 0) !== (a.setsWon ?? 0)) {
+        return (b.setsWon ?? 0) - (a.setsWon ?? 0);
+      }
+      // Finally by total points won
+      return (b.totalPointsWon ?? 0) - (a.totalPointsWon ?? 0);
     });
 
-    // Remove existing standings
-    for (const existing of existingStandings) {
-      await existing.remove();
+    // Assign positions and save
+    let position = 1;
+    for (const standing of standingsArray) {
+      standing.position = position;
+      standing.size = standingsArray.length;
+
+      // Determine riser/faller based on draw configuration
+      standing.riser = position <= (draw.risers ?? 0);
+      standing.faller = position > standingsArray.length - (draw.fallers ?? 0);
+
+      await standing.save();
+      position++;
     }
 
-    // Create new standings
-    for (const standingData of standings) {
-      const newStanding = new Standing();
-      newStanding.entryId = standingData.entryId;
-      newStanding.position = standingData.position;
-      newStanding.points = standingData.points;
-      newStanding.played = standingData.played;
-      newStanding.gamesWon = standingData.gamesWon;
-      newStanding.gamesLost = standingData.gamesLost;
-      newStanding.setsWon = standingData.setsWon;
-      newStanding.setsLost = standingData.setsLost;
-      newStanding.totalPointsWon = standingData.totalPointsWon;
-      newStanding.totalPointsLost = standingData.totalPointsLost;
-      newStanding.won = standingData.won;
-      newStanding.lost = standingData.lost;
-      newStanding.tied = standingData.tied;
-      newStanding.size = draw.size;
-      await newStanding.save();
-    }
+    this.logger.debug(`Saved ${standingsArray.length} standings with positions`);
   }
 }

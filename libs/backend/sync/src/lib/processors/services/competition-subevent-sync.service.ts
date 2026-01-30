@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, CompetitionSubEvent, CompetitionEvent } from '@app/models';
+import { CompetitionSubEvent, CompetitionEvent } from '@app/models';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -79,48 +79,36 @@ export class CompetitionSubEventSyncService {
           return;
         }
 
-        // Create draws first so we have their IDs
-        for (const apiDraw of apiDraws) {
-          await this.createOrUpdateDraw(subEvent, apiDraw);
-        }
-
-        // Look up draw internal IDs and create child jobs
-        const children = await Promise.all(
-          apiDraws.map(async (apiDraw) => {
-            const draw = await CompetitionDraw.findOne({
-              where: { visualCode: apiDraw.Code, subeventId: subEvent.id },
-            });
-
-            if (!draw) {
-              this.logger.warn(`Draw ${apiDraw.Code} not found after creation, skipping`);
-              return null;
-            }
-
-            const drawJobId = generateJobId('competition', 'draw', tournamentCode, eventCode, apiDraw.Code);
-            return {
-              name: drawJobId,
-              queueName: COMPETITION_EVENT_QUEUE,
-              data: {
-                drawId: draw.id, // Pass internal ID
-                includeSubComponents: true,
-                workPlan,
-                metadata: {
-                  displayName: `Draw: ${apiDraw.Name || apiDraw.Code}`,
-                  description: `Draw synchronization for ${apiDraw.Name || apiDraw.Code}`,
-                },
+        // Create child jobs using parent context format (tournamentCode + subEventId + drawCode)
+        // The child draw sync will handle finding or creating the draw
+        const children = apiDraws.map((apiDraw) => {
+          const drawJobId = generateJobId('competition', 'draw', tournamentCode, eventCode, apiDraw.Code);
+          return {
+            name: drawJobId,
+            queueName: COMPETITION_EVENT_QUEUE,
+            data: {
+              // Parent job trigger format: tournamentCode + subEventId + drawCode
+              tournamentCode,
+              subEventId: subEvent.id,
+              drawCode: apiDraw.Code,
+              includeSubComponents: true,
+              workPlan,
+              metadata: {
+                displayName: `Draw: ${apiDraw.Name || apiDraw.Code}`,
+                description: `Draw synchronization for ${apiDraw.Name || apiDraw.Code}`,
               },
-              opts: {
-                jobId: drawJobId,
-                parent: {
-                  id: job.id!,
-                  queue: job.queueQualifiedName,
-                },
+            },
+            opts: {
+              jobId: drawJobId,
+              parent: {
+                id: job.id!,
+                queue: job.queueQualifiedName,
               },
-            };
-          }),
-        );
+            },
+          };
+        });
 
-        const validChildren = children.filter((c) => c !== null);
+        const validChildren = children;
 
         await job.updateData({
           ...job.data,
@@ -178,31 +166,6 @@ export class CompetitionSubEventSyncService {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to update sub-event ${eventCode}: ${errorMessage}`, error);
       throw error;
-    }
-  }
-
-  private async createOrUpdateDraw(subEvent: CompetitionSubEvent, apiDraw: any): Promise<void> {
-    this.logger.debug(`Creating/updating draw: ${apiDraw.Name} (${apiDraw.Code})`);
-
-    const existingDraw = await CompetitionDraw.findOne({
-      where: { visualCode: apiDraw.Code, subeventId: subEvent.id },
-    });
-
-    if (existingDraw) {
-      existingDraw.name = apiDraw.Name;
-      existingDraw.size = apiDraw.Size;
-      existingDraw.lastSync = new Date();
-      await existingDraw.save();
-      this.logger.debug(`Updated draw ${apiDraw.Code}`);
-    } else {
-      const newDraw = new CompetitionDraw();
-      newDraw.visualCode = apiDraw.Code;
-      newDraw.name = apiDraw.Name;
-      newDraw.subeventId = subEvent.id;
-      newDraw.size = apiDraw.Size;
-      newDraw.lastSync = new Date();
-      await newDraw.save();
-      this.logger.debug(`Created draw ${apiDraw.Code}`);
     }
   }
 

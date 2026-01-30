@@ -166,13 +166,13 @@ export interface TeamMatch {
     CountryCode?: string;
   };
   Sets?: {
-    Set: MatchSet[];
+    Set: MatchSet[]
   };
 }
 
 export interface MatchSet {
-  Team1: number;
-  Team2: number;
+  Team1: string;
+  Team2: string;
 }
 
 export interface Stage {

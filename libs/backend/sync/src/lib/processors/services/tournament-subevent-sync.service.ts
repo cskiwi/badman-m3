@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { TournamentDraw, TournamentSubEvent } from '@app/models';
+import { TournamentSubEvent, TournamentEvent } from '@app/models';
 import { GameType, SubEventTypeEnum } from '@app/models-enum';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
@@ -8,12 +8,26 @@ import { TOURNAMENT_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { TournamentPlanningService, TournamentWorkPlan } from './tournament-planning.service';
 
-export interface TournamentSubEventSyncData {
-  subEventId: string; // Required internal ID
+interface SubEventContext {
+  subEvent: TournamentSubEvent;
+  tournamentEvent: TournamentEvent;
+  tournamentCode: string;
+  eventCode: string;
+}
+
+/**
+ * Sub-event sync can be triggered in two ways:
+ * 1. Manual: by subEventId (item must exist)
+ * 2. Parent job: by tournamentCode + eventId + eventCode (item might not exist yet)
+ */
+export type TournamentSubEventSyncData = (
+  | { subEventId: string } // Manual trigger
+  | { tournamentCode: string; eventId: string; eventCode: string } // Parent job trigger
+) & {
   includeSubComponents?: boolean;
   workPlan?: TournamentWorkPlan;
   childJobsCreated?: boolean;
-}
+};
 
 @Injectable()
 export class TournamentSubEventSyncService {
@@ -31,30 +45,11 @@ export class TournamentSubEventSyncService {
     token: string,
   ): Promise<void> {
     this.logger.log(`Processing tournament sub-event sync`);
-    const { subEventId, includeSubComponents, workPlan, childJobsCreated } = job.data;
+    const { includeSubComponents, workPlan, childJobsCreated } = job.data;
 
-    // Step 1: Load the sub-event by internal ID
-    const subEvent = await TournamentSubEvent.findOne({
-      where: { id: subEventId },
-      relations: ['tournamentEvent'],
-    });
-    if (!subEvent) {
-      throw new Error(`Tournament sub-event with id ${subEventId} not found`);
-    }
-
-    const tournamentEvent = subEvent.tournamentEvent;
-    if (!tournamentEvent) {
-      throw new Error(`Tournament event not found for sub-event ${subEventId}`);
-    }
-
-    const tournamentCode = tournamentEvent.visualCode;
-    const eventCode = subEvent.visualCode;
-    if (!tournamentCode) {
-      throw new Error(`Tournament event ${tournamentEvent.id} has no visual code`);
-    }
-    if (!eventCode) {
-      throw new Error(`Sub-event ${subEventId} has no visual code`);
-    }
+    // Step 1: Resolve context from either input type
+    const context = await this.resolveSubEventContext(job.data);
+    const { subEvent, tournamentCode, eventCode } = context;
     this.logger.log(`Loaded sub-event: ${subEvent.name} (${eventCode}) for tournament ${tournamentCode}`);
 
     try {
@@ -86,48 +81,36 @@ export class TournamentSubEventSyncService {
           return;
         }
 
-        // Create draws first so we have their IDs
-        for (const apiDraw of validDraws) {
-          await this.createOrUpdateDraw(subEvent, apiDraw);
-        }
-
-        // Look up draw internal IDs and create child jobs
-        const children = await Promise.all(
-          validDraws.map(async (apiDraw) => {
-            const draw = await TournamentDraw.findOne({
-              where: { visualCode: apiDraw.Code, subeventId: subEvent.id },
-            });
-
-            if (!draw) {
-              this.logger.warn(`Draw ${apiDraw.Code} not found after creation, skipping`);
-              return null;
-            }
-
-            const drawJobId = generateJobId('tournament', 'draw', tournamentCode, eventCode, apiDraw.Code);
-            return {
-              name: drawJobId,
-              queueName: TOURNAMENT_EVENT_QUEUE,
-              data: {
-                drawId: draw.id, // Pass internal ID
-                includeSubComponents: true,
-                workPlan,
-                metadata: {
-                  displayName: `Draw: ${apiDraw.Name || apiDraw.Code}`,
-                  description: `Draw synchronization for ${apiDraw.Name || apiDraw.Code}`,
-                },
+        // Create child jobs using parent context format (tournamentCode + subEventId + drawCode)
+        // The child draw sync will handle finding or creating the draw
+        const children = validDraws.map((apiDraw) => {
+          const drawJobId = generateJobId('tournament', 'draw', tournamentCode, eventCode, apiDraw.Code);
+          return {
+            name: drawJobId,
+            queueName: TOURNAMENT_EVENT_QUEUE,
+            data: {
+              // Parent job trigger format: tournamentCode + subEventId + drawCode
+              tournamentCode,
+              subEventId: subEvent.id,
+              drawCode: apiDraw.Code,
+              includeSubComponents: true,
+              workPlan,
+              metadata: {
+                displayName: `Draw: ${apiDraw.Name || apiDraw.Code}`,
+                description: `Draw synchronization for ${apiDraw.Name || apiDraw.Code}`,
               },
-              opts: {
-                jobId: drawJobId,
-                parent: {
-                  id: job.id!,
-                  queue: job.queueQualifiedName,
-                },
+            },
+            opts: {
+              jobId: drawJobId,
+              parent: {
+                id: job.id!,
+                queue: job.queueQualifiedName,
               },
-            };
-          }),
-        );
+            },
+          };
+        });
 
-        const validChildren = children.filter((c) => c !== null);
+        const validChildren = children;
 
         await job.updateData({
           ...job.data,
@@ -188,33 +171,6 @@ export class TournamentSubEventSyncService {
     }
   }
 
-  private async createOrUpdateDraw(subEvent: TournamentSubEvent, apiDraw: any): Promise<void> {
-    this.logger.debug(`Creating/updating draw: ${apiDraw.Name} (${apiDraw.Code})`);
-
-    const existingDraw = await TournamentDraw.findOne({
-      where: { visualCode: apiDraw.Code, subeventId: subEvent.id },
-    });
-
-    if (existingDraw) {
-      existingDraw.name = apiDraw.Name;
-      existingDraw.size = apiDraw.Size;
-      existingDraw.lastSync = new Date();
-      await existingDraw.save();
-      this.logger.debug(`Updated draw ${apiDraw.Code}`);
-    } else {
-      const newDraw = new TournamentDraw();
-      newDraw.visualCode = apiDraw.Code;
-      newDraw.name = apiDraw.Name;
-      newDraw.subeventId = subEvent.id;
-      newDraw.size = apiDraw.Size;
-      newDraw.risers = 0;
-      newDraw.fallers = 0;
-      newDraw.lastSync = new Date();
-      await newDraw.save();
-      this.logger.debug(`Created draw ${apiDraw.Code}`);
-    }
-  }
-
   private mapSubEventType(genderId: number | string): SubEventTypeEnum {
     if (typeof genderId === 'string') {
       genderId = parseInt(genderId, 10);
@@ -245,5 +201,89 @@ export class TournamentSubEventSyncService {
       default:
         return GameType.MX;
     }
+  }
+
+  /**
+   * Resolve sub-event context from either:
+   * 1. Internal ID (manual trigger) - sub-event must exist
+   * 2. Parent context (parent job trigger) - sub-event might not exist yet
+   */
+  private async resolveSubEventContext(data: TournamentSubEventSyncData): Promise<SubEventContext> {
+    if ('subEventId' in data) {
+      return this.resolveFromInternalId(data.subEventId);
+    } else {
+      return this.resolveFromParentContext(data.tournamentCode, data.eventId, data.eventCode);
+    }
+  }
+
+  /**
+   * Load sub-event context by internal ID (manual trigger)
+   * The sub-event must exist in the database
+   */
+  private async resolveFromInternalId(subEventId: string): Promise<SubEventContext> {
+    const subEvent = await TournamentSubEvent.findOne({
+      where: { id: subEventId },
+      relations: ['tournamentEvent'],
+    });
+
+    if (!subEvent) {
+      throw new Error(`Tournament sub-event with id ${subEventId} not found`);
+    }
+
+    const tournamentEvent = subEvent.tournamentEvent;
+    if (!tournamentEvent) {
+      throw new Error(`Tournament event not found for sub-event ${subEventId}`);
+    }
+
+    const tournamentCode = tournamentEvent.visualCode;
+    const eventCode = subEvent.visualCode;
+
+    if (!tournamentCode) {
+      throw new Error(`Tournament event ${tournamentEvent.id} has no visual code`);
+    }
+    if (!eventCode) {
+      throw new Error(`Sub-event ${subEventId} has no visual code`);
+    }
+
+    return { subEvent, tournamentEvent, tournamentCode, eventCode };
+  }
+
+  /**
+   * Load sub-event context from parent job data
+   * The sub-event might not exist yet - we have the codes to fetch from API and create it
+   */
+  private async resolveFromParentContext(
+    tournamentCode: string,
+    eventId: string,
+    eventCode: string,
+  ): Promise<SubEventContext> {
+    // Load the parent event
+    const tournamentEvent = await TournamentEvent.findOne({
+      where: { id: eventId },
+    });
+
+    if (!tournamentEvent) {
+      throw new Error(`Tournament event with id ${eventId} not found`);
+    }
+
+    // Find or create the sub-event
+    let subEvent = await TournamentSubEvent.findOne({
+      where: { visualCode: eventCode, eventId },
+    });
+
+    if (!subEvent) {
+      // Create the sub-event - it will be updated from API in updateSubEventFromApi
+      subEvent = new TournamentSubEvent();
+      subEvent.visualCode = eventCode;
+      subEvent.eventId = eventId;
+      subEvent.lastSync = new Date();
+      await subEvent.save();
+      this.logger.debug(`Created new sub-event ${eventCode} for event ${eventId}`);
+    }
+
+    // Attach relations for consistent context
+    subEvent.tournamentEvent = tournamentEvent;
+
+    return { subEvent, tournamentEvent, tournamentCode, eventCode };
   }
 }

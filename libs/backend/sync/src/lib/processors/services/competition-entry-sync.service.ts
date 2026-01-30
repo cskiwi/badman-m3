@@ -4,11 +4,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
 
+/**
+ * Entry sync is always triggered from a draw job with the draw's internal ID.
+ * Entries are created by matching teams found in the draw structure.
+ */
 export interface CompetitionEntrySyncData {
-  tournamentCode: string;
-  eventCode?: string;
-  drawCode: string;
-  drawId?: string;
+  drawId: string; // Required internal ID
 }
 
 interface DrawTeamData {
@@ -28,15 +29,11 @@ export class CompetitionEntrySyncService {
   async processEntrySync(job: Job<CompetitionEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
     await updateProgress(10);
-    const { tournamentCode, eventCode, drawCode, drawId } = job.data;
+    const { drawId } = job.data;
 
     try {
-      // Require internal drawId for exact match
+      // Load draw by internal ID
       await updateProgress(15);
-      if (!drawId) {
-        throw new Error(`drawId is required for competition entry sync (drawCode: ${drawCode})`);
-      }
-
       const draw = await CompetitionDraw.findOne({
         where: { id: drawId },
         relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
@@ -47,10 +44,20 @@ export class CompetitionEntrySyncService {
         throw new Error(`Competition draw with id ${drawId} not found for entry sync`);
       }
 
-      this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
+      const drawCode = draw.visualCode;
+      if (!drawCode) {
+        throw new Error(`Draw ${drawId} has no visual code`);
+      }
 
-      // Get competition event from draw relation for team matching context
+      this.logger.debug(`Found draw: ${draw.id} (${drawCode}), subeventId: ${draw.subeventId}`);
+
+      // Get competition event from draw relation for team matching context and tournament code
       const competitionEvent = draw.competitionSubEvent?.competitionEvent || null;
+      const tournamentCode = competitionEvent?.visualCode;
+
+      if (!tournamentCode) {
+        throw new Error(`Competition event for draw ${drawId} has no visual code`);
+      }
 
       // Get draw details from API to find teams in the draw structure
       await updateProgress(40);

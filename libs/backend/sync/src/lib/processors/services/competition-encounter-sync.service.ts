@@ -167,8 +167,8 @@ export class CompetitionEncounterSyncService {
     let homeScore: number | undefined;
     let awayScore: number | undefined;
     if (teamMatch.Sets?.Set && teamMatch.Sets.Set.length > 0) {
-      homeScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (set.Team1 || 0), 0);
-      awayScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (set.Team2 || 0), 0);
+      homeScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (parseInt(set.Team1 || '0', 10)), 0);
+      awayScore = teamMatch.Sets.Set.reduce((sum, set) => sum + (parseInt(set.Team2 || '0', 10)), 0);
     }
 
     const existingEncounter = await CompetitionEncounter.findOne({
@@ -254,12 +254,12 @@ export class CompetitionEncounterSyncService {
       existingGame.winner = match.Winner;
       existingGame.round = match.RoundName;
       existingGame.linkId = encounterId;
-      existingGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
-      existingGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
-      existingGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
-      existingGame.set2Team2 = match.Sets?.Set?.[1]?.Team2;
-      existingGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
-      existingGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
+      existingGame.set1Team1 = parseInt(match.Sets?.Set?.[0]?.Team1, 10);
+      existingGame.set1Team2 = parseInt(match.Sets?.Set?.[0]?.Team2, 10);
+      existingGame.set2Team1 = parseInt(match.Sets?.Set?.[1]?.Team1, 10);
+      existingGame.set2Team2 = parseInt(match.Sets?.Set?.[1]?.Team2, 10);
+      existingGame.set3Team1 = parseInt(match.Sets?.Set?.[2]?.Team1, 10);
+      existingGame.set3Team2 = parseInt(match.Sets?.Set?.[2]?.Team2, 10);
       await existingGame.save();
     } else {
       const newGame = new Game();
@@ -271,12 +271,12 @@ export class CompetitionEncounterSyncService {
       newGame.round = match.RoundName;
       newGame.linkType = 'competition';
       newGame.linkId = encounterId;
-      newGame.set1Team1 = match.Sets?.Set?.[0]?.Team1;
-      newGame.set1Team2 = match.Sets?.Set?.[0]?.Team2;
-      newGame.set2Team1 = match.Sets?.Set?.[1]?.Team1;
-      newGame.set2Team2 = match.Sets?.Set?.[1]?.Team2;
-      newGame.set3Team1 = match.Sets?.Set?.[2]?.Team1;
-      newGame.set3Team2 = match.Sets?.Set?.[2]?.Team2;
+      newGame.set1Team1 = parseInt(match.Sets?.Set?.[0]?.Team1, 10);
+      newGame.set1Team2 = parseInt(match.Sets?.Set?.[0]?.Team2, 10);
+      newGame.set2Team1 = parseInt(match.Sets?.Set?.[1]?.Team1, 10);
+      newGame.set2Team2 = parseInt(match.Sets?.Set?.[1]?.Team2, 10);
+      newGame.set3Team1 = parseInt(match.Sets?.Set?.[2]?.Team1, 10);
+      newGame.set3Team2 = parseInt(match.Sets?.Set?.[2]?.Team2, 10);
       await newGame.save();
     }
 

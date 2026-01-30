@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { TournamentEvent, TournamentSubEvent } from '@app/models';
+import { TournamentEvent } from '@app/models';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
@@ -74,48 +74,36 @@ export class TournamentEventSyncService {
           return;
         }
 
-        // Create sub-events first so we have their IDs
-        for (const apiSubEvent of apiSubEvents) {
-          await this.createOrUpdateSubEvent(tournamentEvent, apiSubEvent);
-        }
-
-        // Look up sub-event internal IDs and create child jobs
-        const children = await Promise.all(
-          apiSubEvents.map(async (apiSubEvent) => {
-            const subEvent = await TournamentSubEvent.findOne({
-              where: { visualCode: apiSubEvent.Code, eventId: tournamentEvent.id },
-            });
-
-            if (!subEvent) {
-              this.logger.warn(`Sub-event ${apiSubEvent.Code} not found after creation, skipping`);
-              return null;
-            }
-
-            const subEventJobId = generateJobId('tournament', 'subevent', tournamentCode, apiSubEvent.Code);
-            return {
-              name: subEventJobId,
-              queueName: TOURNAMENT_EVENT_QUEUE,
-              data: {
-                subEventId: subEvent.id, // Pass internal ID
-                includeSubComponents: true,
-                workPlan,
-                metadata: {
-                  displayName: `Sub-Event: ${apiSubEvent.Name || apiSubEvent.Code}`,
-                  description: `Sub-event synchronization for ${apiSubEvent.Name || apiSubEvent.Code}`,
-                },
+        // Create child jobs using parent context format (tournamentCode + eventId + eventCode)
+        // The child sub-event sync will handle finding or creating the sub-event
+        const children = apiSubEvents.map((apiSubEvent) => {
+          const subEventJobId = generateJobId('tournament', 'subevent', tournamentCode, apiSubEvent.Code);
+          return {
+            name: subEventJobId,
+            queueName: TOURNAMENT_EVENT_QUEUE,
+            data: {
+              // Parent job trigger format: tournamentCode + eventId + eventCode
+              tournamentCode,
+              eventId: tournamentEvent.id,
+              eventCode: apiSubEvent.Code,
+              includeSubComponents: true,
+              workPlan,
+              metadata: {
+                displayName: `Sub-Event: ${apiSubEvent.Name || apiSubEvent.Code}`,
+                description: `Sub-event synchronization for ${apiSubEvent.Name || apiSubEvent.Code}`,
               },
-              opts: {
-                jobId: subEventJobId,
-                parent: {
-                  id: job.id!,
-                  queue: job.queueQualifiedName,
-                },
+            },
+            opts: {
+              jobId: subEventJobId,
+              parent: {
+                id: job.id!,
+                queue: job.queueQualifiedName,
               },
-            };
-          }),
-        );
+            },
+          };
+        });
 
-        const validChildren = children.filter((c) => c !== null);
+        const validChildren = children;
 
         await job.updateData({
           ...job.data,
@@ -178,30 +166,4 @@ export class TournamentEventSyncService {
     }
   }
 
-  private async createOrUpdateSubEvent(tournamentEvent: TournamentEvent, apiSubEvent: any): Promise<void> {
-    this.logger.debug(`Creating/updating sub-event: ${apiSubEvent.Name} (${apiSubEvent.Code})`);
-
-    const existingSubEvent = await TournamentSubEvent.findOne({
-      where: { visualCode: apiSubEvent.Code, eventId: tournamentEvent.id },
-    });
-
-    if (existingSubEvent) {
-      existingSubEvent.name = apiSubEvent.Name;
-      existingSubEvent.genderId = typeof apiSubEvent.GenderID === 'string' ? parseInt(apiSubEvent.GenderID, 10) : apiSubEvent.GenderID;
-      existingSubEvent.gameTypeId = typeof apiSubEvent.GameTypeID === 'string' ? parseInt(apiSubEvent.GameTypeID, 10) : apiSubEvent.GameTypeID;
-      existingSubEvent.lastSync = new Date();
-      await existingSubEvent.save();
-      this.logger.debug(`Updated sub-event ${apiSubEvent.Code}`);
-    } else {
-      const newSubEvent = new TournamentSubEvent();
-      newSubEvent.visualCode = apiSubEvent.Code;
-      newSubEvent.name = apiSubEvent.Name;
-      newSubEvent.eventId = tournamentEvent.id;
-      newSubEvent.genderId = typeof apiSubEvent.GenderID === 'string' ? parseInt(apiSubEvent.GenderID, 10) : apiSubEvent.GenderID;
-      newSubEvent.gameTypeId = typeof apiSubEvent.GameTypeID === 'string' ? parseInt(apiSubEvent.GameTypeID, 10) : apiSubEvent.GameTypeID;
-      newSubEvent.lastSync = new Date();
-      await newSubEvent.save();
-      this.logger.debug(`Created sub-event ${apiSubEvent.Code}`);
-    }
-  }
 }
