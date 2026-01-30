@@ -106,7 +106,16 @@ export class PageDetailComponent {
         groups.push(group);
       }
 
-      group.events.push(event);
+      // Sort draws by name before adding the event
+      const eventWithSortedDraws = {
+        ...event,
+        competitionDraws: [...(event.competitionDraws ?? [])].sort((a, b) => {
+          const nameA = a.name || '';
+          const nameB = b.name || '';
+          return nameA.localeCompare(nameB);
+        }),
+      } as typeof event;
+      group.events.push(eventWithSortedDraws);
     });
 
     return groups;
