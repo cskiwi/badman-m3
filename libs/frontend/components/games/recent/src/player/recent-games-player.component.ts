@@ -104,6 +104,8 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     this.intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          console.log('IntersectionObserver entry:', entry);
+
           if (entry.isIntersecting && this.hasMore() && !this.loading() && !this.loadingMore()) {
             this.loadMore();
           }

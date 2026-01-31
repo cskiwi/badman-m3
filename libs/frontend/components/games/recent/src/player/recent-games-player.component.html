@@ -1,7 +1,7 @@
-<div class="recent-games-container">
+<div>
   @if (!loading()) {
     @for (game of games(); track game.id) {
-      <div class="game-card rounded-border border border-surface mb-3 overflow-hidden">
+      <div class="rounded-border border border-surface mb-5 overflow-hidden">
         <!-- Header: Event/Draw name + Teams for competition -->
         <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight text-sm">
           <div class="flex items-center gap-2 min-w-0">
@@ -38,12 +38,9 @@
             }
             @if (isCompetitionGame(game)) {
               <span class="text-muted-color">-</span>
-              <span class="text-muted-color truncate">
-                {{ getTeamName(game, 1) }} vs {{ getTeamName(game, 2) }}
-              </span>
+              <span class="text-muted-color truncate"> {{ getTeamName(game, 1) }} vs {{ getTeamName(game, 2) }} </span>
             }
           </div>
-          <p-chip [label]="game?.gameType" styleClass="text-xs" />
         </div>
 
         <!-- Game Content -->
@@ -83,17 +80,26 @@
               }
               <div class="flex items-center gap-1 text-sm font-medium tabular-nums">
                 @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-                  <span [class.text-green-600]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1" [class.font-bold]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1">
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1"
+                    [class.font-bold]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1"
+                  >
                     {{ game?.set1Team1 }}
                   </span>
                 }
                 @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-                  <span [class.text-green-600]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1" [class.font-bold]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1">
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1"
+                    [class.font-bold]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1"
+                  >
                     {{ game?.set2Team1 }}
                   </span>
                 }
                 @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-                  <span [class.text-green-600]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1" [class.font-bold]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1">
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1"
+                    [class.font-bold]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1"
+                  >
                     {{ game?.set3Team1 }}
                   </span>
                 }
@@ -136,17 +142,26 @@
               }
               <div class="flex items-center gap-1 text-sm font-medium tabular-nums">
                 @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-                  <span [class.text-green-600]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2" [class.font-bold]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2">
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2"
+                    [class.font-bold]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2"
+                  >
                     {{ game?.set1Team2 }}
                   </span>
                 }
                 @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-                  <span [class.text-green-600]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2" [class.font-bold]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2">
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2"
+                    [class.font-bold]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2"
+                  >
                     {{ game?.set2Team2 }}
                   </span>
                 }
                 @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-                  <span [class.text-green-600]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2" [class.font-bold]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2">
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2"
+                    [class.font-bold]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2"
+                  >
                     {{ game?.set3Team2 }}
                   </span>
                 }
@@ -184,10 +199,7 @@
           }
           @if (getCurrentPlayerPoints(game) !== 0) {
             <div class="ml-auto flex items-center gap-1">
-              <span
-                [class.text-green-600]="getCurrentPlayerPoints(game) > 0"
-                [class.text-red-600]="getCurrentPlayerPoints(game) < 0"
-              >
+              <span [class.text-green-600]="getCurrentPlayerPoints(game) > 0" [class.text-red-600]="getCurrentPlayerPoints(game) < 0">
                 {{ formatPoints(getCurrentPlayerPoints(game)) }} pts
               </span>
             </div>
@@ -205,6 +217,8 @@
     <!-- Infinite scroll sentinel for large screens -->
     @if (!isMobile() && hasMore() && games().length > 0) {
       <div #scrollSentinel class="h-1"></div>
+      <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" [outlined]="true" icon="pi pi-plus">
+      </p-button>
     }
 
     <!-- Load more button for mobile -->
