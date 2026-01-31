@@ -97,10 +97,11 @@
 
             <!-- Right: Game Type -->
             <div class="min-w-0">
-              <p-chip [label]="game?.gameType"
+              <p-chip
+                [label]="game?.gameType"
                 [style]="{ background: 'var(--primary-100)', color: 'var(--primary-700)' }"
                 class="text-xs font-medium"
-               />
+              />
             </div>
           </div>
         </div>
@@ -158,10 +159,16 @@
                             tabindex="0"
                           >
                             {{ membership?.gamePlayer?.fullName }}
+                            @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                              <span class="text-xs text-muted-color font-normal ml-1">({{ level }})</span>
+                            }
                           </div>
                         } @else {
                           <div class="text-base font-bold text-primary-600 truncate focus:outline-none" tabindex="0">
                             {{ membership?.gamePlayer?.fullName }}
+                            @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                              <span class="text-xs text-primary-400 font-normal ml-1">({{ level }})</span>
+                            }
                             <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                           </div>
                         }
@@ -211,10 +218,16 @@
                             tabindex="0"
                           >
                             {{ membership?.gamePlayer?.fullName }}
+                            @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                              <span class="text-xs text-muted-color font-normal ml-1">({{ level }})</span>
+                            }
                           </div>
                         } @else {
                           <div class="text-base font-bold text-primary-600 truncate focus:outline-none" tabindex="0">
                             {{ membership?.gamePlayer?.fullName }}
+                            @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                              <span class="text-xs text-primary-400 font-normal ml-1">({{ level }})</span>
+                            }
                             <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                           </div>
                         }
@@ -245,10 +258,16 @@
                               class="text-sm font-medium text-color cursor-pointer truncate hover:underline"
                             >
                               {{ membership?.gamePlayer?.fullName }}
+                              @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                                <span class="text-xs text-muted-color font-normal ml-1">({{ level }})</span>
+                              }
                             </div>
                           } @else {
                             <div class="text-sm font-bold text-primary-600 truncate">
                               {{ membership?.gamePlayer?.fullName }}
+                              @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                                <span class="text-xs text-primary-400 font-normal ml-1">({{ level }})</span>
+                              }
                               <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                             </div>
                           }
@@ -285,10 +304,16 @@
                               class="text-sm font-medium text-color cursor-pointer truncate hover:underline"
                             >
                               {{ membership?.gamePlayer?.fullName }}
+                              @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                                <span class="text-xs text-muted-color font-normal ml-1">({{ level }})</span>
+                              }
                             </div>
                           } @else {
                             <div class="text-sm font-bold text-primary-600 truncate">
                               {{ membership?.gamePlayer?.fullName }}
+                              @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                                <span class="text-xs text-primary-400 font-normal ml-1">({{ level }})</span>
+                              }
                               <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
                             </div>
                           }

@@ -13,6 +13,9 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
       id
       gamePlayerMemberships(args: $args) {
         id
+        single
+        double
+        mix
         game {
           id
           playedAt
@@ -23,6 +26,7 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
           set2Team2
           set3Team1
           set3Team2
+          gameType
           rankingPoints {
             id
             points

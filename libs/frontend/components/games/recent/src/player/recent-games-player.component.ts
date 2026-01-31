@@ -319,6 +319,34 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Gets the player's level for the game based on game type
+   * @param game The game object
+   * @param playerId The player ID
+   * @returns The player's level for this game type or null if not found
+   */
+  getPlayerLevel(game: Game, playerId: string): number | null {
+    if (!game?.gamePlayerMemberships || !game?.gameType) return null;
+
+    const membership = game.gamePlayerMemberships.find(
+      (m) => m.gamePlayer?.id === playerId
+    );
+
+    if (!membership) return null;
+
+    // Map gameType to the appropriate level field
+    switch (game.gameType) {
+      case 'S':  // Singles
+        return membership.single ?? null;
+      case 'D':  // Doubles
+        return membership.double ?? null;
+      case 'MX': // Mixed Doubles
+        return membership.mix ?? null;
+      default:
+        return null;
+    }
+  }
+
+  /**
    * Checks if a game is a competition game
    * @param game The game object
    * @returns true if the game has competition encounter information
@@ -361,4 +389,6 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     // based on how the game data is structured in your system
     return team === 1 ? this.getHomeTeamName(game) : this.getAwayTeamName(game);
   }
+
+  
 }
