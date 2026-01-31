@@ -1,64 +1,110 @@
+import { IndexService } from '@app/backend-search';
 import { Tournament, TournamentApiClient, TournamentType } from '@app/backend-tournament-api';
 import { CompetitionEvent, TournamentEvent } from '@app/models';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { TOURNAMENT_DISCOVERY_QUEUE as DISCOVERY_QUEUE, TournamentDiscoveryJobData } from '../queues/sync.queue';
+import {
+  TOURNAMENT_DISCOVERY_QUEUE as DISCOVERY_QUEUE,
+  TournamentDiscoveryJobData,
+  TournamentAddByCodeJobData,
+  JOB_TYPES,
+} from '../queues/sync.queue';
+import dayjs = require('dayjs');
 
 @Injectable()
 @Processor(DISCOVERY_QUEUE)
 export class DiscoveryProcessor extends WorkerHost {
   private readonly logger = new Logger(DiscoveryProcessor.name);
 
-  constructor(private readonly tournamentApiClient: TournamentApiClient) {
+  constructor(
+    private readonly tournamentApiClient: TournamentApiClient,
+    private readonly indexService: IndexService,
+  ) {
     super();
   }
 
-  async process(job: Job<TournamentDiscoveryJobData, void, string>): Promise<void> {
-    this.logger.log(`Processing discovery job: ${job.id}`);
+  async process(job: Job<TournamentDiscoveryJobData | TournamentAddByCodeJobData, void, string>): Promise<void> {
+    this.logger.log(`Processing job: ${job.name} (${job.id})`);
 
     try {
-      const { refDate, pageSize, searchTerm } = job.data;
-
-      // Initialize progress
-      await job.updateProgress(0);
-
-      // Discover tournaments from API
-      const tournaments = await this.tournamentApiClient.discoverTournaments({
-        refDate: refDate || '2024-01-01',
-        pageSize: pageSize || 100,
-        searchTerm,
-      });
-
-      this.logger.log(`Discovered ${tournaments.length} events from API`);
-
-      // Calculate total work units
-      const totalTournaments = tournaments.length;
-      if (totalTournaments === 0) {
-        await job.updateProgress(100);
-        this.logger.log(`No tournaments to process for job: ${job.id}`);
+      // Handle add by visual code
+      if (job.name === JOB_TYPES.TOURNAMENT_ADD_BY_CODE) {
+        await this.processAddByCode(job as Job<TournamentAddByCodeJobData>);
         return;
       }
 
-      // Process each tournament with progress tracking
-      for (let i = 0; i < tournaments.length; i++) {
-        const tournament = tournaments[i];
-        await this.processTournament(tournament);
-
-        // Update progress: calculate percentage completed
-        const progressPercentage = Math.round(((i + 1) / totalTournaments) * 100);
-        await job.updateProgress(progressPercentage);
-
-        this.logger.debug(`Processed tournament ${i + 1}/${totalTournaments} (${progressPercentage}%): ${tournament.Name}`);
-      }
-
-      this.logger.log(`Completed tournament discovery job: ${job.id}`);
+      // Handle discovery
+      await this.processDiscovery(job as Job<TournamentDiscoveryJobData>);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
-      this.logger.error(`Failed to process tournament discovery: ${errorMessage}`, errorStack);
+      this.logger.error(`Failed to process job ${job.name}: ${errorMessage}`, errorStack);
       throw error;
     }
+  }
+
+  private async processAddByCode(job: Job<TournamentAddByCodeJobData>): Promise<void> {
+    const { visualCode } = job.data;
+
+    await job.updateProgress(0);
+
+    this.logger.log(`Fetching tournament by visual code: ${visualCode}`);
+
+    // Fetch tournament details from API
+    const tournament = await this.tournamentApiClient.getTournamentDetails(visualCode);
+
+    if (!tournament || !tournament.Code) {
+      this.logger.warn(`Tournament with visual code ${visualCode} not found in external API`);
+      await job.updateProgress(100);
+      return;
+    }
+
+    await job.updateProgress(50);
+
+    // Process the tournament
+    await this.processTournament(tournament);
+
+    await job.updateProgress(100);
+    this.logger.log(`Completed add by code job: ${job.id}`);
+  }
+
+  private async processDiscovery(job: Job<TournamentDiscoveryJobData>): Promise<void> {
+    const { refDate, pageSize, searchTerm } = job.data;
+
+    // Initialize progress
+    await job.updateProgress(0);
+
+    // Discover tournaments from API
+    const tournaments = await this.tournamentApiClient.discoverTournaments({
+      refDate: refDate || '2024-01-01',
+      pageSize: pageSize || 100,
+      searchTerm,
+    });
+
+    this.logger.log(`Discovered ${tournaments.length} events from API`);
+
+    // Calculate total work units
+    const totalTournaments = tournaments.length;
+    if (totalTournaments === 0) {
+      await job.updateProgress(100);
+      this.logger.log(`No tournaments to process for job: ${job.id}`);
+      return;
+    }
+
+    // Process each tournament with progress tracking
+    for (let i = 0; i < tournaments.length; i++) {
+      const tournament = tournaments[i];
+      await this.processTournament(tournament);
+
+      // Update progress: calculate percentage completed
+      const progressPercentage = Math.round(((i + 1) / totalTournaments) * 100);
+      await job.updateProgress(progressPercentage);
+
+      this.logger.debug(`Processed tournament ${i + 1}/${totalTournaments} (${progressPercentage}%): ${tournament.Name}`);
+    }
+
+    this.logger.log(`Completed tournament discovery job: ${job.id}`);
   }
 
   private async processTournament(tournament: Tournament): Promise<void> {
@@ -67,8 +113,8 @@ export class DiscoveryProcessor extends WorkerHost {
       const existingTournament = await this.findExistingTournament(tournament.Code);
 
       if (existingTournament) {
-        this.logger.debug(`Tournament ${tournament.Code} already exists, skipping`);
-        return;
+        this.logger.debug(`Tournament ${tournament.Name} (${tournament.Code}) already exists, skipping`);
+        return; 
       }
 
       // Create new tournament record
@@ -115,6 +161,9 @@ export class DiscoveryProcessor extends WorkerHost {
 
       this.logger.debug(`Creating competition: ${competition.name}`);
       await competition.save();
+
+      // Index in search
+      await this.indexService.indexCompetitionEvent(competition);
     } else {
       // Create tournament event
       const tournamentEvent = new TournamentEvent();
@@ -125,7 +174,7 @@ export class DiscoveryProcessor extends WorkerHost {
       tournamentEvent.lastSync = new Date();
       tournamentEvent.openDate = tournament.OnlineEntryStartDate ? new Date(tournament.OnlineEntryStartDate) : new Date(tournament.StartDate);
       tournamentEvent.closeDate = tournament.OnlineEntryEndDate ? new Date(tournament.OnlineEntryEndDate) : new Date(tournament.EndDate);
-      tournamentEvent.dates = `${tournament.StartDate} - ${tournament.EndDate}`;
+      tournamentEvent.dates = `${dayjs(tournament.StartDate).toISOString()},${dayjs(tournament.EndDate).toISOString()}`;
       tournamentEvent.official = true;
       tournamentEvent.state = this.mapTournamentStatus(tournament.TournamentStatus);
       tournamentEvent.country = tournament.CountryCode || 'BEL';
@@ -133,6 +182,9 @@ export class DiscoveryProcessor extends WorkerHost {
 
       this.logger.debug(`Creating tournament: ${tournamentEvent.name}`);
       await tournamentEvent.save();
+
+      // Index in search
+      await this.indexService.indexTournamentEvent(tournamentEvent);
     }
   }
 

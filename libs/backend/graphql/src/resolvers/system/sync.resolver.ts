@@ -183,6 +183,44 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
+  async addTournamentByCode(
+    @User() user: Player,
+    @Args('visualCode', { type: () => String }) visualCode: string,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to add tournament by code');
+    }
+
+    await this.syncService.queueTournamentAddByCode({ visualCode });
+
+    return {
+      message: `Tournament add by code (${visualCode}) queued successfully`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async addTournamentByCodes(
+    @User() user: Player,
+    @Args('visualCode', { type: () => [String] }) visualCode: string[],
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to add tournament by code');
+    }
+
+    for (const code of visualCode){
+      await this.syncService.queueTournamentAddByCode({ visualCode: code });
+    }
+
+    return {
+      message: `Tournament add by code (${visualCode}) queued successfully`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
   async triggerEventsSync(
     @User() user: Player,
     @Args('eventId', { type: () => [ID] }) eventIds: string[],
@@ -195,7 +233,7 @@ export class SyncResolver {
     for (const eventId of eventIds) {
       await this.syncService.queueEventSync(eventId, includeSubComponents);
     }
-    
+
     return {
       message: `Event sync queued successfully for ${eventIds.length} events`,
       success: true,

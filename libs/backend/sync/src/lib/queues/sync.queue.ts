@@ -17,6 +17,7 @@ export const SYNC_QUEUE = 'sync';
 export const JOB_TYPES = {
   // Discovery jobs
   TOURNAMENT_DISCOVERY: 'tournament-discovery',
+  TOURNAMENT_ADD_BY_CODE: 'tournament-add-by-code',
 
   // Structure sync jobs (events, draws, entries)
   TOURNAMENT_STRUCTURE_SYNC: 'tournament-structure-sync',
@@ -72,7 +73,7 @@ export const ALL_SYNC_QUEUES = [
 
 // Queue to job type mapping for easy reference
 export const QUEUE_JOB_TYPE_MAP = {
-  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY],
+  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE],
   [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
   [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC],
   [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
@@ -101,6 +102,12 @@ export interface TournamentDiscoveryJobData {
   refDate?: string;
   pageSize?: number;
   searchTerm?: string;
+  // Display metadata
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentAddByCodeJobData {
+  visualCode: string;
   // Display metadata
   metadata?: JobDisplayMetadata;
 }

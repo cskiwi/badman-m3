@@ -22,6 +22,7 @@ import {
   JOB_TYPES,
   TeamMatchingJobData,
   TournamentDiscoveryJobData,
+  TournamentAddByCodeJobData,
   TOURNAMENT_EVENT_QUEUE,
   COMPETITION_EVENT_QUEUE,
 } from '../queues/sync.queue';
@@ -134,6 +135,15 @@ export class SyncService {
    */
   async queueTournamentDiscovery(data?: TournamentDiscoveryJobData): Promise<void> {
     await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_DISCOVERY, data || {}, {
+      priority: 1,
+    });
+  }
+
+  /**
+   * Queue adding a tournament by visual code
+   */
+  async queueTournamentAddByCode(data: TournamentAddByCodeJobData): Promise<void> {
+    await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_ADD_BY_CODE, data, {
       priority: 1,
     });
   }
