@@ -358,5 +358,42 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     return team === 1 ? this.getHomeTeamName(game) : this.getAwayTeamName(game);
   }
 
-  
+  /**
+   * Gets the team number (1 or 2) that the current player is on
+   * @param game The game object
+   * @returns Team number or null if not found
+   */
+  getCurrentPlayerTeam(game: Game): number | null {
+    if (!game?.gamePlayerMemberships) return null;
+
+    const currentPlayerId = Array.isArray(this.for()) ? this.for()[0] : this.for();
+    const membership = game.gamePlayerMemberships.find(
+      (m) => m.gamePlayer?.id === currentPlayerId
+    );
+
+    return membership?.team ?? null;
+  }
+
+  /**
+   * Checks if the current player won the game
+   * @param game The game object
+   * @returns true if won, false if lost, null if no winner or player not found
+   */
+  didCurrentPlayerWin(game: Game): boolean | null {
+    const playerTeam = this.getCurrentPlayerTeam(game);
+    if (playerTeam === null || !game.winner) return null;
+
+    return game.winner === playerTeam;
+  }
+
+  /**
+   * Gets the current player's points for this game
+   * @param game The game object
+   * @returns Points for the current player
+   */
+  getCurrentPlayerPoints(game: Game): number {
+    const forValue = this.for();
+    const currentPlayerId = Array.isArray(forValue) ? forValue[0] : forValue;
+    return this.getPlayerPoints(game, currentPlayerId);
+  }
 }
