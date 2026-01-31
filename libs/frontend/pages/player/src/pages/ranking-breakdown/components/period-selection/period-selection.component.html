@@ -1,0 +1,59 @@
+<div class="period-selection">
+  <div class="period-display">
+    <span class="period-label">{{ 'all.ranking.breakdown.period.title' | translate }}</span>
+    <span class="period-dates">
+      @if (start()) {
+        {{ start() | dayjsFormat: 'DD MMM YYYY' }}
+      }
+      -
+      @if (end()) {
+        {{ end() | dayjsFormat: 'DD MMM YYYY' }}
+      }
+    </span>
+  </div>
+
+  <div class="period-actions">
+    <p-button
+      icon="pi pi-calendar"
+      [text]="true"
+      severity="secondary"
+      (onClick)="calendarMenu.toggle($event)"
+    />
+
+    <p-menu #calendarMenu [popup]="true" appendTo="body">
+      <ng-template pTemplate="start">
+        <div class="calendar-container" (click)="$event.stopPropagation()">
+          <p-datepicker
+            [inline]="true"
+            (onSelect)="onDateSelect($event)"
+          />
+          <div class="calendar-legend">
+            <div class="legend-item">
+              <span class="legend-dot point"></span>
+              <span>{{ 'all.ranking.breakdown.update.point' | translate }}</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot ranking"></span>
+              <span>{{ 'all.ranking.breakdown.update.ranking' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-menu>
+
+    <p-button
+      icon="pi pi-ellipsis-v"
+      [text]="true"
+      severity="secondary"
+      (onClick)="quickMenu.toggle($event)"
+    />
+
+    <p-menu #quickMenu [popup]="true" [model]="[
+      { label: 'all.ranking.breakdown.period.last-point-update' | translate, command: lastPointUpdate.bind(this) },
+      { label: 'all.ranking.breakdown.period.last-ranking-update' | translate, command: lastRankingUpdate.bind(this) },
+      { separator: true },
+      { label: 'all.ranking.breakdown.period.next-point-update' | translate, command: nextPointUpdate.bind(this) },
+      { label: 'all.ranking.breakdown.period.next-ranking-update' | translate, command: nextRankingUpdate.bind(this) }
+    ]" appendTo="body" />
+  </div>
+</div>

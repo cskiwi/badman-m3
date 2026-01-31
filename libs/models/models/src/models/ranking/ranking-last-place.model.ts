@@ -14,7 +14,7 @@ import {
 import { Player } from '../player.model';
 import { RankingSystem } from './ranking-system.model';
 import { RankingGroup } from './ranking-group.model';
-import { SortableField, WhereField } from '@app/utils';
+import { SortableField, WhereField, WhereObject } from '@app/utils';
 
 @ObjectType('RankingLastPlace', { description: 'A RankingLastPlace' })
 @Entity('RankingLastPlaces', { schema: 'ranking' })
@@ -38,7 +38,7 @@ export class RankingLastPlace extends BaseEntity {
   @Column({ type: 'timestamptz' })
   declare rankingDate: Date;
 
-  @SortableField({nullable: true})
+  @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ type: 'character varying', length: 255, nullable: true })
   declare gender: string;
@@ -148,18 +148,15 @@ export class RankingLastPlace extends BaseEntity {
   @Column({ default: false })
   declare doubleInactive: boolean;
 
-  @Field(() => ID)
-  @WhereField()
+  @WhereField(() => ID)
   @Column({ type: 'uuid' })
   declare playerId: string;
 
-  @Field(() => ID)
-  @WhereField()
+  @WhereField(() => ID)
   @Column({ type: 'uuid' })
   declare systemId: string;
 
-  @Field(() => ID, { nullable: true })
-  @WhereField({ nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ nullable: true, type: 'uuid' })
   declare groupId?: string;
 
@@ -168,12 +165,12 @@ export class RankingLastPlace extends BaseEntity {
   @JoinColumn({ name: 'playerId' })
   declare player: Relation<Player>;
 
-  @Field(() => RankingSystem, { nullable: true })
+  @WhereObject(() => RankingSystem)
   @ManyToOne(() => RankingSystem, (system) => system.rankingLastPlaces)
   @JoinColumn({ name: 'systemId' })
   declare system: Relation<RankingSystem>;
 
-  @Field(() => RankingGroup, { nullable: true })
+  @WhereObject(() => RankingGroup)
   @ManyToOne(() => RankingGroup)
   @JoinColumn({ name: 'groupId' })
   declare group?: Relation<RankingGroup>;

@@ -60,7 +60,7 @@ export class GamePlayerMembership extends BaseEntity {
   declare gamePlayer: Relation<Player>;
 
   @SortableObject('Game')
-  @WhereObject('Game')
+  @WhereObject(() => Game)
   @ManyToOne(() => Game, (game) => game.gamePlayerMemberships)
   declare game: Relation<Game>;
 }

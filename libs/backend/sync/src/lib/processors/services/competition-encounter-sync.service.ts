@@ -1,10 +1,20 @@
-import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
-import { CompetitionDraw, CompetitionEncounter, Team as TeamModel, Game, Player, GamePlayerMembership, RankingSystem, RankingPlace } from '@app/models';
+import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer, MatchType } from '@app/backend-tournament-api';
+import {
+  CompetitionDraw,
+  CompetitionEncounter,
+  Team as TeamModel,
+  Game,
+  Player,
+  GamePlayerMembership,
+  RankingSystem,
+  RankingPlace,
+} from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
 import { LessThanOrEqual } from 'typeorm';
+import { parse } from 'node:path';
 
 /**
  * Encounter sync can be triggered in two ways:
@@ -67,9 +77,7 @@ export class CompetitionEncounterSyncService {
    * Load encounter context by internal ID (manual trigger)
    * The encounter must exist in the database
    */
-  private async resolveFromInternalId(
-    encounterId: string,
-  ): Promise<{ tournamentCode: string; draw: CompetitionDraw; encounterCode: string }> {
+  private async resolveFromInternalId(encounterId: string): Promise<{ tournamentCode: string; draw: CompetitionDraw; encounterCode: string }> {
     const encounter = await CompetitionEncounter.findOne({
       where: { id: encounterId },
       relations: ['drawCompetition', 'drawCompetition.competitionSubEvent', 'drawCompetition.competitionSubEvent.competitionEvent'],
@@ -169,8 +177,8 @@ export class CompetitionEncounterSyncService {
     let awayScore: number | undefined;
     if (teamMatch.Sets?.Set) {
       const sets = Array.isArray(teamMatch.Sets.Set) ? teamMatch.Sets.Set : [teamMatch.Sets.Set];
-      homeScore = sets.reduce((sum, set) => sum + (parseInt(set.Team1 || '0', 10)), 0);
-      awayScore = sets.reduce((sum, set) => sum + (parseInt(set.Team2 || '0', 10)), 0);
+      homeScore = sets.reduce((sum, set) => sum + parseInt(set.Team1 || '0', 10), 0);
+      awayScore = sets.reduce((sum, set) => sum + parseInt(set.Team2 || '0', 10), 0);
     }
 
     const existingEncounter = await CompetitionEncounter.findOne({
@@ -250,7 +258,7 @@ export class CompetitionEncounterSyncService {
     });
 
     if (existingGame) {
-    existingGame.playedAt = encounterDate;
+      existingGame.playedAt = encounterDate;
       existingGame.gameType = this.mapGameType(match);
       existingGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
       existingGame.winner = match.Winner;
@@ -312,15 +320,26 @@ export class CompetitionEncounterSyncService {
    * Map match to game type based on MatchTypeID
    * MatchTypeID: 1 = Singles, 3 = Doubles
    */
-  private mapGameType(match: Match & { MatchTypeID?: number }): GameType {
-    const matchTypeId = (match as { MatchTypeID?: number }).MatchTypeID;
-    if (matchTypeId === 1) return GameType.S;
-    if (matchTypeId === 3) return GameType.D;
-    // Fallback to checking event name
-    if (match.EventName?.toLowerCase().includes('single')) return GameType.S;
-    if (match.EventName?.toLowerCase().includes('double')) return GameType.D;
-    if (match.EventName?.toLowerCase().includes('mixed')) return GameType.MX;
-    return GameType.S; // Default to singles
+  private mapGameType(match: Match): GameType {
+    const type = parseInt(match.MatchTypeID?.toString(), 10);
+
+    switch (type) {
+      case MatchType.MS:
+      case MatchType.WS:
+      case MatchType.Single:
+        return GameType.S;
+
+      case MatchType.MD:
+      case MatchType.WD:
+        return GameType.D;
+
+      case MatchType.XD:
+      case MatchType.Double:
+        return GameType.MX;
+
+      default:
+        throw new Error(`Type not found, ${type}`);
+    }
   }
 
   private mapMatchStatus(scoreStatus?: string): GameStatus {

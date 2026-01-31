@@ -624,8 +624,98 @@ export type I18nTranslations = {
         };
         "ranking": {
             "breakdown": {
+                "add-game": {
+                    "p1t1": string;
+                    "p1t2": string;
+                    "p2t1": string;
+                    "p2t2": string;
+                    "title": string;
+                    "won": string;
+                };
+                "can-downgrade": string;
+                "can-not-downgrade": string;
+                "can-not-upgrade": string;
+                "can-upgrade": string;
+                "corrected": string;
+                "countsForDowngrade": string;
+                "countsForUpgrade": string;
+                "date": string;
+                "disclaimer": string;
                 "downgrade": string;
+                "downgrade-average": string;
+                "drops-next-period": string;
+                "evolution": string;
+                "export": {
+                    "avgDowngrade": string;
+                    "avgUpgrade": string;
+                    "countsFor": string;
+                    "date": string;
+                    "LOST_DOWNGRADE": string;
+                    "LOST_IGNORED": string;
+                    "LOST_UPGRADE": string;
+                    "opponent1": string;
+                    "opponent2": string;
+                    "OUT_SCOPE": string;
+                    "player1": string;
+                    "player2": string;
+                    "points": string;
+                    "title": string;
+                    "usedForDowngrade": string;
+                    "usedForUpgrade": string;
+                    "WON": string;
+                };
+                "filters": string;
+                "games": {
+                    "none": string;
+                    "one": string;
+                    "other": string;
+                };
+                "games-downgrade": string;
+                "games-upgrade": string;
+                "hint": string;
+                "ignored": string;
+                "includeOutOfScope": string;
+                "lostGames": {
+                    "none": string;
+                    "one": string;
+                    "other": string;
+                };
+                "no-team": string;
+                "notUsed": string;
+                "opponent": string;
+                "outOfScope": {
+                    "none": string;
+                    "one": string;
+                    "other": string;
+                };
+                "outOfScopeDowngrade": string;
+                "outOfScopeUpgrade": string;
+                "outOfScopeWonGames": string;
+                "period": {
+                    "last-point-update": string;
+                    "last-ranking-update": string;
+                    "next-point-update": string;
+                    "next-ranking-update": string;
+                    "title": string;
+                };
+                "points": string;
+                "pointsPerGame": string;
+                "removed-games": string;
+                "show": string;
+                "show-downgrade": string;
+                "show-upgrade": string;
+                "team": string;
+                "title": string;
+                "untill": string;
+                "update": {
+                    "last": string;
+                    "point": string;
+                    "ranking": string;
+                };
                 "upgrade": string;
+                "upgrade-average": string;
+                "usedForDowngrade": string;
+                "usedForUpgrade": string;
             };
         };
         "search": {

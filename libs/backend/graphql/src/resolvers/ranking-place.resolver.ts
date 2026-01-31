@@ -1,7 +1,8 @@
 import { AllowAnonymous } from '@app/backend-authorization';
-import { RankingPlace } from '@app/models';
+import { Player, RankingGroup, RankingPlace, RankingSystem } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { RankingPlaceArgs } from '../args';
 
 @Resolver(() => RankingPlace)
 export class RankingPlaceResolver {
@@ -10,7 +11,6 @@ export class RankingPlaceResolver {
   async rankingPlace(@Args('id', { type: () => ID }) id: string): Promise<RankingPlace> {
     const rankingPlace = await RankingPlace.findOne({
       where: { id },
-      relations: ['player', 'system'],
     });
 
     if (!rankingPlace) {
@@ -23,19 +23,26 @@ export class RankingPlaceResolver {
   @Query(() => [RankingPlace])
   @AllowAnonymous()
   async rankingPlaces(
-    @Args('playerId', { type: () => ID, nullable: true }) playerId?: string,
-    @Args('systemId', { type: () => ID, nullable: true }) systemId?: string,
+    @Args('args', { type: () => RankingPlaceArgs, nullable: true })
+    inputArgs?: InstanceType<typeof RankingPlaceArgs>,
   ): Promise<RankingPlace[]> {
-    const where: any = {};
-    
-    if (playerId) where.playerId = playerId;
-    if (systemId) where.systemId = systemId;
+    const args = RankingPlaceArgs.toFindManyOptions(inputArgs);
+    return RankingPlace.find(args);
+  }
 
-    return RankingPlace.find({
-      where,
-      relations: ['player', 'system'],
-      take: 100,
-      order: { rankingDate: 'DESC' },
-    });
+  @ResolveField(() => Player, { nullable: true })
+  async player(@Parent() { playerId }: RankingPlace): Promise<Player | null> {
+    return Player.findOne({ where: { id: playerId } });
+  }
+
+  @ResolveField(() => RankingSystem, { nullable: true })
+  async system(@Parent() { systemId }: RankingPlace): Promise<RankingSystem | null> {
+    return RankingSystem.findOne({ where: { id: systemId } });
+  }
+
+  @ResolveField(() => RankingGroup, { nullable: true })
+  async group(@Parent() { groupId }: RankingPlace): Promise<RankingGroup | null> {
+    if (!groupId) return null;
+    return RankingGroup.findOne({ where: { id: groupId } });
   }
 }

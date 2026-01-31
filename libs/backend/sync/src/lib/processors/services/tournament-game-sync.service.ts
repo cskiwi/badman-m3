@@ -1,12 +1,5 @@
 import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
-import {
-  Game,
-  Player,
-  GamePlayerMembership,
-  RankingSystem,
-  RankingPlace,
-  TournamentDraw as TournamentDrawModel,
-} from '@app/models';
+import { Game, Player, GamePlayerMembership, RankingSystem, RankingPlace, TournamentDraw as TournamentDrawModel } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { TournamentPlanningService } from './tournament-planning.service';
@@ -78,7 +71,7 @@ export class TournamentGameSyncService {
       }
 
       // Process matches with progress tracking
-      await this.processMatches(matches, tournamentCode, updateProgress, drawId);
+      await this.processMatches(matches, tournamentCode, updateProgress, drawId, subEvent?.gameType);
 
       this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
     } catch (error: unknown) {
@@ -127,7 +120,13 @@ export class TournamentGameSyncService {
     return matches;
   }
 
-  private async processMatches(matches: Match[], tournamentCode: string, updateProgress: (progress: number) => Promise<void>, drawId?: string): Promise<void> {
+  private async processMatches(
+    matches: Match[],
+    tournamentCode: string,
+    updateProgress: (progress: number) => Promise<void>,
+    drawId?: string,
+    gameType?: GameType,
+  ): Promise<void> {
     for (let i = 0; i < matches.length; i++) {
       const match = matches[i];
 
@@ -136,7 +135,7 @@ export class TournamentGameSyncService {
         continue;
       }
 
-      await this.processMatch(tournamentCode, match, drawId);
+      await this.processMatch(match, drawId, gameType);
 
       const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
       await updateProgress(finalProgress);
@@ -145,7 +144,7 @@ export class TournamentGameSyncService {
     }
   }
 
-  private async processMatch(tournamentCode: string, match: Match, drawId?: string): Promise<void> {
+  private async processMatch(match: Match, drawId?: string, gameType?: GameType): Promise<void> {
     if (!match) {
       this.logger.warn('Received undefined or null match, skipping processing');
       return;
@@ -175,7 +174,7 @@ export class TournamentGameSyncService {
 
     if (existingGame) {
       existingGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
-      existingGame.gameType = this.mapGameTypeToEnum(match.EventName);
+      existingGame.gameType = gameType;
       existingGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
       existingGame.winner = match.Winner;
       existingGame.round = match.RoundName;
@@ -195,7 +194,7 @@ export class TournamentGameSyncService {
     } else {
       const newGame = new Game();
       newGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
-      newGame.gameType = this.mapGameTypeToEnum(match.EventName);
+      newGame.gameType = gameType;
       newGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
       newGame.winner = match.Winner;
       newGame.round = match.RoundName;
@@ -244,13 +243,6 @@ export class TournamentGameSyncService {
     if (game) {
       await this.createGamePlayerMemberships(game, match);
     }
-  }
-
-  private mapGameTypeToEnum(eventName: string): GameType {
-    if (eventName?.toLowerCase().includes('single')) return GameType.S;
-    if (eventName?.toLowerCase().includes('double')) return GameType.D;
-    if (eventName?.toLowerCase().includes('mixed')) return GameType.MX;
-    return GameType.S; // Default to singles
   }
 
   private mapMatchStatus(scoreStatus: string): GameStatus {

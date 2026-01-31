@@ -168,7 +168,7 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
   for (const key of fields) {
     // Get the field type from the model - first try explicit type info, then reflection
     let fieldType = Reflect.getMetadata('design:type', classRef.prototype, key);
-    
+
     // Check if we have explicit type information from WhereField decorator
     if (fieldTypes[key]) {
       const returnTypeFunc = fieldTypes[key];
@@ -179,10 +179,10 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
       else if (explicitType === Date) fieldType = Date;
       else if (explicitType === ID) fieldType = ID;
     }
-    
+
     let operatorType: Type;
     let directType: Type;
-    
+
     // Determine the appropriate operator type and direct type based on the field type
     if (fieldType === String) {
       operatorType = StringWhereOperators;
@@ -230,14 +230,16 @@ export function appendWhereObjects<T>(classRef: Type<T>, name: string) {
   }
 
   // Each of the objects should have a WhereInputType in the whereInputs array
-  for (const { propertyKey, propertyName } of objects) {
-    const WhereInputProperty = whereCache.get(propertyName);
+  for (const { propertyKey, typeFunc } of objects) {
+    const objectType = typeFunc();
+    const objectTypeName = objectType.name;
+    const WhereInputProperty = whereCache.get(objectTypeName);
 
     if (!WhereInputProperty) {
-      throw new Error(`2. WhereInputType for ${propertyName} not found`);
+      throw new Error(`2. WhereInputType for ${objectTypeName} not found`);
     }
 
-    Logger.debug(`Appending ${propertyName} for ${propertyKey} in ${className}`);
+    Logger.debug(`Appending ${objectTypeName} for ${propertyKey} in ${className}`);
 
     // Dynamically add a decorated field to the WhereInput class
     Object.defineProperty(WhereInput.prototype, propertyKey, {

@@ -1,0 +1,57 @@
+@if (systemLoaded() && system()) {
+  <!-- Page Header Section -->
+  <section class="mb-6">
+    <div class="rounded-border border border-surface overflow-hidden">
+      <!-- Header with title and controls -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-4 py-4 bg-highlight">
+        <div class="flex items-center gap-3">
+          <i class="pi pi-chart-bar text-2xl text-primary"></i>
+          <div>
+            <h2 class="text-xl font-semibold text-color m-0">{{ 'all.ranking.breakdown.pointsPerGame' | translate }}</h2>
+            <p class="text-sm text-muted-color m-0 mt-1">{{ system().name }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <p-select
+            [options]="gameTypeOptions"
+            [ngModel]="gameTypeControl.value"
+            (onChange)="onGameTypeChange($event.value)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="{{ 'all.game.types.title' | translate }}"
+            styleClass="w-full sm:w-auto"
+          />
+
+          <app-period-selection [system]="system()" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Games List Section -->
+  <section>
+    <div class="rounded-border border border-surface overflow-hidden">
+      <app-list-games
+        [system]="system()"
+        [player]="{ id: playerId() ?? '' }"
+        [rankingPlace]="rankingPlace()"
+        [type]="type()"
+      />
+    </div>
+  </section>
+} @else {
+  <!-- Loading State -->
+  <div class="rounded-border border border-surface overflow-hidden">
+    <div class="flex items-center gap-3 px-4 py-4 bg-highlight">
+      <p-skeleton width="2rem" height="2rem" borderRadius="0.5rem" />
+      <div class="flex-1">
+        <p-skeleton width="12rem" height="1.5rem" styleClass="mb-2" />
+        <p-skeleton width="8rem" height="1rem" />
+      </div>
+    </div>
+    <div class="p-4">
+      <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+    </div>
+  </div>
+}

@@ -119,6 +119,7 @@ export interface Match {
   ScoreStatus: number;
   RoundName?: string;
   MatchTime?: string;
+  MatchTypeID: MatchType;
   EventCode: string;
   EventName: string;
   DrawCode: string;
@@ -210,6 +211,20 @@ export enum GenderType {
 export enum GameType {
   Singles = 1,
   Doubles = 2,
+}
+
+export enum MatchType {
+  MS = 1,
+  WS = 2,
+  MD = 3,
+  WD = 4,
+  XD = 5,
+  BS = 11,
+  GS = 12,
+  BD = 13,
+  GD = 14,
+  Single = 101,
+  Double = 102,
 }
 
 export enum DrawType {

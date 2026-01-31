@@ -28,6 +28,13 @@ export const routes: Route[] = [
             path: 'edit',
             loadComponent: () => import('./pages/edit/page-edit.component').then((m) => m.PageEditComponent),
           },
+          {
+            path: 'ranking/:type',
+            loadComponent: () =>
+              import('./pages/ranking-breakdown/page-ranking-breakdown.component').then(
+                (m) => m.PageRankingBreakdownComponent,
+              ),
+          },
         ],
       },
     ],
