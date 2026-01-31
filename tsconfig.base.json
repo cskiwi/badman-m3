@@ -20,6 +20,7 @@
       "@app/backend-database": ["libs/backend/database/src/index.ts"],
       "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
       "@app/backend-health": ["libs/backend/health/src/index.ts"],
+      "@app/backend-ranking": ["libs/backend/ranking/src/index.ts"],
       "@app/backend-search": ["libs/backend/search/src/index.ts"],
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
       "@app/backend-sync": ["libs/backend/sync/src/index.ts"],

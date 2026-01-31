@@ -1,0 +1,13 @@
+{
+  "name": "@app/backend-ranking",
+  "version": "0.0.1",
+  "dependencies": {
+    "tslib": "^2.8.1",
+    "@nestjs/common": "^11.1.5",
+    "@nestjs/terminus": "^11.0.0"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "private": true
+}

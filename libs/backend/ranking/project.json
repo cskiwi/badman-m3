@@ -1,0 +1,40 @@
+{
+  "name": "backend-ranking",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/ranking/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/libs/backend/ranking", "{workspaceRoot}\\coverage\\libs\\backend\\ranking"],
+      "options": {
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "coverage": true
+        }
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "{workspaceRoot}/dist/libs/backend/ranking",
+        "tsConfig": "libs/backend/ranking/tsconfig.lib.json",
+        "packageJson": "libs/backend/ranking/package.json",
+        "main": "libs/backend/ranking/src/index.ts",
+        "assets": ["{projectRoot/*.md"]
+      }
+    }
+  }
+}
