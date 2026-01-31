@@ -179,9 +179,9 @@
 
                 <!-- Team 1 Bullet -->
                 <div class="flex items-center">
-                  @if (getMatchWinner(game) === 1) {
+                  @if (game.winner === 1) {
                     <div class="w-4 h-4 bg-green-500 rounded-full transition-all duration-200 animate-pulse"></div>
-                  } @else if (getMatchWinner(game) === 2) {
+                  } @else if (game.winner === 2) {
                     <div class="w-4 h-4 bg-red-500 rounded-full opacity-50"></div>
                   } @else {
                     <div class="w-4 h-4 bg-surface-300 rounded-full"></div>
@@ -197,9 +197,9 @@
 
                 <!-- Team 2 Bullet -->
                 <div class="flex items-center">
-                  @if (getMatchWinner(game) === 2) {
+                  @if (game.winner === 2) {
                     <div class="w-4 h-4 bg-green-500 rounded-full transition-all duration-200 animate-pulse"></div>
-                  } @else if (getMatchWinner(game) === 1) {
+                  } @else if (game.winner === 1) {
                     <div class="w-4 h-4 bg-red-500 rounded-full opacity-50"></div>
                   } @else {
                     <div class="w-4 h-4 bg-surface-300 rounded-full"></div>
@@ -242,9 +242,9 @@
                 <!-- Team 1 -->
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2 flex-1 min-w-0">
-                    @if (getMatchWinner(game) === 1) {
+                    @if (game.winner === 1) {
                       <div class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                    } @else if (getMatchWinner(game) === 2) {
+                    } @else if (game.winner === 2) {
                       <div class="w-3 h-3 bg-red-500 rounded-full opacity-50 flex-shrink-0"></div>
                     } @else {
                       <div class="w-3 h-3 bg-surface-300 rounded-full flex-shrink-0"></div>
@@ -288,9 +288,9 @@
                 <!-- Team 2 -->
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2 flex-1 min-w-0">
-                    @if (getMatchWinner(game) === 2) {
+                    @if (game.winner === 2) {
                       <div class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                    } @else if (getMatchWinner(game) === 1) {
+                    } @else if (game.winner === 1) {
                       <div class="w-3 h-3 bg-red-500 rounded-full opacity-50 flex-shrink-0"></div>
                     } @else {
                       <div class="w-3 h-3 bg-surface-300 rounded-full flex-shrink-0"></div>

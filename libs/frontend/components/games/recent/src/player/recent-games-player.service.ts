@@ -27,6 +27,7 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
           set3Team1
           set3Team2
           gameType
+          winner
           rankingPoints {
             id
             points

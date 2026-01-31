@@ -155,38 +155,6 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     return 0;
   }
 
-  /**
-   * Determines which team won the overall match
-   * @param game The game object
-   * @returns 1 if team 1 won, 2 if team 2 won, 0 if tie
-   */
-  getMatchWinner(game: Game): number {
-    let team1Wins = 0;
-    let team2Wins = 0;
-
-    // Only count sets that were actually played
-    if (this.isSetPlayed(game.set1Team1, game.set1Team2)) {
-      const set1Winner = this.getSetWinner(game.set1Team1, game.set1Team2);
-      if (set1Winner === 1) team1Wins++;
-      if (set1Winner === 2) team2Wins++;
-    }
-
-    if (this.isSetPlayed(game.set2Team1, game.set2Team2)) {
-      const set2Winner = this.getSetWinner(game.set2Team1, game.set2Team2);
-      if (set2Winner === 1) team1Wins++;
-      if (set2Winner === 2) team2Wins++;
-    }
-
-    if (this.isSetPlayed(game.set3Team1, game.set3Team2)) {
-      const set3Winner = this.getSetWinner(game.set3Team1, game.set3Team2);
-      if (set3Winner === 1) team1Wins++;
-      if (set3Winner === 2) team2Wins++;
-    }
-
-    if (team1Wins > team2Wins) return 1;
-    if (team2Wins > team1Wins) return 2;
-    return 0;
-  }
 
   /**
    * Checks if a player is the current player being viewed
