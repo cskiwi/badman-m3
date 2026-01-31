@@ -139,7 +139,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
    * @returns true if the set was played (both scores are defined)
    */
   isSetPlayed(team1Score: number | undefined, team2Score: number | undefined): boolean {
-    return team1Score !== undefined && team2Score !== undefined && team1Score > 0 && team2Score > 0;
+    return team1Score !== undefined && team2Score !== undefined && (team1Score > 0 || team2Score > 0);
   }
 
   /**
