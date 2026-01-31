@@ -111,7 +111,7 @@ export class RankingBreakdownService {
                       { gameType: { eq: gameType } },
                       { playedAt: { between: [params.game.toDate(), params.end.toDate()] } },
                       {
-                        OR: [{ set1Team1: { gte: 21 } }, { set1Team2: { gte: 21 } }],
+                        OR: [{ set1Team1: { gte: 0 } }, { set1Team2: { gte: 0 } }],
                       },
                     ],
                   },
