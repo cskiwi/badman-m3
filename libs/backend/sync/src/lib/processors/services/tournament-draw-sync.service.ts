@@ -1,5 +1,5 @@
-import { TournamentApiClient, TournamentDraw } from '@app/backend-tournament-api';
-import { TournamentDraw as TournamentDrawModel, TournamentSubEvent } from '@app/models';
+import { TournamentApiClient } from '@app/backend-tournament-api';
+import { TournamentDraw as TournamentDrawModel, TournamentSubEvent, TournamentEvent } from '@app/models';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
@@ -7,14 +7,28 @@ import { TOURNAMENT_EVENT_QUEUE } from '../../queues/sync.queue';
 import { generateJobId } from '../../utils/job.utils';
 import { TournamentPlanningService, TournamentWorkPlan } from './tournament-planning.service';
 
-export interface TournamentDrawSyncData {
+interface DrawContext {
+  draw: TournamentDrawModel;
+  subEvent: TournamentSubEvent;
+  tournamentEvent: TournamentEvent;
   tournamentCode: string;
   eventCode: string;
   drawCode: string;
+}
+
+/**
+ * Draw sync can be triggered in two ways:
+ * 1. Manual: by drawId (item must exist)
+ * 2. Parent job: by tournamentCode + subEventId + drawCode (item might not exist yet)
+ */
+export type TournamentDrawSyncData = (
+  | { drawId: string } // Manual trigger
+  | { tournamentCode: string; subEventId: string; drawCode: string } // Parent job trigger
+) & {
   includeSubComponents?: boolean;
   workPlan?: TournamentWorkPlan;
   childJobsCreated?: boolean;
-}
+};
 
 @Injectable()
 export class TournamentDrawSyncService {
@@ -28,25 +42,33 @@ export class TournamentDrawSyncService {
 
   async processDrawSync(job: Job<TournamentDrawSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament draw sync`);
-    const { tournamentCode, eventCode, drawCode, includeSubComponents, childJobsCreated } = job.data;
+    const { includeSubComponents, workPlan, childJobsCreated } = job.data;
+
+    // Step 1: Resolve context from either input type
+    const context = await this.resolveDrawContext(job.data);
+    const { draw, tournamentCode, eventCode, drawCode } = context;
+    const drawName = draw.name || drawCode;
+    this.logger.log(`Loaded draw: ${drawName} (${drawCode}) for tournament ${tournamentCode}`);
 
     try {
       let completedSteps = 0;
-      const totalSteps = includeSubComponents ? 3 : 2; // update draw + get name + (optional child job creation)
-
-      // Get draw name for metadata (needed for child job creation)
-      const drawName = await this.getDrawName(tournamentCode, drawCode);
-
-      // Always do the actual work first (create/update the draw)
-      await this.createOrUpdateDrawFromApi(tournamentCode, eventCode, drawCode);
+      const totalSteps = includeSubComponents ? 3 : 2;
 
       completedSteps++;
       await updateProgress(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
-      this.logger.debug(`Completed draw creation/update`);
+      if (workPlan) {
+        this.logger.log(`Work plan: ${workPlan.totalJobs} total jobs needed`);
+      }
 
-      // If includeSubComponents and children haven't been created yet, create them and wait
+      // Step 2: Update draw data from API
+      await this.updateDrawFromApi(draw, tournamentCode, eventCode, drawCode);
+
+      completedSteps++;
+      await updateProgress(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
+      this.logger.debug(`Completed draw update`);
+
+      // Step 3: If includeSubComponents, create game/entry/standing child jobs
       if (includeSubComponents && !childJobsCreated) {
-        // Create game job first, then entry and standing as children of game to ensure proper ordering
         const gameJobName = generateJobId('tournament', 'game', tournamentCode, drawCode);
         const entryJobName = generateJobId('tournament', 'entry', tournamentCode, drawCode);
         const standingJobName = generateJobId('tournament', 'standing', tournamentCode, drawCode);
@@ -56,8 +78,7 @@ export class TournamentDrawSyncService {
             name: gameJobName,
             queueName: TOURNAMENT_EVENT_QUEUE,
             data: {
-              tournamentCode,
-              drawCode,
+              drawId: draw.id, // Pass internal ID
               metadata: {
                 displayName: `Games: ${drawName}`,
                 drawName: drawName,
@@ -76,8 +97,7 @@ export class TournamentDrawSyncService {
             name: entryJobName,
             queueName: TOURNAMENT_EVENT_QUEUE,
             data: {
-              tournamentCode,
-              drawCode,
+              drawId: draw.id, // Pass internal ID
               metadata: {
                 displayName: `Entries: ${drawName}`,
                 drawName: drawName,
@@ -90,15 +110,14 @@ export class TournamentDrawSyncService {
                 id: job.id!,
                 queue: job.queueQualifiedName,
               },
-              dependencies: [gameJobName], // Entry depends on game completion
+              dependencies: [gameJobName],
             },
           },
           {
             name: standingJobName,
             queueName: TOURNAMENT_EVENT_QUEUE,
             data: {
-              tournamentCode,
-              drawCode,
+              drawId: draw.id, // Pass internal ID
               metadata: {
                 displayName: `Standing: ${drawName}`,
                 drawName: drawName,
@@ -111,7 +130,7 @@ export class TournamentDrawSyncService {
                 id: job.id!,
                 queue: job.queueQualifiedName,
               },
-              dependencies: [entryJobName], // Standing depends on entry completion
+              dependencies: [entryJobName],
             },
           },
         ];
@@ -123,16 +142,14 @@ export class TournamentDrawSyncService {
 
         await this.tournamentSyncFlow.addBulk(children);
 
-        this.logger.log(`Added game job with entry (and standing as child of entry) for draw ${drawName}`);
+        this.logger.log(`Added game, entry, standing jobs for draw ${drawName}`);
 
-        // Move to waiting for children and throw WaitingChildrenError
         const shouldWait = await job.moveToWaitingChildren(token!);
         if (shouldWait) {
-          this.logger.log(`Moving to waiting for children - game job (with entry and standing children) pending for draw ${drawName}`);
+          this.logger.log(`Moving to waiting for children for draw ${drawName}`);
           throw new WaitingChildrenError();
         }
 
-        // If we reach here, all children have completed
         this.logger.log(`All child jobs completed for draw ${drawName}, continuing`);
       }
 
@@ -142,7 +159,6 @@ export class TournamentDrawSyncService {
 
       this.logger.log(`Completed tournament draw sync`);
     } catch (error: unknown) {
-      // Re-throw WaitingChildrenError as expected
       if (error instanceof WaitingChildrenError) {
         throw error;
       }
@@ -154,110 +170,36 @@ export class TournamentDrawSyncService {
     }
   }
 
-  private async createOrUpdateDrawFromApi(tournamentCode: string, eventCode: string, drawCode: string): Promise<void> {
-    try {
-      // First try to get the draw from the event draws list to get full draw object
-      const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, eventCode);
-      const drawData = draws.find((d) => d?.Code === drawCode);
+  private async updateDrawFromApi(draw: TournamentDrawModel, tournamentCode: string, eventCode: string, drawCode: string): Promise<void> {
+    this.logger.debug(`Updating draw from API: ${draw.name} (${drawCode})`);
 
-      if (drawData) {
-        // Use the existing createOrUpdateDraw method
-        await this.createOrUpdateDraw(tournamentCode, eventCode, drawData);
+    try {
+      // First try to get the draw from the event draws list
+      const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, eventCode);
+      const apiDraw = draws?.find((d) => d?.Code === drawCode);
+
+      if (apiDraw) {
+        draw.name = apiDraw.Name;
+        draw.type = this.mapDrawType(apiDraw.TypeID);
+        draw.size = apiDraw.Size;
+        draw.lastSync = new Date();
+        await draw.save();
+        this.logger.debug(`Updated draw ${drawCode}`);
         return;
       }
 
-      // Fallback to draw details API if not found in event draws
+      // Fallback to draw details API
       const drawDetails = await this.tournamentApiClient.getDrawDetails?.(tournamentCode, drawCode);
       if (drawDetails) {
-        // Convert drawDetails to TournamentDraw format for createOrUpdateDraw
-        const tournamentDrawData = {
-          Code: drawCode,
-          Name: drawDetails.Name,
-          TypeID: drawDetails.TypeID,
-          Size: drawDetails.Size,
-        } as TournamentDraw;
-
-        await this.createOrUpdateDraw(tournamentCode, eventCode, tournamentDrawData);
+        draw.name = drawDetails.Name;
+        draw.type = this.mapDrawType(drawDetails.TypeID);
+        draw.size = drawDetails.Size;
+        draw.lastSync = new Date();
+        await draw.save();
+        this.logger.debug(`Updated draw ${drawCode} from draw details`);
       }
     } catch (error: unknown) {
-      this.logger.error(`Could not update tournament draw ${drawCode} from API`, error);
-    }
-  }
-
-  /**
-   * Get draw name for display purposes
-   */
-  private async getDrawName(tournamentCode: string, drawCode: string): Promise<string> {
-    try {
-      // Try to get the draw from the tournament API to get its name
-      const events = await this.tournamentApiClient.getTournamentEvents(tournamentCode);
-
-      for (const event of events) {
-        try {
-          const draws = await this.tournamentApiClient.getEventDraws(tournamentCode, event.Code);
-          const draw = draws.find((d) => d.Code === drawCode);
-          if (draw) {
-            return draw.Name || drawCode;
-          }
-        } catch (error) {
-          // Continue to next event if this one fails
-          continue;
-        }
-      }
-
-      // Fallback to draw code if name not found
-      return drawCode;
-    } catch (error) {
-      // Fallback to draw code if API call fails
-      return drawCode;
-    }
-  }
-
-  private async createOrUpdateDraw(tournamentCode: string, eventCode: string, draw: TournamentDraw): Promise<void> {
-    this.logger.debug(`Creating/updating tournament draw: ${draw.Name} (${draw.Code})`);
-
-    // Find the sub-event that this draw belongs to with tournament context
-    const subEvent = await TournamentSubEvent.findOne({
-      where: { 
-        visualCode: eventCode,
-        tournamentEvent: {
-          visualCode: tournamentCode
-        }
-      },
-      relations: ['tournamentEvent']
-    });
-
-    if (!subEvent) {
-      this.logger.warn(`Sub-event with code ${eventCode} not found for tournament ${tournamentCode}, skipping draw ${draw.Code}`);
-      return;
-    }
-
-    // Check if draw already exists for this specific sub-event context
-    const existingDraw = await TournamentDrawModel.findOne({
-      where: {
-        visualCode: draw.Code,
-        subeventId: subEvent.id,
-      },
-    });
-
-    if (existingDraw) {
-      existingDraw.name = draw.Name;
-      existingDraw.type = this.mapDrawType(draw.TypeID);
-      existingDraw.size = draw.Size;
-      await existingDraw.save();
-      this.logger.debug(`Updated existing draw ${draw.Code} for sub-event ${subEvent.id}`);
-    } else {
-      const newDraw = new TournamentDrawModel();
-      newDraw.name = draw.Name;
-      newDraw.type = this.mapDrawType(draw.TypeID);
-      newDraw.size = draw.Size;
-      newDraw.visualCode = draw.Code;
-      newDraw.subeventId = subEvent.id;
-      newDraw.risers = 0;
-      newDraw.fallers = 0;
-      newDraw.visualCode = draw.Code;
-      await newDraw.save();
-      this.logger.debug(`Created new draw ${draw.Code} for sub-event ${subEvent.id}`);
+      this.logger.warn(`Could not update tournament draw ${drawCode} from API`);
     }
   }
 
@@ -282,5 +224,109 @@ export class TournamentDrawSyncService {
       default:
         return 'KO'; // Default to knockout for tournaments
     }
+  }
+
+  /**
+   * Resolve draw context from either:
+   * 1. Internal ID (manual trigger) - draw must exist
+   * 2. Parent context (parent job trigger) - draw might not exist yet
+   */
+  private async resolveDrawContext(data: TournamentDrawSyncData): Promise<DrawContext> {
+    if ('drawId' in data) {
+      return this.resolveFromInternalId(data.drawId);
+    } else {
+      return this.resolveFromParentContext(data.tournamentCode, data.subEventId, data.drawCode);
+    }
+  }
+
+  /**
+   * Load draw context by internal ID (manual trigger)
+   * The draw must exist in the database
+   */
+  private async resolveFromInternalId(drawId: string): Promise<DrawContext> {
+    const draw = await TournamentDrawModel.findOne({
+      where: { id: drawId },
+      relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
+    });
+
+    if (!draw) {
+      throw new Error(`Tournament draw with id ${drawId} not found`);
+    }
+
+    const subEvent = draw.tournamentSubEvent;
+    if (!subEvent) {
+      throw new Error(`Sub-event not found for draw ${drawId}`);
+    }
+
+    const tournamentEvent = subEvent.tournamentEvent;
+    if (!tournamentEvent) {
+      throw new Error(`Tournament event not found for draw ${drawId}`);
+    }
+
+    const tournamentCode = tournamentEvent.visualCode;
+    const eventCode = subEvent.visualCode;
+    const drawCode = draw.visualCode;
+
+    if (!tournamentCode) {
+      throw new Error(`Tournament event ${tournamentEvent.id} has no visual code`);
+    }
+    if (!eventCode) {
+      throw new Error(`Sub-event ${subEvent.id} has no visual code`);
+    }
+    if (!drawCode) {
+      throw new Error(`Draw ${drawId} has no visual code`);
+    }
+
+    return { draw, subEvent, tournamentEvent, tournamentCode, eventCode, drawCode };
+  }
+
+  /**
+   * Load draw context from parent job data
+   * The draw might not exist yet - we have the codes to fetch from API and create it
+   */
+  private async resolveFromParentContext(
+    tournamentCode: string,
+    subEventId: string,
+    drawCode: string,
+  ): Promise<DrawContext> {
+    // Load the parent sub-event
+    const subEvent = await TournamentSubEvent.findOne({
+      where: { id: subEventId },
+      relations: ['tournamentEvent'],
+    });
+
+    if (!subEvent) {
+      throw new Error(`Tournament sub-event with id ${subEventId} not found`);
+    }
+
+    const tournamentEvent = subEvent.tournamentEvent;
+    if (!tournamentEvent) {
+      throw new Error(`Tournament event not found for sub-event ${subEventId}`);
+    }
+
+    const eventCode = subEvent.visualCode;
+    if (!eventCode) {
+      throw new Error(`Sub-event ${subEventId} has no visual code`);
+    }
+
+    // Find or create the draw
+    let draw = await TournamentDrawModel.findOne({
+      where: { visualCode: drawCode, subeventId: subEventId },
+    });
+
+    if (!draw) {
+      // Create the draw - it will be updated from API in updateDrawFromApi
+      draw = new TournamentDrawModel();
+      draw.visualCode = drawCode;
+      draw.subeventId = subEventId;
+      draw.lastSync = new Date();
+      await draw.save();
+      this.logger.debug(`Created new draw ${drawCode} for sub-event ${subEventId}`);
+    }
+
+    // Attach relations for consistent context
+    draw.tournamentSubEvent = subEvent;
+
+    return { draw, subEvent, tournamentEvent, tournamentCode, eventCode, drawCode };
   }
 }

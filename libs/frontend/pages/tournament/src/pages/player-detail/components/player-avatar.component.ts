@@ -19,12 +19,10 @@ import { type Player } from '@app/models';
           loading="lazy">
       } @else {
         <!-- Fallback to initials -->
-        <p-avatar 
-          [label]="initials()"
+        <p-avatar [label]="initials()"
           [size]="size()"
           shape="circle"
-          [styleClass]="fallbackClasses()">
-        </p-avatar>
+          [styleClass]="fallbackClasses()" />
       }
     </div>
   `,

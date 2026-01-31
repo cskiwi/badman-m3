@@ -1,3 +1,4 @@
 export * from './club';
-export * from './event';
+export * from './competitionEvents';
 export * from './player';
+export * from './tournamentEvents';

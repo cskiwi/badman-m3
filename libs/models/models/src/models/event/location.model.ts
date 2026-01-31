@@ -73,7 +73,7 @@ export class Location extends BaseEntity {
 
   @SortableField(() => [Float], { nullable: true })
   @WhereField(() => [Float], { nullable: true })
-  @Column({ type: 'geometry', nullable: true })
+  @Column({ type: 'geometry', spatialFeatureType: 'Geometry', srid: 0, nullable: true })
   declare coordinates?: number[];
 
   @Field(() => [Court], { nullable: true })

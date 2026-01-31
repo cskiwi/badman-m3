@@ -90,7 +90,7 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                         {{ 'TOURNAMENT.LEVEL' | translate }}
                       </div>
                       <div class="text-surface-900 dark:text-surface-50 font-semibold">
-                        {{ history.subEvent?.level }}
+                        {{ history.subEvent?.minLevel }} - {{ history.subEvent?.maxLevel }}
                       </div>
                     </div>
                   </div>
@@ -198,12 +198,12 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
                           <td>
                             @if (game.status === 'completed') {
                               @if (isPlayerWinner(game)) {
-                                <p-tag [value]="'GAME.WON' | translate" severity="success" icon="pi pi-check"> </p-tag>
+                                <p-tag [value]="'GAME.WON' | translate" severity="success" icon="pi pi-check" />
                               } @else {
-                                <p-tag [value]="'GAME.LOST' | translate" severity="danger" icon="pi pi-times"> </p-tag>
+                                <p-tag [value]="'GAME.LOST' | translate" severity="danger" icon="pi pi-times" />
                               }
                             } @else {
-                              <p-tag [value]="game.status | translate" severity="warn"> </p-tag>
+                              <p-tag [value]="game.status | translate" severity="warn" />
                             }
                           </td>
                         </tr>
@@ -219,14 +219,12 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
 
                 <!-- Action Buttons -->
                 <div class="actions-section mt-4">
-                  <p-button
-                    [label]="'TOURNAMENT.VIEW_DETAILS' | translate"
+                  <p-button [label]="'TOURNAMENT.VIEW_DETAILS' | translate"
                     icon="pi pi-external-link"
                     [routerLink]="getTournamentLink(history)"
                     severity="secondary"
                     size="small"
-                  >
-                  </p-button>
+                   />
                 </div>
               </div>
             </ng-template>

@@ -42,7 +42,7 @@ export class OverviewService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.competitionEvents) {
+        if (!result?.data?.competitionEvents) {
           throw new Error('No competitions found');
         }
         return result.data.competitionEvents;

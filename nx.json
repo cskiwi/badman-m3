@@ -3,6 +3,9 @@
   "defaultBase": "main",
   "defaultProject": "app",
   "parallel": 15,
+  "tui": {
+    "enabled": false
+  },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [

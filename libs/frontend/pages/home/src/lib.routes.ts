@@ -1,15 +1,15 @@
 import { Route } from '@angular/router';
-import { CenterLayoutComponent } from '@app/frontend-components/layout';
-import { PageHomeComponent } from './pages/home/page-home.component';
+
+
 
 export const pageHomeRoutes: Route[] = [
   {
     path: '',
-    component: CenterLayoutComponent,
+    loadComponent: () => import('@app/frontend-components/layout').then(m => m.CenterLayoutComponent),
     children: [
       {
         path: '',
-        component: PageHomeComponent,
+        loadComponent: () => import('./pages/home/page-home.component').then(m => m.PageHomeComponent),
        
       },
     ],

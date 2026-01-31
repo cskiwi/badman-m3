@@ -1,0 +1,88 @@
+<p-toast />
+
+<app-page-header>
+  <span breadcrumb>
+    <a routerLink="/tournament">{{ 'all.tournament.title' | translate }}</a>
+    @if (tournamentId(); as id) {
+      <span> / </span>
+      <a [routerLink]="['/tournament', id]">{{ 'all.tournament.detail.title' | translate }}</a>
+      <span> / </span>
+      <span>{{ 'all.enrollment.title' | translate }}</span>
+    }
+  </span>
+  <span title>
+    {{ 'all.enrollment.title' | translate }}
+  </span>
+
+  <span subTitle>
+    {{ 'all.enrollment.subtitle' | translate }}
+  </span>
+  <span actions>
+    <p-button icon="pi pi-arrow-left" [label]="'all.button.back' | translate" severity="secondary" [text]="true" (click)="goBack()" />
+  </span>
+</app-page-header>
+
+<div class="max-w-[1600px] mx-auto px-4 py-6">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-16 gap-4">
+      <p-progressSpinner />
+      <p class="text-muted-color">{{ 'all.enrollment.loading' | translate }}</p>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!loading()) {
+    <div class="flex flex-col gap-6">
+      <!-- Filters Section -->
+      <div class="rounded-border bg-surface-0 dark:bg-surface-900 p-4 border border-surface-200 dark:border-surface-700">
+        <app-enrollment-filters
+          [filters]="filters()"
+          [userRanking]="userRanking()"
+          [userGender]="userGender()"
+          (filtersChange)="onFiltersChange($event)"
+        />
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid lg:grid-cols-[1fr_380px] gap-6 items-start">
+        <!-- Sub-Events Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-color flex items-center gap-2">
+              <i class="pi pi-calendar text-primary-500"></i>
+              {{ 'all.enrollment.availableEvents' | translate }}
+            </h2>
+            <p-badge [value]="filteredSubEvents().length.toString()" severity="info" />
+          </div>
+
+          @if (filteredSubEvents().length === 0) {
+            <div class="flex flex-col items-center justify-center py-16 text-muted-color">
+              <i class="pi pi-calendar-times text-6xl mb-4 opacity-30"></i>
+              <p class="text-lg">{{ 'all.enrollment.noEventsMatch' | translate }}</p>
+              <p class="text-sm mt-2">{{ 'all.enrollment.tryAdjustingFilters' | translate }}</p>
+            </div>
+          } @else {
+            <app-sub-event-selection-grid
+              [subEvents]="filteredSubEvents()"
+              [selectedIds]="selectedIds()"
+              (subEventSelect)="onSubEventSelect($event)"
+              (subEventRemove)="onSubEventRemove($event)"
+            />
+          }
+        </div>
+
+        <!-- Cart Section (Sticky Sidebar) -->
+        <div class="sticky top-6">
+          <app-enrollment-cart
+            [items]="cartItems()"
+            [isSubmitting]="isSubmitting()"
+            (clearCart)="onClearCart()"
+            (submitCart)="onSubmitCart()"
+            (removeItem)="onSubEventRemove($event)"
+          />
+        </div>
+      </div>
+    </div>
+  }
+</div>

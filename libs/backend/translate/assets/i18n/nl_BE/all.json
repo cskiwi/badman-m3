@@ -25,6 +25,22 @@
       "title": "Admin Paneel"
     }
   },
+  "button": {
+    "add": "Toevoegen",
+    "apply": "Toepassen",
+    "back": "Terug",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "confirm": "Bevestigen",
+    "create": "Aanmaken",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "generate": "Genereren",
+    "refresh": "Vernieuwen",
+    "remove": "Verwijderen",
+    "save": "Opslaan",
+    "submit": "Verzenden"
+  },
   "club": {
     "allPlayers": "Alle Spelers",
     "avgRanking": "Gem. Ranking",
@@ -39,6 +55,17 @@
     "totalGames": "Wedstrijden",
     "totalPlayers": "Spelers",
     "totalTeams": "Teams",
+    "tournaments": {
+      "create": "Toernooi Aanmaken",
+      "createFirst": "Maak je eerste toernooi aan",
+      "date": "Datum",
+      "noTournaments": "Geen toernooien gevonden voor deze club",
+      "official": "Officieel",
+      "officialTooltip": "Officieel toernooi",
+      "phase": "Fase",
+      "tab": "Toernooien",
+      "title": "Club Toernooien"
+    },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
   },
@@ -49,10 +76,64 @@
     },
     "search": "Zoek club"
   },
+  "clubSearch": {
+    "card": {
+      "founded": "Opgericht in {{year}}"
+    },
+    "filters": {
+      "activeOnly": "Alleen actieve clubs",
+      "additional": "Aanvullend",
+      "apply": "Toepassen",
+      "clear": "Wissen",
+      "country": "Land",
+      "division": "Divisie",
+      "foundedAfter": "Opgericht na",
+      "foundedBefore": "Opgericht voor",
+      "hasWebsite": "Heeft website",
+      "location": "Locatie",
+      "maxPlayers": "Max. Spelers",
+      "maxTeams": "Max. Teams",
+      "memberCounts": "Ledenaantallen",
+      "minPlayers": "Min. Spelers",
+      "minTeams": "Min. Teams",
+      "resultCount": "{{count}} resultaten",
+      "searchCountries": "Zoek landen...",
+      "searchDivisions": "Zoek divisies...",
+      "searchStates": "Zoek provincies...",
+      "state": "Provincie",
+      "title": "Filters"
+    },
+    "loading": "Laden...",
+    "noResults": {
+      "clearFilters": "Filters wissen",
+      "description": "Probeer andere filters of zoektermen",
+      "searchAgain": "Opnieuw zoeken",
+      "title": "Geen clubs gevonden"
+    },
+    "pagination": {
+      "template": "Toont {{first}} tot {{last}} van {{totalRecords}} resultaten"
+    },
+    "results": {
+      "showing": "Toont {{start}} - {{end}} van {{total}} clubs"
+    },
+    "searchPlaceholder": "Zoek clubs...",
+    "sort": {
+      "placeholder": "Sorteer op..."
+    },
+    "stats": {
+      "avgPlayersPerClub": "Gem. Spelers per Club",
+      "totalClubs": "Totaal Clubs",
+      "totalPlayers": "Totaal Spelers",
+      "totalTeams": "Totaal Teams"
+    },
+    "subtitle": "Ontdek badmintonclubs in je buurt",
+    "title": "Clubs Zoeken"
+  },
   "common": {
     "actions": "Acties",
     "cancel": "Annuleren",
     "error": "Fout",
+    "level": "Niveau",
     "name": "Naam",
     "no": "Nee",
     "save": "Opslaan",
@@ -60,13 +141,12 @@
     "season": "Seizoen",
     "selectSeason": "Selecteer seizoen",
     "success": "Succes",
+    "unknown": "Onbekend",
     "viewAll": "Bekijk Alle",
     "viewDetails": "Details bekijken",
     "yes": "Ja"
   },
   "competition": {
-    "title": "Toernooien & Competities",
-    "search": "Zoek toernooien en competities",
     "bracket_view": "Schema Weergave",
     "bracket_view_description": "Visueel schema komt binnenkort beschikbaar",
     "changeClosePeriod1": "Wijzigingen Sluiten (Periode 1)",
@@ -77,6 +157,112 @@
     "details": "Competitie Details",
     "draw": "Schema",
     "draws": "Reeks",
+    "edit": {
+      "actions": {
+        "cancel": "Annuleren",
+        "save-all": "Alles Opslaan",
+        "save-current": "Huidige Opslaan"
+      },
+      "button": "Bewerken",
+      "dates": {
+        "changeCloseDatePeriod1": "Periode 1 Sluitingsdatum",
+        "changeCloseDatePeriod1.placeholder": "Selecteer periode 1 sluitingsdatum",
+        "changeCloseDatePeriod2": "Periode 2 Sluitingsdatum",
+        "changeCloseDatePeriod2.placeholder": "Selecteer periode 2 sluitingsdatum",
+        "changeCloseRequestDatePeriod1": "Periode 1 Aanvraag Deadline",
+        "changeCloseRequestDatePeriod1.placeholder": "Selecteer periode 1 aanvraag deadline",
+        "changeCloseRequestDatePeriod2": "Periode 2 Aanvraag Deadline",
+        "changeCloseRequestDatePeriod2.placeholder": "Selecteer periode 2 aanvraag deadline",
+        "changeOpenDate": "Wijzigingen Openen",
+        "changeOpenDate.placeholder": "Selecteer openingsdatum wijzigingen",
+        "changePeriod1": {
+          "title": "Wijzigingsperiode 1"
+        },
+        "changePeriod2": {
+          "title": "Wijzigingsperiode 2"
+        },
+        "closeDate": "Inschrijvingen Sluiten",
+        "closeDate.hint": "Deadline voor speler inschrijvingen",
+        "closeDate.placeholder": "Selecteer sluitingsdatum inschrijvingen",
+        "description": "Configureer inschrijvings- en wijzigingsperiodes voor deze competitie.",
+        "messages": {
+          "saving": "Competitie data opslaan..."
+        },
+        "openDate": "Inschrijvingen Openen",
+        "openDate.hint": "Wanneer spelers kunnen beginnen met inschrijven",
+        "openDate.placeholder": "Selecteer openingsdatum inschrijvingen",
+        "registration": {
+          "title": "Inschrijvingsperiode"
+        }
+      },
+      "info": {
+        "basic": {
+          "title": "Basis Informatie"
+        },
+        "contact": {
+          "title": "Contact Informatie"
+        },
+        "contactEmail": "Contact E-mail",
+        "contactEmail.invalid": "Voer een geldig e-mailadres in",
+        "contactEmail.placeholder": "Voer contact e-mail in",
+        "country": "Land",
+        "country.placeholder": "Selecteer land",
+        "description": "Bewerk basis competitie informatie zoals naam, seizoen en locatie.",
+        "location": {
+          "title": "Locatie"
+        },
+        "messages": {
+          "saving": "Competitie info opslaan..."
+        },
+        "name": "Competitie Naam",
+        "name.placeholder": "Voer competitie naam in",
+        "name.required": "Competitie naam is verplicht",
+        "season": "Seizoen",
+        "season.placeholder": "bijv. 2024",
+        "season.required": "Seizoen is verplicht",
+        "state": "Staat/Provincie",
+        "state.placeholder": "Selecteer staat of provincie",
+        "type": "Competitie Type",
+        "type.placeholder": "Selecteer competitie type"
+      },
+      "messages": {
+        "loading": "Competitie gegevens laden...",
+        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen"
+      },
+      "settings": {
+        "checkEncounterForFilledIn": "Valideer Ontmoeting Gegevens",
+        "checkEncounterForFilledIn.description": "Controleer dat alle ontmoeting gegevens zijn ingevuld voordat verzending wordt toegestaan",
+        "description": "Configureer competitie instellingen en validatie regels.",
+        "messages": {
+          "saving": "Competitie instellingen opslaan..."
+        },
+        "official": "Officiële Competitie",
+        "official.description": "Markeer dit als een officiële competitie die speler rankings beïnvloedt",
+        "ranking": {
+          "title": "Ranking Instellingen"
+        },
+        "teamMatcher": "Team Matcher",
+        "teamMatcher.hint": "Identificatie gebruikt voor automatische team matching",
+        "teamMatcher.placeholder": "Voer team matcher identificatie in",
+        "teamMatching": {
+          "title": "Team Matching"
+        },
+        "usedRankingAmount": "Ranking Periode Aantal",
+        "usedRankingAmount.hint": "Aantal tijdseenheden om terug te kijken voor rankings",
+        "usedRankingUnit": "Ranking Periode Eenheid",
+        "usedRankingUnit.placeholder": "Selecteer tijdseenheid",
+        "validation": {
+          "title": "Validatie Instellingen"
+        }
+      },
+      "subtitle": "Wijzig competitie instellingen en informatie",
+      "tabs": {
+        "dates": "Data",
+        "info": "Informatie",
+        "settings": "Instellingen"
+      },
+      "title": "Competitie Bewerken"
+    },
     "eliminated": "Geëlimineerd",
     "encounters": "Ontmoetingen",
     "eventType": "Event Type",
@@ -111,6 +297,7 @@
     "qualification_view": "Kwalificatie Weergave",
     "qualification_view_description": "Kwalificatie ronden weergave komt binnenkort",
     "qualified": "Gekwalificeerd",
+    "search": "Zoek toernooien en competities",
     "season": "Seizoen",
     "sets": "Sets",
     "size": "Grootte",
@@ -121,6 +308,7 @@
     "subEvents": "Reeksen",
     "team": "Team",
     "teams": "Teams",
+    "title": "Toernooien & Competities",
     "tooltip": {
       "faller": "Deze speler/team zal dalen in de rangschikking",
       "riser": "Deze speler/team zal stijgen in de rangschikking"
@@ -149,6 +337,78 @@
     "tuesday": "Dinsdag",
     "wednesday": "Woensdag"
   },
+  "enrollment": {
+    "additionalNotes": "Aanvullende Opmerkingen",
+    "addToCart": "Toevoegen aan Winkelwagen",
+    "availableEvents": "Beschikbare Evenementen",
+    "cart": {
+      "clear": "Winkelwagen Legen",
+      "empty": "Je winkelwagen is leeg",
+      "emptyDescription": "Selecteer evenementen uit de lijst om ze toe te voegen aan je winkelwagen",
+      "enrollNow": "Nu Inschrijven",
+      "eventSelected": "evenement geselecteerd",
+      "eventsSelected": "evenementen geselecteerd",
+      "partnerSelected": "Partner geselecteerd",
+      "title": "Inschrijvingswinkelwagen",
+      "totalEvents": "Totaal Evenementen:"
+    },
+    "characters": "karakters",
+    "closed": "Inschrijving Gesloten",
+    "continue": "Doorgaan",
+    "enrollNow": "Schrijf Nu In",
+    "filters": {
+      "category": "Categorie",
+      "clear": "Wissen",
+      "double": "Dubbel:",
+      "eventType": "Evenement Type",
+      "level": "Niveau",
+      "maxLevel": "Max",
+      "minLevel": "Min",
+      "mixed": "Gemengd:",
+      "showOnlyMyLevel": "Alleen mijn niveau tonen",
+      "single": "Enkel:",
+      "status": "Status",
+      "statusOptions": {
+        "all": "Alle Evenementen",
+        "available": "Alleen Beschikbaar",
+        "open": "Open Inschrijving"
+      },
+      "yourRankings": "Jouw Rankings"
+    },
+    "loading": "Beschikbare evenementen laden...",
+    "messages": {
+      "addedToCart": "Toegevoegd aan winkelwagen",
+      "addedWithPartner": "Toegevoegd aan winkelwagen met partnervoorkeur",
+      "cartCleared": "Winkelwagen geleegd",
+      "cartEmpty": "Winkelwagen is leeg",
+      "enrollmentFailed": "Inschrijving mislukt. Probeer het opnieuw.",
+      "enrollmentSuccess": "Succesvol ingeschreven voor {{count}} evenementen!",
+      "partialEnrollment": "Gedeeltelijk ingeschreven. {{count}} evenementen mislukt.",
+      "removedFromCart": "Verwijderd uit winkelwagen",
+      "submitFailed": "Inschrijving indienen mislukt"
+    },
+    "myEnrollments": "Mijn Inschrijvingen",
+    "noEventsMatch": "Geen evenementen komen overeen met je filters",
+    "notEligible": "Niet In Aanmerking",
+    "notYetOpen": "Nog Niet Open",
+    "optional": "(Optioneel)",
+    "partnerSelection": {
+      "description": "Zoek en selecteer je voorkeurspartner voor dubbel",
+      "notes": "Aanvullende informatie of voorkeuren...",
+      "placeholder": "Begin met typen van de partnernaam...",
+      "title": "Partner Selectie"
+    },
+    "removeFromCart": "Verwijderen uit Winkelwagen",
+    "subtitle": "Selecteer één of meer evenementen om in te schrijven",
+    "title": "Toernooi Inschrijving",
+    "tryAdjustingFilters": "Probeer je filterinstellingen aan te passen"
+  },
+  "error": {
+    "genericTitle": "Er is een fout opgetreden"
+  },
+  "errors": {
+    "title": "Fout"
+  },
   "game": {
     "common": {
       "loadMore": "Meer wedstrijden laden",
@@ -168,6 +428,25 @@
       "noGamesFound": "Geen komende wedstrijden gevonden",
       "title": "Komende ontmoetingen"
     }
+  },
+  "games": {
+    "allResults": "Alle resultaten",
+    "allTypes": "Alle types",
+    "dateFrom": "Van datum",
+    "dateTo": "Tot datum",
+    "export": "Exporteren",
+    "filters": "Filters",
+    "gamesList": "Wedstrijdlijst",
+    "gameType": "Speltype",
+    "losses": "Nederlagen",
+    "result": "Resultaat",
+    "selectDate": "Selecteer datum",
+    "selectTournament": "Selecteer toernooi",
+    "showingCount": "{{count}} wedstrijden getoond",
+    "totalGames": "Totaal Wedstrijden",
+    "tournament": "Toernooi",
+    "winRate": "Winpercentage",
+    "wins": "Overwinningen"
   },
   "head-to-head": {
     "amount-of-games": "Aantal wedstrijden",
@@ -220,6 +499,9 @@
     "win-rate": "Win percentage",
     "win-rate-against": "Winpercentage tegen"
   },
+  "loading": {
+    "players": "Spelers laden..."
+  },
   "navigation": {
     "clubs": "Clubs",
     "competitions": "Competities",
@@ -232,51 +514,42 @@
     "searchPlayersDescription": "Ontdek spelers, rankings en statistieken"
   },
   "player": {
-    "games": "Wedstrijden",
-    "name": "Naam",
-    "ranking": "Ranking",
-    "stats": "Statistieken",
-    "winRate": "Win %",
-    "wins": "Overwinningen",
+    "allGames": "Alle Wedstrijden",
+    "competitionPlayer": "Competitiespeler",
     "edit": {
       "actions": {
         "cancel": "Annuleren",
-        "save-all": "Alle wijzigingen opslaan",
-        "save-current": "Huidige tabblad opslaan"
+        "save-all": "Alles Opslaan",
+        "save-current": "Huidige Opslaan"
       },
       "claims": {
         "actions": {
-          "cancel": "Annuleren",
-          "save": "Wijzigingen opslaan",
-          "select-all": "Alles selecteren",
-          "select-none": "Niets selecteren"
+          "select-all": "Alles",
+          "select-none": "Niets"
         },
-        "description": "Selecteer de globale rechten die je aan deze speler wilt toekennen. Deze rechten gelden voor het hele systeem.",
+        "description": "Beheer speler rechten en toegangsrechten.",
         "messages": {
-          "loading": "Speler- en rechtengegevens laden...",
-          "no-claims": "Geen globale rechten beschikbaar",
-          "no-permission": "Je hebt geen toestemming om spelerrechten te bewerken",
-          "saving": "Wijzigingen opslaan..."
+          "saving": "Rechten opslaan..."
         },
-        "subtitle": "Beheer globale rechten voor deze speler",
-        "title": "Rechten bewerken"
+        "noClaims": "Geen rechten toegewezen",
+        "title": "Speler Rechten"
       },
       "messages": {
-        "loading": "Spelergegevens laden...",
+        "loading": "Speler gegevens laden...",
         "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen"
       },
       "profile": {
         "birthDate": "Geboortedatum",
         "birthDate.placeholder": "Selecteer geboortedatum",
         "competition": {
-          "title": "Competitie-instellingen"
+          "title": "Competitie Instellingen"
         },
         "competitionPlayer": "Competitiespeler",
-        "competitionPlayer.description": "Schakel deze speler in om deel te nemen aan competities en toernooien.",
+        "competitionPlayer.description": "Deze speler neemt deel aan officiële competities",
         "contact": {
-          "title": "Contactgegevens"
+          "title": "Contact Informatie"
         },
-        "description": "Spelerprofiel informatie en instellingen bijwerken.",
+        "description": "Bewerk speler profiel informatie inclusief persoonlijke en contact gegevens.",
         "editable": "bewerkbaar",
         "email": "E-mail",
         "email.invalid": "Voer een geldig e-mailadres in",
@@ -290,27 +563,41 @@
         "lastName.placeholder": "Voer achternaam in",
         "lastName.required": "Achternaam is verplicht",
         "messages": {
-          "saving": "Profielwijzigingen opslaan..."
-        },
-        "permissions": {
-          "canEditAdmin": "Je kunt administratieve velden bewerken (competitie-instellingen)",
-          "canEditContact": "Je kunt contactgegevens bewerken (e-mail, telefoon)",
-          "description": "Je kunt bepaalde velden bewerken op basis van je rechten:",
-          "title": "Bewerkingsrechten"
+          "saving": "Speler profiel opslaan..."
         },
         "personal": {
-          "title": "Persoonlijke informatie"
+          "title": "Persoonlijke Informatie"
         },
         "phone": "Telefoon",
         "phone.placeholder": "Voer telefoonnummer in"
       },
-      "subtitle": "Spelerinformatie en rechten bijwerken",
+      "subtitle": "Wijzig speler profiel informatie",
       "tabs": {
         "claims": "Rechten",
         "profile": "Profiel"
       },
-      "title": "Speler bewerken"
-    }
+      "title": "Speler Bewerken"
+    },
+    "gender": "Geslacht",
+    "headToHead": "Onderlinge Duels",
+    "maxRating": "Max. Rating",
+    "minRating": "Min. Rating",
+    "noGames": "Geen wedstrijden",
+    "noGamesDescription": "Deze speler heeft nog geen wedstrijden gespeeld",
+    "noPerformanceData": "Geen prestatie gegevens",
+    "noPerformanceDataDescription": "Er zijn nog geen prestatie gegevens beschikbaar",
+    "noRecentGames": "Geen recente wedstrijden",
+    "noRecentGamesDescription": "Deze speler heeft nog geen recente wedstrijden gespeeld",
+    "noResults": "Geen resultaten",
+    "noTournamentHistory": "Geen toernooi geschiedenis",
+    "noTournamentHistoryDescription": "Deze speler heeft nog geen toernooien gespeeld",
+    "performance": "Prestaties",
+    "playerType": "Spelertype",
+    "recentGames": "Recente Wedstrijden",
+    "resultsFound": "{{count}} resultaten gevonden",
+    "tournamentHistory": "Toernooi Geschiedenis",
+    "tryDifferentFilters": "Probeer andere filters",
+    "yearsOld": "jaar oud"
   },
   "players": {
     "my-club": "Mijn club",
@@ -330,8 +617,98 @@
   },
   "ranking": {
     "breakdown": {
+      "add-game": {
+        "p1t1": "Speler 1 - Team 1",
+        "p1t2": "Speler 1 - Team 2",
+        "p2t1": "Speler 2 - Team 1",
+        "p2t2": "Speler 2 - Team 2",
+        "title": "Voeg (fictieve) wedstrijd toe",
+        "won": "Team 1 Gewonnen?"
+      },
+      "can-downgrade": "Met dit aantal punten (<{points}) zal de speler dalen van {level} naar {newLevel}",
+      "can-not-downgrade": "Minder dan {points} = dalen van {level} naar {newLevel}",
+      "can-not-upgrade": "Meer dan {points} = stijgen van {level} naar {newLevel}",
+      "can-upgrade": "Met dit aantal punten (>{points}) zal de speler stijgen van {level} naar {newLevel}",
+      "corrected": "Origineel {original} wedstrijden, gemiddelde wordt berekend met minimum {corrected} wedstrijden.",
+      "countsForDowngrade": "# Promotie",
+      "countsForUpgrade": "# Degradatie",
+      "date": "Datum",
+      "disclaimer": "Momenteel is dit een proof of concept. Dit komt omdat we niet alle data kunnen opvragen van een extern systeem om onderstaande correct te tonen. We werken hieraan.",
       "downgrade": "Degradatie",
-      "upgrade": "Promotie"
+      "downgrade-average": "Avg. degradatie",
+      "drops-next-period": "Telt niet meer mee in volgende periode",
+      "evolution": "Evolutie",
+      "export": {
+        "avgDowngrade": "Degradatie gemiddelde",
+        "avgUpgrade": "Pomotie gemiddelde",
+        "countsFor": "Telt voor",
+        "date": "Datum",
+        "LOST_DOWNGRADE": "Promotie + Degradatie",
+        "LOST_IGNORED": "Telt niet mee",
+        "LOST_UPGRADE": "Promotie",
+        "opponent1": "Tegenstander 1",
+        "opponent2": "Tegenstander 2",
+        "OUT_SCOPE": "Buiten scope",
+        "player1": "Speler 1",
+        "player2": "Speler 2",
+        "points": "Punten",
+        "title": "Export huidige filter",
+        "usedForDowngrade": "Gebruikt voor degradatie",
+        "usedForUpgrade": "Gebruikt voor promotie",
+        "WON": "Gewonnen"
+      },
+      "filters": "Filters",
+      "games": {
+        "none": "Geen wedstrijden",
+        "one": "1 wedstrijd",
+        "other": "{count} wedstrijden"
+      },
+      "games-downgrade": "# Wedstrijden degradatie",
+      "games-upgrade": "# Wedstrijden promotie",
+      "hint": "Klik op een klassement voor simulatie en analyse",
+      "ignored": "Niet meegeteld",
+      "includeOutOfScope": "Out of scope",
+      "lostGames": {
+        "none": "Geen verloren wedstrijden",
+        "one": "1 verloren wedstrijd",
+        "other": "{count} verloren wedstrijden"
+      },
+      "no-team": "Geen team",
+      "notUsed": "Niet gebruikt",
+      "opponent": "Tegenstander",
+      "outOfScope": {
+        "none": "Geen wedstrijden",
+        "one": "1 wedstrijd",
+        "other": "{count} wedstrijden"
+      },
+      "outOfScopeDowngrade": "Buiten scope voor degradatie",
+      "outOfScopeUpgrade": "Buiten scope voor promotie",
+      "outOfScopeWonGames": "Niet gebruikte gewonnen wedstrijden",
+      "period": {
+        "last-point-update": "Afgelopen punten update",
+        "last-ranking-update": "Afgelopen klassementen update",
+        "next-point-update": "Volgende punten update",
+        "next-ranking-update": "Volgende klassementen update",
+        "title": "Periode"
+      },
+      "points": "Punten",
+      "pointsPerGame": "Punten per wedstrijd",
+      "removed-games": "Wedstrijden van vorige periode die niet meer meetellen bij de volgende klassementen update",
+      "show": "Toon",
+      "show-downgrade": "Toon downgrade punten",
+      "show-upgrade": "Toon upgrade punten",
+      "team": "Team",
+      "title": "Level breakdown",
+      "untill": "tot",
+      "update": {
+        "last": "Laatste update",
+        "point": "Punten update",
+        "ranking": "Ranking update"
+      },
+      "upgrade": "Promotie",
+      "upgrade-average": "Avg. promotie",
+      "usedForDowngrade": "Gebruikt voor degradatie",
+      "usedForUpgrade": "Gebruikt voor promotie"
     }
   },
   "search": {
@@ -545,10 +922,6 @@
   },
   "team": {
     "captain": "Kapitein",
-    "games": "Wedstrijden",
-    "wins": "Overwinningen",
-    "winRate": "Win %",
-    "name": "Teamnaam",
     "edit": {
       "abbreviation": {
         "label": "Afkorting",
@@ -637,6 +1010,8 @@
         }
       }
     },
+    "games": "Wedstrijden",
+    "name": "Teamnaam",
     "noTeams": "Geen teams gevonden voor dit seizoen",
     "overview": {
       "title": "Teams Overzicht"
@@ -651,17 +1026,351 @@
       "national": "Nationaal",
       "women": "Dames",
       "youth": "Jeugd"
-    }
+    },
+    "winRate": "Win %",
+    "wins": "Overwinningen"
   },
   "tournament": {
+    "admin": {
+      "checkin": {
+        "actions": "Acties",
+        "allStatuses": "Alle statussen",
+        "bulkCheckIn": "Bulk inchecken",
+        "checkedIn": "Ingecheckt",
+        "checkedInAt": "",
+        "checkedInDescription": "",
+        "checkIn": "Inchecken",
+        "checkinRate": "Check-in percentage",
+        "checkInSelected": "Selectie inchecken",
+        "checkinTime": "Check-in tijd",
+        "filterByStatus": "Filter op status",
+        "groupBySubEvent": "Groepeer op onderdeel",
+        "initialize": "",
+        "initializeCheckins": "Check-ins initialiseren",
+        "initializeFirst": "Initialiseer eerst de check-ins",
+        "initializeHint": "",
+        "markNoShow": "Niet verschenen",
+        "noCheckIns": "",
+        "noPlayersYet": "Nog geen spelers om in te checken",
+        "noShow": "Niet verschenen",
+        "noShowDescription": "",
+        "pending": "In afwachting",
+        "pendingDescription": "",
+        "player": "Speler",
+        "players": "",
+        "rate": "",
+        "rateDescription": "",
+        "search": "",
+        "searchPlaceholder": "",
+        "searchPlayers": "Zoek spelers...",
+        "selectAll": "Alles selecteren",
+        "status": "Status",
+        "subEvent": "Onderdeel",
+        "title": "Check-in Beheren",
+        "total": "",
+        "totalDescription": "",
+        "totalPlayers": "Totaal spelers",
+        "undo": "Ongedaan maken"
+      },
+      "draws": {
+        "allEntriesAssigned": "Alle inschrijvingen zijn toegewezen",
+        "applySeeding": "Seeding toepassen",
+        "assign": "Toewijzen",
+        "assigned": "Toegewezen",
+        "assignedDescription": "",
+        "assignSelected": "",
+        "autoSeed": "",
+        "clearSeeds": "",
+        "clearSelection": "",
+        "confirmDeleteDraw": "",
+        "createDraw": "Loting aanmaken",
+        "deleteDraw": "",
+        "drawCount": "Aantal lotingen",
+        "drawCountDescription": "",
+        "drawName": "Naam loting",
+        "drawSize": "Grootte loting",
+        "drawType": "Type loting",
+        "entries": "",
+        "entry": "Inschrijving",
+        "generateEntries": "Inschrijvingen genereren",
+        "generateEntriesDescription": "",
+        "maxLevel": "",
+        "maxLevelHelp": "",
+        "maxLevelPlaceholder": "",
+        "minLevel": "",
+        "minLevelHelp": "",
+        "minLevelPlaceholder": "",
+        "noDraws": "",
+        "noDrawsHint": "",
+        "noDrawsYet": "Nog geen lotingen aangemaakt",
+        "noEntries": "",
+        "noEntriesHint": "",
+        "noEntriesYet": "Nog geen inschrijvingen gegenereerd",
+        "removeFromDraw": "",
+        "seed": "Seeding",
+        "seedByRanking": "",
+        "seeding": "",
+        "seedingDescription": "Kies hoe je de inschrijvingen wilt seeden",
+        "seedingMethod": "Seeding methode",
+        "seedingOptions": "Seeding opties",
+        "seedManual": "",
+        "seedRandom": "",
+        "selectAll": "",
+        "selectDraw": "Selecteer loting",
+        "selectSize": "Selecteer grootte",
+        "selectSubEvent": "Selecteer onderdeel",
+        "selectSubEventFirst": "Selecteer eerst een onderdeel",
+        "setSeed": "",
+        "subEvent": "Onderdeel",
+        "subEventType": "",
+        "title": "Loting Beheren",
+        "totalDraws": "",
+        "totalEntries": "Totaal inschrijvingen",
+        "totalEntriesDescription": "",
+        "unassigned": "Niet toegewezen",
+        "unassignedDescription": "",
+        "unassignedEntries": "Niet toegewezen inschrijvingen",
+        "viewDraw": ""
+      },
+      "enrollments": {
+        "actions": "Acties",
+        "addEnrollment": "",
+        "addManualEnrollment": "",
+        "allStatuses": "Alle statussen",
+        "allSubEvents": "Alle onderdelen",
+        "assignPartner": "Partner toewijzen",
+        "bulkActions": "Bulkacties",
+        "cancel": "Annuleren",
+        "cancelled": "Geannuleerd",
+        "cancelledDescription": "",
+        "cancelSelected": "Selectie annuleren",
+        "confirm": "Bevestigen",
+        "confirmCancel": "",
+        "confirmed": "Bevestigd",
+        "confirmedDescription": "",
+        "confirmSelected": "Selectie bevestigen",
+        "enrollAsGuest": "",
+        "enrolledAt": "",
+        "enrollmentsCount": "",
+        "filterByStatus": "Filter op status",
+        "filterBySubEvent": "Filter op onderdeel",
+        "guestEmail": "",
+        "guestName": "",
+        "lookingForPartner": "Zoekt partner",
+        "manualEnrollmentDescription": "",
+        "noEnrollments": "Nog geen inschrijvingen",
+        "noEnrollmentsHint": "",
+        "notes": "Notities",
+        "notesPlaceholder": "",
+        "partner": "Partner",
+        "partnerSearch": "",
+        "partnerSearchPlaceholder": "",
+        "pending": "In behandeling",
+        "pendingDescription": "",
+        "player": "Speler",
+        "playerSearch": "",
+        "playerSearchHelp": "",
+        "playerSearchPlaceholder": "",
+        "position": "",
+        "promote": "",
+        "promoteFromWaitingList": "Promoveren van wachtlijst",
+        "schedulePublished": "Inschrijvingen zichtbaar",
+        "search": "",
+        "searchPlaceholder": "",
+        "searchPlayers": "Zoek spelers...",
+        "selectSubEventFirst": "",
+        "status": "Status",
+        "subEvent": "Onderdeel",
+        "title": "Inschrijvingen Beheren",
+        "total": "",
+        "totalDescription": "",
+        "totalEntries": "Totaal inschrijvingen",
+        "waitingList": "Wachtlijst",
+        "waitingListDescription": "",
+        "withdraw": ""
+      },
+      "noPermission": "Je hebt geen toestemming om dit toernooi te beheren",
+      "phases": {
+        "cancelled": "Geannuleerd",
+        "completed": "Voltooid",
+        "draft": "Concept",
+        "drawsMade": "Loting Gemaakt",
+        "enrollmentClosed": "Inschrijvingen Gesloten",
+        "enrollmentOpen": "Inschrijvingen Open",
+        "inProgress": "Bezig",
+        "scheduled": "Gepland",
+        "title": "Toernooi Fases"
+      },
+      "schedule": {
+        "allDates": "Alle dagen",
+        "autoSchedule": "Automatisch plannen",
+        "autoScheduleDescription": "",
+        "available": "Beschikbaar",
+        "blocked": "Geblokkeerd",
+        "breakBetween": "",
+        "breakBetweenSlots": "Pauze tussen slots",
+        "byLevel": "Op niveau",
+        "categoryOrder": "Volgorde categorie",
+        "conflicts": "Conflicten",
+        "courts": "Velden",
+        "date": "",
+        "dates": "Dagen",
+        "dragToAssign": "Sleep wedstrijd naar tijdslot",
+        "endTime": "Eindtijd",
+        "filterByDate": "Filter op datum",
+        "generateSlots": "Tijdslots genereren",
+        "hideUnscheduled": "",
+        "inProgress": "",
+        "minimizeWait": "Wachttijd minimaliseren",
+        "minRestTime": "Minimale rusttijd (min)",
+        "noConflicts": "Geen conflicten gevonden",
+        "noSlots": "",
+        "noSlotsHint": "",
+        "noUnscheduledGames": "Alle wedstrijden zijn gepland",
+        "publish": "",
+        "publishSchedule": "Planning publiceren",
+        "random": "Willekeurig",
+        "results": "",
+        "runScheduler": "",
+        "scheduled": "Gepland",
+        "selectCourts": "Selecteer velden",
+        "selectDates": "Selecteer dagen",
+        "showUnscheduled": "",
+        "slotDuration": "Duur tijdslot",
+        "startTime": "Starttijd",
+        "strategies": {
+          "BY_LEVEL": "",
+          "CATEGORY_ORDER": "",
+          "MINIMIZE_WAIT": "",
+          "RANDOM": ""
+        },
+        "strategy": "Strategie",
+        "time": "",
+        "title": "Planning Beheren",
+        "totalSlots": "Totaal tijdslots",
+        "unscheduled": "",
+        "unscheduledGames": "Niet geplande wedstrijden"
+      },
+      "settings": {
+        "actions": "Acties",
+        "addSubEvent": "Onderdeel toevoegen",
+        "advancePhase": "Naar volgende fase",
+        "allowGuests": "Zonder partner",
+        "allowGuestsDescription": "Laat toe om zonder partner in te schrijven",
+        "basic": "Basis info",
+        "closeDate": "Inschrijvingen sluiten",
+        "confirmAdvancePhase": "Weet je zeker dat je naar de volgende fase wilt gaan? Deze actie kan niet ongedaan worden gemaakt.",
+        "confirmDeleteSubEvent": "Weet je zeker dat je dit onderdeel wilt verwijderen?",
+        "createFirstSubEvent": "Maak je eerste onderdeel om inschrijvingen toe te staan",
+        "currentPhase": "Huidige fase",
+        "dates": "Data",
+        "deleteSubEvent": "Onderdeel verwijderen",
+        "editSubEvent": "Onderdeel bewerken",
+        "enrollment": "Inschrijving",
+        "enrollmentClose": "Inschrijvingen sluiten",
+        "enrollmentDates": "Inschrijvingsperiode",
+        "enrollmentDatesHelp": "Wanneer kunnen spelers zich inschrijven voor dit toernooi",
+        "enrollmentDatesPlaceholder": "Selecteer start- en einddatum voor inschrijvingen",
+        "enrollmentOpen": "Inschrijvingen openen",
+        "eventType": "Event Type",
+        "firstDay": "Eerste dag",
+        "gameType": "Speltype",
+        "general": "Algemene instellingen",
+        "generalDescription": "Configureer basis toernooiinformatie en datums",
+        "guestEnrollment": "Gastinschrijvingen toegestaan",
+        "lastDay": "Laatste dag",
+        "level": "Niveau",
+        "levelHelp": "Geef het toegestane spelerniveau bereik aan voor dit onderdeel",
+        "maxEntries": "Maximum inschrijvingen",
+        "maxEntriesHelp": "Laat leeg voor onbeperkte inschrijvingen",
+        "maxLevel": "Max Niveau",
+        "minLevel": "Min Niveau",
+        "name": "Toernooinaam",
+        "namePlaceholder": "Vul toernooinaam in",
+        "nextPhase": "Volgende fase",
+        "noSubEvents": "Geen onderdelen geconfigureerd",
+        "official": "Officieel toernooi",
+        "openDate": "Inschrijvingen openen",
+        "options": "Opties",
+        "phase": "Toernooi fase",
+        "phaseDescription": "Beheer de huidige fase van je toernooi",
+        "phases": {
+          "COMPLETED": "Voltooid",
+          "DRAFT": "Concept",
+          "DRAWS_MADE": "Loting gemaakt",
+          "ENROLLMENT_CLOSED": "Inschrijvingen gesloten",
+          "ENROLLMENT_OPEN": "Inschrijvingen open",
+          "IN_PROGRESS": "Bezig",
+          "SCHEDULED": "Gepland"
+        },
+        "previousPhase": "Vorige fase",
+        "registrationDates": "Registratieperiode",
+        "registrationDatesHelp": "Wanneer moet het registratiesysteem open zijn",
+        "registrationDatesPlaceholder": "Selecteer start- en einddatum voor registratie",
+        "saveChanges": "Wijzigingen opslaan",
+        "subEventGameType": "Speltype",
+        "subEventLevel": "Niveau",
+        "subEventMaxEntries": "Max inschrijvingen",
+        "subEventName": "Naam onderdeel",
+        "subEvents": "Onderdelen",
+        "subEventsDescription": "Configureer onderdelen voor verschillende speltypes en niveaus",
+        "subEventWaitingList": "Wachtlijst inschakelen",
+        "title": "Toernooi Instellingen",
+        "tournamentDates": "Toernooidata",
+        "tournamentDatesHelp": "Selecteer de eerste en laatste dag van het toernooi",
+        "tournamentDatesPlaceholder": "Selecteer start- en einddatum",
+        "waitingList": "Wachtlijst inschakelen",
+        "waitingListEnabled": "Wachtlijst inschakelen"
+      },
+      "tabs": {
+        "checkin": "Check-in",
+        "draws": "Loting",
+        "enrollments": "Inschrijvingen",
+        "schedule": "Planning",
+        "settings": "Instellingen"
+      },
+      "title": "Toernooi Admin"
+    },
+    "capacity": "Capaciteit",
     "closeDate": "Inschrijvingen Sluiten",
+    "create": {
+      "closeDate": "Sluitingsdatum Inschrijvingen",
+      "closeDatePlaceholder": "Selecteer sluitingsdatum",
+      "name": "Toernooinaam",
+      "namePlaceholder": "Voer toernooinaam in",
+      "nameRequired": "Toernooinaam is verplicht",
+      "noClub": "Geen club geselecteerd. Navigeer vanaf een clubpagina.",
+      "official": "Officieel toernooi",
+      "openDate": "Openingsdatum Inschrijvingen",
+      "openDatePlaceholder": "Selecteer openingsdatum",
+      "submit": "Toernooi Aanmaken",
+      "title": "Toernooi Aanmaken",
+      "tournamentDays": "Toernooidagen",
+      "tournamentDaysHelp": "Selecteer de eerste en laatste dag van het toernooi",
+      "tournamentDaysPlaceholder": "Selecteer begin- en einddatum"
+    },
     "dates": "Toernooi Data",
     "details": "Toernooi Details",
+    "double": "Dubbel",
+    "draw-detail": {
+      "games": {
+        "no-games": "Geen wedstrijden gevonden voor dit schema",
+        "title": "Wedstrijden"
+      }
+    },
     "draws": "Reeks",
     "entries": "Inschrijvingen",
     "events": "Toernooi Events",
     "eventType": "Event Type",
+    "eventTypes": {
+      "men": "Heren",
+      "mixed": "Gemengd",
+      "national": "Nationaal",
+      "women": "Dames"
+    },
     "firstDay": "Eerste Dag",
+    "full": "Vol",
+    "fullWaitingList": "Vol (Wachtlijst)",
     "gameType": "Spel Type",
     "gameTypes": {
       "doubles": "Dubbelspel",
@@ -670,25 +1379,78 @@
       "singles": "Enkelspel"
     },
     "information": "Toernooi Informatie",
+    "inWaitingList": "op wachtlijst",
     "level": "Niveau",
+    "live": {
+      "allGamesCompleted": "Alle wedstrijden zijn voltooid!",
+      "announcements": "Aankondigingen",
+      "available": "Beschikbaar",
+      "blocked": "Geblokkeerd",
+      "checkSchedule": "Bekijk het programma voor de volgende wedstrijden",
+      "comingUp": "Volgende",
+      "completed": "Voltooid",
+      "courtAvailable": "Veld is beschikbaar",
+      "courtBlocked": "Veld is tijdelijk geblokkeerd",
+      "courts": "Velden",
+      "courtsDesc": "Huidige veldstatus",
+      "courtsInUse": "Velden In Gebruik",
+      "gamesRemaining": "wedstrijden resterend",
+      "inProgress": "Bezig",
+      "justFinished": "Net Afgelopen",
+      "kiosk": "Kiosk",
+      "kioskDesc": "Volledig scherm weergave",
+      "next": "Volgende",
+      "noAnnouncements": "Geen aankondigingen",
+      "noCourts": "Geen velden geconfigureerd",
+      "noResultsYet": "Nog geen resultaten",
+      "nowPlaying": "Nu Aan Het Spelen",
+      "playing": "Spelend",
+      "recentResults": "Recente Resultaten",
+      "remaining": "Resterend",
+      "results": "Resultaten",
+      "resultsDesc": "Recente wedstrijdresultaten",
+      "startedAt": "Gestart om",
+      "title": "Live Display",
+      "tournament": "Toernooi Live",
+      "upcoming": "Volgende",
+      "upcomingDesc": "Komende wedstrijden",
+      "upcomingGames": "Volgende Wedstrijden"
+    },
     "location": "Locatie",
     "matches": "Wedstrijden",
+    "men": "Heren",
+    "mixed": "Gemengd",
     "number": "Toernooi Nummer",
     "official": "Officieel Toernooi",
     "openDate": "Inschrijvingen Open",
+    "phases": {
+      "completed": "Voltooid",
+      "completedDesc": "Toernooi is afgelopen",
+      "draft": "Concept",
+      "draftDesc": "Toernooi wordt opgezet",
+      "drawsMade": "Loting Gemaakt",
+      "drawsMadeDesc": "Toernooi schema's zijn aangemaakt",
+      "enrollmentClosed": "Inschrijvingen Gesloten",
+      "enrollmentClosedDesc": "Inschrijvingsperiode is afgelopen",
+      "enrollmentOpen": "Inschrijvingen Open",
+      "enrollmentOpenDesc": "Spelers kunnen zich inschrijven",
+      "inProgress": "Bezig",
+      "inProgressDesc": "Toernooi is momenteel bezig",
+      "scheduled": "Gepland",
+      "scheduledDesc": "Wedstrijden zijn ingepland op velden"
+    },
     "registration": "Inschrijving Informatie",
+    "single": "Enkel",
+    "spotsLeft": "{{count}} plaatsen over",
+    "title": "Toernooien",
     "types": {
       "men": "Heren",
       "mix": "Gemengd",
       "other": "Andere",
       "women": "Dames"
     },
+    "unlimited": "Onbeperkt",
     "visualCode": "Visuele Code",
-    "draw-detail": {
-      "games": {
-        "title": "Wedstrijden",
-        "no-games": "Geen wedstrijden gevonden voor dit schema"
-      }
-    }
+    "women": "Dames"
   }
 }

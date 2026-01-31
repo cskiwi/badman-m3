@@ -1,4 +1,4 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType, GraphQLISODateTime } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament-draw.model';
@@ -42,7 +42,12 @@ export class TournamentSubEvent extends BaseEntity {
   @SortableField(() => Int, { nullable: true })
   @WhereField(() => Int, { nullable: true })
   @Column({ nullable: true })
-  declare level?: number;
+  declare minLevel?: number;
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  declare maxLevel?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
@@ -88,6 +93,83 @@ export class TournamentSubEvent extends BaseEntity {
   @WhereField(() => Int, { nullable: true })
   @Column({ type: 'integer', nullable: true })
   declare paraClassId?: number; // 0=Standard
+
+  // Tournament management fields
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  declare maxEntries?: number;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: true })
+  declare waitingListEnabled: boolean;
+
+  // ===================================================================
+  // New enrollment control fields for general enrollment page
+  // ===================================================================
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare enrollmentOpenDate?: Date;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare enrollmentCloseDate?: Date;
+
+  @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
+  @Column({ type: 'character varying', length: 50, default: 'DRAFT' })
+  declare enrollmentPhase: string;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 0 })
+  declare currentEnrollmentCount: number;
+
+  @SortableField(() => Int)
+  @WhereField(() => Int)
+  @Column({ type: 'integer', default: 0 })
+  declare confirmedEnrollmentCount: number;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: true })
+  declare autoPromoteFromWaitingList: boolean;
+
+  @SortableField(() => Int, { nullable: true })
+  @WhereField(() => Int, { nullable: true })
+  @Column({ nullable: true })
+  declare maxWaitingListSize?: number;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: false })
+  declare requiresApproval: boolean;
+
+  @SortableField(() => Boolean)
+  @WhereField(() => Boolean)
+  @Column({ default: true })
+  declare allowGuestEnrollments: boolean;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
+  declare enrollmentNotes?: string;
+
+  // ===================================================================
+  // GraphQL field resolvers (computed on backend, not stored in DB)
+  // Only for data that requires database count queries
+  // ===================================================================
+
+  /**
+   * Current waiting list count - resolved by field resolver
+   * Requires database count query
+   */
+  @Field(() => Int, { nullable: true })
+  waitingListCount?: number;
 
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, (eventEntry) => eventEntry.subEventTournament, { cascade: true, onDelete: 'CASCADE' })

@@ -4,12 +4,12 @@ import {
   effect,
   inject,
   input,
-  ViewChild,
   ElementRef,
   AfterViewInit,
   OnDestroy,
   afterRenderEffect,
   signal,
+  viewChild
 } from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';
@@ -34,7 +34,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
 
-  @ViewChild('scrollSentinel', { static: false }) scrollSentinel?: ElementRef;
+  readonly scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private intersectionObserver?: IntersectionObserver;
 
   // Track when we should scroll and animate new games
@@ -87,7 +87,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Set up intersection observer for infinite scroll on large screens
     setTimeout(() => {
-      if (!this.isMobile() && this.scrollSentinel) {
+      if (!this.isMobile() && this.scrollSentinel()) {
         this.setupIntersectionObserver();
       }
     });
@@ -98,7 +98,8 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   private setupIntersectionObserver(): void {
-    if (!this.scrollSentinel) return;
+    const scrollSentinel = this.scrollSentinel();
+    if (!scrollSentinel) return;
 
     this.intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -113,7 +114,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
       },
     );
 
-    this.intersectionObserver.observe(this.scrollSentinel.nativeElement);
+    this.intersectionObserver.observe(scrollSentinel.nativeElement);
   }
 
   /**
@@ -138,7 +139,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
    * @returns true if the set was played (both scores are defined)
    */
   isSetPlayed(team1Score: number | undefined, team2Score: number | undefined): boolean {
-    return team1Score !== undefined && team2Score !== undefined && team1Score > 0 && team2Score > 0;
+    return team1Score !== undefined && team2Score !== undefined && (team1Score > 0 || team2Score > 0);
   }
 
   /**
@@ -154,38 +155,6 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     return 0;
   }
 
-  /**
-   * Determines which team won the overall match
-   * @param game The game object
-   * @returns 1 if team 1 won, 2 if team 2 won, 0 if tie
-   */
-  getMatchWinner(game: Game): number {
-    let team1Wins = 0;
-    let team2Wins = 0;
-
-    // Only count sets that were actually played
-    if (this.isSetPlayed(game.set1Team1, game.set1Team2)) {
-      const set1Winner = this.getSetWinner(game.set1Team1, game.set1Team2);
-      if (set1Winner === 1) team1Wins++;
-      if (set1Winner === 2) team2Wins++;
-    }
-
-    if (this.isSetPlayed(game.set2Team1, game.set2Team2)) {
-      const set2Winner = this.getSetWinner(game.set2Team1, game.set2Team2);
-      if (set2Winner === 1) team1Wins++;
-      if (set2Winner === 2) team2Wins++;
-    }
-
-    if (this.isSetPlayed(game.set3Team1, game.set3Team2)) {
-      const set3Winner = this.getSetWinner(game.set3Team1, game.set3Team2);
-      if (set3Winner === 1) team1Wins++;
-      if (set3Winner === 2) team2Wins++;
-    }
-
-    if (team1Wins > team2Wins) return 1;
-    if (team2Wins > team1Wins) return 2;
-    return 0;
-  }
 
   /**
    * Checks if a player is the current player being viewed
@@ -318,6 +287,34 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Gets the player's level for the game based on game type
+   * @param game The game object
+   * @param playerId The player ID
+   * @returns The player's level for this game type or null if not found
+   */
+  getPlayerLevel(game: Game, playerId: string): number | null {
+    if (!game?.gamePlayerMemberships || !game?.gameType) return null;
+
+    const membership = game.gamePlayerMemberships.find(
+      (m) => m.gamePlayer?.id === playerId
+    );
+
+    if (!membership) return null;
+
+    // Map gameType to the appropriate level field
+    switch (game.gameType) {
+      case 'S':  // Singles
+        return membership.single ?? null;
+      case 'D':  // Doubles
+        return membership.double ?? null;
+      case 'MX': // Mixed Doubles
+        return membership.mix ?? null;
+      default:
+        return null;
+    }
+  }
+
+  /**
    * Checks if a game is a competition game
    * @param game The game object
    * @returns true if the game has competition encounter information
@@ -359,5 +356,44 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     // This is a simplified approach - in practice, this mapping might need more logic
     // based on how the game data is structured in your system
     return team === 1 ? this.getHomeTeamName(game) : this.getAwayTeamName(game);
+  }
+
+  /**
+   * Gets the team number (1 or 2) that the current player is on
+   * @param game The game object
+   * @returns Team number or null if not found
+   */
+  getCurrentPlayerTeam(game: Game): number | null {
+    if (!game?.gamePlayerMemberships) return null;
+
+    const currentPlayerId = Array.isArray(this.for()) ? this.for()[0] : this.for();
+    const membership = game.gamePlayerMemberships.find(
+      (m) => m.gamePlayer?.id === currentPlayerId
+    );
+
+    return membership?.team ?? null;
+  }
+
+  /**
+   * Checks if the current player won the game
+   * @param game The game object
+   * @returns true if won, false if lost, null if no winner or player not found
+   */
+  didCurrentPlayerWin(game: Game): boolean | null {
+    const playerTeam = this.getCurrentPlayerTeam(game);
+    if (playerTeam === null || !game.winner) return null;
+
+    return game.winner === playerTeam;
+  }
+
+  /**
+   * Gets the current player's points for this game
+   * @param game The game object
+   * @returns Points for the current player
+   */
+  getCurrentPlayerPoints(game: Game): number {
+    const forValue = this.for();
+    const currentPlayerId = Array.isArray(forValue) ? forValue[0] : forValue;
+    return this.getPlayerPoints(game, currentPlayerId);
   }
 }

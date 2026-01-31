@@ -154,15 +154,15 @@ export class RankingPlace extends BaseEntity {
   @Column({ default: false })
   declare doubleInactive: boolean;
 
-  @Field(() => ID)
+  @WhereField(() => ID)
   @Column()
   declare playerId: string;
 
-  @Field(() => ID)
+  @WhereField(() => ID)
   @Column()
   declare systemId: string;
 
-  @Field(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
   @Column({ nullable: true, type: 'uuid' })
   declare groupId?: string;
 

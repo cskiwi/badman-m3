@@ -1,0 +1,396 @@
+<div class="space-y-6">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <!-- Total -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-blue-500 p-4 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
+          <i class="pi pi-users text-blue-600 dark:text-blue-400 text-lg"></i>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ stats().total }}</div>
+          <div class="text-xs uppercase tracking-wide text-surface-500 dark:text-surface-400">
+            {{ 'all.tournament.admin.checkin.total' | translate }}
+          </div>
+          <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+            {{ 'all.tournament.admin.checkin.totalDescription' | translate }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checked In -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-green-500 p-4 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+          <i class="pi pi-check-circle text-green-600 dark:text-green-400 text-lg"></i>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ stats().checkedIn }}</div>
+          <div class="text-xs uppercase tracking-wide text-surface-500 dark:text-surface-400">
+            {{ 'all.tournament.admin.checkin.checkedIn' | translate }}
+          </div>
+          <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+            {{ 'all.tournament.admin.checkin.checkedInDescription' | translate }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-orange-500 p-4 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center">
+          <i class="pi pi-clock text-orange-600 dark:text-orange-400 text-lg"></i>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ stats().pending }}</div>
+          <div class="text-xs uppercase tracking-wide text-surface-500 dark:text-surface-400">
+            {{ 'all.tournament.admin.checkin.pending' | translate }}
+          </div>
+          <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+            {{ 'all.tournament.admin.checkin.pendingDescription' | translate }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Show -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-red-500 p-4 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
+          <i class="pi pi-user-minus text-red-600 dark:text-red-400 text-lg"></i>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ stats().noShow }}</div>
+          <div class="text-xs uppercase tracking-wide text-surface-500 dark:text-surface-400">
+            {{ 'all.tournament.admin.checkin.noShow' | translate }}
+          </div>
+          <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+            {{ 'all.tournament.admin.checkin.noShowDescription' | translate }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check-in Rate -->
+    <div
+      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-purple-500 p-4 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
+          <i class="pi pi-percentage text-purple-600 dark:text-purple-400 text-lg"></i>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            {{ stats().checkInRate | number: '1.0-1' }}%
+          </div>
+          <div class="text-xs uppercase tracking-wide text-surface-500 dark:text-surface-400">
+            {{ 'all.tournament.admin.checkin.rate' | translate }}
+          </div>
+          <div class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+            {{ 'all.tournament.admin.checkin.rateDescription' | translate }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 p-4">
+    <div class="flex flex-wrap gap-4 items-end">
+      <!-- Status Filter -->
+      <div class="flex flex-col gap-1.5">
+        <label for="status" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.checkin.status' | translate }}
+        </label>
+        <p-select
+          id="status"
+          [formControl]="statusFilter"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-44"
+        />
+      </div>
+
+      <!-- Search -->
+      <div class="flex flex-col gap-1.5">
+        <label for="search" class="text-sm font-medium text-color">
+          {{ 'all.tournament.admin.checkin.search' | translate }}
+        </label>
+        <div class="relative">
+          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-muted-color text-sm"></i>
+          <input
+            pInputText
+            id="search"
+            [formControl]="searchControl"
+            [placeholder]="'all.tournament.admin.checkin.searchPlaceholder' | translate"
+            class="w-64 pl-9"
+          />
+        </div>
+      </div>
+
+      <!-- Spacer -->
+      <div class="flex-1"></div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2">
+        <p-button
+          icon="pi pi-play"
+          [label]="'all.tournament.admin.checkin.initialize' | translate"
+          severity="secondary"
+          [outlined]="true"
+          (click)="initializeCheckIns()"
+          [loading]="updating()"
+          pTooltip="Create check-in records for all confirmed enrollments"
+        />
+
+        <p-button
+          icon="pi pi-refresh"
+          severity="secondary"
+          [outlined]="true"
+          (click)="refetch()"
+          [loading]="loading()"
+          pTooltip="Refresh data"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (updateError()) {
+    <p-message severity="error" [text]="updateError()!" styleClass="w-full" />
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+      <div class="h-full bg-primary animate-pulse" style="width: 100%"></div>
+    </div>
+  }
+
+  <!-- Check-in List Section -->
+  <div class="bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden">
+    <!-- Section Header -->
+    <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+          <i class="pi pi-id-card text-primary"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-color m-0">
+            {{ 'all.tournament.admin.checkin.players' | translate }}
+          </h3>
+          <span class="text-sm text-muted-color">{{ checkIns().length }} players</span>
+        </div>
+      </div>
+
+      <!-- Selection Actions -->
+      <div class="flex items-center gap-2">
+        <p-button
+          size="small"
+          [text]="true"
+          icon="pi pi-check-square"
+          pTooltip="Select all pending"
+          (click)="selectAllPending()"
+        />
+        <p-button
+          size="small"
+          [text]="true"
+          icon="pi pi-times"
+          pTooltip="Clear selection"
+          (click)="clearSelection()"
+          [disabled]="selectedCheckIns().length === 0"
+        />
+
+        @if (selectedCheckIns().length > 0) {
+          <div class="w-px h-6 bg-surface-300 dark:bg-surface-600 mx-1"></div>
+          <p-button
+            size="small"
+            icon="pi pi-check"
+            [label]="'all.tournament.admin.checkin.bulkCheckIn' | translate"
+            (click)="bulkCheckIn()"
+            [loading]="updating()"
+            [badge]="selectedCheckIns().length.toString()"
+            badgeClass="p-badge-contrast"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Table Content -->
+    @if (checkIns().length > 0) {
+      <p-table
+        [value]="checkIns()"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [paginator]="checkIns().length > 10"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        styleClass="p-datatable-sm"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem" class="bg-surface-50 dark:bg-surface-800"></th>
+            <th class="bg-surface-50 dark:bg-surface-800 font-semibold text-color">
+              {{ 'all.tournament.admin.checkin.player' | translate }}
+            </th>
+            <th class="bg-surface-50 dark:bg-surface-800 font-semibold text-color">
+              {{ 'all.tournament.admin.checkin.subEvent' | translate }}
+            </th>
+            <th class="bg-surface-50 dark:bg-surface-800 font-semibold text-color">
+              {{ 'all.tournament.admin.checkin.status' | translate }}
+            </th>
+            <th class="bg-surface-50 dark:bg-surface-800 font-semibold text-color">
+              {{ 'all.tournament.admin.checkin.checkedInAt' | translate }}
+            </th>
+            <th style="width: 10rem" class="bg-surface-50 dark:bg-surface-800 font-semibold text-color">
+              {{ 'all.tournament.admin.checkin.actions' | translate }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-checkIn>
+          <tr
+            class="hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+            [class.bg-green-50]="checkIn.status === 'CHECKED_IN'"
+            [class.dark:bg-green-900/20]="checkIn.status === 'CHECKED_IN'"
+            [class.bg-red-50]="checkIn.status === 'NO_SHOW'"
+            [class.dark:bg-red-900/20]="checkIn.status === 'NO_SHOW'"
+          >
+            <!-- Checkbox -->
+            <td class="text-center">
+              @if (checkIn.status === 'PENDING') {
+                <p-checkbox [binary]="true" [ngModel]="isSelected(checkIn)" (onChange)="toggleSelection(checkIn)" />
+              }
+            </td>
+
+            <!-- Player Info -->
+            <td>
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0"
+                >
+                  <i class="pi pi-user text-muted-color"></i>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-medium text-color">{{ getPlayerName(checkIn) }}</span>
+                  @if (checkIn.player?.memberId) {
+                    <span class="text-xs text-muted-color">{{ checkIn.player.memberId }}</span>
+                  }
+                </div>
+              </div>
+            </td>
+
+            <!-- Sub-Event -->
+            <td>
+              @if (checkIn.enrollment?.tournamentSubEvent?.name) {
+                <span class="text-color">{{ checkIn.enrollment.tournamentSubEvent.name }}</span>
+              } @else {
+                <span class="text-muted-color">-</span>
+              }
+            </td>
+
+            <!-- Status -->
+            <td>
+              <p-tag
+                [value]="checkIn.status"
+                [severity]="getStatusSeverity(checkIn.status)"
+                [rounded]="true"
+                styleClass="text-xs"
+              />
+            </td>
+
+            <!-- Checked In Time -->
+            <td>
+              @if (checkIn.checkedInAt) {
+                <div class="flex items-center gap-1.5 text-muted-color">
+                  <i class="pi pi-clock text-xs"></i>
+                  <span>{{ checkIn.checkedInAt | date: 'HH:mm' }}</span>
+                </div>
+              } @else {
+                <span class="text-muted-color">-</span>
+              }
+            </td>
+
+            <!-- Actions -->
+            <td>
+              <div class="flex gap-1">
+                @if (checkIn.status === 'PENDING') {
+                  <p-button
+                    icon="pi pi-check"
+                    severity="success"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    pTooltip="Check in"
+                    (click)="checkIn(checkIn)"
+                    [loading]="updating()"
+                  />
+                  <p-button
+                    icon="pi pi-times"
+                    severity="danger"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    pTooltip="Mark no-show"
+                    (click)="markNoShow(checkIn)"
+                    [loading]="updating()"
+                  />
+                }
+                @if (checkIn.status === 'CHECKED_IN' || checkIn.status === 'NO_SHOW') {
+                  <p-button
+                    icon="pi pi-undo"
+                    severity="secondary"
+                    [text]="true"
+                    [rounded]="true"
+                    size="small"
+                    pTooltip="Undo"
+                    (click)="undoCheckIn(checkIn)"
+                    [loading]="updating()"
+                  />
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center py-8">
+              <div class="flex flex-col items-center gap-2">
+                <i class="pi pi-inbox text-4xl text-muted-color"></i>
+                <span class="text-muted-color">{{ 'all.tournament.admin.checkin.noCheckIns' | translate }}</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <!-- Empty State -->
+      <div class="p-8 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center">
+          <i class="pi pi-id-card text-3xl text-muted-color"></i>
+        </div>
+        <p class="text-lg font-medium text-color mb-2">
+          {{ 'all.tournament.admin.checkin.noCheckIns' | translate }}
+        </p>
+        <p class="text-muted-color mb-4 max-w-md mx-auto">
+          {{ 'all.tournament.admin.checkin.initializeHint' | translate }}
+        </p>
+        <p-button
+          icon="pi pi-play"
+          [label]="'all.tournament.admin.checkin.initialize' | translate"
+          (click)="initializeCheckIns()"
+          [loading]="updating()"
+        />
+      </div>
+    }
+  </div>
+</div>

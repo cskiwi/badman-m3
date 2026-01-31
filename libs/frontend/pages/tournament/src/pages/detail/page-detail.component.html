@@ -16,6 +16,22 @@
       </ng-content>
       <ng-content actions>
         <div class="flex items-center gap-2">
+          @if (canEdit()) {
+            <a
+              [routerLink]="['/', 'tournament', tournament.id, 'admin']"
+              class="flex items-center gap-1 px-3 py-1.5 rounded bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors text-sm no-underline"
+            >
+              <i class="pi pi-cog text-xs"></i>
+              <span>{{ 'all.tournament.admin.title' | translate }}</span>
+            </a>
+          }
+          <a
+            [routerLink]="['/', 'tournament', tournament.id, 'my-enrollments']"
+            class="flex items-center gap-1 px-3 py-1.5 rounded bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors text-sm no-underline"
+          >
+            <i class="pi pi-list text-xs"></i>
+            <span>{{ 'all.enrollment.myEnrollments' | translate }}</span>
+          </a>
           @if (tournament.visualCode) {
             <a
               [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode"
@@ -116,7 +132,7 @@
             <div class="flex items-center gap-2">
               <i class="pi pi-shield text-muted-color"></i>
               <span class="font-medium">{{ 'all.tournament.official' | translate }}:</span>
-              <span [class]="tournament.official ? 'text-green-600' : 'text-orange-600'">
+              <span [class]="tournament.official ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'">
                 {{ (tournament.official ? 'all.common.yes' : 'all.common.no') | translate }}
               </span>
             </div>
@@ -125,13 +141,82 @@
       </div>
     </section>
 
+    <!-- Live Pages Section -->
+    <section class="live-pages">
+      <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
+        <i class="pi pi-desktop text-primary-500"></i>
+        {{ 'all.tournament.live.title' | translate }}
+      </h3>
+
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'courts']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-th-large text-2xl text-primary-500"></i>
+          <span class="font-medium">{{ 'all.tournament.live.courts' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.courtsDesc' | translate }}</span>
+        </a>
+
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'results']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-check-circle text-2xl text-green-500 dark:text-green-400"></i>
+          <span class="font-medium">{{ 'all.tournament.live.results' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.resultsDesc' | translate }}</span>
+        </a>
+
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'upcoming']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-clock text-2xl text-orange-500 dark:text-orange-400"></i>
+          <span class="font-medium">{{ 'all.tournament.live.upcoming' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.upcomingDesc' | translate }}</span>
+        </a>
+
+        <a
+          [routerLink]="['/', 'tournament', tournament.id, 'live', 'kiosk']"
+          class="flex flex-col items-center gap-2 p-4 rounded-border bg-highlight hover:bg-highlight-emphasis transition-colors no-underline"
+        >
+          <i class="pi pi-window-maximize text-2xl text-blue-500 dark:text-blue-400"></i>
+          <span class="font-medium">{{ 'all.tournament.live.kiosk' | translate }}</span>
+          <span class="text-xs text-muted-color">{{ 'all.tournament.live.kioskDesc' | translate }}</span>
+        </a>
+      </div>
+    </section>
+
     <!-- Tournament Events Section (Grouped by type) -->
     @if (groupedSubEvents().length > 0) {
       <section class="tournament-events">
-        <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
-          <i class="pi pi-list text-primary-500"></i>
-          {{ 'all.tournament.events' | translate }}
-        </h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="flex items-center gap-2 text-xl font-semibold">
+            <i class="pi pi-list text-primary-500"></i>
+            {{ 'all.tournament.events' | translate }}
+          </h3>
+
+          <!-- Single Enrollment Button -->
+          @if (tournament.phase === 'ENROLLMENT_OPEN') {
+            <a
+              [routerLink]="['/', 'tournament', tournament.id, 'enroll']"
+              class="flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-contrast hover:bg-primary-emphasis transition-colors no-underline font-medium shadow-md hover:shadow-lg"
+            >
+              <i class="pi pi-user-plus"></i>
+              <span>{{ 'all.enrollment.enrollNow' | translate }}</span>
+            </a>
+          } @else if (tournament.phase === 'DRAFT') {
+            <div class="flex items-center gap-2 px-6 py-3 rounded bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-medium">
+              <i class="pi pi-clock"></i>
+              <span>{{ 'all.enrollment.notYetOpen' | translate }}</span>
+            </div>
+          } @else {
+            <div class="flex items-center gap-2 px-6 py-3 rounded bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-medium">
+              <i class="pi pi-lock"></i>
+              <span>{{ 'all.enrollment.closed' | translate }}</span>
+            </div>
+          }
+        </div>
 
         <!-- Group Type Tabs -->
         @if (groupedSubEvents().length > 1) {
@@ -332,19 +417,19 @@
   <div class="space-y-6">
     <!-- Header skeleton -->
     <div class="space-y-2">
-      <p-skeleton width="20rem" height="2rem"></p-skeleton>
-      <p-skeleton width="15rem" height="1rem"></p-skeleton>
+      <p-skeleton width="20rem" height="2rem" />
+      <p-skeleton width="15rem" height="1rem" />
     </div>
 
     <!-- Tournament info skeletons -->
     <div class="grid gap-6 md:grid-cols-2">
       @for (i of [1, 2]; track i) {
         <div class="rounded-border bg-highlight p-4 space-y-3">
-          <p-skeleton width="8rem" height="1.5rem"></p-skeleton>
+          <p-skeleton width="8rem" height="1.5rem" />
           <div class="space-y-2">
-            <p-skeleton width="100%" height="1rem"></p-skeleton>
-            <p-skeleton width="80%" height="1rem"></p-skeleton>
-            <p-skeleton width="60%" height="1rem"></p-skeleton>
+            <p-skeleton width="100%" height="1rem" />
+            <p-skeleton width="80%" height="1rem" />
+            <p-skeleton width="60%" height="1rem" />
           </div>
         </div>
       }
@@ -352,19 +437,19 @@
 
     <!-- Events skeletons -->
     <div class="space-y-4">
-      <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+      <p-skeleton width="12rem" height="1.5rem" />
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         @for (i of [1, 2, 3, 4, 5, 6]; track i) {
           <div class="rounded-border bg-highlight p-6 space-y-4">
-            <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
+            <p-skeleton width="12rem" height="1.5rem" />
             <div class="space-y-2">
-              <p-skeleton width="8rem" height="1rem"></p-skeleton>
-              <p-skeleton width="6rem" height="1rem"></p-skeleton>
-              <p-skeleton width="10rem" height="1rem"></p-skeleton>
+              <p-skeleton width="8rem" height="1rem" />
+              <p-skeleton width="6rem" height="1rem" />
+              <p-skeleton width="10rem" height="1rem" />
             </div>
             <div class="border-t pt-4 space-y-2">
-              <p-skeleton width="6rem" height="1rem"></p-skeleton>
-              <p-skeleton width="100%" height="2rem"></p-skeleton>
+              <p-skeleton width="6rem" height="1rem" />
+              <p-skeleton width="100%" height="2rem" />
             </div>
           </div>
         }
@@ -374,7 +459,7 @@
 }
 
 @if (error()) {
-  <div class="error flex items-center gap-2 p-4 text-red-600">
+  <div class="error flex items-center gap-2 p-4 text-red-600 dark:text-red-400">
     <i class="pi pi-exclamation-triangle"></i>
     {{ error() }}
   </div>

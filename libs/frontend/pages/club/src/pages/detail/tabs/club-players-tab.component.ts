@@ -30,18 +30,18 @@ import { ClubPlayersTabService } from './club-players-tab.service';
       <p-card>
         <div class="space-y-4">
           <div class="flex justify-between items-center">
-            <p-skeleton width="10rem" height="1.5rem"></p-skeleton>
-            <p-skeleton width="12rem" height="2.5rem"></p-skeleton>
+            <p-skeleton width="10rem" height="1.5rem" />
+            <p-skeleton width="12rem" height="2.5rem" />
           </div>
           @for (i of [1, 2, 3, 4, 5]; track i) {
             <div class="flex items-center gap-4 p-3 border-b border-surface">
-              <p-skeleton shape="circle" size="2rem"></p-skeleton>
+              <p-skeleton shape="circle" size="2rem" />
               <div class="flex-1 space-y-2">
-                <p-skeleton width="8rem" height="1rem"></p-skeleton>
-                <p-skeleton width="5rem" height="0.75rem"></p-skeleton>
+                <p-skeleton width="8rem" height="1rem" />
+                <p-skeleton width="5rem" height="0.75rem" />
               </div>
-              <p-skeleton width="4rem" height="1rem"></p-skeleton>
-              <p-skeleton width="3rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
+              <p-skeleton width="4rem" height="1rem" />
+              <p-skeleton width="3rem" height="1.5rem" borderRadius="1rem" />
             </div>
           }
         </div>
@@ -78,8 +78,8 @@ import { ClubPlayersTabService } from './club-players-tab.service';
 
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="fullName">{{ 'all.player.name' | translate }} <p-sortIcon field="fullName"></p-sortIcon></th>
-              <th pSortableColumn="team.name">{{ 'all.team.name' | translate }} <p-sortIcon field="team.name"></p-sortIcon></th>
+              <th pSortableColumn="fullName">{{ 'all.player.name' | translate }} <p-sortIcon field="fullName" /></th>
+              <th pSortableColumn="team.name">{{ 'all.team.name' | translate }} <p-sortIcon field="team.name" /></th>
               <th>{{ 'all.player.stats' | translate }}</th>
               <th>{{ 'all.common.actions' | translate }}</th>
             </tr>
@@ -102,7 +102,7 @@ import { ClubPlayersTabService } from './club-players-tab.service';
                 <div class="flex items-center gap-2">
                   <span>{{ player.team?.name || 'N/A' }}</span>
                   @if (player.team?.abbreviation) {
-                    <p-badge [value]="player.team.abbreviation" severity="secondary" size="small"></p-badge>
+                    <p-badge [value]="player.team.abbreviation" severity="secondary" size="small" />
                   }
                 </div>
               </td>

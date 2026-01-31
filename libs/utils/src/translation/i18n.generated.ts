@@ -32,6 +32,22 @@ export type I18nTranslations = {
                 "title": string;
             };
         };
+        "button": {
+            "add": string;
+            "apply": string;
+            "back": string;
+            "cancel": string;
+            "close": string;
+            "confirm": string;
+            "create": string;
+            "delete": string;
+            "edit": string;
+            "generate": string;
+            "refresh": string;
+            "remove": string;
+            "save": string;
+            "submit": string;
+        };
         "club": {
             "allPlayers": string;
             "avgRanking": string;
@@ -46,6 +62,17 @@ export type I18nTranslations = {
             "totalGames": string;
             "totalPlayers": string;
             "totalTeams": string;
+            "tournaments": {
+                "create": string;
+                "createFirst": string;
+                "date": string;
+                "noTournaments": string;
+                "official": string;
+                "officialTooltip": string;
+                "phase": string;
+                "tab": string;
+                "title": string;
+            };
             "winRate": string;
             "winRateTrend": string;
         };
@@ -56,10 +83,64 @@ export type I18nTranslations = {
             };
             "search": string;
         };
+        "clubSearch": {
+            "card": {
+                "founded": string;
+            };
+            "filters": {
+                "activeOnly": string;
+                "additional": string;
+                "apply": string;
+                "clear": string;
+                "country": string;
+                "division": string;
+                "foundedAfter": string;
+                "foundedBefore": string;
+                "hasWebsite": string;
+                "location": string;
+                "maxPlayers": string;
+                "maxTeams": string;
+                "memberCounts": string;
+                "minPlayers": string;
+                "minTeams": string;
+                "resultCount": string;
+                "searchCountries": string;
+                "searchDivisions": string;
+                "searchStates": string;
+                "state": string;
+                "title": string;
+            };
+            "loading": string;
+            "noResults": {
+                "clearFilters": string;
+                "description": string;
+                "searchAgain": string;
+                "title": string;
+            };
+            "pagination": {
+                "template": string;
+            };
+            "results": {
+                "showing": string;
+            };
+            "searchPlaceholder": string;
+            "sort": {
+                "placeholder": string;
+            };
+            "stats": {
+                "avgPlayersPerClub": string;
+                "totalClubs": string;
+                "totalPlayers": string;
+                "totalTeams": string;
+            };
+            "subtitle": string;
+            "title": string;
+        };
         "common": {
             "actions": string;
             "cancel": string;
             "error": string;
+            "level": string;
             "name": string;
             "no": string;
             "save": string;
@@ -67,13 +148,12 @@ export type I18nTranslations = {
             "season": string;
             "selectSeason": string;
             "success": string;
+            "unknown": string;
             "viewAll": string;
             "viewDetails": string;
             "yes": string;
         };
         "competition": {
-            "title": string;
-            "search": string;
             "bracket_view": string;
             "bracket_view_description": string;
             "changeClosePeriod1": string;
@@ -84,6 +164,112 @@ export type I18nTranslations = {
             "details": string;
             "draw": string;
             "draws": string;
+            "edit": {
+                "actions": {
+                    "cancel": string;
+                    "save-all": string;
+                    "save-current": string;
+                };
+                "button": string;
+                "dates": {
+                    "changeCloseDatePeriod1": string;
+                    "changeCloseDatePeriod1.placeholder": string;
+                    "changeCloseDatePeriod2": string;
+                    "changeCloseDatePeriod2.placeholder": string;
+                    "changeCloseRequestDatePeriod1": string;
+                    "changeCloseRequestDatePeriod1.placeholder": string;
+                    "changeCloseRequestDatePeriod2": string;
+                    "changeCloseRequestDatePeriod2.placeholder": string;
+                    "changeOpenDate": string;
+                    "changeOpenDate.placeholder": string;
+                    "changePeriod1": {
+                        "title": string;
+                    };
+                    "changePeriod2": {
+                        "title": string;
+                    };
+                    "closeDate": string;
+                    "closeDate.hint": string;
+                    "closeDate.placeholder": string;
+                    "description": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                    "openDate": string;
+                    "openDate.hint": string;
+                    "openDate.placeholder": string;
+                    "registration": {
+                        "title": string;
+                    };
+                };
+                "info": {
+                    "basic": {
+                        "title": string;
+                    };
+                    "contact": {
+                        "title": string;
+                    };
+                    "contactEmail": string;
+                    "contactEmail.invalid": string;
+                    "contactEmail.placeholder": string;
+                    "country": string;
+                    "country.placeholder": string;
+                    "description": string;
+                    "location": {
+                        "title": string;
+                    };
+                    "messages": {
+                        "saving": string;
+                    };
+                    "name": string;
+                    "name.placeholder": string;
+                    "name.required": string;
+                    "season": string;
+                    "season.placeholder": string;
+                    "season.required": string;
+                    "state": string;
+                    "state.placeholder": string;
+                    "type": string;
+                    "type.placeholder": string;
+                };
+                "messages": {
+                    "loading": string;
+                    "unsaved-changes": string;
+                };
+                "settings": {
+                    "checkEncounterForFilledIn": string;
+                    "checkEncounterForFilledIn.description": string;
+                    "description": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                    "official": string;
+                    "official.description": string;
+                    "ranking": {
+                        "title": string;
+                    };
+                    "teamMatcher": string;
+                    "teamMatcher.hint": string;
+                    "teamMatcher.placeholder": string;
+                    "teamMatching": {
+                        "title": string;
+                    };
+                    "usedRankingAmount": string;
+                    "usedRankingAmount.hint": string;
+                    "usedRankingUnit": string;
+                    "usedRankingUnit.placeholder": string;
+                    "validation": {
+                        "title": string;
+                    };
+                };
+                "subtitle": string;
+                "tabs": {
+                    "dates": string;
+                    "info": string;
+                    "settings": string;
+                };
+                "title": string;
+            };
             "eliminated": string;
             "encounters": string;
             "eventType": string;
@@ -118,6 +304,7 @@ export type I18nTranslations = {
             "qualification_view": string;
             "qualification_view_description": string;
             "qualified": string;
+            "search": string;
             "season": string;
             "sets": string;
             "size": string;
@@ -128,6 +315,7 @@ export type I18nTranslations = {
             "subEvents": string;
             "team": string;
             "teams": string;
+            "title": string;
             "tooltip": {
                 "faller": string;
                 "riser": string;
@@ -156,6 +344,78 @@ export type I18nTranslations = {
             "tuesday": string;
             "wednesday": string;
         };
+        "enrollment": {
+            "additionalNotes": string;
+            "addToCart": string;
+            "availableEvents": string;
+            "cart": {
+                "clear": string;
+                "empty": string;
+                "emptyDescription": string;
+                "enrollNow": string;
+                "eventSelected": string;
+                "eventsSelected": string;
+                "partnerSelected": string;
+                "title": string;
+                "totalEvents": string;
+            };
+            "characters": string;
+            "closed": string;
+            "continue": string;
+            "enrollNow": string;
+            "filters": {
+                "category": string;
+                "clear": string;
+                "double": string;
+                "eventType": string;
+                "level": string;
+                "maxLevel": string;
+                "minLevel": string;
+                "mixed": string;
+                "showOnlyMyLevel": string;
+                "single": string;
+                "status": string;
+                "statusOptions": {
+                    "all": string;
+                    "available": string;
+                    "open": string;
+                };
+                "yourRankings": string;
+            };
+            "loading": string;
+            "messages": {
+                "addedToCart": string;
+                "addedWithPartner": string;
+                "cartCleared": string;
+                "cartEmpty": string;
+                "enrollmentFailed": string;
+                "enrollmentSuccess": string;
+                "partialEnrollment": string;
+                "removedFromCart": string;
+                "submitFailed": string;
+            };
+            "myEnrollments": string;
+            "noEventsMatch": string;
+            "notEligible": string;
+            "notYetOpen": string;
+            "optional": string;
+            "partnerSelection": {
+                "description": string;
+                "notes": string;
+                "placeholder": string;
+                "title": string;
+            };
+            "removeFromCart": string;
+            "subtitle": string;
+            "title": string;
+            "tryAdjustingFilters": string;
+        };
+        "error": {
+            "genericTitle": string;
+        };
+        "errors": {
+            "title": string;
+        };
         "game": {
             "common": {
                 "loadMore": string;
@@ -175,6 +435,25 @@ export type I18nTranslations = {
                 "noGamesFound": string;
                 "title": string;
             };
+        };
+        "games": {
+            "allResults": string;
+            "allTypes": string;
+            "dateFrom": string;
+            "dateTo": string;
+            "export": string;
+            "filters": string;
+            "gamesList": string;
+            "gameType": string;
+            "losses": string;
+            "result": string;
+            "selectDate": string;
+            "selectTournament": string;
+            "showingCount": string;
+            "totalGames": string;
+            "tournament": string;
+            "winRate": string;
+            "wins": string;
         };
         "head-to-head": {
             "amount-of-games": string;
@@ -227,6 +506,9 @@ export type I18nTranslations = {
             "win-rate": string;
             "win-rate-against": string;
         };
+        "loading": {
+            "players": string;
+        };
         "navigation": {
             "clubs": string;
             "competitions": string;
@@ -239,12 +521,8 @@ export type I18nTranslations = {
             "searchPlayersDescription": string;
         };
         "player": {
-            "games": string;
-            "name": string;
-            "ranking": string;
-            "stats": string;
-            "winRate": string;
-            "wins": string;
+            "allGames": string;
+            "competitionPlayer": string;
             "edit": {
                 "actions": {
                     "cancel": string;
@@ -253,19 +531,14 @@ export type I18nTranslations = {
                 };
                 "claims": {
                     "actions": {
-                        "cancel": string;
-                        "save": string;
                         "select-all": string;
                         "select-none": string;
                     };
                     "description": string;
                     "messages": {
-                        "loading": string;
-                        "no-claims": string;
-                        "no-permission": string;
                         "saving": string;
                     };
-                    "subtitle": string;
+                    "noClaims": string;
                     "title": string;
                 };
                 "messages": {
@@ -299,12 +572,6 @@ export type I18nTranslations = {
                     "messages": {
                         "saving": string;
                     };
-                    "permissions": {
-                        "canEditAdmin": string;
-                        "canEditContact": string;
-                        "description": string;
-                        "title": string;
-                    };
                     "personal": {
                         "title": string;
                     };
@@ -318,6 +585,26 @@ export type I18nTranslations = {
                 };
                 "title": string;
             };
+            "gender": string;
+            "headToHead": string;
+            "maxRating": string;
+            "minRating": string;
+            "noGames": string;
+            "noGamesDescription": string;
+            "noPerformanceData": string;
+            "noPerformanceDataDescription": string;
+            "noRecentGames": string;
+            "noRecentGamesDescription": string;
+            "noResults": string;
+            "noTournamentHistory": string;
+            "noTournamentHistoryDescription": string;
+            "performance": string;
+            "playerType": string;
+            "recentGames": string;
+            "resultsFound": string;
+            "tournamentHistory": string;
+            "tryDifferentFilters": string;
+            "yearsOld": string;
         };
         "players": {
             "my-club": string;
@@ -337,8 +624,98 @@ export type I18nTranslations = {
         };
         "ranking": {
             "breakdown": {
+                "add-game": {
+                    "p1t1": string;
+                    "p1t2": string;
+                    "p2t1": string;
+                    "p2t2": string;
+                    "title": string;
+                    "won": string;
+                };
+                "can-downgrade": string;
+                "can-not-downgrade": string;
+                "can-not-upgrade": string;
+                "can-upgrade": string;
+                "corrected": string;
+                "countsForDowngrade": string;
+                "countsForUpgrade": string;
+                "date": string;
+                "disclaimer": string;
                 "downgrade": string;
+                "downgrade-average": string;
+                "drops-next-period": string;
+                "evolution": string;
+                "export": {
+                    "avgDowngrade": string;
+                    "avgUpgrade": string;
+                    "countsFor": string;
+                    "date": string;
+                    "LOST_DOWNGRADE": string;
+                    "LOST_IGNORED": string;
+                    "LOST_UPGRADE": string;
+                    "opponent1": string;
+                    "opponent2": string;
+                    "OUT_SCOPE": string;
+                    "player1": string;
+                    "player2": string;
+                    "points": string;
+                    "title": string;
+                    "usedForDowngrade": string;
+                    "usedForUpgrade": string;
+                    "WON": string;
+                };
+                "filters": string;
+                "games": {
+                    "none": string;
+                    "one": string;
+                    "other": string;
+                };
+                "games-downgrade": string;
+                "games-upgrade": string;
+                "hint": string;
+                "ignored": string;
+                "includeOutOfScope": string;
+                "lostGames": {
+                    "none": string;
+                    "one": string;
+                    "other": string;
+                };
+                "no-team": string;
+                "notUsed": string;
+                "opponent": string;
+                "outOfScope": {
+                    "none": string;
+                    "one": string;
+                    "other": string;
+                };
+                "outOfScopeDowngrade": string;
+                "outOfScopeUpgrade": string;
+                "outOfScopeWonGames": string;
+                "period": {
+                    "last-point-update": string;
+                    "last-ranking-update": string;
+                    "next-point-update": string;
+                    "next-ranking-update": string;
+                    "title": string;
+                };
+                "points": string;
+                "pointsPerGame": string;
+                "removed-games": string;
+                "show": string;
+                "show-downgrade": string;
+                "show-upgrade": string;
+                "team": string;
+                "title": string;
+                "untill": string;
+                "update": {
+                    "last": string;
+                    "point": string;
+                    "ranking": string;
+                };
                 "upgrade": string;
+                "upgrade-average": string;
+                "usedForDowngrade": string;
+                "usedForUpgrade": string;
             };
         };
         "search": {
@@ -552,10 +929,6 @@ export type I18nTranslations = {
         };
         "team": {
             "captain": string;
-            "games": string;
-            "wins": string;
-            "winRate": string;
-            "name": string;
             "edit": {
                 "abbreviation": {
                     "label": string;
@@ -644,6 +1017,8 @@ export type I18nTranslations = {
                     };
                 };
             };
+            "games": string;
+            "name": string;
             "noTeams": string;
             "overview": {
                 "title": string;
@@ -659,16 +1034,350 @@ export type I18nTranslations = {
                 "women": string;
                 "youth": string;
             };
+            "winRate": string;
+            "wins": string;
         };
         "tournament": {
+            "admin": {
+                "checkin": {
+                    "actions": string;
+                    "allStatuses": string;
+                    "bulkCheckIn": string;
+                    "checkedIn": string;
+                    "checkedInAt": string;
+                    "checkedInDescription": string;
+                    "checkIn": string;
+                    "checkinRate": string;
+                    "checkInSelected": string;
+                    "checkinTime": string;
+                    "filterByStatus": string;
+                    "groupBySubEvent": string;
+                    "initialize": string;
+                    "initializeCheckins": string;
+                    "initializeFirst": string;
+                    "initializeHint": string;
+                    "markNoShow": string;
+                    "noCheckIns": string;
+                    "noPlayersYet": string;
+                    "noShow": string;
+                    "noShowDescription": string;
+                    "pending": string;
+                    "pendingDescription": string;
+                    "player": string;
+                    "players": string;
+                    "rate": string;
+                    "rateDescription": string;
+                    "search": string;
+                    "searchPlaceholder": string;
+                    "searchPlayers": string;
+                    "selectAll": string;
+                    "status": string;
+                    "subEvent": string;
+                    "title": string;
+                    "total": string;
+                    "totalDescription": string;
+                    "totalPlayers": string;
+                    "undo": string;
+                };
+                "draws": {
+                    "allEntriesAssigned": string;
+                    "applySeeding": string;
+                    "assign": string;
+                    "assigned": string;
+                    "assignedDescription": string;
+                    "assignSelected": string;
+                    "autoSeed": string;
+                    "clearSeeds": string;
+                    "clearSelection": string;
+                    "confirmDeleteDraw": string;
+                    "createDraw": string;
+                    "deleteDraw": string;
+                    "drawCount": string;
+                    "drawCountDescription": string;
+                    "drawName": string;
+                    "drawSize": string;
+                    "drawType": string;
+                    "entries": string;
+                    "entry": string;
+                    "generateEntries": string;
+                    "generateEntriesDescription": string;
+                    "maxLevel": string;
+                    "maxLevelHelp": string;
+                    "maxLevelPlaceholder": string;
+                    "minLevel": string;
+                    "minLevelHelp": string;
+                    "minLevelPlaceholder": string;
+                    "noDraws": string;
+                    "noDrawsHint": string;
+                    "noDrawsYet": string;
+                    "noEntries": string;
+                    "noEntriesHint": string;
+                    "noEntriesYet": string;
+                    "removeFromDraw": string;
+                    "seed": string;
+                    "seedByRanking": string;
+                    "seeding": string;
+                    "seedingDescription": string;
+                    "seedingMethod": string;
+                    "seedingOptions": string;
+                    "seedManual": string;
+                    "seedRandom": string;
+                    "selectAll": string;
+                    "selectDraw": string;
+                    "selectSize": string;
+                    "selectSubEvent": string;
+                    "selectSubEventFirst": string;
+                    "setSeed": string;
+                    "subEvent": string;
+                    "subEventType": string;
+                    "title": string;
+                    "totalDraws": string;
+                    "totalEntries": string;
+                    "totalEntriesDescription": string;
+                    "unassigned": string;
+                    "unassignedDescription": string;
+                    "unassignedEntries": string;
+                    "viewDraw": string;
+                };
+                "enrollments": {
+                    "actions": string;
+                    "addEnrollment": string;
+                    "addManualEnrollment": string;
+                    "allStatuses": string;
+                    "allSubEvents": string;
+                    "assignPartner": string;
+                    "bulkActions": string;
+                    "cancel": string;
+                    "cancelled": string;
+                    "cancelledDescription": string;
+                    "cancelSelected": string;
+                    "confirm": string;
+                    "confirmCancel": string;
+                    "confirmed": string;
+                    "confirmedDescription": string;
+                    "confirmSelected": string;
+                    "enrollAsGuest": string;
+                    "enrolledAt": string;
+                    "enrollmentsCount": string;
+                    "filterByStatus": string;
+                    "filterBySubEvent": string;
+                    "guestEmail": string;
+                    "guestName": string;
+                    "lookingForPartner": string;
+                    "manualEnrollmentDescription": string;
+                    "noEnrollments": string;
+                    "noEnrollmentsHint": string;
+                    "notes": string;
+                    "notesPlaceholder": string;
+                    "partner": string;
+                    "partnerSearch": string;
+                    "partnerSearchPlaceholder": string;
+                    "pending": string;
+                    "pendingDescription": string;
+                    "player": string;
+                    "playerSearch": string;
+                    "playerSearchHelp": string;
+                    "playerSearchPlaceholder": string;
+                    "position": string;
+                    "promote": string;
+                    "promoteFromWaitingList": string;
+                    "schedulePublished": string;
+                    "search": string;
+                    "searchPlaceholder": string;
+                    "searchPlayers": string;
+                    "selectSubEventFirst": string;
+                    "status": string;
+                    "subEvent": string;
+                    "title": string;
+                    "total": string;
+                    "totalDescription": string;
+                    "totalEntries": string;
+                    "waitingList": string;
+                    "waitingListDescription": string;
+                    "withdraw": string;
+                };
+                "noPermission": string;
+                "phases": {
+                    "cancelled": string;
+                    "completed": string;
+                    "draft": string;
+                    "drawsMade": string;
+                    "enrollmentClosed": string;
+                    "enrollmentOpen": string;
+                    "inProgress": string;
+                    "scheduled": string;
+                    "title": string;
+                };
+                "schedule": {
+                    "allDates": string;
+                    "autoSchedule": string;
+                    "autoScheduleDescription": string;
+                    "available": string;
+                    "blocked": string;
+                    "breakBetween": string;
+                    "breakBetweenSlots": string;
+                    "byLevel": string;
+                    "categoryOrder": string;
+                    "conflicts": string;
+                    "courts": string;
+                    "date": string;
+                    "dates": string;
+                    "dragToAssign": string;
+                    "endTime": string;
+                    "filterByDate": string;
+                    "generateSlots": string;
+                    "hideUnscheduled": string;
+                    "inProgress": string;
+                    "minimizeWait": string;
+                    "minRestTime": string;
+                    "noConflicts": string;
+                    "noSlots": string;
+                    "noSlotsHint": string;
+                    "noUnscheduledGames": string;
+                    "publish": string;
+                    "publishSchedule": string;
+                    "random": string;
+                    "results": string;
+                    "runScheduler": string;
+                    "scheduled": string;
+                    "selectCourts": string;
+                    "selectDates": string;
+                    "showUnscheduled": string;
+                    "slotDuration": string;
+                    "startTime": string;
+                    "strategies": {
+                        "BY_LEVEL": string;
+                        "CATEGORY_ORDER": string;
+                        "MINIMIZE_WAIT": string;
+                        "RANDOM": string;
+                    };
+                    "strategy": string;
+                    "time": string;
+                    "title": string;
+                    "totalSlots": string;
+                    "unscheduled": string;
+                    "unscheduledGames": string;
+                };
+                "settings": {
+                    "actions": string;
+                    "addSubEvent": string;
+                    "advancePhase": string;
+                    "allowGuests": string;
+                    "allowGuestsDescription": string;
+                    "basic": string;
+                    "closeDate": string;
+                    "confirmAdvancePhase": string;
+                    "confirmDeleteSubEvent": string;
+                    "createFirstSubEvent": string;
+                    "currentPhase": string;
+                    "dates": string;
+                    "deleteSubEvent": string;
+                    "editSubEvent": string;
+                    "enrollment": string;
+                    "enrollmentClose": string;
+                    "enrollmentDates": string;
+                    "enrollmentDatesHelp": string;
+                    "enrollmentDatesPlaceholder": string;
+                    "enrollmentOpen": string;
+                    "eventType": string;
+                    "firstDay": string;
+                    "gameType": string;
+                    "general": string;
+                    "generalDescription": string;
+                    "guestEnrollment": string;
+                    "lastDay": string;
+                    "level": string;
+                    "levelHelp": string;
+                    "maxEntries": string;
+                    "maxEntriesHelp": string;
+                    "maxLevel": string;
+                    "minLevel": string;
+                    "name": string;
+                    "namePlaceholder": string;
+                    "nextPhase": string;
+                    "noSubEvents": string;
+                    "official": string;
+                    "openDate": string;
+                    "options": string;
+                    "phase": string;
+                    "phaseDescription": string;
+                    "phases": {
+                        "COMPLETED": string;
+                        "DRAFT": string;
+                        "DRAWS_MADE": string;
+                        "ENROLLMENT_CLOSED": string;
+                        "ENROLLMENT_OPEN": string;
+                        "IN_PROGRESS": string;
+                        "SCHEDULED": string;
+                    };
+                    "previousPhase": string;
+                    "registrationDates": string;
+                    "registrationDatesHelp": string;
+                    "registrationDatesPlaceholder": string;
+                    "saveChanges": string;
+                    "subEventGameType": string;
+                    "subEventLevel": string;
+                    "subEventMaxEntries": string;
+                    "subEventName": string;
+                    "subEvents": string;
+                    "subEventsDescription": string;
+                    "subEventWaitingList": string;
+                    "title": string;
+                    "tournamentDates": string;
+                    "tournamentDatesHelp": string;
+                    "tournamentDatesPlaceholder": string;
+                    "waitingList": string;
+                    "waitingListEnabled": string;
+                };
+                "tabs": {
+                    "checkin": string;
+                    "draws": string;
+                    "enrollments": string;
+                    "schedule": string;
+                    "settings": string;
+                };
+                "title": string;
+            };
+            "capacity": string;
             "closeDate": string;
+            "create": {
+                "closeDate": string;
+                "closeDatePlaceholder": string;
+                "name": string;
+                "namePlaceholder": string;
+                "nameRequired": string;
+                "noClub": string;
+                "official": string;
+                "openDate": string;
+                "openDatePlaceholder": string;
+                "submit": string;
+                "title": string;
+                "tournamentDays": string;
+                "tournamentDaysHelp": string;
+                "tournamentDaysPlaceholder": string;
+            };
             "dates": string;
             "details": string;
+            "double": string;
+            "draw-detail": {
+                "games": {
+                    "no-games": string;
+                    "title": string;
+                };
+            };
             "draws": string;
             "entries": string;
             "events": string;
             "eventType": string;
+            "eventTypes": {
+                "men": string;
+                "mixed": string;
+                "national": string;
+                "women": string;
+            };
             "firstDay": string;
+            "full": string;
+            "fullWaitingList": string;
             "gameType": string;
             "gameTypes": {
                 "doubles": string;
@@ -677,26 +1386,79 @@ export type I18nTranslations = {
                 "singles": string;
             };
             "information": string;
+            "inWaitingList": string;
             "level": string;
+            "live": {
+                "allGamesCompleted": string;
+                "announcements": string;
+                "available": string;
+                "blocked": string;
+                "checkSchedule": string;
+                "comingUp": string;
+                "completed": string;
+                "courtAvailable": string;
+                "courtBlocked": string;
+                "courts": string;
+                "courtsDesc": string;
+                "courtsInUse": string;
+                "gamesRemaining": string;
+                "inProgress": string;
+                "justFinished": string;
+                "kiosk": string;
+                "kioskDesc": string;
+                "next": string;
+                "noAnnouncements": string;
+                "noCourts": string;
+                "noResultsYet": string;
+                "nowPlaying": string;
+                "playing": string;
+                "recentResults": string;
+                "remaining": string;
+                "results": string;
+                "resultsDesc": string;
+                "startedAt": string;
+                "title": string;
+                "tournament": string;
+                "upcoming": string;
+                "upcomingDesc": string;
+                "upcomingGames": string;
+            };
             "location": string;
             "matches": string;
+            "men": string;
+            "mixed": string;
             "number": string;
             "official": string;
             "openDate": string;
+            "phases": {
+                "completed": string;
+                "completedDesc": string;
+                "draft": string;
+                "draftDesc": string;
+                "drawsMade": string;
+                "drawsMadeDesc": string;
+                "enrollmentClosed": string;
+                "enrollmentClosedDesc": string;
+                "enrollmentOpen": string;
+                "enrollmentOpenDesc": string;
+                "inProgress": string;
+                "inProgressDesc": string;
+                "scheduled": string;
+                "scheduledDesc": string;
+            };
             "registration": string;
+            "single": string;
+            "spotsLeft": string;
+            "title": string;
             "types": {
                 "men": string;
                 "mix": string;
                 "other": string;
                 "women": string;
             };
+            "unlimited": string;
             "visualCode": string;
-            "draw-detail": {
-                "games": {
-                    "title": string;
-                    "no-games": string;
-                };
-            };
+            "women": string;
         };
     };
 };

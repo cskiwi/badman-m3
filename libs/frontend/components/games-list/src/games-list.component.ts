@@ -124,15 +124,13 @@ export interface GamesListOptions {
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 {{ 'GAMES.TOURNAMENT' | translate }}
               </label>
-              <p-select 
-                formControlName="tournament"
+              <p-select formControlName="tournament"
                 [options]="tournamentOptions()"
                 optionLabel="name"
                 optionValue="id"
                 [placeholder]="'GAMES.SELECT_TOURNAMENT' | translate"
                 [showClear]="true"
-                styleClass="w-full">
-              </p-select>
+                styleClass="w-full" />
             </div>
 
             <!-- Date Range Filter -->
@@ -140,24 +138,20 @@ export interface GamesListOptions {
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 {{ 'GAMES.DATE_FROM' | translate }}
               </label>
-              <p-calendar 
-                formControlName="dateFrom"
+              <p-calendar formControlName="dateFrom"
                 [placeholder]="'GAMES.SELECT_DATE' | translate"
                 [showIcon]="true"
-                styleClass="w-full">
-              </p-calendar>
+                styleClass="w-full" />
             </div>
 
             <div class="col-12 md:col-4">
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 {{ 'GAMES.DATE_TO' | translate }}
               </label>
-              <p-calendar 
-                formControlName="dateTo"
+              <p-calendar formControlName="dateTo"
                 [placeholder]="'GAMES.SELECT_DATE' | translate"
                 [showIcon]="true"
-                styleClass="w-full">
-              </p-calendar>
+                styleClass="w-full" />
             </div>
 
             <!-- Result Filter -->
@@ -165,15 +159,13 @@ export interface GamesListOptions {
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 {{ 'GAMES.RESULT' | translate }}
               </label>
-              <p-select 
-                formControlName="result"
+              <p-select formControlName="result"
                 [options]="resultOptions"
                 optionLabel="label"
                 optionValue="value"
                 [placeholder]="'GAMES.ALL_RESULTS' | translate"
                 [showClear]="true"
-                styleClass="w-full">
-              </p-select>
+                styleClass="w-full" />
             </div>
 
             <!-- Game Type Filter -->
@@ -181,36 +173,30 @@ export interface GamesListOptions {
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                 {{ 'GAMES.GAME_TYPE' | translate }}
               </label>
-              <p-select 
-                formControlName="gameType"
+              <p-select formControlName="gameType"
                 [options]="gameTypeOptions"
                 optionLabel="label"
                 optionValue="value"
                 [placeholder]="'GAMES.ALL_TYPES' | translate"
                 [showClear]="true"
-                styleClass="w-full">
-              </p-select>
+                styleClass="w-full" />
             </div>
 
             <!-- Action Buttons -->
             <div class="col-12 md:col-4 flex items-end gap-2">
-              <p-button 
-                (click)="clearFilters()"
+              <p-button (click)="clearFilters()"
                 [label]="'COMMON.CLEAR_FILTERS' | translate"
                 icon="pi pi-times"
                 severity="secondary"
                 size="small"
-                [outlined]="true">
-              </p-button>
+                [outlined]="true" />
               @if (options().showExport) {
-                <p-button 
-                  (click)="exportGames()"
+                <p-button (click)="exportGames()"
                   [label]="'GAMES.EXPORT' | translate"
                   icon="pi pi-download"
                   severity="info"
                   size="small"
-                  [outlined]="true">
-                </p-button>
+                  [outlined]="true" />
               }
             </div>
           </form>
@@ -237,12 +223,12 @@ export interface GamesListOptions {
           <div class="space-y-3">
             @for (i of [1,2,3,4,5]; track i) {
               <div class="flex gap-4 p-3 border border-surface-200 dark:border-surface-700 rounded">
-                <p-skeleton shape="circle" size="3rem"></p-skeleton>
+                <p-skeleton shape="circle" size="3rem" />
                 <div class="flex-1">
-                  <p-skeleton height="1rem" width="60%" styleClass="mb-2"></p-skeleton>
-                  <p-skeleton height="0.75rem" width="40%"></p-skeleton>
+                  <p-skeleton height="1rem" width="60%" styleClass="mb-2" />
+                  <p-skeleton height="0.75rem" width="40%" />
                 </div>
-                <p-skeleton height="2rem" width="4rem"></p-skeleton>
+                <p-skeleton height="2rem" width="4rem" />
               </div>
             }
           </div>
@@ -290,14 +276,12 @@ export interface GamesListOptions {
               <tr>
                 @if (options().enableDrillDown) {
                   <td>
-                    <p-button 
-                      type="button" 
+                    <p-button type="button" 
                       [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
                       (click)="toggleRow(game)"
                       severity="secondary"
                       [text]="true"
-                      size="small">
-                    </p-button>
+                      size="small" />
                   </td>
                 }
                 <td>
@@ -318,41 +302,35 @@ export interface GamesListOptions {
                 </td>
                 <td>
                   @if (isWin(game)) {
-                    <p-tag severity="success" [value]="'GAMES.WIN' | translate" size="small"></p-tag>
+                    <p-tag severity="success" [value]="'GAMES.WIN' | translate" size="small" />
                   } @else {
-                    <p-tag severity="danger" [value]="'GAMES.LOSS' | translate" size="small"></p-tag>
+                    <p-tag severity="danger" [value]="'GAMES.LOSS' | translate" size="small" />
                   }
                 </td>
                 <td>
                   <span class="text-sm font-mono">{{ getScore(game) }}</span>
                 </td>
                 <td>
-                  <p-tag 
-                    [severity]="getGameTypeSeverity(game)"
+                  <p-tag [severity]="getGameTypeSeverity(game)"
                     [value]="getGameTypeLabel(game)"
-                    size="small">
-                  </p-tag>
+                    size="small" />
                 </td>
                 <td>
                   <div class="flex gap-1">
                     @if (options().enableDrillDown) {
-                      <p-button 
-                        (click)="viewGameDetails(game)"
+                      <p-button (click)="viewGameDetails(game)"
                         icon="pi pi-eye"
                         severity="info"
                         [text]="true"
                         size="small"
-                        pTooltip="{{ 'GAMES.VIEW_DETAILS' | translate }}">
-                      </p-button>
+                        pTooltip="{{ 'GAMES.VIEW_DETAILS' | translate }}" />
                     }
-                    <p-button 
-                      (click)="navigateToTournament(game)"
+                    <p-button (click)="navigateToTournament(game)"
                       icon="pi pi-external-link"
                       severity="secondary"
                       [text]="true"
                       size="small"
-                      pTooltip="{{ 'GAMES.GO_TO_TOURNAMENT' | translate }}">
-                    </p-button>
+                      pTooltip="{{ 'GAMES.GO_TO_TOURNAMENT' | translate }}" />
                   </div>
                 </td>
               </tr>

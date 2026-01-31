@@ -46,7 +46,6 @@ export class DrawDetailService {
                   name
                   eventType
                   gameType
-                  level
                   visualCode
                   drawTournaments {
                     id
@@ -130,7 +129,7 @@ export class DrawDetailService {
           }),
         );
 
-        if (!result?.data.tournamentEvent || !result?.data.tournamentSubEvent || !result?.data.tournamentDraw) {
+        if (!result?.data?.tournamentEvent || !result?.data?.tournamentSubEvent || !result?.data?.tournamentDraw) {
           throw new Error('No tournament, sub event, or draw found');
         }
 
@@ -152,12 +151,15 @@ export class DrawDetailService {
         const games = [...(result.data.tournamentDraw.games || [])]
           .sort((a, b) => {
             if (a.playedAt && b.playedAt) {
-              return new Date(a.playedAt).getTime() - new Date(b.playedAt).getTime();
+              return new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime();
             }
-            if (a.playedAt && !b.playedAt) return -1;
-            if (!a.playedAt && b.playedAt) return 1;
-            return (a.order || 0) - (b.order || 0);
+            return 0;
+            // if (a.playedAt && !b.playedAt) return -1;
+            // if (!a.playedAt && b.playedAt) return 1;
+            // return (a.order || 0) - (b.order || 0);
           });
+
+        console.log(games);
 
         return {
           tournament: result.data.tournamentEvent,

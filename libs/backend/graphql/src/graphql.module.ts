@@ -1,7 +1,7 @@
+import { loadDevMessages, loadErrorMessages } from '@apollo/client/dev';
 import { ApolloServerPluginLandingPageLocalDefault, ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
 import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaReporting';
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import { AuthorizationModule } from '@app/backend-authorization';
 import { SyncModule } from '@app/backend-sync';
 import { ApolloDriver } from '@nestjs/apollo';
@@ -24,6 +24,10 @@ import {
   CompetitionSubEventResolver,
   CourtResolver,
   CronJobResolver,
+  EnrollmentMutationsResolver,
+  EnrollmentQueriesResolver,
+  EnrollmentSessionResolver,
+  EnrollmentSessionItemResolver,
   EntryResolver,
   FaqResolver,
   GamePlayerMembershipResolver,
@@ -52,10 +56,16 @@ import {
   TeamPlayerMembershipResolver,
   TeamResolver,
   TournamentDrawResolver,
+  TournamentEnrollmentResolver,
   TournamentEventResolver,
+  TournamentSubEventFieldResolver,
   TournamentSubEventResolver,
   UserResolver,
 } from './resolvers';
+import { EnrollmentCapacityService } from './services/tournament/enrollment-capacity.service';
+import { EnrollmentCartService } from './services/tournament/enrollment-cart.service';
+import { EnrollmentValidationService } from './services/tournament/enrollment-validation.service';
+import { EnrollmentService } from './services/tournament/enrollment.service';
 @Module({
   imports: [
     ConfigModule,
@@ -87,7 +97,7 @@ import {
           );
         }
 
-        if (process.env['NODE_ENV'] !== "production") {
+        if (process.env['NODE_ENV'] !== 'production') {
           // Adds messages only in a dev environment
           loadDevMessages();
           loadErrorMessages();
@@ -127,6 +137,16 @@ import {
     TournamentEventResolver,
     TournamentSubEventResolver,
     TournamentDrawResolver,
+    TournamentEnrollmentResolver,
+    EnrollmentQueriesResolver,
+    EnrollmentMutationsResolver,
+    EnrollmentSessionResolver,
+    EnrollmentSessionItemResolver,
+    TournamentSubEventFieldResolver,
+    EnrollmentService,
+    EnrollmentCartService,
+    EnrollmentValidationService,
+    EnrollmentCapacityService, 
     GroupSubeventMembershipResolver,
     LocationEventMembershipResolver,
     PlayerPermissionsResolver,

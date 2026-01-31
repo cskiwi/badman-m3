@@ -1,12 +1,12 @@
 {
-  "name": "Badman v2",
-  "short_name": "Badman v2",
+  "name": "Gladman",
+  "short_name": "Gladman",
   "theme_color": "#444559",
   "background_color": "#1b1b1f",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
-  "homepage_url": "https://ssr.badman.app",
+  "homepage_url": "https://gladman.purr.dev",
   "icons": [
     {
       "src": "icons/manifest-icon-192.maskable.png",

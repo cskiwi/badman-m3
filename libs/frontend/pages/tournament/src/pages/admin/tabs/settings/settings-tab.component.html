@@ -1,0 +1,26 @@
+<div class="flex flex-col gap-6">
+  <!-- Phase Stepper -->
+  <app-phase-stepper
+    [tournament]="tournament()"
+    [updating]="updating()"
+    (advancePhaseRequested)="handleAdvancePhase()"
+    (goBackPhaseRequested)="handleGoBackPhase()"
+  />
+
+  <!-- General Settings -->
+  <app-general-settings
+    [tournament]="tournament()"
+    [updating]="updating()"
+    [updateError]="updateError()"
+    (saveSettingsRequested)="handleSaveSettings($event)"
+  />
+
+  <!-- Sub-Events -->
+  <app-sub-events
+    [tournament]="tournament()"
+    [updating]="updating()"
+    (createSubEventRequested)="handleCreateSubEvent($event)"
+    (updateSubEventRequested)="handleUpdateSubEvent($event)"
+    (deleteSubEventRequested)="handleDeleteSubEvent($event)"
+  />
+</div>

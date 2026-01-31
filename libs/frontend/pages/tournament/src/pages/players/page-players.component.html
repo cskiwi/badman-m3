@@ -24,70 +24,65 @@
       <div class="filters-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
         <!-- Gender filter -->
         <p-floatlabel>
-          <p-select
-            [formControl]="genderControl"
+          <p-select [formControl]="genderControl"
             [options]="genderOptions"
             optionLabel="label"
             optionValue="value"
             placeholder="Select gender"
             class="w-full"
             id="gender-filter"
-          ></p-select>
+           />
           <label for="gender-filter">{{ 'all.players.gender' | translate }}</label>
         </p-floatlabel>
 
         <!-- Competition player filter -->
         <p-floatlabel>
-          <p-select
-            [formControl]="competitionPlayerControl"
+          <p-select [formControl]="competitionPlayerControl"
             [options]="competitionPlayerOptions"
             optionLabel="label"
             optionValue="value"
             placeholder="Select player type"
             class="w-full"
             id="competition-filter"
-          ></p-select>
+           />
           <label for="competition-filter">{{ 'all.players.playerType' | translate }}</label>
         </p-floatlabel>
 
         <!-- Min rating -->
         <p-floatlabel>
-          <p-inputNumber
-            [formControl]="minRatingControl"
+          <p-inputNumber [formControl]="minRatingControl"
             mode="decimal"
             [min]="0"
             [max]="3000"
             placeholder="Min rating"
             class="w-full"
             id="min-rating"
-          ></p-inputNumber>
+           />
           <label for="min-rating">{{ 'all.players.minRating' | translate }}</label>
         </p-floatlabel>
 
         <!-- Max rating -->
         <p-floatlabel>
-          <p-inputNumber
-            [formControl]="maxRatingControl"
+          <p-inputNumber [formControl]="maxRatingControl"
             mode="decimal"
             [min]="0"
             [max]="3000"
             placeholder="Max rating"
             class="w-full"
             id="max-rating"
-          ></p-inputNumber>
+           />
           <label for="max-rating">{{ 'all.players.maxRating' | translate }}</label>
         </p-floatlabel>
 
         <!-- Clear filters button -->
         <div class="flex align-items-end">
-          <p-button
-            label="Clear Filters"
+          <p-button label="Clear Filters"
             icon="pi pi-filter-slash"
             severity="secondary"
             size="small"
             (onClick)="clearFilters()"
             class="w-full"
-          ></p-button>
+           />
         </div>
       </div>
 
@@ -116,18 +111,16 @@
                 </div>
                 <div class="player-badges">
                   @if (player.gender) {
-                    <p-tag 
-                      [value]="player.gender === 'M' ? 'Male' : 'Female'"
+                    <p-tag [value]="player.gender === 'M' ? 'Male' : 'Female'"
                       [severity]="player.gender === 'M' ? 'info' : 'success'"
                       class="mr-1 mb-1"
-                    ></p-tag>
+                     />
                   }
                   @if (player.competitionPlayer) {
-                    <p-tag 
-                      value="Competition"
+                    <p-tag value="Competition"
                       severity="warn"
                       class="mb-1"
-                    ></p-tag>
+                     />
                   }
                 </div>
               </div>
@@ -141,17 +134,16 @@
                 <div class="rating-info mb-3">
                   <div class="flex justify-content-between align-items-center">
                     <span class="text-sm font-medium">Singles Rating:</span>
-                    <p-tag 
-                      [value]="formatRating(rating)"
+                    <p-tag [value]="formatRating(rating)"
                       [severity]="getRankingColor(rating)"
-                    ></p-tag>
+                     />
                   </div>
                 </div>
               } @else {
                 <div class="rating-info mb-3">
                   <div class="flex justify-content-between align-items-center">
                     <span class="text-sm font-medium">Singles Rating:</span>
-                    <p-tag value="Unrated" severity="secondary"></p-tag>
+                    <p-tag value="Unrated" severity="secondary" />
                   </div>
                 </div>
               }
@@ -181,14 +173,13 @@
 
           <ng-template pTemplate="footer">
             <div class="player-actions pt-2">
-              <p-button
-                label="View Profile"
+              <p-button label="View Profile"
                 icon="pi pi-user"
                 size="small"
                 severity="secondary"
                 (onClick)="navigateToPlayer(player); $event.stopPropagation()"
                 class="w-full"
-              ></p-button>
+               />
             </div>
           </ng-template>
         </p-card>

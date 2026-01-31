@@ -6,7 +6,6 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -126,12 +125,6 @@ export class Player extends BaseEntity {
 
   @Field(() => [Claim], { nullable: true })
   @ManyToMany(() => Claim, (claim) => claim.players, { nullable: true })
-  @JoinTable({
-    name: 'PlayerClaimMemberships',
-    schema: 'security',
-    joinColumn: { name: 'playerId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'claimId', referencedColumnName: 'id' },
-  })
   declare claims?: Relation<Claim[]>;
 
   /**

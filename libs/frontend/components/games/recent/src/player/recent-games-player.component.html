@@ -1,426 +1,234 @@
-<div class="recent-games-container space-y-6">
+<div>
   @if (!loading()) {
     @for (game of games(); track game.id) {
-      <div class="game-card rounded-border overflow-hidden mb-6 transition-all duration-200 hover:shadow-lg">
-        <!-- Game Header -->
-        <div class="bg-highlight px-6 py-4">
-          <div class="flex justify-between items-center">
-            <!-- Left: Date and Time -->
-            <div class="flex items-center gap-3 text-sm min-w-0">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                <span class="font-semibold text-base">{{ game?.playedAt | dayjsFormat: 'MMM DD' }}</span>
-                <span class="text-xs text-color-secondary font-medium">{{ game?.playedAt | dayjsFormat: 'HH:mm' }}</span>
-              </div>
-            </div>
-
-            <!-- Center: Tournament/Competition Title -->
-            <div class="flex-1 text-center px-4 min-w-0">
-              @if (
-                game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name ||
-                game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name
-              ) {
-                @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
-                  <span class="text-base font-semibold">
-                    @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id) {
-                      <a
-                        [routerLink]="['/tournament', game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id]"
-                        class="text-color no-underline"
-                      >
-                        {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
-                      </a>
-                    } @else {
-                      {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
-                    }
-                    @if (game?.tournamentDraw?.name) {
-                      <span class="text-sm font-medium"
-                        >(
-                        @if (game?.tournamentDraw?.id) {
-                          <a
-                            [routerLink]="[
-                              '/tournament',
-                              game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
-                              'sub-events',
-                              game?.tournamentDraw?.tournamentSubEvent?.id,
-                              'draws',
-                              game?.tournamentDraw?.id,
-                            ]"
-                            class="text-muted-color no-underline"
-                          >
-                            {{ game?.tournamentDraw?.name }}
-                          </a>
-                        } @else {
-                          <span class="text-muted-color">{{ game?.tournamentDraw?.name }}</span>
-                        }
-                        )</span
-                      >
-                    }
-                  </span>
-                } @else if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
-                  <span class="text-base font-semibold">
-                    @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id) {
-                      <a
-                        [routerLink]="['/competition', game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id]"
-                        class="text-color no-underline"
-                      >
-                        {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
-                      </a>
-                    } @else {
-                      {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
-                    }
-                    @if (game?.competitionEncounter?.drawCompetition?.name) {
-                      <span class="text-sm font-medium"
-                        >(
-                        @if (game?.competitionEncounter?.drawCompetition?.id) {
-                          <a
-                            [routerLink]="[
-                              '/competition',
-                              game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
-                              'sub-events',
-                              game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id,
-                              'draws',
-                              game?.competitionEncounter?.drawCompetition?.id,
-                            ]"
-                            class="text-muted-color no-underline"
-                          >
-                            {{ game?.competitionEncounter?.drawCompetition?.name }}
-                          </a>
-                        } @else {
-                          <span class="text-muted-color">{{ game?.competitionEncounter?.drawCompetition?.name }}</span>
-                        }
-                        )</span
-                      >
-                    }
-                  </span>
-                }
-              }
-            </div>
-
-            <!-- Right: Game Type -->
-            <div class="min-w-0">
-              <p-chip
-                [label]="game?.gameType"
-                [style]="{ background: 'var(--primary-100)', color: 'var(--primary-700)' }"
-                class="text-xs font-medium"
-              ></p-chip>
-            </div>
+      <div class="rounded-border border border-surface mb-5 overflow-hidden">
+        <!-- Header: Event/Draw name + Teams for competition -->
+        <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight text-sm">
+          <div class="flex items-center gap-2 min-w-0">
+            @if (game?.tournamentDraw?.name) {
+              <a
+                [routerLink]="[
+                  '/tournament',
+                  game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
+                  'sub-events',
+                  game?.tournamentDraw?.tournamentSubEvent?.id,
+                  'draws',
+                  game?.tournamentDraw?.id,
+                ]"
+                class="font-medium text-color no-underline hover:text-primary-600 truncate"
+              >
+                {{ game?.tournamentDraw?.name }}
+              </a>
+            } @else if (game?.competitionEncounter?.drawCompetition?.name) {
+              <a
+                [routerLink]="[
+                  '/competition',
+                  game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
+                  'sub-events',
+                  game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id,
+                  'draws',
+                  game?.competitionEncounter?.drawCompetition?.id,
+                ]"
+                class="font-medium text-color no-underline hover:text-primary-600 truncate"
+              >
+                {{ game?.competitionEncounter?.drawCompetition?.name }}
+              </a>
+            } @else {
+              <span class="font-medium text-color">{{ game?.gameType }}</span>
+            }
+            @if (isCompetitionGame(game)) {
+              <span class="text-muted-color">-</span>
+              <span class="text-muted-color truncate"> {{ getTeamName(game, 1) }} vs {{ getTeamName(game, 2) }} </span>
+            }
           </div>
         </div>
 
         <!-- Game Content -->
-        <div class="game-content pt-6">
-          <!-- Players/Teams Section -->
-          <div class="players-section">
-            <!-- Team Labels for Competition Games -->
-            @if (isCompetitionGame(game)) {
-              <div class="flex items-center justify-between gap-6 mb-2">
-                <!-- Team 1 Label -->
-                <div class="team-section flex-1 min-w-0">
-                  <div class="text-right">
-                    <div class="text-xs font-semibold text-muted-color uppercase tracking-wide">
-                      {{ getTeamName(game, 1) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center">
-                  <div class="w-4 h-4"></div>
-                </div>
-                <div class="flex items-center">
-                  <div class="px-6 py-1"></div>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-4 h-4"></div>
-                </div>
-
-                <!-- Team 2 Label -->
-                <div class="team-section flex-1 min-w-0">
-                  <div class="text-left">
-                    <div class="text-xs font-semibold text-muted-color uppercase tracking-wide">
-                      {{ getTeamName(game, 2) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-
-            <!-- Player Names Row -->
-            <div class="players-row">
-              <!-- Desktop Layout -->
-              <div class="hidden sm:flex items-center justify-between gap-6">
-                <!-- Team 1 -->
-                <div class="team-section flex-1 min-w-0">
-                  <div class="text-right space-y-1">
-                    @for (membership of game?.gamePlayerMemberships; track membership?.id) {
-                      @if (membership?.team === 1) {
-                        @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
-                          <div
-                            [routerLink]="['/players', membership?.gamePlayer?.id]"
-                            class="text-base font-medium text-color cursor-pointer truncate hover:underline focus:outline-none"
-                            tabindex="0"
-                          >
-                            {{ membership?.gamePlayer?.fullName }}
-                          </div>
-                        } @else {
-                          <div class="text-base font-bold text-primary-600 truncate focus:outline-none" tabindex="0">
-                            {{ membership?.gamePlayer?.fullName }}
-                            <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
-                          </div>
-                        }
-                      }
-                    }
-                  </div>
-                </div>
-
-                <!-- Team 1 Bullet -->
-                <div class="flex items-center">
-                  @if (getMatchWinner(game) === 1) {
-                    <div class="w-4 h-4 bg-green-500 rounded-full transition-all duration-200 animate-pulse"></div>
-                  } @else if (getMatchWinner(game) === 2) {
-                    <div class="w-4 h-4 bg-red-500 rounded-full opacity-50"></div>
-                  } @else {
-                    <div class="w-4 h-4 bg-surface-300 rounded-full"></div>
-                  }
-                </div>
-
-                <!-- VS Divider -->
-                <div class="flex items-center">
-                  <div class="px-3 py-1 rounded-full">
-                    <span class="text-sm font-bold text-color-secondary uppercase tracking-wide">vs</span>
-                  </div>
-                </div>
-
-                <!-- Team 2 Bullet -->
-                <div class="flex items-center">
-                  @if (getMatchWinner(game) === 2) {
-                    <div class="w-4 h-4 bg-green-500 rounded-full transition-all duration-200 animate-pulse"></div>
-                  } @else if (getMatchWinner(game) === 1) {
-                    <div class="w-4 h-4 bg-red-500 rounded-full opacity-50"></div>
-                  } @else {
-                    <div class="w-4 h-4 bg-surface-300 rounded-full"></div>
-                  }
-                </div>
-
-                <!-- Team 2 -->
-                <div class="team-section flex-1 min-w-0">
-                  <div class="text-left space-y-1">
-                    @for (membership of game?.gamePlayerMemberships; track membership?.id) {
-                      @if (membership?.team === 2) {
-                        @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
-                          <div
-                            [routerLink]="['/players', membership?.gamePlayer?.id]"
-                            class="text-base font-medium text-color cursor-pointer truncate hover:underline focus:outline-none"
-                            tabindex="0"
-                          >
-                            {{ membership?.gamePlayer?.fullName }}
-                          </div>
-                        } @else {
-                          <div class="text-base font-bold text-primary-600 truncate focus:outline-none" tabindex="0">
-                            {{ membership?.gamePlayer?.fullName }}
-                            <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
-                          </div>
-                        }
-                      }
-                    }
-                  </div>
-                </div>
-              </div>
-
-              <!-- Mobile Layout -->
-              <div class="sm:hidden space-y-3">
-                <!-- Team 1 -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 flex-1 min-w-0">
-                    @if (getMatchWinner(game) === 1) {
-                      <div class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                    } @else if (getMatchWinner(game) === 2) {
-                      <div class="w-3 h-3 bg-red-500 rounded-full opacity-50 flex-shrink-0"></div>
+        <div class="px-4 py-3">
+          <!-- Team 1 -->
+          <div class="flex items-center gap-3 mb-2">
+            <div class="flex-1 min-w-0">
+              @for (membership of game?.gamePlayerMemberships; track membership?.id) {
+                @if (membership?.team === 1) {
+                  <div class="flex items-center gap-1">
+                    @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
+                      <a
+                        [routerLink]="['/players', membership?.gamePlayer?.id]"
+                        class="text-sm text-color no-underline hover:text-primary-600 truncate"
+                      >
+                        {{ membership?.gamePlayer?.fullName }}
+                      </a>
                     } @else {
-                      <div class="w-3 h-3 bg-surface-300 rounded-full flex-shrink-0"></div>
+                      <span class="text-sm font-bold text-primary truncate">
+                        <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
+                        {{ membership?.gamePlayer?.fullName }}
+                      </span>
                     }
-                    <div class="flex-1 min-w-0">
-                      @for (membership of game?.gamePlayerMemberships; track membership?.id) {
-                        @if (membership?.team === 1) {
-                          @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
-                            <div
-                              [routerLink]="['/players', membership?.gamePlayer?.id]"
-                              class="text-sm font-medium text-color cursor-pointer truncate hover:underline"
-                            >
-                              {{ membership?.gamePlayer?.fullName }}
-                            </div>
-                          } @else {
-                            <div class="text-sm font-bold text-primary-600 truncate">
-                              {{ membership?.gamePlayer?.fullName }}
-                              <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
-                            </div>
-                          }
-                        }
-                      }
-                    </div>
-                  </div>
-                  @if (getTeamPoints(game, 1) !== 0) {
-                    <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 1)) }}pts</div>
-                  }
-                </div>
-
-                <!-- VS Divider Mobile -->
-                <div class="flex justify-center">
-                  <span class="text-xs font-bold text-color-secondary uppercase tracking-wide">vs</span>
-                </div>
-
-                <!-- Team 2 -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 flex-1 min-w-0">
-                    @if (getMatchWinner(game) === 2) {
-                      <div class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
-                    } @else if (getMatchWinner(game) === 1) {
-                      <div class="w-3 h-3 bg-red-500 rounded-full opacity-50 flex-shrink-0"></div>
-                    } @else {
-                      <div class="w-3 h-3 bg-surface-300 rounded-full flex-shrink-0"></div>
+                    @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                      <span class="text-xs text-muted-color">({{ level }})</span>
                     }
-                    <div class="flex-1 min-w-0">
-                      @for (membership of game?.gamePlayerMemberships; track membership?.id) {
-                        @if (membership?.team === 2) {
-                          @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
-                            <div
-                              [routerLink]="['/players', membership?.gamePlayer?.id]"
-                              class="text-sm font-medium text-color cursor-pointer truncate hover:underline"
-                            >
-                              {{ membership?.gamePlayer?.fullName }}
-                            </div>
-                          } @else {
-                            <div class="text-sm font-bold text-primary-600 truncate">
-                              {{ membership?.gamePlayer?.fullName }}
-                              <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
-                            </div>
-                          }
-                        }
-                      }
-                    </div>
-                  </div>
-                  @if (getTeamPoints(game, 2) !== 0) {
-                    <div class="text-xs font-light text-muted-color ml-2 flex-shrink-0">{{ formatPoints(getTeamPoints(game, 2)) }}pts</div>
-                  }
-                </div>
-              </div>
-            </div>
-
-            <!-- Points Row (Desktop only) -->
-            <div class="hidden sm:flex items-center justify-between gap-6">
-              <!-- Team 1 Points -->
-              <div class="flex-1 flex justify-end">
-                @if (getTeamPoints(game, 1) !== 0) {
-                  <div class="text-sm font-extralight text-muted-color">
-                    <span>{{ formatPoints(getTeamPoints(game, 1)) }}</span>
-                    <span class="text-xs ml-0.5">{{ 'all.game.common.pts' | translate }}</span>
                   </div>
                 }
-              </div>
-
-              <div class="flex items-center">
-                <div class="w-4 h-4"></div>
-              </div>
-              <div class="flex items-center">
-                <div class="px-6 py-1"></div>
-              </div>
-              <div class="flex items-center">
-                <div class="w-4 h-4"></div>
-              </div>
-
-              <!-- Team 2 Points -->
-              <div class="flex-1 flex justify-start">
-                @if (getTeamPoints(game, 2) !== 0) {
-                  <div class="text-sm font-extralight text-muted-color">
-                    <span>{{ formatPoints(getTeamPoints(game, 2)) }}</span>
-                    <span class="text-xs ml-0.5">{{ 'all.game.common.pts' | translate }}</span>
-                  </div>
+              }
+            </div>
+            <!-- Scores -->
+            <div class="flex items-center gap-2">
+              @if (game.winner === 1) {
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              } @else if (game.winner === 2) {
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500 opacity-50"></div>
+              }
+              <div class="flex items-center gap-1 text-sm font-medium tabular-nums">
+                @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1"
+                    [class.font-bold]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1"
+                  >
+                    {{ game?.set1Team1 }}
+                  </span>
+                }
+                @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1"
+                    [class.font-bold]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1"
+                  >
+                    {{ game?.set2Team1 }}
+                  </span>
+                }
+                @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1"
+                    [class.font-bold]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1"
+                  >
+                    {{ game?.set3Team1 }}
+                  </span>
                 }
               </div>
             </div>
           </div>
 
-          <!-- Score Section -->
-          <div class="score-section">
-            <div class="sets-container flex justify-center gap-2 sm:gap-4 flex-wrap">
-              <!-- Set 1 -->
-              @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-                <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">
-                    {{ 'all.game.common.set' | translate }} 1
+          <!-- Team 2 -->
+          <div class="flex items-center gap-3">
+            <div class="flex-1 min-w-0">
+              @for (membership of game?.gamePlayerMemberships; track membership?.id) {
+                @if (membership?.team === 2) {
+                  <div class="flex items-center gap-1">
+                    @if (!isCurrentPlayer(membership?.gamePlayer?.id || '')) {
+                      <a
+                        [routerLink]="['/players', membership?.gamePlayer?.id]"
+                        class="text-sm text-color no-underline hover:text-primary-600 truncate"
+                      >
+                        {{ membership?.gamePlayer?.fullName }}
+                      </a>
+                    } @else {
+                      <span class="text-sm font-bold text-primary truncate">
+                        <i class="pi pi-user text-xs text-primary-500 ml-1"></i>
+                        {{ membership?.gamePlayer?.fullName }}
+                      </span>
+                    }
+                    @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
+                      <span class="text-xs text-muted-color">({{ level }})</span>
+                    }
                   </div>
-                  <div class="text-lg sm:text-2xl font-semibold">
-                    <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
-                      game?.set1Team1
-                    }}</span>
-                    <span class="mx-0.5 sm:mx-1">-</span>
-                    <span class="{{ getSetWinner(game?.set1Team1, game?.set1Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{
-                      game?.set1Team2
-                    }}</span>
-                  </div>
-                </div>
-              }
-
-              <!-- Set 2 -->
-              @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-                <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">
-                    {{ 'all.game.common.set' | translate }} 2
-                  </div>
-                  <div class="text-lg sm:text-2xl font-semibold">
-                    <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
-                      game?.set2Team1
-                    }}</span>
-                    <span class="mx-0.5 sm:mx-1">-</span>
-                    <span class="{{ getSetWinner(game?.set2Team1, game?.set2Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{
-                      game?.set2Team2
-                    }}</span>
-                  </div>
-                </div>
-              }
-
-              <!-- Set 3 (only if exists) -->
-              @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-                <div class="rounded-lg px-2 py-2 sm:px-4 sm:py-3 text-center min-w-16 sm:min-w-20 transition-all duration-200 hover:scale-105">
-                  <div class="text-xs mb-1 sm:mb-3 text-color-secondary font-semibold uppercase tracking-wide">
-                    {{ 'all.game.common.set' | translate }} 3
-                  </div>
-                  <div class="text-lg sm:text-2xl font-semibold">
-                    <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 1 ? 'font-bold text-green-600' : '' }}">{{
-                      game?.set3Team1
-                    }}</span>
-                    <span class="mx-0.5 sm:mx-1">-</span>
-                    <span class="{{ getSetWinner(game?.set3Team1, game?.set3Team2) === 2 ? 'font-bold text-green-600' : '' }}">{{
-                      game?.set3Team2
-                    }}</span>
-                  </div>
-                </div>
+                }
               }
             </div>
+            <!-- Scores -->
+            <div class="flex items-center gap-2">
+              @if (game.winner === 2) {
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+              } @else if (game.winner === 1) {
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500 opacity-50"></div>
+              }
+              <div class="flex items-center gap-1 text-sm font-medium tabular-nums">
+                @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2"
+                    [class.font-bold]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2"
+                  >
+                    {{ game?.set1Team2 }}
+                  </span>
+                }
+                @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2"
+                    [class.font-bold]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2"
+                  >
+                    {{ game?.set2Team2 }}
+                  </span>
+                }
+                @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+                  <span
+                    [class.text-green-600]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2"
+                    [class.font-bold]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2"
+                  >
+                    {{ game?.set3Team2 }}
+                  </span>
+                }
+              </div>
+            </div>
           </div>
+        </div>
+
+        <!-- Footer: Date and Event -->
+        <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis text-xs text-muted-color">
+          <div class="flex items-center gap-1">
+            <i class="pi pi-calendar"></i>
+            <span>{{ game?.playedAt | dayjsFormat: 'ddd DD-MM-YYYY HH:mm' }}</span>
+          </div>
+          @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
+            <div class="flex items-center gap-1">
+              <i class="pi pi-map-marker"></i>
+              <a
+                [routerLink]="['/tournament', game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id]"
+                class="text-muted-color no-underline hover:text-primary-600"
+              >
+                {{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}
+              </a>
+            </div>
+          } @else if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
+            <div class="flex items-center gap-1">
+              <i class="pi pi-map-marker"></i>
+              <a
+                [routerLink]="['/competition', game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id]"
+                class="text-muted-color no-underline hover:text-primary-600"
+              >
+                {{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}
+              </a>
+            </div>
+          }
+          @if (getCurrentPlayerPoints(game) !== 0) {
+            <div class="ml-auto flex items-center gap-1">
+              <span [class.text-green-600]="getCurrentPlayerPoints(game) > 0" [class.text-red-600]="getCurrentPlayerPoints(game) < 0">
+                {{ formatPoints(getCurrentPlayerPoints(game)) }} pts
+              </span>
+            </div>
+          }
         </div>
       </div>
     } @empty {
-      <div class="empty-state text-center py-12">
-        <div class="rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-all duration-200 hover:scale-105">
-          <i class="pi pi-search text-2xl"></i>
-        </div>
-        <h3 class="text-lg font-medium mb-2">{{ 'all.game.recent.noGamesFound' | translate }}</h3>
-        <p class="">{{ 'all.game.recent.noPlayerGamesDescription' | translate }}</p>
+      <div class="p-8 text-center">
+        <i class="pi pi-search text-4xl text-muted-color mb-4"></i>
+        <h3 class="text-lg font-semibold text-color mb-2">{{ 'all.game.recent.noGamesFound' | translate }}</h3>
+        <p class="text-muted-color text-sm">{{ 'all.game.recent.noPlayerGamesDescription' | translate }}</p>
       </div>
     }
 
     <!-- Infinite scroll sentinel for large screens -->
     @if (!isMobile() && hasMore() && games().length > 0) {
-      <div #scrollSentinel class="scroll-sentinel h-1"></div>
+      <div #scrollSentinel class="h-1"></div>
+      <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" [outlined]="true" icon="pi pi-plus">
+      </p-button>
     }
 
     <!-- Load more button for mobile -->
     @if (isMobile() && hasMore() && games().length > 0) {
-      <div class="flex justify-center mt-6">
+      <div class="flex justify-center mt-4">
         <p-button
           [label]="'all.game.common.loadMore' | translate"
           [loading]="loadingMore()"
           (onClick)="loadMore()"
-          styleClass="p-button-outlined"
+          [outlined]="true"
           icon="pi pi-plus"
         />
       </div>
@@ -429,126 +237,47 @@
     <!-- Loading more skeletons -->
     @if (loadingMore()) {
       @for (i of [1, 2, 3]; track i) {
-        <div class="rounded-border overflow-hidden mb-6">
-          <!-- Skeleton Header -->
-          <div class="bg-highlight px-6 py-4">
-            <div class="flex justify-between items-center">
-              <!-- Left: Date skeleton -->
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col gap-1">
-                  <p-skeleton width="4rem" height="1rem"></p-skeleton>
-                  <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
-                </div>
-              </div>
-
-              <!-- Center: Tournament skeleton -->
-              <div class="flex-1 text-center px-4">
-                <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
-              </div>
-
-              <!-- Right: Game type skeleton -->
-              <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
+        <div class="rounded-border border border-surface-200 mb-3 overflow-hidden">
+          <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight">
+            <p-skeleton width="6rem" height="1rem" />
+            <p-skeleton width="2rem" height="1.25rem" borderRadius="1rem" />
+          </div>
+          <div class="px-4 py-3 space-y-2">
+            <div class="flex items-center justify-between">
+              <p-skeleton width="10rem" height="0.875rem" />
+              <p-skeleton width="4rem" height="0.875rem" />
+            </div>
+            <div class="flex items-center justify-between">
+              <p-skeleton width="8rem" height="0.875rem" />
+              <p-skeleton width="4rem" height="0.875rem" />
             </div>
           </div>
-
-          <!-- Skeleton Content -->
-          <div class="game-content pt-6">
-            <!-- Players skeleton -->
-            <div class="flex items-center justify-between gap-6 mb-4">
-              <!-- Team 1 -->
-              <div class="flex-1 text-right space-y-2">
-                <p-skeleton width="6rem" height="1rem" class="ml-auto"></p-skeleton>
-                <p-skeleton width="5rem" height="1rem" class="ml-auto"></p-skeleton>
-              </div>
-
-              <!-- VS section -->
-              <div class="flex items-center gap-4">
-                <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
-                <div class="bg-surface-200 dark:bg-surface-700 px-3 py-1 rounded-full">
-                  <p-skeleton width="1.5rem" height="0.75rem"></p-skeleton>
-                </div>
-                <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
-              </div>
-
-              <!-- Team 2 -->
-              <div class="flex-1 text-left space-y-2">
-                <p-skeleton width="6rem" height="1rem"></p-skeleton>
-                <p-skeleton width="5rem" height="1rem"></p-skeleton>
-              </div>
-            </div>
-
-            <!-- Score skeleton -->
-            <div class="flex justify-center gap-4">
-              @for (set of [1, 2]; track set) {
-                <div class="rounded-lg px-4 py-3 text-center min-w-20">
-                  <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3"></p-skeleton>
-                  <p-skeleton width="3rem" height="1.5rem" class="mx-auto"></p-skeleton>
-                </div>
-              }
-            </div>
+          <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis">
+            <p-skeleton width="10rem" height="0.75rem" />
           </div>
         </div>
       }
     }
   } @else {
-    @for (i of [1, 2, 3, 5, 6, 7]; track i) {
-      <div class="rounded-border overflow-hidden mb-6">
-        <!-- Skeleton Header -->
-        <div class="bg-highlight px-6 py-4">
-          <div class="flex justify-between items-center">
-            <!-- Left: Date skeleton -->
-            <div class="flex items-center gap-3">
-              <div class="flex flex-col gap-1">
-                <p-skeleton width="4rem" height="1rem"></p-skeleton>
-                <p-skeleton width="3rem" height="0.75rem"></p-skeleton>
-              </div>
-            </div>
-
-            <!-- Center: Tournament skeleton -->
-            <div class="flex-1 text-center px-4">
-              <p-skeleton width="8rem" height="1rem" class="mx-auto"></p-skeleton>
-            </div>
-
-            <!-- Right: Game type skeleton -->
-            <p-skeleton width="4rem" height="1.5rem" borderRadius="1rem"></p-skeleton>
+    <!-- Initial loading skeletons -->
+    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+      <div class="rounded-border border border-surface mb-3 overflow-hidden">
+        <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight">
+          <p-skeleton width="6rem" height="1rem" />
+          <p-skeleton width="2rem" height="1.25rem" borderRadius="1rem" />
+        </div>
+        <div class="px-4 py-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <p-skeleton width="10rem" height="0.875rem" />
+            <p-skeleton width="4rem" height="0.875rem" />
+          </div>
+          <div class="flex items-center justify-between">
+            <p-skeleton width="8rem" height="0.875rem" />
+            <p-skeleton width="4rem" height="0.875rem" />
           </div>
         </div>
-
-        <!-- Skeleton Content -->
-        <div class="game-content pt-6">
-          <!-- Players skeleton -->
-          <div class="flex items-center justify-between gap-6 mb-4">
-            <!-- Team 1 -->
-            <div class="flex-1 text-right space-y-2">
-              <p-skeleton width="6rem" height="1rem" class="ml-auto"></p-skeleton>
-              <p-skeleton width="5rem" height="1rem" class="ml-auto"></p-skeleton>
-            </div>
-
-            <!-- VS section -->
-            <div class="flex items-center gap-4">
-              <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
-              <div class="bg-surface-200 dark:bg-surface-700 px-3 py-1 rounded-full">
-                <p-skeleton width="1.5rem" height="0.75rem"></p-skeleton>
-              </div>
-              <p-skeleton width="1rem" height="1rem" borderRadius="50%"></p-skeleton>
-            </div>
-
-            <!-- Team 2 -->
-            <div class="flex-1 text-left space-y-2">
-              <p-skeleton width="6rem" height="1rem"></p-skeleton>
-              <p-skeleton width="5rem" height="1rem"></p-skeleton>
-            </div>
-          </div>
-
-          <!-- Score skeleton -->
-          <div class="flex justify-center gap-4">
-            @for (set of [1, 2]; track set) {
-              <div class="rounded-lg px-4 py-3 text-center min-w-20">
-                <p-skeleton width="2rem" height="0.75rem" class="mx-auto mb-3"></p-skeleton>
-                <p-skeleton width="3rem" height="1.5rem" class="mx-auto"></p-skeleton>
-              </div>
-            }
-          </div>
+        <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis">
+          <p-skeleton width="10rem" height="0.75rem" />
         </div>
       </div>
     }

@@ -16,6 +16,15 @@
       </ng-content>
       <ng-content actions>
         <div class="flex items-center gap-2">
+          @if (canEdit()) {
+            <p-button
+              icon="pi pi-pencil"
+              [label]="'all.competition.edit.button' | translate"
+              [outlined]="true"
+              size="small"
+              [routerLink]="['edit']"
+            />
+          }
           @if (competition.visualCode) {
             <a
               [href]="'https://www.toernooi.nl/sport/league?id=' + competition.visualCode"

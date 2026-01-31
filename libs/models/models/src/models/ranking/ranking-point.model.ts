@@ -50,15 +50,15 @@ export class RankingPoint extends BaseEntity {
   @Column({ nullable: true, type: 'numeric', precision: 2 })
   declare differenceInLevel?: number;
 
-  @Field(() => ID)
+  @WhereField(() => ID)
   @Column()
   declare playerId: string;
 
-  @Field(() => ID)
+  @WhereField(() => ID)
   @Column()
   declare gameId: string;
 
-  @Field(() => ID)
+  @WhereField(() => ID)
   @Column()
   declare systemId: string;
 

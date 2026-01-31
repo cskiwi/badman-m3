@@ -5,7 +5,7 @@
         @for (col of columns(); track col) {
           <th [pSortableColumn]="col.field">
             {{ col.header | async }}
-            <p-sortIcon [field]="col.field"></p-sortIcon>
+            <p-sortIcon [field]="col.field" />
           </th>
         }
       </tr>

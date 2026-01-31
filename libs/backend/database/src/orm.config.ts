@@ -5,7 +5,11 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 // Extract all entity classes from the models package
 // An entity class extends BaseEntity and is decorated with @Entity
 const entities = Object.values(Models).filter((value) => {
+  // Exclude enums and non-function values
   if (typeof value !== 'function' || !value.prototype) return false;
+
+  // Exclude TypeScript enums (they're objects with both numeric and string keys)
+  if (typeof value === 'object' && Object.keys(value).some(k => !isNaN(Number(k)))) return false;
 
   // Check if it extends BaseEntity (TypeORM entity base class)
   let proto = value.prototype;
@@ -14,7 +18,7 @@ const entities = Object.values(Models).filter((value) => {
     proto = Object.getPrototypeOf(proto);
   }
   return false;
-});
+}) as any[];
 
 export function getDbConfig(configService?: ConfigService): DataSourceOptions {
   const getEnvVar = (key: string, defaultValue?: string) => (configService ? configService.get<string>(key) : process.env[key] || defaultValue);
@@ -42,7 +46,7 @@ export function getDbConfig(configService?: ConfigService): DataSourceOptions {
       database: getEnvVar('DB_DATABASE'),
       ssl: getEnvVar('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
       migrationsTableName: 'typeorm_migrations',
-      applicationName: 'badman',
+      applicationName: 'Gladman',
       options: { trustServerCertificate: true },
       migrations: addMigrations ? ['libs/backend/database/src/migrations/*.ts'] : undefined,
       synchronize: false,

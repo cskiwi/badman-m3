@@ -13,6 +13,9 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
       id
       gamePlayerMemberships(args: $args) {
         id
+        single
+        double
+        mix
         game {
           id
           playedAt
@@ -23,6 +26,8 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
           set2Team2
           set3Team1
           set3Team2
+          gameType
+          winner
           rankingPoints {
             id
             points
@@ -38,7 +43,8 @@ const PLAYER_RECENT_GAMES_QUERY = gql`
               name
               eventType
               gameType
-              level
+              minLevel
+              maxLevel
               tournamentEvent {
                 id
                 name
@@ -167,7 +173,7 @@ export class PlayerRecentGamesService {
           }),
         );
 
-        if (!result?.data.player?.gamePlayerMemberships) {
+        if (!result?.data?.player?.gamePlayerMemberships) {
           throw new Error('No player found');
         }
 
@@ -286,7 +292,7 @@ export class PlayerRecentGamesService {
       })
     );
 
-    if (!result?.data.player?.gamePlayerMemberships) {
+    if (!result?.data?.player?.gamePlayerMemberships) {
       throw new Error('No player found');
     }
 

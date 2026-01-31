@@ -21,9 +21,9 @@ import { langulageInitializer, provideTranslation } from '@app/frontend-modules-
 import { BASE_URL } from '@app/frontend-utils';
 import { AuthModule } from '@auth0/auth0-angular';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
-import Aura from '@primeuix/themes/aura';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { providePrimeNG } from 'primeng/config';
+import { BadmanPreset } from './theme.preset';
 import { environment } from '../src/environments/environment';
 import { appRoutes } from './app.routes';
 
@@ -68,8 +68,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withViewTransitions()),
     provideAnimationsAsync(),
     providePrimeNG({
+      overlayAppendTo: 'body',
       theme: {
-        preset: Aura,
+        preset: BadmanPreset,
         options: {
           darkModeSelector: '.dark-theme',
         },
@@ -98,8 +99,8 @@ export const appConfig: ApplicationConfig = {
     {
       provide: SEO_CONFIG,
       useFactory: (baseUrl: string) => ({
-        siteName: 'Badminton',
-        siteUrl: 'https://badman.app',
+        siteName: 'Gladman',
+        siteUrl: 'https://gladman.purr.dev',
         imageEndpoint: `${baseUrl}/api/v1/images`,
       }),
       deps: [BASE_URL],

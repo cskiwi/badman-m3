@@ -1,0 +1,90 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class MissingSinceGenerated1768738604071 implements MigrationInterface {
+    name = 'MissingSinceGenerated1768738604071'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships" DROP CONSTRAINT "FK_c58a3fa6f0cf3e39415fb8c921e"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships" DROP CONSTRAINT "FK_ff730a10bb49aa72b3970ad9f02"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships" DROP CONSTRAINT "FK_4e01a9879a5374db2acd070d672"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships" DROP CONSTRAINT "FK_a03d57401ba2f731457db73a67a"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "event"."EnrollmentSessions"
+            ADD "tournamentEventId" uuid
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "event"."Locations"
+            ALTER COLUMN "coordinates" TYPE geometry
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "event"."EnrollmentSessions"
+            ADD CONSTRAINT "FK_46ad60e62c4ea0152aa9bd1fa56" FOREIGN KEY ("tournamentEventId") REFERENCES "event"."EventTournaments"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships"
+            ADD CONSTRAINT "FK_4e01a9879a5374db2acd070d672" FOREIGN KEY ("claimId") REFERENCES "security"."Claims"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships"
+            ADD CONSTRAINT "FK_a03d57401ba2f731457db73a67a" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships"
+            ADD CONSTRAINT "FK_ff730a10bb49aa72b3970ad9f02" FOREIGN KEY ("claimId") REFERENCES "security"."Claims"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships"
+            ADD CONSTRAINT "FK_c58a3fa6f0cf3e39415fb8c921e" FOREIGN KEY ("roleId") REFERENCES "security"."Roles"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships" DROP CONSTRAINT "FK_c58a3fa6f0cf3e39415fb8c921e"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships" DROP CONSTRAINT "FK_ff730a10bb49aa72b3970ad9f02"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships" DROP CONSTRAINT "FK_a03d57401ba2f731457db73a67a"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships" DROP CONSTRAINT "FK_4e01a9879a5374db2acd070d672"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "event"."EnrollmentSessions" DROP CONSTRAINT "FK_46ad60e62c4ea0152aa9bd1fa56"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "event"."Locations"
+            ALTER COLUMN "coordinates" TYPE geometry(GEOMETRY, 0)
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "event"."EnrollmentSessions" DROP COLUMN "tournamentEventId"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships"
+            ADD CONSTRAINT "FK_a03d57401ba2f731457db73a67a" FOREIGN KEY ("playerId") REFERENCES "Players"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."PlayerClaimMemberships"
+            ADD CONSTRAINT "FK_4e01a9879a5374db2acd070d672" FOREIGN KEY ("claimId") REFERENCES "security"."Claims"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships"
+            ADD CONSTRAINT "FK_ff730a10bb49aa72b3970ad9f02" FOREIGN KEY ("claimId") REFERENCES "security"."Claims"("id") ON DELETE CASCADE ON UPDATE CASCADE
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "security"."RoleClaimMemberships"
+            ADD CONSTRAINT "FK_c58a3fa6f0cf3e39415fb8c921e" FOREIGN KEY ("roleId") REFERENCES "security"."Roles"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+    }
+
+}

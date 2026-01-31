@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, effect, input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
+
 import { lastValueFrom } from 'rxjs';
 
 import { CardModule } from 'primeng/card';
@@ -44,7 +44,7 @@ const UPDATE_PLAYER_CLAIMS = gql`
 @Component({
   selector: 'app-player-claims',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CardModule, ButtonModule, CheckboxModule, MessageModule, ProgressBarModule, TranslateModule],
+  imports: [ReactiveFormsModule, CardModule, ButtonModule, CheckboxModule, MessageModule, ProgressBarModule, TranslateModule],
   templateUrl: './player-claims.component.html',
 })
 export class PlayerClaimsComponent {
@@ -105,10 +105,11 @@ export class PlayerClaimsComponent {
       }
     });
 
-    // Update form values when player data changes
+    // Update form values when player data or global claims change
     effect(() => {
       const player = this.player();
-      if (player?.claims) {
+      const claims = this.globalClaims();
+      if (player?.claims && claims.length > 0) {
         this.updateFormValues(player.claims);
       }
     });

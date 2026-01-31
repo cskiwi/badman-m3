@@ -1,15 +1,15 @@
 import { Route } from '@angular/router';
-import { FullWidthLayoutComponent } from '@app/frontend-components/layout';
-import { PageAdminComponent } from './pages/admin/page-admin.component';
+
+
 
 export const adminRoutes: Route[] = [
   {
     path: '',
-    component: FullWidthLayoutComponent,
+    loadComponent: () => import('@app/frontend-components/layout').then(m => m.FullWidthLayoutComponent),
     children: [
       {
         path: '',
-        component: PageAdminComponent,
+        loadComponent: () => import('./pages/admin/page-admin.component').then(m => m.PageAdminComponent),
       },
     ],
   },

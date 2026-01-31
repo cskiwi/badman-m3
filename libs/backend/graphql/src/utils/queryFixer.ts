@@ -76,6 +76,13 @@ export class GraphQLWhereConverter {
       return this.convertOperator(firstKey, value[firstKey]);
     }
 
+    // Check if nested object contains AND/OR logical operators (relation with complex query)
+    // Use convert() to properly handle these logical operators within nested relations
+    if (value.AND || value.OR) {
+      const converted = this.convert(value);
+      return Array.isArray(converted) ? converted[0] : converted;
+    }
+
     // Check if it's a nested object (relation fields)
     // Convert each field recursively
     const converted: Record<string, any> = {};

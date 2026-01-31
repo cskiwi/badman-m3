@@ -1,3 +1,4 @@
+import { ISearchConfig, SearchModule } from '@app/backend-search';
 import { TournamentApiModule } from '@app/backend-tournament-api';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
@@ -9,11 +10,11 @@ import {
   CompetitionEntrySyncService,
   CompetitionEventProcessor,
   CompetitionEventSyncService,
-  CompetitionGameSyncService,
   CompetitionPlanningService,
   CompetitionStandingSyncService,
   CompetitionSubEventSyncService,
   TeamMatchingProcessor,
+  TeamMatchingService,
   TeamSyncService,
   DiscoveryProcessor,
   TournamentDrawSyncService,
@@ -75,6 +76,27 @@ import { SyncService } from './services/sync.service';
       name: COMPETITION_EVENT_QUEUE,
     }),
     TournamentApiModule,
+    SearchModule.forRootAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const getEnvVar = <T>(key: string, defaultValue?: string) => (configService ? configService.get<T>(key) : process.env[key] || defaultValue);
+
+        return {
+          typesense: {
+            nodes: [
+              {
+                host: getEnvVar<string>('TYPESENSE_HOST'),
+                port: getEnvVar<number>('TYPESENSE_PORT'),
+                protocol: getEnvVar<string>('TYPESENSE_PROTOCOL'),
+              },
+            ],
+            apiKey: getEnvVar<string>('TYPESENSE_API_KEY'),
+          },
+        } as ISearchConfig;
+      },
+    }),
   ],
   providers: [
     SyncService, // Add SyncService so processors can queue additional jobs
@@ -83,7 +105,6 @@ import { SyncService } from './services/sync.service';
     TournamentEventProcessor,
     TeamMatchingProcessor,
     // Competition sync services
-    CompetitionGameSyncService,
     CompetitionEventSyncService,
     CompetitionSubEventSyncService,
     CompetitionDrawSyncService,
@@ -100,6 +121,7 @@ import { SyncService } from './services/sync.service';
     TournamentStandingSyncService,
     TournamentPlanningService,
     // Shared sync services
+    TeamMatchingService,
     TeamSyncService,
   ],
 })

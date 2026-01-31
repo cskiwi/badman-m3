@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   displayName: 'frontend-modules-translation',
   preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],

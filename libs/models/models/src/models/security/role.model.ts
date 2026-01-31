@@ -56,17 +56,13 @@ export class Role extends BaseEntity {
 
   @Field(() => [Claim], { nullable: true })
   @ManyToMany(() => Claim, (claim) => claim.roles, { nullable: true })
-  @JoinTable({
-    name: 'RoleClaimMemberships',
-    joinColumn: { name: 'roleId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'claimId', referencedColumnName: 'id' },
-  })
   claims?: Relation<Claim[]>;
 
   @Field(() => [Player], { nullable: true })
   @ManyToMany(() => Player, (player) => player.roles, { nullable: true })
   @JoinTable({
     name: 'PlayerRoleMemberships',
+    schema: 'security',
     joinColumn: { name: 'roleId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'playerId', referencedColumnName: 'id' },
   })

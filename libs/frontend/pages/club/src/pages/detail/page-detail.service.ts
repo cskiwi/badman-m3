@@ -62,7 +62,7 @@ export class DetailService {
           }),
         );
 
-        if (!result?.data.club) {
+        if (!result?.data?.club) {
           throw new Error('No club found');
         }
         return result.data.club;
@@ -125,7 +125,7 @@ export class DetailService {
           }),
         );
 
-        const teams = teamsResult.data.club?.teams || [];
+        const teams = teamsResult.data?.club?.teams || [];
         const teamIds = teams.map(t => t.id);
 
         // If no teams, return early
@@ -167,7 +167,7 @@ export class DetailService {
 
         return {
           teams: [...teams].sort(sortTeams),
-          encounters: encountersResult.data.competitionEncounters || [],
+          encounters: encountersResult.data?.competitionEncounters || [],
         };
       } catch (err) {
         console.error(err);

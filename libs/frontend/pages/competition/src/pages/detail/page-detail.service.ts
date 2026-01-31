@@ -57,6 +57,7 @@ export class DetailService {
                     minBaseIndex
                     maxBaseIndex
                     lastSync
+                    visualCode
                     competitionDraws {
                       id
                       name
@@ -64,6 +65,7 @@ export class DetailService {
                       size
                       risers
                       fallers
+                      visualCode
                     }
                   }
                 }
@@ -75,7 +77,7 @@ export class DetailService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.competitionEvent) {
+        if (!result?.data?.competitionEvent) {
           throw new Error('No competition found');
         }
         return result.data.competitionEvent;

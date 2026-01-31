@@ -9,7 +9,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-// import { AuthService } from '@app/backend-authorization'; // Commented out for now to avoid circular dependencies
 
 interface QueueStats {
   waiting: number;

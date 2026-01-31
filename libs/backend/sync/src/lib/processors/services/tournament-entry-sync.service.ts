@@ -1,10 +1,13 @@
-import { TournamentDraw, Entry, Game, TournamentEvent as TournamentEventModel, TournamentSubEvent } from '@app/models';
+import { TournamentDraw, Entry, Game } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
-import { Job, WaitingChildrenError } from 'bullmq';
+import { Job } from 'bullmq';
 
+/**
+ * Entry sync is always triggered from a draw job with the draw's internal ID.
+ * Entries are created from games found in the draw.
+ */
 export interface TournamentEntrySyncData {
-  tournamentCode: string;
-  drawCode: string;
+  drawId: string; // Required internal ID
 }
 
 @Injectable()
@@ -14,72 +17,22 @@ export class TournamentEntrySyncService {
   async processEntrySync(job: Job<TournamentEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament entry sync`);
     await updateProgress(10);
-    const { tournamentCode, drawCode } = job.data;
+    const { drawId } = job.data;
 
     try {
-      // Find the tournament event first to get proper context
+      // Load draw by internal ID
       await updateProgress(15);
-      const tournamentEvent = await TournamentEventModel.findOne({
-        where: { visualCode: tournamentCode },
-      });
-      await updateProgress(20);
-
-      if (!tournamentEvent) {
-        this.logger.warn(`Tournament with code ${tournamentCode} not found, skipping entry sync`);
-        return;
-      }
-
-      this.logger.debug(`Found tournament: ${tournamentEvent.id} with code ${tournamentCode}`);
-
-      // Find the draw with tournament context to avoid visualCode ambiguity
-      await updateProgress(30);
       const draw = await TournamentDraw.findOne({
-        where: {
-          visualCode: drawCode,
-          tournamentSubEvent: {
-            tournamentEvent: {
-              id: tournamentEvent.id,
-            },
-          },
-        },
+        where: { id: drawId },
         relations: ['tournamentSubEvent', 'tournamentSubEvent.tournamentEvent'],
       });
       await updateProgress(35);
 
       if (!draw) {
-        this.logger.warn(`Draw with code ${drawCode} not found for tournament ${tournamentCode}, skipping entry sync`);
-        return;
+        throw new Error(`Tournament draw with id ${drawId} not found for entry sync`);
       }
 
-      this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
-
-      // Verify the draw belongs to the correct tournament
-      if (draw.tournamentSubEvent) {
-        // Load the subevent with tournament relation to check eventId
-        const subEvent = await TournamentSubEvent.findOne({
-          where: { id: draw.tournamentSubEvent.id },
-          relations: ['tournamentEvent'],
-        });
-
-        this.logger.debug(`Found subEvent: ${subEvent?.id}, eventId: ${subEvent?.eventId}, tournament eventId: ${tournamentEvent.id}`);
-
-        if (!subEvent || subEvent.eventId !== tournamentEvent.id) {
-          // Try to repair the relationship if the sub-event exists but has wrong eventId
-          if (subEvent && subEvent.eventId !== tournamentEvent.id) {
-            this.logger.log(`Attempting to repair orphaned sub-event relationship for draw ${drawCode}`);
-            await this.repairSubEventRelationship(subEvent, tournamentEvent);
-            // Continue with entry sync after repair
-          } else {
-            this.logger.warn(
-              `Draw ${drawCode} does not belong to tournament ${tournamentCode}. SubEvent eventId: ${subEvent?.eventId}, Tournament id: ${tournamentEvent.id}, skipping entry sync`,
-            );
-            return;
-          }
-        }
-      } else {
-        this.logger.warn(`Draw ${drawCode} has no tournamentSubEvent relation, skipping entry sync`);
-        return;
-      }
+      this.logger.debug(`Found draw: ${draw.id} (${draw.visualCode}), subeventId: ${draw.subeventId}`);
 
       // Create entries from existing games if entries don't exist
       await updateProgress(40);
@@ -177,22 +130,5 @@ export class TournamentEntrySyncService {
     }
 
     this.logger.log(`Created ${teamPlayerCombinations.size} entries for draw ${draw.visualCode}`);
-  }
-
-  private async repairSubEventRelationship(subEvent: TournamentSubEvent, tournamentEvent: TournamentEventModel): Promise<void> {
-    try {
-      this.logger.log(
-        `Repairing sub-event ${subEvent.id} (${subEvent.visualCode}) to link to tournament ${tournamentEvent.id} (${tournamentEvent.visualCode})`,
-      );
-
-      subEvent.eventId = tournamentEvent.id;
-      await subEvent.save();
-
-      this.logger.log(`Successfully repaired sub-event relationship`);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to repair sub-event relationship: ${errorMessage}`, error);
-      throw error;
-    }
   }
 }

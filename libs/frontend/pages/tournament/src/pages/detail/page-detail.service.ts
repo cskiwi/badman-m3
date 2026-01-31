@@ -42,12 +42,14 @@ export class DetailService {
                   official
                   state
                   country
+                  phase
                   tournamentSubEvents(args: $args) {
                     id
                     name
                     eventType
                     gameType
-                    level
+                    minLevel
+                    maxLevel
                     visualCode
                     lastSync
                     drawTournaments {
@@ -64,7 +66,7 @@ export class DetailService {
               id: params.tournamentId,
               args: {
                 order: {
-                  level: 'ASC',
+                  minLevel: 'ASC',
                 },
               },
             },
@@ -72,7 +74,7 @@ export class DetailService {
           }),
         );
 
-        if (!result?.data.tournamentEvent) {
+        if (!result?.data?.tournamentEvent) {
           throw new Error('No tournament found');
         }
         return result.data.tournamentEvent;

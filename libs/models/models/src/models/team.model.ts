@@ -76,6 +76,11 @@ export class Team extends BaseEntity {
   @Column({ type: 'character varying', length: 255, nullable: true })
   declare slug?: string;
 
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ type: 'character varying', length: 255, nullable: true })
+  declare visualCode?: string;
+
   @SortableField(() => String)
   @WhereField(() => String, { nullable: true })
   @Column({ type: 'character varying', length: 255 })

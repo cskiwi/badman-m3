@@ -59,7 +59,7 @@ export class TeamCardService {
           }),
         );
 
-        const encounters = result.data.competitionEncounters || [];
+        const encounters = result.data?.competitionEncounters || [];
 
         let gamesPlayed = 0;
         let gamesWon = 0;

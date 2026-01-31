@@ -14,8 +14,8 @@
       <div class="grid grid-cols-4 gap-4">
         @for (i of [1, 2, 3, 4]; track i) {
           <div class="text-center">
-            <p-skeleton width="4rem" height="2rem" class="mx-auto mb-2"></p-skeleton>
-            <p-skeleton width="6rem" height="1rem" class="mx-auto"></p-skeleton>
+            <p-skeleton width="4rem" height="2rem" class="mx-auto mb-2" />
+            <p-skeleton width="6rem" height="1rem" class="mx-auto" />
           </div>
         }
       </div>
@@ -217,9 +217,9 @@
             <div class="flex gap-1">
               <app-sync-button
                 [config]="{
-                  tournamentCode: tournament.visualCode,
-                  tournamentName: tournament.name,
-                  level: 'tournament',
+                  eventId: tournament.id,
+                  eventName: tournament.name,
+                  level: 'event',
                 }"
               />
               <p-button
@@ -265,7 +265,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.status' | translate }}</label>
-            <p-tag [value]="job.status" [severity]="getJobStatusSeverity(job.status)"></p-tag>
+            <p-tag [value]="job.status" [severity]="getJobStatusSeverity(job.status)" />
           </div>
           <div>
             <label class="block text-sm font-medium text-muted-color mb-1">{{ 'all.sync.dashboard.jobs.details.progress' | translate }}</label>

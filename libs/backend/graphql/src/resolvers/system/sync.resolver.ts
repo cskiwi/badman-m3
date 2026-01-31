@@ -2,7 +2,7 @@ import { PermGuard, User } from '@app/backend-authorization';
 import { SyncService } from '@app/backend-sync';
 import { Player } from '@app/models';
 import { ForbiddenException, UseGuards } from '@nestjs/common';
-import { Args, Field, Float, InputType, Int, Mutation, ObjectType, Query, Resolver } from '@nestjs/graphql';
+import { Args, Field, Float, ID, InputType, Int, Mutation, ObjectType, Query, Resolver } from '@nestjs/graphql';
 
 // GraphQL types
 @ObjectType()
@@ -183,44 +183,59 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async triggerCompetitionSync(
+  async addTournamentByCode(
     @User() user: Player,
-    @Args('tournamentCode', { nullable: true }) tournamentCode?: string,
-    @Args('eventCode', { type: () => [String], nullable: true }) eventCode?: string,
-    @Args('forceUpdate', { type: () => Boolean, defaultValue: false }) forceUpdate?: boolean,
-    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
+    @Args('visualCode', { type: () => String }) visualCode: string,
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
-      throw new ForbiddenException('Insufficient permissions to trigger competition sync');
+      throw new ForbiddenException('Insufficient permissions to add tournament by code');
     }
 
-    const data = tournamentCode ? { tournamentCode, eventCode, forceUpdate, includeSubComponents } : undefined;
-    await this.syncService.queueCompetitionStructureSync(data);
+    await this.syncService.queueTournamentAddByCode({ visualCode });
 
     return {
-      message: 'Competition structure sync queued successfully',
+      message: `Tournament add by code (${visualCode}) queued successfully`,
       success: true,
     };
   }
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async triggerTournamentSync(
+  async addTournamentByCodes(
     @User() user: Player,
-    @Args('tournamentCode', { nullable: true }) tournamentCode?: string,
-    @Args('eventCode', { type: () => [String], nullable: true }) eventCode?: string,
-    @Args('forceUpdate', { type: () => Boolean, defaultValue: false }) forceUpdate?: boolean,
-    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
+    @Args('visualCode', { type: () => [String] }) visualCode: string[],
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
-      throw new ForbiddenException('Insufficient permissions to trigger tournament sync');
+      throw new ForbiddenException('Insufficient permissions to add tournament by code');
     }
 
-    const data = tournamentCode ? { tournamentCode, eventCode, forceUpdate, includeSubComponents } : undefined;
-    await this.syncService.queueTournamentStructureSync(data);
+    for (const code of visualCode){
+      await this.syncService.queueTournamentAddByCode({ visualCode: code });
+    }
 
     return {
-      message: 'Tournament structure sync queued successfully',
+      message: `Tournament add by code (${visualCode}) queued successfully`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerEventsSync(
+    @User() user: Player,
+    @Args('eventId', { type: () => [ID] }) eventIds: string[],
+    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger event sync!');
+    }
+
+    for (const eventId of eventIds) {
+      await this.syncService.queueEventSync(eventId, includeSubComponents);
+    }
+
+    return {
+      message: `Event sync queued successfully for ${eventIds.length} events`,
       success: true,
     };
   }
@@ -229,18 +244,17 @@ export class SyncResolver {
   @UseGuards(PermGuard)
   async triggerEventSync(
     @User() user: Player,
-    @Args('tournamentCode') tournamentCode: string,
-    @Args('eventCode') eventCode: string,
+    @Args('eventId', { type: () => ID }) eventId: string,
     @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
-      throw new ForbiddenException('Insufficient permissions to trigger event sync');
+      throw new ForbiddenException('Insufficient permissions to trigger event sync!');
     }
 
-    await this.syncService.queueEventSync(tournamentCode, eventCode, includeSubComponents);
+    await this.syncService.queueEventSync(eventId, includeSubComponents);
 
     return {
-      message: `Event sync queued successfully for ${eventCode}`,
+      message: `Event sync queued successfully for ${eventId}`,
       success: true,
     };
   }
@@ -249,18 +263,17 @@ export class SyncResolver {
   @UseGuards(PermGuard)
   async triggerDrawSync(
     @User() user: Player,
-    @Args('tournamentCode') tournamentCode: string,
-    @Args('drawCode') drawCode: string,
+    @Args('drawId', { type: () => ID }) drawId: string,
     @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to trigger draw sync');
     }
 
-    await this.syncService.queueDrawSync(tournamentCode, drawCode, includeSubComponents);
+    await this.syncService.queueDrawSync(drawId, includeSubComponents);
 
     return {
-      message: `Draw sync queued successfully for ${drawCode}`,
+      message: `Draw sync queued successfully for ${drawId}`,
       success: true,
     };
   }
@@ -269,17 +282,14 @@ export class SyncResolver {
   @UseGuards(PermGuard)
   async triggerGameSync(
     @User() user: Player,
-    @Args('tournamentCode') tournamentCode: string,
-    @Args('eventCode', { nullable: true }) eventCode?: string,
-    @Args('drawCode', { nullable: true }) drawCode?: string,
+    @Args('drawId', { type: () => ID }) drawId: string,
     @Args('matchCodes', { type: () => [String], nullable: true }) matchCodes?: string[],
-    @Args('date', { nullable: true }) date?: string,
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to trigger game sync');
     }
 
-    await this.syncService.queueGameSync(tournamentCode, eventCode, drawCode, matchCodes);
+    await this.syncService.queueGameSync(drawId, matchCodes);
 
     return {
       message: 'Game sync queued successfully',
@@ -289,21 +299,34 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
+  async triggerEncounterSync(@User() user: Player, @Args('encounterId', { type: () => ID }) encounterId: string): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger encounter sync');
+    }
+
+    await this.syncService.queueEncounterSync(encounterId);
+
+    return {
+      message: `Encounter sync queued successfully for ${encounterId}`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
   async triggerSubEventSync(
     @User() user: Player,
-    @Args('tournamentCode') tournamentCode: string,
-    @Args('eventCode') eventCode: string,
-    @Args('subEventCode', { nullable: true }) subEventCode?: string,
+    @Args('subEventId', { type: () => ID }) subEventId: string,
     @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents?: boolean,
   ): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to trigger sub-event sync');
     }
 
-    await this.syncService.queueSubEventSync(tournamentCode, eventCode, subEventCode, includeSubComponents);
+    await this.syncService.queueSubEventSync(subEventId, includeSubComponents);
 
     return {
-      message: `Sub-event sync queued successfully for ${subEventCode || 'all sub-events'}`,
+      message: `Sub-event sync queued successfully for ${subEventId}`,
       success: true,
     };
   }

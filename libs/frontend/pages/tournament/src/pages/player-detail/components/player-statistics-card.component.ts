@@ -53,7 +53,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </span>
               <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ statistics().winRate | number: '1.1-1' }}% </span>
             </div>
-            <p-progressBar [value]="statistics().winRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0"> </p-progressBar>
+            <p-progressBar [value]="statistics().winRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0" />
           </div>
         </p-card>
       </div>
@@ -101,7 +101,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </span>
               <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ statistics().setWinRate | number: '1.1-1' }}% </span>
             </div>
-            <p-progressBar [value]="statistics().setWinRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0"> </p-progressBar>
+            <p-progressBar [value]="statistics().setWinRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0" />
           </div>
         </p-card>
       </div>
@@ -149,7 +149,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
               </span>
               <span class="text-surface-900 dark:text-surface-50 text-sm font-semibold"> {{ statistics().pointWinRate | number: '1.1-1' }}% </span>
             </div>
-            <p-progressBar [value]="statistics().pointWinRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0"> </p-progressBar>
+            <p-progressBar [value]="statistics().pointWinRate" [style]="{ height: '8px' }" [showValue]="false" styleClass="border-0" />
           </div>
         </p-card>
       </div>

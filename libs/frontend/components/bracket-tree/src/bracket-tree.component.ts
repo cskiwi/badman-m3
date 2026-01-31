@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, input } from '@angular/core';
 import { Game } from '@app/models';
 
@@ -13,7 +13,7 @@ export interface BracketRound {
 @Component({
   standalone: true,
   selector: 'app-bracket-tree',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './bracket-tree.component.html',
 })
 export class BracketTree {

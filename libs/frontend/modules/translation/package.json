@@ -2,7 +2,6 @@
   "name": "@app/frontend-modules-translation",
   "version": "0.0.1",
   "peerDependencies": {
-    "@app/frontend-utils": "*",
     "@angular/core": "*",
     "@ngx-translate/core": "*",
     "ngx-cookie-service-ssr": "*",

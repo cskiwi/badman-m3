@@ -1,44 +1,11 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { Player, Team, TeamPlayerMembership } from '@app/models';
-import { TeamUpdateInput } from '../inputs';
 import { TeamMembershipType } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation, Field, InputType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsUUID as IsUUIDValidator, IsOptional } from 'class-validator';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TeamArgs, TeamPlayerMembershipArgs } from '../args';
-
-// Register the enum for GraphQL
-registerEnumType(TeamMembershipType, {
-  name: 'TeamMembershipType',
-  description: 'The type of team membership',
-});
-
-@InputType('UpdateTeamPlayerMembershipInput', { description: 'Input for updating team player membership' })
-export class UpdateTeamPlayerMembershipInput {
-  @Field(() => ID, { description: 'Team player membership ID' })
-  @IsUUIDValidator()
-  id!: string;
-
-  @Field(() => TeamMembershipType, { description: 'New membership type' })
-  @IsEnum(TeamMembershipType)
-  membershipType!: TeamMembershipType;
-}
-
-@InputType('AddTeamPlayerMembershipInput', { description: 'Input for adding team player membership' })
-export class AddTeamPlayerMembershipInput {
-  @Field(() => ID, { description: 'Team ID' })
-  @IsUUIDValidator()
-  teamId!: string;
-
-  @Field(() => ID, { description: 'Player ID' })
-  @IsUUIDValidator()
-  playerId!: string;
-
-  @Field(() => TeamMembershipType, { description: 'Membership type', defaultValue: TeamMembershipType.REGULAR })
-  @IsEnum(TeamMembershipType)
-  membershipType!: TeamMembershipType;
-}
+import { TeamUpdateInput } from '../inputs';
 
 @Resolver(() => Team)
 export class TeamResolver {
@@ -109,7 +76,6 @@ export class TeamResolver {
       },
     });
   }
-
 
   @Mutation(() => Team)
   @UseGuards(PermGuard)

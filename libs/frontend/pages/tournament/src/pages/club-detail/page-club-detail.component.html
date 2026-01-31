@@ -4,10 +4,10 @@
     <!-- Header Skeleton -->
     <div class="bg-surface-50 p-6 rounded-lg">
       <div class="flex items-center gap-4">
-        <p-skeleton shape="circle" size="3rem"></p-skeleton>
+        <p-skeleton shape="circle" size="3rem" />
         <div class="flex-1 space-y-2">
-          <p-skeleton width="12rem" height="1.5rem"></p-skeleton>
-          <p-skeleton width="8rem" height="1rem"></p-skeleton>
+          <p-skeleton width="12rem" height="1.5rem" />
+          <p-skeleton width="8rem" height="1rem" />
         </div>
       </div>
     </div>
@@ -17,9 +17,9 @@
       @for (i of [1, 2, 3]; track i) {
         <p-card>
           <div class="space-y-3">
-            <p-skeleton width="8rem" height="1.25rem"></p-skeleton>
-            <p-skeleton width="100%" height="1rem"></p-skeleton>
-            <p-skeleton width="60%" height="1rem"></p-skeleton>
+            <p-skeleton width="8rem" height="1.25rem" />
+            <p-skeleton width="100%" height="1rem" />
+            <p-skeleton width="60%" height="1rem" />
           </div>
         </p-card>
       }
@@ -30,18 +30,16 @@
 <!-- Main Content -->
 @if (club(); as club) {
   <!-- Breadcrumb Navigation -->
-  <p-breadcrumb [model]="breadcrumbItems()" class="mb-6"></p-breadcrumb>
+  <p-breadcrumb [model]="breadcrumbItems()" class="mb-6" />
 
   <!-- Club Header -->
   <app-page-header class="mb-6">
     <ng-content avatar>
-      <p-avatar
-        [label]="club.abbreviation || club.name.substring(0, 2).toUpperCase()"
+      <p-avatar [label]="club.abbreviation || club.name.substring(0, 2).toUpperCase()"
         size="large"
         shape="circle"
         styleClass="text-primary-contrast bg-primary"
-      >
-      </p-avatar>
+       />
     </ng-content>
 
     <ng-content title>{{ club.fullName || club.name }}</ng-content>
@@ -160,7 +158,7 @@
                   <label class="block text-sm font-medium text-surface-600 mb-1">
                     {{ 'all.club.info.abbreviation' | translate }}
                   </label>
-                  <p-badge [value]="club.abbreviation" styleClass="p-badge-lg"></p-badge>
+                  <p-badge [value]="club.abbreviation" styleClass="p-badge-lg" />
                 </div>
               }
 
@@ -199,7 +197,7 @@
           @if (performanceChartData()) {
             <p-card header="{{ 'all.club.stats.performance' | translate }}">
               <div style="height: 300px; position: relative">
-                <p-chart type="pie" [data]="performanceChartData()" [options]="performanceChartOptions" width="100%" height="100%"> </p-chart>
+                <p-chart type="pie" [data]="performanceChartData()" [options]="performanceChartOptions" width="100%" height="100%" />
               </div>
             </p-card>
           }
@@ -209,14 +207,12 @@
         @if (teamDistributionData()) {
           <p-card header="{{ 'all.club.stats.teamDistribution' | translate }}" class="mt-6">
             <div style="height: 300px; position: relative">
-              <p-chart
-                type="bar"
+              <p-chart type="bar"
                 [data]="teamDistributionData()"
                 [options]="{ responsive: true, maintainAspectRatio: false }"
                 width="100%"
                 height="100%"
-              >
-              </p-chart>
+               />
             </div>
           </p-card>
         }
@@ -248,7 +244,7 @@
                 <tr>
                   <td>
                     <div class="flex items-center gap-3">
-                      <p-avatar [label]="getPlayerInitials(player)" size="normal" shape="circle"> </p-avatar>
+                      <p-avatar [label]="getPlayerInitials(player)" size="normal" shape="circle" />
                       <div>
                         <div class="font-medium">{{ player.fullName }}</div>
                         @if (player.slug) {
@@ -259,7 +255,7 @@
                   </td>
                   <td>
                     @if (player.gender) {
-                      <p-tag [value]="player.gender" [severity]="getGenderSeverity(player.gender)"> </p-tag>
+                      <p-tag [value]="player.gender" [severity]="getGenderSeverity(player.gender)" />
                     }
                   </td>
                   <td>
@@ -277,10 +273,10 @@
                         <div class="flex items-center gap-2 text-sm">
                           <span class="font-medium">{{ team.name }}</span>
                           @if (team.season) {
-                            <p-badge [value]="team.season" size="small"></p-badge>
+                            <p-badge [value]="team.season" size="small" />
                           }
                           @if (team.membershipType) {
-                            <p-tag [value]="team.membershipType" size="small" severity="info"></p-tag>
+                            <p-tag [value]="team.membershipType" size="small" severity="info" />
                           }
                         </div>
                       }
@@ -333,7 +329,7 @@
                     <div class="flex items-center justify-between p-4 pb-0">
                       <h4 class="font-semibold text-lg text-primary">{{ team.name }}</h4>
                       @if (team.abbreviation) {
-                        <p-badge [value]="team.abbreviation"></p-badge>
+                        <p-badge [value]="team.abbreviation" />
                       }
                     </div>
                   </ng-template>
@@ -375,23 +371,19 @@
                         <div class="flex flex-wrap gap-1">
                           @for (membership of team.teamPlayerMemberships.slice(0, 6); track membership.id) {
                             @if (membership.player) {
-                              <p-avatar
-                                [label]="getPlayerInitials(membership.player)"
+                              <p-avatar [label]="getPlayerInitials(membership.player)"
                                 size="normal"
                                 shape="circle"
                                 [pTooltip]="membership.player.fullName"
-                              >
-                              </p-avatar>
+                               />
                             }
                           }
                           @if (team.teamPlayerMemberships.length > 6) {
-                            <p-avatar
-                              [label]="'+' + (team.teamPlayerMemberships.length - 6)"
+                            <p-avatar [label]="'+' + (team.teamPlayerMemberships.length - 6)"
                               size="normal"
                               shape="circle"
                               styleClass="bg-surface-200 text-surface-600"
-                            >
-                            </p-avatar>
+                             />
                           }
                         </div>
                       </div>
@@ -401,7 +393,7 @@
                   <ng-template pTemplate="footer">
                     <div class="flex items-center justify-between">
                       @if (team.season) {
-                        <p-badge [value]="'Season ' + team.season" severity="info"></p-badge>
+                        <p-badge [value]="'Season ' + team.season" severity="info" />
                       }
                       <button
                         pButton
@@ -479,7 +471,7 @@
                   </td>
                   <td>
                     @if (entry.tournament.eventType) {
-                      <p-tag [value]="entry.tournament.eventType" [severity]="getEventTypeSeverity(entry.tournament.eventType)"> </p-tag>
+                      <p-tag [value]="entry.tournament.eventType" [severity]="getEventTypeSeverity(entry.tournament.eventType)" />
                     }
                   </td>
                   <td>
@@ -504,7 +496,7 @@
                   </td>
                   <td>
                     @if (entry.standing?.position) {
-                      <p-badge [value]="entry.standing.position" [severity]="getPositionSeverity(entry.standing.position)"> </p-badge>
+                      <p-badge [value]="entry.standing.position" [severity]="getPositionSeverity(entry.standing.position)" />
                     } @else {
                       <span class="text-surface-400">N/A</span>
                     }

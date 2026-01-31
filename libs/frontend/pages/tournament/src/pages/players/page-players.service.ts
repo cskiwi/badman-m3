@@ -90,7 +90,7 @@ export class PlayersService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.players) {
+        if (!result?.data?.players) {
           throw new Error('No players found');
         }
         return result.data.players;

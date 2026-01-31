@@ -10,6 +10,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TabsModule } from 'primeng/tabs';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-page-detail',
@@ -23,6 +24,7 @@ import { TabsModule } from 'primeng/tabs';
     SyncButtonComponent,
     SyncStatusIndicatorComponent,
     TabsModule,
+    ButtonModule,
   ],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
@@ -30,6 +32,18 @@ import { TabsModule } from 'primeng/tabs';
 })
 export class PageDetailComponent {
   private readonly auth = inject(AuthService);
+
+  // Permission check for admin access
+  canEdit = computed(() => {
+    const tournament = this.tournament();
+    if (!tournament || !this.auth.loggedIn()) return false;
+    return this.auth.hasAnyPermission([
+      'edit-any:tournament',
+      'edit-any:club',
+      `${tournament.club?.id}_edit:club`,
+      `${tournament.club?.id}_edit:tournament`,
+    ]);
+  });
 
   // Helper function to extract event type and level
   private getEventTypeAndLevel = (eventType: string) => {
@@ -142,10 +156,8 @@ export class PageDetailComponent {
     }
 
     return {
-      level: 'tournament',
-      tournamentCode: tournament.visualCode || tournament.id,
-      tournamentName: tournament?.name,
-      eventCode: tournament.visualCode || tournament.id, // Use tournament code as event code for tournament-level sync
+      level: 'event',
+      eventId: tournament.id,
       eventName: tournament.name,
     };
   });
@@ -159,8 +171,8 @@ export class PageDetailComponent {
     }
 
     return {
-      entityType: 'tournament',
-      entityCode: tournament.visualCode || tournament.id,
+      entityType: 'event',
+      entityCode: tournament.visualCode!,
       entityName: tournament?.name,
       lastSync: tournament.lastSync,
     };
@@ -176,10 +188,9 @@ export class PageDetailComponent {
 
     return {
       level: 'sub-event',
-      tournamentCode: tournament.visualCode || tournament.id,
-      tournamentName: tournament?.name,
-      eventCode: subEvent.visualCode || subEvent.id,
-      eventName: subEvent.name,
+      subEventId: subEvent.id,
+      eventName: tournament.name,
+      subEventName: subEvent.name,
     };
   }
 
@@ -193,7 +204,7 @@ export class PageDetailComponent {
 
     return {
       entityType: 'event',
-      entityCode: subEvent.visualCode || subEvent.id,
+      entityCode: subEvent.visualCode,
       entityName: subEvent.name,
       lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
     };
@@ -215,5 +226,4 @@ export class PageDetailComponent {
       }
     });
   }
-
 }

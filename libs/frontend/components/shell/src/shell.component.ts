@@ -183,7 +183,7 @@ export class ShellComponent {
     }
   }
 
-  @HostListener('window:scroll', ['$event'])
+  @HostListener('window:scroll')
   onWindowScroll() {
     if (isPlatformBrowser(this.platformId)) {
       this.isScrolled.set(window.scrollY > 10);

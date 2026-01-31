@@ -120,7 +120,7 @@ export class TeamRecentGamesService {
           }),
         );
 
-        if (!result?.data.competitionEncounters) {
+        if (!result?.data?.competitionEncounters) {
           return [];
         }
 
@@ -256,7 +256,7 @@ export class TeamRecentGamesService {
       }),
     );
 
-    if (!result?.data.competitionEncounters) {
+    if (!result?.data?.competitionEncounters) {
       return [];
     }
 

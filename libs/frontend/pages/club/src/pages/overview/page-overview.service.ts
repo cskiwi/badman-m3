@@ -84,7 +84,7 @@ export class OverviewService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.clubs) {
+        if (!result?.data?.clubs) {
           throw new Error('No clubs found');
         }
 

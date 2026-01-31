@@ -16,17 +16,17 @@ import { TeamCardComponent } from '../../../components/team-card';
         @for (i of [1, 2, 3, 4, 5, 6]; track i) {
           <div class="rounded-border bg-highlight p-4 space-y-3">
             <div class="flex items-center justify-between">
-              <p-skeleton width="8rem" height="1.25rem"></p-skeleton>
-              <p-skeleton width="3rem" height="1rem" borderRadius="1rem"></p-skeleton>
+              <p-skeleton width="8rem" height="1.25rem" />
+              <p-skeleton width="3rem" height="1rem" borderRadius="1rem" />
             </div>
             <div class="space-y-2">
-              <p-skeleton width="6rem" height="1rem"></p-skeleton>
-              <p-skeleton width="7rem" height="1rem"></p-skeleton>
-              <p-skeleton width="5rem" height="1rem"></p-skeleton>
+              <p-skeleton width="6rem" height="1rem" />
+              <p-skeleton width="7rem" height="1rem" />
+              <p-skeleton width="5rem" height="1rem" />
             </div>
             <div class="flex gap-2">
-              <p-skeleton width="4rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
-              <p-skeleton width="3rem" height="0.75rem" borderRadius="1rem"></p-skeleton>
+              <p-skeleton width="4rem" height="0.75rem" borderRadius="1rem" />
+              <p-skeleton width="3rem" height="0.75rem" borderRadius="1rem" />
             </div>
           </div>
         }

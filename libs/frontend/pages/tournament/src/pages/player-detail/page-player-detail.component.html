@@ -2,16 +2,16 @@
 @if (loading()) {
   <div class="space-y-6">
     <div class="w-full">
-      <p-progressBar mode="indeterminate" styleClass="h-1"></p-progressBar>
+      <p-progressBar mode="indeterminate" styleClass="h-1" />
     </div>
 
     <!-- Loading Header -->
     <div class="bg-highlight rounded-lg p-6">
       <div class="flex flex-col md:flex-row gap-6">
-        <p-skeleton shape="circle" size="4rem"></p-skeleton>
+        <p-skeleton shape="circle" size="4rem" />
         <div class="flex-1 space-y-3">
-          <p-skeleton height="2rem" width="60%"></p-skeleton>
-          <p-skeleton height="1rem" width="40%"></p-skeleton>
+          <p-skeleton height="2rem" width="60%" />
+          <p-skeleton height="1rem" width="40%" />
         </div>
       </div>
     </div>
@@ -19,12 +19,12 @@
     <!-- Loading Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       @for (i of [1, 2, 3, 4]; track i) {
-        <p-skeleton height="8rem" styleClass="border-round"></p-skeleton>
+        <p-skeleton height="8rem" styleClass="border-round" />
       }
     </div>
 
     <!-- Loading Content -->
-    <p-skeleton height="20rem" styleClass="border-round"></p-skeleton>
+    <p-skeleton height="20rem" styleClass="border-round" />
   </div>
 }
 
@@ -41,19 +41,15 @@
           {{ error() }}
         </p>
         <div class="flex gap-3 pt-2">
-          <p-button
-            (click)="goBack()"
+          <p-button (click)="goBack()"
             [label]="'COMMON.BACK' | translate"
             icon="pi pi-arrow-left"
             severity="secondary"
-            size="small">
-          </p-button>
-          <p-button
-            (click)="dataService.filter.updateValueAndValidity()"
+            size="small" />
+          <p-button (click)="dataService.filter.updateValueAndValidity()"
             [label]="'COMMON.RETRY' | translate"
             icon="pi pi-refresh"
-            size="small">
-          </p-button>
+            size="small" />
         </div>
       </div>
     </div>
@@ -64,15 +60,13 @@
 @if (player() && !loading()) {
   <div class="space-y-6">
     <!-- Navigation Breadcrumb -->
-    <p-breadcrumb
-      [model]="breadcrumbItems()"
+    <p-breadcrumb [model]="breadcrumbItems()"
       [home]="homeItem"
-      styleClass="bg-transparent border-0 p-0">
-    </p-breadcrumb>
+      styleClass="bg-transparent border-0 p-0" />
 
     <!-- Player Header -->
     <app-page-header>
-      <app-player-avatar avatar [player]="player()" size="large"></app-player-avatar>
+      <app-player-avatar avatar [player]="player()" size="large" />
       <span title>{{ playerDisplayName() }}</span>
       <ng-container subTitle>
         @if (player()?.memberId) {
@@ -94,22 +88,18 @@
             {{ 'PLAYER.COMPETITION_PLAYER' | translate }}
           </div>
         }
-        <p-button
-          (click)="goBack()"
+        <p-button (click)="goBack()"
           [label]="'COMMON.BACK' | translate"
           icon="pi pi-arrow-left"
           severity="secondary"
           size="small"
-          [text]="true">
-        </p-button>
+          [text]="true" />
       </ng-container>
     </app-page-header>
 
         <!-- Statistics Cards -->
         @if (statistics()) {
-          <app-player-statistics-card 
-            [statistics]="statistics()!">
-          </app-player-statistics-card>
+          <app-player-statistics-card [statistics]="statistics()!" />
         }
 
         <!-- Main Content Tabs -->
@@ -143,11 +133,9 @@
               <p-tabpanel value="0">
                 <div class="p-6">
                   @if (recentGames().length > 0) {
-                    <app-player-games-table 
-                      [games]="recentGames()" 
+                    <app-player-games-table [games]="recentGames()" 
                       [playerId]="player()?.id!"
-                      [showTournamentInfo]="true">
-                    </app-player-games-table>
+                      [showTournamentInfo]="true" />
                   } @else {
                     <div class="flex flex-col items-center justify-center py-16 text-center">
                       <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
@@ -166,10 +154,8 @@
               <p-tabpanel value="1">
                 <div class="p-6">
                   @if (tournamentHistory().length > 0) {
-                    <app-player-tournament-history 
-                      [tournamentHistory]="tournamentHistory()"
-                      [playerId]="player()?.id!">
-                    </app-player-tournament-history>
+                    <app-player-tournament-history [tournamentHistory]="tournamentHistory()"
+                      [playerId]="player()?.id!" />
                   } @else {
                     <div class="flex flex-col items-center justify-center py-16 text-center">
                       <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
@@ -188,10 +174,8 @@
               <p-tabpanel value="2">
                 <div class="p-6">
                   @if (allGames().length > 0) {
-                    <app-player-performance-chart 
-                      [games]="allGames()" 
-                      [playerId]="player()?.id!">
-                    </app-player-performance-chart>
+                    <app-player-performance-chart [games]="allGames()" 
+                      [playerId]="player()?.id!" />
                   } @else {
                     <div class="flex flex-col items-center justify-center py-16 text-center">
                       <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>
@@ -209,10 +193,8 @@
               <!-- Head-to-Head Tab -->
               <p-tabpanel value="3">
                 <div class="p-6">
-                  <app-player-head-to-head 
-                    [games]="allGames()" 
-                    [playerId]="player()?.id!">
-                  </app-player-head-to-head>
+                  <app-player-head-to-head [games]="allGames()" 
+                    [playerId]="player()?.id!" />
                 </div>
               </p-tabpanel>
 
@@ -220,12 +202,10 @@
               <p-tabpanel value="4">
                 <div class="p-6">
                   @if (allGames().length > 0) {
-                    <app-player-games-table 
-                      [games]="allGames()" 
+                    <app-player-games-table [games]="allGames()" 
                       [playerId]="player()?.id!"
                       [showTournamentInfo]="true"
-                      [showPagination]="true">
-                    </app-player-games-table>
+                      [showPagination]="true" />
                   } @else {
                     <div class="flex flex-col items-center justify-center py-16 text-center">
                       <i class="pi pi-info-circle text-4xl text-surface-400 dark:text-surface-500 mb-4"></i>

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@app/models": "*",
-    "@apollo/server": "^4.12.2",
+    "@apollo/server": "^5.2.0",
     "@app/backend-authorization": "*",
     "@app/backend-sync": "*",
     "@nestjs/apollo": "^13.1.0",
@@ -19,7 +19,8 @@
     "reflect-metadata": "^0.2.2",
     "@app/models-enum": "*",
     "dayjs": "^1.11.13",
-    "@apollo/client": "^3.14.0"
+    "@apollo/client": "^4.0.10",
+    "uuid": "11.1.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",

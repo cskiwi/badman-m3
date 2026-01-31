@@ -1,0 +1,61 @@
+<div class="p-6">
+  <form [formGroup]="form" class="space-y-5">
+    <!-- Partner Search Field -->
+    <div class="flex flex-col gap-2">
+      <label for="partner" class="font-medium text-color">
+        <i class="pi pi-users text-primary-500 mr-2"></i>
+        {{ 'all.enrollment.partnerSelection.title' | translate }}
+      </label>
+      <p-autoComplete
+        formControlName="partner"
+        [suggestions]="filteredPartners"
+        (completeMethod)="searchPartners($event)"
+        field="fullName"
+        [dropdown]="true"
+        [placeholder]="'all.enrollment.partnerSelection.placeholder' | translate"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
+      <small class="text-muted-color">{{ 'all.enrollment.partnerSelection.description' | translate }}</small>
+    </div>
+
+    <!-- Notes Field -->
+    <div class="flex flex-col gap-2">
+      <label for="notes" class="font-medium text-color">
+        <i class="pi pi-pencil text-primary-500 mr-2"></i>
+        {{ 'all.enrollment.additionalNotes' | translate }} <span class="text-muted-color font-normal">{{ 'all.enrollment.optional' | translate }}</span>
+      </label>
+      <textarea
+        pInputTextarea
+        id="notes"
+        formControlName="notes"
+        rows="4"
+        [placeholder]="'all.enrollment.partnerSelection.notes' | translate"
+        class="w-full"
+      ></textarea>
+      <small class="text-muted-color">
+        {{ form.get('notes')?.value?.length || 0 }} / 500 {{ 'all.enrollment.characters' | translate }}
+      </small>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 pt-4 border-t border-surface-200 dark:border-surface-700">
+      <p-button
+        [label]="'all.button.cancel' | translate"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="onCancel()"
+        styleClass="flex-1"
+      />
+      <p-button
+        [label]="'all.enrollment.continue' | translate"
+        icon="pi pi-check"
+        severity="primary"
+        (onClick)="onSubmit()"
+        [disabled]="form.invalid"
+        styleClass="flex-1"
+      />
+    </div>
+  </form>
+</div>

@@ -1,0 +1,126 @@
+<div class="space-y-6">
+  <p class="text-surface-500 mb-6">
+    {{ 'all.competition.edit.settings.description' | translate }}
+  </p>
+
+  <form [formGroup]="settingsForm" class="space-y-6">
+    <!-- Official Settings -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.settings.official.title' | translate }}
+      </h2>
+      <div class="flex flex-col gap-4">
+        <!-- Official Competition -->
+        <div class="flex items-center gap-3">
+          <p-checkbox id="official" formControlName="official" [binary]="true" />
+          <label for="official" class="font-medium cursor-pointer">
+            {{ 'all.competition.edit.settings.official' | translate }}
+          </label>
+        </div>
+        <p class="text-sm text-surface-500">
+          {{ 'all.competition.edit.settings.official.description' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Team Matching Settings -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.settings.teamMatching.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Team Matcher -->
+        <div class="flex flex-col gap-1">
+          <label for="teamMatcher" class="font-medium">
+            {{ 'all.competition.edit.settings.teamMatcher' | translate }}
+          </label>
+          <input
+            pInputText
+            id="teamMatcher"
+            formControlName="teamMatcher"
+            [placeholder]="'all.competition.edit.settings.teamMatcher.placeholder' | translate"
+          />
+          <small class="text-surface-500">
+            {{ 'all.competition.edit.settings.teamMatcher.hint' | translate }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking Settings -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.settings.ranking.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Used Ranking Amount -->
+        <div class="flex flex-col gap-1">
+          <label for="usedRankingAmount" class="font-medium">
+            {{ 'all.competition.edit.settings.usedRankingAmount' | translate }}
+          </label>
+          <p-inputNumber
+            id="usedRankingAmount"
+            formControlName="usedRankingAmount"
+            [min]="1"
+            [max]="24"
+            [showButtons]="true"
+          />
+          <small class="text-surface-500">
+            {{ 'all.competition.edit.settings.usedRankingAmount.hint' | translate }}
+          </small>
+        </div>
+
+        <!-- Used Ranking Unit -->
+        <div class="flex flex-col gap-1">
+          <label for="usedRankingUnit" class="font-medium">
+            {{ 'all.competition.edit.settings.usedRankingUnit' | translate }}
+          </label>
+          <p-select
+            id="usedRankingUnit"
+            formControlName="usedRankingUnit"
+            [options]="rankingUnitOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'all.competition.edit.settings.usedRankingUnit.placeholder' | translate"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Validation Settings -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.settings.validation.title' | translate }}
+      </h2>
+      <div class="flex flex-col gap-4">
+        <!-- Check Encounter For Filled In -->
+        <div class="flex items-center gap-3">
+          <p-checkbox
+            id="checkEncounterForFilledIn"
+            formControlName="checkEncounterForFilledIn"
+            [binary]="true"
+          />
+          <label for="checkEncounterForFilledIn" class="font-medium cursor-pointer">
+            {{ 'all.competition.edit.settings.checkEncounterForFilledIn' | translate }}
+          </label>
+        </div>
+        <p class="text-sm text-surface-500">
+          {{ 'all.competition.edit.settings.checkEncounterForFilledIn.description' | translate }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    @if (saving()) {
+      <div class="pt-4">
+        <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+        <p class="text-sm text-surface-500 mt-2">{{ 'all.competition.edit.settings.messages.saving' | translate }}</p>
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (error(); as errorMessage) {
+      <p-message severity="error" [text]="errorMessage" />
+    }
+  </form>
+</div>

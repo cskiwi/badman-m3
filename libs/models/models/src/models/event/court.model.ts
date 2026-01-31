@@ -1,16 +1,13 @@
+import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  Index,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
-import { SortableField, WhereField } from '@app/utils';
 
 @ObjectType('Court', { description: 'A court at a location' })
 @Entity('Courts', { schema: 'event' })

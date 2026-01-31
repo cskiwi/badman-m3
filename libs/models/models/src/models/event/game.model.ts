@@ -118,6 +118,28 @@ export class Game extends BaseEntity {
   @Column({ type: 'character varying', length: 255, nullable: true })
   declare visualCode?: string;
 
+  // Tournament scheduling fields
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
+  declare scheduledTime?: Date;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
+  declare actualStartTime?: Date;
+
+  @SortableField(() => Date, { nullable: true })
+  @WhereField(() => Date, { nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
+  declare actualEndTime?: Date;
+
+  @SortableField(() => ID, { nullable: true })
+  @WhereField(() => ID, { nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  @Index()
+  declare scheduleSlotId?: string;
+
   @Field(() => [GamePlayerMembership], { nullable: true })
   @OneToMany(() => GamePlayerMembership, (gamePlayerMembership) => gamePlayerMembership.game)
   declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;

@@ -1,0 +1,123 @@
+<div class="bg-card rounded-border border border-card overflow-hidden">
+  <!-- Header -->
+  <div class="bg-card-header px-6 py-4 border-b border-card">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+        <i class="pi pi-cog text-primary text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-color m-0">{{ 'all.tournament.admin.settings.general' | translate }}</h3>
+        <p class="text-sm text-muted-color m-0">{{ 'all.tournament.admin.settings.generalDescription' | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Content -->
+  <div class="p-6">
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Tournament Name -->
+        <div class="flex flex-col gap-2 lg:col-span-2">
+          <label for="name" class="text-sm font-medium text-color">
+            {{ 'all.tournament.admin.settings.name' | translate }}
+            <span class="text-red-500">*</span>
+          </label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            class="w-full lg:max-w-xl"
+            [placeholder]="'all.tournament.admin.settings.namePlaceholder' | translate"
+          />
+        </div>
+
+        <!-- Tournament Dates -->
+        <div class="flex flex-col gap-2">
+          <label for="tournamentDates" class="text-sm font-medium text-color">
+            <i class="pi pi-calendar mr-2 text-muted-color"></i>
+            {{ 'all.tournament.admin.settings.tournamentDates' | translate }}
+          </label>
+          @defer {
+            <p-datepicker
+              id="tournamentDates"
+              formControlName="tournamentDates"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              selectionMode="range"
+              [readonlyInput]="true"
+              styleClass="w-full"
+              [placeholder]="'all.tournament.admin.settings.tournamentDatesPlaceholder' | translate"
+            />
+          }
+          <small class="text-muted-color text-xs">
+            {{ 'all.tournament.admin.settings.tournamentDatesHelp' | translate }}
+          </small>
+        </div>
+
+        <!-- Enrollment Dates -->
+        <div class="flex flex-col gap-2">
+          <label for="enrollmentDates" class="text-sm font-medium text-color">
+            <i class="pi pi-user-plus mr-2 text-muted-color"></i>
+            {{ 'all.tournament.admin.settings.enrollmentDates' | translate }}
+          </label>
+          @defer {
+            <p-datepicker
+              id="enrollmentDates"
+              formControlName="enrollmentDates"
+              [showIcon]="true"
+              dateFormat="dd/mm/yy"
+              selectionMode="range"
+              [readonlyInput]="true"
+              styleClass="w-full"
+              [placeholder]="'all.tournament.admin.settings.enrollmentDatesPlaceholder' | translate"
+            />
+          }
+          <small class="text-muted-color text-xs">
+            {{ 'all.tournament.admin.settings.enrollmentDatesHelp' | translate }}
+          </small>
+        </div>
+
+        <!-- Toggles Section -->
+        <div class="lg:col-span-2 pt-4 border-t border-card">
+          <p class="text-sm font-medium text-color mb-4">{{ 'all.tournament.admin.settings.options' | translate }}</p>
+          <div class="flex flex-wrap gap-6">
+            <div class="bg-card-header flex items-center gap-3 px-4 py-3 rounded-lg border border-card">
+              <p-checkbox formControlName="official" [binary]="true" inputId="official" />
+              <label for="official" class="text-sm text-color cursor-pointer">
+                {{ 'all.tournament.admin.settings.official' | translate }}
+              </label>
+            </div>
+
+            <div class="bg-card-header flex items-center gap-3 px-4 py-3 rounded-lg border border-card">
+              <p-checkbox formControlName="allowGuestEnrollments" [binary]="true" inputId="allowGuestEnrollments" />
+              <label for="allowGuestEnrollments" class="text-sm text-color cursor-pointer">
+                {{ 'all.tournament.admin.settings.guestEnrollment' | translate }}
+              </label>
+            </div>
+
+            <div class="bg-card-header flex items-center gap-3 px-4 py-3 rounded-lg border border-card">
+              <p-checkbox formControlName="schedulePublished" [binary]="true" inputId="schedulePublished" />
+              <label for="schedulePublished" class="text-sm text-color cursor-pointer">
+                {{ 'all.tournament.admin.enrollments.schedulePublished' | translate }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @if (updateError()) {
+        <p-message severity="error" [text]="updateError()!" styleClass="mt-6 w-full" />
+      }
+
+      <div class="flex justify-end mt-6 pt-4 border-t border-surface-200 dark:border-surface-700">
+        <p-button
+          type="submit"
+          [label]="'all.button.save' | translate"
+          icon="pi pi-save"
+          [loading]="updating()"
+          [disabled]="settingsForm.invalid || updating()"
+        />
+      </div>
+    </form>
+  </div>
+</div>

@@ -43,6 +43,7 @@ export class DrawsService {
                   name
                   slug
                   season
+                  visualCode
                 }
                 competitionSubEvent(id: $subEventId) {
                   id
@@ -124,7 +125,7 @@ export class DrawsService {
           }),
         );
 
-        if (!result?.data.competitionEvent || !result?.data.competitionSubEvent || !result?.data.competitionDraw) {
+        if (!result?.data?.competitionEvent || !result?.data?.competitionSubEvent || !result?.data?.competitionDraw) {
           throw new Error('No competition, sub event, or draw found');
         }
 
@@ -155,7 +156,11 @@ export class DrawsService {
           ...encounter,
           games: gamesData[encounter.id] || null,
         }) as CompetitionEncounter,
-    );
+    ).sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0;
+      const dateB = b.date ? new Date(b.date).getTime() : 0;
+      return dateA - dateB;
+    });
   });
   standings = computed(() => {
     const entries = this.dataResource.value()?.entries || [];
@@ -214,7 +219,7 @@ export class DrawsService {
         // Update the signal with the loaded games
         this.encounterGames.update((currentGames) => ({
           ...currentGames,
-          [encounterId]: result.data.competitionEncounter.games,
+          [encounterId]: result.data?.competitionEncounter?.games || [],
         }));
       } else {
         // Set empty array if no games found

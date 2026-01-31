@@ -1,7 +1,8 @@
 import { AllowAnonymous } from '@app/backend-authorization';
-import { RankingPoint } from '@app/models';
+import { Game, Player, RankingPoint, RankingSystem } from '@app/models';
 import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { RankingPointArgs } from '../args';
 
 @Resolver(() => RankingPoint)
 export class RankingPointResolver {
@@ -10,7 +11,6 @@ export class RankingPointResolver {
   async rankingPoint(@Args('id', { type: () => ID }) id: string): Promise<RankingPoint> {
     const rankingPoint = await RankingPoint.findOne({
       where: { id },
-      relations: ['player', 'game', 'system'],
     });
 
     if (!rankingPoint) {
@@ -23,21 +23,25 @@ export class RankingPointResolver {
   @Query(() => [RankingPoint])
   @AllowAnonymous()
   async rankingPoints(
-    @Args('playerId', { type: () => ID, nullable: true }) playerId?: string,
-    @Args('gameId', { type: () => ID, nullable: true }) gameId?: string,
-    @Args('systemId', { type: () => ID, nullable: true }) systemId?: string,
+    @Args('args', { type: () => RankingPointArgs, nullable: true })
+    inputArgs?: InstanceType<typeof RankingPointArgs>,
   ): Promise<RankingPoint[]> {
-    const where: any = {};
-    
-    if (playerId) where.playerId = playerId;
-    if (gameId) where.gameId = gameId;
-    if (systemId) where.systemId = systemId;
+    const args = RankingPointArgs.toFindManyOptions(inputArgs);
+    return RankingPoint.find(args);
+  }
 
-    return RankingPoint.find({
-      where,
-      relations: ['player', 'game', 'system'],
-      take: 100,
-      order: { createdAt: 'DESC' },
-    });
+  @ResolveField(() => Player, { nullable: true })
+  async player(@Parent() { playerId }: RankingPoint): Promise<Player | null> {
+    return Player.findOne({ where: { id: playerId } });
+  }
+
+  @ResolveField(() => Game, { nullable: true })
+  async game(@Parent() { gameId }: RankingPoint): Promise<Game | null> {
+    return Game.findOne({ where: { id: gameId } });
+  }
+
+  @ResolveField(() => RankingSystem, { nullable: true })
+  async system(@Parent() { systemId }: RankingPoint): Promise<RankingSystem | null> {
+    return RankingSystem.findOne({ where: { id: systemId } });
   }
 }

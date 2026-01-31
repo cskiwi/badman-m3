@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TableModule } from 'primeng/table';
@@ -40,7 +40,7 @@ import { type Game } from '@app/models';
           <tr>
             <th pSortableColumn="playedAt">
               {{ 'GAME.DATE' | translate }}
-              <p-sortIcon field="playedAt"></p-sortIcon>
+              <p-sortIcon field="playedAt" />
             </th>
             @if (showTournamentInfo()) {
               <th>{{ 'GAME.TOURNAMENT' | translate }}</th>
@@ -131,23 +131,17 @@ import { type Game } from '@app/models';
               <div class="result-cell">
                 @if (game.status === 'completed') {
                   @if (isPlayerWinner(game)) {
-                    <p-tag 
-                      [value]="'GAME.WON' | translate"
+                    <p-tag [value]="'GAME.WON' | translate"
                       severity="success"
-                      icon="pi pi-check">
-                    </p-tag>
+                      icon="pi pi-check" />
                   } @else {
-                    <p-tag 
-                      [value]="'GAME.LOST' | translate"
+                    <p-tag [value]="'GAME.LOST' | translate"
                       severity="danger"
-                      icon="pi pi-times">
-                    </p-tag>
+                      icon="pi pi-times" />
                   }
                 } @else {
-                  <p-tag 
-                    [value]="game.status | translate"
-                    severity="warn">
-                  </p-tag>
+                  <p-tag [value]="game.status | translate"
+                    severity="warn" />
                 }
               </div>
             </td>
@@ -164,14 +158,12 @@ import { type Game } from '@app/models';
             <!-- Actions -->
             <td>
               @if (game.draw?.subEvent?.tournament) {
-                <p-button
-                  icon="pi pi-external-link"
+                <p-button icon="pi pi-external-link"
                   [routerLink]="getGameLink(game)"
                   severity="secondary"
                   size="small"
                   [text]="true"
-                  [pTooltip]="'GAME.VIEW_DETAILS' | translate">
-                </p-button>
+                  [pTooltip]="'GAME.VIEW_DETAILS' | translate" />
               }
             </td>
           </tr>

@@ -1,7 +1,7 @@
 import { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections';
 
-export const EventDocument: CollectionCreateSchema<{}> = {
-  name: 'events',
+export const EventDocument: CollectionCreateSchema<Record<string, unknown>> = {
+  name: 'event',
   fields: [
     { name: 'objectID', type: 'string' },
     { name: 'name', type: 'string' },

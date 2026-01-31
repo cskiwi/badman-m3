@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, resource, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
-import { CommonModule } from '@angular/common';
+
 import { lastValueFrom } from 'rxjs';
 
 import { CardModule } from 'primeng/card';
@@ -48,7 +48,6 @@ const GET_PLAYER_WITH_DETAILS = gql`
   selector: 'app-page-edit',
   standalone: true,
   imports: [
-    CommonModule,
     CardModule,
     ButtonModule,
     MessageModule,
@@ -58,8 +57,8 @@ const GET_PLAYER_WITH_DETAILS = gql`
     PageHeaderComponent,
     TranslateModule,
     PlayerProfileComponent,
-    PlayerClaimsComponent,
-  ],
+    PlayerClaimsComponent
+],
   providers: [MessageService],
   templateUrl: './page-edit.component.html',
   styleUrl: './page-edit.component.scss',

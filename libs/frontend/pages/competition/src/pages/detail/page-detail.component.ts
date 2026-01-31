@@ -4,10 +4,12 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { DetailService } from './page-detail.service';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-page-detail',
@@ -20,6 +22,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
     PageHeaderComponent,
     SyncButtonComponent,
     SyncStatusIndicatorComponent,
+    ButtonModule,
   ],
   templateUrl: './page-detail.component.html',
   styleUrl: './page-detail.component.scss',
@@ -28,10 +31,21 @@ import { ProgressBarModule } from 'primeng/progressbar';
 export class PageDetailComponent {
   private readonly dataService = new DetailService();
   private readonly seoService = inject(SeoService);
+  private readonly authService = inject(AuthService);
   private readonly competitionId = injectParams('competitionId');
 
   // selectors
   competition = this.dataService.competition;
+
+  // Check if user can edit the competition
+  canEdit = computed(() => {
+    const competition = this.competition();
+    if (!competition) return false;
+    return this.authService.hasAnyPermission([
+      'edit-any:competition',
+      `${competition.id}_edit:competition`,
+    ]);
+  });
 
   // Helper function to extract event type and level
   private getEventTypeAndLevel = (eventType: string) => {
@@ -92,7 +106,16 @@ export class PageDetailComponent {
         groups.push(group);
       }
 
-      group.events.push(event);
+      // Sort draws by name before adding the event
+      const eventWithSortedDraws = {
+        ...event,
+        competitionDraws: [...(event.competitionDraws ?? [])].sort((a, b) => {
+          const nameA = a.name || '';
+          const nameB = b.name || '';
+          return nameA.localeCompare(nameB);
+        }),
+      } as typeof event;
+      group.events.push(eventWithSortedDraws);
     });
 
     return groups;
@@ -110,10 +133,8 @@ export class PageDetailComponent {
     }
 
     return {
-      level: 'tournament', // Use tournament level for competition events
-      tournamentCode: competition.visualCode || competition.id,
-      tournamentName: competition.name,
-      eventCode: competition.visualCode || competition.id, // Use competition code as event code
+      level: 'event',
+      eventId: competition.id,
       eventName: competition.name,
     };
   });
@@ -126,9 +147,13 @@ export class PageDetailComponent {
       return null;
     }
 
+    if (!competition.visualCode) {
+      throw new Error('Competition visual code is missing');
+    }
+
     return {
       entityType: 'competition',
-      entityCode: competition.visualCode || competition.id,
+      entityCode: competition.visualCode,
       entityName: competition.name,
       lastSync: competition.lastSync,
     };
@@ -144,10 +169,9 @@ export class PageDetailComponent {
 
     return {
       level: 'sub-event',
-      tournamentCode: competition.visualCode || competition.id,
-      tournamentName: competition.name,
-      eventCode: subEvent.visualCode || subEvent.id,
-      eventName: subEvent.name,
+      subEventId: subEvent.id,
+      eventName: competition.name,
+      subEventName: subEvent.name,
     };
   }
 
@@ -159,9 +183,13 @@ export class PageDetailComponent {
       return null;
     }
 
+    if (!subEvent.visualCode) {
+      throw new Error('Competition visual code is missing');
+    }
+
     return {
       entityType: 'event',
-      entityCode: subEvent.visualCode || subEvent.id,
+      entityCode: subEvent.visualCode,
       entityName: subEvent.name,
       lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
     };

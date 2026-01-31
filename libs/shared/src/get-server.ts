@@ -26,8 +26,8 @@ export const getServer = async (adapter?: AbstractHttpAdapter) => {
   const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
-    .setTitle('Badman')
-    .setDescription('The Badman API description.')
+    .setTitle('Gladman')
+    .setDescription('The Gladman API description.')
     .setVersion('1.0')
     .addOAuth2(
       {

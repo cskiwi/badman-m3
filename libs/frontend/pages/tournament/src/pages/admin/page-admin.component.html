@@ -1,0 +1,90 @@
+<app-page-header>
+  <span breadcrumb>
+    <a routerLink="/tournament">{{ 'all.tournament.title' | translate }}</a>
+    @if (tournament(); as t) {
+      <span> / </span>
+      <a [routerLink]="['/tournament', t.id]">{{ t.name }}</a>
+      <span> / </span>
+      <span>{{ 'all.tournament.admin.title' | translate }}</span>
+    }
+  </span>
+  <span title>
+    @if (loading()) {
+      <p-skeleton width="200px" height="2rem" />
+    } @else if (tournament(); as t) {
+      {{ 'all.tournament.admin.title' | translate }}: {{ t.name }}
+    }
+  </span>
+  <span actions>
+    <p-button
+      icon="pi pi-arrow-left"
+      [label]="'all.button.back' | translate"
+      severity="secondary"
+      [text]="true"
+      (click)="goBack()"
+    />
+  </span>
+</app-page-header>
+
+@if (error(); as err) {
+  <p-message severity="error" [text]="err" />
+} @else if (loading()) {
+  <div class="p-4">
+    <p-skeleton height="4rem" styleClass="mb-4" />
+    <p-skeleton height="3rem" styleClass="mb-3" />
+    <p-skeleton height="20rem" />
+  </div>
+} @else if (!canEdit()) {
+  <p-message severity="warn" [text]="'all.tournament.admin.noPermission' | translate" />
+} @else if (tournament(); as tournament) {
+  <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
+      <p-tablist>
+        <p-tab [value]="0">
+          <i class="pi pi-cog mr-2"></i>
+          {{ 'all.tournament.admin.tabs.settings' | translate }}
+        </p-tab>
+        <p-tab [value]="1" [disabled]="!canAccessEnrollments()">
+          <i class="pi pi-users mr-2"></i>
+          {{ 'all.tournament.admin.tabs.enrollments' | translate }}
+        </p-tab>
+        <p-tab [value]="2" [disabled]="!canAccessDraws()">
+          <i class="pi pi-sitemap mr-2"></i>
+          {{ 'all.tournament.admin.tabs.draws' | translate }}
+        </p-tab>
+        <p-tab [value]="3" [disabled]="!canAccessSchedule()">
+          <i class="pi pi-calendar mr-2"></i>
+          {{ 'all.tournament.admin.tabs.schedule' | translate }}
+        </p-tab>
+        <p-tab [value]="4" [disabled]="!canAccessCheckin()">
+          <i class="pi pi-check-circle mr-2"></i>
+          {{ 'all.tournament.admin.tabs.checkin' | translate }}
+        </p-tab>
+      </p-tablist>
+
+      <p-tabpanels>
+        <p-tabpanel [value]="0">
+          <app-settings-tab [tournament]="tournament" (tournamentUpdated)="refetchTournament()" />
+        </p-tabpanel>
+        <p-tabpanel [value]="1">
+          @if (canAccessEnrollments()) {
+            <app-enrollments-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="2">
+          @if (canAccessDraws()) {
+            <app-draws-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="3">
+          @if (canAccessSchedule()) {
+            <app-schedule-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="4">
+          @if (canAccessCheckin()) {
+            <app-checkin-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+}

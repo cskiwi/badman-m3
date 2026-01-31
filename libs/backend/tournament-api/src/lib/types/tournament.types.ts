@@ -119,6 +119,7 @@ export interface Match {
   ScoreStatus: number;
   RoundName?: string;
   MatchTime?: string;
+  MatchTypeID: MatchType;
   EventCode: string;
   EventName: string;
   DrawCode: string;
@@ -141,9 +142,38 @@ export interface Match {
   };
 }
 
+/**
+ * TeamMatch represents a competition encounter between two teams
+ * This is different from Match which is for individual/doubles matches
+ */
+export interface TeamMatch {
+  Code: string;
+  Winner: MatchWinner;
+  ScoreStatus: number;
+  RoundName?: string;
+  MatchTime?: string;
+  EventCode: string;
+  EventName: string;
+  DrawCode: string;
+  DrawName: string;
+  Team1: {
+    Code: string;
+    Name: string;
+    CountryCode?: string;
+  };
+  Team2: {
+    Code: string;
+    Name: string;
+    CountryCode?: string;
+  };
+  Sets?: {
+    Set: MatchSet[] | MatchSet;
+  };
+}
+
 export interface MatchSet {
-  Team1: number;
-  Team2: number;
+  Team1: string;
+  Team2: string;
 }
 
 export interface Stage {
@@ -181,6 +211,20 @@ export enum GenderType {
 export enum GameType {
   Singles = 1,
   Doubles = 2,
+}
+
+export enum MatchType {
+  MS = 1,
+  WS = 2,
+  MD = 3,
+  WD = 4,
+  XD = 5,
+  BS = 11,
+  GS = 12,
+  BD = 13,
+  GD = 14,
+  Single = 101,
+  Double = 102,
 }
 
 export enum DrawType {
@@ -255,5 +299,19 @@ export interface StagesResponse {
   Result: {
     Version: string;
     Stage: Stage[];
+  };
+}
+
+export interface TeamMatchesResponse {
+  Result: {
+    Version: string;
+    TeamMatch: TeamMatch[];
+  };
+}
+
+export interface TeamMatchResponse {
+  Result: {
+    Version: string;
+    TeamMatch: TeamMatch;
   };
 }

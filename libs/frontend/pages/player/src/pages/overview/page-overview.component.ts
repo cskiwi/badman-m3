@@ -18,12 +18,11 @@ import { RatingModule } from 'primeng/rating';
 import { SkeletonModule } from 'primeng/skeleton';
 import { BadgeModule } from 'primeng/badge';
 import { DividerModule } from 'primeng/divider';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-page-overview',
   imports: [
-    CommonModule,
     RouterLink,
     ReactiveFormsModule,
     FormsModule,
@@ -42,8 +41,8 @@ import { CommonModule } from '@angular/common';
     SkeletonModule,
     BadgeModule,
     DividerModule,
-    PageHeaderComponent,
-  ],
+    PageHeaderComponent
+],
   templateUrl: './page-overview.component.html',
   styleUrl: './page-overview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

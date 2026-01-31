@@ -198,16 +198,16 @@ export class WebSocketSyncService implements OnDestroy {
       this.subscribeToJobUpdates();
     });
 
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', () => {
       this.connectionStatus.set('disconnected');
     });
 
-    this.socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
+    this.socket.on('connect_error', (err) => {
+      console.error('WebSocket connection error:', err);
       this.connectionStatus.set('disconnected');
     });
 
-    this.socket.on('reconnect_attempt', (attemptNumber) => {
+    this.socket.on('reconnect_attempt', () => {
       this.connectionStatus.set('connecting');
     });
 
@@ -215,7 +215,7 @@ export class WebSocketSyncService implements OnDestroy {
       this.connectionStatus.set('disconnected');
     });
 
-    this.socket.on('reconnect', (attemptNumber) => {
+    this.socket.on('reconnect', () => {
       this.connectionStatus.set('connected');
     });
 

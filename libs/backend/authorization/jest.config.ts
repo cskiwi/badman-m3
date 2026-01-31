@@ -1,5 +1,4 @@
- 
-export default {
+module.exports = {
   displayName: 'backend-authorization',
   preset: '../../../jest.preset.js',
   testEnvironment: 'node',

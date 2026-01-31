@@ -1,0 +1,108 @@
+<div class="space-y-4">
+  <!-- User Ranking Info -->
+  @if (hasRanking()) {
+    <div class="flex items-center gap-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-700">
+      <i class="pi pi-user text-2xl text-primary-600 dark:text-primary-400"></i>
+      <div class="flex-1">
+        <div class="font-semibold text-primary-900 dark:text-primary-100 mb-1">{{ 'all.enrollment.filters.yourRankings' | translate }}</div>
+        <div class="flex flex-wrap gap-4 text-sm">
+          @if (userRanking()?.single) {
+            <span class="flex items-center gap-1 text-primary-700 dark:text-primary-300">
+              <strong>{{ 'all.enrollment.filters.single' | translate }}</strong> Level {{ userRanking()?.single }}
+            </span>
+          }
+          @if (userRanking()?.double) {
+            <span class="flex items-center gap-1 text-primary-700 dark:text-primary-300">
+              <strong>{{ 'all.enrollment.filters.double' | translate }}</strong> Level {{ userRanking()?.double }}
+            </span>
+          }
+          @if (userRanking()?.mix) {
+            <span class="flex items-center gap-1 text-primary-700 dark:text-primary-300">
+              <strong>{{ 'all.enrollment.filters.mixed' | translate }}</strong> Level {{ userRanking()?.mix }}
+            </span>
+          }
+        </div>
+      </div>
+      <div class="flex items-center gap-2 px-3 py-2 bg-surface-0 dark:bg-surface-800 rounded-lg">
+        <p-checkbox
+          [formControl]="showOnlyMyLevelControl"
+          [binary]="true"
+          inputId="showOnlyMyLevel"
+        />
+        <label for="showOnlyMyLevel" class="cursor-pointer text-sm font-medium text-color select-none">
+          {{ 'all.enrollment.filters.showOnlyMyLevel' | translate }}
+        </label>
+      </div>
+    </div>
+  }
+
+  <!-- Filters Row -->
+  <div class="flex flex-wrap gap-4 items-end">
+    <!-- Event Type -->
+    <div class="flex-1 min-w-[200px]">
+      <p-multiSelect
+        [formControl]="eventTypeControl"
+        [options]="eventTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="'all.enrollment.filters.eventType' | translate"
+        display="chip"
+        [style]="{'width': '100%'}"
+      />
+    </div>
+
+    <!-- Game Type -->
+    <div class="flex-1 min-w-[200px]">
+      <p-multiSelect
+        [formControl]="gameTypeControl"
+        [options]="gameTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="'all.enrollment.filters.category' | translate"
+        display="chip"
+        [style]="{'width': '100%'}"
+      />
+    </div>
+
+    <!-- Level Range -->
+    <div class="flex-1 min-w-[200px]">
+      <label class="block text-sm font-medium text-color mb-2">
+        {{ 'all.enrollment.filters.level' | translate }}: {{ levelRangeControl.value?.[0] || 1 }} - {{ levelRangeControl.value?.[1] || 12 }}
+      </label>
+      <div class="py-3">
+        <p-slider
+          [formControl]="levelRangeControl"
+          [range]="true"
+          [min]="1"
+          [max]="12"
+          [step]="1"
+          styleClass="w-full"
+          (onSlideEnd)="onLevelSlideEnd()"
+        />
+      </div>
+    </div>
+
+    <!-- Enrollment Status -->
+    <div class="flex-1 min-w-[200px]">
+      <p-select
+        [formControl]="enrollmentStatusControl"
+        [options]="enrollmentStatusOptions"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="'all.enrollment.filters.status' | translate"
+        [style]="{'width': '100%'}"
+      />
+    </div>
+
+    <!-- Clear Filters -->
+    @if (hasActiveFilters()) {
+      <p-button
+        [label]="'all.enrollment.filters.clear' | translate"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="clearFilters()"
+      />
+    }
+  </div>
+</div>

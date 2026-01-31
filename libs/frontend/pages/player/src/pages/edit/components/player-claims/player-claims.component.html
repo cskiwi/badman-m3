@@ -9,8 +9,18 @@
     @if (globalClaims().length > 0 && canEditClaims()) {
       <div class="flex flex-col sm:flex-row justify-between gap-4 pb-6 border-b border-surface-border">
         <div class="flex gap-2">
-          <p-button [label]="'all.player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAll()"> </p-button>
-          <p-button [label]="'all.player.edit.claims.actions.select-none' | translate" [outlined]="true" size="small" type="button" (click)="selectNone()"> </p-button>
+          <p-button [label]="'all.player.edit.claims.actions.select-all' | translate"
+            [outlined]="true"
+            size="small"
+            type="button"
+            (click)="selectAll()"
+           />
+          <p-button [label]="'all.player.edit.claims.actions.select-none' | translate"
+            [outlined]="true"
+            size="small"
+            type="button"
+            (click)="selectNone()"
+           />
         </div>
       </div>
     }
@@ -18,24 +28,28 @@
     <!-- Claims Selection -->
     <div class="space-y-6">
       @if (!canEditClaims()) {
-        <p-message severity="warn" [text]="'all.player.edit.claims.messages.no-permission' | translate"></p-message>
+        <p-message severity="warn" [text]="'all.player.edit.claims.messages.no-permission' | translate" />
       } @else if (globalClaims().length === 0) {
         <p class="text-surface-500">{{ 'all.player.edit.claims.messages.no-claims' | translate }}</p>
       } @else {
         @for (categoryGroup of claimsByCategory(); track categoryGroup.category) {
           <div class="mb-8">
             <div class="flex items-center justify-between w-full mb-2">
-              <h3 class="text-lg font-medium text-primary-700 dark:text-primary-400">{{ categoryGroup.category }}</h3>
+              <h3 class="text-lg font-medium">{{ categoryGroup.category }}</h3>
               @if (canEditClaims()) {
                 <div class="flex gap-2">
-                  <p-button [label]="'all.player.edit.claims.actions.select-all' | translate" [outlined]="true" size="small" type="button" (click)="selectAllInCategory(categoryGroup.category)"></p-button>
-                  <p-button
-                    [label]="'all.player.edit.claims.actions.select-none' | translate"
+                  <p-button [label]="'all.player.edit.claims.actions.select-all' | translate"
+                    [outlined]="true"
+                    size="small"
+                    type="button"
+                    (click)="selectAllInCategory(categoryGroup.category)"
+                   />
+                  <p-button [label]="'all.player.edit.claims.actions.select-none' | translate"
                     [outlined]="true"
                     size="small"
                     type="button"
                     (click)="selectNoneInCategory(categoryGroup.category)"
-                  ></p-button>
+                   />
                 </div>
               }
             </div>
@@ -43,8 +57,8 @@
             <!-- Claims Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               @for (claim of categoryGroup.claims; track claim.id) {
-                <div class="flex items-start space-x-3 p-3 border border-surface-border rounded-md transition-colors hover:bg-surface-hover">
-                  <p-checkbox [formControlName]="claim.id!" [inputId]="claim.id!" [binary]="true"> </p-checkbox>
+                <div class="flex items-start space-x-3 p-3 border border-surface rounded-md transition-colors hover:bg-surface-hover">
+                  <p-checkbox [formControlName]="claim.id!" [inputId]="claim.id!" [binary]="true" />
                   <div class="flex-1 min-w-0">
                     <label [for]="claim.id!" class="font-medium cursor-pointer block leading-tight">
                       {{ claim.name }}
@@ -71,7 +85,7 @@
 
     <!-- Error Message -->
     @if (error(); as errorMessage) {
-      <p-message severity="error" [text]="errorMessage"></p-message>
+      <p-message severity="error" [text]="errorMessage" />
     }
   </form>
 </div>

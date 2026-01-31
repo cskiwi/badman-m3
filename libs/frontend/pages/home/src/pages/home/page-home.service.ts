@@ -46,7 +46,7 @@ export class HomeService {
             context: { signal: abortSignal },
           }));
 
-        if (!result?.data.rankingSystem) {
+        if (!result?.data?.rankingSystem) {
           throw new Error('No rankingSystem found');
         }
         return result.data.rankingSystem;

@@ -1,0 +1,159 @@
+<div class="space-y-6">
+  <p class="text-surface-500 mb-6">
+    {{ 'all.competition.edit.dates.description' | translate }}
+  </p>
+
+  <form [formGroup]="datesForm" class="space-y-6">
+    <!-- Registration Dates -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.dates.registration.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Open Date -->
+        <div class="flex flex-col gap-1">
+          <label for="openDate" class="font-medium">{{ 'all.competition.edit.dates.openDate' | translate }}</label>
+          @defer {
+            <p-datepicker
+              id="openDate"
+              formControlName="openDate"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.openDate.placeholder' | translate"
+            />
+          }
+          <small class="text-surface-500">{{ 'all.competition.edit.dates.openDate.hint' | translate }}</small>
+        </div>
+
+        <!-- Close Date -->
+        <div class="flex flex-col gap-1">
+          <label for="closeDate" class="font-medium">{{ 'all.competition.edit.dates.closeDate' | translate }}</label>
+          @defer {
+            <p-datepicker
+              id="closeDate"
+              formControlName="closeDate"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.closeDate.placeholder' | translate"
+            />
+          }
+          <small class="text-surface-500">{{ 'all.competition.edit.dates.closeDate.hint' | translate }}</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Period 1 -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.dates.changePeriod1.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <!-- Change Open Date -->
+        <div class="flex flex-col gap-1">
+          <label for="changeOpenDate" class="font-medium">{{ 'all.competition.edit.dates.changeOpenDate' | translate }}</label>
+          @defer {
+            <p-datepicker
+              id="changeOpenDate"
+              formControlName="changeOpenDate"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.changeOpenDate.placeholder' | translate"
+            />
+          }
+        </div>
+
+        <!-- Change Close Date Period 1 -->
+        <div class="flex flex-col gap-1">
+          <label for="changeCloseDatePeriod1" class="font-medium">
+            {{ 'all.competition.edit.dates.changeCloseDatePeriod1' | translate }}
+          </label>
+          @defer {
+            <p-datepicker
+              id="changeCloseDatePeriod1"
+              formControlName="changeCloseDatePeriod1"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.changeCloseDatePeriod1.placeholder' | translate"
+            />
+          }
+        </div>
+
+        <!-- Change Close Request Date Period 1 -->
+        <div class="flex flex-col gap-1">
+          <label for="changeCloseRequestDatePeriod1" class="font-medium">
+            {{ 'all.competition.edit.dates.changeCloseRequestDatePeriod1' | translate }}
+          </label>
+          @defer {
+            <p-datepicker
+              id="changeCloseRequestDatePeriod1"
+              formControlName="changeCloseRequestDatePeriod1"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.changeCloseRequestDatePeriod1.placeholder' | translate"
+            />
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Period 2 -->
+    <div class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-primary-700 dark:text-primary-400">
+        {{ 'all.competition.edit.dates.changePeriod2.title' | translate }}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Change Close Date Period 2 -->
+        <div class="flex flex-col gap-1">
+          <label for="changeCloseDatePeriod2" class="font-medium">
+            {{ 'all.competition.edit.dates.changeCloseDatePeriod2' | translate }}
+          </label>
+          @defer {
+            <p-datepicker
+              id="changeCloseDatePeriod2"
+              formControlName="changeCloseDatePeriod2"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.changeCloseDatePeriod2.placeholder' | translate"
+            />
+          }
+        </div>
+
+        <!-- Change Close Request Date Period 2 -->
+        <div class="flex flex-col gap-1">
+          <label for="changeCloseRequestDatePeriod2" class="font-medium">
+            {{ 'all.competition.edit.dates.changeCloseRequestDatePeriod2' | translate }}
+          </label>
+          @defer {
+            <p-datepicker
+              id="changeCloseRequestDatePeriod2"
+              formControlName="changeCloseRequestDatePeriod2"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showTime]="true"
+              [placeholder]="'all.competition.edit.dates.changeCloseRequestDatePeriod2.placeholder' | translate"
+            />
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    @if (saving()) {
+      <div class="pt-4">
+        <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+        <p class="text-sm text-surface-500 mt-2">{{ 'all.competition.edit.dates.messages.saving' | translate }}</p>
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (error(); as errorMessage) {
+      <p-message severity="error" [text]="errorMessage" />
+    }
+  </form>
+</div>

@@ -1,15 +1,12 @@
 
 import {
-  AfterContentInit,
   ChangeDetectionStrategy,
   Component,
-  ContentChildren,
   ElementRef,
-  QueryList,
+  contentChildren,
+  computed
 } from '@angular/core';
 import { DividerModule } from 'primeng/divider';
-import { injectDestroy } from 'ngxtension/inject-destroy';
-import { takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-page-header',
@@ -17,19 +14,8 @@ import { takeUntil } from 'rxjs';
     templateUrl: './page-header.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PageHeaderComponent implements AfterContentInit {
-  private destroy$ = injectDestroy();
-  public hasAvatar?: boolean;
+export class PageHeaderComponent {
+  readonly content = contentChildren<ElementRef>('avatar');
 
-  @ContentChildren('avatar') content?: QueryList<ElementRef>;
-
-  ngAfterContentInit(): void {
-    if (!this.content) return;
-
-    this.hasAvatar = this.content.length > 0;
-    this.content.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      if (!this.content) return;
-      this.hasAvatar = this.content.length > 0;
-    });
-  }
+  public hasAvatar = computed(() => this.content().length > 0);
 }

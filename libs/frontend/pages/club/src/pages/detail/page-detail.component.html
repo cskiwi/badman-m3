@@ -45,6 +45,10 @@
           <i class="pi pi-calendar mr-2"></i>
           {{ 'all.club.schedule' | translate }}
         </p-tab>
+        <p-tab value="4">
+          <i class="pi pi-trophy mr-2"></i>
+          {{ 'all.club.tournaments.tab' | translate }}
+        </p-tab>
       </p-tablist>
 
       <p-tabpanels>
@@ -71,6 +75,15 @@
         <!-- Match Schedule & Results Tab -->
         <p-tabpanel value="3">
           <app-club-schedule-tab [clubId]="club.id" [season]="currentSeason()" />
+        </p-tabpanel>
+
+        <!-- Tournaments Tab -->
+        <p-tabpanel value="4">
+          <app-club-tournaments-tab
+            [clubId]="club.id"
+            [canCreate]="canCreateTournament()"
+            (createTournament)="createTournament()"
+          />
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

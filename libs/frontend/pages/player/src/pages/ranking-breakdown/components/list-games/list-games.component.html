@@ -1,0 +1,204 @@
+<!-- Toolbar Section -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 bg-highlight border-b border-surface">
+  <!-- Filter Toggles -->
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="text-sm font-medium text-muted-color mr-2">
+      <i class="pi pi-filter text-xs mr-1"></i>
+      {{ 'all.ranking.breakdown.filters' | translate }}:
+    </span>
+    <p-toggleButton
+      [(ngModel)]="filter.controls.includedUpgrade.value"
+      onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ lostGamesUpgrade() }}"
+      offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ lostGamesUpgrade() }}"
+      (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
+    />
+    <p-toggleButton
+      [(ngModel)]="filter.controls.includedDowngrade.value"
+      onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ lostGamesDowngrade() }}"
+      offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ lostGamesDowngrade() }}"
+      (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
+    />
+    @if ((system().latestXGamesToUse ?? 0) > 0) {
+      <p-toggleButton
+        [(ngModel)]="filter.controls.includedIgnored.value"
+        onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
+        offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
+        (onChange)="filter.controls.includedIgnored.setValue($event.checked)"
+      />
+    }
+  </div>
+
+  <!-- View Toggles -->
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="text-sm font-medium text-muted-color mr-2">
+      <i class="pi pi-eye text-xs mr-1"></i>
+      {{ 'all.ranking.breakdown.show' | translate }}:
+    </span>
+    <p-toggleButton
+      [ngModel]="showUpgrade()"
+      onLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
+      offLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
+      (onChange)="showUpgrade.set($event.checked)"
+    />
+    <p-toggleButton
+      [ngModel]="showDowngrade()"
+      onLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
+      offLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
+      (onChange)="showDowngrade.set($event.checked)"
+    />
+  </div>
+</div>
+
+<!-- Data Table -->
+<div class="overflow-x-auto">
+  <p-table [value]="filteredGames()" [loading]="loading()" [paginator]="false" styleClass="p-datatable-sm" [scrollable]="true">
+    <ng-template pTemplate="header">
+      <tr>
+        @if (showUpgrade()) {
+          <th class="text-center" style="min-width: 60px">
+            <span class="hidden sm:inline">{{ 'all.ranking.breakdown.countsForUpgrade' | translate }}</span>
+            <span class="sm:hidden">#</span>
+          </th>
+        }
+        @if (showDowngrade()) {
+          <th class="text-center" style="min-width: 60px">
+            <span class="hidden sm:inline">{{ 'all.ranking.breakdown.countsForDowngrade' | translate }}</span>
+            <span class="sm:hidden">#</span>
+          </th>
+        }
+        <th style="min-width: 40px"></th>
+        <th style="min-width: 140px">
+          <i class="pi pi-calendar text-xs mr-1"></i>
+          {{ 'all.ranking.breakdown.date' | translate }}
+        </th>
+        <th style="min-width: 180px">
+          <i class="pi pi-users text-xs mr-1"></i>
+          {{ 'all.ranking.breakdown.team' | translate }}
+        </th>
+        <th style="min-width: 180px">
+          <i class="pi pi-users text-xs mr-1"></i>
+          {{ 'all.ranking.breakdown.opponent' | translate }}
+        </th>
+        <th class="text-center" style="min-width: 80px">
+          <i class="pi pi-star text-xs mr-1"></i>
+          {{ 'all.ranking.breakdown.points' | translate }}
+        </th>
+        @if (showUpgrade()) {
+          <th class="text-center" style="min-width: 80px">
+            <i class="pi pi-arrow-up text-xs mr-1"></i>
+            <span class="hidden md:inline">{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}</span>
+          </th>
+          <th class="text-center" style="min-width: 100px">
+            <i class="pi pi-chart-line text-xs mr-1"></i>
+            <span class="hidden md:inline">{{ 'all.ranking.breakdown.upgrade-average' | translate }}</span>
+          </th>
+        }
+        @if (showDowngrade()) {
+          <th class="text-center" style="min-width: 80px">
+            <i class="pi pi-arrow-down text-xs mr-1"></i>
+            <span class="hidden md:inline">{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}</span>
+          </th>
+          <th class="text-center" style="min-width: 100px">
+            <i class="pi pi-chart-line text-xs mr-1"></i>
+            <span class="hidden md:inline">{{ 'all.ranking.breakdown.downgrade-average' | translate }}</span>
+          </th>
+        }
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-game>
+      <tr [class.bg-highlight]="game.highestAvgUpgrade || game.highestAvgDowngrade">
+        @if (showUpgrade()) {
+          <td class="text-center font-medium">
+            @if (game.usedForUpgrade) {
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-contrast text-xs">
+                {{ game.countUpgrade }}
+              </span>
+            }
+          </td>
+        }
+        @if (showDowngrade()) {
+          <td class="text-center font-medium">
+            @if (game.usedForDowngrade) {
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white text-xs">
+                {{ game.countDowngrade }}
+              </span>
+            }
+          </td>
+        }
+        <td class="text-center">
+          @if (game.dropsNextPeriod) {
+            <i class="pi pi-clock text-orange-500" [pTooltip]="'all.ranking.breakdown.drops-next-period' | translate" tooltipPosition="top"></i>
+          }
+        </td>
+        <td class="text-sm text-muted-color">
+          {{ game.playedAt | dayjsFormat: 'DD MMM YYYY HH:mm' }}
+        </td>
+        <td class="text-sm text-color">{{ getTeamDisplay(game) }}</td>
+        <td class="text-sm text-color">{{ getOpponentDisplay(game) }}</td>
+        <td class="text-center">
+          <span
+            class="inline-flex items-center justify-center px-2 py-1 rounded text-sm font-medium"
+            [class.text-green-600]="game.points > 0"
+            [class.text-red-600]="game.points < 0"
+            [class.text-muted-color]="game.points === 0"
+          >
+            {{ game.points > 0 ? '+' : '' }}{{ game.points }}
+          </span>
+        </td>
+        @if (showUpgrade()) {
+          <td class="text-center">
+            @if (game.usedForUpgrade) {
+              <i class="pi pi-check-circle text-green-500"></i>
+            } @else {
+              <i class="pi pi-times-circle text-red-500 opacity-50"></i>
+            }
+          </td>
+          <td class="text-center font-medium" [pTooltip]="getTooltip(game, true, game.usedForUpgrade)" tooltipPosition="top">
+            @if (game.avgUpgrade) {
+              <span
+                class="inline-flex items-center justify-center px-2 py-1 rounded text-sm"
+                [class.text-green-600]="game.canUpgrade"
+                [class.font-bold]="game.highestAvgUpgrade"
+                [class.text-yellow-600]="game.highestAvgUpgrade && !game.canUpgrade"
+              >
+                {{ game.avgUpgrade | number: '1.0-0' }}
+              </span>
+            }
+          </td>
+        }
+        @if (showDowngrade()) {
+          <td class="text-center">
+            @if (game.usedForDowngrade) {
+              <i class="pi pi-check-circle text-green-500"></i>
+            } @else {
+              <i class="pi pi-times-circle text-red-500 opacity-50"></i>
+            }
+          </td>
+          <td class="text-center font-medium" [pTooltip]="getTooltip(game, false, game.usedForDowngrade)" tooltipPosition="top">
+            @if (game.avgDowngrade) {
+              <span
+                class="inline-flex items-center justify-center px-2 py-1 rounded text-sm"
+                [class.text-red-600]="game.canDowngrade"
+                [class.font-bold]="game.highestAvgDowngrade"
+                [class.text-yellow-600]="game.highestAvgDowngrade && !game.canDowngrade"
+              >
+                {{ game.avgDowngrade | number: '1.0-0' }}
+              </span>
+            }
+          </td>
+        }
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="showUpgrade() && showDowngrade() ? 11 : showUpgrade() || showDowngrade() ? 9 : 7">
+          <div class="flex flex-col items-center justify-center py-8 text-center">
+            <i class="pi pi-search text-4xl text-muted-color mb-4"></i>
+            <h3 class="text-lg font-semibold text-color mb-2">{{ 'all.ranking.breakdown.games.none' | translate }}</h3>
+            <p class="text-muted-color text-sm">{{ 'all.ranking.breakdown.games.noGamesDescription' | translate }}</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

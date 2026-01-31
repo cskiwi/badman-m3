@@ -81,7 +81,7 @@
             <i class="pi pi-calendar text-primary-500 mr-2"></i>
             {{ 'all.game.upcoming.title' | translate }}
           </ng-template>
-          <ng-template #subtitle></ng-template>
+          <ng-template #subtitle />
           <app-upcoming-games [for]="player.id" [type]="'player'" />
         </p-card>
       </section>
@@ -91,7 +91,7 @@
             <i class="pi pi-history text-primary-500 mr-2"></i>
             {{ 'all.game.recent.title' | translate }}
           </ng-template>
-          <ng-template #subtitle></ng-template>
+          <ng-template #subtitle />
 
           <app-recent-games [for]="player.id" [type]="'player'" />
         </p-card>

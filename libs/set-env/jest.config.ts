@@ -1,5 +1,4 @@
- 
-export default {
+module.exports = {
   displayName: 'set-env',
   preset: '../../jest.preset.js',
   transform: {

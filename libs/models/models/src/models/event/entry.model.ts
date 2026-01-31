@@ -89,6 +89,19 @@ export class Entry extends BaseEntity {
   @Column({ type: 'timestamp with time zone', nullable: true })
   declare sendOn?: Date;
 
+  // Tournament enrollment reference
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
+  @Index()
+  declare enrollmentId?: string;
+
+  // Seeding position in draw
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true })
+  declare seed?: number;
+
   @Field(() => Standing, { nullable: true })
   @OneToOne(() => Standing, (standing) => standing.entry)
   declare standing?: Relation<Standing>;

@@ -1,70 +1,88 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, Entry, Team as TeamModel, CompetitionEvent as CompetitionEventModel } from '@app/models';
+import { CompetitionDraw, Entry, Team as TeamModel } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
-import { Job, WaitingChildrenError } from 'bullmq';
+import { Job } from 'bullmq';
+import { TeamMatchingService } from './team-matching.service';
 
+/**
+ * Entry sync is always triggered from a draw job with the draw's internal ID.
+ * Entries are created by matching teams found in the draw structure.
+ */
 export interface CompetitionEntrySyncData {
-  tournamentCode: string;
-  drawCode: string;
+  drawId: string; // Required internal ID
+}
+
+interface DrawTeamData {
+  Code?: string;
+  Name?: string;
 }
 
 @Injectable()
 export class CompetitionEntrySyncService {
   private readonly logger = new Logger(CompetitionEntrySyncService.name);
 
-  constructor(private readonly tournamentApiClient: TournamentApiClient) {}
+  constructor(
+    private readonly tournamentApiClient: TournamentApiClient,
+    private readonly teamMatchingService: TeamMatchingService,
+  ) {}
 
   async processEntrySync(job: Job<CompetitionEntrySyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing competition entry sync`);
     await updateProgress(10);
-    const { tournamentCode, drawCode } = job.data;
+    const { drawId } = job.data;
 
     try {
-      // Find the competition event first to get proper context
+      // Load draw by internal ID
       await updateProgress(15);
-      const competitionEvent = await CompetitionEventModel.findOne({
-        where: { visualCode: tournamentCode },
-      });
-      await updateProgress(20);
-
-      if (!competitionEvent) {
-        this.logger.warn(`Competition with code ${tournamentCode} not found, skipping entry sync`);
-        return;
-      }
-
-      this.logger.debug(`Found competition: ${competitionEvent.id} with code ${tournamentCode}`);
-
-      // Find the draw with competition context to avoid visualCode ambiguity
-      await updateProgress(25);
       const draw = await CompetitionDraw.findOne({
-        where: {
-          visualCode: drawCode,
-          competitionSubEvent: {
-            competitionEvent: {
-              id: competitionEvent.id,
-            },
-          },
-        },
+        where: { id: drawId },
         relations: ['competitionSubEvent', 'competitionSubEvent.competitionEvent'],
       });
       await updateProgress(30);
 
       if (!draw) {
-        this.logger.warn(`Draw with code ${drawCode} not found for competition ${tournamentCode}, skipping entry sync`);
-        return;
+        throw new Error(`Competition draw with id ${drawId} not found for entry sync`);
       }
 
-      this.logger.debug(`Found draw: ${draw.id} with code ${drawCode}, subeventId: ${draw.subeventId}`);
+      const drawCode = draw.visualCode;
+      if (!drawCode) {
+        throw new Error(`Draw ${drawId} has no visual code`);
+      }
 
-      // Get and sync entries
+      this.logger.debug(`Found draw: ${draw.id} (${drawCode}), subeventId: ${draw.subeventId}`);
+
+      // Get competition event from draw relation for team matching context and tournament code
+      const competitionEvent = draw.competitionSubEvent?.competitionEvent || null;
+      const tournamentCode = competitionEvent?.visualCode;
+
+      if (!tournamentCode) {
+        throw new Error(`Competition event for draw ${drawId} has no visual code`);
+      }
+
+      // Get draw details from API to find teams in the draw structure
       await updateProgress(40);
-      const entries = await this.tournamentApiClient.getDrawEntries?.(tournamentCode, drawCode);
+      const drawData = await this.tournamentApiClient.getDrawDetails?.(tournamentCode, drawCode);
       await updateProgress(60);
-      if (entries) {
-        await this.updateCompetitionEntries(draw, entries);
-      }
-      await updateProgress(90);
 
+      if (drawData?.Structure?.Item) {
+        // Extract unique teams from the draw structure
+        const teamsInDraw = this.extractTeamsFromDrawStructure(drawData.Structure.Item);
+        this.logger.debug(`Found ${teamsInDraw.length} teams in draw structure`);
+
+        // Create entries for each team found in the draw
+        // Note: We only add entries, never remove them (in case admin moved a team)
+        for (const teamData of teamsInDraw) {
+          const result = await this.teamMatchingService.findTeam(teamData.Code, teamData.Name, competitionEvent);
+          if (result.team) {
+            await this.createOrUpdateEntry(draw, result.team, 'competition');
+            this.logger.debug(`Matched team "${teamData.Name}" with confidence: ${result.confidence} (score: ${result.score.toFixed(3)})`);
+          } else {
+            this.logger.warn(`Team with code ${teamData.Code} / name ${teamData.Name} not found in system`);
+          }
+        }
+      }
+
+      await updateProgress(90);
       this.logger.log(`Completed competition entry sync`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -74,31 +92,34 @@ export class CompetitionEntrySyncService {
     }
   }
 
-  private async updateCompetitionEntries(draw: CompetitionDraw, entries: unknown[]): Promise<void> {
-    for (const entryData of entries) {
-      const entry = entryData as { Team1: unknown; Team2?: unknown };
+  /**
+   * Extract unique teams from draw structure items
+   */
+  private extractTeamsFromDrawStructure(items: unknown[]): DrawTeamData[] {
+    const teamMap = new Map<string, DrawTeamData>();
 
-      // Find or create teams
-      const team1 = await this.findOrCreateTeamFromEntry(entry.Team1);
-      const team2 = entry.Team2 ? await this.findOrCreateTeamFromEntry(entry.Team2) : null;
-
-      if (!team1) {
-        this.logger.warn(`Could not find or create team for entry`);
-        continue;
-      }
-
-      // Create entry for team1
-      await this.createOrUpdateEntry(draw, team1, 'competition');
-
-      // Create entry for team2 if it exists
-      if (team2) {
-        await this.createOrUpdateEntry(draw, team2, 'competition');
+    for (const item of items) {
+      const drawItem = item as { Team?: DrawTeamData };
+      if (drawItem.Team?.Code || drawItem.Team?.Name) {
+        const key = drawItem.Team.Code || drawItem.Team.Name || '';
+        if (key && !teamMap.has(key)) {
+          teamMap.set(key, {
+            Code: drawItem.Team.Code,
+            Name: drawItem.Team.Name,
+          });
+        }
       }
     }
+
+    return Array.from(teamMap.values());
   }
 
-  private async createOrUpdateEntry(draw: CompetitionDraw, team: TeamModel, entryType: string): Promise<void> {
-    // Check if team entry already exists
+  /**
+   * Create or update an entry for a team in a draw
+   * Note: Entries are only added, never removed (to handle team moves by admin)
+   */
+  async createOrUpdateEntry(draw: CompetitionDraw, team: TeamModel, entryType: string): Promise<void> {
+    // Check if team entry already exists for this draw
     const existingTeamEntry = await Entry.findOne({
       where: {
         drawId: draw.id,
@@ -113,30 +134,8 @@ export class CompetitionEntrySyncService {
       newTeamEntry.teamId = team.id;
       newTeamEntry.entryType = entryType;
       await newTeamEntry.save();
+      this.logger.debug(`Created entry for team ${team.name} in draw ${draw.id}`);
     }
   }
 
-  private async findOrCreateTeamFromEntry(teamData: unknown): Promise<TeamModel | null> {
-    const team = teamData as { Code?: string; Name?: string };
-
-    if (!team || !team.Code) {
-      return null;
-    }
-
-    const existingTeam = await TeamModel.findOne({
-      where: { name: team.Name },
-    });
-
-    if (existingTeam) {
-      return existingTeam;
-    }
-
-    // Create minimal team record for API reference
-    const newTeam = new TeamModel();
-    newTeam.name = team.Name || `Team ${team.Code}`;
-    // Note: Team model doesn't have visualCode, using name as identifier
-    await newTeam.save();
-
-    return newTeam;
-  }
 }
