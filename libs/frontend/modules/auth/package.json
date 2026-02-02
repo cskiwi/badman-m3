@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@app/models": "*",
-    "@angular/common": "20.3.15",
-    "@angular/core": "20.3.15",
-    "@angular/router": "20.3.15",
-    "ngx-cookie-service-ssr": "^20.0.1",
+    "@angular/common": "21.0.9",
+    "@angular/core": "21.0.9",
+    "@angular/router": "21.0.9",
+    "ngx-cookie-service-ssr": "^21.1.0",
     "@auth0/auth0-angular": "^2.2.3",
     "apollo-angular": "^13.0.0",
     "rxjs": "~7.8.2"
