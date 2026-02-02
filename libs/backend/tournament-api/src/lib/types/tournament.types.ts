@@ -203,14 +203,18 @@ export enum TournamentStatus {
 }
 
 export enum GenderType {
-  Men = 1,
-  Women = 2,
+  Male = 1,
+  Female = 2,
   Mixed = 3,
+  Boy = 4,
+  Girl = 5,
+  Genderless = 6,
 }
 
 export enum GameType {
   Singles = 1,
   Doubles = 2,
+  Mixed = 3,
 }
 
 export enum MatchType {
