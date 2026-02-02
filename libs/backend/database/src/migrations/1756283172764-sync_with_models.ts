@@ -840,18 +840,6 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ALTER TABLE "ranking"."RankingSystems" DROP CONSTRAINT "Systems_name_key"
         `);
         await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "procentWinning" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "procentWinningPlus1" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "procentLosing" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
             ALTER TYPE "ranking"."enum_Systems_inactivityUnit"
             RENAME TO "enum_Systems_inactivityUnit_old"
         `);
@@ -973,30 +961,6 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
             ALTER TABLE "ranking"."RankingSystems"
             ALTER COLUMN "runCurrently"
             SET NOT NULL
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForUpgradeSingle" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForUpgradeDouble" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForUpgradeMix" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForDowngradeSingle" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForDowngradeDouble" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForDowngradeMix" TYPE numeric(2)
         `);
         await queryRunner.query(`
             ALTER TYPE "ranking"."enum_Systems_startingType"
@@ -2480,30 +2444,6 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         `);
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForDowngradeMix" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForDowngradeDouble" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForDowngradeSingle" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForUpgradeMix" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForUpgradeDouble" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "differenceForUpgradeSingle" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
             ALTER COLUMN "runCurrently" DROP NOT NULL
         `);
         await queryRunner.query(`
@@ -2627,18 +2567,6 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         await queryRunner.query(`
             ALTER TYPE "ranking"."enum_Systems_inactivityUnit_old"
             RENAME TO "enum_Systems_inactivityUnit"
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "procentLosing" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "procentWinningPlus1" TYPE numeric(10, 2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingSystems"
-            ALTER COLUMN "procentWinning" TYPE numeric(10, 2)
         `);
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingSystems"

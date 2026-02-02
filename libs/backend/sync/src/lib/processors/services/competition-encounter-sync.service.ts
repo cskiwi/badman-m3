@@ -1,3 +1,4 @@
+import { PointService } from '@app/backend-ranking';
 import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer, MatchType } from '@app/backend-tournament-api';
 import {
   CompetitionDraw,
@@ -14,7 +15,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TeamMatchingService } from './team-matching.service';
 import { LessThanOrEqual } from 'typeorm';
-import { parse } from 'node:path';
 
 /**
  * Encounter sync can be triggered in two ways:
@@ -32,6 +32,7 @@ export class CompetitionEncounterSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly teamMatchingService: TeamMatchingService,
+    private readonly pointService: PointService,
   ) {}
 
   async processEncounterSync(
@@ -313,6 +314,38 @@ export class CompetitionEncounterSyncService {
 
     if (game) {
       await this.createGamePlayerMemberships(game, match);
+      await this.createRankingPoints(game);
+    }
+  }
+
+  /**
+   * Create ranking points for a game using the primary ranking system
+   */
+  private async createRankingPoints(game: Game): Promise<void> {
+    try {
+      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
+      if (!primarySystem) {
+        this.logger.warn('No primary ranking system found, skipping point creation');
+        return;
+      }
+
+      // Reload game with memberships for point calculation
+      const gameWithMemberships = await Game.findOne({
+        where: { id: game.id },
+        relations: ['gamePlayerMemberships'],
+      });
+
+      if (!gameWithMemberships) {
+        this.logger.warn(`Game ${game.id} not found when creating ranking points`);
+        return;
+      }
+
+      await this.pointService.createRankingPointForGame(primarySystem, gameWithMemberships);
+      this.logger.debug(`Created ranking points for game ${game.visualCode}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.warn(`Failed to create ranking points for game ${game.id}: ${errorMessage}`);
+      // Don't throw - ranking point creation failure shouldn't block game sync
     }
   }
 

@@ -20,6 +20,7 @@
       "@app/backend-database": ["libs/backend/database/src/index.ts"],
       "@app/backend-graphql": ["libs/backend/graphql/src/index.ts"],
       "@app/backend-health": ["libs/backend/health/src/index.ts"],
+      "@app/backend-ranking": ["libs/backend/ranking/src/index.ts"],
       "@app/backend-search": ["libs/backend/search/src/index.ts"],
       "@app/backend-seo": ["libs/backend/seo/src/index.ts"],
       "@app/backend-sync": ["libs/backend/sync/src/index.ts"],
@@ -74,7 +75,7 @@
       "@app/models-enum": ["libs/models/enum/src/index.ts"],
       "@app/set-env": ["libs/set-env/src/index.ts"],
       "@app/utils": ["libs/utils/src/index.ts"],
-      "@app/utils/comp": ["libs/utils/src/lib/comp.ts"],
+      "@app/utils/comp": ["libs/utils/src/comp/index.ts"],
       "@app/utils/sorts": ["libs/utils/src/sorts/index.ts"],
       "@apps/shared": ["libs/shared/src/index.ts"],
       "@app/frontend-components/country-state": ["libs/frontend/components/country-state/src/index.ts"]

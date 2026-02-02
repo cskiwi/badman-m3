@@ -5,7 +5,7 @@ import { Game, Player } from '@app/models';
 import { GameType } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { Dayjs } from 'dayjs';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, startWith } from 'rxjs';
 
 export type RankingType = 'single' | 'double' | 'mix';
 
@@ -75,7 +75,7 @@ export class RankingBreakdownService {
     includeOutOfScopeWonGames: new FormControl<boolean>(false),
   });
 
-  private filterSignal = toSignal(this.filter.valueChanges);
+  private filterSignal = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));
 
   private gamesResource = resource({
     params: () => this.filterSignal(),
@@ -111,7 +111,7 @@ export class RankingBreakdownService {
                       { gameType: { eq: gameType } },
                       { playedAt: { between: [params.game.toDate(), params.end.toDate()] } },
                       {
-                        OR: [{ set1Team1: { gte: 21 } }, { set1Team2: { gte: 21 } }],
+                        OR: [{ set1Team1: { gte: 0 } }, { set1Team2: { gte: 0 } }],
                       },
                     ],
                   },

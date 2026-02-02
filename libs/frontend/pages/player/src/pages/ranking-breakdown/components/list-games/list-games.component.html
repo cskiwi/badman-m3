@@ -6,20 +6,20 @@
       <i class="pi pi-filter text-xs mr-1"></i>
       {{ 'all.ranking.breakdown.filters' | translate }}:
     </span>
-    <p-toggleButton
+    <p-togglebutton
       [(ngModel)]="filter.controls.includedUpgrade.value"
       onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ lostGamesUpgrade() }}"
       offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ lostGamesUpgrade() }}"
       (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
     />
-    <p-toggleButton
+    <p-togglebutton
       [(ngModel)]="filter.controls.includedDowngrade.value"
       onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ lostGamesDowngrade() }}"
       offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ lostGamesDowngrade() }}"
       (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
     />
     @if ((system().latestXGamesToUse ?? 0) > 0) {
-      <p-toggleButton
+      <p-togglebutton
         [(ngModel)]="filter.controls.includedIgnored.value"
         onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
         offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
@@ -34,13 +34,13 @@
       <i class="pi pi-eye text-xs mr-1"></i>
       {{ 'all.ranking.breakdown.show' | translate }}:
     </span>
-    <p-toggleButton
+    <p-togglebutton
       [ngModel]="showUpgrade()"
       onLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
       offLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
       (onChange)="showUpgrade.set($event.checked)"
     />
-    <p-toggleButton
+    <p-togglebutton
       [ngModel]="showDowngrade()"
       onLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
       offLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
@@ -133,8 +133,20 @@
         <td class="text-sm text-muted-color">
           {{ game.playedAt | dayjsFormat: 'DD MMM YYYY HH:mm' }}
         </td>
-        <td class="text-sm text-color">{{ getTeamDisplay(game) }}</td>
-        <td class="text-sm text-color">{{ getOpponentDisplay(game) }}</td>
+        <td class="text-sm text-color">
+          <div class="flex flex-col gap-0.5">
+            @for (player of game.team; track player.gamePlayer?.id) {
+              <span>{{ player.gamePlayer?.fullName ?? 'Unknown' }} ({{ player[type()] ?? '?' }})</span>
+            }
+          </div>
+        </td>
+        <td class="text-sm text-color">
+          <div class="flex flex-col gap-0.5">
+            @for (player of game.opponent; track player.gamePlayer?.id) {
+              <span>{{ player.gamePlayer?.fullName ?? 'Unknown' }} ({{ player[type()] ?? '?' }})</span>
+            }
+          </div>
+        </td>
         <td class="text-center">
           <span
             class="inline-flex items-center justify-center px-2 py-1 rounded text-sm font-medium"

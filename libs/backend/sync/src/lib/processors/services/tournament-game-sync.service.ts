@@ -1,3 +1,4 @@
+import { PointService } from '@app/backend-ranking';
 import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
 import { Game, Player, GamePlayerMembership, RankingSystem, RankingPlace, TournamentDraw as TournamentDrawModel } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
@@ -19,6 +20,7 @@ export class TournamentGameSyncService {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly tournamentPlanningService: TournamentPlanningService,
+    private readonly pointService: PointService,
   ) {}
 
   async processGameSync(job: Job<TournamentGameSyncOptions>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
@@ -242,6 +244,38 @@ export class TournamentGameSyncService {
 
     if (game) {
       await this.createGamePlayerMemberships(game, match);
+      await this.createRankingPoints(game);
+    }
+  }
+
+  /**
+   * Create ranking points for a game using the primary ranking system
+   */
+  private async createRankingPoints(game: Game): Promise<void> {
+    try {
+      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
+      if (!primarySystem) {
+        this.logger.warn('No primary ranking system found, skipping point creation');
+        return;
+      }
+
+      // Reload game with memberships for point calculation
+      const gameWithMemberships = await Game.findOne({
+        where: { id: game.id },
+        relations: ['gamePlayerMemberships'],
+      });
+
+      if (!gameWithMemberships) {
+        this.logger.warn(`Game ${game.id} not found when creating ranking points`);
+        return;
+      }
+
+      await this.pointService.createRankingPointForGame(primarySystem, gameWithMemberships);
+      this.logger.debug(`Created ranking points for game ${game.visualCode}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.warn(`Failed to create ranking points for game ${game.id}: ${errorMessage}`);
+      // Don't throw - ranking point creation failure shouldn't block game sync
     }
   }
 

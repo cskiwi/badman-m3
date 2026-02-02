@@ -36,17 +36,17 @@ export class RankingSystem extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare procentWinning?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare procentWinningPlus1?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare procentLosing?: number;
 
   @SortableField({ nullable: true })
@@ -192,32 +192,32 @@ export class RankingSystem extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare differenceForUpgradeSingle?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare differenceForUpgradeDouble?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare differenceForUpgradeMix?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare differenceForDowngradeSingle?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare differenceForDowngradeDouble?: number;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'numeric', precision: 2 })
+  @Column({ nullable: true, type: 'numeric', precision: 10, scale: 2 })
   declare differenceForDowngradeMix?: number;
 
   @SortableField(() => [Int], { nullable: true })

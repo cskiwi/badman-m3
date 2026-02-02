@@ -1,3 +1,4 @@
+import { RankingModule } from '@app/backend-ranking';
 import { ISearchConfig, SearchModule } from '@app/backend-search';
 import { TournamentApiModule } from '@app/backend-tournament-api';
 import { BullModule } from '@nestjs/bullmq';
@@ -97,6 +98,7 @@ import { SyncService } from './services/sync.service';
         } as ISearchConfig;
       },
     }),
+    RankingModule,
   ],
   providers: [
     SyncService, // Add SyncService so processors can queue additional jobs

@@ -43,6 +43,7 @@ Thumbs.db
 .angular
 routes.txt
 .env
+.env.kubero
 typesense-data/
 .claude-collective/metrics/
 .claude-flow/metrics/

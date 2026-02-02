@@ -1,15 +1,17 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
+import { startWith } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
-import { getRankingPeriods } from '../../../../../../../../utils/src/lib/get-ranking-periods';
 import { RankingBreakdownService } from '../../page-ranking-breakdown.service';
 import { RankingSystem } from '@app/models';
 import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
+import { GetRankingPeriods } from '@app/utils/comp';
 
 @Component({
   selector: 'app-period-selection',
@@ -30,11 +32,12 @@ export class PeriodSelectionComponent {
 
   system = input.required<RankingSystem>();
   filter = this.breakdownService.filter;
+  private filterSignal = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));
 
   viewingDate = signal(dayjs());
 
-  start = computed(() => this.filter.get('start')?.value as Dayjs | null);
-  end = computed(() => this.filter.get('end')?.value as Dayjs | null);
+  start = computed(() => this.filterSignal()?.start as Dayjs | null);
+  end = computed(() => this.filterSignal()?.end as Dayjs | null);
 
   updates = computed(() => {
     const sys = this.system();
@@ -44,7 +47,7 @@ export class PeriodSelectionComponent {
     }
 
     try {
-      return getRankingPeriods(
+      return GetRankingPeriods(
         sys,
         viewing.startOf('month').subtract(1, 'day'),
         viewing.endOf('month').add(1, 'day'),

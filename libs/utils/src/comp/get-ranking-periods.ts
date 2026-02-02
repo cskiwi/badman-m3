@@ -7,7 +7,7 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isoWeek);
 
-export function getRankingPeriods<
+export function GetRankingPeriods<
   T extends Partial<{
     updateIntervalAmount: number;
     updateIntervalUnit: string;

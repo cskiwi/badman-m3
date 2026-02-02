@@ -6,9 +6,10 @@
   "scripts": {
     "start": "nx run-many -t serve -p tag:scope:app",
     "start:all": "nx run-many -t serve -p tag:scope:app,tag:scope:worker",
-    "workers:start": "pm2 start cmd --name worker -i 7 -- /c \"npx nx run-many -t serve -p tag:scope:worker\"",
+    "workers:start": "pm2 start cmd --name worker -i 5 -- /c \"npx nx run-many -t serve -p tag:scope:worker\"",
     "workers:stop": "pm2 delete worker",
     "start:prod": "npx nx run app:set-env && node ./dist/apps/app/server/server.mjs",
+    "start:prod:worker": "npx nx run app:set-env && node ./dist/apps/sync-worker/main.js",
     "build": "nx run-many -t build --prod",
     "lint": "nx run-many -t lint",
     "migrate:create": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-generate",

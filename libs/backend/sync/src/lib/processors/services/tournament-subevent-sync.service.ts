@@ -1,6 +1,6 @@
-import { TournamentApiClient } from '@app/backend-tournament-api';
-import { TournamentSubEvent, TournamentEvent } from '@app/models';
-import { GameType, SubEventTypeEnum } from '@app/models-enum';
+import { GameType, GenderType, TournamentApiClient, TournamentEvent } from '@app/backend-tournament-api';
+import { TournamentSubEvent, TournamentEvent as TournamentEventModel } from '@app/models';
+import { GameType as GameTypeModel, SubEventTypeEnum } from '@app/models-enum';
 import { InjectFlowProducer } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { FlowProducer, Job, WaitingChildrenError } from 'bullmq';
@@ -10,7 +10,7 @@ import { TournamentPlanningService, TournamentWorkPlan } from './tournament-plan
 
 interface SubEventContext {
   subEvent: TournamentSubEvent;
-  tournamentEvent: TournamentEvent;
+  tournamentEvent: TournamentEventModel;
   tournamentCode: string;
   eventCode: string;
 }
@@ -39,11 +39,7 @@ export class TournamentSubEventSyncService {
     @InjectFlowProducer(TOURNAMENT_EVENT_QUEUE) private readonly tournamentSyncFlow: FlowProducer,
   ) {}
 
-  async processSubEventSync(
-    job: Job<TournamentSubEventSyncData>,
-    updateProgress: (progress: number) => Promise<void>,
-    token: string,
-  ): Promise<void> {
+  async processSubEventSync(job: Job<TournamentSubEventSyncData>, updateProgress: (progress: number) => Promise<void>, token: string): Promise<void> {
     this.logger.log(`Processing tournament sub-event sync`);
     const { includeSubComponents, workPlan, childJobsCreated } = job.data;
 
@@ -156,8 +152,8 @@ export class TournamentSubEventSyncService {
 
       if (apiEvent) {
         subEvent.name = apiEvent.Name;
-        subEvent.eventType = this.mapSubEventType(apiEvent.GenderID);
-        subEvent.gameType = this.mapGameType(apiEvent.GameTypeID);
+        subEvent.eventType = this.getEventType(apiEvent);
+        subEvent.gameType = this.getGameType(apiEvent);
         subEvent.minLevel = apiEvent.LevelID;
         subEvent.maxLevel = apiEvent.LevelID;
         subEvent.lastSync = new Date();
@@ -171,37 +167,42 @@ export class TournamentSubEventSyncService {
     }
   }
 
-  private mapSubEventType(genderId: number | string): SubEventTypeEnum {
-    if (typeof genderId === 'string') {
-      genderId = parseInt(genderId, 10);
-    }
-
-    switch (genderId) {
-      case 1:
+  
+  private getEventType(xmlEvent: TournamentEvent): SubEventTypeEnum | undefined {
+    switch (parseInt(`${xmlEvent.GenderID}`, 10)) {
+      case GenderType.Male:
+      case GenderType.Boy:
         return SubEventTypeEnum.M;
-      case 2:
+      case GenderType.Female:
+      case GenderType.Girl:
         return SubEventTypeEnum.F;
-      case 3:
+      case GenderType.Mixed:
         return SubEventTypeEnum.MX;
       default:
-        return SubEventTypeEnum.M;
+        this.logger.warn('No event type found');
+        return;
     }
   }
 
-  private mapGameType(gameTypeId: number | string): GameType {
-    if (typeof gameTypeId === 'string') {
-      gameTypeId = parseInt(gameTypeId, 10);
-    }
-
-    switch (gameTypeId) {
-      case 1:
-        return GameType.S;
-      case 2:
-        return GameType.D;
+  private getGameType(xmlEvent: TournamentEvent): GameTypeModel | undefined {
+    switch (parseInt(`${xmlEvent.GameTypeID}`, 10)) {
+      case GameType.Doubles:
+        // Stupid fix but should work
+        if (parseInt(`${xmlEvent.GenderID}`, 10) === GenderType.Mixed) {
+          return GameTypeModel.MX;
+        } else {
+          return GameTypeModel.D;
+        }
+      case GameType.Singles:
+        return GameTypeModel.S;
+      case GameType.Mixed:
+        return GameTypeModel.MX;
       default:
-        return GameType.MX;
+        this.logger.warn('No Game type found');
+        return;
     }
   }
+
 
   /**
    * Resolve sub-event context from either:
@@ -252,13 +253,9 @@ export class TournamentSubEventSyncService {
    * Load sub-event context from parent job data
    * The sub-event might not exist yet - we have the codes to fetch from API and create it
    */
-  private async resolveFromParentContext(
-    tournamentCode: string,
-    eventId: string,
-    eventCode: string,
-  ): Promise<SubEventContext> {
+  private async resolveFromParentContext(tournamentCode: string, eventId: string, eventCode: string): Promise<SubEventContext> {
     // Load the parent event
-    const tournamentEvent = await TournamentEvent.findOne({
+    const tournamentEvent = await TournamentEventModel.findOne({
       where: { id: eventId },
     });
 
