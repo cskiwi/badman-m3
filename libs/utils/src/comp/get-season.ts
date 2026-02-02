@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { Dayjs } from 'dayjs';
-
 export const getSeasonPeriod = (season?: number) => {
   if (!season) {
     season = getSeason();

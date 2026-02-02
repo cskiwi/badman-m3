@@ -54,15 +54,12 @@ module.exports = [
         'error',
         {
           ignoredDependencies: [
-            '@angular/common',
             '@angular/core',
-            '@ngx-translate/core',
-            'primeng',
             '@angular/router',
-            'ngxtension',
             '@angular/forms',
-            'rxjs',
-            'apollo-angular',
+            '@ngx-translate/core',
+            'ngxtension',
+            'primeng'
           ],
         },
       ],

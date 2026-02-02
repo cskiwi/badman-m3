@@ -1,5 +1,5 @@
 import { Game, GamePlayerMembership } from '@app/models';
-import { GameBreakdownType } from '../../../../../../../utils/src/lib/get-game-result-type';
+import { GameBreakdownType } from '@app/utils/comp';
 
 export interface GameBreakdown extends Game {
   points?: number;

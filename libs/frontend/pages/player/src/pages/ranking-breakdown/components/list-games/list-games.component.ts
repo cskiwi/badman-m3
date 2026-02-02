@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RankingLastPlace, RankingSystem } from '@app/models';
-import { GameType } from '@app/models-enum';
-import { GameBreakdownType, getGameResultType } from '../../../../../../../../utils/src/lib/get-game-result-type';
+import { GameBreakdownType, GetGameResultType } from '@app/utils/comp';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { startWith } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/togglebutton';
@@ -46,12 +47,13 @@ export class ListGamesComponent {
   games = this.breakdownService.games;
   loading = this.breakdownService.loading;
   filter = this.breakdownService.filter;
+  private filterSignal = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));
 
   showUpgrade = signal(true);
   showDowngrade = signal(false);
 
-  start = computed(() => this.filter.get('start')?.value as Dayjs | null);
-  next = computed(() => this.filter.get('next')?.value as Dayjs | null);
+  start = computed(() => this.filterSignal()?.start as Dayjs | null);
+  next = computed(() => this.filterSignal()?.next as Dayjs | null);
 
   currGames = computed(() => {
     const startPeriod = this.start();
@@ -153,8 +155,6 @@ export class ListGamesComponent {
     const sys = this.system();
     const nextPeriod = this.next();
 
-    console.log('Adding breakdown info to games', games);
-
     for (const game of games) {
       const myMembership = game.gamePlayerMemberships?.find((gpm) => gpm.gamePlayer?.id === playerData.id || gpm.player === 1 || gpm.player === 2);
       const myTeam = myMembership?.team;
@@ -167,7 +167,7 @@ export class ListGamesComponent {
 
       const rankingPoint = game.rankingPoints?.find((x) => x.playerId === playerData.id && x.systemId === sys.id);
 
-      const type = getGameResultType(game.winner === myTeam, game.gameType, {
+      const type = GetGameResultType(game.winner === myTeam, game.gameType, {
         differenceInLevel: rankingPoint?.differenceInLevel ?? 0,
         system: sys,
       });

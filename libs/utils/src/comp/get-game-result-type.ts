@@ -1,6 +1,6 @@
 import { GameType } from '@app/models-enum';
 
-export const getGameResultType = (
+export const GetGameResultType = (
   won: boolean,
   gameType: GameType,
   rankingPoint?: Partial<{

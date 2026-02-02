@@ -20,7 +20,7 @@
             optionLabel="label"
             optionValue="value"
             placeholder="{{ 'all.game.types.title' | translate }}"
-            styleClass="w-full sm:w-auto"
+            class="w-full sm:w-auto"
           />
 
           <app-period-selection [system]="system()" />
@@ -32,12 +32,7 @@
   <!-- Games List Section -->
   <section>
     <div class="rounded-border border border-surface overflow-hidden">
-      <app-list-games
-        [system]="system()"
-        [player]="{ id: playerId() ?? '' }"
-        [rankingPlace]="rankingPlace()"
-        [type]="type()"
-      />
+      <app-list-games [system]="system()" [player]="{ id: playerId() ?? '' }" [rankingPlace]="rankingPlace()" [type]="type()" />
     </div>
   </section>
 } @else {
