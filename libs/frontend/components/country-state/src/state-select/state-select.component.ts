@@ -52,8 +52,12 @@ export class StateSelectComponent implements ControlValueAccessor {
   readonly value = signal<string | null>(null);
   readonly disabled = signal(false);
 
-  private onChange: (value: string | null) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string | null) => void = () => {
+    /* noop - replaced by registerOnChange */
+  };
+  private onTouched: () => void = () => {
+    /* noop - replaced by registerOnTouched */
+  };
 
   readonly states = computed(() => {
     const countryCode = this.country();

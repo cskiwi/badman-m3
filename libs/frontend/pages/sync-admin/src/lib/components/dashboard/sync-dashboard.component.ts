@@ -331,85 +331,82 @@ export class SyncDashboardComponent implements OnDestroy {
       }
 
       const jobType = this.getJobType(job);
-      
+
       // Handle different job types and extract names
       switch (jobType.toLowerCase()) {
-        case 'event':
+        case 'event': {
           const eventName = getProperty(jobData, 'metadata', 'eventName') || getProperty(jobData, 'name');
           if (eventName && typeof eventName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.event')}: ${eventName}`;
           }
           break;
-          
-        case 'subevent':
+        }
+        case 'subevent': {
           const subEventName = getProperty(jobData, 'metadata', 'subEventName') || getProperty(jobData, 'name');
           if (subEventName && typeof subEventName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.subEvent')}: ${subEventName}`;
           }
           break;
-          
-        case 'draw':
+        }
+        case 'draw': {
           const drawName = getProperty(jobData, 'metadata', 'drawName') || getProperty(jobData, 'name');
           if (drawName && typeof drawName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.draw')}: ${drawName}`;
           }
           break;
-          
-        case 'games':
+        }
+        case 'games': {
           const gamesDrawName = getProperty(jobData, 'metadata', 'drawName') || getProperty(jobData, 'name');
           if (gamesDrawName && typeof gamesDrawName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.games')}: ${gamesDrawName}`;
           }
           break;
-          
-        case 'standing':
+        }
+        case 'standing': {
           const standingDrawName = getProperty(jobData, 'metadata', 'drawName') || getProperty(jobData, 'name');
           if (standingDrawName && typeof standingDrawName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.standing')}: ${standingDrawName}`;
           }
           break;
-          
+        }
         case 'encounter':
-        case 'competition':
+        case 'competition': {
           // For encounters, check metadata first for team names
           const metadataHomeTeam = getProperty(jobData, 'metadata', 'homeTeam');
           const metadataAwayTeam = getProperty(jobData, 'metadata', 'awayTeam');
-          
+
           if (metadataHomeTeam && metadataAwayTeam) {
-            const homeTeamName = (typeof metadataHomeTeam === 'object' && metadataHomeTeam !== null
-              ? getProperty(metadataHomeTeam, 'name')
-              : metadataHomeTeam) as string;
-            const awayTeamName = (typeof metadataAwayTeam === 'object' && metadataAwayTeam !== null
-              ? getProperty(metadataAwayTeam, 'name')
-              : metadataAwayTeam) as string;
+            const homeTeamName = (
+              typeof metadataHomeTeam === 'object' && metadataHomeTeam !== null ? getProperty(metadataHomeTeam, 'name') : metadataHomeTeam
+            ) as string;
+            const awayTeamName = (
+              typeof metadataAwayTeam === 'object' && metadataAwayTeam !== null ? getProperty(metadataAwayTeam, 'name') : metadataAwayTeam
+            ) as string;
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${homeTeamName} vs ${awayTeamName}`;
           }
           // Fallback to legacy format
           const homeTeam = getProperty(jobData, 'homeTeam');
           const awayTeam = getProperty(jobData, 'awayTeam');
-          
+
           if (homeTeam && awayTeam) {
-            const homeTeamName = (typeof homeTeam === 'object' && homeTeam !== null
-              ? getProperty(homeTeam, 'name')
-              : homeTeam) as string;
-            const awayTeamName = (typeof awayTeam === 'object' && awayTeam !== null
-              ? getProperty(awayTeam, 'name')
-              : awayTeam) as string;
+            const homeTeamName = (typeof homeTeam === 'object' && homeTeam !== null ? getProperty(homeTeam, 'name') : homeTeam) as string;
+            const awayTeamName = (typeof awayTeam === 'object' && awayTeam !== null ? getProperty(awayTeam, 'name') : awayTeam) as string;
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${homeTeamName} vs ${awayTeamName}`;
           }
-          
+
           const encounterDrawName = getProperty(jobData, 'metadata', 'drawName') || getProperty(jobData, 'name');
           if (encounterDrawName && typeof encounterDrawName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${encounterDrawName}`;
           }
           break;
-          
-        case 'tournament':
+        }
+        case 'tournament': {
           const tournamentName = getProperty(jobData, 'name');
           if (tournamentName && typeof tournamentName === 'string') {
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.tournament')}: ${tournamentName}`;
           }
           break;
+        }
       }
 
       // Fallback: try to get a generic name from job data
@@ -421,10 +418,9 @@ export class SyncDashboardComponent implements OnDestroy {
       // Final fallback: just return the translated job type
       const translationKey = `all.sync.dashboard.jobs.types.${jobType.toLowerCase()}`;
       const translatedType = this.translateService.instant(translationKey);
-      
+
       // If translation doesn't exist, fallback to the original job type
       return translatedType !== translationKey ? translatedType : jobType;
-      
     } catch (error) {
       // If parsing fails, fall back to job type
       console.warn('Failed to parse job data for display name:', error);

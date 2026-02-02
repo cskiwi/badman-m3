@@ -48,8 +48,12 @@ export class CountrySelectComponent implements ControlValueAccessor {
   readonly value = signal<string | null>(null);
   readonly disabled = signal(false);
 
-  private onChange: (value: string | null) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string | null) => void = () => {
+    /* noop - replaced by registerOnChange */
+  };
+  private onTouched: () => void = () => {
+    /* noop - replaced by registerOnTouched */
+  };
 
   // Track language changes reactively
   private readonly currentLang = toSignal(
