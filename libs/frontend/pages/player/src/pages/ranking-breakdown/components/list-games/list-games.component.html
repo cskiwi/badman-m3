@@ -6,20 +6,20 @@
       <i class="pi pi-filter text-xs mr-1"></i>
       {{ 'all.ranking.breakdown.filters' | translate }}:
     </span>
-    <p-toggleButton
+    <p-togglebutton
       [(ngModel)]="filter.controls.includedUpgrade.value"
       onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ lostGamesUpgrade() }}"
       offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ lostGamesUpgrade() }}"
       (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
     />
-    <p-toggleButton
+    <p-togglebutton
       [(ngModel)]="filter.controls.includedDowngrade.value"
       onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ lostGamesDowngrade() }}"
       offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ lostGamesDowngrade() }}"
       (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
     />
     @if ((system().latestXGamesToUse ?? 0) > 0) {
-      <p-toggleButton
+      <p-togglebutton
         [(ngModel)]="filter.controls.includedIgnored.value"
         onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
         offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
@@ -34,13 +34,13 @@
       <i class="pi pi-eye text-xs mr-1"></i>
       {{ 'all.ranking.breakdown.show' | translate }}:
     </span>
-    <p-toggleButton
+    <p-togglebutton
       [ngModel]="showUpgrade()"
       onLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
       offLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
       (onChange)="showUpgrade.set($event.checked)"
     />
-    <p-toggleButton
+    <p-togglebutton
       [ngModel]="showDowngrade()"
       onLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
       offLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
