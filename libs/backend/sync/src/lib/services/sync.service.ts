@@ -16,6 +16,7 @@ import {
   GameSyncJobData,
   StructureSyncJobData,
   TournamentStructureSyncJobData,
+  TournamentRankingRecalcJobData,
   SYNC_QUEUE,
   TOURNAMENT_DISCOVERY_QUEUE,
   TEAM_MATCHING_QUEUE,
@@ -180,6 +181,15 @@ export class SyncService {
    */
   async queueTournamentGameSync(data: GameSyncJobData): Promise<void> {
     await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_GAME_SYNC, data, {
+      priority: 10,
+    });
+  }
+
+  /**
+   * Queue tournament ranking point recalculation
+   */
+  async queueTournamentRankingRecalc(data: TournamentRankingRecalcJobData): Promise<void> {
+    await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_RANKING_RECALC, data, {
       priority: 10,
     });
   }

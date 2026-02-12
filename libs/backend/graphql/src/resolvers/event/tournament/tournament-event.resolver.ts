@@ -1,7 +1,8 @@
 import { PermGuard, User } from '@app/backend-authorization';
+import { SyncService } from '@app/backend-sync';
 import { TournamentEvent, TournamentSubEvent, Club, Player } from '@app/models';
 import { TournamentPhase } from '@app/models-enum';
-import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { ForbiddenException, Logger, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver, registerEnumType } from '@nestjs/graphql';
 import { IsUUID } from '@app/utils';
 import { TournamentEventArgs, TournamentSubEventArgs } from '../../../args';
@@ -15,6 +16,10 @@ registerEnumType(TournamentPhase, {
 
 @Resolver(() => TournamentEvent)
 export class TournamentEventResolver {
+  private readonly logger = new Logger(TournamentEventResolver.name);
+
+  constructor(private readonly syncService: SyncService) {}
+
   @Query(() => TournamentEvent)
   async tournamentEvent(
     @Args('id', { type: () => ID }) id: string,
@@ -151,6 +156,9 @@ export class TournamentEventResolver {
       throw new ForbiddenException('You do not have permission to update this tournament');
     }
 
+    // Detect official flag change
+    const officialChanged = data.official !== undefined && data.official !== tournament.official;
+
     // Update fields
     if (data.name !== undefined) {
       tournament.name = data.name;
@@ -166,6 +174,20 @@ export class TournamentEventResolver {
     if (data.schedulePublished !== undefined) tournament.schedulePublished = data.schedulePublished;
 
     await tournament.save();
+
+    // Queue ranking point recalculation when official flag changes
+    if (officialChanged) {
+      const action = data.official ? 'create' : 'remove';
+      this.logger.log(`Official flag changed for tournament "${tournament.name}", queueing ranking point ${action}`);
+      await this.syncService.queueTournamentRankingRecalc({
+        tournamentId: tournament.id,
+        action,
+        metadata: {
+          displayName: `Ranking point ${action} for ${tournament.name}`,
+          eventName: tournament.name,
+        },
+      });
+    }
 
     return tournament;
   }

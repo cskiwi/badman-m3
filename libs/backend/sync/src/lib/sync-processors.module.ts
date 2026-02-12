@@ -24,6 +24,7 @@ import {
   TournamentEventSyncService,
   TournamentGameSyncService,
   TournamentPlanningService,
+  TournamentRankingRecalcService,
   TournamentStandingSyncService,
   TournamentSubEventSyncService,
 } from './processors';
@@ -120,6 +121,7 @@ import { SyncService } from './services/sync.service';
     TournamentSubEventSyncService,
     TournamentDrawSyncService,
     TournamentEntrySyncService,
+    TournamentRankingRecalcService,
     TournamentStandingSyncService,
     TournamentPlanningService,
     // Shared sync services

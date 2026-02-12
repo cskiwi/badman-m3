@@ -3,6 +3,7 @@ export * from './club-detail';
 export * from './clubs';
 export * from './create';
 export * from './detail';
+export * from './edit';
 export * from './draw-detail';
 export * from './enrollment';
 export * from './live-courts';

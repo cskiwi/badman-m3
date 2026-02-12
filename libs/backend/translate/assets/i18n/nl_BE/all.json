@@ -1359,6 +1359,65 @@
       }
     },
     "draws": "Reeks",
+    "edit": {
+      "actions": {
+        "cancel": "Annuleren",
+        "save-all": "Alles Opslaan",
+        "save-current": "Huidige Opslaan"
+      },
+      "info": {
+        "basic": {
+          "title": "Basisinformatie"
+        },
+        "closeDate": "Inschrijvingen Sluiten",
+        "dates": {
+          "title": "Toernooi Data"
+        },
+        "description": "Bewerk basisinformatie van het toernooi zoals naam en datums.",
+        "enrollment": {
+          "title": "Inschrijvingsdata"
+        },
+        "enrollmentCloseDate": "Inschrijvingen Sluiten",
+        "enrollmentOpenDate": "Inschrijvingen Openen",
+        "firstDay": "Eerste Dag",
+        "messages": {
+          "saving": "Toernooi informatie opslaan..."
+        },
+        "name": "Toernooinaam",
+        "name.placeholder": "Voer toernooinaam in",
+        "name.required": "Toernooinaam is verplicht",
+        "openDate": "Inschrijvingen Openen"
+      },
+      "messages": {
+        "loading": "Toernooi gegevens laden...",
+        "unsaved-changes": "Je hebt niet-opgeslagen wijzigingen"
+      },
+      "settings": {
+        "allowGuestEnrollments": "Gastinschrijvingen Toestaan",
+        "allowGuestEnrollments.description": "Sta spelers toe om in te schrijven zonder lid te zijn van een club",
+        "description": "Configureer toernooi instellingen en opties.",
+        "enrollment": {
+          "title": "Inschrijvingsinstellingen"
+        },
+        "messages": {
+          "saving": "Toernooi instellingen opslaan..."
+        },
+        "official": "Officieel Toernooi",
+        "official.description": "Markeer dit als een officieel toernooi dat speler rankings beïnvloedt",
+        "official.title": "Officiële Instellingen",
+        "schedule": {
+          "title": "Planning Instellingen"
+        },
+        "schedulePublished": "Planning Gepubliceerd",
+        "schedulePublished.description": "Maak de toernooiplanning zichtbaar voor spelers"
+      },
+      "subtitle": "Wijzig toernooi informatie en instellingen",
+      "tabs": {
+        "info": "Informatie",
+        "settings": "Instellingen"
+      },
+      "title": "Toernooi Bewerken"
+    },
     "entries": "Inschrijvingen",
     "events": "Toernooi Events",
     "eventType": "Event Type",

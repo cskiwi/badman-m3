@@ -12,5 +12,6 @@ export * from './tournament-entry-sync.service';
 export * from './tournament-event-sync.service';
 export * from './tournament-game-sync.service';
 export * from './tournament-planning.service';
+export * from './tournament-ranking-recalc.service';
 export * from './tournament-standing-sync.service';
 export * from './tournament-subevent-sync.service';

@@ -36,6 +36,10 @@ export const routes: Route[] = [
             loadComponent: () => import('./pages/detail/page-detail.component').then(m => m.PageDetailComponent),
           },
           {
+            path: 'edit',
+            loadComponent: () => import('./pages/edit/page-edit.component').then(m => m.PageEditComponent),
+          },
+          {
             path: 'admin',
             loadComponent: () => import('./pages/admin/page-admin.component').then(m => m.PageAdminComponent),
           },

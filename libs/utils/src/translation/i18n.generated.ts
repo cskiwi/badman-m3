@@ -1366,6 +1366,65 @@ export type I18nTranslations = {
                 };
             };
             "draws": string;
+            "edit": {
+                "actions": {
+                    "cancel": string;
+                    "save-all": string;
+                    "save-current": string;
+                };
+                "info": {
+                    "basic": {
+                        "title": string;
+                    };
+                    "closeDate": string;
+                    "dates": {
+                        "title": string;
+                    };
+                    "description": string;
+                    "enrollment": {
+                        "title": string;
+                    };
+                    "enrollmentCloseDate": string;
+                    "enrollmentOpenDate": string;
+                    "firstDay": string;
+                    "messages": {
+                        "saving": string;
+                    };
+                    "name": string;
+                    "name.placeholder": string;
+                    "name.required": string;
+                    "openDate": string;
+                };
+                "messages": {
+                    "loading": string;
+                    "unsaved-changes": string;
+                };
+                "settings": {
+                    "allowGuestEnrollments": string;
+                    "allowGuestEnrollments.description": string;
+                    "description": string;
+                    "enrollment": {
+                        "title": string;
+                    };
+                    "messages": {
+                        "saving": string;
+                    };
+                    "official": string;
+                    "official.description": string;
+                    "official.title": string;
+                    "schedule": {
+                        "title": string;
+                    };
+                    "schedulePublished": string;
+                    "schedulePublished.description": string;
+                };
+                "subtitle": string;
+                "tabs": {
+                    "info": string;
+                    "settings": string;
+                };
+                "title": string;
+            };
             "entries": string;
             "events": string;
             "eventType": string;

@@ -1359,6 +1359,65 @@
       }
     },
     "draws": "Draws",
+    "edit": {
+      "actions": {
+        "cancel": "Cancel",
+        "save-all": "Save All",
+        "save-current": "Save Current"
+      },
+      "info": {
+        "basic": {
+          "title": "Basic Information"
+        },
+        "closeDate": "Registration Closes",
+        "dates": {
+          "title": "Tournament Dates"
+        },
+        "description": "Edit basic tournament information such as name and dates.",
+        "enrollment": {
+          "title": "Enrollment Dates"
+        },
+        "enrollmentCloseDate": "Enrollment Closes",
+        "enrollmentOpenDate": "Enrollment Opens",
+        "firstDay": "First Day",
+        "messages": {
+          "saving": "Saving tournament information..."
+        },
+        "name": "Tournament Name",
+        "name.placeholder": "Enter tournament name",
+        "name.required": "Tournament name is required",
+        "openDate": "Registration Opens"
+      },
+      "messages": {
+        "loading": "Loading tournament data...",
+        "unsaved-changes": "You have unsaved changes"
+      },
+      "settings": {
+        "allowGuestEnrollments": "Allow Guest Enrollments",
+        "allowGuestEnrollments.description": "Allow players to enroll without being a club member",
+        "description": "Configure tournament settings and options.",
+        "enrollment": {
+          "title": "Enrollment Settings"
+        },
+        "messages": {
+          "saving": "Saving tournament settings..."
+        },
+        "official": "Official Tournament",
+        "official.description": "Mark this as an official tournament that affects player rankings",
+        "official.title": "Official Settings",
+        "schedule": {
+          "title": "Schedule Settings"
+        },
+        "schedulePublished": "Schedule Published",
+        "schedulePublished.description": "Make the tournament schedule visible to players"
+      },
+      "subtitle": "Modify tournament information and settings",
+      "tabs": {
+        "info": "Information",
+        "settings": "Settings"
+      },
+      "title": "Edit Tournament"
+    },
     "entries": "Entries",
     "events": "Tournament Events",
     "eventType": "Event Type",

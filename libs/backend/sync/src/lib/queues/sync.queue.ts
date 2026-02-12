@@ -29,6 +29,8 @@ export const JOB_TYPES = {
   COMPETITION_ENCOUNTER_SYNC: 'competition-encounter-sync',
   // Team matching
   TEAM_MATCHING: 'team-matching',
+  // Ranking point recalculation
+  TOURNAMENT_RANKING_RECALC: 'tournament-ranking-recalc',
 } as const;
 
 // Helper function to create dynamic job names
@@ -75,7 +77,7 @@ export const ALL_SYNC_QUEUES = [
 export const QUEUE_JOB_TYPE_MAP = {
   [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE],
   [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
-  [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC],
+  [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC, JOB_TYPES.TOURNAMENT_RANKING_RECALC],
   [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
   [SYNC_QUEUE]: [], // Legacy queue
 } as const;
@@ -133,6 +135,12 @@ export interface GameSyncJobData {
   matchCodes?: string[];
   date?: string;
   // Display metadata
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentRankingRecalcJobData {
+  tournamentId: string;
+  action: 'create' | 'remove';
   metadata?: JobDisplayMetadata;
 }
 

@@ -2,6 +2,7 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TOURNAMENT_EVENT_QUEUE } from '../queues/sync.queue';
+import { TournamentRankingRecalcJobData } from '../queues/sync.queue';
 import {
   TournamentDrawSyncData,
   TournamentDrawSyncService,
@@ -11,6 +12,7 @@ import {
   TournamentEventSyncService,
   TournamentGameSyncOptions,
   TournamentGameSyncService,
+  TournamentRankingRecalcService,
   TournamentStandingSyncData,
   TournamentStandingSyncService,
   TournamentSubEventSyncData,
@@ -24,7 +26,8 @@ type TournamentJobData =
   | TournamentDrawSyncData
   | TournamentEntrySyncData
   | TournamentStandingSyncData
-  | TournamentGameSyncOptions;
+  | TournamentGameSyncOptions
+  | TournamentRankingRecalcJobData;
 
 @Injectable()
 @Processor(TOURNAMENT_EVENT_QUEUE, {
@@ -40,6 +43,7 @@ export class TournamentEventProcessor extends WorkerHost {
     private readonly tournamentDrawSyncService: TournamentDrawSyncService,
     private readonly tournamentEntrySyncService: TournamentEntrySyncService,
     private readonly tournamentStandingSyncService: TournamentStandingSyncService,
+    private readonly tournamentRankingRecalcService: TournamentRankingRecalcService,
   ) {
     super();
   }
@@ -101,6 +105,13 @@ export class TournamentEventProcessor extends WorkerHost {
         );
         break;
 
+      case 'ranking-recalc':
+        await this.tournamentRankingRecalcService.processRankingRecalc(
+          job.data as TournamentRankingRecalcJobData,
+          updateProgress,
+        );
+        break;
+
       default:
         throw new Error(`Unknown job type: ${job.name}`);
     }
@@ -112,9 +123,12 @@ export class TournamentEventProcessor extends WorkerHost {
    * e.g., "prefix-tournament-sync-structure-ABC123" -> "sync-structure"
    */
   private extractJobType(jobName: string): string {
-    // Handle special case for sync-structure first
+    // Handle special cases with hyphens in the type name
     if (jobName.includes('tournament-sync-structure')) {
       return 'sync-structure';
+    }
+    if (jobName.includes('tournament-ranking-recalc')) {
+      return 'ranking-recalc';
     }
 
     // Extract type from pattern: tournament-{type}-{codes...}

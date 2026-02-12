@@ -1359,6 +1359,65 @@
       }
     },
     "draws": "Série",
+    "edit": {
+      "actions": {
+        "cancel": "Annuler",
+        "save-all": "Tout Enregistrer",
+        "save-current": "Enregistrer l'actuel"
+      },
+      "info": {
+        "basic": {
+          "title": "Informations de Base"
+        },
+        "closeDate": "Clôture des Inscriptions",
+        "dates": {
+          "title": "Dates du Tournoi"
+        },
+        "description": "Modifier les informations de base du tournoi telles que le nom et les dates.",
+        "enrollment": {
+          "title": "Dates d'Inscription"
+        },
+        "enrollmentCloseDate": "Clôture des Inscriptions",
+        "enrollmentOpenDate": "Ouverture des Inscriptions",
+        "firstDay": "Premier Jour",
+        "messages": {
+          "saving": "Enregistrement des informations du tournoi..."
+        },
+        "name": "Nom du Tournoi",
+        "name.placeholder": "Entrez le nom du tournoi",
+        "name.required": "Le nom du tournoi est requis",
+        "openDate": "Ouverture des Inscriptions"
+      },
+      "messages": {
+        "loading": "Chargement des données du tournoi...",
+        "unsaved-changes": "Vous avez des modifications non enregistrées"
+      },
+      "settings": {
+        "allowGuestEnrollments": "Autoriser les Inscriptions Invités",
+        "allowGuestEnrollments.description": "Permettre aux joueurs de s'inscrire sans être membre d'un club",
+        "description": "Configurer les paramètres et options du tournoi.",
+        "enrollment": {
+          "title": "Paramètres d'Inscription"
+        },
+        "messages": {
+          "saving": "Enregistrement des paramètres du tournoi..."
+        },
+        "official": "Tournoi Officiel",
+        "official.description": "Marquer comme tournoi officiel qui affecte les classements des joueurs",
+        "official.title": "Paramètres Officiels",
+        "schedule": {
+          "title": "Paramètres du Planning"
+        },
+        "schedulePublished": "Planning Publié",
+        "schedulePublished.description": "Rendre le planning du tournoi visible aux joueurs"
+      },
+      "subtitle": "Modifier les informations et paramètres du tournoi",
+      "tabs": {
+        "info": "Informations",
+        "settings": "Paramètres"
+      },
+      "title": "Modifier le Tournoi"
+    },
     "entries": "Inscriptions",
     "events": "Épreuves du tournoi",
     "eventType": "Type d'épreuve",
