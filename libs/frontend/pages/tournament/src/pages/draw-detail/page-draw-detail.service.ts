@@ -159,7 +159,6 @@ export class DrawDetailService {
             // return (a.order || 0) - (b.order || 0);
           });
 
-        console.log(games);
 
         return {
           tournament: result.data.tournamentEvent,

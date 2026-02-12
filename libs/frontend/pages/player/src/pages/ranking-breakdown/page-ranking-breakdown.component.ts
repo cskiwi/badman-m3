@@ -48,9 +48,9 @@ export class PageRankingBreakdownComponent {
   readonly breakdownService = inject(RankingBreakdownService);
 
   // Route params
-  playerId = computed(() => this.authService.user()?.id );
-  type = injectParams('type') as Signal<RankingType>;
-  periodEndRoute = injectQueryParams('end');
+  readonly playerId = injectParams('playerId') as Signal<string>;
+  readonly type = injectParams('type') as Signal<RankingType>;
+  readonly periodEndRoute = injectQueryParams('end');
 
   // System
   system = computed(() => this.systemService.system() as RankingSystem);

@@ -32,7 +32,7 @@
   <!-- Games List Section -->
   <section>
     <div class="rounded-border border border-surface overflow-hidden">
-      <app-list-games [system]="system()" [player]="{ id: playerId() ?? '' }" [rankingPlace]="rankingPlace()" [type]="type()" />
+      <app-list-games [system]="system()" [player]="{ id: playerId() }" [rankingPlace]="rankingPlace()" [type]="type()" />
     </div>
   </section>
 } @else {
