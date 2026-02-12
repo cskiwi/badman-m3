@@ -1,6 +1,6 @@
 import { PointService } from '@app/backend-ranking';
 import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
-import { Game, Player, GamePlayerMembership, RankingSystem, RankingPlace, TournamentDraw as TournamentDrawModel } from '@app/models';
+import { Game, Player, GamePlayerMembership, RankingSystem, RankingPlace, RankingPoint, TournamentDraw as TournamentDrawModel } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { TournamentPlanningService } from './tournament-planning.service';
@@ -73,7 +73,7 @@ export class TournamentGameSyncService {
       }
 
       // Process matches with progress tracking
-      await this.processMatches(matches, tournamentCode, updateProgress, drawId, subEvent?.gameType);
+      await this.processMatches(matches, tournamentCode, updateProgress, drawId, subEvent?.gameType, tournamentEvent.official);
 
       this.logger.log(`Completed tournament game sync - processed ${matches.length} matches`);
     } catch (error: unknown) {
@@ -128,6 +128,7 @@ export class TournamentGameSyncService {
     updateProgress: (progress: number) => Promise<void>,
     drawId?: string,
     gameType?: GameType,
+    official?: boolean,
   ): Promise<void> {
     for (let i = 0; i < matches.length; i++) {
       const match = matches[i];
@@ -137,7 +138,7 @@ export class TournamentGameSyncService {
         continue;
       }
 
-      await this.processMatch(match, drawId, gameType);
+      await this.processMatch(match, drawId, gameType, official);
 
       const finalProgress = this.tournamentPlanningService.calculateProgress(i + 1, matches.length, true);
       await updateProgress(finalProgress);
@@ -146,7 +147,7 @@ export class TournamentGameSyncService {
     }
   }
 
-  private async processMatch(match: Match, drawId?: string, gameType?: GameType): Promise<void> {
+  private async processMatch(match: Match, drawId?: string, gameType?: GameType, official?: boolean): Promise<void> {
     if (!match) {
       this.logger.warn('Received undefined or null match, skipping processing');
       return;
@@ -244,7 +245,11 @@ export class TournamentGameSyncService {
 
     if (game) {
       await this.createGamePlayerMemberships(game, match);
-      await this.createRankingPoints(game);
+      if (official) {
+        await this.createRankingPoints(game);
+      } else {
+        await this.removeRankingPoints(game);
+      }
     }
   }
 
@@ -276,6 +281,33 @@ export class TournamentGameSyncService {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.logger.warn(`Failed to create ranking points for game ${game.id}: ${errorMessage}`);
       // Don't throw - ranking point creation failure shouldn't block game sync
+    }
+  }
+
+  /**
+   * Remove ranking points for a game when the tournament is not official
+   */
+  private async removeRankingPoints(game: Game): Promise<void> {
+    try {
+      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
+      if (!primarySystem) {
+        return;
+      }
+
+      const existingPoints = await RankingPoint.find({
+        where: {
+          gameId: game.id,
+          systemId: primarySystem.id,
+        },
+      });
+
+      if (existingPoints.length > 0) {
+        await RankingPoint.remove(existingPoints);
+        this.logger.log(`Removed ${existingPoints.length} ranking points for non-official tournament game ${game.visualCode}`);
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.warn(`Failed to remove ranking points for game ${game.id}: ${errorMessage}`);
     }
   }
 
