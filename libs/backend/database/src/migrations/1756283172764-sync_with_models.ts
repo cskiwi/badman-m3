@@ -992,10 +992,6 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         `);
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingPoints"
-            ALTER COLUMN "differenceInLevel" TYPE numeric(2)
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingPoints"
             ALTER COLUMN "playerId"
             SET NOT NULL
         `);
@@ -2410,10 +2406,6 @@ export class SyncWithModels1756283172764 implements MigrationInterface {
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingPoints"
             ALTER COLUMN "playerId" DROP NOT NULL
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "ranking"."RankingPoints"
-            ALTER COLUMN "differenceInLevel" TYPE numeric(10, 2)
         `);
         await queryRunner.query(`
             ALTER TABLE "ranking"."RankingSystems"
