@@ -55,21 +55,20 @@
     <ng-template pTemplate="header">
       <tr>
         @if (showUpgrade()) {
-          <th class="text-center" style="min-width: 60px">
-            <span class="hidden sm:inline">{{ 'all.ranking.breakdown.countsForUpgrade' | translate }}</span>
-            <span class="sm:hidden">#</span>
+          <th class="text-center" style="min-width: 40px">
+            # <i class="pi pi-arrow-up text-xs"></i>
           </th>
         }
         @if (showDowngrade()) {
-          <th class="text-center" style="min-width: 60px">
-            <span class="hidden sm:inline">{{ 'all.ranking.breakdown.countsForDowngrade' | translate }}</span>
-            <span class="sm:hidden">#</span>
+          <th class="text-center" style="min-width: 40px">
+            # <i class="pi pi-arrow-down text-xs"></i>
           </th>
         }
         <th style="min-width: 40px"></th>
-        <th style="min-width: 140px">
+        <th pSortableColumn="playedAt" style="min-width: 140px; cursor: pointer">
           <i class="pi pi-calendar text-xs mr-1"></i>
           {{ 'all.ranking.breakdown.date' | translate }}
+          <p-sortIcon field="playedAt" />
         </th>
         <th style="min-width: 180px">
           <i class="pi pi-users text-xs mr-1"></i>
