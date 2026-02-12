@@ -13,7 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { GamePlayerMembership } from './game-player-membership';
-import { SortableField, WhereField } from '@app/utils';
+import { SortableField, WhereField, WhereObject } from '@app/utils';
 import { TournamentDraw } from './tournament/tournament-draw.model';
 import { CompetitionEncounter } from './competition/competition-encounter.model';
 import { RankingPoint } from '../ranking/ranking-point.model';
@@ -144,6 +144,7 @@ export class Game extends BaseEntity {
   @OneToMany(() => GamePlayerMembership, (gamePlayerMembership) => gamePlayerMembership.game)
   declare gamePlayerMemberships: Relation<GamePlayerMembership[]>;
 
+  @WhereObject(() => RankingPoint)
   @Field(() => [RankingPoint], { nullable: true })
   @OneToMany(() => RankingPoint, (rankingPoint) => rankingPoint.game)
   declare rankingPoints: Relation<RankingPoint[]>;

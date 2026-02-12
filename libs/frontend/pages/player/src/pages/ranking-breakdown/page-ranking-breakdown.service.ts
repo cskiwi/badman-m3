@@ -113,6 +113,9 @@ export class RankingBreakdownService {
                       {
                         OR: [{ set1Team1: { gte: 0 } }, { set1Team2: { gte: 0 } }],
                       },
+                      {
+                        rankingPoints: { points: { gte: 0 } },
+                      },
                     ],
                   },
                 },
