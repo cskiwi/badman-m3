@@ -162,7 +162,7 @@
     "webpack-cli": "^6.0.1"
   },
   "overrides": {
-    "stylus": "0.0.1-security"
+    "stylus": "0.64.0"
   },
   "engines": {
     "node": "24"
