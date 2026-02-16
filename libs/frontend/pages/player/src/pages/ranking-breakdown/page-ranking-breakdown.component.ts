@@ -112,11 +112,12 @@ export class PageRankingBreakdownComponent {
     const sys = this.system();
     const playerId = this.playerId();
     const type = this.type() ?? 'single';
-    const endParam = this.periodEndRoute();
+    const endParam = dayjs(); // this.periodEndRoute();
 
     if (!sys || !playerId) {
       return;
     }
+    
 
     // Default we take last calculation update, if no end is given
     const endPeriod = endParam ? dayjs(endParam) : dayjs(sys.calculationLastUpdate);
@@ -174,5 +175,9 @@ export class PageRankingBreakdownComponent {
 
   onGameTypeChange(value: RankingType) {
     this.filter.patchValue({ gameType: value });
+  }
+
+  goBack() {
+    this.router.navigate(['players', this.playerId()]);
   }
 }

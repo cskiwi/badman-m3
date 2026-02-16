@@ -51,24 +51,32 @@
 
 <!-- Data Table -->
 <div class="overflow-x-auto">
-  <p-table [value]="filteredGames()" [loading]="loading()" [paginator]="false" styleClass="p-datatable-sm" [scrollable]="true">
+  <p-table [value]="displayGames()" [loading]="loading()" [paginator]="false" styleClass="p-datatable-sm" [scrollable]="true">
     <ng-template pTemplate="header">
       <tr>
         @if (showUpgrade()) {
-          <th class="text-center" style="min-width: 40px">
-            # <i class="pi pi-arrow-up text-xs"></i>
+          <th class="text-center cursor-pointer select-none" style="min-width: 40px" (click)="toggleSort('devideUpgrade')">
+            <div class="flex items-center justify-center gap-1">
+              # <i class="pi pi-arrow-up text-xs"></i>
+              <i class="pi text-xs" [ngClass]="getSortIcon('devideUpgrade')"></i>
+            </div>
           </th>
         }
         @if (showDowngrade()) {
-          <th class="text-center" style="min-width: 40px">
-            # <i class="pi pi-arrow-down text-xs"></i>
+          <th class="text-center cursor-pointer select-none" style="min-width: 40px" (click)="toggleSort('devideDowngrade')">
+            <div class="flex items-center justify-center gap-1">
+              # <i class="pi pi-arrow-down text-xs"></i>
+              <i class="pi text-xs" [ngClass]="getSortIcon('devideDowngrade')"></i>
+            </div>
           </th>
         }
         <th style="min-width: 40px"></th>
-        <th pSortableColumn="playedAt" style="min-width: 140px">
-          <i class="pi pi-calendar text-xs mr-1"></i>
-          {{ 'all.ranking.breakdown.date' | translate }}
-          <p-sortIcon field="playedAt" />
+        <th class="cursor-pointer select-none" style="min-width: 140px" (click)="toggleSort('playedAt')">
+          <div class="flex items-center gap-1">
+            <i class="pi pi-calendar text-xs"></i>
+            {{ 'all.ranking.breakdown.date' | translate }}
+            <i class="pi text-xs" [ngClass]="getSortIcon('playedAt')"></i>
+          </div>
         </th>
         <th style="min-width: 180px">
           <i class="pi pi-users text-xs mr-1"></i>

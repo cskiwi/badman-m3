@@ -52,6 +52,9 @@ export class ListGamesComponent {
   showUpgrade = signal(true);
   showDowngrade = signal(false);
 
+  sortField = signal<string | null>(null);
+  sortOrder = signal<1 | -1>(1);
+
   start = computed(() => this.filterSignal()?.start as Dayjs | null);
   next = computed(() => this.filterSignal()?.next as Dayjs | null);
 
@@ -138,6 +141,37 @@ export class ListGamesComponent {
       }
 
       return false;
+    });
+  });
+
+  displayGames = computed(() => {
+    const games = [...this.filteredGames()];
+    const field = this.sortField();
+    const order = this.sortOrder();
+
+    if (!field) {
+      return games;
+    }
+
+    return games.sort((a, b) => {
+      let valueA: unknown = a[field as keyof GameBreakdown];
+      let valueB: unknown = b[field as keyof GameBreakdown];
+
+      if (field === 'playedAt') {
+        valueA = valueA ? new Date(valueA as string).getTime() : 0;
+        valueB = valueB ? new Date(valueB as string).getTime() : 0;
+      }
+
+      let result = 0;
+      if (valueA == null && valueB != null) {
+        result = -1;
+      } else if (valueA != null && valueB == null) {
+        result = 1;
+      } else if (typeof valueA === 'number' && typeof valueB === 'number') {
+        result = valueA - valueB;
+      }
+
+      return order * result;
     });
   });
 
@@ -403,5 +437,24 @@ export class ListGamesComponent {
         return `${p?.gamePlayer?.fullName ?? 'Unknown'} (${level})`;
       })
       .join(', ');
+  }
+
+  toggleSort(field: string) {
+    if (this.sortField() !== field) {
+      this.sortField.set(field);
+      this.sortOrder.set(1);
+    } else if (this.sortOrder() === 1) {
+      this.sortOrder.set(-1);
+    } else {
+      this.sortField.set(null);
+      this.sortOrder.set(1);
+    }
+  }
+
+  getSortIcon(field: string): string {
+    if (this.sortField() !== field) {
+      return 'pi-sort-alt';
+    }
+    return this.sortOrder() === 1 ? 'pi-sort-amount-up-alt' : 'pi-sort-amount-down';
   }
 }
