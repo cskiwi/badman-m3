@@ -629,11 +629,11 @@
         "title": "Voeg (fictieve) wedstrijd toe",
         "won": "Team 1 Gewonnen?"
       },
-      "can-downgrade": "Met dit aantal punten (<{points}) zal de speler dalen van {level} naar {newLevel}",
-      "can-not-downgrade": "Minder dan {points} = dalen van {level} naar {newLevel}",
-      "can-not-upgrade": "Meer dan {points} = stijgen van {level} naar {newLevel}",
-      "can-upgrade": "Met dit aantal punten (>{points}) zal de speler stijgen van {level} naar {newLevel}",
-      "corrected": "Origineel {original} wedstrijden, gemiddelde wordt berekend met minimum {corrected} wedstrijden.",
+      "can-downgrade": "Met dit aantal punten (<{{points}}) zal de speler dalen van {{level}} naar {{newLevel}}",
+      "can-not-downgrade": "Minder dan {{points}} = dalen van {{level}} naar {{newLevel}}",
+      "can-not-upgrade": "Meer dan {{points}} = stijgen van {{level}} naar {{newLevel}}",
+      "can-upgrade": "Met dit aantal punten (>{{points}}) zal de speler stijgen van {{level}} naar {{newLevel}}",
+      "corrected": "Origineel {{original}} wedstrijden, gemiddelde wordt berekend met minimum {{corrected}} wedstrijden.",
       "countsForDowngrade": "# Promotie",
       "countsForUpgrade": "# Degradatie",
       "date": "Datum",
@@ -665,7 +665,7 @@
       "games": {
         "none": "Geen wedstrijden",
         "one": "1 wedstrijd",
-        "other": "{count} wedstrijden"
+        "other": "{{count}} wedstrijden"
       },
       "games-downgrade": "# Wedstrijden degradatie",
       "games-upgrade": "# Wedstrijden promotie",
@@ -675,7 +675,7 @@
       "lostGames": {
         "none": "Geen verloren wedstrijden",
         "one": "1 verloren wedstrijd",
-        "other": "{count} verloren wedstrijden"
+        "other": "{{count}} verloren wedstrijden"
       },
       "no-team": "Geen team",
       "notUsed": "Niet gebruikt",
@@ -683,7 +683,7 @@
       "outOfScope": {
         "none": "Geen wedstrijden",
         "one": "1 wedstrijd",
-        "other": "{count} wedstrijden"
+        "other": "{{count}} wedstrijden"
       },
       "outOfScopeDowngrade": "Buiten scope voor degradatie",
       "outOfScopeLatestX": "Buiten laatste {{latestX}} wedstrijden",

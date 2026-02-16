@@ -629,11 +629,11 @@
         "title": "Add (fictive) game",
         "won": "Team 1 won?"
       },
-      "can-downgrade": "With this number of points (<{points}), the player will drop from {level} to {newLevel}",
-      "can-not-downgrade": "Less than {points} = dropping from {level} to {newLevel}",
-      "can-not-upgrade": "More than {points} = rising from {level} to {newLevel}",
-      "can-upgrade": "With this number of points (>{points}), the player will rise from {level} to {newLevel}",
-      "corrected": "Originally {original} games, average is being calculated with minimum {corrected} games.",
+      "can-downgrade": "With this number of points (<{{points}}), the player will drop from {{level}} to {{newLevel}}",
+      "can-not-downgrade": "Less than {{points}} = dropping from {{level}} to {{newLevel}}",
+      "can-not-upgrade": "More than {{points}} = rising from {{level}} to {{newLevel}}",
+      "can-upgrade": "With this number of points (>{{points}}), the player will rise from {{level}} to {{newLevel}}",
+      "corrected": "Originally {{original}} games, average is being calculated with minimum {{corrected}} games.",
       "countsForDowngrade": "# Promotion",
       "countsForUpgrade": "# Degradation",
       "date": "Date",
@@ -665,7 +665,7 @@
       "games": {
         "none": "No games",
         "one": "1 game",
-        "other": "{count}  games."
+        "other": "{{count}}  games."
       },
       "games-downgrade": "# Games relegation",
       "games-upgrade": "# Matches promotion",
@@ -675,7 +675,7 @@
       "lostGames": {
         "none": "No lost games",
         "one": "1 lost game",
-        "other": "{count} lost games."
+        "other": "{{count}} lost games."
       },
       "no-team": "No team",
       "notUsed": "Not used",
@@ -683,7 +683,7 @@
       "outOfScope": {
         "none": "No games",
         "one": "One game",
-        "other": "{count} games"
+        "other": "{{count}} games"
       },
       "outOfScopeDowngrade": "Out of scope for downgrade",
       "outOfScopeLatestX": "Exceeded latest {{latestX}} games",

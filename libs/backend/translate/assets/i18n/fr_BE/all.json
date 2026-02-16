@@ -629,11 +629,11 @@
         "title": "Ajouter une correspondance (fictive)",
         "won": "L'équipe 1 a gagné ?"
       },
-      "can-downgrade": "Avec ce nombre de points (<{points}), le joueur passera de {level} à {newLevel}",
-      "can-not-downgrade": "Inférieur à {points} = chute de {level} à {newLevel}",
-      "can-not-upgrade": "Plus de {points} = passer de {level} à {newLevel}",
-      "can-upgrade": "Avec ce nombre de points (>{points}), le joueur passera de {level} à {newLevel}",
-      "corrected": " {original} correspondances d'origine, la moyenne est calculée avec un minimum de {corrected} correspondances.",
+      "can-downgrade": "Avec ce nombre de points (<{{points}}), le joueur passera de {{level}} à {{newLevel}}",
+      "can-not-downgrade": "Inférieur à {{points}} = chute de {{level}} à {{newLevel}}",
+      "can-not-upgrade": "Plus de {{points}} = passer de {{level}} à {{newLevel}}",
+      "can-upgrade": "Avec ce nombre de points (>{{points}}), le joueur passera de {{level}} à {{newLevel}}",
+      "corrected": " {{original}} correspondances d'origine, la moyenne est calculée avec un minimum de {{corrected}} correspondances.",
       "countsForDowngrade": "# Promotion",
       "countsForUpgrade": "# Dégradation",
       "date": "Date",
@@ -665,7 +665,7 @@
       "games": {
         "none": "Aucun jeu",
         "one": "1 match",
-        "other": "{count} matchs"
+        "other": "{{count}} matchs"
       },
       "games-downgrade": "# Jeux relégation",
       "games-upgrade": "# Correspond à la promotion",
@@ -675,7 +675,7 @@
       "lostGames": {
         "none": "Aucun jeu perdu",
         "one": "1 match perdu",
-        "other": "{count} matchs perdus"
+        "other": "{{count}} matchs perdus"
       },
       "no-team": "Pas d'équipe",
       "notUsed": "Non utilisé",
@@ -683,7 +683,7 @@
       "outOfScope": {
         "none": "Pas de concours",
         "one": "1 match",
-        "other": "{count}  correspondances"
+        "other": "{{count}}  correspondances"
       },
       "outOfScopeDowngrade": "Hors de portée d'une révision à la baisse",
       "outOfScopeLatestX": "Au-delà des derniers {{latestX}} matchs",
