@@ -1,4 +1,4 @@
-import { PointService } from '@app/backend-ranking';
+import { PointService, getRankingProtected } from '@app/backend-ranking';
 import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
 import { Game, Player, GamePlayerMembership, RankingSystem, RankingPlace, RankingPoint, TournamentDraw as TournamentDrawModel } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
@@ -407,14 +407,23 @@ export class TournamentGameSyncService {
         },
       });
 
+      const protectedRanking = getRankingProtected(
+        {
+          single: rankingplace?.single ?? primarySystem!.amountOfLevels,
+          double: rankingplace?.double ?? primarySystem!.amountOfLevels,
+          mix: rankingplace?.mix ?? primarySystem!.amountOfLevels,
+        },
+        primarySystem!,
+      );
+
       if (existingMembership) {
         // Update existing membership
         existingMembership.team = team;
         existingMembership.player = playerPosition;
 
-        existingMembership.single = rankingplace ? rankingplace.single : primarySystem!.amountOfLevels;
-        existingMembership.double = rankingplace ? rankingplace.double : primarySystem!.amountOfLevels;
-        existingMembership.mix = rankingplace ? rankingplace.mix : primarySystem!.amountOfLevels;
+        existingMembership.single = protectedRanking.single;
+        existingMembership.double = protectedRanking.double;
+        existingMembership.mix = protectedRanking.mix;
 
         await existingMembership.save();
         this.logger.debug(`Updated game player membership for player ${player.id} in game ${game.id}`);
@@ -426,9 +435,9 @@ export class TournamentGameSyncService {
         membership.team = team;
         membership.player = playerPosition;
 
-        membership.single = rankingplace ? rankingplace.single : primarySystem!.amountOfLevels;
-        membership.double = rankingplace ? rankingplace.double : primarySystem!.amountOfLevels;
-        membership.mix = rankingplace ? rankingplace.mix : primarySystem!.amountOfLevels;
+        membership.single = protectedRanking.single;
+        membership.double = protectedRanking.double;
+        membership.mix = protectedRanking.mix;
 
         await membership.save();
         this.logger.debug(`Created game player membership for player ${player.id} in game ${game.id}`);
