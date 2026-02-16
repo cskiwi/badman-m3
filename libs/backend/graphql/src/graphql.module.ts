@@ -4,12 +4,14 @@ import { ApolloServerPluginSchemaReporting } from '@apollo/server/plugin/schemaR
 import { ApolloServerPluginUsageReporting } from '@apollo/server/plugin/usageReporting';
 import { AuthorizationModule } from '@app/backend-authorization';
 import { SyncModule } from '@app/backend-sync';
+import { TournamentApiModule } from '@app/backend-tournament-api';
 import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GqlModuleOptions, GraphQLModule as NestJsGql } from '@nestjs/graphql';
 import {
   AvailabilityResolver,
+  CacheResolver,
   ClaimResolver,
   ClubPlayerMembershipResolver,
   ClubResolver,
@@ -71,6 +73,7 @@ import { EnrollmentService } from './services/tournament/enrollment.service';
     ConfigModule,
     AuthorizationModule,
     SyncModule,
+    TournamentApiModule,
     NestJsGql.forRootAsync({
       driver: ApolloDriver,
       imports: [ConfigModule],
@@ -117,6 +120,7 @@ import { EnrollmentService } from './services/tournament/enrollment.service';
   providers: [
     UserResolver,
     PlayerResolver,
+    CacheResolver,
     ClaimResolver,
     ClubPlayerMembershipResolver,
     ClubResolver,

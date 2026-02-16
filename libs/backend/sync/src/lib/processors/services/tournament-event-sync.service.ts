@@ -151,11 +151,10 @@ export class TournamentEventSyncService {
 
       tournamentEvent.name = apiEvent.Name || tournamentEvent.name;
       tournamentEvent.tournamentNumber = apiEvent.Number;
-      tournamentEvent.state = apiEvent.TournamentStatus?.toString();
       tournamentEvent.firstDay = apiEvent.StartDate ? new Date(apiEvent.StartDate) : tournamentEvent.firstDay;
       tournamentEvent.openDate = apiEvent.OnlineEntryStartDate ? new Date(apiEvent.OnlineEntryStartDate) : tournamentEvent.openDate;
       tournamentEvent.closeDate = apiEvent.OnlineEntryEndDate ? new Date(apiEvent.OnlineEntryEndDate) : tournamentEvent.closeDate;
-      tournamentEvent.country = apiEvent.Venue?.CountryCode;
+      tournamentEvent.country = tournamentEvent.country ?? apiEvent.Venue?.CountryCode;
       tournamentEvent.lastSync = new Date();
       await tournamentEvent.save();
       this.logger.debug(`Updated tournament ${tournamentCode}`);

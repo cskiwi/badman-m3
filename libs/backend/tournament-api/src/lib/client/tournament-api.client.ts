@@ -34,6 +34,12 @@ export class TournamentApiClient {
   private readonly redis?: Redis;
   private readonly cacheEnabled: boolean;
 
+  // In-memory cache of tournament end dates for smart TTL decisions
+  private readonly tournamentEndDates = new Map<string, string>();
+
+  // 1 year in seconds - used for old tournaments that won't change
+  private static readonly PERMANENT_TTL = 31536000;
+
   // Cache TTL in seconds for different data types
   private readonly cacheTtl = {
     tournaments: 3600, // 1 hour - tournament list changes infrequently
@@ -101,6 +107,47 @@ export class TournamentApiClient {
     return 'tournamentDetails'; // Default fallback
   }
 
+  /**
+   * Extract tournament code from an endpoint URL
+   */
+  private extractTournamentCode(endpoint: string): string | null {
+    const match = endpoint.match(/\/Tournament\/([^/?]+)/);
+    return match ? match[1] : null;
+  }
+
+  /**
+   * Determine TTL based on whether the tournament has ended > 1 year ago.
+   * Old tournaments won't change, so cache them effectively permanently.
+   */
+  private determineTtl(endpoint: string, tournamentDetails?: TournamentDetailsResponse): number {
+    const cacheType = this.getCacheType(endpoint);
+    const baseTtl = this.cacheTtl[cacheType];
+    const tournamentCode = this.extractTournamentCode(endpoint);
+    if (!tournamentCode) return baseTtl;
+
+    // For tournament detail responses, extract and store EndDate
+    if (tournamentDetails) {
+      const endDate = tournamentDetails.Result?.Tournament?.EndDate;
+      if (endDate) {
+        this.tournamentEndDates.set(tournamentCode, endDate);
+      }
+    }
+
+    // Check if this tournament ended > 1 year ago
+    const endDateStr = this.tournamentEndDates.get(tournamentCode);
+    if (endDateStr) {
+      const endDate = new Date(endDateStr);
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+      if (endDate < oneYearAgo) {
+        return TournamentApiClient.PERMANENT_TTL;
+      }
+    }
+
+    return baseTtl;
+  }
+
   private async makeRequest<T>(endpoint: string): Promise<T> {
     const cacheKey = this.generateCacheKey(endpoint);
 
@@ -135,8 +182,8 @@ export class TournamentApiClient {
       // Store in cache if caching is enabled
       if (this.cacheEnabled && this.redis) {
         try {
-          const cacheType = this.getCacheType(endpoint);
-          const ttl = this.cacheTtl[cacheType];
+          const tournamentDetails = this.getCacheType(endpoint) === 'tournamentDetails' ? (parsed as TournamentDetailsResponse) : undefined;
+          const ttl = this.determineTtl(endpoint, tournamentDetails);
           await this.redis.setex(cacheKey, ttl, JSON.stringify(parsed));
           this.logger.debug(`Cached result for endpoint: ${endpoint} (TTL: ${ttl}s)`);
         } catch (cacheError) {
@@ -164,16 +211,51 @@ export class TournamentApiClient {
         await this.redis.del(cacheKey);
         this.logger.debug(`Cleared cache for endpoint: ${endpoint}`);
       } else {
-        const pattern = this.generateCacheKey('*');
-        const keys = await this.redis.keys(pattern);
-        if (keys.length > 0) {
-          await this.redis.del(...keys);
-          this.logger.debug(`Cleared ${keys.length} tournament API cache entries`);
-        }
+        await this.clearCacheByPattern(this.generateCacheKey('*'));
       }
     } catch (error) {
       this.logger.warn(`Failed to clear cache:`, error instanceof Error ? error.message : String(error));
     }
+  }
+
+  /**
+   * Clear cache keys matching a glob pattern using SCAN (production-safe, non-blocking).
+   * Returns the number of keys deleted.
+   */
+  async clearCacheByPattern(pattern: string): Promise<number> {
+    if (!this.cacheEnabled || !this.redis) {
+      return 0;
+    }
+
+    let deleted = 0;
+    let cursor = '0';
+
+    try {
+      do {
+        const [nextCursor, keys] = await this.redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+        cursor = nextCursor;
+
+        if (keys.length > 0) {
+          await this.redis.del(...keys);
+          deleted += keys.length;
+        }
+      } while (cursor !== '0');
+
+      this.logger.debug(`Cleared ${deleted} cache keys matching pattern: ${pattern}`);
+    } catch (error) {
+      this.logger.warn(`Failed to clear cache by pattern ${pattern}:`, error instanceof Error ? error.message : String(error));
+    }
+
+    return deleted;
+  }
+
+  /**
+   * Clear all cached data for a tournament and its children (events, draws, matches).
+   * The tournament code appears in all child endpoint URLs.
+   */
+  async clearCacheForTournament(tournamentCode: string): Promise<number> {
+    const pattern = `tournament-api:*/Tournament/${tournamentCode}*`;
+    return this.clearCacheByPattern(pattern);
   }
 
   /**

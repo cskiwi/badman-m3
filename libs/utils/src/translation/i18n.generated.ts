@@ -48,6 +48,10 @@ export type I18nTranslations = {
             "save": string;
             "submit": string;
         };
+        "cache": {
+            "clear": string;
+            "clearWithChildren": string;
+        };
         "club": {
             "allPlayers": string;
             "avgRanking": string;

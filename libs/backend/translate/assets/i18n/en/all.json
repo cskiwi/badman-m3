@@ -41,6 +41,10 @@
     "save": "Save",
     "submit": "Submit"
   },
+  "cache": {
+    "clear": "Clear API Cache",
+    "clearWithChildren": "Clear API Cache (+ children)"
+  },
   "club": {
     "allPlayers": "All Players",
     "avgRanking": "Avg. Ranking",

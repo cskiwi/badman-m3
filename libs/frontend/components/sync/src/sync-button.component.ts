@@ -48,6 +48,36 @@ const TRIGGER_GAME_SYNC_MUTATION = gql`
   }
 `;
 
+const CLEAR_EVENT_CACHE_MUTATION = gql`
+  mutation ClearEventCache($eventId: ID!, $includeChildren: Boolean!) {
+    clearTournamentApiCache(eventId: $eventId, includeChildren: $includeChildren) {
+      success
+      message
+      keysRemoved
+    }
+  }
+`;
+
+const CLEAR_SUB_EVENT_CACHE_MUTATION = gql`
+  mutation ClearSubEventCache($subEventId: ID!, $includeChildren: Boolean!) {
+    clearSubEventApiCache(subEventId: $subEventId, includeChildren: $includeChildren) {
+      success
+      message
+      keysRemoved
+    }
+  }
+`;
+
+const CLEAR_DRAW_CACHE_MUTATION = gql`
+  mutation ClearDrawCache($drawId: ID!, $includeChildren: Boolean!) {
+    clearDrawApiCache(drawId: $drawId, includeChildren: $includeChildren) {
+      success
+      message
+      keysRemoved
+    }
+  }
+`;
+
 export type SyncLevel = 'event' | 'sub-event' | 'draw' | 'game';
 
 export interface SyncButtonConfig {
@@ -180,6 +210,20 @@ export class SyncButtonComponent {
   }
 
   getSyncItems(level: SyncLevel): any[] {
+    const cacheItems = [
+      { separator: true },
+      {
+        label: this.translate.instant('all.cache.clear'),
+        icon: 'pi pi-trash',
+        command: () => this.clearCache(false),
+      },
+      {
+        label: this.translate.instant('all.cache.clearWithChildren'),
+        icon: 'pi pi-trash',
+        command: () => this.clearCache(true),
+      },
+    ];
+
     const baseItems = {
       event: [
         {
@@ -190,6 +234,7 @@ export class SyncButtonComponent {
             this.syncEvent();
           },
         },
+        ...cacheItems,
       ],
       'sub-event': [
         {
@@ -197,6 +242,7 @@ export class SyncButtonComponent {
           icon: 'pi pi-refresh',
           command: () => this.syncSubEvent(),
         },
+        ...cacheItems,
       ],
       draw: [
         {
@@ -204,6 +250,7 @@ export class SyncButtonComponent {
           icon: 'pi pi-refresh',
           command: () => this.syncDraw(),
         },
+        ...cacheItems,
       ],
       game: [
         {
@@ -362,6 +409,71 @@ export class SyncButtonComponent {
         severity: 'error',
         summary: 'Error',
         detail: 'Failed to sync games',
+      });
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async clearCache(includeChildren: boolean): Promise<void> {
+    const cfg = this.config();
+    if (!cfg) return;
+
+    let mutation: any;
+    let variables: Record<string, unknown>;
+    let resultKey: string;
+
+    switch (cfg.level) {
+      case 'event':
+        if (!cfg.eventId) return;
+        mutation = CLEAR_EVENT_CACHE_MUTATION;
+        variables = { eventId: cfg.eventId, includeChildren };
+        resultKey = 'clearTournamentApiCache';
+        break;
+      case 'sub-event':
+        if (!cfg.subEventId) return;
+        mutation = CLEAR_SUB_EVENT_CACHE_MUTATION;
+        variables = { subEventId: cfg.subEventId, includeChildren };
+        resultKey = 'clearSubEventApiCache';
+        break;
+      case 'draw':
+        if (!cfg.drawId) return;
+        mutation = CLEAR_DRAW_CACHE_MUTATION;
+        variables = { drawId: cfg.drawId, includeChildren };
+        resultKey = 'clearDrawApiCache';
+        break;
+      default:
+        return;
+    }
+
+    this.loading.set(true);
+    try {
+      const result = await lastValueFrom(
+        this.apollo.mutate<Record<string, { success: boolean; message: string; keysRemoved: number }>>({
+          mutation,
+          variables,
+        }),
+      );
+
+      const response = result.data?.[resultKey];
+      if (response?.success) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Cache Cleared',
+          detail: response.message,
+        });
+      } else {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Cache Clear',
+          detail: response?.message || 'No cache entries found',
+        });
+      }
+    } catch (e: unknown) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to clear API cache',
       });
     } finally {
       this.loading.set(false);

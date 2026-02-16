@@ -30,6 +30,12 @@ const PLAYER_GAMES_QUERY = gql`
           winner
           status
           gameType
+          set1Team1
+          set1Team2
+          set2Team1
+          set2Team2
+          set3Team1
+          set3Team2
           gamePlayerMemberships {
             id
             team
@@ -48,6 +54,43 @@ const PLAYER_GAMES_QUERY = gql`
             playerId
             systemId
             points
+          }
+          tournamentDraw {
+            name
+            id
+            tournamentSubEvent {
+              id
+              name
+              tournamentEvent {
+                id
+                name
+              }
+            }
+          }
+          competitionEncounter {
+            id
+            homeTeam {
+              id
+              name
+              abbreviation
+            }
+            awayTeam {
+              id
+              name
+              abbreviation
+            }
+            drawCompetition {
+              id
+              name
+              competitionSubEvent {
+                id
+                name
+                competitionEvent {
+                  id
+                  name
+                }
+              }
+            }
           }
         }
       }

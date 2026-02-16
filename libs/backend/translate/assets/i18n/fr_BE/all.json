@@ -41,6 +41,10 @@
     "save": "Enregistrer",
     "submit": "Soumettre"
   },
+  "cache": {
+    "clear": "Vider le cache API",
+    "clearWithChildren": "Vider le cache API (+ enfants)"
+  },
   "club": {
     "allPlayers": "Tous les Joueurs",
     "avgRanking": "Classement Moy.",

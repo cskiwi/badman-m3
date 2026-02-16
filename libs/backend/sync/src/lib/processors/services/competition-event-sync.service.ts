@@ -153,10 +153,9 @@ export class CompetitionEventSyncService {
       const apiEvent = await this.tournamentApiClient.getTournamentDetails(tournamentCode);
 
       competitionEvent.name = apiEvent.Name || competitionEvent.name;
-      competitionEvent.state = apiEvent.TournamentStatus?.toString();
       competitionEvent.openDate = apiEvent.StartDate ? new Date(apiEvent.StartDate) : competitionEvent.openDate;
       competitionEvent.closeDate = apiEvent.EndDate ? new Date(apiEvent.EndDate) : competitionEvent.closeDate;
-      competitionEvent.country = apiEvent.Venue?.CountryCode || competitionEvent.country;
+      competitionEvent.country = competitionEvent.country ?? apiEvent?.CountryCode;
       competitionEvent.lastSync = new Date();
       await competitionEvent.save();
       this.logger.debug(`Updated competition ${tournamentCode}`);

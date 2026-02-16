@@ -137,7 +137,11 @@
             <i class="pi pi-clock text-orange-500" [pTooltip]="'all.ranking.breakdown.drops-next-period' | translate" tooltipPosition="top"></i>
           }
         </td>
-        <td class="text-sm text-muted-color">
+        <td
+          class="text-sm text-muted-color cursor-help"
+          (mouseenter)="showGameInfo($event, game)"
+          (mouseleave)="hideGameInfo()"
+        >
           {{ game.playedAt | dayjsFormat: 'DD MMM YYYY HH:mm' }}
         </td>
         <td class="text-sm text-color">
@@ -221,3 +225,63 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-popover #gameInfoPopover [style]="{ 'pointer-events': 'none' }">
+  @if (hoveredGame(); as game) {
+    <div class="flex flex-col gap-2 min-w-48 max-w-84">
+      <!-- Draw / Home vs Away -->
+      @if (game.tournamentDraw?.name) {
+        <div class="flex items-center gap-2 text-sm font-medium text-color">
+          <i class="pi pi-sitemap"></i>
+          <span>{{ game.tournamentDraw?.name }}</span>
+        </div>
+      } @else if (game.competitionEncounter?.drawCompetition?.name) {
+        <div class="flex flex-col gap-1">
+          @if (game.competitionEncounter?.homeTeam && game.competitionEncounter?.awayTeam) {
+            <div class="flex items-center gap-2 text-sm font-medium text-color">
+              <i class="pi pi-users"></i>
+              <span>{{ game.competitionEncounter?.homeTeam?.name ?? game.competitionEncounter?.homeTeam?.abbreviation }}</span>
+              <span class="text-muted-color">vs</span>
+              <span>{{ game.competitionEncounter?.awayTeam?.name ?? game.competitionEncounter?.awayTeam?.abbreviation }}</span>
+            </div>
+          }
+          <div class="flex items-center gap-2 text-xs text-muted-color">
+            <i class="pi pi-sitemap"></i>
+            <span>{{ game.competitionEncounter?.drawCompetition?.name }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Event name -->
+      @if (game.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
+        <div class="flex items-center gap-2 text-xs text-muted-color">
+          <i class="pi pi-map-marker"></i>
+          <span>{{ game.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}</span>
+        </div>
+      } @else if (game.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
+        <div class="flex items-center gap-2 text-xs text-muted-color">
+          <i class="pi pi-map-marker"></i>
+          <span>{{ game.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}</span>
+        </div>
+      }
+
+      <!-- Score -->
+      @if (hasScores(game)) {
+        <div class="flex items-center gap-2 text-sm">
+          <i class="pi pi-trophy text-xs"></i>
+          <div class="flex items-center gap-1 tabular-nums">
+            @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+              <span class="px-1 rounded"><span [class.text-green-500]="getPlayerSetScore(game, 1) > getOpponentSetScore(game, 1)" [class.text-red-500]="getPlayerSetScore(game, 1) < getOpponentSetScore(game, 1)">{{ getPlayerSetScore(game, 1) }}</span>-{{ getOpponentSetScore(game, 1) }}</span>
+            }
+            @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+              <span class="px-1 rounded"><span [class.text-green-500]="getPlayerSetScore(game, 2) > getOpponentSetScore(game, 2)" [class.text-red-500]="getPlayerSetScore(game, 2) < getOpponentSetScore(game, 2)">{{ getPlayerSetScore(game, 2) }}</span>-{{ getOpponentSetScore(game, 2) }}</span>
+            }
+            @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+              <span class="px-1 rounded"><span [class.text-green-500]="getPlayerSetScore(game, 3) > getOpponentSetScore(game, 3)" [class.text-red-500]="getPlayerSetScore(game, 3) < getOpponentSetScore(game, 3)">{{ getPlayerSetScore(game, 3) }}</span>-{{ getOpponentSetScore(game, 3) }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</p-popover>

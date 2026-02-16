@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal, untracked, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RankingLastPlace, RankingSystem } from '@app/models';
@@ -12,6 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { GameBreakdown } from '../../models';
 import { RankingBreakdownService, RankingType } from '../../page-ranking-breakdown.service';
 import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
@@ -32,6 +33,7 @@ dayjs.extend(isSameOrAfter);
     ButtonModule,
     TooltipModule,
     ToggleButtonModule,
+    PopoverModule,
     DayjsFormatPipe,
   ],
 })
@@ -48,6 +50,10 @@ export class ListGamesComponent {
   loading = this.breakdownService.loading;
   filter = this.breakdownService.filter;
   private filterSignal = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));
+
+  readonly gameInfoPopover = viewChild<Popover>('gameInfoPopover');
+  hoveredGame = signal<GameBreakdown | null>(null);
+  private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
   showUpgrade = signal(true);
   showDowngrade = signal(false);
@@ -417,6 +423,51 @@ export class ListGamesComponent {
     }
 
     return tooltip;
+  }
+
+  showGameInfo(event: Event, game: GameBreakdown) {
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+      this.hideTimeout = null;
+    }
+    const popover = this.gameInfoPopover();
+    if (popover) {
+      popover.hide();
+      this.hoveredGame.set(game);
+      // Small delay so the popover can reposition to the new target
+      setTimeout(() => popover.show(event), 0);
+    }
+  }
+
+  hideGameInfo() {
+    this.hideTimeout = setTimeout(() => {
+      this.gameInfoPopover()?.hide();
+      this.hoveredGame.set(null);
+    }, 150);
+  }
+
+  isSetPlayed(team1Score: number | undefined, team2Score: number | undefined): boolean {
+    return team1Score != null && team2Score != null && (team1Score > 0 || team2Score > 0);
+  }
+
+  hasScores(game: GameBreakdown): boolean {
+    return this.isSetPlayed(game.set1Team1, game.set1Team2);
+  }
+
+  getPlayerTeam(game: GameBreakdown): number | undefined {
+    return game.team?.[0]?.team;
+  }
+
+  getPlayerSetScore(game: GameBreakdown, set: number): number {
+    const team = this.getPlayerTeam(game);
+    const key = `set${set}Team${team}` as keyof GameBreakdown;
+    return (game[key] as number) ?? 0;
+  }
+
+  getOpponentSetScore(game: GameBreakdown, set: number): number {
+    const team = this.getPlayerTeam(game) === 1 ? 2 : 1;
+    const key = `set${set}Team${team}` as keyof GameBreakdown;
+    return (game[key] as number) ?? 0;
   }
 
   getTeamDisplay(game: GameBreakdown): string {

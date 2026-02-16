@@ -1,3 +1,4 @@
+export * from './cache.resolver';
 export * from './cron-job.resolver';
 export * from './log-entry.resolver';
 export * from './rule.resolver';

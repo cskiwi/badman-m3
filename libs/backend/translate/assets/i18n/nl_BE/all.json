@@ -41,6 +41,10 @@
     "save": "Opslaan",
     "submit": "Verzenden"
   },
+  "cache": {
+    "clear": "API Cache wissen",
+    "clearWithChildren": "API Cache wissen (+ onderliggende)"
+  },
   "club": {
     "allPlayers": "Alle Spelers",
     "avgRanking": "Gem. Ranking",
