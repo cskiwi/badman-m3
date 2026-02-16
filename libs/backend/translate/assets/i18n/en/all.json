@@ -687,6 +687,8 @@
       },
       "outOfScopeDowngrade": "Out of scope for downgrade",
       "outOfScopeUpgrade": "Out of scope for promotion",
+      "outOfScopeLatestX": "Exceeded latest {{latestX}} games",
+      "outOfScopeLatestXTooltip": "This game exceeds the latest {{latestX}} games limit and is not used for ranking",
       "outOfScopeWonGames": "Unused matches won",
       "period": {
         "last-point-update": "Past points update",

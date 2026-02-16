@@ -18,6 +18,10 @@ export interface GameBreakdown extends Game {
   devideUpgrade?: number;
   devideUpgradeCorrected?: number;
 
+  // LatestXGamesToUse cutoff tracking
+  outOfScopeLatestXUpgrade?: boolean;
+  outOfScopeLatestXDowngrade?: boolean;
+
   // Downgrade calculations
   totalPointsDowngrade?: number;
   avgDowngrade?: number;

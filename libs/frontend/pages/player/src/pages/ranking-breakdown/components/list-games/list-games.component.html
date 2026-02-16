@@ -25,6 +25,12 @@
         offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ lostGamesIgnored() }}"
         (onChange)="filter.controls.includedIgnored.setValue($event.checked)"
       />
+      <p-togglebutton
+        [(ngModel)]="filter.controls.includeOutOfScopeLatestX.value"
+        onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{ outOfScopeLatestXGames() }}"
+        offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{ outOfScopeLatestXGames() }}"
+        (onChange)="filter.controls.includeOutOfScopeLatestX.setValue($event.checked)"
+      />
     }
   </div>
 
@@ -113,7 +119,7 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-game>
-      <tr [class.bg-highlight]="game.highestAvgUpgrade || game.highestAvgDowngrade">
+      <tr [class.bg-highlight]="game.highestAvgUpgrade || game.highestAvgDowngrade" [class.opacity-50]="game.outOfScopeLatestXUpgrade || game.outOfScopeLatestXDowngrade">
         @if (showUpgrade()) {
           <td class="text-center font-medium">
             @if (game.usedForUpgrade) {
@@ -135,6 +141,9 @@
         <td class="text-center">
           @if (game.dropsNextPeriod) {
             <i class="pi pi-clock text-orange-500" [pTooltip]="'all.ranking.breakdown.drops-next-period' | translate" tooltipPosition="top"></i>
+          }
+          @if (game.outOfScopeLatestXUpgrade || game.outOfScopeLatestXDowngrade) {
+            <i class="pi pi-ban text-muted-color" [pTooltip]="'all.ranking.breakdown.outOfScopeLatestXTooltip' | translate: { latestX: system().latestXGamesToUse }" tooltipPosition="top"></i>
           }
         </td>
         <td

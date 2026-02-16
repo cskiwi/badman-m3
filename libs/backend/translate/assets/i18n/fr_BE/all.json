@@ -687,6 +687,8 @@
       },
       "outOfScopeDowngrade": "Hors de portée d'une révision à la baisse",
       "outOfScopeUpgrade": "Pas de possibilité de promotion",
+      "outOfScopeLatestX": "Au-delà des derniers {{latestX}} matchs",
+      "outOfScopeLatestXTooltip": "Ce match dépasse la limite des derniers {{latestX}} matchs et n'est pas utilisé pour le classement",
       "outOfScopeWonGames": "Matchs gagnés non utilisés",
       "period": {
         "last-point-update": "Mise à jour des points précédents",

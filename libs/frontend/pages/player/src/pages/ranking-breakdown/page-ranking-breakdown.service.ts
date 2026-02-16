@@ -116,6 +116,7 @@ export class RankingBreakdownService {
     includeOutOfScopeUpgrade: new FormControl<boolean>(false),
     includeOutOfScopeDowngrade: new FormControl<boolean>(false),
     includeOutOfScopeWonGames: new FormControl<boolean>(false),
+    includeOutOfScopeLatestX: new FormControl<boolean>(false),
   });
 
   private filterSignal = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));

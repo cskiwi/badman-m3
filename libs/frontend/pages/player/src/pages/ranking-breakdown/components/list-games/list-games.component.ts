@@ -120,6 +120,7 @@ export class ListGamesComponent {
     const includeOutOfScopeDowngrade = this.filter.get('includeOutOfScopeDowngrade')?.value;
     const includeOutOfScopeUpgrade = this.filter.get('includeOutOfScopeUpgrade')?.value;
     const includeOutOfScopeWonGames = this.filter.get('includeOutOfScopeWonGames')?.value;
+    const includeOutOfScopeLatestX = this.filter.get('includeOutOfScopeLatestX')?.value;
 
     return this.currGames().filter((x) => {
       if (includeOutOfScopeDowngrade && x.type === GameBreakdownType.LOST_DOWNGRADE && !x.usedForUpgrade) {
@@ -143,6 +144,10 @@ export class ListGamesComponent {
       }
 
       if (includeOutOfScopeWonGames && x.type === GameBreakdownType.WON) {
+        return true;
+      }
+
+      if (includeOutOfScopeLatestX && (x.outOfScopeLatestXUpgrade || x.outOfScopeLatestXDowngrade)) {
         return true;
       }
 
@@ -189,6 +194,9 @@ export class ListGamesComponent {
   outOfScopeGamesDowngrade = computed(
     () => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_DOWNGRADE && !x.usedForDowngrade).length,
   );
+  outOfScopeLatestXGames = computed(
+    () => this.currGames().filter((x) => x.outOfScopeLatestXUpgrade || x.outOfScopeLatestXDowngrade).length,
+  );
 
   private _addBreakdownInfo(games: GameBreakdown[]) {
     const playerData = this.player();
@@ -223,6 +231,8 @@ export class ListGamesComponent {
       game.usedForUpgrade = false;
       game.canUpgrade = false;
       game.canDowngrade = false;
+      game.outOfScopeLatestXUpgrade = false;
+      game.outOfScopeLatestXDowngrade = false;
     }
   }
 
@@ -230,6 +240,8 @@ export class ListGamesComponent {
     const sys = this.system();
     let validGamesUpgrade = 0;
     let validGamesDowngrade = 0;
+
+    const limit = sys?.latestXGamesToUse ?? Infinity;
 
     // sort games by playedAt newest first
     for (const game of games.slice().sort((a, b) => {
@@ -259,18 +271,17 @@ export class ListGamesComponent {
         }
       }
 
-      if (validUpgrade && validGamesUpgrade < (sys?.latestXGamesToUse ?? Infinity)) {
+      if (validUpgrade && validGamesUpgrade < limit) {
         validGamesUpgrade++;
         game.usedForUpgrade = true;
+      } else if (validUpgrade && validGamesUpgrade >= limit) {
+        game.outOfScopeLatestXUpgrade = true;
       }
-      if (validDowngrade && validGamesDowngrade < (sys?.latestXGamesToUse ?? Infinity)) {
+      if (validDowngrade && validGamesDowngrade < limit) {
         validGamesDowngrade++;
         game.usedForDowngrade = true;
-      }
-
-      // if both x games are used, the rest of the games are not used
-      if (validGamesUpgrade >= (sys?.latestXGamesToUse ?? Infinity) && validGamesDowngrade >= (sys?.latestXGamesToUse ?? Infinity)) {
-        break;
+      } else if (validDowngrade && validGamesDowngrade >= limit) {
+        game.outOfScopeLatestXDowngrade = true;
       }
     }
 

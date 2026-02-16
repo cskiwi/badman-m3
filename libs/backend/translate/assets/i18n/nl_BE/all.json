@@ -687,6 +687,8 @@
       },
       "outOfScopeDowngrade": "Buiten scope voor degradatie",
       "outOfScopeUpgrade": "Buiten scope voor promotie",
+      "outOfScopeLatestX": "Buiten laatste {{latestX}} wedstrijden",
+      "outOfScopeLatestXTooltip": "Deze wedstrijd valt buiten het limiet van de laatste {{latestX}} wedstrijden en wordt niet gebruikt voor de ranking",
       "outOfScopeWonGames": "Niet gebruikte gewonnen wedstrijden",
       "period": {
         "last-point-update": "Afgelopen punten update",
