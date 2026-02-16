@@ -706,7 +706,14 @@ export type I18nTranslations = {
                 };
                 "points": string;
                 "pointsPerGame": string;
+                "remove-game": string;
                 "removed-games": string;
+                "reset-overrides": string;
+                "games-excluded": string;
+                "simulation": string;
+                "enable-remove-games": string;
+                "enable-toggle-latest-x": string;
+                "in-latest-x": string;
                 "show": string;
                 "show-downgrade": string;
                 "show-upgrade": string;

@@ -53,6 +53,34 @@
       (onChange)="showDowngrade.set($event.checked)"
     />
   </div>
+
+  <!-- Simulation -->
+  <div class="flex flex-wrap items-center gap-2">
+    <p-button
+      icon="pi pi-sliders-h"
+      [label]="'all.ranking.breakdown.simulation' | translate"
+      [text]="true"
+      [badge]="hasOverrides() ? '!' : ''"
+      badgeSeverity="warn"
+      size="small"
+      (onClick)="simulationPopover.toggle($event)"
+    />
+    @if (hasOverrides()) {
+      <p-button
+        icon="pi pi-refresh"
+        [label]="'all.ranking.breakdown.reset-overrides' | translate"
+        severity="warn"
+        [text]="true"
+        size="small"
+        (onClick)="restoreAllGames()"
+      />
+      @if (excludedCount() > 0) {
+        <span class="text-xs text-muted-color">
+          {{ 'all.ranking.breakdown.games-excluded' | translate: { count: excludedCount() } }}
+        </span>
+      }
+    }
+  </div>
 </div>
 
 <!-- Data Table -->
@@ -60,6 +88,9 @@
   <p-table [value]="displayGames()" [loading]="loading()" [paginator]="false" styleClass="p-datatable-sm" [scrollable]="true">
     <ng-template pTemplate="header">
       <tr>
+        @if (enableRemoveGames()) {
+          <th style="min-width: 32px"></th>
+        }
         @if (showUpgrade()) {
           <th class="text-center cursor-pointer select-none" style="min-width: 40px" (click)="toggleSort('devideUpgrade')">
             <div class="flex items-center justify-center gap-1">
@@ -96,6 +127,12 @@
           <i class="pi pi-star text-xs mr-1"></i>
           {{ 'all.ranking.breakdown.points' | translate }}
         </th>
+        @if (enableToggleLatestX()) {
+          <th class="text-center" style="min-width: 50px">
+            <i class="pi pi-check-square text-xs mr-1"></i>
+            <span class="hidden md:inline">{{ 'all.ranking.breakdown.in-latest-x' | translate: { latestX: system().latestXGamesToUse } }}</span>
+          </th>
+        }
         @if (showUpgrade()) {
           <th class="text-center" style="min-width: 80px">
             <i class="pi pi-arrow-up text-xs mr-1"></i>
@@ -119,10 +156,23 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-game>
-      <tr [class.bg-highlight]="game.highestAvgUpgrade || game.highestAvgDowngrade" [class.opacity-50]="game.outOfScopeLatestXUpgrade || game.outOfScopeLatestXDowngrade">
+      <tr [class.bg-highlight]="game.highestAvgUpgrade || game.highestAvgDowngrade" [class.opacity-50]="!game.inLatestX && game.type !== 'LOST_IGNORED'">
+        @if (enableRemoveGames()) {
+          <td class="text-center" style="padding: 0.25rem">
+            <button
+              class="p-button p-button-text p-button-sm p-button-rounded p-button-danger"
+              style="width: 1.5rem; height: 1.5rem; padding: 0"
+              (click)="removeGame(game)"
+              [pTooltip]="'all.ranking.breakdown.remove-game' | translate"
+              tooltipPosition="top"
+            >
+              <i class="pi pi-times text-xs"></i>
+            </button>
+          </td>
+        }
         @if (showUpgrade()) {
           <td class="text-center font-medium">
-            @if (game.usedForUpgrade) {
+            @if (game.usedForUpgrade && game.countUpgrade) {
               <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-contrast text-xs">
                 {{ game.countUpgrade }}
               </span>
@@ -131,7 +181,7 @@
         }
         @if (showDowngrade()) {
           <td class="text-center font-medium">
-            @if (game.usedForDowngrade) {
+            @if (game.usedForDowngrade && game.countDowngrade) {
               <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500 text-white text-xs">
                 {{ game.countDowngrade }}
               </span>
@@ -142,7 +192,7 @@
           @if (game.dropsNextPeriod) {
             <i class="pi pi-clock text-orange-500" [pTooltip]="'all.ranking.breakdown.drops-next-period' | translate" tooltipPosition="top"></i>
           }
-          @if (game.outOfScopeLatestXUpgrade || game.outOfScopeLatestXDowngrade) {
+          @if (!game.inLatestX && game.type !== 'LOST_IGNORED') {
             <i class="pi pi-ban text-muted-color" [pTooltip]="'all.ranking.breakdown.outOfScopeLatestXTooltip' | translate: { latestX: system().latestXGamesToUse }" tooltipPosition="top"></i>
           }
         </td>
@@ -177,6 +227,15 @@
             {{ game.points > 0 ? '+' : '' }}{{ game.points }}
           </span>
         </td>
+        @if (enableToggleLatestX()) {
+          <td class="text-center">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="game.inLatestX"
+              (onChange)="toggleLatestX(game)"
+            />
+          </td>
+        }
         @if (showUpgrade()) {
           <td class="text-center">
             @if (game.usedForUpgrade) {
@@ -223,7 +282,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td [attr.colspan]="showUpgrade() && showDowngrade() ? 11 : showUpgrade() || showDowngrade() ? 9 : 7">
+        <td [attr.colspan]="totalColumns()">
           <div class="flex flex-col items-center justify-center py-8 text-center">
             <i class="pi pi-search text-4xl text-muted-color mb-4"></i>
             <h3 class="text-lg font-semibold text-color mb-2">{{ 'all.ranking.breakdown.games.none' | translate }}</h3>
@@ -234,6 +293,30 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-popover #simulationPopover>
+  <div class="flex flex-col gap-3 min-w-56">
+    <span class="text-sm font-semibold text-color">{{ 'all.ranking.breakdown.simulation' | translate }}</span>
+    <div class="flex items-center gap-2">
+      <p-checkbox
+        [binary]="true"
+        [ngModel]="enableRemoveGames()"
+        (onChange)="enableRemoveGames.set($event.checked)"
+        inputId="sim-remove"
+      />
+      <label for="sim-remove" class="text-sm cursor-pointer">{{ 'all.ranking.breakdown.enable-remove-games' | translate }}</label>
+    </div>
+    <div class="flex items-center gap-2">
+      <p-checkbox
+        [binary]="true"
+        [ngModel]="enableToggleLatestX()"
+        (onChange)="enableToggleLatestX.set($event.checked)"
+        inputId="sim-toggle"
+      />
+      <label for="sim-toggle" class="text-sm cursor-pointer">{{ 'all.ranking.breakdown.enable-toggle-latest-x' | translate }}</label>
+    </div>
+  </div>
+</p-popover>
 
 <p-popover #gameInfoPopover [style]="{ 'pointer-events': 'none' }">
   @if (hoveredGame(); as game) {

@@ -12,6 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
+import { CheckboxModule } from 'primeng/checkbox';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { GameBreakdown } from '../../models';
 import { RankingBreakdownService, RankingType } from '../../page-ranking-breakdown.service';
@@ -33,6 +34,7 @@ dayjs.extend(isSameOrAfter);
     ButtonModule,
     TooltipModule,
     ToggleButtonModule,
+    CheckboxModule,
     PopoverModule,
     DayjsFormatPipe,
   ],
@@ -58,8 +60,15 @@ export class ListGamesComponent {
   showUpgrade = signal(true);
   showDowngrade = signal(false);
 
+  enableRemoveGames = signal(false);
+  enableToggleLatestX = signal(false);
+
   sortField = signal<string | null>(null);
   sortOrder = signal<1 | -1>(1);
+
+  // Manual overrides
+  excludedGameIds = signal<Set<string>>(new Set());
+  latestXOverrides = signal<Map<string, boolean>>(new Map()); // force in/out of latest X window
 
   start = computed(() => this.filterSignal()?.start as Dayjs | null);
   next = computed(() => this.filterSignal()?.next as Dayjs | null);
@@ -69,6 +78,8 @@ export class ListGamesComponent {
     const playerData = this.player();
     const sys = this.system();
     const allGames = this.games();
+    const excluded = this.excludedGameIds();
+    const latestXOvr = this.latestXOverrides();
 
     if (!startPeriod || !playerData || !sys || allGames.length <= 0) {
       return [];
@@ -77,10 +88,12 @@ export class ListGamesComponent {
     let games: GameBreakdown[] = [];
 
     untracked(() => {
-      games = allGames.filter((x) => dayjs(x.playedAt).isSameOrAfter(startPeriod)).map((x) => x as unknown as GameBreakdown);
+      games = allGames
+        .filter((x) => dayjs(x.playedAt).isSameOrAfter(startPeriod) && !excluded.has(x.id))
+        .map((x) => x as unknown as GameBreakdown);
 
       this._addBreakdownInfo(games);
-      this._determineUsedForRanking(games);
+      this._determineUsedForRanking(games, latestXOvr);
       this._calculateAverageUpgrade(games);
     });
 
@@ -113,6 +126,18 @@ export class ListGamesComponent {
     });
   });
 
+  excludedCount = computed(() => this.excludedGameIds().size);
+  hasOverrides = computed(() => this.excludedGameIds().size > 0 || this.latestXOverrides().size > 0);
+
+  totalColumns = computed(() => {
+    let cols = 5; // status icons, date, team, opponent, points
+    if (this.enableRemoveGames()) cols++;
+    if (this.enableToggleLatestX()) cols++; // single shared "in latest X" column
+    if (this.showUpgrade()) cols += 3; // # badge, used checkbox, average
+    if (this.showDowngrade()) cols += 3; // # badge, used checkbox, average
+    return cols;
+  });
+
   filteredGames = computed(() => {
     const includedIgnored = this.filter.get('includedIgnored')?.value;
     const includedUpgrade = this.filter.get('includedUpgrade')?.value;
@@ -121,13 +146,11 @@ export class ListGamesComponent {
     const includeOutOfScopeUpgrade = this.filter.get('includeOutOfScopeUpgrade')?.value;
     const includeOutOfScopeWonGames = this.filter.get('includeOutOfScopeWonGames')?.value;
     const includeOutOfScopeLatestX = this.filter.get('includeOutOfScopeLatestX')?.value;
+    const latestXOvr = this.latestXOverrides();
 
     return this.currGames().filter((x) => {
-      if (includeOutOfScopeDowngrade && x.type === GameBreakdownType.LOST_DOWNGRADE && !x.usedForUpgrade) {
-        return true;
-      }
-
-      if (includeOutOfScopeUpgrade && x.type === GameBreakdownType.LOST_UPGRADE && !x.usedForDowngrade) {
+      // Games with manual overrides should always stay visible
+      if (latestXOvr.has(x.id)) {
         return true;
       }
 
@@ -135,19 +158,31 @@ export class ListGamesComponent {
         return true;
       }
 
-      if (includedUpgrade && this.showUpgrade() && x.usedForUpgrade) {
-        return true;
+      // Games in the latest X window
+      if (x.inLatestX) {
+        if (includedUpgrade && this.showUpgrade() && x.usedForUpgrade) {
+          return true;
+        }
+
+        if (includedDowngrade && this.showDowngrade() && x.usedForDowngrade) {
+          return true;
+        }
+
+        if (includeOutOfScopeWonGames && x.type === GameBreakdownType.WON) {
+          return true;
+        }
+
+        if (includeOutOfScopeDowngrade && x.type === GameBreakdownType.LOST_DOWNGRADE && !x.usedForUpgrade) {
+          return true;
+        }
+
+        if (includeOutOfScopeUpgrade && x.type === GameBreakdownType.LOST_UPGRADE && !x.usedForDowngrade) {
+          return true;
+        }
       }
 
-      if (includedDowngrade && this.showDowngrade() && x.usedForDowngrade) {
-        return true;
-      }
-
-      if (includeOutOfScopeWonGames && x.type === GameBreakdownType.WON) {
-        return true;
-      }
-
-      if (includeOutOfScopeLatestX && (x.outOfScopeLatestXUpgrade || x.outOfScopeLatestXDowngrade)) {
+      // Games outside the latest X window
+      if (!x.inLatestX && includeOutOfScopeLatestX && x.type !== GameBreakdownType.LOST_IGNORED) {
         return true;
       }
 
@@ -186,16 +221,16 @@ export class ListGamesComponent {
     });
   });
 
-  lostGamesUpgrade = computed(() => this.currGames().filter((x) => x.usedForUpgrade).length);
-  lostGamesDowngrade = computed(() => this.currGames().filter((x) => x.usedForDowngrade).length);
+  lostGamesUpgrade = computed(() => this.currGames().filter((x) => x.usedForUpgrade && x.inLatestX).length);
+  lostGamesDowngrade = computed(() => this.currGames().filter((x) => x.usedForDowngrade && x.inLatestX).length);
   wonGames = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.WON).length);
   lostGamesIgnored = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_IGNORED).length);
-  outOfScopeGamesUpgrade = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_UPGRADE && !x.usedForUpgrade).length);
+  outOfScopeGamesUpgrade = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_UPGRADE && !x.inLatestX).length);
   outOfScopeGamesDowngrade = computed(
-    () => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_DOWNGRADE && !x.usedForDowngrade).length,
+    () => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_DOWNGRADE && !x.inLatestX).length,
   );
   outOfScopeLatestXGames = computed(
-    () => this.currGames().filter((x) => x.outOfScopeLatestXUpgrade || x.outOfScopeLatestXDowngrade).length,
+    () => this.currGames().filter((x) => !x.inLatestX && x.type !== GameBreakdownType.LOST_IGNORED).length,
   );
 
   private _addBreakdownInfo(games: GameBreakdown[]) {
@@ -226,20 +261,66 @@ export class ListGamesComponent {
       game.team = game.gamePlayerMemberships?.filter((x) => x.team === myTeam) ?? [];
       game.dropsNextPeriod = nextPeriod ? dayjs(game.playedAt).isBefore(nextPeriod) : false;
 
-      // defaults
-      game.usedForDowngrade = false;
-      game.usedForUpgrade = false;
+      // Set usedForUpgrade/usedForDowngrade based purely on game type (level difference)
+      if (type === GameBreakdownType.WON) {
+        game.usedForUpgrade = true;
+        game.usedForDowngrade = true;
+      } else if (type === GameBreakdownType.LOST_UPGRADE) {
+        game.usedForUpgrade = true;
+        game.usedForDowngrade = false;
+      } else if (type === GameBreakdownType.LOST_DOWNGRADE) {
+        game.usedForUpgrade = true;
+        game.usedForDowngrade = true;
+      } else {
+        game.usedForUpgrade = false;
+        game.usedForDowngrade = false;
+      }
+
+      // defaults for calculated fields
+      game.inLatestX = false;
       game.canUpgrade = false;
       game.canDowngrade = false;
       game.outOfScopeLatestXUpgrade = false;
       game.outOfScopeLatestXDowngrade = false;
+      game.countUpgrade = undefined;
+      game.countDowngrade = undefined;
+      game.devideUpgrade = undefined;
+      game.devideDowngrade = undefined;
+      game.devideUpgradeCorrected = undefined;
+      game.devideDowngradeCorrected = undefined;
+      game.totalPointsUpgrade = undefined;
+      game.totalPointsDowngrade = undefined;
+      game.avgUpgrade = undefined;
+      game.avgDowngrade = undefined;
+      game.highestAvgUpgrade = undefined;
+      game.highestAvgDowngrade = undefined;
     }
   }
 
-  private _determineUsedForRanking(games: GameBreakdown[]) {
+  toggleLatestX(game: GameBreakdown) {
+    this.latestXOverrides.update((map) => {
+      const next = new Map(map);
+      next.set(game.id, !game.inLatestX);
+      return next;
+    });
+  }
+
+  removeGame(game: GameBreakdown) {
+    this.excludedGameIds.update((set) => {
+      const next = new Set(set);
+      next.add(game.id);
+      return next;
+    });
+  }
+
+  restoreAllGames() {
+    this.excludedGameIds.set(new Set());
+    this.latestXOverrides.set(new Map());
+  }
+
+  private _determineUsedForRanking(games: GameBreakdown[], latestXOverrides: Map<string, boolean>) {
     const sys = this.system();
-    let validGamesUpgrade = 0;
-    let validGamesDowngrade = 0;
+    let validGames = 0;
 
     const limit = sys?.latestXGamesToUse ?? Infinity;
 
@@ -254,34 +335,32 @@ export class ListGamesComponent {
         continue;
       }
 
-      let validUpgrade = false;
-      let validDowngrade = false;
+      const latestXOverride = latestXOverrides.get(game.id);
 
-      if (game.type === GameBreakdownType.WON) {
-        validUpgrade = true;
-        validDowngrade = true;
+      // Handle latest X overrides
+      if (latestXOverride === false) {
+        game.inLatestX = false;
+        continue;
+      }
+
+      if (latestXOverride === true) {
+        game.inLatestX = true;
+        validGames++;
+        continue;
+      }
+
+      // Normal behavior: respect latest X limit
+      if (validGames < limit) {
+        validGames++;
+        game.inLatestX = true;
       } else {
-        if (game.type === GameBreakdownType.LOST_UPGRADE) {
-          validUpgrade = true;
+        game.inLatestX = false;
+        if (game.usedForUpgrade) {
+          game.outOfScopeLatestXUpgrade = true;
         }
-
-        if (game.type === GameBreakdownType.LOST_DOWNGRADE) {
-          validUpgrade = true;
-          validDowngrade = true;
+        if (game.usedForDowngrade) {
+          game.outOfScopeLatestXDowngrade = true;
         }
-      }
-
-      if (validUpgrade && validGamesUpgrade < limit) {
-        validGamesUpgrade++;
-        game.usedForUpgrade = true;
-      } else if (validUpgrade && validGamesUpgrade >= limit) {
-        game.outOfScopeLatestXUpgrade = true;
-      }
-      if (validDowngrade && validGamesDowngrade < limit) {
-        validGamesDowngrade++;
-        game.usedForDowngrade = true;
-      } else if (validDowngrade && validGamesDowngrade >= limit) {
-        game.outOfScopeLatestXDowngrade = true;
       }
     }
 
@@ -313,7 +392,7 @@ export class ListGamesComponent {
     let totalPointsUpgrade = 0;
     let gamesProcessedUpgrade = 0;
     let workingAvgUpgrade = 0;
-    for (const game of games.filter((x) => x.usedForUpgrade)) {
+    for (const game of games.filter((x) => x.usedForUpgrade && x.inLatestX)) {
       gamesProcessedUpgrade++;
       game.devideUpgrade = gamesProcessedUpgrade;
       game.countUpgrade = gamesProcessedUpgrade;
@@ -338,7 +417,7 @@ export class ListGamesComponent {
     let totalPointsDowngrade = 0;
     let gamesProcessedDowngrade = 0;
     let workingAvgDowngrade = 0;
-    for (const game of games.filter((x) => x.usedForDowngrade)) {
+    for (const game of games.filter((x) => x.usedForDowngrade && x.inLatestX)) {
       gamesProcessedDowngrade++;
       game.devideDowngrade = gamesProcessedDowngrade;
       game.countDowngrade = gamesProcessedDowngrade;

@@ -19,6 +19,7 @@ export interface GameBreakdown extends Game {
   devideUpgradeCorrected?: number;
 
   // LatestXGamesToUse cutoff tracking
+  inLatestX?: boolean;
   outOfScopeLatestXUpgrade?: boolean;
   outOfScopeLatestXDowngrade?: boolean;
 
