@@ -693,9 +693,9 @@ export type I18nTranslations = {
                     "other": string;
                 };
                 "outOfScopeDowngrade": string;
-                "outOfScopeUpgrade": string;
                 "outOfScopeLatestX": string;
                 "outOfScopeLatestXTooltip": string;
+                "outOfScopeUpgrade": string;
                 "outOfScopeWonGames": string;
                 "period": {
                     "last-point-update": string;

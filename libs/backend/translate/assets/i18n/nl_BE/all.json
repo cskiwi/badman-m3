@@ -686,9 +686,9 @@
         "other": "{count} wedstrijden"
       },
       "outOfScopeDowngrade": "Buiten scope voor degradatie",
-      "outOfScopeUpgrade": "Buiten scope voor promotie",
       "outOfScopeLatestX": "Buiten laatste {{latestX}} wedstrijden",
       "outOfScopeLatestXTooltip": "Deze wedstrijd valt buiten het limiet van de laatste {{latestX}} wedstrijden en wordt niet gebruikt voor de ranking",
+      "outOfScopeUpgrade": "Buiten scope voor promotie",
       "outOfScopeWonGames": "Niet gebruikte gewonnen wedstrijden",
       "period": {
         "last-point-update": "Afgelopen punten update",
@@ -713,8 +713,8 @@
       },
       "upgrade": "Promotie",
       "upgrade-average": "Avg. promotie",
-      "usedForDowngrade": "Gebruikt voor degradatie",
-      "usedForUpgrade": "Gebruikt voor promotie"
+      "usedForDowngrade": "Degradatie",
+      "usedForUpgrade": "Promotie"
     }
   },
   "search": {

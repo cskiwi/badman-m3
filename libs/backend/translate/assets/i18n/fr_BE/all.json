@@ -686,9 +686,9 @@
         "other": "{count}  correspondances"
       },
       "outOfScopeDowngrade": "Hors de portée d'une révision à la baisse",
-      "outOfScopeUpgrade": "Pas de possibilité de promotion",
       "outOfScopeLatestX": "Au-delà des derniers {{latestX}} matchs",
       "outOfScopeLatestXTooltip": "Ce match dépasse la limite des derniers {{latestX}} matchs et n'est pas utilisé pour le classement",
+      "outOfScopeUpgrade": "Pas de possibilité de promotion",
       "outOfScopeWonGames": "Matchs gagnés non utilisés",
       "period": {
         "last-point-update": "Mise à jour des points précédents",
@@ -713,8 +713,8 @@
       },
       "upgrade": "Promotion",
       "upgrade-average": "Moyenne. promotion",
-      "usedForDowngrade": "Utilisé pour le déclassement",
-      "usedForUpgrade": "Utilisé pour la promotion"
+      "usedForDowngrade": "Dégradation",
+      "usedForUpgrade": "Promotion"
     }
   },
   "search": {

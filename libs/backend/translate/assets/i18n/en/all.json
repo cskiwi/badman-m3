@@ -686,9 +686,9 @@
         "other": "{count} games"
       },
       "outOfScopeDowngrade": "Out of scope for downgrade",
-      "outOfScopeUpgrade": "Out of scope for promotion",
       "outOfScopeLatestX": "Exceeded latest {{latestX}} games",
       "outOfScopeLatestXTooltip": "This game exceeds the latest {{latestX}} games limit and is not used for ranking",
+      "outOfScopeUpgrade": "Out of scope for promotion",
       "outOfScopeWonGames": "Unused matches won",
       "period": {
         "last-point-update": "Past points update",
@@ -713,8 +713,8 @@
       },
       "upgrade": "Promotion",
       "upgrade-average": "Avg. promotion",
-      "usedForDowngrade": "Used for downgrade",
-      "usedForUpgrade": "Used for promotion"
+      "usedForDowngrade": "Degradation",
+      "usedForUpgrade": "Promotion"
     }
   },
   "search": {
