@@ -204,6 +204,29 @@ export class SyncService {
   }
 
   /**
+   * Remove any existing job with the same ID to allow re-queueing.
+   * This handles stale jobs stuck in waiting-children state from previous runs,
+   * which would otherwise silently block new jobs with the same deterministic ID.
+   */
+  private async cleanupExistingJob(queue: Queue, jobId: string): Promise<void> {
+    try {
+      const existingJob = await queue.getJob(jobId);
+      if (existingJob) {
+        const state = await existingJob.getState();
+        if (state === 'active') {
+          this.logger.warn(`Cannot remove active job ${jobId}, skipping cleanup`);
+          return;
+        }
+        await queue.remove(jobId);
+        this.logger.log(`Removed stale ${state} job ${jobId} to allow re-queueing`);
+      }
+    } catch (error) {
+      // Job removal can fail if children are locked - log and continue
+      this.logger.warn(`Failed to cleanup existing job ${jobId}: ${error instanceof Error ? error.message : error}`);
+    }
+  }
+
+  /**
    * Queue sync for a specific event by its internal ID
    */
   async queueEventSync(eventId: string, includeSubComponents = false): Promise<void> {
@@ -221,6 +244,10 @@ export class SyncService {
     const data = { eventId, includeSubComponents };
     const jobId = generateJobId(eventType, 'event', eventId);
     const jobName = jobId;
+
+    // Clean up any stale job with the same ID (e.g., stuck in waiting-children from a previous run)
+    const queue = eventType === 'competition' ? this.competitionEventQueue : this.tournamentEventQueue;
+    await this.cleanupExistingJob(queue, jobId);
 
     if (includeSubComponents) {
       if (eventType === 'competition') {
@@ -253,6 +280,7 @@ export class SyncService {
       // Only pass internal ID - the service will load visual codes from the model
       const data = { subEventId, includeSubComponents };
       const jobId = generateJobId('tournament', 'subevent', subEventId);
+      await this.cleanupExistingJob(this.tournamentEventQueue, jobId);
       await (includeSubComponents
         ? this.tournamentSyncFlow.add({ name: jobId, queueName: TOURNAMENT_EVENT_QUEUE, data, opts: { jobId, priority: 5 } })
         : this.tournamentEventQueue.add(jobId, data, { jobId, priority: 5 }));
@@ -260,6 +288,7 @@ export class SyncService {
       // Only pass internal ID - the service will load visual codes from the model
       const data = { subEventId, includeSubComponents };
       const jobId = generateJobId('competition', 'subevent', subEventId);
+      await this.cleanupExistingJob(this.competitionEventQueue, jobId);
       await (includeSubComponents
         ? this.competitionSyncFlow.add({ name: jobId, queueName: COMPETITION_EVENT_QUEUE, data, opts: { jobId, priority: 5 } })
         : this.competitionEventQueue.add(jobId, data, { jobId, priority: 5 }));
@@ -284,6 +313,7 @@ export class SyncService {
       // Only pass internal ID - the service will load visual codes from the model
       const data = { drawId, includeSubComponents };
       const jobId = generateJobId('tournament', 'draw', drawId);
+      await this.cleanupExistingJob(this.tournamentEventQueue, jobId);
       await (includeSubComponents
         ? this.tournamentSyncFlow.add({ name: jobId, queueName: TOURNAMENT_EVENT_QUEUE, data, opts: { jobId, priority: 6 } })
         : this.tournamentEventQueue.add(jobId, data, { jobId, priority: 6 }));
@@ -291,6 +321,7 @@ export class SyncService {
       // Only pass internal ID - the service will load visual codes from the model
       const data = { drawId, includeSubComponents };
       const jobId = generateJobId('competition', 'draw', drawId);
+      await this.cleanupExistingJob(this.competitionEventQueue, jobId);
       await (includeSubComponents
         ? this.competitionSyncFlow.add({ name: jobId, queueName: COMPETITION_EVENT_QUEUE, data, opts: { jobId, priority: 6 } })
         : this.competitionEventQueue.add(jobId, data, { jobId, priority: 6 }));

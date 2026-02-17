@@ -100,6 +100,7 @@ export class CompetitionSubEventSyncService {
             },
             opts: {
               jobId: drawJobId,
+              failParentOnFailure: true,
               parent: {
                 id: job.id!,
                 queue: job.queueQualifiedName,
@@ -110,18 +111,24 @@ export class CompetitionSubEventSyncService {
 
         const validChildren = children;
 
+        try {
+          await this.competitionSyncFlow.addBulk(validChildren);
+          this.logger.log(`Added ${validChildren.length} child draw jobs to flow`);
+        } catch (err: unknown) {
+          // Children may already exist from a previous attempt - log actual error
+          const errMsg = err instanceof Error ? err.message : String(err);
+          this.logger.warn(`addBulk for draw children returned error: ${errMsg}`);
+        }
+
         await job.updateData({
           ...job.data,
           childJobsCreated: true,
         });
 
-        await this.competitionSyncFlow.addBulk(validChildren);
-
-        this.logger.log(`Added ${validChildren.length} child draw jobs to flow`);
-
         const shouldWait = await job.moveToWaitingChildren(token!);
+        this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
         if (shouldWait) {
-          this.logger.log(`Moving to waiting for children - ${validChildren.length} draw jobs pending`);
+          this.logger.log(`Releasing job to wait for ${validChildren.length} draw children (will be resumed by any available worker)`);
           throw new WaitingChildrenError();
         }
 

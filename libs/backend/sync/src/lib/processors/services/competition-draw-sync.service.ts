@@ -29,6 +29,8 @@ export type CompetitionDrawSyncData = (
   drawName?: string;
   /** Phase 1: entry + encounter children created */
   childJobsCreated?: boolean;
+  /** Phase 2: standing child job created */
+  standingJobCreated?: boolean;
 };
 
 @Injectable()
@@ -79,6 +81,7 @@ export class CompetitionDrawSyncService {
           },
           opts: {
             jobId: entryJobName,
+            failParentOnFailure: true,
             parent: {
               id: job.id!,
               queue: job.queueQualifiedName,
@@ -110,6 +113,7 @@ export class CompetitionDrawSyncService {
               },
               opts: {
                 jobId: encounterJobName,
+                failParentOnFailure: true,
                 parent: {
                   id: job.id!,
                   queue: job.queueQualifiedName,
@@ -119,24 +123,31 @@ export class CompetitionDrawSyncService {
           }
         }
 
+        try {
+          await this.competitionSyncFlow.addBulk(children);
+          this.logger.log(`Added ${children.length} child jobs (entry + ${children.length - 1} encounters)`);
+        } catch (err: unknown) {
+          // Children may already exist from a previous attempt - log actual error
+          const errMsg = err instanceof Error ? err.message : String(err);
+          this.logger.warn(`addBulk for draw children returned error: ${errMsg}`);
+        }
+
         await job.updateData({
           ...job.data,
           drawName,
           childJobsCreated: true,
         });
 
-        await this.competitionSyncFlow.addBulk(children);
-        this.logger.log(`Added ${children.length} child jobs (entry + ${children.length - 1} encounters)`);
-
         const shouldWait = await job.moveToWaitingChildren(token!);
+        this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
         if (shouldWait) {
-          this.logger.log(`Waiting for entry + encounters to complete`);
+          this.logger.log(`Phase 1 done — releasing job to wait for entry + encounters (will be resumed by any available worker)`);
           throw new WaitingChildrenError();
         }
       }
 
       // Phase 2: After entry + encounters complete, create standing child
-      if (includeSubComponents) {
+      if (includeSubComponents && !job.data.standingJobCreated) {
         this.logger.log(`Entry + encounters completed, creating standing job`);
         await updateProgress(70);
 
@@ -156,6 +167,7 @@ export class CompetitionDrawSyncService {
               },
               opts: {
                 jobId: standingJobName,
+                failParentOnFailure: true,
                 parent: {
                   id: job.id!,
                   queue: job.queueQualifiedName,
@@ -164,14 +176,21 @@ export class CompetitionDrawSyncService {
             },
           ]);
           this.logger.log(`Added standing job for draw ${drawName}`);
-        } catch {
-          // Standing job already exists from a previous resume - continue
-          this.logger.debug(`Standing job already exists for draw ${drawName}`);
+        } catch (err: unknown) {
+          // Standing job may already exist from a previous resume - log actual error
+          const errMsg = err instanceof Error ? err.message : String(err);
+          this.logger.warn(`addBulk for standing returned error: ${errMsg}`);
         }
 
+        await job.updateData({
+          ...job.data,
+          standingJobCreated: true,
+        });
+
         const shouldWait = await job.moveToWaitingChildren(token!);
+        this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
         if (shouldWait) {
-          this.logger.log(`Waiting for standing to complete`);
+          this.logger.log(`Phase 2 done — releasing job to wait for standing (will be resumed by any available worker)`);
           throw new WaitingChildrenError();
         }
       }

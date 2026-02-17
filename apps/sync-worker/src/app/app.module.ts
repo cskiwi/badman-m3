@@ -1,4 +1,4 @@
-import { SyncModule, SyncProcessorsModule } from '@app/backend-sync';
+import { SyncProcessorsModule } from '@app/backend-sync';
 import { TournamentApiModule } from '@app/backend-tournament-api';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -14,8 +14,10 @@ import { DatabaseModule } from '@app/backend-database';
     DatabaseModule,
     ScheduleModule.forRoot(),
     TournamentApiModule,
-    SyncModule,
-    SyncProcessorsModule, // Add processors for background job processing
+    // Only import SyncProcessorsModule for workers — SyncModule is for the API server.
+    // Importing both caused duplicate BullModule queue registrations with conflicting
+    // defaultJobOptions (attempts, removeOnComplete) and duplicate SyncService/FlowProducer instances.
+    SyncProcessorsModule,
   ],
 })
 export class AppModule {}

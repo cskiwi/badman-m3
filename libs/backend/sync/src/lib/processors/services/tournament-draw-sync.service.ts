@@ -87,6 +87,7 @@ export class TournamentDrawSyncService {
             },
             opts: {
               jobId: gameJobName,
+              failParentOnFailure: true,
               parent: {
                 id: job.id!,
                 queue: job.queueQualifiedName,
@@ -106,6 +107,7 @@ export class TournamentDrawSyncService {
             },
             opts: {
               jobId: entryJobName,
+              failParentOnFailure: true,
               parent: {
                 id: job.id!,
                 queue: job.queueQualifiedName,
@@ -126,6 +128,7 @@ export class TournamentDrawSyncService {
             },
             opts: {
               jobId: standingJobName,
+              failParentOnFailure: true,
               parent: {
                 id: job.id!,
                 queue: job.queueQualifiedName,
@@ -135,18 +138,23 @@ export class TournamentDrawSyncService {
           },
         ];
 
+        try {
+          await this.tournamentSyncFlow.addBulk(children);
+          this.logger.log(`Added game, entry, standing jobs for draw ${drawName}`);
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          this.logger.warn(`addBulk for draw children returned error: ${errMsg}`);
+        }
+
         await job.updateData({
           ...job.data,
           childJobsCreated: true,
         });
 
-        await this.tournamentSyncFlow.addBulk(children);
-
-        this.logger.log(`Added game, entry, standing jobs for draw ${drawName}`);
-
         const shouldWait = await job.moveToWaitingChildren(token!);
+        this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
         if (shouldWait) {
-          this.logger.log(`Moving to waiting for children for draw ${drawName}`);
+          this.logger.log(`Releasing job to wait for draw children (will be resumed by any available worker)`);
           throw new WaitingChildrenError();
         }
 

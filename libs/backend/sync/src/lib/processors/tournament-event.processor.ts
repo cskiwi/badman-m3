@@ -50,6 +50,11 @@ export class TournamentEventProcessor extends WorkerHost {
 
   async process(job: Job<TournamentJobData, void, string>, token: string): Promise<void> {
     const jobType = this.extractJobType(job.name);
+    const isResuming = job.attemptsStarted > 0;
+    this.logger.log(
+      `[${job.name}] Processing job type="${jobType}" id="${job.id}" parent="${job.parentKey || 'none'}" ` +
+      `attempt=${job.attemptsMade}/${job.opts?.attempts ?? 'n/a'} resuming=${isResuming}`,
+    );
     const updateProgress = async (progress: number) => {
       this.logger.debug(`Tournament ${jobType} sync progress: ${progress}%`);
       await job.updateProgress(progress);

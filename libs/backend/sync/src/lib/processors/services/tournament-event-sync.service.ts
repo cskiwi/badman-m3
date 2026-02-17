@@ -95,6 +95,7 @@ export class TournamentEventSyncService {
             },
             opts: {
               jobId: subEventJobId,
+              failParentOnFailure: true,
               parent: {
                 id: job.id!,
                 queue: job.queueQualifiedName,
@@ -105,18 +106,23 @@ export class TournamentEventSyncService {
 
         const validChildren = children;
 
+        try {
+          await this.tournamentSyncFlow.addBulk(validChildren);
+          this.logger.log(`Added ${validChildren.length} child sub-event jobs to flow`);
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          this.logger.warn(`addBulk for sub-event children returned error: ${errMsg}`);
+        }
+
         await job.updateData({
           ...job.data,
           childJobsCreated: true,
         });
 
-        await this.tournamentSyncFlow.addBulk(validChildren);
-
-        this.logger.log(`Added ${validChildren.length} child sub-event jobs to flow`);
-
         const shouldWait = await job.moveToWaitingChildren(token!);
+        this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
         if (shouldWait) {
-          this.logger.log(`Moving to waiting for children - ${validChildren.length} sub-event jobs pending`);
+          this.logger.log(`Releasing job to wait for ${validChildren.length} sub-event children (will be resumed by any available worker)`);
           throw new WaitingChildrenError();
         }
 
