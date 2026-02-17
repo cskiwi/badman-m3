@@ -106,6 +106,12 @@ export class RankingBreakdownService {
   showUpgrade = signal(true);
   showDowngrade = signal(false);
 
+  // Game counts (written by list-games component)
+  lostGamesUpgrade = signal(0);
+  lostGamesDowngrade = signal(0);
+  lostGamesIgnored = signal(0);
+  outOfScopeLatestXGames = signal(0);
+
   filter = new FormGroup({
     systemId: new FormControl<string | null>(null),
     playerId: new FormControl<string | null>(null),
@@ -123,10 +129,10 @@ export class RankingBreakdownService {
     includeOutOfScopeLatestX: new FormControl<boolean>(false),
   });
 
-  private filterSignal = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));
+  filterValues = toSignal(this.filter.valueChanges.pipe(startWith(this.filter.value)));
 
   private gamesResource = resource({
-    params: () => this.filterSignal(),
+    params: () => this.filterValues(),
     loader: async ({ params, abortSignal }) => {
       if (!params?.playerId || !params?.systemId || !params?.gameType || !params?.game || !params?.end) {
         return [];

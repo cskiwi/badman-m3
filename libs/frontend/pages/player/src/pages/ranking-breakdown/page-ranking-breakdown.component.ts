@@ -54,6 +54,14 @@ export class PageRankingBreakdownComponent {
   readonly type = injectParams('type') as Signal<RankingType>;
   readonly periodEndRoute = injectQueryParams('end');
 
+  // Query params for filters & view toggles
+  private readonly qpIncludedUpgrade = injectQueryParams('includedUpgrade');
+  private readonly qpIncludedDowngrade = injectQueryParams('includedDowngrade');
+  private readonly qpIncludedIgnored = injectQueryParams('includedIgnored');
+  private readonly qpIncludeOutOfScopeLatestX = injectQueryParams('includeOutOfScopeLatestX');
+  private readonly qpShowUpgrade = injectQueryParams('showUpgrade');
+  private readonly qpShowDowngrade = injectQueryParams('showDowngrade');
+
   // System
   system = computed(() => this.systemService.system() as RankingSystem);
   systemLoaded = this.systemService.loaded;
@@ -88,11 +96,12 @@ export class PageRankingBreakdownComponent {
       this._loadFilter();
     });
 
-    // Update URL when filter changes (except for initial load)
+    // Update URL when filter/view changes
     effect(() => {
-      const gameType = this.filter.get('gameType')?.value;
-      const end = this.filter.get('end')?.value;
-      if (gameType && end) {
+      // Track reactive values
+      const filterValues = this.breakdownService.filterValues();
+
+      if (filterValues?.gameType && filterValues?.end) {
         this._updateUrl();
       }
     });
@@ -119,7 +128,6 @@ export class PageRankingBreakdownComponent {
     if (!sys || !playerId) {
       return;
     }
-    
 
     // Default we take last calculation update, if no end is given
     const endPeriod = endParam ? dayjs(endParam) : dayjs(sys.calculationLastUpdate);
@@ -128,6 +136,14 @@ export class PageRankingBreakdownComponent {
     const nextPeriod = startPeriod.add(sys.calculationIntervalAmount ?? 1, sys.calculationIntervalUnit as dayjs.ManipulateType);
 
     this.gameTypeControl.setValue(type, { emitEvent: false });
+
+    // Restore filter toggles from query params (only if present, otherwise keep defaults)
+    const includedUpgrade = this.qpIncludedUpgrade();
+    const includedDowngrade = this.qpIncludedDowngrade();
+    const includedIgnored = this.qpIncludedIgnored();
+    const includeOutOfScopeLatestX = this.qpIncludeOutOfScopeLatestX();
+    const showUpgrade = this.qpShowUpgrade();
+    const showDowngrade = this.qpShowDowngrade();
 
     this.breakdownService.filter.patchValue(
       {
@@ -138,16 +154,28 @@ export class PageRankingBreakdownComponent {
         end: endPeriod,
         game: gamePeriod,
         next: nextPeriod,
+        ...(includedUpgrade !== null ? { includedUpgrade: includedUpgrade === 'true' } : {}),
+        ...(includedDowngrade !== null ? { includedDowngrade: includedDowngrade === 'true' } : {}),
+        ...(includedIgnored !== null ? { includedIgnored: includedIgnored === 'true' } : {}),
+        ...(includeOutOfScopeLatestX !== null ? { includeOutOfScopeLatestX: includeOutOfScopeLatestX === 'true' } : {}),
       },
       { emitEvent: true },
     );
+
+    if (showUpgrade !== null) {
+      this.breakdownService.showUpgrade.set(showUpgrade === 'true');
+    }
+    if (showDowngrade !== null) {
+      this.breakdownService.showDowngrade.set(showDowngrade === 'true');
+    }
   }
 
   private _updateUrl() {
     const sys = this.system();
     const currentType = this.type();
-    const filterGameType = this.filter.get('gameType')?.value;
-    const filterEnd = this.filter.get('end')?.value;
+    const filterValues = this.breakdownService.filterValues();
+    const filterGameType = filterValues?.gameType;
+    const filterEnd = filterValues?.end;
 
     if (!sys || !filterEnd) {
       return;
@@ -155,22 +183,36 @@ export class PageRankingBreakdownComponent {
 
     const systemLastUpdate = dayjs(sys.calculationLastUpdate);
 
+    // Only include non-default values in URL (null removes the param)
     const queryParams: { [key: string]: string | null } = {
       end: systemLastUpdate.isSame(filterEnd, 'day') ? null : filterEnd.format('YYYY-MM-DD'),
+      includedUpgrade: filterValues?.includedUpgrade === false ? 'false' : null,
+      includedDowngrade: filterValues?.includedDowngrade === false ? 'false' : null,
+      includedIgnored: filterValues?.includedIgnored === true ? 'true' : null,
+      includeOutOfScopeLatestX: filterValues?.includeOutOfScopeLatestX === true ? 'true' : null,
+      showUpgrade: this.breakdownService.showUpgrade() === false ? 'false' : null,
+      showDowngrade: this.breakdownService.showDowngrade() === true ? 'true' : null,
     };
 
-    // Only navigate if game type changed
+    // Check if query params actually differ from current URL
+    const currentQp = this.route.snapshot.queryParams;
+    const hasChanges = Object.keys(queryParams).some((key) => {
+      const desired = queryParams[key];
+      const current = currentQp[key] ?? null;
+      return desired !== current;
+    });
+
     if (filterGameType && filterGameType !== currentType) {
       this.router.navigate(['..', filterGameType], {
         relativeTo: this.route,
         queryParams,
-        queryParamsHandling: 'merge',
+        replaceUrl: true,
       });
-    } else if (queryParams['end'] !== this.periodEndRoute()) {
+    } else if (hasChanges) {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams,
-        queryParamsHandling: 'merge',
+        replaceUrl: true,
       });
     }
   }

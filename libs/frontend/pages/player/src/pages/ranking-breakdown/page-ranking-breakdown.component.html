@@ -42,27 +42,27 @@
           </span>
           <p-togglebutton
             [(ngModel)]="filter.controls.includedUpgrade.value"
-            onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}"
-            offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}"
+            onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ breakdownService.lostGamesUpgrade() }}"
+            offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ breakdownService.lostGamesUpgrade() }}"
             (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
           />
           <p-togglebutton
             [(ngModel)]="filter.controls.includedDowngrade.value"
-            onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}"
-            offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}"
+            onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ breakdownService.lostGamesDowngrade() }}"
+            offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ breakdownService.lostGamesDowngrade() }}"
             (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
           />
           @if ((system().latestXGamesToUse ?? 0) > 0) {
             <p-togglebutton
               [(ngModel)]="filter.controls.includedIgnored.value"
-              onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}"
-              offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}"
+              onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ breakdownService.lostGamesIgnored() }}"
+              offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ breakdownService.lostGamesIgnored() }}"
               (onChange)="filter.controls.includedIgnored.setValue($event.checked)"
             />
             <p-togglebutton
               [(ngModel)]="filter.controls.includeOutOfScopeLatestX.value"
-              onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}"
-              offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}"
+              onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{ breakdownService.outOfScopeLatestXGames() }}"
+              offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{ breakdownService.outOfScopeLatestXGames() }}"
               (onChange)="filter.controls.includeOutOfScopeLatestX.setValue($event.checked)"
             />
           }

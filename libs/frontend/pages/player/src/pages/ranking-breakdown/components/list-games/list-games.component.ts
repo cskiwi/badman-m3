@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal, untracked, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RankingLastPlace, RankingSystem } from '@app/models';
@@ -232,6 +232,16 @@ export class ListGamesComponent {
   outOfScopeLatestXGames = computed(
     () => this.currGames().filter((x) => !x.inLatestX && x.type !== GameBreakdownType.LOST_IGNORED).length,
   );
+
+  constructor() {
+    // Sync counts to service so parent can display them
+    effect(() => {
+      this.breakdownService.lostGamesUpgrade.set(this.lostGamesUpgrade());
+      this.breakdownService.lostGamesDowngrade.set(this.lostGamesDowngrade());
+      this.breakdownService.lostGamesIgnored.set(this.lostGamesIgnored());
+      this.breakdownService.outOfScopeLatestXGames.set(this.outOfScopeLatestXGames());
+    });
+  }
 
   private _addBreakdownInfo(games: GameBreakdown[]) {
     const playerData = this.player();
