@@ -41,7 +41,7 @@ export class SearchComponent {
         this.router.navigate(['/team', model.linkId]);
         break;
       case 'club':
-        this.router.navigate(['/clubs', model.linkId]);
+        this.router.navigate(['/clubs', model.slug]);
         break;
       case 'competition':
         this.router.navigate(['/competition', model.linkId]);
