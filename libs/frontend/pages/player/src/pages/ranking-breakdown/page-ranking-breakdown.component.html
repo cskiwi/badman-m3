@@ -30,6 +30,67 @@
     </div>
   </section>
 
+  <!-- Filters & View Toggles -->
+  <section class="mb-6">
+    <div class="rounded-border border border-surface overflow-hidden">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 bg-highlight">
+        <!-- Filter Toggles -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-medium text-muted-color mr-2">
+            <i class="pi pi-filter text-xs mr-1"></i>
+            {{ 'all.ranking.breakdown.filters' | translate }}:
+          </span>
+          <p-togglebutton
+            [(ngModel)]="filter.controls.includedUpgrade.value"
+            onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}"
+            offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}"
+            (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
+          />
+          <p-togglebutton
+            [(ngModel)]="filter.controls.includedDowngrade.value"
+            onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}"
+            offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}"
+            (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
+          />
+          @if ((system().latestXGamesToUse ?? 0) > 0) {
+            <p-togglebutton
+              [(ngModel)]="filter.controls.includedIgnored.value"
+              onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}"
+              offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}"
+              (onChange)="filter.controls.includedIgnored.setValue($event.checked)"
+            />
+            <p-togglebutton
+              [(ngModel)]="filter.controls.includeOutOfScopeLatestX.value"
+              onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}"
+              offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}"
+              (onChange)="filter.controls.includeOutOfScopeLatestX.setValue($event.checked)"
+            />
+          }
+        </div>
+
+        <!-- View Toggles -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-medium text-muted-color mr-2">
+            <i class="pi pi-eye text-xs mr-1"></i>
+            {{ 'all.ranking.breakdown.show' | translate }}:
+          </span>
+          <p-togglebutton
+            [ngModel]="breakdownService.showUpgrade()"
+            onLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
+            offLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
+            (onChange)="breakdownService.showUpgrade.set($event.checked)"
+          />
+          <p-togglebutton
+            [ngModel]="breakdownService.showDowngrade()"
+            onLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
+            offLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
+            (onChange)="breakdownService.showDowngrade.set($event.checked)"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Games List Section -->
   <section>
     <div class="rounded-border border border-surface overflow-hidden">

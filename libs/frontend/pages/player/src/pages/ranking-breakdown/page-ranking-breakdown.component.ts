@@ -12,6 +12,7 @@ import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ListGamesComponent, PeriodSelectionComponent } from './components';
 import { RankingBreakdownService, RankingType } from './page-ranking-breakdown.service';
 import { ShowLevelService } from '../detail/components/show-level.service';
@@ -34,6 +35,7 @@ import { AuthService } from '@app/frontend-modules-auth/service';
     CardModule,
     SelectModule,
     SkeletonModule,
+    ToggleButtonModule,
     ListGamesComponent,
     PeriodSelectionComponent,
   ],

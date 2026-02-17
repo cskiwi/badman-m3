@@ -57,8 +57,8 @@ export class ListGamesComponent {
   hoveredGame = signal<GameBreakdown | null>(null);
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  showUpgrade = signal(true);
-  showDowngrade = signal(false);
+  showUpgrade = this.breakdownService.showUpgrade;
+  showDowngrade = this.breakdownService.showDowngrade;
 
   enableRemoveGames = signal(false);
   enableToggleLatestX = signal(false);

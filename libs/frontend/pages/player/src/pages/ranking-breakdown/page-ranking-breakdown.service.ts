@@ -1,8 +1,8 @@
-import { computed, inject, Injectable, resource } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Game, Player } from '@app/models';
-import { GameType } from '@app/models-enum';
+import { GameStatus, GameType } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { Dayjs } from 'dayjs';
 import { lastValueFrom, startWith } from 'rxjs';
@@ -102,6 +102,10 @@ const PLAYER_GAMES_QUERY = gql`
 export class RankingBreakdownService {
   private readonly apollo = inject(Apollo);
 
+  // Shared view toggles
+  showUpgrade = signal(true);
+  showDowngrade = signal(false);
+
   filter = new FormGroup({
     systemId: new FormControl<string | null>(null),
     playerId: new FormControl<string | null>(null),
@@ -153,6 +157,7 @@ export class RankingBreakdownService {
                   game: {
                     AND: [
                       { gameType: { eq: gameType } },
+                      { status: { in: [GameStatus.NORMAL, GameStatus.RETIREMENT, GameStatus.DISQUALIFIED] } },
                       { playedAt: { between: [params.game.toDate(), params.end.toDate()] } },
                       {
                         OR: [{ set1Team1: { gte: 0 } }, { set1Team2: { gte: 0 } }],
