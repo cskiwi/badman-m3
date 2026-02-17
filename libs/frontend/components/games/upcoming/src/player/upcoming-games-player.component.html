@@ -1,110 +1,75 @@
-<div class="upcoming-games-container space-y-6">
-  @if (loading()) {
-    @for (i of [1,2,3,4,5]; track i) {
-      <div class="rounded-border overflow-hidden mb-6">
-        <!-- Game Header Skeleton -->
-        <div class="bg-highlight px-6 py-4">
-          <div class="flex justify-between items-center">
-            <!-- Left: Date and Time Skeletons -->
-            <div class="flex items-center justify-center gap-3 text-sm min-w-0">
-              <div class="flex flex-col items-center sm:flex-row sm:gap-2">
-                <p-skeleton width="4rem" height="1rem" />
-                <p-skeleton width="3rem" height="0.75rem" />
-              </div>
-            </div>
-
-            <!-- Right: Draw name skeleton -->
-            <div class="min-w-0">
-              <p-skeleton width="8rem" height="1rem" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Game Content Skeleton -->
-        <div class="game-content p-6">
-          <!-- Teams Section Skeleton -->
-          <div class="teams-section">
-            <!-- Team Names Row Skeleton -->
-            <div class="flex items-center justify-between gap-6">
-              <!-- Home Team Skeleton -->
-              <div class="team-section flex-1 min-w-0">
-                <div class="text-right space-y-1">
-                  <p-skeleton width="5rem" height="0.75rem" class="ml-auto" />
-                  <p-skeleton width="8rem" height="1.25rem" class="ml-auto" />
-                </div>
-              </div>
-
-              <!-- Away Team Skeleton -->
-              <div class="team-section flex-1 min-w-0">
-                <div class="text-left space-y-1">
-                  <p-skeleton width="5rem" height="0.75rem" />
-                  <p-skeleton width="7rem" height="1.25rem" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    }
-  } @else {
+<div>
+  @if (!loading()) {
     @for (game of games(); track game.id) {
-      <div class="rounded-border overflow-hidden mb-6 transition-all duration-200 hover:shadow-lg">
-        <!-- Game Header -->
-        <div class="bg-highlight px-6 py-4">
-          <div class="flex justify-between items-center">
-            <!-- Left: Date and Time -->
-            <div class="flex items-center justify-center gap-3 text-sm min-w-0">
-              <div class="flex flex-col items-center sm:flex-row sm:gap-2">
-                <span class="font-semibold text-base">{{ game?.date | dayjsFormat: 'MMM DD' }}</span>
-                <span class="text-xs text-color-secondary font-medium">{{ game?.date | dayjsFormat: 'HH:mm' }}</span>
-              </div>
-            </div>
-
-            <!-- Right: Draw name -->
-            <div class="min-w-0">
-              @if (game?.drawCompetition?.id) {
-                <span class="text-sm font-medium text-color-secondary">{{ game?.drawCompetition?.name }}</span>
-              }
-            </div>
+      <div class="rounded-border border border-surface mb-5 overflow-hidden transition-all duration-200 hover:shadow-lg">
+        <!-- Header: Draw/Competition name -->
+        <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight text-sm">
+          <div class="flex items-center gap-2 min-w-0">
+            @if (game?.drawCompetition?.name) {
+              <span class="font-medium text-color truncate">{{ game?.drawCompetition?.name }}</span>
+            }
           </div>
         </div>
 
         <!-- Game Content -->
-        <div class="game-content p-6">
-          <!-- Teams Section -->
-          <div class="teams-section">
-            <!-- Team Names Row -->
-            <div class="flex items-center justify-between gap-6">
-              <!-- Home Team -->
-              <div class="team-section flex-1 min-w-0">
-                <div class="text-right space-y-1">
-                  <div class="text-xs font-semibold text-muted-color uppercase tracking-wide mb-2">{{ 'all.game.upcoming.homeTeam' | translate }}</div>
-                  <div class="text-lg font-semibold text-color">
-                    {{ game?.homeTeam?.name || game?.homeTeam?.abbreviation }}
-                  </div>
-                </div>
-              </div>
+        <div class="px-4 py-3">
+          <!-- Home Team -->
+          <div class="flex items-center gap-2 mb-2">
+            <i class="pi pi-home text-xs text-muted-color"></i>
+            <span class="text-sm font-semibold text-color truncate">
+              {{ game?.homeTeam?.name || game?.homeTeam?.abbreviation }}
+            </span>
+          </div>
 
-              <!-- Away Team -->
-              <div class="team-section flex-1 min-w-0">
-                <div class="text-left space-y-1">
-                  <div class="text-xs font-semibold text-muted-color uppercase tracking-wide mb-2">{{ 'all.game.upcoming.awayTeam' | translate }}</div>
-                  <div class="text-lg font-semibold text-color">
-                    {{ game?.awayTeam?.name || game?.awayTeam?.abbreviation }}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Away Team -->
+          <div class="flex items-center gap-2">
+            <i class="pi pi-compass text-xs text-muted-color"></i>
+            <span class="text-sm font-semibold text-color truncate">
+              {{ game?.awayTeam?.name || game?.awayTeam?.abbreviation }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Footer: Date and Time -->
+        <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis text-xs text-muted-color">
+          <div class="flex items-center gap-1">
+            <i class="pi pi-calendar"></i>
+            <span>{{ game?.date | dayjsFormat: 'ddd DD-MM-YYYY' }}</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i class="pi pi-clock"></i>
+            <span>{{ game?.date | dayjsFormat: 'HH:mm' }}</span>
           </div>
         </div>
       </div>
     } @empty {
-      <div class="empty-state text-center py-12">
-        <div class="rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-all duration-200 hover:scale-105">
-          <i class="pi pi-calendar text-2xl"></i>
+      <div class="p-8 text-center">
+        <i class="pi pi-calendar text-4xl text-muted-color mb-4"></i>
+        <h3 class="text-lg font-semibold text-color mb-2">{{ 'all.game.upcoming.noGamesFound' | translate }}</h3>
+        <p class="text-muted-color text-sm">{{ 'all.game.upcoming.noGamesDescription' | translate }}</p>
+      </div>
+    }
+  } @else {
+    <!-- Loading skeletons -->
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+      <div class="rounded-border border border-surface mb-5 overflow-hidden">
+        <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight">
+          <p-skeleton width="8rem" height="1rem" />
+          <p-skeleton width="4rem" height="1.25rem" borderRadius="1rem" />
         </div>
-        <h3 class="text-lg font-medium mb-2">{{ 'all.game.upcoming.noGamesFound' | translate }}</h3>
-        <p class="">{{ 'all.game.upcoming.noGamesDescription' | translate }}</p>
+        <div class="px-4 py-3 space-y-2">
+          <div class="flex items-center gap-2">
+            <p-skeleton width="1rem" height="0.875rem" />
+            <p-skeleton width="8rem" height="0.875rem" />
+          </div>
+          <div class="flex items-center gap-2">
+            <p-skeleton width="1rem" height="0.875rem" />
+            <p-skeleton width="7rem" height="0.875rem" />
+          </div>
+        </div>
+        <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis">
+          <p-skeleton width="10rem" height="0.75rem" />
+        </div>
       </div>
     }
   }
