@@ -188,7 +188,6 @@ export class RankingBreakdownService {
       const result = await lastValueFrom(
         this.apollo.query<{ player: Player }>({
           query: PLAYER_GAMES_QUERY,
-          fetchPolicy: 'no-cache',
           variables: {
             playerId: params.playerId,
             args: {

@@ -90,7 +90,7 @@ export class ListGamesComponent {
     untracked(() => {
       games = allGames
         .filter((x) => dayjs(x.playedAt).isSameOrAfter(startPeriod) && !excluded.has(x.id))
-        .map((x) => x as unknown as GameBreakdown);
+        .map((x) => structuredClone(x) as GameBreakdown);
 
       this._addBreakdownInfo(games);
       this._determineUsedForRanking(games, latestXOvr);
