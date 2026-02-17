@@ -116,7 +116,7 @@ export interface DrawItem {
 export interface Match {
   Code: string;
   Winner: MatchWinner;
-  ScoreStatus: number;
+  ScoreStatus: ScoreStatus;
   RoundName?: string;
   MatchTime?: string;
   MatchTypeID: MatchType;
@@ -140,6 +140,14 @@ export interface Match {
   Sets: {
     Set: MatchSet[];
   };
+}
+
+export enum ScoreStatus {
+  Normal = 0,
+  Walkover = 1,
+  Retirement = 2,
+  Disqualified = 3,
+  "No Match" = 4,
 }
 
 /**

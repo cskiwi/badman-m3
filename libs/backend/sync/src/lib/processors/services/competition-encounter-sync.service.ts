@@ -1,5 +1,5 @@
 import { PointService, getRankingProtected } from '@app/backend-ranking';
-import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer, MatchType } from '@app/backend-tournament-api';
+import { TournamentApiClient, TeamMatch, Match, Player as TournamentPlayer, MatchType, ScoreStatus } from '@app/backend-tournament-api';
 import {
   CompetitionDraw,
   CompetitionEncounter,
@@ -261,7 +261,7 @@ export class CompetitionEncounterSyncService {
     if (existingGame) {
       existingGame.playedAt = encounterDate;
       existingGame.gameType = this.mapGameType(match);
-      existingGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
+      existingGame.status = this.mapMatchStatus(match);
       existingGame.winner = match.Winner;
       existingGame.round = match.RoundName;
       existingGame.linkId = encounterId;
@@ -277,7 +277,7 @@ export class CompetitionEncounterSyncService {
       newGame.visualCode = match.Code;
       newGame.playedAt = encounterDate;
       newGame.gameType = this.mapGameType(match);
-      newGame.status = this.mapMatchStatus(match.ScoreStatus?.toString());
+      newGame.status = this.mapMatchStatus(match);
       newGame.winner = match.Winner;
       newGame.round = match.RoundName;
       newGame.linkType = 'competition';
@@ -375,19 +375,34 @@ export class CompetitionEncounterSyncService {
     }
   }
 
-  private mapMatchStatus(scoreStatus?: string): GameStatus {
-    switch (scoreStatus?.toLowerCase()) {
-      case 'played':
-      case '0': // ScoreStatus 0 typically means played
-        return GameStatus.NORMAL;
-      case 'scheduled':
-        return GameStatus.NORMAL;
-      case 'postponed':
-        return GameStatus.NORMAL;
-      case 'cancelled':
+  private mapMatchStatus(match: Match): GameStatus {
+    switch (match.ScoreStatus) {
+      case ScoreStatus.Retirement:
+        return GameStatus.RETIREMENT;
+      case ScoreStatus.Disqualified:
+        return GameStatus.DISQUALIFIED;
+      case ScoreStatus['No Match']:
         return GameStatus.NO_MATCH;
+      case ScoreStatus.Walkover:
+        return GameStatus.WALKOVER;
+      case ScoreStatus.Normal:
       default:
-        return GameStatus.NORMAL;
+        // This is the case when the tournament didn't configured their score status
+        if (
+          // No scores
+          match?.Sets?.Set[0]?.Team1 == null &&
+          match?.Sets?.Set[0]?.Team2 == null &&
+          // But not both players filled
+          !(
+            match?.Team1?.Player1?.MemberID == null && match?.Team2?.Player1?.MemberID == null
+          ) &&
+          // And not both players null
+          (match?.Team2?.Player1?.MemberID !== null || match?.Team2?.Player2?.MemberID !== null)
+        ) {
+          return GameStatus.WALKOVER;
+        } else {
+          return GameStatus.NORMAL;
+        }
     }
   }
 

@@ -1,5 +1,5 @@
 import { PointService, getRankingProtected } from '@app/backend-ranking';
-import { TournamentApiClient, Match, Player as TournamentPlayer } from '@app/backend-tournament-api';
+import { TournamentApiClient, Match, Player as TournamentPlayer, ScoreStatus } from '@app/backend-tournament-api';
 import { Game, Player, GamePlayerMembership, RankingSystem, RankingPlace, RankingPoint, TournamentDraw as TournamentDrawModel } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
@@ -178,7 +178,7 @@ export class TournamentGameSyncService {
     if (existingGame) {
       existingGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
       existingGame.gameType = gameType;
-      existingGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
+      existingGame.status = this.mapMatchStatus(match);
       existingGame.winner = match.Winner;
       existingGame.round = match.RoundName;
 
@@ -198,7 +198,7 @@ export class TournamentGameSyncService {
       const newGame = new Game();
       newGame.playedAt = match.MatchTime ? new Date(match.MatchTime) : undefined;
       newGame.gameType = gameType;
-      newGame.status = this.mapMatchStatus(match.ScoreStatus.toString());
+      newGame.status = this.mapMatchStatus(match);
       newGame.winner = match.Winner;
       newGame.round = match.RoundName;
       newGame.linkType = 'tournament';
@@ -311,18 +311,34 @@ export class TournamentGameSyncService {
     }
   }
 
-  private mapMatchStatus(scoreStatus: string): GameStatus {
-    switch (scoreStatus?.toLowerCase()) {
-      case 'played':
-        return GameStatus.NORMAL;
-      case 'scheduled':
-        return GameStatus.NORMAL;
-      case 'postponed':
-        return GameStatus.NORMAL;
-      case 'cancelled':
+  private mapMatchStatus(match: Match): GameStatus {
+    switch (match.ScoreStatus) {
+      case ScoreStatus.Retirement:
+        return GameStatus.RETIREMENT;
+      case ScoreStatus.Disqualified:
+        return GameStatus.DISQUALIFIED;
+      case ScoreStatus['No Match']:
         return GameStatus.NO_MATCH;
+      case ScoreStatus.Walkover:
+        return GameStatus.WALKOVER;
+      case ScoreStatus.Normal:
       default:
-        return GameStatus.NORMAL;
+        // This is the case when the tournament didn't configured their score status
+        if (
+          // No scores
+          match?.Sets?.Set[0]?.Team1 == null &&
+          match?.Sets?.Set[0]?.Team2 == null &&
+          // But not both players filled
+          !(
+            match?.Team1?.Player1?.MemberID == null && match?.Team2?.Player1?.MemberID == null
+          ) &&
+          // And not both players null
+          (match?.Team2?.Player1?.MemberID !== null || match?.Team2?.Player2?.MemberID !== null)
+        ) {
+          return GameStatus.WALKOVER;
+        } else {
+          return GameStatus.NORMAL;
+        }
     }
   }
 
