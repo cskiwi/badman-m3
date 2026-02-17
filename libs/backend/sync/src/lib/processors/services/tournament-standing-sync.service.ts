@@ -221,33 +221,55 @@ export class TournamentStandingSyncService {
   }
 
   private findEntryForPlayerIds(entries: EntryModel[], playerIds: string[]): EntryModel | null {
-    return (
-      entries.find((entry) => {
-        if (playerIds.length === 1) {
-          // Singles match
-          return entry.player1Id === playerIds[0] && !entry.player2Id;
-        } else if (playerIds.length === 2) {
-          // Doubles match
-          const sortedPlayerIds = playerIds.sort();
-          const entryPlayerIds = [entry.player1Id, entry.player2Id].filter(Boolean).sort();
-          return JSON.stringify(sortedPlayerIds) === JSON.stringify(entryPlayerIds);
-        }
-        return null;
-      }) || null
-    );
+    // First try exact match
+    const exactMatch = entries.find((entry) => {
+      if (playerIds.length === 1) {
+        // Singles match
+        return entry.player1Id === playerIds[0] && !entry.player2Id;
+      } else if (playerIds.length === 2) {
+        // Doubles match - exact player pair
+        const sortedPlayerIds = [...playerIds].sort();
+        const entryPlayerIds = [entry.player1Id, entry.player2Id].filter(Boolean).sort();
+        return JSON.stringify(sortedPlayerIds) === JSON.stringify(entryPlayerIds);
+      }
+      return false;
+    });
+
+    if (exactMatch) return exactMatch;
+
+    // Fallback: match by player1Id (handles substitute players in doubles)
+    if (playerIds.length === 2) {
+      const fallbackMatch = entries.find((entry) => {
+        return entry.player1Id != null && playerIds.includes(entry.player1Id);
+      });
+
+      if (fallbackMatch) {
+        this.logger.debug(
+          `Used player1Id fallback match for entry ${fallbackMatch.id} with game players [${playerIds.join(', ')}]`,
+        );
+        return fallbackMatch;
+      }
+    }
+
+    return null;
   }
 
   private async updateCalculatedStandings(draw: TournamentDrawModel, standings: any[]): Promise<void> {
-    // Clear existing standings for this draw
-    const existingStandings = await Standing.find({
-      where: {
-        entryId: In(standings.map((s) => s.entryId)),
-      },
-    });
+    // Clear ALL existing standings for this draw's entries (not just recalculated ones)
+    const allEntries = await EntryModel.find({ where: { drawId: draw.id } });
+    const allEntryIds = allEntries.map((e) => e.id);
 
-    // Remove existing standings
-    for (const existing of existingStandings) {
-      await existing.remove();
+    if (allEntryIds.length > 0) {
+      const existingStandings = await Standing.find({
+        where: {
+          entryId: In(allEntryIds),
+        },
+      });
+
+      // Remove existing standings
+      for (const existing of existingStandings) {
+        await existing.remove();
+      }
     }
 
     // Create new standings
