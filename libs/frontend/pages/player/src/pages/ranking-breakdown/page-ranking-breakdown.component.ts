@@ -131,7 +131,7 @@ export class PageRankingBreakdownComponent {
     const sys = this.system();
     const playerId = this.breakdownService.resolvedPlayerId();
     const type = this.type() ?? 'single';
-    const endParam = dayjs(); // this.periodEndRoute();
+    const endParam = this.periodEndRoute();
 
     if (!sys || !playerId) {
       return;
