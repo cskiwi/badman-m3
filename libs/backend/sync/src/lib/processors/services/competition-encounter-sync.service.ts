@@ -323,9 +323,9 @@ export class CompetitionEncounterSyncService {
    */
   private async createRankingPoints(game: Game): Promise<void> {
     try {
-      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
-      if (!primarySystem) {
-        this.logger.warn('No primary ranking system found, skipping point creation');
+      const activeSystem = await RankingSystem.findActiveSystem(game.playedAt ?? new Date());
+      if (!activeSystem) {
+        this.logger.warn('No active ranking system found, skipping point creation');
         return;
       }
 
@@ -340,7 +340,7 @@ export class CompetitionEncounterSyncService {
         return;
       }
 
-      await this.pointService.createRankingPointForGame(primarySystem, gameWithMemberships);
+      await this.pointService.createRankingPointForGame(activeSystem, gameWithMemberships);
       this.logger.debug(`Created ranking points for game ${game.visualCode}`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -434,7 +434,7 @@ export class CompetitionEncounterSyncService {
     const createMembershipForPlayer = async (tournamentPlayer: TournamentPlayer, team: number, playerPosition: number): Promise<void> => {
       if (!tournamentPlayer?.MemberID) return;
 
-      const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
+      const activeSystem = await RankingSystem.findActiveSystem(game.playedAt ?? new Date());
 
       const player = await Player.findOne({
         where: { memberId: tournamentPlayer.MemberID },
@@ -449,7 +449,7 @@ export class CompetitionEncounterSyncService {
         where: {
           playerId: player.id,
           rankingDate: LessThanOrEqual(game.playedAt || new Date()),
-          systemId: primarySystem!.id,
+          systemId: activeSystem!.id,
         },
         order: {
           rankingDate: 'DESC',
@@ -465,11 +465,11 @@ export class CompetitionEncounterSyncService {
 
       const protectedRanking = getRankingProtected(
         {
-          single: rankingplace?.single ?? primarySystem!.amountOfLevels,
-          double: rankingplace?.double ?? primarySystem!.amountOfLevels,
-          mix: rankingplace?.mix ?? primarySystem!.amountOfLevels,
+          single: rankingplace?.single ?? activeSystem!.amountOfLevels,
+          double: rankingplace?.double ?? activeSystem!.amountOfLevels,
+          mix: rankingplace?.mix ?? activeSystem!.amountOfLevels,
         },
-        primarySystem!,
+        activeSystem!,
       );
 
       if (existingMembership) {

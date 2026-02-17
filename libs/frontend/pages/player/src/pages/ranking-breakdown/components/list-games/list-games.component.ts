@@ -249,7 +249,7 @@ export class ListGamesComponent {
     const nextPeriod = this.next();
 
     for (const game of games) {
-      const myMembership = game.gamePlayerMemberships?.find((gpm) => gpm.gamePlayer?.id === playerData.id);
+      const myMembership = game.gamePlayerMemberships?.find((gpm) => gpm.playerId === playerData.id);
       const myTeam = myMembership?.team;
 
 

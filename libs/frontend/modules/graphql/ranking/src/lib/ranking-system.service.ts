@@ -34,7 +34,8 @@ const SYSTEM_QUERY = gql`
       pointsToGoDown
       amountOfLevels
       latestXGamesToUse
-      primary
+      startDate
+      endDate
     }
   }
 `;
@@ -63,7 +64,9 @@ export class RankingSystemService {
   // Public selectors
   system = computed(() => this.rankingSystemSignal());
   systemId = computed(() => this.rankingSystemSignal()?.id);
-  primary = computed(() => this.rankingSystemSignal()?.primary);
+  startDate = computed(() => this.rankingSystemSignal()?.startDate);
+  endDate = computed(() => this.rankingSystemSignal()?.endDate);
+  isActive = computed(() => !this.rankingSystemSignal()?.endDate);
   loaded = computed(() => this.loadedSignal());
 
   private async loadInitialSystem() {

@@ -10,6 +10,7 @@ export class RankingSystemResolver {
   @AllowAnonymous()
   async rankingSystem(
     @Args('id', { type: () => ID, nullable: true }) id: string,
+    @Args('date', { type: () => Date, nullable: true }) date?: Date,
   ): Promise<RankingSystem> {
     const rankingsystem = id
       ? await RankingSystem.findOne({
@@ -17,11 +18,7 @@ export class RankingSystemResolver {
             id,
           },
         })
-      : await RankingSystem.findOne({
-          where: {
-            primary: true,
-          },
-        });
+      : await RankingSystem.findActiveSystem(date ?? new Date());
 
     if (rankingsystem) {
       return rankingsystem;

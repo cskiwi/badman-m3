@@ -71,12 +71,6 @@ export class TournamentRankingRecalcService {
     games: Game[],
     updateProgress: (progress: number) => Promise<void>,
   ): Promise<void> {
-    const primarySystem = await RankingSystem.findOne({ where: { primary: true } });
-    if (!primarySystem) {
-      this.logger.warn('No primary ranking system found, skipping ranking point creation');
-      return;
-    }
-
     let created = 0;
     for (let i = 0; i < games.length; i++) {
       const gameWithMemberships = await Game.findOne({
@@ -85,7 +79,13 @@ export class TournamentRankingRecalcService {
       });
       if (!gameWithMemberships) continue;
 
-      const points = await this.pointService.createRankingPointForGame(primarySystem, gameWithMemberships);
+      const activeSystem = await RankingSystem.findActiveSystem(gameWithMemberships.playedAt ?? new Date());
+      if (!activeSystem) {
+        this.logger.warn(`No active ranking system found for game ${games[i].id}, skipping`);
+        continue;
+      }
+
+      const points = await this.pointService.createRankingPointForGame(activeSystem, gameWithMemberships);
       created += points.length;
 
       // Update progress between 20% and 95%

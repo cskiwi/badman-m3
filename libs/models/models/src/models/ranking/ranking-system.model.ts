@@ -1,5 +1,5 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { AfterLoad, BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
+import { AfterLoad, BaseEntity, Column, CreateDateColumn, Entity, IsNull, LessThanOrEqual, MoreThanOrEqual, OneToMany, Or, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 import { Period, RankingSystems, StartingType } from '@app/models-enum';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { RankingPoint } from './ranking-point.model';
@@ -175,10 +175,15 @@ export class RankingSystem extends BaseEntity {
   @Column({ nullable: true, type: 'simple-enum', enum: RankingSystems })
   declare rankingSystem: RankingSystems;
 
-  @SortableField({ nullable: false })
-  @WhereField({ nullable: false })
-  @Column({ default: false })
-  declare primary: boolean;
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare startDate?: Date;
+
+  @SortableField({ nullable: true })
+  @WhereField({ nullable: true })
+  @Column({ nullable: true, type: 'timestamptz' })
+  declare endDate?: Date;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
@@ -255,6 +260,16 @@ export class RankingSystem extends BaseEntity {
 
   @OneToMany(() => RankingLastPlace, (rankingLastPlace) => rankingLastPlace.system)
   declare rankingLastPlaces: Relation<RankingLastPlace[]>;
+
+  static async findActiveSystem(date?: Date): Promise<RankingSystem | null> {
+    const d = date ?? new Date();
+    return RankingSystem.findOne({
+      where: {
+        startDate: LessThanOrEqual(d),
+        endDate: Or(MoreThanOrEqual(d), IsNull()),
+      },
+    });
+  }
 
   @AfterLoad()
   setupValues() {

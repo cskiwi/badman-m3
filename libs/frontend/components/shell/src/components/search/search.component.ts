@@ -35,7 +35,7 @@ export class SearchComponent {
   select(model: SearchHit) {
     switch (model?.linkType) {
       case 'player':
-        this.router.navigate(['/players', model.linkId]);
+        this.router.navigate(['/players', model.slug]);
         break;
       case 'team':
         this.router.navigate(['/team', model.linkId]);

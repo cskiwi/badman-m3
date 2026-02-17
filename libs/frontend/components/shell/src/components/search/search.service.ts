@@ -5,6 +5,7 @@ export type SearchHit = {
   linkType: string;
   linkId: string;
   title: string;
+  slug?: string;
   subtitle?: string; // Additional information like club name for players
 };
 
@@ -94,6 +95,7 @@ export class SearchService {
           title = hit.name || 'Unknown';
         }
 
+
         // Skip hits with empty titles
         if (!title || title.trim().length === 0) {
           console.warn('Search: Hit with empty title:', hit);
@@ -111,6 +113,7 @@ export class SearchService {
           linkType,
           linkId,
           title,
+          slug: hit.slug || undefined,
           subtitle: subtitle || undefined,
         } as SearchHit;
 
@@ -164,6 +167,7 @@ export type PlayerHit = {
 export type ClubHit = {
   name: string;
   objectID: string;
+  slug?: string;
   type?: 'club';
   order: number;
   firstName?: never; // Ensure clubs don't have firstName
@@ -173,6 +177,7 @@ export type ClubHit = {
 export type EventHit = {
   name: string;
   objectID: string;
+  slug?: string;
   type?: 'event';
   order: number;
   firstName?: never; // Ensure events don't have firstName

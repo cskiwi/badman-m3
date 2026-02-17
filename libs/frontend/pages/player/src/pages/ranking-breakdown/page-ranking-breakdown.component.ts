@@ -82,9 +82,17 @@ export class PageRankingBreakdownComponent {
   gameTypeControl = new FormControl<RankingType>('single');
 
   constructor() {
-    // Load ranking place when system is ready
+    // Trigger slug-to-ID resolution when route param changes
     effect(() => {
-      const id = this.playerId();
+      const slugOrId = this.playerId();
+      if (slugOrId) {
+        this.breakdownService.playerSlugOrId.set(slugOrId);
+      }
+    });
+
+    // Load ranking place when resolved player ID and system are ready
+    effect(() => {
+      const id = this.breakdownService.resolvedPlayerId();
       const systemId = this.systemService.systemId();
       if (id && systemId) {
         this.showLevelService.getRanking(id, systemId);
@@ -121,7 +129,7 @@ export class PageRankingBreakdownComponent {
 
   private _loadFilter() {
     const sys = this.system();
-    const playerId = this.playerId();
+    const playerId = this.breakdownService.resolvedPlayerId();
     const type = this.type() ?? 'single';
     const endParam = dayjs(); // this.periodEndRoute();
 

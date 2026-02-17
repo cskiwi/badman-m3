@@ -36,7 +36,6 @@ export class HomeService {
                   pointsToGoDown
                   pointsWhenWinningAgainst
                   calculationLastUpdate
-                  primary
                 }
               }
             `,

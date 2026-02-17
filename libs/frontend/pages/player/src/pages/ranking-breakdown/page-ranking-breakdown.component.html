@@ -1,4 +1,4 @@
-@if (systemLoaded() && system()) {
+@if (systemLoaded() && system() && breakdownService.resolvedPlayerId()) {
   <!-- Page Header Section -->
   <section class="mb-6">
     <div class="rounded-border border border-surface overflow-hidden">
@@ -94,7 +94,7 @@
   <!-- Games List Section -->
   <section>
     <div class="rounded-border border border-surface overflow-hidden">
-      <app-list-games [system]="system()" [player]="{ id: playerId() }" [rankingPlace]="rankingPlace()" [type]="type()" />
+      <app-list-games [system]="system()" [player]="{ id: breakdownService.resolvedPlayerId()! }" [rankingPlace]="rankingPlace()" [type]="type()" />
     </div>
   </section>
 } @else {

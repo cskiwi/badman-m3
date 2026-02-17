@@ -9,6 +9,14 @@ import { lastValueFrom, startWith } from 'rxjs';
 
 export type RankingType = 'single' | 'double' | 'mix';
 
+const PLAYER_ID_QUERY = gql`
+  query ResolvePlayer($id: ID!) {
+    player(id: $id) {
+      id
+    }
+  }
+`;
+
 const PLAYER_GAMES_QUERY = gql`
   query PlayerGames($playerId: ID!, $args: GamePlayerMembershipArgs, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
     player(id: $playerId) {
@@ -38,6 +46,7 @@ const PLAYER_GAMES_QUERY = gql`
           set3Team2
           gamePlayerMemberships {
             id
+            playerId
             team
             player
             single
@@ -101,6 +110,31 @@ const PLAYER_GAMES_QUERY = gql`
 @Injectable()
 export class RankingBreakdownService {
   private readonly apollo = inject(Apollo);
+
+  // Player slug/id to resolve
+  playerSlugOrId = signal<string | null>(null);
+
+  // Resolve slug to actual player ID
+  private playerResource = resource({
+    params: () => this.playerSlugOrId(),
+    loader: async ({ params: slugOrId, abortSignal }) => {
+      if (!slugOrId) return null;
+
+      const result = await lastValueFrom(
+        this.apollo.query<{ player: Player }>({
+          query: PLAYER_ID_QUERY,
+          variables: { id: slugOrId },
+          context: { signal: abortSignal },
+        }),
+      );
+
+      return result?.data?.player ?? null;
+    },
+  });
+
+  // The resolved player ID (always a UUID)
+  resolvedPlayerId = computed(() => this.playerResource.value()?.id ?? null);
+  playerLoading = computed(() => this.playerResource.isLoading());
 
   // Shared view toggles
   showUpgrade = signal(true);
@@ -179,10 +213,8 @@ export class RankingBreakdownService {
             rankingLastPlacesArgs: {
               where: [
                 {
-                  system: {
-                    primary: {
-                      eq: true,
-                    },
+                  systemId: {
+                    eq: params.systemId,
                   },
                 },
               ],
