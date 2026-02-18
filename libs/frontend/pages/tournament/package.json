@@ -18,7 +18,7 @@
     "@app/frontend-modules-auth": "*",
     "@app/utils": "0.0.1",
     "socket.io-client": "^4.7.5",
-    "@angular/cdk": "21.0.6",
+    "@angular/cdk": "21.1.5",
     "ngx-cookie-service-ssr": "^21.1.0"
   },
   "sideEffects": false
