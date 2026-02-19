@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@app/models": "*",
-    "@angular/common": "21.0.9",
-    "@angular/core": "21.0.9",
-    "@angular/platform-browser": "21.0.9"
+    "@angular/common": "21.1.5",
+    "@angular/core": "21.1.5",
+    "@angular/platform-browser": "21.1.5"
   },
   "sideEffects": false
 }
