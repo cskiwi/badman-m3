@@ -2,7 +2,7 @@
   "name": "@app/frontend-modules-theme",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/core": "21.0.9",
+    "@angular/core": "21.1.5",
     "ngx-cookie-service-ssr": "^21.1.0"
   },
   "sideEffects": false

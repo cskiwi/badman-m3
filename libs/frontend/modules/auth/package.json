@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@app/models": "*",
-    "@angular/common": "21.0.9",
-    "@angular/core": "21.0.9",
-    "@angular/router": "21.0.9",
+    "@angular/common": "21.1.5",
+    "@angular/core": "21.1.5",
+    "@angular/router": "21.1.5",
     "ngx-cookie-service-ssr": "^21.1.0",
     "@auth0/auth0-angular": "^2.2.3",
     "apollo-angular": "^13.0.0",
