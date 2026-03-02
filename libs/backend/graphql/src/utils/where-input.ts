@@ -140,6 +140,7 @@ export class IdWhereOperators {
 }
 
 const whereCache = new Map<string, Type>();
+const whereCacheByClass = new Map<Function, Type>();
 export const whereInputs = new Map<string, Type>();
 
 export function WhereInputType<T>(classRef: Type<T>, name: string) {
@@ -215,6 +216,7 @@ export function WhereInputType<T>(classRef: Type<T>, name: string) {
   }
 
   whereCache.set(name, WhereInput);
+  whereCacheByClass.set(classRef, WhereInput);
   whereInputs.set(className, WhereInput);
 
   return WhereInput;
@@ -232,14 +234,14 @@ export function appendWhereObjects<T>(classRef: Type<T>, name: string) {
   // Each of the objects should have a WhereInputType in the whereInputs array
   for (const { propertyKey, typeFunc } of objects) {
     const objectType = typeFunc();
-    const objectTypeName = objectType.name;
-    const WhereInputProperty = whereCache.get(objectTypeName);
+    // Look up by class reference to survive production minification (class names get mangled)
+    const WhereInputProperty = whereCacheByClass.get(objectType);
 
     if (!WhereInputProperty) {
-      throw new Error(`2. WhereInputType for ${objectTypeName} not found`);
+      throw new Error(`2. WhereInputType for ${objectType.name} not found`);
     }
 
-    Logger.debug(`Appending ${objectTypeName} for ${propertyKey} in ${className}`);
+    Logger.debug(`Appending ${objectType.name} for ${propertyKey} in ${className}`);
 
     // Dynamically add a decorated field to the WhereInput class
     Object.defineProperty(WhereInput.prototype, propertyKey, {
