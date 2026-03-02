@@ -85,8 +85,10 @@ export class SyncService {
     // Fetch stats for all queues in parallel
     const statsEntries = await Promise.all(
       Object.entries(queueMap).map(async ([queueName, queue]) => {
-        const [waitingCount, activeCount, completedCount, failedCount] = await Promise.all([
+        const [waitingCount, prioritizedCount, waitingChildrenCount, activeCount, completedCount, failedCount] = await Promise.all([
           queue.getWaitingCount(),
+          queue.getPrioritizedCount(),
+          queue.getWaitingChildrenCount(),
           queue.getActiveCount(),
           queue.getCompletedCount(),
           queue.getFailedCount(),
@@ -95,7 +97,7 @@ export class SyncService {
         return [
           queueName,
           {
-            waiting: waitingCount,
+            waiting: waitingCount + prioritizedCount + waitingChildrenCount,
             active: activeCount,
             completed: completedCount,
             failed: failedCount,
@@ -399,16 +401,22 @@ export class SyncService {
     const queues = this.getAllQueues();
 
     const statsPromises = queues.map(async (queue) => {
-      // Use count methods instead of fetching all jobs - much faster
-      const [waitingCount, activeCount, completedCount, failedCount] = await Promise.all([
+      // Use count methods instead of fetching all jobs - much faster.
+      // getPrioritizedCount() must be added to waitingCount because all sync jobs
+      // are added with a priority value, which places them in the prioritized sorted
+      // set rather than the standard waiting list — getWaitingCount() returns 0 for them.
+      // getWaitingChildrenCount() covers parent flow jobs waiting for children to finish.
+      const [waitingCount, prioritizedCount, waitingChildrenCount, activeCount, completedCount, failedCount] = await Promise.all([
         queue.getWaitingCount(),
+        queue.getPrioritizedCount(),
+        queue.getWaitingChildrenCount(),
         queue.getActiveCount(),
         queue.getCompletedCount(),
         queue.getFailedCount(),
       ]);
 
       return {
-        waiting: waitingCount,
+        waiting: waitingCount + prioritizedCount + waitingChildrenCount,
         active: activeCount,
         completed: completedCount,
         failed: failedCount,

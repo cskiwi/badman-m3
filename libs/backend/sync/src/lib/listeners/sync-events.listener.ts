@@ -2,13 +2,14 @@ import { InjectQueue, OnQueueEvent, QueueEventsHost, QueueEventsListener } from 
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Job, Queue } from 'bullmq';
 import { SyncGateway } from '../gateways/sync.gateway';
+import { SyncService } from '../services/sync.service';
 import { extractParentId } from '../utils/job.utils';
-import { 
-  SYNC_QUEUE, 
-  TOURNAMENT_DISCOVERY_QUEUE, 
-  COMPETITION_EVENT_QUEUE, 
-  TOURNAMENT_EVENT_QUEUE, 
-  TEAM_MATCHING_QUEUE 
+import {
+  SYNC_QUEUE,
+  TOURNAMENT_DISCOVERY_QUEUE,
+  COMPETITION_EVENT_QUEUE,
+  TOURNAMENT_EVENT_QUEUE,
+  TEAM_MATCHING_QUEUE
 } from '../queues/sync.queue';
 
 // Base listener class with shared functionality
@@ -16,12 +17,21 @@ abstract class BaseQueueEventsListener extends QueueEventsHost {
   constructor(
     protected readonly syncGateway: SyncGateway,
     protected readonly queue: Queue,
+    protected readonly syncService: SyncService,
   ) {
     super();
   }
 
   @OnQueueEvent('waiting')
   onWaiting(job: { jobId: string; prev?: string }) {
+    this.emitJobUpdateById(job.jobId);
+    this.emitQueueStatsUpdate();
+  }
+
+  // Fired by BullMQ when a job is added with a priority value (goes into the
+  // prioritized sorted set instead of the standard waiting list).
+  @OnQueueEvent('prioritized' as any)
+  onPrioritized(job: { jobId: string; priority: number }) {
     this.emitJobUpdateById(job.jobId);
     this.emitQueueStatsUpdate();
   }
@@ -85,9 +95,8 @@ abstract class BaseQueueEventsListener extends QueueEventsHost {
 
   protected async emitQueueStatsUpdate() {
     if (this.syncGateway) {
-      // NOTE: This will trigger multiple stats updates - one per queue
-      // The SyncGateway can debounce these if needed
-      const stats = await this.getQueueStats();
+      // Use SyncService to get aggregate stats across ALL queues
+      const stats = await this.syncService.getQueueStats();
       this.syncGateway.emitQueueStatsUpdate(stats);
     }
   }
@@ -105,21 +114,6 @@ abstract class BaseQueueEventsListener extends QueueEventsHost {
       timestamp: job.timestamp || Date.now(),
       createdAt: job.timestamp ? new Date(job.timestamp) : new Date(),
       parentId: extractParentId(job),
-    };
-  }
-
-  protected async getQueueStats() {
-    const waiting = await this.queue.getWaiting();
-    const active = await this.queue.getActive();
-    // Use getCompletedCount() and getFailedCount() to get actual counts instead of limited arrays
-    const completedCount = await this.queue.getCompletedCount();
-    const failedCount = await this.queue.getFailedCount();
-
-    return {
-      waiting: waiting.length,
-      active: active.length,
-      completed: completedCount,
-      failed: failedCount,
     };
   }
 
@@ -141,8 +135,9 @@ export class SyncEventsListener extends BaseQueueEventsListener {
     syncGateway: SyncGateway,
     @InjectQueue(SYNC_QUEUE)
     queue: Queue,
+    syncService: SyncService,
   ) {
-    super(syncGateway, queue);
+    super(syncGateway, queue, syncService);
   }
 }
 
@@ -154,8 +149,9 @@ export class TournamentDiscoveryEventsListener extends BaseQueueEventsListener {
     syncGateway: SyncGateway,
     @InjectQueue(TOURNAMENT_DISCOVERY_QUEUE)
     queue: Queue,
+    syncService: SyncService,
   ) {
-    super(syncGateway, queue);
+    super(syncGateway, queue, syncService);
   }
 }
 
@@ -167,8 +163,9 @@ export class CompetitionEventEventsListener extends BaseQueueEventsListener {
     syncGateway: SyncGateway,
     @InjectQueue(COMPETITION_EVENT_QUEUE)
     queue: Queue,
+    syncService: SyncService,
   ) {
-    super(syncGateway, queue);
+    super(syncGateway, queue, syncService);
   }
 }
 
@@ -180,8 +177,9 @@ export class TournamentEventEventsListener extends BaseQueueEventsListener {
     syncGateway: SyncGateway,
     @InjectQueue(TOURNAMENT_EVENT_QUEUE)
     queue: Queue,
+    syncService: SyncService,
   ) {
-    super(syncGateway, queue);
+    super(syncGateway, queue, syncService);
   }
 }
 
@@ -193,7 +191,8 @@ export class TeamMatchingEventsListener extends BaseQueueEventsListener {
     syncGateway: SyncGateway,
     @InjectQueue(TEAM_MATCHING_QUEUE)
     queue: Queue,
+    syncService: SyncService,
   ) {
-    super(syncGateway, queue);
+    super(syncGateway, queue, syncService);
   }
 }

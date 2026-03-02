@@ -277,6 +277,20 @@ export class SyncDashboardService {
       updatedFlatJobs = this.insertJobInProperPosition(updatedJob, currentFlatJobs);
     }
 
+    // If this is a child job, update parent's derived progress based on siblings' completion
+    if (updatedJob.parentId) {
+      const parentIndex = updatedFlatJobs.findIndex((j) => j.id === updatedJob.parentId);
+      if (parentIndex >= 0) {
+        const siblings = updatedFlatJobs.filter((j) => j.parentId === updatedJob.parentId);
+        if (siblings.length > 0) {
+          const done = siblings.filter((j) => j.status === 'completed' || j.status === 'failed').length;
+          const derivedProgress = Math.round((done / siblings.length) * 100);
+          updatedFlatJobs = [...updatedFlatJobs];
+          updatedFlatJobs[parentIndex] = { ...updatedFlatJobs[parentIndex], progress: derivedProgress };
+        }
+      }
+    }
+
     this._flatJobsList.set(updatedFlatJobs);
   }
 
