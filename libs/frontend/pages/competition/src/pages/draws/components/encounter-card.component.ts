@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CompetitionEncounter } from '@app/models';
 import { TranslateModule } from '@ngx-translate/core';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -7,7 +8,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 @Component({
   selector: 'app-encounter-card',
   standalone: true,
-  imports: [DatePipe, TranslateModule, SkeletonModule],
+  imports: [DatePipe, TranslateModule, SkeletonModule, RouterModule],
   templateUrl: './encounter-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

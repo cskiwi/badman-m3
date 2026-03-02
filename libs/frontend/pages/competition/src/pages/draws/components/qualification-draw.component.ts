@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-qualification-draw',
-  imports: [DatePipe, TranslateModule, TooltipModule],
+  imports: [DatePipe, TranslateModule, TooltipModule, RouterModule],
   templateUrl: './qualification-draw.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

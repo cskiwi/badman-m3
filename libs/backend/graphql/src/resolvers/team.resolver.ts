@@ -1,10 +1,10 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { Player, Team, TeamPlayerMembership } from '@app/models';
+import { Club, Player, Team, TeamPlayerMembership } from '@app/models';
 import { TeamMembershipType } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { TeamArgs, TeamPlayerMembershipArgs } from '../args';
+import { ClubArgs, TeamArgs, TeamPlayerMembershipArgs } from '../args';
 import { TeamUpdateInput } from '../inputs';
 
 @Resolver(() => Team)
@@ -66,6 +66,35 @@ export class TeamResolver {
     }
 
     return TeamPlayerMembership.find(args);
+  }
+
+  @ResolveField(() => Club, { nullable: true })
+  async club(
+    @Parent() { clubId }: Team,
+    @Args('args', {
+      type: () => ClubArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof ClubArgs>,
+  ) {
+    if (!clubId) return null;
+
+    const args = ClubArgs.toFindOneOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        id: clubId,
+      }));
+    } else {
+      args.where = [
+        {
+          id: clubId,
+        },
+      ];
+    }
+
+    return Club.findOne(args);
   }
 
   @ResolveField(() => Player, { nullable: true })

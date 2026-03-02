@@ -67,11 +67,19 @@ export class DrawsService {
                       id
                       name
                       abbreviation
+                      club {
+                        id
+                        slug
+                      }
                     }
                     awayTeam {
                       id
                       name
                       abbreviation
+                      club {
+                        id
+                        slug
+                      }
                     }
                     homeScore
                     awayScore
@@ -98,6 +106,10 @@ export class DrawsService {
                   team {
                     id
                     name
+                    club {
+                      id
+                      slug
+                    }
                   }
                   standing {
                     id

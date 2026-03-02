@@ -38,7 +38,19 @@
             }
             @if (isCompetitionGame(game)) {
               <span class="text-muted-color">-</span>
-              <span class="text-muted-color truncate"> {{ getTeamName(game, 1) }} vs {{ getTeamName(game, 2) }} </span>
+              <span class="text-muted-color truncate">
+                @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
+                  <a [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!]" class="text-muted-color no-underline hover:text-primary">{{ getTeamName(game, 1) }}</a>
+                } @else {
+                  {{ getTeamName(game, 1) }}
+                }
+                vs
+                @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
+                  <a [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!]" class="text-muted-color no-underline hover:text-primary">{{ getTeamName(game, 2) }}</a>
+                } @else {
+                  {{ getTeamName(game, 2) }}
+                }
+              </span>
             }
           </div>
         </div>

@@ -22,12 +22,20 @@ const UPCOMING_GAMES_QUERY = gql`
         name
         abbreviation
         slug
+        club {
+          id
+          slug
+        }
       }
       awayTeam {
         id
         name
         abbreviation
         slug
+        club {
+          id
+          slug
+        }
       }
     }
   }

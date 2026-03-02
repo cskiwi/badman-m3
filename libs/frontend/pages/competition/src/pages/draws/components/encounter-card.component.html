@@ -7,7 +7,11 @@
       <!-- Home Team -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
-          <span class="font-semibold text-900 white-space-nowrap">{{ encounter().homeTeam?.name || 'TBD' }}</span>
+          @if (encounter().homeTeam?.club?.slug) {
+            <a [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]" class="font-semibold text-color white-space-nowrap hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().homeTeam?.name || 'TBD' }}</a>
+          } @else {
+            <span class="font-semibold text-900 white-space-nowrap">{{ encounter().homeTeam?.name || 'TBD' }}</span>
+          }
           @if (encounter().homeTeam?.abbreviation) {
             <span class="text-xs text-muted-color white-space-nowrap">({{ encounter().homeTeam?.abbreviation }})</span>
           }
@@ -30,7 +34,11 @@
       <!-- Away Team -->
       <div class="flex-1 min-w-0 text-right">
         <div class="flex items-center justify-content-end gap-2">
-          <span class="font-semibold text-900 white-space-nowrap">{{ encounter().awayTeam?.name || 'TBD' }}</span>
+          @if (encounter().awayTeam?.club?.slug) {
+            <a [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]" class="font-semibold text-color white-space-nowrap hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().awayTeam?.name || 'TBD' }}</a>
+          } @else {
+            <span class="font-semibold text-900 white-space-nowrap">{{ encounter().awayTeam?.name || 'TBD' }}</span>
+          }
           @if (encounter().awayTeam?.abbreviation) {
             <span class="text-xs text-muted-color white-space-nowrap">({{ encounter().awayTeam?.abbreviation }})</span>
           }
@@ -57,7 +65,11 @@
       <div class="flex items-center justify-content-between gap-3 mb-3">
         <!-- Home Team -->
         <div class="flex-1 min-w-0">
-          <div class="font-semibold text-900 text-sm truncate">{{ encounter().homeTeam?.name || 'TBD' }}</div>
+          @if (encounter().homeTeam?.club?.slug) {
+            <a [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]" class="font-semibold text-color text-sm truncate block hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().homeTeam?.name || 'TBD' }}</a>
+          } @else {
+            <div class="font-semibold text-900 text-sm truncate">{{ encounter().homeTeam?.name || 'TBD' }}</div>
+          }
           @if (encounter().homeTeam?.abbreviation) {
             <div class="text-xs text-muted-color">({{ encounter().homeTeam?.abbreviation }})</div>
           }
@@ -78,7 +90,11 @@
 
         <!-- Away Team -->
         <div class="flex-1 min-w-0 text-right">
-          <div class="font-semibold text-900 text-sm truncate">{{ encounter().awayTeam?.name || 'TBD' }}</div>
+          @if (encounter().awayTeam?.club?.slug) {
+            <a [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]" class="font-semibold text-color text-sm truncate block hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().awayTeam?.name || 'TBD' }}</a>
+          } @else {
+            <div class="font-semibold text-900 text-sm truncate">{{ encounter().awayTeam?.name || 'TBD' }}</div>
+          }
           @if (encounter().awayTeam?.abbreviation) {
             <div class="text-xs text-muted-color">({{ encounter().awayTeam?.abbreviation }})</div>
           }

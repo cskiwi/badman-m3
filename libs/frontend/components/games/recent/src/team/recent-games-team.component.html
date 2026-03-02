@@ -148,8 +148,16 @@
           <!-- Team Labels for Competition Games -->
           @if (isCompetitionGame(game)) {
             <div class="flex justify-between items-center text-xs font-semibold text-muted-color uppercase tracking-wide">
-              <span>{{ getTeamName(game, 1) }}</span>
-              <span>{{ getTeamName(game, 2) }}</span>
+              @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
+                <a [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!]" class="text-muted-color no-underline hover:text-primary">{{ getTeamName(game, 1) }}</a>
+              } @else {
+                <span>{{ getTeamName(game, 1) }}</span>
+              }
+              @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
+                <a [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!]" class="text-muted-color no-underline hover:text-primary">{{ getTeamName(game, 2) }}</a>
+              } @else {
+                <span>{{ getTeamName(game, 2) }}</span>
+              }
             </div>
           }
 

@@ -95,9 +95,15 @@
                 <div class="flex items-center gap-3 md:flex-row flex-col md:text-left text-center">
                   <!-- Home Participant -->
                   <div [class]="match.homeScore !== null && match.awayScore !== null && match.homeScore > match.awayScore ? 'font-semibold text-green-600' : ''">
-                    <span class="font-medium">
-                      {{ getMatchParticipantName(match.homeTeam, match.homePlayer) }}
-                    </span>
+                    @if (match.homeTeam?.club?.slug) {
+                      <a [routerLink]="['/clubs', match.homeTeam.club.slug]" class="font-medium text-color hover:text-primary no-underline">
+                        {{ getMatchParticipantName(match.homeTeam, match.homePlayer) }}
+                      </a>
+                    } @else {
+                      <span class="font-medium">
+                        {{ getMatchParticipantName(match.homeTeam, match.homePlayer) }}
+                      </span>
+                    }
                   </div>
                   
                   <!-- Score or VS -->
@@ -113,9 +119,15 @@
                   
                   <!-- Away Participant -->
                   <div [class]="match.homeScore !== null && match.awayScore !== null && match.awayScore > match.homeScore ? 'font-semibold text-green-600' : ''">
-                    <span class="font-medium">
-                      {{ getMatchParticipantName(match.awayTeam, match.awayPlayer) }}
-                    </span>
+                    @if (match.awayTeam?.club?.slug) {
+                      <a [routerLink]="['/clubs', match.awayTeam.club.slug]" class="font-medium text-color hover:text-primary no-underline">
+                        {{ getMatchParticipantName(match.awayTeam, match.awayPlayer) }}
+                      </a>
+                    } @else {
+                      <span class="font-medium">
+                        {{ getMatchParticipantName(match.awayTeam, match.awayPlayer) }}
+                      </span>
+                    }
                   </div>
                 </div>
               </div>

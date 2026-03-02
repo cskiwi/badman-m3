@@ -18,11 +18,19 @@ const TEAM_RECENT_GAMES_QUERY = gql`
         id
         name
         abbreviation
+        club {
+          id
+          slug
+        }
       }
       awayTeam {
         id
         name
         abbreviation
+        club {
+          id
+          slug
+        }
       }
       drawCompetition {
         id
