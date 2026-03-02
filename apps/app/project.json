@@ -41,7 +41,6 @@
           "cache-manager",
           "class-transformer",
           "class-validator",
-          "ioredis",
           "typeorm",
           "sharp",
           "canvas",
