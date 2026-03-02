@@ -46,6 +46,24 @@ const TRIGGER_DISCOVERY_SYNC = gql`
   }
 `;
 
+const TRIGGER_TOURNAMENT_STRUCTURE_SYNC = gql`
+  mutation TriggerTournamentSync {
+    triggerTournamentSync {
+      message
+      success
+    }
+  }
+`;
+
+const TRIGGER_COMPETITION_STRUCTURE_SYNC = gql`
+  mutation TriggerCompetitionSync {
+    triggerCompetitionSync {
+      message
+      success
+    }
+  }
+`;
+
 
 @Injectable({
   providedIn: 'root',
@@ -72,7 +90,29 @@ export class SyncApiService {
       .mutate<{ triggerDiscoverySync: SyncTriggerResponse }>({
         mutation: TRIGGER_DISCOVERY_SYNC,
       })
-      .pipe(map((result) => result.data?.triggerDiscoverySync ?? {} as SyncTriggerResponse));
+      .pipe(map((result) => result.data?.triggerDiscoverySync ?? ({} as SyncTriggerResponse)));
+  }
+
+  /**
+   * Trigger tournament structure sync (all current/upcoming tournaments)
+   */
+  triggerTournamentSync(): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ triggerTournamentSync: SyncTriggerResponse }>({
+        mutation: TRIGGER_TOURNAMENT_STRUCTURE_SYNC,
+      })
+      .pipe(map((result) => result.data?.triggerTournamentSync ?? ({} as SyncTriggerResponse)));
+  }
+
+  /**
+   * Trigger competition structure sync (all past-month encounters)
+   */
+  triggerCompetitionSync(): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ triggerCompetitionSync: SyncTriggerResponse }>({
+        mutation: TRIGGER_COMPETITION_STRUCTURE_SYNC,
+      })
+      .pipe(map((result) => result.data?.triggerCompetitionSync ?? ({} as SyncTriggerResponse)));
   }
 
 

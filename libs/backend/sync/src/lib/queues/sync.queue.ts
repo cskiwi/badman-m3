@@ -123,7 +123,7 @@ export interface StructureSyncJobData {
   metadata?: JobDisplayMetadata;
 }
 
-export interface TournamentStructureSyncJobData extends StructureSyncJobData {
+export interface TournamentSyncJobData extends StructureSyncJobData {
   workPlan?: TournamentWorkPlan;
 }
 

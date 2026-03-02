@@ -23,6 +23,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { SyncButtonComponent } from '@app/frontend-components/sync';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { SyncJob } from '../../models';
+import { SyncApiService } from '../../services';
 import { SyncDashboardService } from './sync-dashboard.service';
 
 @Component({
@@ -57,6 +58,7 @@ export class SyncDashboardComponent implements OnDestroy {
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private syncService = inject(SyncDashboardService);
+  private syncApiService = inject(SyncApiService);
   private translateService = inject(TranslateService);
 
   // State from service
@@ -183,6 +185,93 @@ export class SyncDashboardComponent implements OnDestroy {
             detail: this.translateService.instant('all.sync.dashboard.jobs.retryError', { id: job.id }),
           });
         }
+      },
+    });
+  }
+
+  triggerDiscoverySync(): void {
+    this.confirmationService.confirm({
+      message: this.translateService.instant('all.sync.dashboard.actions.confirmDiscovery'),
+      header: this.translateService.instant('all.sync.dashboard.actions.sync'),
+      icon: 'pi pi-search',
+      accept: () => {
+        this.actionLoading.set(true);
+        this.syncApiService.triggerDiscoverySync().subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('all.common.success'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.syncQueued'),
+            });
+            this.syncService.refresh();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('all.common.error'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.syncError'),
+            });
+          },
+          complete: () => this.actionLoading.set(false),
+        });
+      },
+    });
+  }
+
+  triggerTournamentSync(): void {
+    this.confirmationService.confirm({
+      message: this.translateService.instant('all.sync.dashboard.actions.confirmTournamentSync'),
+      header: this.translateService.instant('all.sync.dashboard.actions.tournamentSync'),
+      icon: 'pi pi-refresh',
+      accept: () => {
+        this.actionLoading.set(true);
+        this.syncApiService.triggerTournamentSync().subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('all.common.success'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.tournamentSyncQueued'),
+            });
+            this.syncService.refresh();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('all.common.error'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.tournamentSyncError'),
+            });
+          },
+          complete: () => this.actionLoading.set(false),
+        });
+      },
+    });
+  }
+
+  triggerCompetitionSync(): void {
+    this.confirmationService.confirm({
+      message: this.translateService.instant('all.sync.dashboard.actions.confirmCompetitionSync'),
+      header: this.translateService.instant('all.sync.dashboard.actions.competitionSync'),
+      icon: 'pi pi-refresh',
+      accept: () => {
+        this.actionLoading.set(true);
+        this.syncApiService.triggerCompetitionSync().subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('all.common.success'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.competitionSyncQueued'),
+            });
+            this.syncService.refresh();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('all.common.error'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.competitionSyncError'),
+            });
+          },
+          complete: () => this.actionLoading.set(false),
+        });
       },
     });
   }

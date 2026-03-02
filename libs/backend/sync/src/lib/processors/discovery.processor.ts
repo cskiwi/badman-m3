@@ -10,6 +10,7 @@ import {
   TournamentAddByCodeJobData,
   JOB_TYPES,
 } from '../queues/sync.queue';
+import { SyncService } from '../services/sync.service';
 import dayjs = require('dayjs');
 
 @Injectable()
@@ -20,6 +21,7 @@ export class DiscoveryProcessor extends WorkerHost {
   constructor(
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly indexService: IndexService,
+    private readonly syncService: SyncService,
   ) {
     super();
   }
@@ -164,6 +166,15 @@ export class DiscoveryProcessor extends WorkerHost {
 
       // Index in search
       await this.indexService.indexCompetitionEvent(competition);
+
+      // Queue full structure sync for new competition
+      try {
+        await this.syncService.queueEventSync(competition.id, true);
+        this.logger.log(`Queued full sync for new competition: ${competition.name}`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this.logger.warn(`Failed to queue sync for new competition ${competition.id}: ${errorMessage}`);
+      }
     } else {
       // Create tournament event
       const tournamentEvent = new TournamentEvent();
@@ -185,6 +196,15 @@ export class DiscoveryProcessor extends WorkerHost {
 
       // Index in search
       await this.indexService.indexTournamentEvent(tournamentEvent);
+
+      // Queue full structure sync for new tournament
+      try {
+        await this.syncService.queueEventSync(tournamentEvent.id, true);
+        this.logger.log(`Queued full sync for new tournament: ${tournamentEvent.name}`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this.logger.warn(`Failed to queue sync for new tournament ${tournamentEvent.id}: ${errorMessage}`);
+      }
     }
   }
 

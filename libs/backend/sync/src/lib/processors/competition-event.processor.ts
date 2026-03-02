@@ -13,12 +13,15 @@ import {
   CompetitionEventSyncService,
   CompetitionStandingSyncData,
   CompetitionStandingSyncService,
+  CompetitionSyncService,
   CompetitionSubEventSyncData,
   CompetitionSubEventSyncService,
 } from './services';
+import { StructureSyncJobData } from '../queues/sync.queue';
 
 // Union of all job data types for this processor
 type CompetitionJobData =
+  | StructureSyncJobData
   | CompetitionEventSyncData
   | CompetitionSubEventSyncData
   | CompetitionDrawSyncData
@@ -34,6 +37,7 @@ export class CompetitionEventProcessor extends WorkerHost {
   private readonly logger = new Logger(CompetitionEventProcessor.name);
 
   constructor(
+    private readonly competitionSyncService: CompetitionSyncService,
     private readonly competitionEventSyncService: CompetitionEventSyncService,
     private readonly competitionSubEventSyncService: CompetitionSubEventSyncService,
     private readonly competitionDrawSyncService: CompetitionDrawSyncService,
@@ -58,8 +62,11 @@ export class CompetitionEventProcessor extends WorkerHost {
 
     switch (jobType) {
       case 'sync-structure':
-        // Structure sync jobs should be handled by individual specialized processors
-        throw new Error('Structure sync jobs should not be processed here - use specialized processors');
+        await this.competitionSyncService.processStructureSync(
+          job as Job<StructureSyncJobData>,
+          updateProgress,
+        );
+        break;
 
       case 'event':
         await this.competitionEventSyncService.processEventSync(
@@ -121,7 +128,7 @@ export class CompetitionEventProcessor extends WorkerHost {
    */
   private extractJobType(jobName: string): string {
     // Handle special case for sync-structure first
-    if (jobName.includes('competition-sync-structure')) {
+    if (jobName.includes('competition-structure-sync')) {
       return 'sync-structure';
     }
 

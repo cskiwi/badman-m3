@@ -13,6 +13,7 @@ import {
   CompetitionEventSyncService,
   CompetitionPlanningService,
   CompetitionStandingSyncService,
+  CompetitionSyncService,
   CompetitionSubEventSyncService,
   TeamMatchingProcessor,
   TeamMatchingService,
@@ -26,6 +27,7 @@ import {
   TournamentPlanningService,
   TournamentRankingRecalcService,
   TournamentStandingSyncService,
+  TournamentSyncService,
   TournamentSubEventSyncService,
 } from './processors';
 import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
@@ -108,6 +110,7 @@ import { SyncService } from './services/sync.service';
     TournamentEventProcessor,
     TeamMatchingProcessor,
     // Competition sync services
+    CompetitionSyncService,
     CompetitionEventSyncService,
     CompetitionSubEventSyncService,
     CompetitionDrawSyncService,
@@ -116,6 +119,7 @@ import { SyncService } from './services/sync.service';
     CompetitionStandingSyncService,
     CompetitionPlanningService,
     // Tournament sync services
+    TournamentSyncService,
     TournamentGameSyncService,
     TournamentEventSyncService,
     TournamentSubEventSyncService,

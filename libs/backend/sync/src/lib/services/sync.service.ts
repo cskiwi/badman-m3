@@ -15,7 +15,7 @@ import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
   GameSyncJobData,
   StructureSyncJobData,
-  TournamentStructureSyncJobData,
+  TournamentSyncJobData,
   TournamentRankingRecalcJobData,
   SYNC_QUEUE,
   TOURNAMENT_DISCOVERY_QUEUE,
@@ -119,16 +119,16 @@ export class SyncService {
    * Competition structure sync - runs every 12 hours during May-August
    */
   @Cron('0 */12 * 5-8 *')
-  async scheduleCompetitionStructureSync(): Promise<void> {
-    await this.queueCompetitionStructureSync();
+  async scheduleCompetitionSync(): Promise<void> {
+    await this.queueCompetitionSync();
   }
 
   /**
    * Tournament structure sync - runs every 12 hours
    */
   @Cron('0 */12 * * *')
-  async scheduleTournamentStructureSync(): Promise<void> {
-    await this.queueTournamentStructureSync();
+  async scheduleTournamentSync(): Promise<void> {
+    await this.queueTournamentSync();
   }
 
   /**
@@ -152,7 +152,7 @@ export class SyncService {
   /**
    * Queue competition structure sync
    */
-  async queueCompetitionStructureSync(data?: StructureSyncJobData): Promise<void> {
+  async queueCompetitionSync(data?: StructureSyncJobData): Promise<void> {
     await this.competitionEventQueue.add(JOB_TYPES.COMPETITION_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });
@@ -161,7 +161,7 @@ export class SyncService {
   /**
    * Queue tournament structure sync
    */
-  async queueTournamentStructureSync(data?: TournamentStructureSyncJobData): Promise<void> {
+  async queueTournamentSync(data?: TournamentSyncJobData): Promise<void> {
     await this.tournamentEventQueue.add(JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, data || {}, {
       priority: 3,
     });

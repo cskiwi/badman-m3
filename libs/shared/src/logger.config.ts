@@ -1,16 +1,11 @@
-import winston, { format, transports } from 'winston';
+import winston, { format } from 'winston';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
-const { combine, timestamp, printf, colorize, errors } = format;
+const { combine, timestamp, printf, errors } = format;
 
 // Custom format for log files
 const logFileFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
-  const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
-  return `${timestamp} [${level.toUpperCase()}] ${stack || message}${metaStr}`;
-});
-
-// Custom format for console
-const consoleFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
   const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
   return `${timestamp} [${level.toUpperCase()}] ${stack || message}${metaStr}`;
 });
@@ -31,7 +26,7 @@ export function createWinstonLogger(config?: { name?: string; logDir?: string; i
         format: winston.format.combine(
           winston.format.timestamp(),
           winston.format.ms(),
-          nestWinstonModuleUtilities.format.nestLike('Badman', {
+          nestWinstonModuleUtilities.format.nestLike('de-sutter', {
             colors: true,
             prettyPrint: true,
             processId: true,
@@ -39,19 +34,25 @@ export function createWinstonLogger(config?: { name?: string; logDir?: string; i
           }),
         ),
       }),
-      // File transport for all logs
-      new transports.File({
-        filename: `${logDir}/info-${appName}${suffix}.log`,
+      // Rotating file transport for all logs — keeps 14 days, max 20MB per file
+      new DailyRotateFile({
+        dirname: logDir,
+        filename: `info-${appName}${suffix}-%DATE%.log`,
+        datePattern: 'YYYY-MM-DD',
         level: 'silly',
         format: combine(timestamp(), logFileFormat),
-        options: { flags: 'w' },
+        maxSize: '20m',
+        maxFiles: '14d',
       }),
-      // Separate file for errors
-      new transports.File({
-        filename: `${logDir}/error-${appName}${suffix}.log`,
+      // Rotating file transport for errors — keeps 30 days
+      new DailyRotateFile({
+        dirname: logDir,
+        filename: `error-${appName}${suffix}-%DATE%.log`,
+        datePattern: 'YYYY-MM-DD',
         level: 'error',
         format: combine(timestamp(), logFileFormat),
-        options: { flags: 'w' },
+        maxSize: '20m',
+        maxFiles: '30d',
       }),
     ],
   });

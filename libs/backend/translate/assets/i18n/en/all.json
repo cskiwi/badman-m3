@@ -641,6 +641,8 @@
       "downgrade": "Degradation",
       "downgrade-average": "Avg. demotion",
       "drops-next-period": "Drops next period",
+      "enable-remove-games": "Remove games",
+      "enable-toggle-latest-x": "Toggle included games",
       "evolution": "Evolution",
       "export": {
         "avgDowngrade": "Degradation average",
@@ -668,9 +670,11 @@
         "other": "{{count}}  games."
       },
       "games-downgrade": "# Games relegation",
+      "games-excluded": "{{count}} game(s) excluded",
       "games-upgrade": "# Matches promotion",
       "hint": "Click on a level for simulation and breakdown",
       "ignored": "Doesn't count",
+      "in-latest-x": "In latest {{latestX}}",
       "includeOutOfScope": "Out of scope",
       "lostGames": {
         "none": "No lost games",
@@ -702,14 +706,10 @@
       "remove-game": "Remove game from calculation",
       "removed-games": "Matches from the previous period that no longer count in the next rankings update",
       "reset-overrides": "Reset changes",
-      "games-excluded": "{{count}} game(s) excluded",
-      "simulation": "Simulation",
-      "enable-remove-games": "Remove games",
-      "enable-toggle-latest-x": "Toggle included games",
-      "in-latest-x": "In latest {{latestX}}",
       "show": "Show",
       "show-downgrade": "Show downgrade points",
       "show-upgrade": "Show upgrade points",
+      "simulation": "Simulation",
       "team": "Team",
       "title": "Level breakdown",
       "untill": "Until",
@@ -742,9 +742,23 @@
   "sync": {
     "dashboard": {
       "actions": {
+        "competitionSync": "Competition sync",
+        "competitionSyncError": "Failed to schedule competition sync",
+        "competitionSyncQueued": "Competition sync successfully scheduled",
+        "competitionSyncTooltip": "Sync all encounters from the past month",
+        "confirmCompetitionSync": "Queue a competition sync for all encounters from the past month?",
+        "confirmDiscovery": "Queue a tournament discovery sync to find new tournaments?",
+        "confirmTournamentSync": "Sync plans for all current and upcoming tournaments?",
         "discoverySync": "Discovery Sync",
+        "discoverySyncError": "Failed to queue discovery sync",
+        "discoverySyncQueued": "Discovery sync queued successfully",
+        "discoverySyncTooltip": "Discover new tournaments from the external API",
         "fullSync": "Full Sync",
-        "sync": "Sync"
+        "sync": "Sync",
+        "tournamentSync": "Tournament sync",
+        "tournamentSyncError": "Failed to schedule tournament sync",
+        "tournamentSyncQueued": "Tournament sync successfully scheduled",
+        "tournamentSyncTooltip": "Synchronize current and upcoming tournaments"
       },
       "jobs": {
         "actions": "Actions",

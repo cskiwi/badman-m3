@@ -648,6 +648,8 @@ export type I18nTranslations = {
                 "downgrade": string;
                 "downgrade-average": string;
                 "drops-next-period": string;
+                "enable-remove-games": string;
+                "enable-toggle-latest-x": string;
                 "evolution": string;
                 "export": {
                     "avgDowngrade": string;
@@ -675,9 +677,11 @@ export type I18nTranslations = {
                     "other": string;
                 };
                 "games-downgrade": string;
+                "games-excluded": string;
                 "games-upgrade": string;
                 "hint": string;
                 "ignored": string;
+                "in-latest-x": string;
                 "includeOutOfScope": string;
                 "lostGames": {
                     "none": string;
@@ -709,14 +713,10 @@ export type I18nTranslations = {
                 "remove-game": string;
                 "removed-games": string;
                 "reset-overrides": string;
-                "games-excluded": string;
-                "simulation": string;
-                "enable-remove-games": string;
-                "enable-toggle-latest-x": string;
-                "in-latest-x": string;
                 "show": string;
                 "show-downgrade": string;
                 "show-upgrade": string;
+                "simulation": string;
                 "team": string;
                 "title": string;
                 "untill": string;
@@ -749,9 +749,23 @@ export type I18nTranslations = {
         "sync": {
             "dashboard": {
                 "actions": {
+                    "competitionSync": string;
+                    "competitionSyncError": string;
+                    "competitionSyncQueued": string;
+                    "competitionSyncTooltip": string;
+                    "confirmCompetitionSync": string;
+                    "confirmDiscovery": string;
+                    "confirmTournamentSync": string;
                     "discoverySync": string;
+                    "discoverySyncError": string;
+                    "discoverySyncQueued": string;
+                    "discoverySyncTooltip": string;
                     "fullSync": string;
                     "sync": string;
+                    "tournamentSync": string;
+                    "tournamentSyncError": string;
+                    "tournamentSyncQueued": string;
+                    "tournamentSyncTooltip": string;
                 };
                 "jobs": {
                     "actions": string;

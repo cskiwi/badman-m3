@@ -641,6 +641,8 @@
       "downgrade": "Dégradation",
       "downgrade-average": "Moyenne des déclassements",
       "drops-next-period": "Ne compte pas dans la période suivante",
+      "enable-remove-games": "Supprimer des matchs",
+      "enable-toggle-latest-x": "Modifier les matchs inclus",
       "evolution": "Évolution",
       "export": {
         "avgDowngrade": "Moyenne de dégradation",
@@ -668,9 +670,11 @@
         "other": "{{count}} matchs"
       },
       "games-downgrade": "# Jeux relégation",
+      "games-excluded": "{{count}} match(s) exclu(s)",
       "games-upgrade": "# Correspond à la promotion",
       "hint": "Cliquez sur un classement pour une simulation et une analyse",
       "ignored": "Non compté",
+      "in-latest-x": "Dans les derniers {{latestX}}",
       "includeOutOfScope": "Hors champ",
       "lostGames": {
         "none": "Aucun jeu perdu",
@@ -702,14 +706,10 @@
       "remove-game": "Retirer le match du calcul",
       "removed-games": "Matchs de la période précédente qui ne comptent plus dans la prochaine mise à jour du classement",
       "reset-overrides": "Annuler les modifications",
-      "games-excluded": "{{count}} match(s) exclu(s)",
-      "simulation": "Simulation",
-      "enable-remove-games": "Supprimer des matchs",
-      "enable-toggle-latest-x": "Modifier les matchs inclus",
-      "in-latest-x": "Dans les derniers {{latestX}}",
       "show": "Afficher",
       "show-downgrade": "Afficher les points de déclassement",
       "show-upgrade": "Afficher les points de mise à niveau",
+      "simulation": "Simulation",
       "team": "Équipe",
       "title": "Répartition des niveaux",
       "untill": "Tot",
@@ -742,9 +742,23 @@
   "sync": {
     "dashboard": {
       "actions": {
+        "competitionSync": "Synchronisation de la concurrence",
+        "competitionSyncError": "Échec de la programmation de la synchronisation des compétitions",
+        "competitionSyncQueued": "Synchronisation de la compétition programmée avec succès",
+        "competitionSyncTooltip": "Synchroniser toutes les rencontres du mois passé",
+        "confirmCompetitionSync": "Les plans de synchronisation de la compétition pour toutes les rencontres du mois dernier ?",
+        "confirmDiscovery": "Mettre en file une sync de découverte pour trouver de nouveaux tournois ?",
+        "confirmTournamentSync": "Synchroniser les plans de tous les tournois en cours et à venir ?",
         "discoverySync": "Sync de découverte",
+        "discoverySyncError": "Échec de la mise en file de la sync de découverte",
+        "discoverySyncQueued": "Sync de découverte mise en file avec succès",
+        "discoverySyncTooltip": "Découvrir les nouveaux tournois via l'API externe",
         "fullSync": "Sync complète",
-        "sync": "Sync"
+        "sync": "Sync",
+        "tournamentSync": "Synchronisation des tournois",
+        "tournamentSyncError": "Échec de la synchronisation des tournois",
+        "tournamentSyncQueued": "Synchronisation du tournoi programmée avec succès",
+        "tournamentSyncTooltip": "Synchroniser les tournois en cours et à venir"
       },
       "jobs": {
         "actions": "Actions",

@@ -3,8 +3,30 @@
   <div class="flex justify-between items-center">
     <h1 class="text-3xl font-bold">{{ 'all.sync.dashboard.title' | translate }}</h1>
     <div class="flex gap-2">
-      <!-- Global sync actions will need to be implemented separately -->
-      <!-- These don't fit the sync-button component pattern which is entity-specific -->
+      <p-button
+        icon="pi pi-search"
+        [label]="'all.sync.dashboard.actions.sync' | translate"
+        severity="secondary"
+        [loading]="actionLoading()"
+        (onClick)="triggerDiscoverySync()"
+        [pTooltip]="'all.sync.dashboard.actions.syncTooltip' | translate"
+      />
+      <p-button
+        icon="pi pi-refresh"
+        [label]="'all.sync.dashboard.actions.tournamentSync' | translate"
+        severity="secondary"
+        [loading]="actionLoading()"
+        (onClick)="triggerTournamentSync()"
+        [pTooltip]="'all.sync.dashboard.actions.tournamentSyncTooltip' | translate"
+      />
+      <p-button
+        icon="pi pi-sync"
+        [label]="'all.sync.dashboard.actions.competitionSync' | translate"
+        severity="secondary"
+        [loading]="actionLoading()"
+        (onClick)="triggerCompetitionSync()"
+        [pTooltip]="'all.sync.dashboard.actions.competitionSyncTooltip' | translate"
+      />
     </div>
   </div>
 

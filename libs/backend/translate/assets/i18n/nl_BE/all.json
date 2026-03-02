@@ -641,6 +641,8 @@
       "downgrade": "Degradatie",
       "downgrade-average": "Avg. degradatie",
       "drops-next-period": "Telt niet meer mee in volgende periode",
+      "enable-remove-games": "Wedstrijden verwijderen",
+      "enable-toggle-latest-x": "Meegetelde wedstrijden wijzigen",
       "evolution": "Evolutie",
       "export": {
         "avgDowngrade": "Degradatie gemiddelde",
@@ -668,9 +670,11 @@
         "other": "{{count}} wedstrijden"
       },
       "games-downgrade": "# Wedstrijden degradatie",
+      "games-excluded": "{{count}} wedstrijd(en) uitgesloten",
       "games-upgrade": "# Wedstrijden promotie",
       "hint": "Klik op een klassement voor simulatie en analyse",
       "ignored": "Niet meegeteld",
+      "in-latest-x": "In laatste {{latestX}}",
       "includeOutOfScope": "Out of scope",
       "lostGames": {
         "none": "Geen verloren wedstrijden",
@@ -702,14 +706,10 @@
       "remove-game": "Wedstrijd verwijderen uit berekening",
       "removed-games": "Wedstrijden van vorige periode die niet meer meetellen bij de volgende klassementen update",
       "reset-overrides": "Wijzigingen resetten",
-      "games-excluded": "{{count}} wedstrijd(en) uitgesloten",
-      "simulation": "Simulatie",
-      "enable-remove-games": "Wedstrijden verwijderen",
-      "enable-toggle-latest-x": "Meegetelde wedstrijden wijzigen",
-      "in-latest-x": "In laatste {{latestX}}",
       "show": "Toon",
       "show-downgrade": "Toon downgrade punten",
       "show-upgrade": "Toon upgrade punten",
+      "simulation": "Simulatie",
       "team": "Team",
       "title": "Level breakdown",
       "untill": "tot",
@@ -742,9 +742,23 @@
   "sync": {
     "dashboard": {
       "actions": {
+        "competitionSync": "Competitie sync",
+        "competitionSyncError": "Mislukt om competitie sync te plannen",
+        "competitionSyncQueued": "Competitie sync succesvol gepland",
+        "competitionSyncTooltip": "Synchroniseer alle ontmoetingen van de afgelopen maand",
+        "confirmCompetitionSync": "Competitie sync plannen voor alle ontmoetingen van de afgelopen maand?",
+        "confirmDiscovery": "Toernooi discovery sync plannen om nieuwe toernooien te vinden?",
+        "confirmTournamentSync": "Sync plannen voor alle huidige en aankomende toernooien?",
         "discoverySync": "Discovery Sync",
+        "discoverySyncError": "Mislukt om discovery sync te plannen",
+        "discoverySyncQueued": "Discovery sync succesvol gepland",
+        "discoverySyncTooltip": "Ontdek nieuwe toernooien via de externe API",
         "fullSync": "Volledige Sync",
-        "sync": "Sync"
+        "sync": "Sync",
+        "tournamentSync": "Toernooi sync",
+        "tournamentSyncError": "Mislukt om toernooi sync te plannen",
+        "tournamentSyncQueued": "Toernooi  sync succesvol gepland",
+        "tournamentSyncTooltip": "Synchroniseer huidige en aankomende toernooien"
       },
       "jobs": {
         "actions": "Acties",

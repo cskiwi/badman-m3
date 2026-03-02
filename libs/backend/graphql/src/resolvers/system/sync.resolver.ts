@@ -351,6 +351,36 @@ export class SyncResolver {
     };
   }
 
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerTournamentSync(@User() user: Player): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger tournament structure sync');
+    }
+
+    await this.syncService.queueTournamentSync();
+
+    return {
+      message: 'Tournament structure sync queued successfully',
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerCompetitionSync(@User() user: Player): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger competition structure sync');
+    }
+
+    await this.syncService.queueCompetitionSync();
+
+    return {
+      message: 'Competition structure sync queued successfully',
+      success: true,
+    };
+  }
+
   @Query(() => String)
   @UseGuards(PermGuard)
   async syncQueueStatsByName(@User() user: Player): Promise<string> {

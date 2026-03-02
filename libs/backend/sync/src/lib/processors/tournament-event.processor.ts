@@ -15,12 +15,15 @@ import {
   TournamentRankingRecalcService,
   TournamentStandingSyncData,
   TournamentStandingSyncService,
+  TournamentSyncService,
   TournamentSubEventSyncData,
   TournamentSubEventSyncService,
 } from './services';
+import { TournamentSyncJobData } from '../queues/sync.queue';
 
 // Union of all job data types for this processor
 type TournamentJobData =
+  | TournamentSyncJobData
   | TournamentEventSyncData
   | TournamentSubEventSyncData
   | TournamentDrawSyncData
@@ -37,6 +40,7 @@ export class TournamentEventProcessor extends WorkerHost {
   private readonly logger = new Logger(TournamentEventProcessor.name);
 
   constructor(
+    private readonly tournamentSyncService: TournamentSyncService,
     private readonly tournamentGameSyncService: TournamentGameSyncService,
     private readonly tournamentEventSyncService: TournamentEventSyncService,
     private readonly tournamentSubEventSyncService: TournamentSubEventSyncService,
@@ -62,7 +66,11 @@ export class TournamentEventProcessor extends WorkerHost {
 
     switch (jobType) {
       case 'sync-structure':
-        throw new Error('Structure sync jobs should not be processed here - use specialized processors');
+        await this.tournamentSyncService.processStructureSync(
+          job as Job<TournamentSyncJobData>,
+          updateProgress,
+        );
+        break;
 
       case 'event':
         await this.tournamentEventSyncService.processEventSync(
@@ -129,7 +137,7 @@ export class TournamentEventProcessor extends WorkerHost {
    */
   private extractJobType(jobName: string): string {
     // Handle special cases with hyphens in the type name
-    if (jobName.includes('tournament-sync-structure')) {
+    if (jobName.includes('tournament-structure-sync')) {
       return 'sync-structure';
     }
     if (jobName.includes('tournament-ranking-recalc')) {
