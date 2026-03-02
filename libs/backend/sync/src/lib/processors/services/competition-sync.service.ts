@@ -1,7 +1,7 @@
 import { CompetitionEncounter } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { IsNull, MoreThanOrEqual, Not } from 'typeorm';
+import { And, IsNull, LessThan, MoreThanOrEqual } from 'typeorm';
 import { StructureSyncJobData } from '../../queues/sync.queue';
 import { SyncService } from '../../services/sync.service';
 
@@ -16,33 +16,42 @@ export class CompetitionSyncService {
    * (pending results) and those with scores (may need updates) - then
    * queue an encounter sync for each, deduplicating by encounter ID.
    */
-  async processStructureSync(
+  async processSync(
     job: Job<StructureSyncJobData>,
     updateProgress: (progress: number) => Promise<void>,
   ): Promise<void> {
     await updateProgress(0);
 
+    const dayAfterTomorrow = new Date();
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+    dayAfterTomorrow.setHours(0, 0, 0, 0);
+
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
-    // Encounters from the past month without a score yet (primary targets)
-    const pendingEncounters = await CompetitionEncounter.find({
-      where: { date: MoreThanOrEqual(oneMonthAgo), homeScore: IsNull() },
+    // All encounters from the last 2 weeks (regardless of score), up to today
+    const recentEncounters = await CompetitionEncounter.find({
+      where: { date: And(MoreThanOrEqual(twoWeeksAgo), LessThan(dayAfterTomorrow)) },
       select: ['id'],
     });
 
-    // Encounters from the past month that already have scores
-    const scoredEncounters = await CompetitionEncounter.find({
-      where: { date: MoreThanOrEqual(oneMonthAgo), homeScore: Not(IsNull()) },
+    // Encounters between 1 month ago and 2 weeks ago without a score
+    const pendingOlderEncounters = await CompetitionEncounter.find({
+      where: { date: And(MoreThanOrEqual(oneMonthAgo), LessThan(twoWeeksAgo)), homeScore: IsNull() },
       select: ['id'],
     });
 
     // Combine and deduplicate
-    const uniqueIds = [...new Set([...pendingEncounters.map((e) => e.id), ...scoredEncounters.map((e) => e.id)])];
+    const uniqueIds = [
+      ...new Set([...recentEncounters.map((e) => e.id), ...pendingOlderEncounters.map((e) => e.id)]),
+    ];
 
     this.logger.log(
       `Found ${uniqueIds.length} encounters to sync ` +
-        `(${pendingEncounters.length} pending, ${scoredEncounters.length} scored)`,
+        `(${recentEncounters.length} recent 2w, ${pendingOlderEncounters.length} pending older)`,
     );
 
     if (uniqueIds.length === 0) {

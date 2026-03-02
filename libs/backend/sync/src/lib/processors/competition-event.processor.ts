@@ -62,7 +62,7 @@ export class CompetitionEventProcessor extends WorkerHost {
 
     switch (jobType) {
       case 'sync-structure':
-        await this.competitionSyncService.processStructureSync(
+        await this.competitionSyncService.processSync(
           job as Job<StructureSyncJobData>,
           updateProgress,
         );

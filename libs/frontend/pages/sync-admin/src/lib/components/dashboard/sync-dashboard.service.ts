@@ -201,8 +201,6 @@ export class SyncDashboardService {
       }
     });
 
-    console.log(`[SyncDashboard] Hierarchy built: ${rootJobs.length} root jobs, ${attachedToParent} attached to parents, ${orphanedJobs} orphaned (parent not found)`);
-
     // Sort children within each parent by timestamp (newest first)
     this.sortJobsRecursively(rootJobs);
 
