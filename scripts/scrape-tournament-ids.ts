@@ -15,6 +15,9 @@ interface TournamentInfo {
   eventUrl: string;
   eventName: string;
   tournamentId: string | null;
+  status: string | null;
+  category: string | null;
+  group: string | null;
 }
 
 async function delay(ms: number): Promise<void> {
@@ -74,6 +77,27 @@ function extractTournamentIds(html: string): string[] {
   return [...new Set(ids)];
 }
 
+function extractFieldValue(html: string, fieldName: string): string | null {
+  const pattern = new RegExp(
+    `<strong>${fieldName}[^<]*<\\/strong>\\s*([^<]+?)\\s*(?:<|$)`,
+    'i',
+  );
+  const match = pattern.exec(html);
+  return match ? match[1].trim() : null;
+}
+
+function extractStatus(html: string): string | null {
+  return extractFieldValue(html, 'Status:');
+}
+
+function extractCategory(html: string): string | null {
+  return extractFieldValue(html, 'Categorie:');
+}
+
+function extractGroup(html: string): string | null {
+  return extractFieldValue(html, 'Groep:');
+}
+
 function extractEventName(url: string): string {
   const parts = url.split('/');
   return parts[parts.length - 1] || 'Unknown';
@@ -113,11 +137,17 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
         eventUrl,
         eventName,
         tournamentId: null,
+        status: null,
+        category: null,
+        group: null,
       });
       continue;
     }
 
     const tournamentIds = extractTournamentIds(eventHtml);
+    const status = extractStatus(eventHtml);
+    const category = extractCategory(eventHtml);
+    const group = extractGroup(eventHtml);
 
     if (tournamentIds.length > 0) {
       console.log(` ✅ ${tournamentIds.length} tournament(s)`);
@@ -127,6 +157,9 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
           eventUrl,
           eventName,
           tournamentId: id,
+          status,
+          category,
+          group,
         });
       }
     } else {
@@ -136,6 +169,9 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
         eventUrl,
         eventName,
         tournamentId: null,
+        status,
+        category,
+        group,
       });
     }
   }
@@ -199,6 +235,9 @@ async function main() {
       eventName: r.eventName,
       tournamentId: r.tournamentId,
       eventUrl: r.eventUrl,
+      status: r.status,
+      category: r.category,
+      group: r.group,
     })),
   };
 
