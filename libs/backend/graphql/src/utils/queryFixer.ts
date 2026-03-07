@@ -14,9 +14,9 @@ export class GraphQLWhereConverter {
 
     // Handle array input - convert each item and flatten
     if (Array.isArray(where)) {
-      const results = where.map(item => this.convert<T>(item));
+      const results = where.map((item) => this.convert<T>(item));
       // If any result is an array, we need to flatten appropriately
-      const flattened = results.flatMap(result => Array.isArray(result) ? result : [result]);
+      const flattened = results.flatMap((result) => (Array.isArray(result) ? result : [result]));
       return flattened.length === 1 ? flattened[0] : flattened;
     }
 
@@ -64,7 +64,7 @@ export class GraphQLWhereConverter {
     // Check if it's an operator object (contains typed operators)
     const keys = Object.keys(value);
     const typedOperators = ['eq', 'ne', 'in', 'nin', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'between', 'isNull', 'raw'];
-    
+
     if (keys.length === 1 && typedOperators.includes(keys[0])) {
       return this.convertOperator(keys[0], value[keys[0]]);
     }
@@ -139,4 +139,3 @@ export class GraphQLWhereConverter {
     }
   }
 }
-
