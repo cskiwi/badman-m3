@@ -1,9 +1,0 @@
-{
-  "executors": {
-    "set-env": {
-      "implementation": "./src/executors/set-env/executor",
-      "schema": "./src/executors/set-env/schema.json",
-      "description": "set-env executor"
-    }
-  }
-}

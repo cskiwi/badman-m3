@@ -123,8 +123,5 @@
         }
       }
     },
-    "set-env": {
-      "executor": "@app/set-env:set-env"
-    }
   }
 }

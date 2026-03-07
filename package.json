@@ -11,7 +11,6 @@
     "start:prod": "node ./dist/apps/app/server/server.mjs",
     "start:prod:worker": "node ./dist/apps/sync-worker/main.js",
     "build": "nx run-many -t build --prod",
-    "build:prod": "npx nx run app:set-env && nx run-many -t build --prod",
     "lint": "nx run-many -t lint",
     "migrate:create": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-generate",
     "migrate": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-run",

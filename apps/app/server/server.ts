@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import bootstrap from '../src/main.server';
 import { ConfigService } from '@nestjs/config';
-import { NAVIGATOR } from '@app/frontend-utils';
+import { BASE_URL, NAVIGATOR } from '@app/frontend-utils';
 import cookieParser from 'cookie-parser';
 import { REQUEST } from '@angular/core';
 
@@ -52,6 +52,10 @@ export async function app() {
           publicPath: browserDistFolder,
           providers: [
             { provide: APP_BASE_HREF, useValue: baseUrl },
+            {
+              provide: BASE_URL,
+              useValue: process.env['BASE_URL'] ? `https://${process.env['BASE_URL']}` : 'http://localhost:5200',
+            },
             {
               provide: REQUEST,
               useValue: {
