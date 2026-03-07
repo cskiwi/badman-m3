@@ -18,6 +18,9 @@ interface TournamentInfo {
   status: string | null;
   category: string | null;
   group: string | null;
+  official: boolean;
+  levelMin: number | null;
+  levelMax: number | null;
 }
 
 async function delay(ms: number): Promise<void> {
@@ -98,6 +101,17 @@ function extractGroup(html: string): string | null {
   return extractFieldValue(html, 'Groep:');
 }
 
+function parseOfficialCategory(category: string | null): {
+  official: boolean;
+  levelMin: number | null;
+  levelMax: number | null;
+} {
+  if (!category) return { official: false, levelMin: null, levelMax: null };
+  const match = /^\s*(\d+)\s*-\s*(\d+)\s*$/.exec(category);
+  if (!match) return { official: false, levelMin: null, levelMax: null };
+  return { official: true, levelMin: Number(match[1]), levelMax: Number(match[2]) };
+}
+
 function extractEventName(url: string): string {
   const parts = url.split('/');
   return parts[parts.length - 1] || 'Unknown';
@@ -140,6 +154,9 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
         status: null,
         category: null,
         group: null,
+        official: false,
+        levelMin: null,
+        levelMax: null,
       });
       continue;
     }
@@ -148,6 +165,7 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
     const status = extractStatus(eventHtml);
     const category = extractCategory(eventHtml);
     const group = extractGroup(eventHtml);
+    const { official, levelMin, levelMax } = parseOfficialCategory(category);
 
     if (tournamentIds.length > 0) {
       console.log(` ✅ ${tournamentIds.length} tournament(s)`);
@@ -160,6 +178,9 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
           status,
           category,
           group,
+          official,
+          levelMin,
+          levelMax,
         });
       }
     } else {
@@ -172,6 +193,9 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
         status,
         category,
         group,
+        official,
+        levelMin,
+        levelMax,
       });
     }
   }
@@ -238,6 +262,9 @@ async function main() {
       status: r.status,
       category: r.category,
       group: r.group,
+      official: r.official,
+      levelMin: r.levelMin,
+      levelMax: r.levelMax,
     })),
   };
 
