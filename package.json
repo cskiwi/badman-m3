@@ -14,8 +14,7 @@
     "lint": "nx run-many -t lint",
     "migrate:create": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-generate",
     "migrate": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-run",
-    "migrate:undo": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-revert",
-    "postinstall": "patch-package"
+    "migrate:undo": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-revert"
   },
   "private": true,
   "dependencies": {
