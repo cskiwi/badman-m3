@@ -86,7 +86,8 @@ export const appConfig: ApplicationConfig = {
         if (isPlatformBrowser(platformId)) {
           return window.location.origin;
         }
-        return environment.baseUrl || `http://localhost:5000`;
+        const envBaseUrl = typeof process !== 'undefined' ? process.env?.['BASE_URL'] : undefined;
+        return envBaseUrl ? `https://${envBaseUrl}` : `http://localhost:5000`;
       },
       deps: [PLATFORM_ID],
     },
