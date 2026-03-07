@@ -18,7 +18,10 @@ export async function app() {
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
 
-  const commonEngine = new CommonEngine();
+  const allowedHost = process.env['BASE_URL'] ?? 'localhost';
+  const commonEngine = new CommonEngine({
+    allowedHosts: [allowedHost, 'localhost'],
+  });
 
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
@@ -48,7 +51,7 @@ export async function app() {
         const html = await commonEngine.render({
           bootstrap,
           documentFilePath: indexHtml,
-          url: `${protocol}://${headers.host}${originalUrl}`,
+          url: `${headers['x-forwarded-proto'] ?? protocol}://${headers['x-forwarded-host'] ?? headers.host}${originalUrl}`,
           publicPath: browserDistFolder,
           providers: [
             { provide: APP_BASE_HREF, useValue: baseUrl },
