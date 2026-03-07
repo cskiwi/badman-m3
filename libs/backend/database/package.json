@@ -6,7 +6,7 @@
     "tslib": "^2.8.1",
     "@nestjs/common": "^11.1.5",
     "@nestjs/typeorm": "^11.0.0",
-    "@nestjs/config": "4.0.2",
+    "@nestjs/config": "4.0.3",
     "typeorm": "^0.3.25"
   },
   "type": "commonjs",

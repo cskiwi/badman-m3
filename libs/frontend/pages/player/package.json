@@ -7,7 +7,7 @@
     "@app/frontend-modules-seo": "*",
     "@app/frontend-components": "*",
     "@app/frontend-modules-auth": "*",
-    "@angular/common": "21.0.9",
+    "@angular/common": "^21.2.1",
     "@angular/core": "20.1.0",
     "@ngx-translate/core": "^16.0.4",
     "primeng": "^20.0.0-rc.3",

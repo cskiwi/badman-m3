@@ -11,14 +11,15 @@
     "@app/backend-search": "*",
     "@app/backend-translate": "*",
     "@nestjs/common": "^11.1.5",
-    "@nestjs/config": "4.0.2",
+    "@nestjs/config": "4.0.3",
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/core": "^11.1.5",
     "@nestjs/swagger": "^11.2.0",
     "@app/backend-sync": "*",
     "@nestjs/platform-socket.io": "^11.1.5",
     "winston": "^3.17.0",
-    "nest-winston": "^1.10.2"
+    "nest-winston": "^1.10.2",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "type": "commonjs",
   "main": "./src/index.js",
