@@ -381,6 +381,26 @@ export class SyncResolver {
     };
   }
 
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerRankingSync(
+    @User() user: Player,
+    @Args('startDate', { nullable: true }) startDate?: string,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger ranking sync');
+    }
+
+    await this.syncService.queueRankingSync(startDate ? { startDate } : undefined);
+
+    return {
+      message: startDate
+        ? `Ranking sync queued from ${startDate}`
+        : 'Ranking sync queued (incremental from last update)',
+      success: true,
+    };
+  }
+
   @Query(() => String)
   @UseGuards(PermGuard)
   async syncQueueStatsByName(@User() user: Player): Promise<string> {

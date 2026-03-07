@@ -327,3 +327,65 @@ export interface TeamMatchResponse {
     TeamMatch: TeamMatch;
   };
 }
+
+// ─── Ranking API types ────────────────────────────────────────────────────────
+
+export interface RankingListEntry {
+  Code: string;
+  Name: string;
+}
+
+export interface RankingCategory {
+  Code: string;
+  Name: string;
+}
+
+export interface RankingPublication {
+  Code: string;
+  Name: string;
+  Year: string;
+  Week: string;
+  PublicationDate: string;
+  Visible: boolean;
+}
+
+export interface RankingPlayerEntry {
+  Rank: number;
+  PreviousRank?: number;
+  Level: number;
+  Totalpoints: number;
+  Player1: {
+    Code: string;
+    MemberID: string;
+    Name: string;
+    CountryCode?: string;
+  };
+}
+
+export interface RankingListResponse {
+  Result: {
+    Version: string;
+    Ranking: RankingListEntry | RankingListEntry[];
+  };
+}
+
+export interface RankingCategoriesResponse {
+  Result: {
+    Version: string;
+    RankingCategory: RankingCategory | RankingCategory[];
+  };
+}
+
+export interface RankingPublicationsResponse {
+  Result: {
+    Version: string;
+    RankingPublication: RankingPublication | RankingPublication[];
+  };
+}
+
+export interface RankingPlacesResponse {
+  Result: {
+    Version: string;
+    RankingPublicationPoints: RankingPlayerEntry | RankingPlayerEntry[];
+  };
+}

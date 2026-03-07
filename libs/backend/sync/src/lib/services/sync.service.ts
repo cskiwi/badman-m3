@@ -14,18 +14,20 @@ import {
 import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
   GameSyncJobData,
-  StructureSyncJobData,
-  TournamentSyncJobData,
-  TournamentRankingRecalcJobData,
-  SYNC_QUEUE,
-  TOURNAMENT_DISCOVERY_QUEUE,
-  TEAM_MATCHING_QUEUE,
   JOB_TYPES,
+  RANKING_SYNC_QUEUE,
+  RankingSyncInitJobData,
+  StructureSyncJobData,
+  SYNC_QUEUE,
+  TEAM_MATCHING_QUEUE,
   TeamMatchingJobData,
-  TournamentDiscoveryJobData,
+  TOURNAMENT_DISCOVERY_QUEUE,
   TournamentAddByCodeJobData,
   TOURNAMENT_EVENT_QUEUE,
   COMPETITION_EVENT_QUEUE,
+  TournamentDiscoveryJobData,
+  TournamentRankingRecalcJobData,
+  TournamentSyncJobData,
 } from '../queues/sync.queue';
 
 @Injectable()
@@ -47,6 +49,9 @@ export class SyncService {
     @InjectQueue(TEAM_MATCHING_QUEUE)
     private readonly teamMatchingQueue: Queue,
 
+    @InjectQueue(RANKING_SYNC_QUEUE)
+    private readonly rankingSyncQueue: Queue,
+
     @InjectFlowProducer(COMPETITION_EVENT_QUEUE)
     private readonly competitionSyncFlow: FlowProducer,
 
@@ -58,7 +63,7 @@ export class SyncService {
    * Get all queue instances as an array for easy iteration
    */
   private getAllQueues(): Queue[] {
-    return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue];
+    return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue, this.rankingSyncQueue];
   }
 
 
@@ -72,6 +77,7 @@ export class SyncService {
       [COMPETITION_EVENT_QUEUE]: this.competitionEventQueue,
       [TOURNAMENT_EVENT_QUEUE]: this.tournamentEventQueue,
       [TEAM_MATCHING_QUEUE]: this.teamMatchingQueue,
+      [RANKING_SYNC_QUEUE]: this.rankingSyncQueue,
     };
   }
 
@@ -131,6 +137,23 @@ export class SyncService {
   @Cron('0 */12 * * *')
   async scheduleTournamentSync(): Promise<void> {
     await this.queueTournamentSync();
+  }
+
+  /**
+   * BBF Rating ranking sync - runs every Monday at 4 AM
+   */
+  @Cron('0 4 * * 1')
+  async scheduleRankingSync(): Promise<void> {
+    await this.queueRankingSync();
+  }
+
+  /**
+   * Queue BBF Rating ranking sync init job
+   */
+  async queueRankingSync(data?: RankingSyncInitJobData): Promise<void> {
+    await this.rankingSyncQueue.add(JOB_TYPES.RANKING_SYNC_INIT, data ?? {}, {
+      priority: 5,
+    });
   }
 
   /**

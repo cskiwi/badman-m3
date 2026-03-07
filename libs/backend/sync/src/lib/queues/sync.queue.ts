@@ -5,6 +5,7 @@ export const TOURNAMENT_DISCOVERY_QUEUE = 'tournament-discovery';
 export const COMPETITION_EVENT_QUEUE = 'competition-event';
 export const TOURNAMENT_EVENT_QUEUE = 'tournament-event';
 export const TEAM_MATCHING_QUEUE = 'team-matching';
+export const RANKING_SYNC_QUEUE = 'ranking-sync';
 
 // Legacy queue name for backwards compatibility
 export const SYNC_QUEUE = 'sync';
@@ -31,6 +32,9 @@ export const JOB_TYPES = {
   TEAM_MATCHING: 'team-matching',
   // Ranking point recalculation
   TOURNAMENT_RANKING_RECALC: 'tournament-ranking-recalc',
+  // BBF Rating ranking sync
+  RANKING_SYNC_INIT: 'ranking-sync-init',
+  RANKING_SYNC_PUBLICATION: 'ranking-sync-publication',
 } as const;
 
 // Helper function to create dynamic job names
@@ -71,6 +75,7 @@ export const ALL_SYNC_QUEUES = [
   COMPETITION_EVENT_QUEUE,
   TOURNAMENT_EVENT_QUEUE,
   TEAM_MATCHING_QUEUE,
+  RANKING_SYNC_QUEUE,
 ] as const;
 
 // Queue to job type mapping for easy reference
@@ -79,6 +84,7 @@ export const QUEUE_JOB_TYPE_MAP = {
   [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
   [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC, JOB_TYPES.TOURNAMENT_RANKING_RECALC],
   [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
+  [RANKING_SYNC_QUEUE]: [JOB_TYPES.RANKING_SYNC_INIT, JOB_TYPES.RANKING_SYNC_PUBLICATION],
   [SYNC_QUEUE]: [], // Legacy queue
 } as const;
 
@@ -141,6 +147,27 @@ export interface GameSyncJobData {
 export interface TournamentRankingRecalcJobData {
   tournamentId: string;
   action: 'create' | 'remove';
+  metadata?: JobDisplayMetadata;
+}
+
+export interface RankingSyncInitJobData {
+  startDate?: string; // ISO date string, defaults to system's updateLastUpdate
+  metadata?: JobDisplayMetadata;
+}
+
+export interface RankingSyncCategoryData {
+  code: string;
+  name: string;
+}
+
+export interface RankingSyncPublicationJobData {
+  rankingCode: string;
+  systemId: string;
+  publicationCode: string;
+  publicationDate: string; // ISO date string
+  usedForUpdate: boolean;
+  categories: RankingSyncCategoryData[];
+  isLastPublication: boolean;
   metadata?: JobDisplayMetadata;
 }
 

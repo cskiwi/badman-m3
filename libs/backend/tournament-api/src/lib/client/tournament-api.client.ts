@@ -9,6 +9,14 @@ import {
   Match,
   MatchResponse,
   MatchesResponse,
+  RankingCategory,
+  RankingCategoriesResponse,
+  RankingListEntry,
+  RankingListResponse,
+  RankingPlayerEntry,
+  RankingPlacesResponse,
+  RankingPublication,
+  RankingPublicationsResponse,
   Stage,
   StagesResponse,
   Team,
@@ -433,5 +441,46 @@ export class TournamentApiClient {
    */
   async getDrawDetails(tournamentCode: string, drawCode: string): Promise<TournamentDraw> {
     return this.getTournamentDraw(tournamentCode, drawCode);
+  }
+
+  // ─── Ranking API ────────────────────────────────────────────────────────────
+
+  /**
+   * Get all available ranking systems
+   */
+  async getRankings(): Promise<RankingListEntry[]> {
+    const response = await this.makeRequest<RankingListResponse>('/1.0/Ranking');
+    const ranking = response.Result.Ranking;
+    return Array.isArray(ranking) ? ranking : ranking ? [ranking] : [];
+  }
+
+  /**
+   * Get all categories for a ranking system
+   */
+  async getRankingCategories(rankingCode: string): Promise<RankingCategory[]> {
+    const response = await this.makeRequest<RankingCategoriesResponse>(`/1.0/Ranking/${rankingCode}/Category`);
+    const categories = response.Result.RankingCategory;
+    return Array.isArray(categories) ? categories : categories ? [categories] : [];
+  }
+
+  /**
+   * Get all publications (weekly snapshots) for a ranking system
+   */
+  async getRankingPublications(rankingCode: string): Promise<RankingPublication[]> {
+    const response = await this.makeRequest<RankingPublicationsResponse>(`/1.0/Ranking/${rankingCode}/Publication`);
+    const publications = response.Result.RankingPublication;
+    return Array.isArray(publications) ? publications : publications ? [publications] : [];
+  }
+
+  /**
+   * Get player ranking entries for a specific publication and category.
+   * Returns RankingPublicationPoints entries with MemberID, Level, Totalpoints, Rank.
+   */
+  async getRankingPlacesByCategory(rankingCode: string, publicationCode: string, categoryCode: string): Promise<RankingPlayerEntry[]> {
+    const response = await this.makeRequest<RankingPlacesResponse>(
+      `/1.0/Ranking/${rankingCode}/Publication/${publicationCode}/Category/${categoryCode}`,
+    );
+    const entries = response.Result.RankingPublicationPoints;
+    return Array.isArray(entries) ? entries : entries ? [entries] : [];
   }
 }

@@ -14,7 +14,7 @@ import {
   TournamentEventEventsListener,
   TeamMatchingEventsListener,
 } from './listeners/sync-events.listener';
-import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
+import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, RANKING_SYNC_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
 
 @Module({
   imports: [
@@ -62,6 +62,9 @@ import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE } from
     }),
     BullModule.registerFlowProducer({
       name: COMPETITION_EVENT_QUEUE,
+    }),
+    BullModule.registerFlowProducer({
+      name: RANKING_SYNC_QUEUE,
     }),
 
     TournamentApiModule,
