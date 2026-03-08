@@ -242,8 +242,8 @@ export class SyncService {
           this.logger.warn(`Cannot remove active job ${jobId}, skipping cleanup`);
           return;
         }
-        await queue.remove(jobId);
-        this.logger.log(`Removed stale ${state} job ${jobId} to allow re-queueing`);
+        await existingJob.remove({ removeChildren: true });
+        this.logger.log(`Removed stale ${state} job ${jobId} (with children) to allow re-queueing`);
       }
     } catch (error) {
       // Job removal can fail if children are locked - log and continue
