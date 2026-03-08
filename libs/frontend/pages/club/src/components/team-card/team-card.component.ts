@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BadgeModule } from 'primeng/badge';
@@ -6,13 +6,12 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Team } from '@app/models';
 import { PhoneNumberPipe } from '@app/frontend-utils';
-import { TeamCardService } from './team-card.service';
+import { TeamGameStatsComponent } from './team-game-stats.component';
 
 @Component({
   selector: 'app-team-card',
   standalone: true,
-  imports: [RouterModule, TranslateModule, BadgeModule, ButtonModule, SkeletonModule, PhoneNumberPipe],
-  providers: [TeamCardService],
+  imports: [RouterModule, TranslateModule, BadgeModule, ButtonModule, SkeletonModule, PhoneNumberPipe, TeamGameStatsComponent],
   template: `
     <div class="border-surface rounded-border border">
       <div class="flex items-center justify-between bg-highlight p-2">
@@ -22,12 +21,7 @@ import { TeamCardService } from './team-card.service';
             <p-badge [value]="team().abbreviation!" />
           }
           @if (canEdit()) {
-            <button
-              pButton
-              icon="pi pi-pencil"
-              class="p-button-text p-button-rounded p-button-sm"
-              (click)="editClicked.emit(team())"
-            ></button>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-sm" (click)="editClicked.emit(team())"></button>
           }
         </div>
       </div>
@@ -42,11 +36,7 @@ import { TeamCardService } from './team-card.service';
           @if (team().email) {
             <div class="flex items-center gap-1">
               <i class="pi pi-envelope text-xs"></i>
-              <a
-                [href]="'mailto:' + team().email"
-                class="hover:text-primary-600 hover:underline no-underline text-muted-color"
-                >{{ team().email }}</a
-              >
+              <a [href]="'mailto:' + team().email" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{ team().email }}</a>
             </div>
           }
           @if (team().phone) {
@@ -95,58 +85,38 @@ import { TeamCardService } from './team-card.service';
         </div>
 
         <!-- Team Stats -->
-        <div class="grid grid-cols-3 gap-2 text-center my-3 border-t border-surface pt-3">
-          @if (service.loading()) {
-            <div class="p-2">
-              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1" />
-              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto" />
-            </div>
-            <div class="p-2">
-              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1" />
-              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto" />
-            </div>
-            <div class="p-2">
-              <p-skeleton width="2rem" height="1.25rem" styleClass="mx-auto mb-1" />
-              <p-skeleton width="3rem" height="0.75rem" styleClass="mx-auto" />
-            </div>
-          } @else {
-            <div class="p-2">
-              <div class="font-bold text-primary-600">{{ service.stats().gamesPlayed }}</div>
-              <div class="text-xs text-surface-600">{{ 'all.team.games' | translate }}</div>
-            </div>
-            <div class="p-2">
-              <div class="font-bold text-green-600">{{ service.stats().gamesWon }}</div>
-              <div class="text-xs text-surface-600">{{ 'all.team.wins' | translate }}</div>
-            </div>
-            <div class="p-2">
-              <div class="font-bold text-blue-600">{{ service.winRate() }}%</div>
-              <div class="text-xs text-surface-600">{{ 'all.team.winRate' | translate }}</div>
+        @if (team().id) {
+          @defer (on idle) {
+            <app-team-game-stats [teamId]="team().id!" />
+          } @placeholder {
+            <div class="grid grid-cols-3 gap-2 text-center my-3 border-t border-surface pt-3">
+              <div class="p-2">
+                <p-skeleton width="2rem" height="1.25rem" class="mx-auto mb-1" />
+                <p-skeleton width="3rem" height="0.75rem" class="mx-auto" />
+              </div>
+              <div class="p-2">
+                <p-skeleton width="2rem" height="1.25rem" class="mx-auto mb-1" />
+                <p-skeleton width="3rem" height="0.75rem" class="mx-auto" />
+              </div>
+              <div class="p-2">
+                <p-skeleton width="2rem" height="1.25rem" class="mx-auto mb-1" />
+                <p-skeleton width="3rem" height="0.75rem" class="mx-auto" />
+              </div>
             </div>
           }
-        </div>
+        }
       </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeamCardComponent {
-  readonly service = inject(TeamCardService);
-
   team = input.required<Team>();
   canEdit = input<boolean>(false);
 
   editClicked = output<Team>();
 
   expanded = false;
-
-  constructor() {
-    effect(() => {
-      const team = this.team();
-      if (team?.id) {
-        this.service.setTeamId(team.id);
-      }
-    });
-  }
 
   togglePlayers() {
     this.expanded = !this.expanded;
