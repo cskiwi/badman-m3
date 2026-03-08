@@ -81,7 +81,7 @@ import { TeamCardService } from './team-card.service';
                 @for (membership of team().teamPlayerMemberships; track membership.id) {
                   @if (membership.player) {
                     <a
-                      [routerLink]="['/player', membership.player.id]"
+                      [routerLink]="['/players', membership.player.slug]"
                       class="flex items-center gap-2 p-1 rounded-lg hover:bg-highlight-emphasis text-color transition-colors cursor-pointer"
                     >
                       <i class="pi pi-user text-xs text-muted-color"></i>

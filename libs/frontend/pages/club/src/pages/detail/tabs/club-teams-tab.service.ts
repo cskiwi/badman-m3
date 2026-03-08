@@ -49,6 +49,7 @@ export class ClubTeamsTabService {
                       playerId
                       player {
                         id
+                        slug
                         fullName
                         firstName
                         lastName

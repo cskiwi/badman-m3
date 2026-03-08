@@ -108,6 +108,7 @@ export class DetailService {
                       playerId
                       player {
                         id
+                        slug
                         fullName
                         firstName
                         lastName
