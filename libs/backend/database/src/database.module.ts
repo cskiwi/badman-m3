@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 
 import { ConfigService } from '@nestjs/config';
 import { initializeDataSource } from './orm.config';
-
 @Module({
   imports: [
     ConfigModule,

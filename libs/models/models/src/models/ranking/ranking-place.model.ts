@@ -1,20 +1,27 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import {
+  AfterInsert,
+  AfterRemove,
+  AfterUpdate,
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
-  Index,
+  MoreThan,
   PrimaryGeneratedColumn,
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { Player } from '../player.model';
-import { RankingSystem } from './ranking-system.model';
-import { RankingGroup } from './ranking-group.model';
 import { SortableField, WhereField } from '@app/utils';
+import { Game } from '../event/game.model';
+import { GamePlayerMembership } from '../event/game-player-membership';
+import { Player } from '../player.model';
+import { RankingGroup } from './ranking-group.model';
+import { RankingLastPlace } from './ranking-last-place.model';
+import { RankingSystem } from './ranking-system.model';
 
 @Index(["playerId", "systemId", "rankingDate"], { unique: true })
 @ObjectType('RankingPlace', { description: 'A RankingPlace' })
@@ -180,4 +187,138 @@ export class RankingPlace extends BaseEntity {
   @ManyToOne(() => RankingGroup)
   @JoinColumn({ name: 'groupId' })
   declare group?: Relation<RankingGroup>;
+
+
+  @AfterInsert()
+  async afterInsertHook(): Promise<void> {
+    if (!this.playerId || !this.systemId || !this.rankingDate) return;
+    await RankingPlace.updateLatestRankings([this], 'create');
+  }
+
+  @AfterUpdate()
+  async afterUpdateHook(): Promise<void> {
+    if (!this.playerId || !this.systemId || !this.rankingDate) return;
+    await Promise.all([
+      RankingPlace.updateLatestRankings([this], 'update'),
+      RankingPlace.updateGameRanking([this]),
+    ]);
+  }
+
+  @AfterRemove()
+  async afterRemoveHook(): Promise<void> {
+    if (!this.playerId || !this.systemId) return;
+    const lastRanking = await RankingPlace.findOne({
+      where: { playerId: this.playerId, systemId: this.systemId },
+      order: { rankingDate: 'DESC' },
+    });
+    if (lastRanking) {
+      await RankingPlace.updateLatestRankings([lastRanking], 'destroy');
+    }
+  }
+
+  private static async updateLatestRankings(
+    instances: RankingPlace[],
+    type: 'create' | 'update' | 'destroy',
+  ): Promise<void> {
+    let instancesToProcess = instances;
+
+    if (type !== 'create') {
+      const existing = await RankingLastPlace.find({
+        where: instances.map((i) => ({ playerId: i.playerId, systemId: i.systemId })),
+      });
+      instancesToProcess = instances.filter((i) =>
+        existing.some((e) => e.playerId === i.playerId && e.systemId === i.systemId),
+      );
+    }
+
+    for (const instance of instancesToProcess) {
+      const lastPlace = await RankingLastPlace.findOne({
+        where: { playerId: instance.playerId, systemId: instance.systemId },
+      });
+
+      const data = RankingPlace.asLastRankingPlace(instance);
+
+      if (!lastPlace) {
+        await RankingLastPlace.save(RankingLastPlace.create(data));
+      } else if (
+        !lastPlace.rankingDate ||
+        !instance.rankingDate ||
+        new Date(instance.rankingDate) >= new Date(lastPlace.rankingDate)
+      ) {
+        const updateData = Object.fromEntries(
+          Object.entries(data).filter(([, value]) => value !== undefined && value !== null),
+        );
+        await RankingLastPlace.update({ id: lastPlace.id }, updateData);
+      }
+    }
+  }
+
+  private static async updateGameRanking(instances: RankingPlace[]): Promise<void> {
+    try {
+      for (const instance of instances) {
+        const nextRankingPlace = await RankingPlace.findOne({
+          where: {
+            playerId: instance.playerId,
+            systemId: instance.systemId,
+            rankingDate: MoreThan(instance.rankingDate),
+          },
+          order: { rankingDate: 'ASC' },
+        });
+
+        const endDate = nextRankingPlace?.rankingDate;
+
+        const qb = GamePlayerMembership.createQueryBuilder('gpm')
+          .innerJoin(Game, 'game', 'game.id = gpm.gameId')
+          .where('gpm.playerId = :playerId', { playerId: instance.playerId })
+          .andWhere('game.playedAt >= :startDate', { startDate: instance.rankingDate });
+
+        if (endDate) {
+          qb.andWhere('game.playedAt < :endDate', { endDate });
+        }
+
+        const memberships = await qb.getMany();
+
+        for (const membership of memberships) {
+          await GamePlayerMembership.update(membership.id, {
+            systemId: instance.systemId,
+            single: instance.single,
+            double: instance.double,
+            mix: instance.mix,
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to update game rankings', e);
+    }
+  }
+
+  private static asLastRankingPlace(instance: RankingPlace): Partial<RankingLastPlace> {
+    return {
+      rankingDate: instance.rankingDate,
+      gender: instance.gender,
+      singlePoints: instance.singlePoints,
+      mixPoints: instance.mixPoints,
+      doublePoints: instance.doublePoints,
+      singlePointsDowngrade: instance.singlePointsDowngrade,
+      mixPointsDowngrade: instance.mixPointsDowngrade,
+      doublePointsDowngrade: instance.doublePointsDowngrade,
+      singleRank: instance.singleRank,
+      mixRank: instance.mixRank,
+      doubleRank: instance.doubleRank,
+      totalSingleRanking: instance.totalSingleRanking,
+      totalMixRanking: instance.totalMixRanking,
+      totalDoubleRanking: instance.totalDoubleRanking,
+      totalWithinSingleLevel: instance.totalWithinSingleLevel,
+      totalWithinMixLevel: instance.totalWithinMixLevel,
+      totalWithinDoubleLevel: instance.totalWithinDoubleLevel,
+      single: instance.single,
+      mix: instance.mix,
+      double: instance.double,
+      singleInactive: instance.singleInactive,
+      mixInactive: instance.mixInactive,
+      doubleInactive: instance.doubleInactive,
+      playerId: instance.playerId,
+      systemId: instance.systemId,
+    };
+  }
 }

@@ -1,6 +1,6 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { getRankingProtected } from '@app/backend-ranking';
-import { Player, RankingLastPlace, RankingPlace, RankingSystem } from '@app/models';
+import { Player, RankingPlace, RankingSystem } from '@app/models';
 import { RankingSystems } from '@app/models-enum';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
@@ -281,10 +281,25 @@ export class RankingSyncService {
     const chunkSize = 500;
     for (let i = 0; i < places.length; i += chunkSize) {
       const chunk = places.slice(i, i + chunkSize);
-      const result = await RankingPlace.upsert(chunk, {
-        conflictPaths: ['playerId', 'systemId', 'rankingDate'],
+
+      // Find existing records to get their IDs (all places share the same systemId + rankingDate)
+      const existing = await RankingPlace.find({
+        where: {
+          playerId: In(chunk.map((p) => p.playerId)),
+          systemId: chunk[0].systemId,
+          rankingDate: chunk[0].rankingDate,
+        },
+        select: ['id', 'playerId'],
       });
-      this.logger.debug(`Chunk ${Math.floor(i / chunkSize) + 1}: upserted ${result.identifiers.length} records`);
+
+      const existingById = new Map(existing.map((e) => [e.playerId, e.id]));
+      for (const place of chunk) {
+        const id = existingById.get(place.playerId);
+        if (id) place.id = id;
+      }
+
+      const saved = await RankingPlace.save(chunk);
+      this.logger.debug(`Chunk ${Math.floor(i / chunkSize) + 1}: saved ${saved.length} records`);
     }
 
     this.logger.log(`Upserted ${places.length} ranking places for publication ${publicationCode}`);
@@ -326,4 +341,5 @@ export class RankingSyncService {
     const margin = firstMonday.add(2, 'day');
     return (d.isSame(firstMonday) || (d.isAfter(firstMonday) && d.isBefore(margin))) ;
   }
+
 }
