@@ -47,60 +47,41 @@ export class PageDetailComponent {
     ]);
   });
 
-  // Helper function to extract event type and level
-  private getEventTypeAndLevel = (eventType: string) => {
-    if (!eventType) return { type: 'Other', level: 999 };
-
-    const match = eventType.match(/^(MX|M|F)(\d+)?/);
-
-    if (!match) return { type: 'Other', level: 999 };
-
-    return {
-      type: match[1],
-      level: parseInt(match[2] || '0', 10),
-    };
-  };
-
   // Grouped sub-events by type for visual separation
   groupedSubEvents = computed(() => {
     const subEvents = this.competition()?.competitionSubEvents ?? [];
 
+    const typeOrder: Record<string, number> = { M: 1, F: 2, MX: 3, NATIONAL: 4 };
+
     // Sort all events first
     const sortedEvents = [...subEvents].sort((a, b) => {
-      const aData = this.getEventTypeAndLevel(a.eventType || '');
-      const bData = this.getEventTypeAndLevel(b.eventType || '');
+      const aTypeOrder = typeOrder[a.eventType ?? ''] ?? 999;
+      const bTypeOrder = typeOrder[b.eventType ?? ''] ?? 999;
 
-      // Define order for event types
-      const typeOrder = { M: 1, F: 2, MX: 3, Other: 4 };
-      const aTypeOrder = typeOrder[aData.type as keyof typeof typeOrder] || 999;
-      const bTypeOrder = typeOrder[bData.type as keyof typeof typeOrder] || 999;
-
-      // First sort by event type
       if (aTypeOrder !== bTypeOrder) {
         return aTypeOrder - bTypeOrder;
       }
 
-      // Then sort by level
-      return aData.level - bData.level;
+      return (a.level ?? 999) - (b.level ?? 999);
     });
 
     // Group by event type
     const groups: { type: string; label: string; events: typeof subEvents }[] = [];
-    const typeLabels = {
+    const typeLabels: Record<string, string> = {
       M: 'all.competition.types.men',
       F: 'all.competition.types.women',
       MX: 'all.competition.types.mix',
-      Other: 'all.competition.types.other',
+      NATIONAL: 'all.competition.types.national',
     };
 
     sortedEvents.forEach((event) => {
-      const eventData = this.getEventTypeAndLevel(event.eventType || '');
-      let group = groups.find((g) => g.type === eventData.type);
+      const type = event.eventType ?? 'Other';
+      let group = groups.find((g) => g.type === type);
 
       if (!group) {
         group = {
-          type: eventData.type,
-          label: typeLabels[eventData.type as keyof typeof typeLabels] || 'all.competition.types.other',
+          type,
+          label: typeLabels[type] ?? 'all.competition.types.other',
           events: [],
         };
         groups.push(group);
