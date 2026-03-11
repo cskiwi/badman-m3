@@ -14,13 +14,13 @@ export class TeamMatchingService {
   private readonly logger = new Logger(TeamMatchingService.name);
 
   /**
-   * Find a team by visualCode, teamMatcher pattern, or fuzzy name matching
+   * Find a team by teamMatcher pattern or fuzzy name matching.
    * Uses multiple strategies in order of preference:
-   * 1. Exact visualCode match (filtered by season)
-   * 2. Event's teamMatcher regex pattern (filtered by season)
-   * 3. Fuzzy name matching within state and season-filtered clubs
+   * 1. Event's teamMatcher regex pattern (filtered by season)
+   * 2. Fuzzy name matching within state and season-filtered clubs
    *
-   * Season filtering ensures teams are matched within the correct competition season.
+   * visualCode is intentionally NOT used: it is a non-unique sequential number
+   * scoped to a single draw/subevent, so the same value exists on many unrelated teams.
    */
   async findTeam(
     visualCode: string | undefined,
@@ -33,55 +33,27 @@ export class TeamMatchingService {
       throw new Error('Season is required for team matching. CompetitionEvent must have a valid season.');
     }
 
-    if (!visualCode && !name) {
-      return { team: null, confidence: 'none', score: 0 };
-    }
-
-    // 1. First try exact visualCode match (filtered by season)
-    if (visualCode) {
-      const teamByCode = await TeamModel.findOne({
-        where: { visualCode, season },
-        relations: ['club'],
-      });
-
-      if (teamByCode) {
-        this.logger.debug(`Found team by visualCode: ${visualCode} (season: ${season})`);
-        return { team: teamByCode, confidence: 'high', score: 1.0 };
-      }
-    }
-
     if (!name) {
       return { team: null, confidence: 'none', score: 0 };
     }
 
-    // 2. Try teamMatcher pattern if event has one
+    // NOTE: visualCode is NOT used for matching because it is not globally unique —
+    // it is a sequential number (1, 2, 3, …) scoped to a draw/subevent/event,
+    // so the same value appears on many unrelated teams across the database.
+
+    // 1. Try teamMatcher pattern if event has one
     if (competitionEvent?.teamMatcher) {
       const matchedTeam = await this.matchByTeamMatcher(name, competitionEvent.teamMatcher, season);
       if (matchedTeam) {
-        // Update visualCode for future matching
-        if (visualCode && !matchedTeam.visualCode) {
-          matchedTeam.visualCode = visualCode;
-          await matchedTeam.save();
-          this.logger.debug(`Updated team ${matchedTeam.name} with visualCode ${visualCode}`);
-        }
         return { team: matchedTeam, confidence: 'high', score: 0.95 };
       }
     }
 
-    // 3. Fuzzy match with state and season filtering
+    // 2. Fuzzy match with state and season filtering
     // Only apply state filter for provincial (PROV) competitions, not for LIGA or NATIONAL
     const applyStateFilter = competitionEvent?.type === LevelType.PROV;
     const state = applyStateFilter ? competitionEvent?.state : undefined;
-    const result = await this.fuzzyMatch(name, visualCode, state, season);
-
-    // Update visualCode if we found a match
-    if (result.team && visualCode && !result.team.visualCode) {
-      result.team.visualCode = visualCode;
-      await result.team.save();
-      this.logger.debug(`Updated team ${result.team.name} with visualCode ${visualCode}`);
-    }
-
-    return result;
+    return this.fuzzyMatch(name, state, season);
   }
 
   /**
@@ -173,14 +145,12 @@ export class TeamMatchingService {
    */
   private async fuzzyMatch(
     apiName: string,
-    visualCode: string | undefined,
     state: string | undefined,
     season: number,
   ): Promise<TeamMatchResult> {
-    const normalizedApiName = this.normalizeTeamName(apiName);
     const parsed = this.parseTeamName(apiName);
 
-    this.logger.debug(`Fuzzy matching: "${apiName}" -> normalized: "${normalizedApiName}", parsed: ${JSON.stringify(parsed)}, season: ${season}`);
+    this.logger.debug(`Fuzzy matching: "${apiName}" -> parsed: ${JSON.stringify(parsed)}, season: ${season}`);
 
     // Build club query with optional state filter (case-insensitive)
     const clubQuery: Record<string, unknown>[] = [];
@@ -384,7 +354,7 @@ export class TeamMatchingService {
    * Check if gender code matches team type
    */
   private genderMatches(genderCode: string, teamType?: string): boolean {
-    if (!teamType) return true; // If no team type, don't penalize
+    if (!teamType) return false; // Unknown type cannot be confirmed as a gender match
 
     const genderMap: Record<string, string[]> = {
       H: ['M', 'MEN', 'HEREN'],
