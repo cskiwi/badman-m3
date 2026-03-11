@@ -2,16 +2,16 @@
 name: "Feature Orchestrator"
 description: "Decomposes full-stack feature requests and delegates frontend/backend work to the Angular Expert and NestJS Expert agents."
 argument-hint: "Describe the feature you want to build (e.g., 'add a club ranking page with filtering')"
-tools: ['read', 'search', 'execute']
+tools: ['read', 'search']
 handoffs:
   - label: "Implement Backend"
-    agent: NestJS Expert
-    prompt: "Implement the following NestJS backend feature:"
-    send: false
+    agent: "NestJS Expert"
+    prompt: "Implement the backend feature as described above"
+    send: true
   - label: "Implement Frontend"
-    agent: Angular Expert
-    prompt: "Implement the following Angular frontend feature:"
-    send: false
+    agent: "Angular Expert"
+    prompt: "Implement the frontend feature as described above"
+    send: true
 ---
 
 # Feature Orchestrator Agent
