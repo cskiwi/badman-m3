@@ -41,12 +41,17 @@ import { TeamCardService } from './team-card.service';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TeamGameStatsComponent implements OnInit {
+export class TeamGameStatsComponent {
   readonly service = inject(TeamCardService);
 
   teamId = input.required<string>();
 
-  ngOnInit() {
-    this.service.setTeamId(this.teamId());
+  constructor() {
+    effect(() => {
+      if (this.teamId()) {
+        this.service.setTeamId(this.teamId());
+      }
+    });
   }
+
 }
