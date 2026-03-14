@@ -69,16 +69,30 @@ export class CompetitionEntrySyncService {
         const teamsInDraw = this.extractTeamsFromDrawStructure(drawData.Structure.Item);
         this.logger.debug(`Found ${teamsInDraw.length} teams in draw structure`);
 
-        // Create entries for each team found in the draw
-        // Note: We only add entries, never remove them (in case admin moved a team)
+        // Match all teams and track which ones are valid
+        const matchedTeamIds = new Set<string>();
         for (const teamData of teamsInDraw) {
           const result = await this.teamMatchingService.findTeam(teamData.Code, teamData.Name, competitionEvent);
           if (result.team) {
+            matchedTeamIds.add(result.team.id);
             await this.createOrUpdateEntry(draw, result.team, 'competition');
             this.logger.debug(`Matched team "${teamData.Name}" with confidence: ${result.confidence} (score: ${result.score.toFixed(3)})`);
           } else {
             this.logger.warn(`Team with code ${teamData.Code} / name ${teamData.Name} not found in system`);
           }
+        }
+
+        // Remove entries for teams no longer in the draw (full sync cleanup)
+        const existingEntries = await Entry.find({ where: { drawId: draw.id } });
+        const staleEntries = existingEntries.filter((e) => e.teamId && !matchedTeamIds.has(e.teamId));
+        if (staleEntries.length > 0) {
+          // if we ever try to remove an entry with meta data throw an error
+          if (staleEntries.some((e) => e.meta)) {
+            throw new Error(`Attempting to remove entries with meta data, aborting to prevent data loss`);
+          }
+          
+          await Entry.remove(staleEntries);
+          this.logger.log(`Removed ${staleEntries.length} stale entries from draw ${drawCode}`);
         }
       }
 

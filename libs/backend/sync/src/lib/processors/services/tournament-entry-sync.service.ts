@@ -52,14 +52,14 @@ export class TournamentEntrySyncService {
   private async createEntriesFromGames(draw: TournamentDraw): Promise<void> {
     this.logger.debug(`Creating entries from games for draw ${draw.id} (${draw.visualCode})`);
 
-    // Check if entries already exist for this draw
+    // Remove existing entries before recreating (full sync cleanup)
     const existingEntries = await Entry.find({
       where: { drawId: draw.id },
     });
 
     if (existingEntries.length > 0) {
-      this.logger.debug(`Draw ${draw.visualCode} already has ${existingEntries.length} entries, skipping creation`);
-      return;
+      await Entry.remove(existingEntries);
+      this.logger.debug(`Removed ${existingEntries.length} existing entries for draw ${draw.visualCode} before full sync`);
     }
 
     // Get games for this draw

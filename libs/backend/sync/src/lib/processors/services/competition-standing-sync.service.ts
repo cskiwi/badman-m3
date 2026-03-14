@@ -1,11 +1,4 @@
-import {
-  CompetitionDraw,
-  CompetitionEncounter,
-  Entry as EntryModel,
-  Game,
-  Standing,
-  Team,
-} from '@app/models';
+import { CompetitionDraw, CompetitionEncounter, Entry as EntryModel, Game, Standing, Team } from '@app/models';
 import { Injectable, Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { In } from 'typeorm';
@@ -76,6 +69,25 @@ export class CompetitionStandingSyncService {
       const standings = await this.getOrCreateStandings(draw, teams);
       await updateProgress(50);
 
+      // Step 4b: Remove stale standings and entries for teams no longer in encounters
+      const allEntries = await EntryModel.find({ where: { drawId: draw.id } });
+      const staleEntries = allEntries.filter((e) => e.teamId && !teams.has(e.teamId));
+      if (staleEntries.length > 0) {
+        const staleEntryIds = staleEntries.map((e) => e.id);
+        const staleStandings = await Standing.find({ where: { entryId: In(staleEntryIds) } });
+        if (staleStandings.length > 0) {
+          await Standing.remove(staleStandings);
+        }
+
+        // if we ever try to remove an entry with meta data throw an error
+        if (staleEntries.some((e) => e.meta)) {
+          throw new Error(`Attempting to remove entries with meta data, aborting to prevent data loss`);
+        }
+
+        await EntryModel.remove(staleEntries);
+        this.logger.log(`Removed ${staleEntries.length} stale entries and ${staleStandings.length} stale standings from draw ${draw.visualCode}`);
+      }
+
       // Step 5: Reset standings before recalculating
       for (const standing of standings.values()) {
         this.resetStanding(standing);
@@ -142,10 +154,7 @@ export class CompetitionStandingSyncService {
   /**
    * Get or create Entry and Standing for each team
    */
-  private async getOrCreateStandings(
-    draw: CompetitionDraw,
-    teams: Map<string, Team>,
-  ): Promise<Map<string, Standing>> {
+  private async getOrCreateStandings(draw: CompetitionDraw, teams: Map<string, Team>): Promise<Map<string, Standing>> {
     const standings = new Map<string, Standing>();
 
     for (const [teamId, team] of teams) {
@@ -279,29 +288,14 @@ export class CompetitionStandingSyncService {
       }
 
       // Process set 1
-      this.processSet(
-        game.set1Team1,
-        game.set1Team2,
-        homeStanding,
-        awayStanding,
-      );
+      this.processSet(game.set1Team1, game.set1Team2, homeStanding, awayStanding);
 
       // Process set 2
-      this.processSet(
-        game.set2Team1,
-        game.set2Team2,
-        homeStanding,
-        awayStanding,
-      );
+      this.processSet(game.set2Team1, game.set2Team2, homeStanding, awayStanding);
 
       // Process set 3 (if played)
       if ((game.set3Team1 ?? 0) !== 0 || (game.set3Team2 ?? 0) !== 0) {
-        this.processSet(
-          game.set3Team1,
-          game.set3Team2,
-          homeStanding,
-          awayStanding,
-        );
+        this.processSet(game.set3Team1, game.set3Team2, homeStanding, awayStanding);
       }
     }
   }
@@ -341,10 +335,7 @@ export class CompetitionStandingSyncService {
   /**
    * Calculate positions and save all standings
    */
-  private async finalizeAndSaveStandings(
-    draw: CompetitionDraw,
-    standings: Map<string, Standing>,
-  ): Promise<void> {
+  private async finalizeAndSaveStandings(draw: CompetitionDraw, standings: Map<string, Standing>): Promise<void> {
     // Convert to array and sort
     const standingsArray = [...standings.values()];
 

@@ -1,5 +1,5 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
-import { CompetitionDraw, CompetitionSubEvent, CompetitionEvent } from '@app/models';
+import { CompetitionDraw, CompetitionEncounter, CompetitionSubEvent, CompetitionEvent } from '@app/models';
 import { DrawType } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectFlowProducer } from '@nestjs/bullmq';
@@ -94,6 +94,15 @@ export class CompetitionDrawSyncService {
           const encounters = await this.tournamentApiClient.getEncountersByDraw(tournamentCode, drawCode);
           const validEncounters = encounters?.filter((e) => e != null) || [];
           this.logger.log(`Found ${validEncounters.length} encounters to sync for draw ${drawCode}`);
+
+          // Remove encounters that are no longer present in the API (full sync cleanup)
+          const validEncounterCodes = new Set(validEncounters.map((e) => e.Code));
+          const dbEncounters = await CompetitionEncounter.find({ where: { drawId: draw.id } });
+          const staleEncounters = dbEncounters.filter((e) => e.visualCode && !validEncounterCodes.has(e.visualCode));
+          if (staleEncounters.length > 0) {
+            await CompetitionEncounter.remove(staleEncounters);
+            this.logger.log(`Removed ${staleEncounters.length} stale encounters from draw ${drawCode}`);
+          }
 
           for (const encounter of validEncounters) {
             const encounterJobName = generateJobId('competition', 'encounter', tournamentCode, drawCode, encounter.Code);
