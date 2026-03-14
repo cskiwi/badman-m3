@@ -9,7 +9,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { CardModule } from 'primeng/card';
-import { EncounterCardComponent } from './components/encounter-card.component';
+import { EncounterCardComponent } from '@app/frontend-components/games/encounter-card';
 import { PouleDrawComponent } from './components/poule-draw.component';
 import { QualificationDrawComponent } from './components/qualification-draw.component';
 import { DrawsService } from './page-draws.service';

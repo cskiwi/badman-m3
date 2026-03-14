@@ -2,39 +2,53 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input } f
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
-import { RecentGamesComponent } from '@app/frontend-components/games/recent';
-import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
+import { EncounterCardComponent } from '@app/frontend-components/games/encounter-card';
 import { ClubTeamsTabService } from './club-teams-tab.service';
+import { ClubScheduleTabService } from './club-schedule-tab.service';
 
 @Component({
   selector: 'app-club-schedule-tab',
   standalone: true,
-  providers: [ClubTeamsTabService],
+  providers: [ClubTeamsTabService, ClubScheduleTabService],
   imports: [
     TranslateModule,
     CardModule,
     SkeletonModule,
-    RecentGamesComponent,
-    UpcomingGamesComponent,
+    EncounterCardComponent,
   ],
   templateUrl: './club-schedule-tab.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClubScheduleTabComponent {
-  readonly service = inject(ClubTeamsTabService);
+  private readonly teamsService = inject(ClubTeamsTabService);
+  readonly scheduleService = inject(ClubScheduleTabService);
 
   clubId = input.required<string>();
   season = input.required<number>();
 
-  teamIds = computed(() => this.service.teams().map(team => team.id));
+  teamIds = computed(() => this.teamsService.teams().map(team => team.id));
+  loading = computed(() => this.teamsService.loading() || this.scheduleService.loading());
+  playedEncounters = computed(() => this.scheduleService.playedEncounters());
+  upcomingEncounters = computed(() => this.scheduleService.upcomingEncounters());
+
+  onLoadGames = async (encounterId: string): Promise<void> => {
+    await this.scheduleService.loadEncounterGames(encounterId);
+  };
 
   constructor() {
     effect(() => {
-      this.service.setClubId(this.clubId());
+      this.teamsService.setClubId(this.clubId());
     });
 
     effect(() => {
-      this.service.setSeason(this.season());
+      this.teamsService.setSeason(this.season());
+    });
+
+    effect(() => {
+      const ids = this.teamIds();
+      if (ids.length > 0) {
+        this.scheduleService.setTeamIds(ids);
+      }
     });
   }
 }

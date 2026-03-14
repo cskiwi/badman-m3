@@ -1,56 +1,72 @@
-@if (service.loading()) {
-      <div class="grid gap-6">
-        @for (i of [1, 2]; track i) {
-          <p-card>
-            <ng-template pTemplate="header">
-              <div class="p-4 border-b border-surface-200">
-                <p-skeleton width="10rem" height="1.25rem" />
+@if (loading()) {
+  <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
+    @for (i of [1, 2]; track i) {
+      <p-card>
+        <ng-template #title>
+          <p-skeleton width="12rem" height="1.25rem" />
+        </ng-template>
+        <ng-template #subtitle />
+        <div class="space-y-3">
+          @for (j of [1, 2, 3]; track j) {
+            <div class="rounded-border border border-surface p-3 space-y-2">
+              <div class="flex items-center justify-between">
+                <p-skeleton width="8rem" height="0.875rem" />
+                <p-skeleton width="4rem" height="0.875rem" />
               </div>
-            </ng-template>
-            <div class="space-y-4 p-4">
-              @for (j of [1, 2, 3]; track j) {
-                <div class="flex items-center gap-4">
-                  <p-skeleton width="4rem" height="1rem" />
-                  <p-skeleton width="8rem" height="1rem" />
-                  <p-skeleton width="2rem" height="1rem" />
-                  <p-skeleton width="8rem" height="1rem" />
-                </div>
-              }
+              <p-skeleton width="6rem" height="0.875rem" />
             </div>
-          </p-card>
-        }
-      </div>
-    } @else if (teamIds().length > 0) {
-      <div class="grid gap-6">
-        <!-- Recent Games -->
-        <p-card>
-          <ng-template pTemplate="header">
-            <div class="p-4 border-b border-surface-200">
-              <h4 class="font-semibold flex items-center gap-2">
-                <i class="pi pi-history text-primary-500"></i>
-                {{ 'all.game.recent.title' | translate }}
-              </h4>
-            </div>
-          </ng-template>
-          <app-recent-games [for]="teamIds()" [type]="'team'" />
-        </p-card>
-
-        <!-- Upcoming Games -->
-        <p-card>
-          <ng-template pTemplate="header">
-            <div class="p-4 border-b border-surface-200">
-              <h4 class="font-semibold flex items-center gap-2">
-                <i class="pi pi-calendar text-primary-500"></i>
-                {{ 'all.game.upcoming.title' | translate }}
-              </h4>
-            </div>
-          </ng-template>
-          <app-upcoming-games [for]="teamIds()" [type]="'team'" />
-        </p-card>
-      </div>
-    } @else {
-      <div class="text-center py-8 text-surface-500">
-        <i class="pi pi-calendar text-4xl mb-2 block"></i>
-        <p>{{ 'all.team.noTeams' | translate }}</p>
-      </div>
+          }
+        </div>
+      </p-card>
     }
+  </div>
+} @else if (playedEncounters().length > 0 || upcomingEncounters().length > 0) {
+  <section class="encounters">
+    <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
+      <!-- Played encounters (most recent first) -->
+      <p-card>
+        <ng-template #title>
+          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+          {{ 'all.competition.played_encounters' | translate }}
+          <span class="text-muted-color text-xs font-normal ml-1">({{ playedEncounters().length }})</span>
+        </ng-template>
+        <ng-template #subtitle />
+        @if (playedEncounters().length > 0) {
+          @for (encounter of playedEncounters(); track encounter.id) {
+            <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="played" />
+          }
+        } @else {
+          <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
+        }
+      </p-card>
+
+      <!-- Upcoming encounters (soonest first) -->
+      <p-card>
+        <ng-template #title>
+          <i class="pi pi-clock text-blue-500 mr-2"></i>
+          {{ 'all.competition.upcoming_encounters' | translate }}
+          <span class="text-muted-color text-xs font-normal ml-1">({{ upcomingEncounters().length }})</span>
+        </ng-template>
+        <ng-template #subtitle />
+        @if (upcomingEncounters().length > 0) {
+          @for (encounter of upcomingEncounters(); track encounter.id) {
+            <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="upcoming" />
+          }
+        } @else {
+          <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
+        }
+      </p-card>
+    </div>
+  </section>
+} @else if (teamIds().length === 0) {
+  <div class="text-center py-8 text-surface-500">
+    <i class="pi pi-calendar text-4xl mb-2 block"></i>
+    <p>{{ 'all.team.noTeams' | translate }}</p>
+  </div>
+} @else {
+  <div class="text-center py-12 text-surface-500">
+    <i class="pi pi-calendar text-4xl mb-4 block"></i>
+    <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
+    <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
+  </div>
+}
