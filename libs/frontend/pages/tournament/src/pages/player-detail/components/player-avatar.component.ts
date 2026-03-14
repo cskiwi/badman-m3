@@ -7,26 +7,8 @@ import { type Player } from '@app/models';
   imports: [
     AvatarModule,
   ],
-  template: `
-    <div class="player-avatar-container">
-      @if (imageUrl()) {
-        <!-- Player photo -->
-        <img 
-          [src]="imageUrl()" 
-          [alt]="altText()"
-          [class]="avatarClasses()"
-          (error)="onImageError($event)"
-          loading="lazy">
-      } @else {
-        <!-- Fallback to initials -->
-        <p-avatar [label]="initials()"
-          [size]="size()"
-          shape="circle"
-          [styleClass]="fallbackClasses()" />
-      }
-    </div>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './player-avatar.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlayerAvatarComponent {
   player = input.required<Player | null | undefined>();

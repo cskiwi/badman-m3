@@ -18,22 +18,7 @@ const UNIQUE_COUNTRIES = [...new Set(STATES_DATA.map((s) => s.country))];
   selector: 'app-country-select',
   standalone: true,
   imports: [FormsModule, SelectModule, TranslateModule],
-  template: `
-    <p-select
-      [options]="countries()"
-      [ngModel]="value()"
-      (ngModelChange)="onValueChange($event)"
-      optionLabel="name"
-      optionValue="code"
-      [filter]="true"
-      [filterBy]="'name'"
-      [placeholder]="'all.competition.edit.info.country.placeholder' | translate"
-      [showClear]="true"
-      [disabled]="disabled()"
-      appendTo="body"
-      styleClass="w-full"
-    />
-  `,
+  templateUrl: './country-select.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

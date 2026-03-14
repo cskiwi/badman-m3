@@ -21,22 +21,7 @@ function kebabToTitleCase(str: string): string {
   selector: 'app-state-select',
   standalone: true,
   imports: [FormsModule, SelectModule, TranslateModule],
-  template: `
-    <p-select
-      [options]="states()"
-      [ngModel]="value()"
-      (ngModelChange)="onValueChange($event)"
-      optionLabel="name"
-      optionValue="code"
-      [filter]="true"
-      [filterBy]="'name'"
-      [placeholder]="'all.competition.edit.info.state.placeholder' | translate"
-      [showClear]="true"
-      [disabled]="disabled() || states().length === 0"
-      appendTo="body"
-      styleClass="w-full"
-    />
-  `,
+  templateUrl: './state-select.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

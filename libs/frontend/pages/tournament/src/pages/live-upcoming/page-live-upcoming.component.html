@@ -1,0 +1,104 @@
+<div class="p-4 min-h-screen bg-surface-50">
+  <header class="flex justify-between items-center mb-6 pb-4 border-b border-surface">
+    <h1 class="m-0 text-3xl text-color">{{ 'all.tournament.live.upcomingGames' | translate }}</h1>
+    <div>
+      @if (liveService.isConnected()) {
+        <p-tag severity="success" value="Live" icon="pi pi-wifi" />
+      } @else if (liveService.isConnecting()) {
+        <p-tag severity="warn" value="Connecting..." icon="pi pi-spin pi-spinner" />
+      } @else {
+        <p-tag severity="danger" value="Offline" icon="pi pi-times" />
+      }
+    </div>
+  </header>
+
+  @if (stats(); as stats) {
+    <div class="mb-6 text-center">
+      <p-tag severity="info" value="{{ stats.gamesRemaining }} {{ 'all.tournament.live.gamesRemaining' | translate }}" />
+    </div>
+  }
+
+  <div class="flex flex-col gap-3">
+    @for (game of upcomingGames(); track game.gameId; let i = $index) {
+      <p-card [styleClass]="i < 3 ? 'border-l-4 border-green-500' : ''">
+        <div class="flex items-center gap-6 p-3">
+          <div class="shrink-0 w-16 text-center">
+            @if (i === 0) {
+              <p-tag severity="success" value="{{ 'all.tournament.live.next' | translate }}" />
+            } @else {
+              <span class="text-xl font-semibold text-muted-color">#{{ i + 1 }}</span>
+            }
+          </div>
+
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-1">
+              <span class="font-semibold text-lg">{{ game.team1 || 'TBD' }}</span>
+              <span class="text-muted-color text-sm">vs</span>
+              <span class="font-semibold text-lg">{{ game.team2 || 'TBD' }}</span>
+            </div>
+            @if (game.category || game.round) {
+              <div class="flex gap-4 text-muted-color text-sm">
+                @if (game.category) {
+                  <span>{{ game.category }}</span>
+                }
+                @if (game.round) {
+                  <span>• {{ game.round }}</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="shrink-0 text-right">
+            @if (game.courtName) {
+              <div class="flex items-center justify-end gap-2 font-medium text-color">
+                <i class="pi pi-map-marker text-sm"></i>
+                <span>{{ game.courtName }}</span>
+              </div>
+            }
+            @if (game.scheduledTime) {
+              <div class="flex items-center justify-end gap-2 text-muted-color">
+                <i class="pi pi-clock text-sm"></i>
+                <span>{{ game.scheduledTime | date:'HH:mm' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </p-card>
+    } @empty {
+      <div class="flex flex-col items-center justify-center py-16 text-muted-color">
+        <i class="pi pi-check-circle text-5xl text-green-500 mb-4"></i>
+        <p class="text-xl">{{ 'all.tournament.live.allGamesCompleted' | translate }}</p>
+      </div>
+    }
+  </div>
+
+  @if (liveService.announcements().length > 0) {
+    <div class="mt-8 pt-6 border-t border-surface">
+      <h2 class="m-0 mb-4 text-xl text-color">{{ 'all.tournament.live.announcements' | translate }}</h2>
+      @for (announcement of liveService.announcements(); track announcement.timestamp) {
+        <div class="flex gap-4 p-4 mb-3 rounded-border bg-surface-0 border-l-4"
+             [ngClass]="{
+               'bg-red-50 border-red-500': announcement.type === 'urgent',
+               'bg-orange-50 border-orange-500': announcement.type === 'warning',
+               'border-blue-500': announcement.type === 'info'
+             }">
+          @switch (announcement.type) {
+            @case ('urgent') {
+              <i class="pi pi-exclamation-triangle text-xl text-red-500 shrink-0"></i>
+            }
+            @case ('warning') {
+              <i class="pi pi-exclamation-circle text-xl text-orange-500 shrink-0"></i>
+            }
+            @default {
+              <i class="pi pi-info-circle text-xl text-blue-500 shrink-0"></i>
+            }
+          }
+          <div class="flex-1">
+            <p class="m-0 mb-1">{{ announcement.message }}</p>
+            <span class="text-xs text-muted-color">{{ announcement.timestamp | date:'HH:mm' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

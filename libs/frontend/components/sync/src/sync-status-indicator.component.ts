@@ -18,78 +18,9 @@ export interface SyncStatusConfig {
 @Component({
   selector: 'app-sync-status-indicator',
   standalone: true,
+  host: { class: 'inline-block' },
   imports: [CommonModule, TranslateModule, BadgeModule, ChipModule, TooltipModule],
-  template: `
-    @if (config(); as cfg) {
-      <div class="flex items-center gap-1">
-        <!-- Compact Sync Status Icon -->
-        <i [class]="statusIcon()" [ngClass]="statusClass()" [pTooltip]="fullStatusTooltip() | translate" tooltipPosition="top"></i>
-      </div>
-    }
-  `,
-  styles: [
-    `
-      :host {
-        display: inline-block;
-      }
-
-      .sync-status-synced {
-        color: var(--p-green-600);
-        font-size: 0.875rem;
-      }
-
-      [data-theme='dark'] .sync-status-synced {
-        color: var(--p-green-400);
-      }
-
-      .sync-status-syncing {
-        color: var(--p-blue-600);
-        font-size: 0.875rem;
-        animation: pulse 2s infinite;
-      }
-
-      [data-theme='dark'] .sync-status-syncing {
-        color: var(--p-blue-400);
-      }
-
-      .sync-status-queued {
-        color: var(--p-orange-600);
-        font-size: 0.875rem;
-      }
-
-      [data-theme='dark'] .sync-status-queued {
-        color: var(--p-orange-400);
-      }
-
-      .sync-status-failed {
-        color: var(--p-red-600);
-        font-size: 0.875rem;
-      }
-
-      [data-theme='dark'] .sync-status-failed {
-        color: var(--p-red-400);
-      }
-
-      .sync-status-never-synced {
-        color: var(--p-gray-600);
-        font-size: 0.875rem;
-      }
-
-      [data-theme='dark'] .sync-status-never-synced {
-        color: var(--p-gray-400);
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
-      }
-    `,
-  ],
+  templateUrl: './sync-status-indicator.component.html'
 })
 export class SyncStatusIndicatorComponent {
   // Inputs
@@ -150,7 +81,14 @@ export class SyncStatusIndicatorComponent {
 
   statusClass = computed(() => {
     const status = this.syncStatus();
-    return `sync-status-${status}`;
+    const classes: Record<SyncStatusType, string> = {
+      synced: 'text-green-600',
+      syncing: 'text-blue-600 animate-pulse',
+      queued: 'text-orange-600',
+      failed: 'text-red-600',
+      'never-synced': 'text-gray-500',
+    };
+    return classes[status];
   });
 
   statusTooltip = computed(() => {
