@@ -9,10 +9,11 @@ import {
   makeEnvironmentProviders,
   NgModule,
   ModuleWithProviders,
+  provideAppInitializer,
 } from '@angular/core';
 import { ApolloLink, InMemoryCache, NormalizedCacheObject } from '@apollo/client/core';
 import { BASE_URL } from '@app/frontend-utils';
-import { provideApollo } from 'apollo-angular';
+import { Apollo, provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 
 const STATE_KEY = makeStateKey<NormalizedCacheObject>('apollo.state');
@@ -55,6 +56,14 @@ export function provideGraphQL(
         graphqlConfig ?? undefined,
       );
     }),
+    // Eagerly initialize Apollo on the browser so connectToDevTools() fires at
+    // bootstrap time — before the Apollo DevTools extension checks for clients.
+    // Without this, Apollo is lazy and the extension misses the registration.
+    provideAppInitializer(() => {
+      if (isPlatformBrowser(inject(PLATFORM_ID))) {
+        inject(Apollo);
+      }
+    }),
   ]);
 }
 
@@ -91,9 +100,6 @@ export function createApollo(
 
   return {
     link,
-    persistedQueries: {
-      ttl: 900, // 15 minutes
-    },
     cache,
     devtools: {
       enabled: config?.devToolsEnabled ?? true,

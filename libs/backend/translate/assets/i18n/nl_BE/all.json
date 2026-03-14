@@ -596,6 +596,7 @@
     "noTournamentHistory": "Geen toernooi geschiedenis",
     "noTournamentHistoryDescription": "Deze speler heeft nog geen toernooien gespeeld",
     "performance": "Prestaties",
+    "players": "Spelers",
     "playerType": "Spelertype",
     "recentGames": "Recente Wedstrijden",
     "resultsFound": "{{count}} resultaten gevonden",
@@ -1037,6 +1038,7 @@
         }
       }
     },
+    "filterByTeam": "Filter op team",
     "games": "Wedstrijden",
     "name": "Teamnaam",
     "noTeams": "Geen teams gevonden voor dit seizoen",

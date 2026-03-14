@@ -603,6 +603,7 @@ export type I18nTranslations = {
             "noTournamentHistory": string;
             "noTournamentHistoryDescription": string;
             "performance": string;
+            "players": string;
             "playerType": string;
             "recentGames": string;
             "resultsFound": string;
@@ -1044,6 +1045,7 @@ export type I18nTranslations = {
                     };
                 };
             };
+            "filterByTeam": string;
             "games": string;
             "name": string;
             "noTeams": string;

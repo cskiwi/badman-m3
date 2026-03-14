@@ -596,6 +596,7 @@
     "noTournamentHistory": "Aucun historique de tournoi",
     "noTournamentHistoryDescription": "Ce joueur n'a pas encore participé à des tournois",
     "performance": "Performance",
+    "players": "Joueurs",
     "playerType": "Type de joueur",
     "recentGames": "Matchs Récents",
     "resultsFound": "{{count}} résultats trouvés",
@@ -1037,6 +1038,7 @@
         }
       }
     },
+    "filterByTeam": "Filtrer par équipe",
     "games": "Matchs",
     "name": "Nom de l'équipe",
     "noTeams": "Aucune équipe trouvée pour cette saison",

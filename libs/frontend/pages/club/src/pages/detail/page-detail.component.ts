@@ -14,7 +14,7 @@ import { SelectModule } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 import { TeamEditComponent } from '../../components/team-edit/team-edit.component';
 import { DetailService } from './page-detail.service';
-import { ClubPerformanceTabComponent, ClubScheduleTabComponent, ClubTeamsTabComponent, ClubTournamentsTabComponent } from './tabs';
+import { ClubScheduleTabComponent, ClubTeamsTabComponent, ClubTournamentsTabComponent, ClubPlayersTabComponent } from './tabs';
 
 @Component({
   selector: 'app-page-detail',
@@ -27,14 +27,12 @@ import { ClubPerformanceTabComponent, ClubScheduleTabComponent, ClubTeamsTabComp
     TabsModule,
     PageHeaderComponent,
     ClubTeamsTabComponent,
-    // ClubPlayersTabComponent,
-    ClubPerformanceTabComponent,
+    ClubPlayersTabComponent,
     ClubScheduleTabComponent,
     ClubTournamentsTabComponent,
   ],
   providers: [DialogService],
   templateUrl: './page-detail.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageDetailComponent {
   readonly dataService = new DetailService();

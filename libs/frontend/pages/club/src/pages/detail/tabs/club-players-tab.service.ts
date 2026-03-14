@@ -1,32 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
-import { Game, GamePlayerMembership, Player, Team, TeamPlayerMembership } from '@app/models';
+import { Player, Team, TeamPlayerMembership } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { sortTeams } from '@app/utils/sorts';
-
-// Extended type for player with games from GraphQL response
-type PlayerWithGames = Player & {
-  games?: (Game & {
-    winner?: number;
-    players?: (GamePlayerMembership & {
-      team?: number;
-      gamePlayer?: { id: string };
-    })[];
-  })[];
-};
-
-// Extended type for team with player games
-type TeamWithPlayerGames = Team & {
-  teamPlayerMemberships?: (TeamPlayerMembership & {
-    player?: PlayerWithGames;
-  })[];
-};
-
-// Player with team info for display
-type PlayerWithTeam = PlayerWithGames & {
-  team: { id: string; name: string; abbreviation?: string };
-};
 
 export class ClubPlayersTabService {
   private readonly apollo = inject(Apollo);
@@ -46,7 +23,7 @@ export class ClubPlayersTabService {
 
       try {
         const result = await lastValueFrom(
-          this.apollo.query<{ club: { teams: TeamWithPlayerGames[] } }>({
+          this.apollo.query<{ club: { teams: Team[] } }>({
             query: gql`
               query ClubTeamsForPlayers($clubId: ID!, $season: Float!) {
                 club(id: $clubId) {
@@ -59,20 +36,10 @@ export class ClubPlayersTabService {
                       id
                       player {
                         id
+                        slug
                         fullName
                         firstName
                         lastName
-                        games(args: { take: 100 }) {
-                          id
-                          winner
-                          players: gamePlayerMemberships {
-                            id
-                            team
-                            gamePlayer {
-                              id
-                            }
-                          }
-                        }
                       }
                     }
                   }
@@ -95,74 +62,34 @@ export class ClubPlayersTabService {
     },
   });
 
-  // Public selectors - flatten players from teams
-  players = computed(() => {
+  // Deduplicated players - each player appears once with all their teamPlayerMemberships populated
+  players = computed((): Player[] => {
     const teams = this.teamsResource.value() || [];
-    const playersWithTeam: PlayerWithTeam[] = [];
+    const playersMap = new Map<string, Player>();
 
     teams.forEach(team => {
       team.teamPlayerMemberships?.forEach(membership => {
         if (membership.player) {
-          playersWithTeam.push({
-            ...membership.player,
-            team: {
-              id: team.id,
-              name: team.name || '',
-              abbreviation: team.abbreviation,
-            }
-          } as PlayerWithTeam);
-        }
-      });
-    });
-
-    return playersWithTeam;
-  });
-
-  // Player statistics computed from games
-  playerStats = computed(() => {
-    const players = this.players();
-    const statsMap = new Map<string, { gamesPlayed: number; wins: number; losses: number }>();
-
-    players.forEach(player => {
-      let gamesPlayed = 0;
-      let wins = 0;
-      let losses = 0;
-
-      player.games?.forEach(game => {
-        if (game.winner !== null && game.winner !== undefined) {
-          // Find which team the player was on in this game
-          const playerInGame = game.players?.find(p => p.gamePlayer?.id === player.id);
-          if (playerInGame && playerInGame.team !== undefined) {
-            gamesPlayed++;
-            // winner: 1 = team 1 won, 2 = team 2 won
-            if (playerInGame.team === game.winner) {
-              wins++;
-            } else {
-              losses++;
-            }
+          const playerId = membership.player.id;
+          if (!playersMap.has(playerId)) {
+            playersMap.set(playerId, { ...membership.player, teamPlayerMemberships: [] } as unknown as Player);
           }
+          const entry = playersMap.get(playerId)!;
+          entry.teamPlayerMemberships = [...(entry.teamPlayerMemberships ?? []), { ...membership, team } as TeamPlayerMembership];
         }
       });
-
-      statsMap.set(player.id, { gamesPlayed, wins, losses });
     });
 
-    return statsMap;
+    return [...playersMap.values()].sort((a, b) =>
+      (a.fullName || '').localeCompare(b.fullName || ''),
+    );
   });
+
+  // Available teams for the filter bar
+  availableTeams = computed((): Team[] => this.teamsResource.value() || []);
 
   loading = computed(() => this.teamsResource.isLoading());
   error = computed(() => this.teamsResource.error()?.message || null);
-
-  getPlayerStats(playerId: string) {
-    const stats = this.playerStats().get(playerId);
-    return stats || { gamesPlayed: 0, wins: 0, losses: 0 };
-  }
-
-  getPlayerWinRate(playerId: string): number {
-    const stats = this.getPlayerStats(playerId);
-    if (stats.gamesPlayed === 0) return 0;
-    return Math.round((stats.wins / stats.gamesPlayed) * 100);
-  }
 
   setClubId(clubId: string | null) {
     this.clubId.set(clubId);
@@ -179,3 +106,4 @@ export class ClubPlayersTabService {
     return err.statusText || 'An error occurred';
   }
 }
+

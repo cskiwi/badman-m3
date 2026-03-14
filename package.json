@@ -32,6 +32,7 @@
     "@angular/service-worker": "^21.2.1",
     "@angular/ssr": "^21.2.1",
     "@apollo/client": "^4.1.6",
+    "@apollo/client-devtools-vscode": "^4.25.0",
     "@apollo/server": "^5.4.0",
     "@as-integrations/express5": "^1.1.2",
     "@auth0/auth0-angular": "^2.3.0",

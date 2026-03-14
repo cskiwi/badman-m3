@@ -8,12 +8,6 @@ import { lastValueFrom } from 'rxjs';
 import { getSeason } from '@app/utils/comp';
 import { sortTeams } from '@app/utils/sorts';
 
-// Extended type for encounters from GraphQL response
-type EncounterWithStats = CompetitionEncounter & {
-  homeTeam?: { id: string };
-  awayTeam?: { id: string };
-  games?: (Game & { winner?: number })[];
-};
 
 export class DetailService {
   private readonly apollo = inject(Apollo);
@@ -134,41 +128,10 @@ export class DetailService {
           return { teams: [], encounters: [] };
         }
 
-        // Second query: get encounters for these teams
-        const encountersResult = await lastValueFrom(
-          this.apollo.query<{ competitionEncounters: EncounterWithStats[] }>({
-            query: gql`
-              query ClubEncounters($teamIds: [String!]!) {
-                competitionEncounters(
-                  args: { where: [{ OR: [{ homeTeamId: { in: $teamIds } }, { awayTeamId: { in: $teamIds } }] }] }
-                ) {
-                  id
-                  date
-                  homeTeamId
-                  awayTeamId
-                  homeTeam {
-                    id
-                  }
-                  awayTeam {
-                    id
-                  }
-                  games {
-                    id
-                    winner
-                  }
-                }
-              }
-            `,
-            variables: {
-              teamIds,
-            },
-            context: { signal: abortSignal },
-          }),
-        );
 
         return {
           teams: [...teams].sort(sortTeams),
-          encounters: encountersResult.data?.competitionEncounters || [],
+          encounters: [],
         };
       } catch (err) {
         console.error(err);
@@ -180,83 +143,11 @@ export class DetailService {
   // Public selectors
   club = computed(() => this.clubResource.value());
   teams = computed(() => this.teamsResource.value()?.teams || []);
-  encounters = computed(() => this.teamsResource.value()?.encounters || []);
 
   error = computed(() => this.clubResource.error()?.message || null);
   loading = computed(() => this.clubResource.isLoading());
   teamsLoading = computed(() => this.teamsResource.isLoading());
   statsLoading = computed(() => this.teamsResource.isLoading());
-
-  // Team statistics computed from encounters
-  teamStats = computed(() => {
-    const teams = this.teams();
-    const encounters = this.encounters();
-    const statsMap = new Map<string, { gamesPlayed: number; wins: number; losses: number }>();
-
-    teams.forEach(team => {
-      let gamesPlayed = 0;
-      let wins = 0;
-      let losses = 0;
-
-      // Find encounters for this team
-      const teamEncounters = encounters.filter(
-        encounter => encounter.homeTeam?.id === team.id || encounter.awayTeam?.id === team.id,
-      );
-
-      teamEncounters.forEach(encounter => {
-        if (encounter.games && encounter.games.length > 0) {
-          const isHomeTeam = encounter.homeTeam?.id === team.id;
-
-          encounter.games.forEach(game => {
-            if (game.winner !== null && game.winner !== undefined) {
-              gamesPlayed++;
-              // winner: 1 = home team won, 2 = away team won
-              if ((isHomeTeam && game.winner === 1) || (!isHomeTeam && game.winner === 2)) {
-                wins++;
-              } else {
-                losses++;
-              }
-            }
-          });
-        }
-      });
-
-      statsMap.set(team.id, { gamesPlayed, wins, losses });
-    });
-
-    return statsMap;
-  });
-
-  // Club-wide statistics
-  clubStats = computed(() => {
-    const teamStatsMap = this.teamStats();
-    let totalGames = 0;
-    let totalWins = 0;
-
-    teamStatsMap.forEach(stats => {
-      totalGames += stats.gamesPlayed;
-      totalWins += stats.wins;
-    });
-
-    const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
-
-    return {
-      totalGames,
-      winRate,
-      averageRanking: null as number | null, // Can be extended later
-    };
-  });
-
-  getTeamStats(teamId: string) {
-    const stats = this.teamStats().get(teamId);
-    return stats || { gamesPlayed: 0, wins: 0, losses: 0 };
-  }
-
-  getTeamWinRate(teamId: string): number {
-    const stats = this.getTeamStats(teamId);
-    if (stats.gamesPlayed === 0) return 0;
-    return Math.round((stats.wins / stats.gamesPlayed) * 100);
-  }
 
   // Season management
   currentSeason = computed(() => this.filterSignal().season || getSeason());

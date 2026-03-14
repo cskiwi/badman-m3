@@ -26,7 +26,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Component, computed, inject, signal } from '@angular/core';
 
 const UPDATE_TEAM = gql`
-  mutation UpdateTeam($teamId: ID!, $input: UpdateTeamInput!) {
+  mutation UpdateTeam($teamId: ID!, $input: TeamUpdateInput!) {
     updateTeam(teamId: $teamId, input: $input) {
       id
       name
