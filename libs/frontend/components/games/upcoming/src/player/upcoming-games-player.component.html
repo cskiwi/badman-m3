@@ -6,7 +6,19 @@
         <div class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight text-sm">
           <div class="flex items-center gap-2 min-w-0">
             @if (game?.drawCompetition?.name) {
-              <span class="font-medium text-color truncate">{{ game?.drawCompetition?.name }}</span>
+              @let draw = game.drawCompetition;
+              @let subEvent = draw?.competitionSubEvent;
+              @let competitionEvent = subEvent?.competitionEvent;
+              @if (draw && subEvent && competitionEvent) {
+                <a
+                  [routerLink]="['/competition', competitionEvent.id, 'sub-events', subEvent.id, 'draws', draw.id]"
+                  class="font-medium text-color truncate hover:text-primary no-underline"
+                >
+                  {{ draw.name }}
+                </a>
+              } @else {
+                <span class="font-medium text-color truncate">{{ draw?.name }}</span>
+              }
             }
           </div>
         </div>

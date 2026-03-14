@@ -16,6 +16,12 @@ const UPCOMING_GAMES_QUERY = gql`
       drawCompetition {
         id
         name
+        competitionSubEvent {
+          id
+          competitionEvent {
+            id
+          }
+        }
       }
       homeTeam {
         id
