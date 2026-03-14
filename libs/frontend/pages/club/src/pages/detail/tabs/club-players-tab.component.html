@@ -2,107 +2,70 @@
 <div class="flex flex-row flex-wrap gap-3 items-center mb-4">
   <p-iconfield class="flex-1" [style]="{ 'min-width': '200px' }">
     <p-inputicon class="pi pi-search" />
-    <input
-      pInputText
-      type="text"
-      (input)="searchQuery.set($any($event.target).value)"
-      [placeholder]="('all.common.search' | translate) + '...'"
-      class="w-full"
-    />
+    <input pInputText type="text" (input)="searchQuery.set($any($event.target).value)" [placeholder]="('all.common.search' | translate) + '...'" class="w-full" />
   </p-iconfield>
   @if (service.availableTeams().length > 1) {
-    <p-multiSelect
-      [options]="service.availableTeams()"
-      [ngModel]="selectedTeamIds()"
-      (ngModelChange)="selectedTeamIds.set($event)"
-      optionLabel="name"
-      optionValue="id"
-      [showClear]="true"
-      display="chip"
-      [placeholder]="'all.team.filterByTeam' | translate"
-      [style]="{ 'min-width': '200px', 'max-width': '340px' }"
-    />
+  <p-multiSelect [options]="service.availableTeams()" [ngModel]="selectedTeamIds()" (ngModelChange)="selectedTeamIds.set($event)" optionLabel="name" optionValue="id" [showClear]="true" display="chip" [placeholder]="'all.team.filterByTeam' | translate"
+    [style]="{ 'min-width': '200px', 'max-width': '340px' }" />
   }
 </div>
 
 @if (service.loading()) {
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
-      <div class="border-surface rounded-border border">
-        <div class="flex items-center gap-2 bg-highlight p-2">
-          <p-skeleton shape="circle" size="2rem" />
-          <p-skeleton width="8rem" height="1.25rem" />
-        </div>
-        <div class="p-4 space-y-2">
-          <p-skeleton width="7rem" height="1rem" />
-          <p-skeleton width="5rem" height="1rem" />
-          <p-skeleton width="7rem" height="2rem" borderRadius="0.5rem" />
-        </div>
-      </div>
-    }
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+  <div class="border-surface rounded-border border">
+    <div class="flex items-center gap-2 bg-highlight p-2">
+      <p-skeleton shape="circle" size="2rem" />
+      <p-skeleton width="8rem" height="1.25rem" />
+    </div>
+    <div class="p-4 space-y-2">
+      <p-skeleton width="7rem" height="1rem" />
+      <p-skeleton width="5rem" height="1rem" />
+      <p-skeleton width="7rem" height="2rem" borderRadius="0.5rem" />
+    </div>
   </div>
+  }
+</div>
 } @else if (filteredPlayers().length > 0) {
-  <div class="mb-3 text-sm text-surface-500">
-    {{ filteredPlayers().length }} {{ 'all.player.players' | translate }}
-  </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    @for (player of filteredPlayers(); track player.id) {
-      <div class="border-surface rounded-border border">
-        <!-- Header -->
-        <div class="flex items-center justify-between bg-highlight p-2">
-          <div class="flex items-center gap-2">
-            <p-avatar
-              [label]="getPlayerInitials(player)"
-              size="normal"
-              shape="circle"
-            />
-            <span class="font-semibold text-primary my-2 truncate">
-              {{ player.fullName }}
-            </span>
-          </div>
-          <p-badge
-            [value]="(player.teamPlayerMemberships.length).toString()"
-            severity="secondary"
-            [pTooltip]="'all.team.name' | translate"
-          />
-        </div>
-        <!-- Body -->
-        <div class="p-4">
-          <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
-            @for (membership of player.teamPlayerMemberships; track membership.id) {
-              <div class="flex items-center gap-1">
-                <i class="pi pi-users text-xs"></i>
-                <span>{{ membership.team.name }}</span>
-                @if (membership.team.abbreviation) {
-                  <p-badge
-                    [value]="membership.team.abbreviation"
-                    severity="secondary"
-                    size="small"
-                  />
-                }
-              </div>
-            }
-          </div>
-          <div class="flex justify-start">
-            <button
-              pButton
-              type="button"
-              [label]="'all.common.viewDetails' | translate"
-              icon="pi pi-external-link"
-              class="p-button-text p-button-sm"
-              [routerLink]="['/players', player.slug]"
-            ></button>
-          </div>
-        </div>
+<div class="mb-3 text-sm text-surface-500">
+  {{ filteredPlayers().length }} {{ 'all.player.players' | translate }}
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  @for (player of filteredPlayers(); track player.id) {
+  <div class="border-surface rounded-border border">
+    <!-- Header -->
+    <div class="flex items-center justify-between bg-highlight p-2 cursor-pointer" [routerLink]="['/players', player.slug]">
+      <div class="flex items-center gap-2">
+        <p-avatar [label]="getPlayerInitials(player)" size="normal" shape="circle" />
+        <span class="font-semibold text-primary my-2 truncate ">
+          {{ player.fullName }}
+        </span>
       </div>
-    }
+    </div>
+    <!-- Body -->
+    <div class="p-4">
+      <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
+        @for (membership of player.teamPlayerMemberships; track membership.id) {
+        <div class="flex items-center gap-1">
+          <i class="pi pi-users text-xs"></i>
+          <span>{{ membership.team.name }}</span>
+          @if (membership.team.abbreviation) {
+          <p-badge [value]="membership.team.abbreviation" severity="secondary" size="small" />
+          }
+        </div>
+        }
+      </div>
+
+    </div>
   </div>
+  }
+</div>
 } @else {
-  <div class="text-center py-12 text-surface-500">
-    <i class="pi pi-users text-6xl mb-4 block"></i>
-    <h3 class="text-xl font-medium mb-2">
-      {{ 'all.player.noPlayers' | translate }}
-    </h3>
-    <p>{{ 'all.club.players.noPlayersDescription' | translate }}</p>
-  </div>
+<div class="text-center py-12 text-surface-500">
+  <i class="pi pi-users text-6xl mb-4 block"></i>
+  <h3 class="text-xl font-medium mb-2">
+    {{ 'all.player.noPlayers' | translate }}
+  </h3>
+  <p>{{ 'all.club.players.noPlayersDescription' | translate }}</p>
+</div>
 }
