@@ -255,7 +255,7 @@ export class EnrollmentService {
       await lastValueFrom(
         this.apollo.mutate({
           mutation: gql`
-            mutation CancelEnrollment($enrollmentId: ID!) {
+            mutation CancelTournamentEnrollment($enrollmentId: ID!) {
               cancelEnrollment(enrollmentId: $enrollmentId) {
                 id
                 status

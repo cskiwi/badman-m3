@@ -39,7 +39,7 @@ export class OverviewService {
         const result = await lastValueFrom(this.apollo
           .query<{ players: Player[], playersCount: { count: number } }>({
             query: gql`
-              query Players($args: PlayerArgs, $countArgs: PlayerArgs) {
+              query PlayersOverview($args: PlayerArgs, $countArgs: PlayerArgs) {
                 players(args: $args) {
                   id
                   memberId

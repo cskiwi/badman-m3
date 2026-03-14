@@ -64,7 +64,7 @@ export class PlayerDetailService {
             >;
           }>({
             query: gql`
-              query PlayerDetail($playerId: ID!) {
+              query TournamentPlayerDetail($playerId: ID!) {
                 player(id: $playerId) {
                   id
                   firstName

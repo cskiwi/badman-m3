@@ -49,7 +49,7 @@ export class ClubsService {
         const result = await lastValueFrom(this.apollo
           .query<ClubsQueryResponse>({
             query: gql`
-              query Clubs($args: ClubArgs) {
+              query TournamentClubs($args: ClubArgs) {
                 clubs(args: $args) {
                   id
                   name

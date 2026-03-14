@@ -20,7 +20,7 @@ import { AuthService } from '@app/frontend-modules-auth/service';
 import { CountrySelectComponent, StateSelectComponent } from '@app/frontend-components/country-state';
 
 const UPDATE_COMPETITION_INFO = gql`
-  mutation UpdateCompetitionEvent($id: ID!, $input: CompetitionEventUpdateInput!) {
+  mutation UpdateCompetitionEventInfo($id: ID!, $input: CompetitionEventUpdateInput!) {
     updateCompetitionEvent(id: $id, input: $input) {
       id
       name

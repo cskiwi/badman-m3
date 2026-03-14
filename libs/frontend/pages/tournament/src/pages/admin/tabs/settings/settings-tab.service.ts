@@ -83,7 +83,7 @@ export class SettingsTabService {
       const result = await lastValueFrom(
         this.apollo.mutate<{ updateTournamentEvent: TournamentEvent }>({
           mutation: gql`
-            mutation UpdateTournamentEvent($id: ID!, $data: TournamentEventUpdateInput!) {
+            mutation UpdateTournamentEventSettings($id: ID!, $data: TournamentEventUpdateInput!) {
               updateTournamentEvent(id: $id, data: $data) {
                 id
                 name

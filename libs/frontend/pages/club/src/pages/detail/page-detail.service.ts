@@ -78,7 +78,7 @@ export class DetailService {
         const teamsResult = await lastValueFrom(
           this.apollo.query<{ club: { teams: Team[] } }>({
             query: gql`
-              query ClubTeams($clubId: ID!, $season: Float!) {
+              query ClubDetailTeams($clubId: ID!, $season: Float!) {
                 club(id: $clubId) {
                   id
                   teams(args: { where: [{ season: { eq: $season } }], take: 50, order: { name: ASC } }) {

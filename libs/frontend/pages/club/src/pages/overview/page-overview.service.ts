@@ -50,7 +50,7 @@ export class OverviewService {
         const result = await lastValueFrom(this.apollo
           .query<ClubsQueryResponse>({
             query: gql`
-              query Clubs($args: ClubArgs) {
+              query ClubsOverview($args: ClubArgs) {
                 clubs(args: $args) {
                   id
                   name

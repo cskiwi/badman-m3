@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '@app/frontend-modules-auth/service';
 
 const UPDATE_COMPETITION_DATES = gql`
-  mutation UpdateCompetitionEvent($id: ID!, $input: CompetitionEventUpdateInput!) {
+  mutation UpdateCompetitionEventDates($id: ID!, $input: CompetitionEventUpdateInput!) {
     updateCompetitionEvent(id: $id, input: $input) {
       id
       openDate
