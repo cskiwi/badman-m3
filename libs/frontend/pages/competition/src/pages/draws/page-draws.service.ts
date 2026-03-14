@@ -174,6 +174,30 @@ export class DrawsService {
       return dateA - dateB;
     });
   });
+
+  playedEncounters = computed(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return this.encounters()
+      .filter((e) => e.date && new Date(e.date) < today)
+      .sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateB - dateA; // most recent first
+      });
+  });
+
+  upcomingEncounters = computed(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return this.encounters()
+      .filter((e) => !e.date || new Date(e.date) >= today)
+      .sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateA - dateB; // soonest first
+      });
+  });
   standings = computed(() => {
     const entries = this.dataResource.value()?.entries || [];
     return entries

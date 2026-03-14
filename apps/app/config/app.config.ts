@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {
   APP_ID,
   ApplicationConfig,
@@ -30,7 +30,7 @@ import { appRoutes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
-    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi()),
     provideGraphQL(),
     importProvidersFrom(
       AuthModule.forRoot({

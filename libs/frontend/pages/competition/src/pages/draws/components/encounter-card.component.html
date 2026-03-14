@@ -1,245 +1,207 @@
-<!-- Encounter Card matching page theme -->
-<div class="bg-highlight rounded-border border-1 surface-border mb-4 overflow-hidden">
-  <!-- Main encounter display -->
-  <div class="p-4 cursor-pointer hover:bg-surface-hover transition-colors transition-duration-150" (click)="toggleExpanded()">
-    <!-- Desktop layout -->
-    <div class="hidden md:flex items-center justify-content-between gap-4">
-      <!-- Home Team -->
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2">
-          @if (encounter().homeTeam?.club?.slug) {
-            <a [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]" class="font-semibold text-color white-space-nowrap hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().homeTeam?.name || 'TBD' }}</a>
-          } @else {
-            <span class="font-semibold text-900 white-space-nowrap">{{ encounter().homeTeam?.name || 'TBD' }}</span>
-          }
-          @if (encounter().homeTeam?.abbreviation) {
-            <span class="text-xs text-muted-color white-space-nowrap">({{ encounter().homeTeam?.abbreviation }})</span>
-          }
-        </div>
-      </div>
-
-      <!-- Score -->
-      <div class="flex-none">
-        @if (encounter().homeScore !== null && encounter().awayScore !== null) {
-          <span
-            class="inline-flex items-center justify-content-center font-bold px-3 py-2 rounded-border text-surface-900 bg-surface-100 border-1 surface-border"
+@if (variant() === 'upcoming') {
+  <div class="rounded-border border border-surface mb-5 overflow-hidden transition-all duration-200 hover:shadow-lg">
+    <div class="px-4 py-3">
+      <div class="flex items-center gap-2 mb-2">
+        <i class="pi pi-home text-xs text-muted-color"></i>
+        @if (encounter().homeTeam?.club?.slug) {
+          <a
+            [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]"
+            class="text-sm font-semibold text-color truncate hover:text-primary no-underline"
           >
-            {{ encounter().homeScore }} - {{ encounter().awayScore }}
-          </span>
+            {{ encounter().homeTeam?.name || encounter().homeTeam?.abbreviation }}
+          </a>
         } @else {
-          <span class="text-muted-color font-medium px-3 py-2">vs</span>
+          <span class="text-sm font-semibold text-color truncate">{{ encounter().homeTeam?.name || 'TBD' }}</span>
         }
       </div>
 
-      <!-- Away Team -->
-      <div class="flex-1 min-w-0 text-right">
-        <div class="flex items-center justify-content-end gap-2">
-          @if (encounter().awayTeam?.club?.slug) {
-            <a [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]" class="font-semibold text-color white-space-nowrap hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().awayTeam?.name || 'TBD' }}</a>
-          } @else {
-            <span class="font-semibold text-900 white-space-nowrap">{{ encounter().awayTeam?.name || 'TBD' }}</span>
-          }
-          @if (encounter().awayTeam?.abbreviation) {
-            <span class="text-xs text-muted-color white-space-nowrap">({{ encounter().awayTeam?.abbreviation }})</span>
-          }
-        </div>
-      </div>
-
-      <!-- Date and Expand Arrow -->
-      <div class="flex-none">
-        <div class="flex items-center gap-3">
-          @if (encounter().date) {
-            <span class="text-sm text-muted-color white-space-nowrap">{{ encounter().date | date: 'short' }}</span>
-          }
-
-          @if (hasGames()) {
-            <i class="pi text-muted-color transition-all transition-duration-200" [class]="expanded() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-          }
-        </div>
+      <div class="flex items-center gap-2">
+        <i class="pi pi-compass text-xs text-muted-color"></i>
+        @if (encounter().awayTeam?.club?.slug) {
+          <a
+            [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]"
+            class="text-sm font-semibold text-color truncate hover:text-primary no-underline"
+          >
+            {{ encounter().awayTeam?.name || encounter().awayTeam?.abbreviation }}
+          </a>
+        } @else {
+          <span class="text-sm font-semibold text-color truncate">{{ encounter().awayTeam?.name || 'TBD' }}</span>
+        }
       </div>
     </div>
 
-    <!-- Mobile layout -->
-    <div class="block md:hidden">
-      <!-- Teams and Score Row -->
-      <div class="flex items-center justify-content-between gap-3 mb-3">
-        <!-- Home Team -->
-        <div class="flex-1 min-w-0">
-          @if (encounter().homeTeam?.club?.slug) {
-            <a [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]" class="font-semibold text-color text-sm truncate block hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().homeTeam?.name || 'TBD' }}</a>
-          } @else {
-            <div class="font-semibold text-900 text-sm truncate">{{ encounter().homeTeam?.name || 'TBD' }}</div>
-          }
-          @if (encounter().homeTeam?.abbreviation) {
-            <div class="text-xs text-muted-color">({{ encounter().homeTeam?.abbreviation }})</div>
-          }
-        </div>
-
-        <!-- Score -->
-        <div class="flex-none">
-          @if (encounter().homeScore !== null && encounter().awayScore !== null) {
-            <span
-              class="inline-flex items-center justify-content-center font-bold px-2 py-1 rounded-border text-surface-900 bg-surface-100 border-1 surface-border text-sm"
-            >
-              {{ encounter().homeScore }} - {{ encounter().awayScore }}
-            </span>
-          } @else {
-            <span class="text-muted-color font-medium text-sm">vs</span>
-          }
-        </div>
-
-        <!-- Away Team -->
-        <div class="flex-1 min-w-0 text-right">
-          @if (encounter().awayTeam?.club?.slug) {
-            <a [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]" class="font-semibold text-color text-sm truncate block hover:text-primary no-underline" (click)="$event.stopPropagation()">{{ encounter().awayTeam?.name || 'TBD' }}</a>
-          } @else {
-            <div class="font-semibold text-900 text-sm truncate">{{ encounter().awayTeam?.name || 'TBD' }}</div>
-          }
-          @if (encounter().awayTeam?.abbreviation) {
-            <div class="text-xs text-muted-color">({{ encounter().awayTeam?.abbreviation }})</div>
-          }
-        </div>
+    <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis text-xs text-muted-color">
+      <div class="flex items-center gap-1">
+        <i class="pi pi-calendar"></i>
+        <span>{{ encounter().date | dayjsFormat: 'ddd DD-MM-YYYY' }}</span>
       </div>
-
-      <!-- Date and Expand Row -->
-      <div class="flex items-center justify-content-between">
-        @if (encounter().date) {
-          <span class="text-sm text-muted-color">{{ encounter().date | date: 'short' }}</span>
-        }
-
-        @if (hasGames()) {
-          <i class="pi text-muted-color transition-all transition-duration-200" [class]="expanded() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-        }
+      <div class="flex items-center gap-1">
+        <i class="pi pi-clock"></i>
+        <span>{{ encounter().date | dayjsFormat: 'HH:mm' }}</span>
       </div>
     </div>
   </div>
+} @else {
+  <div class="rounded-border border border-surface mb-5 overflow-hidden">
+    <div
+      class="flex items-center justify-between gap-2 px-4 py-2 bg-highlight text-sm cursor-pointer hover:bg-surface-hover transition-colors"
+      (click)="toggleExpanded()"
+    >
+      <div class="flex items-center gap-2 min-w-0">
+        @if (encounter().homeTeam?.club?.slug) {
+          <a
+            [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]"
+            class="font-medium text-color no-underline hover:text-primary-600 truncate"
+            (click)="$event.stopPropagation()"
+          >
+            {{ encounter().homeTeam?.name || encounter().homeTeam?.abbreviation }}
+          </a>
+        } @else {
+          <span class="font-medium text-color truncate">{{ encounter().homeTeam?.name || 'TBD' }}</span>
+        }
+        <span class="text-muted-color flex-none">vs</span>
+        @if (encounter().awayTeam?.club?.slug) {
+          <a
+            [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]"
+            class="font-medium text-color no-underline hover:text-primary-600 truncate"
+            (click)="$event.stopPropagation()"
+          >
+            {{ encounter().awayTeam?.name || encounter().awayTeam?.abbreviation }}
+          </a>
+        } @else {
+          <span class="font-medium text-color truncate">{{ encounter().awayTeam?.name || 'TBD' }}</span>
+        }
+      </div>
 
-  <!-- Expanded games section -->
-  @if (expanded() && hasGames()) {
-    <div class="border-top-1 surface-border px-4 pb-4">
+      <div class="flex items-center gap-2 flex-none">
+        @if (encounter().homeScore !== undefined && encounter().awayScore !== undefined) {
+          <span class="font-bold tabular-nums">{{ encounter().homeScore }} - {{ encounter().awayScore }}</span>
+        }
+        @if (hasGames()) {
+          <i
+            class="pi text-muted-color transition-all duration-200"
+            [class.pi-chevron-down]="!expanded()"
+            [class.pi-chevron-up]="expanded()"
+          ></i>
+        }
+      </div>
+    </div>
+
+    @if (expanded() && hasGames()) {
       @if (gamesLoading()) {
-        <!-- Loading skeleton for games -->
-        <div class="mt-4">
-          @for (i of [1, 2, 3]; track i) {
-            <div class="flex items-center justify-content-between p-3 mb-2 surface-100 border-round">
-              <p-skeleton width="15rem" height="1rem" />
-              <p-skeleton width="8rem" height="1rem" />
-              <p-skeleton width="15rem" height="1rem" />
+        @for (i of [1, 2, 3]; track i) {
+          <div class="px-4 py-3 border-t border-surface space-y-2">
+            <div class="flex items-center justify-between">
+              <p-skeleton width="10rem" height="0.875rem" />
+              <p-skeleton width="4rem" height="0.875rem" />
             </div>
-          }
-        </div>
-      } @else {
-        <div class="mt-4">
-          <h5 class="text-sm font-semibold text-600 mb-3 border-bottom-1 surface-border pb-2">
-            <i class="pi pi-list mr-2"></i>
-            {{ 'all.competition.games' | translate }}
-          </h5>
-
-          @if (games().length > 0) {
-            <div class="flex flex-col gap-3">
-              @for (game of games(); track game.id) {
-                <div class="surface-50 p-3 border-round border-1 surface-border">
-                  <!-- Game header -->
-                  <div class="flex items-center gap-2 mb-3">
-                    @if (game.gameType) {
-                      <span class="inline-flex items-center px-2 py-1 text-xs font-semibold border-round bg-primary text-white">
-                        {{ game.gameType }}
-                      </span>
-                    }
-                    @if (game.order) {
-                      <span class="text-sm text-700 font-medium"> {{ 'all.competition.game' | translate }} {{ game.order }} </span>
-                    }
-                  </div>
-
-                  <!-- Players with scores -->
-                  @if (game.gamePlayerMemberships && game.gamePlayerMemberships.length > 0) {
-                    <div class="grid grid-cols-1 gap-2">
-                      <!-- Team 1 -->
-                      <div class="flex items-center gap-3 p-2 surface-0 border-round">
-                        <div class="flex items-center gap-2 w-1/3">
-                          <div class="flex flex-col gap-1">
-                            @for (membership of game.gamePlayerMemberships; track membership.playerId) {
-                              @if (membership.team === 1) {
-                                <span class="text-sm text-900" [class.underline]="isWinnerTeam(game, 1)" [class.font-bold]="isWinnerTeam(game, 1)">{{
-                                  membership.gamePlayer.fullName ||
-                                    membership.gamePlayer.firstName + ' ' + membership.gamePlayer.lastName ||
-                                    'Unknown'
-                                }}</span>
-                              }
-                            }
-                          </div>
-                        </div>
-                        <!-- Team 1 Scores -->
-                        @if (hasSetScores(game)) {
-                          <div class="flex items-center gap-2">
-                            @if (game.set1Team1 !== null) {
-                              <span class="text-xs text-900" [class.font-bold]="isWinnerTeam(game, 1)">
-                                {{ game.set1Team1 }}
-                              </span>
-                            }
-                            @if (game.set2Team1 !== null) {
-                              <span class="text-xs text-900" [class.font-bold]="isWinnerTeam(game, 1)">
-                                {{ game.set2Team1 }}
-                              </span>
-                            }
-                            @if (game.set3Team1 !== null) {
-                              <span class="text-xs text-900" [class.font-bold]="isWinnerTeam(game, 1)">
-                                {{ game.set3Team1 }}
-                              </span>
-                            }
-                          </div>
-                        }
-                      </div>
-
-                      <!-- Team 2 -->
-                      <div class="flex items-center gap-3 p-2 surface-0 border-round">
-                        <div class="flex items-center gap-2 w-1/3">
-                          <div class="flex flex-col gap-1">
-                            @for (membership of game.gamePlayerMemberships; track membership.playerId) {
-                              @if (membership.team === 2) {
-                                <span class="text-sm text-900" [class.underline]="isWinnerTeam(game, 2)" [class.font-bold]="isWinnerTeam(game, 2)">{{
-                                  membership.gamePlayer.fullName ||
-                                    membership.gamePlayer.firstName + ' ' + membership.gamePlayer.lastName ||
-                                    'Unknown'
-                                }}</span>
-                              }
-                            }
-                          </div>
-                        </div>
-                        <!-- Team 2 Scores -->
-                        @if (hasSetScores(game)) {
-                          <div class="flex items-center gap-2">
-                            @if (game.set1Team2 !== null) {
-                              <span class="text-xs text-900" [class.font-bold]="isWinnerTeam(game, 2)">
-                                {{ game.set1Team2 }}
-                              </span>
-                            }
-                            @if (game.set2Team2 !== null) {
-                              <span class="text-xs text-900" [class.font-bold]="isWinnerTeam(game, 2)">
-                                {{ game.set2Team2 }}
-                              </span>
-                            }
-                            @if (game.set3Team2 !== null) {
-                              <span class="text-xs text-900" [class.font-bold]="isWinnerTeam(game, 2)">
-                                {{ game.set3Team2 }}
-                              </span>
-                            }
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  }
-                </div>
+            <div class="flex items-center justify-between">
+              <p-skeleton width="8rem" height="0.875rem" />
+              <p-skeleton width="4rem" height="0.875rem" />
+            </div>
+          </div>
+        }
+      } @else if (games().length > 0) {
+        @for (game of games(); track game.id) {
+          <div class="px-4 py-3 border-t border-surface">
+            <div class="flex items-center gap-2 mb-2">
+              @if (game.order) {
+                <span class="text-xs text-muted-color">{{ 'all.competition.game' | translate }} {{ game.order }}</span>
               }
             </div>
-          } @else {
-            <div class="text-center py-4 text-600">
-              <i class="pi pi-info-circle text-2xl mb-2 block text-400"></i>
-              <span class="text-sm">{{ 'all.competition.no_games' | translate }}</span>
+
+            <div class="flex items-center gap-3 mb-2">
+              <div class="flex-1 min-w-0">
+                @for (membership of game.gamePlayerMemberships; track membership.playerId) {
+                  @if (membership.team === 1) {
+                    <span class="text-sm text-color block truncate" [class.font-bold]="isWinnerTeam(game, 1)">
+                      {{ membership.gamePlayer.fullName || membership.gamePlayer.firstName + ' ' + membership.gamePlayer.lastName || 'Unknown' }}
+                    </span>
+                  }
+                }
+              </div>
+              <div class="flex items-center gap-2 flex-none">
+                @if (game.winner === 1) {
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                } @else if (game.winner === 2) {
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500 opacity-50"></div>
+                }
+                <div class="flex items-center gap-1 text-sm font-medium tabular-nums">
+                  @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+                    <span
+                      [class.text-green-600]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
+                      [class.font-bold]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
+                    >{{ game.set1Team1 }}</span>
+                  }
+                  @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+                    <span
+                      [class.text-green-600]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
+                      [class.font-bold]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
+                    >{{ game.set2Team1 }}</span>
+                  }
+                  @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+                    <span
+                      [class.text-green-600]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
+                      [class.font-bold]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
+                    >{{ game.set3Team1 }}</span>
+                  }
+                </div>
+              </div>
             </div>
-          }
+
+            <div class="flex items-center gap-3">
+              <div class="flex-1 min-w-0">
+                @for (membership of game.gamePlayerMemberships; track membership.playerId) {
+                  @if (membership.team === 2) {
+                    <span class="text-sm text-color block truncate" [class.font-bold]="isWinnerTeam(game, 2)">
+                      {{ membership.gamePlayer.fullName || membership.gamePlayer.firstName + ' ' + membership.gamePlayer.lastName || 'Unknown' }}
+                    </span>
+                  }
+                }
+              </div>
+              <div class="flex items-center gap-2 flex-none">
+                @if (game.winner === 2) {
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                } @else if (game.winner === 1) {
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500 opacity-50"></div>
+                }
+                <div class="flex items-center gap-1 text-sm font-medium tabular-nums">
+                  @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+                    <span
+                      [class.text-green-600]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
+                      [class.font-bold]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
+                    >{{ game.set1Team2 }}</span>
+                  }
+                  @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+                    <span
+                      [class.text-green-600]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
+                      [class.font-bold]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
+                    >{{ game.set2Team2 }}</span>
+                  }
+                  @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+                    <span
+                      [class.text-green-600]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
+                      [class.font-bold]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
+                    >{{ game.set3Team2 }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="text-center py-4 px-4 text-muted-color text-sm">
+          <i class="pi pi-info-circle text-2xl mb-2 block"></i>
+          {{ 'all.competition.no_games' | translate }}
         </div>
       }
+    }
+
+    <div class="flex items-center gap-3 px-4 py-2 bg-highlight-emphasis text-xs text-muted-color">
+      <div class="flex items-center gap-1">
+        <i class="pi pi-calendar"></i>
+        <span>{{ encounter().date | dayjsFormat: 'ddd DD-MM-YYYY' }}</span>
+      </div>
     </div>
-  }
-</div>
+  </div>
+}

@@ -11,14 +11,15 @@ import { SsrCookieService } from 'ngx-cookie-service-ssr';
 export class AuthInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler) {
     const cookie = inject(SsrCookieService);
-    return next.handle(
-      request.clone({
-        setHeaders: {
-          Authorization: cookie.check(AUTH_KEY)
-            ? `Bearer ${cookie.get(AUTH_KEY)}`
-            : '',
-        },
-      }),
-    );
+    if (cookie.check(AUTH_KEY)) {
+      return next.handle(
+        request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${cookie.get(AUTH_KEY)}`,
+          },
+        }),
+      );
+    }
+    return next.handle(request);
   }
 }

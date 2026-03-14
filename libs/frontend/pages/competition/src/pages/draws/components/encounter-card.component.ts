@@ -1,20 +1,21 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CompetitionEncounter } from '@app/models';
+import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
 import { TranslateModule } from '@ngx-translate/core';
 import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
   selector: 'app-encounter-card',
   standalone: true,
-  imports: [DatePipe, TranslateModule, SkeletonModule, RouterModule],
+  imports: [DayjsFormatPipe, TranslateModule, SkeletonModule, RouterModule],
   templateUrl: './encounter-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EncounterCardComponent {
   encounter = input.required<CompetitionEncounter>();
   onLoadGames = input<(encounterId: string) => Promise<void>>();
+  variant = input<'played' | 'upcoming'>('played');
 
   protected expanded = signal(false);
   private _gamesLoading = signal(false);
@@ -48,6 +49,17 @@ export class EncounterCardComponent {
 
   isWinnerTeam(game: any, team: number): boolean {
     return game.winner !== null && game.winner !== 0 && game.winner === team;
+  }
+
+  isSetPlayed(score1: number | null | undefined, score2: number | null | undefined): boolean {
+    return score1 !== null && score1 !== undefined && score2 !== null && score2 !== undefined;
+  }
+
+  getSetWinner(score1: number | null | undefined, score2: number | null | undefined): 1 | 2 | null {
+    if (!this.isSetPlayed(score1, score2)) return null;
+    if ((score1 as number) > (score2 as number)) return 1;
+    if ((score2 as number) > (score1 as number)) return 2;
+    return null;
   }
 
   async toggleExpanded(): Promise<void> {

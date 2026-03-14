@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
+import { CardModule } from 'primeng/card';
 import { EncounterCardComponent } from './components/encounter-card.component';
 import { PouleDrawComponent } from './components/poule-draw.component';
 import { QualificationDrawComponent } from './components/qualification-draw.component';
@@ -22,6 +23,7 @@ import { DrawsService } from './page-draws.service';
     TranslateModule,
     PageHeaderComponent,
     SkeletonModule,
+    CardModule,
     SyncButtonComponent,
     PouleDrawComponent,
     QualificationDrawComponent,
@@ -42,6 +44,8 @@ export class PageDrawsComponent {
   subEvent = this.dataService.subEvent;
   draw = this.dataService.draw;
   encounters = this.dataService.encounters;
+  playedEncounters = this.dataService.playedEncounters;
+  upcomingEncounters = this.dataService.upcomingEncounters;
   standings = this.dataService.standings;
 
   error = this.dataService.error;

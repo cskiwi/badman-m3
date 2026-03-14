@@ -289,6 +289,10 @@ export type I18nTranslations = {
             "no_encounters": string;
             "no_encounters_description": string;
             "no_games": string;
+            "no_played_encounters": string;
+            "no_upcoming_encounters": string;
+            "played_encounters": string;
+            "upcoming_encounters": string;
             "no_qualification": string;
             "no_qualification_description": string;
             "no_standings": string;
