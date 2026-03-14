@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TeamCardService } from './team-card.service';
