@@ -10,12 +10,20 @@ const logFileFormat = printf(({ level, message, timestamp, stack, ...meta }) => 
   return `${timestamp} [${level.toUpperCase()}] ${stack || message}${metaStr}`;
 });
 
-export function createWinstonLogger(config?: { name?: string; logDir?: string; instanceId?: string | number }) {
+type WinstonLoggerConfig = {
+  name?: string;
+  logDir?: string;
+  instanceId?: string | number;
+  enableFileLogging?: boolean;
+};
+
+export function createWinstonLogger(config?: WinstonLoggerConfig) {
   const logDir = config?.logDir || 'logs';
   const appName = config?.name || 'app';
   // Support PM2 instance ID via config or environment variable
   const instanceId = config?.instanceId ?? process.env['PM2_INSTANCE_ID'] ?? process.env['NODE_APP_INSTANCE'];
   const suffix = instanceId !== undefined ? `-${instanceId}` : '';
+  const isFileLoggingEnabled = config?.enableFileLogging ?? process.env['NODE_ENV'] !== 'production';
 
   return WinstonModule.createLogger({
     level: 'silly',
@@ -34,26 +42,28 @@ export function createWinstonLogger(config?: { name?: string; logDir?: string; i
           }),
         ),
       }),
-      // Rotating file transport for all logs — keeps 14 days, max 20MB per file
-      new DailyRotateFile({
-        dirname: logDir,
-        filename: `info-${appName}${suffix}-%DATE%.log`,
-        datePattern: 'YYYY-MM-DD',
-        level: 'silly',
-        format: combine(timestamp(), logFileFormat),
-        maxSize: '20m',
-        maxFiles: '14d',
-      }),
-      // Rotating file transport for errors — keeps 30 days
-      new DailyRotateFile({
-        dirname: logDir,
-        filename: `error-${appName}${suffix}-%DATE%.log`,
-        datePattern: 'YYYY-MM-DD',
-        level: 'error',
-        format: combine(timestamp(), logFileFormat),
-        maxSize: '20m',
-        maxFiles: '30d',
-      }),
+      ...(isFileLoggingEnabled
+        ? [
+            new DailyRotateFile({
+              dirname: logDir,
+              filename: `info-${appName}${suffix}-%DATE%.log`,
+              datePattern: 'YYYY-MM-DD',
+              level: 'silly',
+              format: combine(timestamp(), logFileFormat),
+              maxSize: '20m',
+              maxFiles: '14d',
+            }),
+            new DailyRotateFile({
+              dirname: logDir,
+              filename: `error-${appName}${suffix}-%DATE%.log`,
+              datePattern: 'YYYY-MM-DD',
+              level: 'error',
+              format: combine(timestamp(), logFileFormat),
+              maxSize: '20m',
+              maxFiles: '30d',
+            }),
+          ]
+        : []),
     ],
   });
 }
