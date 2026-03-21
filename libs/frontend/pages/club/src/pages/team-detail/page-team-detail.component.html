@@ -19,20 +19,6 @@
       <!-- Team Information -->
       <section class="draw-info mb-8">
         <div class="rounded-border bg-highlight p-6">
-          <div class="flex items-start justify-between mb-4">
-            <div>
-              <h3 class="font-semibold text-xl text-primary">{{ team.name }}</h3>
-            </div>
-            <div class="flex gap-2 text-sm">
-              @if (team.type) {
-                <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded">{{ team.type }}</span>
-              }
-              @if (team.abbreviation) {
-                <span class="bg-surface-200 text-color px-2 py-1 rounded font-mono">{{ team.abbreviation }}</span>
-              }
-            </div>
-          </div>
-
           <!-- Team Details -->
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-sm">
             @if (team.captain) {
@@ -81,8 +67,6 @@
                   </a>
                   @if (subEvent.level != null || subEvent.maxLevel != null) {
                     <p-tag
-                      severity="secondary"
-                      [rounded]="true"
                       [value]="subEvent.level != null && subEvent.maxLevel != null
                         ? subEvent.level + ' - ' + subEvent.maxLevel
                         : '' + (subEvent.level ?? subEvent.maxLevel)"
