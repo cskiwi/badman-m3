@@ -828,6 +828,37 @@
         },
         "title": "Queue Statistics"
       },
+      "scheduling": {
+        "competition": "Competition",
+        "confirmSync": "Schedule sync for {{count}} items at {{level}} level?",
+        "dateFrom": "Date From",
+        "dateTo": "Date To",
+        "eventCategory": "Event Type",
+        "maxLevel": "Max Level",
+        "minLevel": "Min Level",
+        "noEventsSelected": "No events selected",
+        "official": "Official",
+        "scheduleSync": "Schedule Sync",
+        "seasonFrom": "Season From",
+        "seasonTo": "Season To",
+        "selectedCount": "items selected",
+        "syncError": "Failed to schedule sync",
+        "syncLevel": "Sync Level",
+        "syncLevel.draw": "Draw",
+        "syncLevel.encounter": "Encounter",
+        "syncLevel.event": "Event",
+        "syncLevel.subEvent": "Sub Event",
+        "syncScheduled": "Sync scheduled for {{count}} items",
+        "table": {
+          "extra": "Info",
+          "name": "Name",
+          "noItemsFound": "No items match the current filters",
+          "type": "Type"
+        },
+        "title": "Schedule Sync",
+        "tournament": "Tournament",
+        "withSubComponents": "With sub-components"
+      },
       "recentJobs": {
         "headers": {
           "actions": "Actions",

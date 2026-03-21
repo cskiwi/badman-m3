@@ -1,17 +1,17 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import dayjs from 'dayjs';
 
-// PrimeNG Components
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -20,7 +20,6 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
-import { SyncButtonComponent } from '@app/frontend-components/sync';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { SyncJob } from '../../models';
 import { SyncApiService } from '../../services';
@@ -33,13 +32,13 @@ import { SyncDashboardService } from './sync-dashboard.service';
     CommonModule,
     RouterModule,
     FormsModule,
+    ReactiveFormsModule,
     CardModule,
     ButtonModule,
     TableModule,
     TagModule,
     ProgressSpinnerModule,
     SkeletonModule,
-    InputTextModule,
     SelectModule,
     DatePickerModule,
     ToastModule,
@@ -48,7 +47,8 @@ import { SyncDashboardService } from './sync-dashboard.service';
     DialogModule,
     TranslateModule,
     DatePipe,
-    SyncButtonComponent,
+    CheckboxModule,
+    InputNumberModule,
   ],
   providers: [MessageService, ConfirmationService, SyncDashboardService],
   templateUrl: './sync-dashboard.component.html',
@@ -61,30 +61,31 @@ export class SyncDashboardComponent implements OnDestroy {
   private syncApiService = inject(SyncApiService);
   private translateService = inject(TranslateService);
 
-  // State from service
+  // Queue stats
   queueStats = this.syncService.queueStats;
-  recentJobs = this.syncService.recentJobs;
-  tournaments = this.syncService.tournaments;
+  loadingStats = this.syncService.queueStatsLoading;
 
-  // Hierarchical jobs for table display
+  // Jobs
+  recentJobs = this.syncService.recentJobs;
+  loadingJobs = this.syncService.recentJobsLoading;
+
   displayJobs = computed(() => {
     const jobs = this.recentJobs();
     return this.syncService.flattenJobsForDisplay(jobs);
   });
 
-  loading = this.syncService.loading;
-  loadingStats = this.syncService.queueStatsLoading;
-  loadingJobs = this.syncService.recentJobsLoading;
-  loadingTournaments = this.syncService.tournamentsLoading;
+  // Scheduling
+  filter = this.syncService.filter;
+  displayItems = this.syncService.displayItems;
+  eventsLoading = this.syncService.eventsLoading;
+  selectedCount = this.syncService.selectedCount;
 
-  // Manual loading state for actions
   actionLoading = signal(false);
 
   // Job details dialog
   jobDetailsVisible = signal(false);
   selectedJob = signal<SyncJob | null>(null);
 
-  // Dialog visibility property for two-way binding
   get dialogVisible(): boolean {
     return this.jobDetailsVisible();
   }
@@ -96,151 +97,93 @@ export class SyncDashboardComponent implements OnDestroy {
     }
   }
 
-  // Filter state
-  searchTerm = '';
-  selectedType: string | null = null;
-  selectedStatus: string | null = null;
-
-  // Dropdown options with translations
-  typeOptions = computed(() => [
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.filters.allTypes'), value: null },
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.types.competition'), value: 'competition' },
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.types.tournament'), value: 'tournament' },
+  // Dropdown options
+  eventCategoryOptions = computed(() => [
+    { label: this.translateService.instant('all.sync.dashboard.scheduling.competition'), value: 'competition' },
+    { label: this.translateService.instant('all.sync.dashboard.scheduling.tournament'), value: 'tournament' },
   ]);
 
-  statusOptions = computed(() => [
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.filters.allStatuses'), value: null },
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.statuses.active'), value: 'active' },
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.statuses.finished'), value: 'finished' },
-    { label: this.translateService.instant('all.sync.dashboard.tournaments.statuses.cancelled'), value: 'cancelled' },
-  ]);
+  syncLevelOptions = computed(() => {
+    const category = this.filter.controls.eventCategory.value;
+    const options = [
+      { label: this.translateService.instant('all.sync.dashboard.scheduling.syncLevel.event'), value: 'event' },
+      { label: this.translateService.instant('all.sync.dashboard.scheduling.syncLevel.subEvent'), value: 'subEvent' },
+      { label: this.translateService.instant('all.sync.dashboard.scheduling.syncLevel.draw'), value: 'draw' },
+    ];
 
-  // Computed filtered tournaments
-  filteredTournaments = computed(() => {
-    let filtered = this.tournaments();
-
-    if (this.searchTerm) {
-      const search = this.searchTerm.toLowerCase();
-      filtered = filtered.filter((t) => t.name.toLowerCase().includes(search) || t.visualCode.toLowerCase().includes(search));
+    if (category === 'competition') {
+      options.push({
+        label: this.translateService.instant('all.sync.dashboard.scheduling.syncLevel.encounter'),
+        value: 'encounter',
+      });
     }
 
-    if (this.selectedType) {
-      filtered = filtered.filter((t) => t.type === this.selectedType);
-    }
-
-    if (this.selectedStatus) {
-      filtered = filtered.filter((t) => t.status === this.selectedStatus);
-    }
-
-    return filtered;
+    return options;
   });
 
   ngOnDestroy(): void {
-    // Unsubscribe from WebSocket updates when component is destroyed
     this.syncService.webSocketService.unsubscribeFromQueueStats();
     this.syncService.webSocketService.unsubscribeFromJobUpdates();
   }
 
-  onSearchChange(): void {
-    // Trigger filtering
+  // ===== SCHEDULING =====
+
+  isSelected(id: string): boolean {
+    return this.syncService.isSelected(id);
   }
 
-  onFilterChange(): void {
-    // Trigger filtering
+  isAllSelected(): boolean {
+    return this.syncService.isAllSelected();
   }
 
-  viewJobDetails(job: SyncJob): void {
-    this.selectedJob.set(job);
-    this.jobDetailsVisible.set(true);
+  toggleSelection(id: string): void {
+    this.syncService.toggleSelection(id);
   }
 
-  closeJobDetails(): void {
-    this.jobDetailsVisible.set(false);
-    this.selectedJob.set(null);
+  toggleSelectAll(): void {
+    if (this.syncService.isAllSelected()) {
+      this.syncService.deselectAll();
+    } else {
+      this.syncService.selectAll();
+    }
   }
 
-  retryJob(job: SyncJob): void {
+  toggleExpansion(id: string): void {
+    this.syncService.toggleHierarchyExpansion(id);
+  }
+
+  getIndentStyle(level: number): { 'padding-left': string } {
+    return { 'padding-left': `${level * 24}px` };
+  }
+
+  scheduleSyncForSelected(): void {
+    const count = this.syncService.selectedCount();
+    const syncLevel = this.filter.controls.syncLevel.value;
+
     this.confirmationService.confirm({
-      message: this.translateService.instant('all.sync.dashboard.jobs.confirmRetry', { id: job.id }),
-      header: this.translateService.instant('all.sync.dashboard.jobs.retryHeader'),
-      icon: 'pi pi-refresh',
-      accept: async () => {
-        try {
-          // TODO: Call retry API
-          await new Promise((resolve) => setTimeout(resolve, 500));
-
-          this.messageService.add({
-            severity: 'success',
-            summary: this.translateService.instant('all.common.success'),
-            detail: this.translateService.instant('all.sync.dashboard.jobs.retrySuccess', { id: job.id }),
-          });
-
-          // Refresh jobs
-          this.syncService.refresh();
-        } catch (error) {
-          console.error('Retry error:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: this.translateService.instant('all.common.error'),
-            detail: this.translateService.instant('all.sync.dashboard.jobs.retryError', { id: job.id }),
-          });
-        }
-      },
-    });
-  }
-
-  clearCompletedJobs(): void {
-    this.confirmationService.confirm({
-      message: this.translateService.instant('all.sync.dashboard.actions.confirmClearCompleted'),
-      header: this.translateService.instant('all.sync.dashboard.actions.clearCompleted'),
-      icon: 'pi pi-check-circle',
-      acceptButtonStyleClass: 'p-button-warning',
+      message: this.translateService.instant('all.sync.dashboard.scheduling.confirmSync', { count, level: syncLevel }),
+      header: this.translateService.instant('all.sync.dashboard.scheduling.scheduleSync'),
+      icon: 'pi pi-sync',
       accept: () => {
         this.actionLoading.set(true);
-        this.syncApiService.clearCompletedJobs().subscribe({
-          next: (response) => {
-            this.messageService.add({
-              severity: 'success',
-              summary: this.translateService.instant('all.common.success'),
-              detail: response.message || this.translateService.instant('all.sync.dashboard.actions.clearCompletedSuccess'),
-            });
-            this.syncService.refresh();
-          },
-          error: () => {
-            this.messageService.add({
-              severity: 'error',
-              summary: this.translateService.instant('all.common.error'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.clearCompletedError'),
-            });
-          },
-          complete: () => this.actionLoading.set(false),
-        });
-      },
-    });
-  }
+        const sync$ = this.syncService.getScheduleSyncObservable();
+        if (!sync$) return;
 
-  clearAllJobs(): void {
-    this.confirmationService.confirm({
-      message: this.translateService.instant('all.sync.dashboard.actions.confirmClearAll'),
-      header: this.translateService.instant('all.sync.dashboard.actions.clearAll'),
-      icon: 'pi pi-trash',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => {
-        this.actionLoading.set(true);
-        this.syncApiService.clearAllJobs().subscribe({
+        sync$.subscribe({
           next: () => {
             this.messageService.add({
               severity: 'success',
               summary: this.translateService.instant('all.common.success'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.clearAllSuccess'),
+              detail: this.translateService.instant('all.sync.dashboard.scheduling.syncScheduled', { count }),
             });
+            this.syncService.deselectAll();
             this.syncService.refresh();
           },
           error: () => {
             this.messageService.add({
               severity: 'error',
               summary: this.translateService.instant('all.common.error'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.clearAllError'),
+              detail: this.translateService.instant('all.sync.dashboard.scheduling.syncError'),
             });
           },
           complete: () => this.actionLoading.set(false),
@@ -248,6 +191,8 @@ export class SyncDashboardComponent implements OnDestroy {
       },
     });
   }
+
+  // ===== DISCOVERY =====
 
   triggerDiscoverySync(): void {
     this.confirmationService.confirm({
@@ -278,60 +223,35 @@ export class SyncDashboardComponent implements OnDestroy {
     });
   }
 
-  triggerTournamentSync(): void {
-    this.confirmationService.confirm({
-      message: this.translateService.instant('all.sync.dashboard.actions.confirmTournamentSync'),
-      header: this.translateService.instant('all.sync.dashboard.actions.tournamentSync'),
-      icon: 'pi pi-refresh',
-      accept: () => {
-        this.actionLoading.set(true);
-        this.syncApiService.triggerTournamentSync().subscribe({
-          next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: this.translateService.instant('all.common.success'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.tournamentSyncQueued'),
-            });
-            this.syncService.refresh();
-          },
-          error: () => {
-            this.messageService.add({
-              severity: 'error',
-              summary: this.translateService.instant('all.common.error'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.tournamentSyncError'),
-            });
-          },
-          complete: () => this.actionLoading.set(false),
-        });
-      },
-    });
+  // ===== JOB DISPLAY =====
+
+  viewJobDetails(job: SyncJob): void {
+    this.selectedJob.set(job);
+    this.jobDetailsVisible.set(true);
   }
 
-  triggerCompetitionSync(): void {
+  retryJob(job: SyncJob): void {
     this.confirmationService.confirm({
-      message: this.translateService.instant('all.sync.dashboard.actions.confirmCompetitionSync'),
-      header: this.translateService.instant('all.sync.dashboard.actions.competitionSync'),
+      message: this.translateService.instant('all.sync.dashboard.jobs.confirmRetry', { id: job.id }),
+      header: this.translateService.instant('all.sync.dashboard.jobs.retryHeader'),
       icon: 'pi pi-refresh',
-      accept: () => {
-        this.actionLoading.set(true);
-        this.syncApiService.triggerCompetitionSync().subscribe({
-          next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: this.translateService.instant('all.common.success'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.competitionSyncQueued'),
-            });
-            this.syncService.refresh();
-          },
-          error: () => {
-            this.messageService.add({
-              severity: 'error',
-              summary: this.translateService.instant('all.common.error'),
-              detail: this.translateService.instant('all.sync.dashboard.actions.competitionSyncError'),
-            });
-          },
-          complete: () => this.actionLoading.set(false),
-        });
+      accept: async () => {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translateService.instant('all.common.success'),
+            detail: this.translateService.instant('all.sync.dashboard.jobs.retrySuccess', { id: job.id }),
+          });
+          this.syncService.refresh();
+        } catch (error) {
+          console.error('Retry error:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translateService.instant('all.common.error'),
+            detail: this.translateService.instant('all.sync.dashboard.jobs.retryError', { id: job.id }),
+          });
+        }
       },
     });
   }
@@ -346,36 +266,6 @@ export class SyncDashboardComponent implements OnDestroy {
         return 'warn';
       case 'failed':
         return 'danger';
-      default:
-        return 'info';
-    }
-  }
-
-  getTournamentStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'finished':
-        return 'info';
-      case 'cancelled':
-        return 'danger';
-      case 'postponed':
-        return 'warn';
-      default:
-        return 'info';
-    }
-  }
-
-  getSyncStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' {
-    switch (status) {
-      case 'success':
-        return 'success';
-      case 'syncing':
-        return 'info';
-      case 'error':
-        return 'danger';
-      case 'never':
-        return 'warn';
       default:
         return 'info';
     }
@@ -441,16 +331,8 @@ export class SyncDashboardComponent implements OnDestroy {
     return dayjsDate.isValid() ? dayjsDate.toDate() : undefined;
   }
 
-  getJobType(job: SyncJob): string {
-    return job.name || 'Unknown';
-  }
-
-  /**
-   * Get a display name for the job that shows meaningful names instead of IDs
-   */
   getJobDisplayName(job: SyncJob): string {
     try {
-      // Parse job data to extract meaningful information
       let jobData: Record<string, unknown> = {};
       if (job.data) {
         if (typeof job.data === 'string') {
@@ -460,7 +342,6 @@ export class SyncDashboardComponent implements OnDestroy {
         }
       }
 
-      // Helper to safely access nested properties
       const getProperty = (obj: unknown, ...keys: string[]): unknown => {
         let current: unknown = obj;
         for (const key of keys) {
@@ -473,15 +354,13 @@ export class SyncDashboardComponent implements OnDestroy {
         return current;
       };
 
-      // First check if we have metadata with a display name
       const displayName = getProperty(jobData, 'metadata', 'displayName');
       if (displayName && typeof displayName === 'string') {
         return displayName;
       }
 
-      const jobType = this.getJobType(job);
+      const jobType = job.name || 'Unknown';
 
-      // Handle different job types and extract names
       switch (jobType.toLowerCase()) {
         case 'event': {
           const eventName = getProperty(jobData, 'metadata', 'eventName') || getProperty(jobData, 'name');
@@ -520,7 +399,6 @@ export class SyncDashboardComponent implements OnDestroy {
         }
         case 'encounter':
         case 'competition': {
-          // For encounters, check metadata first for team names
           const metadataHomeTeam = getProperty(jobData, 'metadata', 'homeTeam');
           const metadataAwayTeam = getProperty(jobData, 'metadata', 'awayTeam');
 
@@ -533,7 +411,6 @@ export class SyncDashboardComponent implements OnDestroy {
             ) as string;
             return `${this.translateService.instant('all.sync.dashboard.jobs.types.encounter')}: ${homeTeamName} vs ${awayTeamName}`;
           }
-          // Fallback to legacy format
           const homeTeam = getProperty(jobData, 'homeTeam');
           const awayTeam = getProperty(jobData, 'awayTeam');
 
@@ -558,22 +435,17 @@ export class SyncDashboardComponent implements OnDestroy {
         }
       }
 
-      // Fallback: try to get a generic name from job data
       const genericName = getProperty(jobData, 'name');
       if (genericName && typeof genericName === 'string') {
         return `${jobType}: ${genericName}`;
       }
 
-      // Final fallback: just return the translated job type
       const translationKey = `all.sync.dashboard.jobs.types.${jobType.toLowerCase()}`;
       const translatedType = this.translateService.instant(translationKey);
-
-      // If translation doesn't exist, fallback to the original job type
       return translatedType !== translationKey ? translatedType : jobType;
     } catch (error) {
-      // If parsing fails, fall back to job type
       console.warn('Failed to parse job data for display name:', error);
-      return this.getJobType(job);
+      return job.name || 'Unknown';
     }
   }
 
@@ -581,36 +453,20 @@ export class SyncDashboardComponent implements OnDestroy {
     return job.failedReason;
   }
 
-  getCurrentTime(): Date {
-    return new Date();
-  }
-
-  /**
-   * Toggle expansion of a job to show/hide its children
-   */
   toggleJobExpansion(job: SyncJob): void {
     if (job.children && job.children.length > 0) {
       this.syncService.toggleJobExpansion(job.id);
     }
   }
 
-  /**
-   * Check if a job has children
-   */
   hasChildren(job: SyncJob): boolean {
     return !!(job.children && job.children.length > 0);
   }
 
-  /**
-   * Get indentation style for hierarchical display
-   */
-  getIndentStyle(level: number): { 'padding-left': string } {
+  getJobIndentStyle(level: number): { 'padding-left': string } {
     return { 'padding-left': `${level * 20}px` };
   }
 
-  /**
-   * Get appropriate icon for expansion state
-   */
   getExpansionIcon(job: SyncJob): string {
     if (!this.hasChildren(job)) {
       return '';
@@ -618,9 +474,6 @@ export class SyncDashboardComponent implements OnDestroy {
     return job.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right';
   }
 
-  /**
-   * Get job level for styling purposes
-   */
   getJobLevel(job: SyncJob & { level?: number }): number {
     return job.level || 0;
   }

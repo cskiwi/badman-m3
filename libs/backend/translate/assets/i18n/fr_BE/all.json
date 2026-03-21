@@ -828,6 +828,37 @@
         },
         "title": "Statistiques de la file"
       },
+      "scheduling": {
+        "competition": "Compétition",
+        "confirmSync": "Planifier la synchronisation pour {{count}} éléments au niveau {{level}} ?",
+        "dateFrom": "Date Début",
+        "dateTo": "Date Fin",
+        "eventCategory": "Type d'événement",
+        "maxLevel": "Niveau Max",
+        "minLevel": "Niveau Min",
+        "noEventsSelected": "Aucun événement sélectionné",
+        "official": "Officiel",
+        "scheduleSync": "Planifier Sync",
+        "seasonFrom": "Saison Depuis",
+        "seasonTo": "Saison Jusqu'à",
+        "selectedCount": "éléments sélectionnés",
+        "syncError": "Échec de la planification de la synchronisation",
+        "syncLevel": "Niveau de Sync",
+        "syncLevel.draw": "Série",
+        "syncLevel.encounter": "Rencontre",
+        "syncLevel.event": "Événement",
+        "syncLevel.subEvent": "Sous-événement",
+        "syncScheduled": "Synchronisation planifiée pour {{count}} éléments",
+        "table": {
+          "extra": "Info",
+          "name": "Nom",
+          "noItemsFound": "Aucun élément ne correspond aux filtres actuels",
+          "type": "Type"
+        },
+        "title": "Planifier Sync",
+        "tournament": "Tournoi",
+        "withSubComponents": "Avec sous-composants"
+      },
       "recentJobs": {
         "headers": {
           "actions": "Actions",

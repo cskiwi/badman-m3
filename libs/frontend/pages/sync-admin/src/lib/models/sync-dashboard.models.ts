@@ -1,11 +1,2 @@
-export interface Tournament {
-  id: string;
-  visualCode: string;
-  name: string;
-  type: 'competition' | 'tournament';
-  status: string;
-  startDate: Date;
-  endDate: Date;
-  lastSyncAt?: Date;
-  syncStatus: 'never' | 'syncing' | 'success' | 'error';
-}
+export type EventCategory = 'competition' | 'tournament';
+export type SyncLevel = 'event' | 'subEvent' | 'draw' | 'encounter';

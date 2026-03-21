@@ -128,12 +128,14 @@ export class CompetitionEvent extends BaseEntity {
   declare usedRankingUnit: 'months' | 'weeks' | 'days';
 
   @SortableField(() => Boolean, { nullable: false })
+  @WhereField(() => Boolean, { nullable: false })
   @Column({
     default: false,
   })
   declare official: boolean;
 
   @SortableField(() => String, { nullable: true })
+  @WhereField(() => String, { nullable: true })
   @Column({
     type: 'simple-enum',
     enum: LevelType,

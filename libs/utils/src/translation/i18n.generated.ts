@@ -835,6 +835,37 @@ export type I18nTranslations = {
                     };
                     "title": string;
                 };
+                "scheduling": {
+                    "competition": string;
+                    "confirmSync": string;
+                    "dateFrom": string;
+                    "dateTo": string;
+                    "eventCategory": string;
+                    "maxLevel": string;
+                    "minLevel": string;
+                    "noEventsSelected": string;
+                    "official": string;
+                    "scheduleSync": string;
+                    "seasonFrom": string;
+                    "seasonTo": string;
+                    "selectedCount": string;
+                    "syncError": string;
+                    "syncLevel": string;
+                    "syncLevel.draw": string;
+                    "syncLevel.encounter": string;
+                    "syncLevel.event": string;
+                    "syncLevel.subEvent": string;
+                    "syncScheduled": string;
+                    "table": {
+                        "extra": string;
+                        "name": string;
+                        "noItemsFound": string;
+                        "type": string;
+                    };
+                    "title": string;
+                    "tournament": string;
+                    "withSubComponents": string;
+                };
                 "recentJobs": {
                     "headers": {
                         "actions": string;

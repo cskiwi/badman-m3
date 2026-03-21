@@ -828,6 +828,37 @@
         },
         "title": "Wachtrij Statistieken"
       },
+      "scheduling": {
+        "competition": "Competitie",
+        "confirmSync": "Sync plannen voor {{count}} items op {{level}} niveau?",
+        "dateFrom": "Datum Vanaf",
+        "dateTo": "Datum Tot",
+        "eventCategory": "Event Type",
+        "maxLevel": "Max Niveau",
+        "minLevel": "Min Niveau",
+        "noEventsSelected": "Geen events geselecteerd",
+        "official": "Officieel",
+        "scheduleSync": "Sync Plannen",
+        "seasonFrom": "Seizoen Vanaf",
+        "seasonTo": "Seizoen Tot",
+        "selectedCount": "items geselecteerd",
+        "syncError": "Sync plannen mislukt",
+        "syncLevel": "Sync Niveau",
+        "syncLevel.draw": "Reeks",
+        "syncLevel.encounter": "Ontmoeting",
+        "syncLevel.event": "Event",
+        "syncLevel.subEvent": "Sub Event",
+        "syncScheduled": "Sync gepland voor {{count}} items",
+        "table": {
+          "extra": "Info",
+          "name": "Naam",
+          "noItemsFound": "Geen items gevonden voor de huidige filters",
+          "type": "Type"
+        },
+        "title": "Sync Plannen",
+        "tournament": "Tornooi",
+        "withSubComponents": "Met subcomponenten"
+      },
       "recentJobs": {
         "headers": {
           "actions": "Acties",

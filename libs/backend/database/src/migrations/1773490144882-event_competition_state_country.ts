@@ -27,7 +27,7 @@ export class EventCompetitionStateCountry1773490144882 implements MigrationInter
       UPDATE event."EventCompetitions" AS ec
       SET
         "state"     = m.state,
-        "country"   = m.country,
+        "country"   = m.country
       FROM (VALUES
         ${rows}
       ) AS m(pattern, state, country)

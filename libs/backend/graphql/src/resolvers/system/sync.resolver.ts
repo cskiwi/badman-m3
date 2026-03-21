@@ -314,6 +314,68 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
+  async triggerSubEventsSync(
+    @User() user: Player,
+    @Args('subEventIds', { type: () => [ID] }) subEventIds: string[],
+    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger sub-event sync!');
+    }
+
+    for (const subEventId of subEventIds) {
+      await this.syncService.queueSubEventSync(subEventId, includeSubComponents);
+    }
+
+    return {
+      message: `Sub-event sync queued successfully for ${subEventIds.length} sub-events`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerDrawsSync(
+    @User() user: Player,
+    @Args('drawIds', { type: () => [ID] }) drawIds: string[],
+    @Args('includeSubComponents', { type: () => Boolean, defaultValue: false }) includeSubComponents: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger draw sync!');
+    }
+
+    for (const drawId of drawIds) {
+      await this.syncService.queueDrawSync(drawId, includeSubComponents);
+    }
+
+    return {
+      message: `Draw sync queued successfully for ${drawIds.length} draws`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerEncountersSync(
+    @User() user: Player,
+    @Args('encounterIds', { type: () => [ID] }) encounterIds: string[],
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger encounter sync!');
+    }
+
+    for (const encounterId of encounterIds) {
+      await this.syncService.queueEncounterSync(encounterId);
+    }
+
+    return {
+      message: `Encounter sync queued successfully for ${encounterIds.length} encounters`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
   async triggerSubEventSync(
     @User() user: Player,
     @Args('subEventId', { type: () => ID }) subEventId: string,

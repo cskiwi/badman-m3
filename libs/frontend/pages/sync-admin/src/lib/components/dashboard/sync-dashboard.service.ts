@@ -1,13 +1,35 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AuthService } from '@app/frontend-modules-auth/service';
+import {
+  CompetitionDraw,
+  CompetitionEncounter,
+  CompetitionEvent,
+  CompetitionSubEvent,
+  TournamentDraw,
+  TournamentEvent,
+  TournamentSubEvent,
+} from '@app/models';
 import { lastValueFrom } from 'rxjs';
-import { Tournament } from '../../models/sync-dashboard.models';
+import { EventCategory, SyncLevel } from '../../models/sync-dashboard.models';
 import { SyncJob } from '../../models/sync.models';
 import { SyncApiService } from '../../services';
 import { WebSocketSyncService } from '../../services/websocket-sync.service';
+
+// Display item for the flattened hierarchy table
+export interface HierarchyDisplayItem {
+  id: string;
+  name?: string;
+  level: number; // indentation depth
+  type: 'event' | 'subEvent' | 'draw' | 'encounter';
+  isSelectable: boolean; // only items at the chosen sync level are selectable
+  hasChildren: boolean;
+  expanded: boolean;
+  childCount: number;
+  // Extra display info
+  extra?: string;
+}
 
 export class SyncDashboardService {
   private readonly auth = inject(AuthService);
@@ -27,48 +49,478 @@ export class SyncDashboardService {
       return [];
     }
 
-    // Build hierarchy from flat list, passing expansion states to apply during build
-    const hierarchicalJobs = this.buildJobHierarchy([...flatJobs], expansionStates);
-
-    // Limit to 20 root jobs for display
-    return hierarchicalJobs;
+    return this.buildJobHierarchy([...flatJobs], expansionStates);
   });
 
-  // Filter form for reactive updates
+  // ===== SCHEDULING FILTER =====
+
   filter = new FormGroup({
+    eventCategory: new FormControl<EventCategory>('competition', { nonNullable: true }),
+    official: new FormControl<boolean>(true, { nonNullable: true }),
+    // Competition uses season (year), tournament uses date range
+    seasonFrom: new FormControl<number | null>(null),
+    seasonTo: new FormControl<number | null>(null),
+    dateFrom: new FormControl<Date | null>(null),
+    dateTo: new FormControl<Date | null>(null),
+    minLevel: new FormControl<number | null>(null),
+    maxLevel: new FormControl<number | null>(null),
+    syncLevel: new FormControl<SyncLevel>('event', { nonNullable: true }),
+    includeSubComponents: new FormControl<boolean>(true, { nonNullable: true }),
+  });
+
+  private filterSignal = toSignal(this.filter.valueChanges, { initialValue: this.filter.value });
+
+  // ===== EVENTS RESOURCE =====
+
+  private eventsRefreshTrigger = signal(0);
+
+  private eventsResource = resource({
+    params: computed(() => ({
+      filter: this.filterSignal(),
+      refresh: this.eventsRefreshTrigger(),
+    })),
+    loader: async ({ params }) => {
+      try {
+        if (!this.auth.loggedIn()) {
+          return { competitionEvents: [] as CompetitionEvent[], tournamentEvents: [] as TournamentEvent[] };
+        }
+
+        const { filter } = params;
+        const category = filter.eventCategory ?? 'competition';
+        const syncLevel = filter.syncLevel ?? 'event';
+        const args = this.buildQueryArgs(filter);
+
+        if (category === 'competition') {
+          const events = await lastValueFrom(this.syncService.getCompetitionEvents(args, syncLevel));
+          const filtered = this.filterByLevel(events, filter.minLevel, filter.maxLevel);
+          return { competitionEvents: filtered, tournamentEvents: [] as TournamentEvent[] };
+        } else {
+          // Tournaments don't support encounter level
+          const effectiveLevel = syncLevel === 'encounter' ? 'draw' : syncLevel;
+          const events = await lastValueFrom(
+            this.syncService.getTournamentEvents(args, effectiveLevel as 'event' | 'subEvent' | 'draw'),
+          );
+          const filtered = this.filterByTournamentLevel(events, filter.minLevel, filter.maxLevel);
+          return { competitionEvents: [] as CompetitionEvent[], tournamentEvents: filtered };
+        }
+      } catch (err) {
+        console.warn('Failed to load events:', err);
+        return { competitionEvents: [] as CompetitionEvent[], tournamentEvents: [] as TournamentEvent[] };
+      }
+    },
+  });
+
+  // ===== EXPANSION & SELECTION STATE =====
+
+  private _hierarchyExpansionStates = signal<Map<string, boolean>>(new Map());
+  private _selectedIds = signal<Set<string>>(new Set());
+
+  // ===== PUBLIC COMPUTED SELECTORS =====
+
+  // Jobs
+  syncStatus = this.webSocketService.syncStatus;
+  queueStats = this.webSocketService.queueStats;
+  queueStatsLoading = this.webSocketService.queueStatsLoading;
+  recentJobs = computed(() => this._hierarchicalJobs());
+  recentJobsLoading = this.webSocketService.recentJobsLoading;
+  loading = this.webSocketService.loading;
+
+  // Events
+  competitionEvents = computed(() => this.eventsResource.value()?.competitionEvents ?? []);
+  tournamentEvents = computed(() => this.eventsResource.value()?.tournamentEvents ?? []);
+  eventsLoading = computed(() => this.eventsResource.isLoading());
+  selectedIds = computed(() => this._selectedIds());
+  selectedCount = computed(() => this._selectedIds().size);
+
+  // Flattened hierarchy for display
+  displayItems = computed(() => {
+    const category = this.filter.controls.eventCategory.value;
+    const syncLevel = this.filter.controls.syncLevel.value;
+    const expansionStates = this._hierarchyExpansionStates();
+
+    if (category === 'competition') {
+      return this.flattenCompetitionHierarchy(this.competitionEvents(), syncLevel, expansionStates);
+    } else {
+      return this.flattenTournamentHierarchy(this.tournamentEvents(), syncLevel, expansionStates);
+    }
+  });
+
+  // Job filter form (for backwards compat with jobs section)
+  private jobsFilter = new FormGroup({
     jobsLimit: new FormControl<number | undefined>(undefined),
     jobsStatus: new FormControl<string | null>(null),
-    refreshInterval: new FormControl<number>(30000), // 30 seconds default (not used with WebSocket)
+    refreshInterval: new FormControl<number>(30000),
   });
 
-  // Convert form to signal for reactive updates
-  private filterSignal = toSignal(this.filter.valueChanges);
-
-  // Manual refresh trigger for fallback GraphQL queries
-  private refreshTrigger = signal(0);
-
   constructor() {
-    // Load initial data via GraphQL, then rely on WebSocket for updates
     this.loadInitialData();
-
-    // Set up WebSocket job handling delegation
     this.webSocketService.setJobUpdateHandler((job: SyncJob) => this.handleJobUpdate(job));
   }
 
-  /**
-   * Load initial data via GraphQL, then WebSocket takes over for real-time updates
-   */
+  // ===== SCHEDULING ACTIONS =====
+
+  toggleHierarchyExpansion(id: string): void {
+    const states = new Map(this._hierarchyExpansionStates());
+    states.set(id, !(states.get(id) ?? false));
+    this._hierarchyExpansionStates.set(states);
+  }
+
+  toggleSelection(id: string): void {
+    const ids = new Set(this._selectedIds());
+    if (ids.has(id)) {
+      ids.delete(id);
+    } else {
+      ids.add(id);
+    }
+    this._selectedIds.set(ids);
+  }
+
+  selectAll(): void {
+    const items = this.displayItems().filter((item) => item.isSelectable);
+    this._selectedIds.set(new Set(items.map((item) => item.id)));
+  }
+
+  deselectAll(): void {
+    this._selectedIds.set(new Set());
+  }
+
+  isSelected(id: string): boolean {
+    return this._selectedIds().has(id);
+  }
+
+  isAllSelected(): boolean {
+    const selectableItems = this.displayItems().filter((item) => item.isSelectable);
+    if (selectableItems.length === 0) return false;
+    const selectedIds = this._selectedIds();
+    return selectableItems.every((item) => selectedIds.has(item.id));
+  }
+
+  scheduleSyncForSelected(): void {
+    const syncLevel = this.filter.controls.syncLevel.value;
+    const includeSubComponents = this.filter.controls.includeSubComponents.value;
+    const ids = [...this._selectedIds()];
+
+    if (ids.length === 0) return;
+
+    let sync$;
+    switch (syncLevel) {
+      case 'event':
+        sync$ = this.syncService.triggerEventsSync(ids, includeSubComponents);
+        break;
+      case 'subEvent':
+        sync$ = this.syncService.triggerSubEventsSync(ids, includeSubComponents);
+        break;
+      case 'draw':
+        sync$ = this.syncService.triggerDrawsSync(ids, includeSubComponents);
+        break;
+      case 'encounter':
+        sync$ = this.syncService.triggerEncountersSync(ids);
+        break;
+    }
+
+    return sync$ as unknown as void; // Return observable for component to subscribe
+  }
+
+  getScheduleSyncObservable() {
+    const syncLevel = this.filter.controls.syncLevel.value;
+    const includeSubComponents = this.filter.controls.includeSubComponents.value;
+    const ids = [...this._selectedIds()];
+
+    if (ids.length === 0) return null;
+
+    switch (syncLevel) {
+      case 'event':
+        return this.syncService.triggerEventsSync(ids, includeSubComponents);
+      case 'subEvent':
+        return this.syncService.triggerSubEventsSync(ids, includeSubComponents);
+      case 'draw':
+        return this.syncService.triggerDrawsSync(ids, includeSubComponents);
+      case 'encounter':
+        return this.syncService.triggerEncountersSync(ids);
+      default:
+        return null;
+    }
+  }
+
+  refreshEvents(): void {
+    this.eventsRefreshTrigger.update((v) => v + 1);
+  }
+
+  // ===== JOBS =====
+
+  refresh(): void {
+    this.loadInitialData();
+  }
+
+  toggleJobExpansion(jobId: string): void {
+    const currentStates = this._expansionStates();
+    const newStates = new Map(currentStates);
+    newStates.set(jobId, !(newStates.get(jobId) ?? false));
+    this._expansionStates.set(newStates);
+  }
+
+  flattenJobsForDisplay(jobs: SyncJob[], level = 0): Array<SyncJob & { level: number }> {
+    const flattened: Array<SyncJob & { level: number }> = [];
+
+    jobs.forEach((job) => {
+      flattened.push({ ...job, level });
+
+      if (job.expanded && job.children && job.children.length > 0) {
+        const childrenFlattened = this.flattenJobsForDisplay(job.children, level + 1);
+        flattened.push(...childrenFlattened);
+      }
+    });
+
+    return flattened;
+  }
+
+  // ===== PRIVATE: QUERY ARGS BUILDER =====
+
+  private buildQueryArgs(filter: typeof this.filter.value): Record<string, unknown> {
+    const conditions: Record<string, unknown>[] = [];
+
+    if (filter.official) {
+      conditions.push({ official: { eq: true } });
+    }
+
+    if (filter.eventCategory === 'competition') {
+      // Competition: filter by season (year)
+      if (filter.seasonFrom) {
+        conditions.push({ season: { gte: filter.seasonFrom } });
+      }
+      if (filter.seasonTo) {
+        conditions.push({ season: { lte: filter.seasonTo } });
+      }
+    } else {
+      // Tournament: filter by date range
+      if (filter.dateFrom) {
+        conditions.push({ firstDay: { gte: filter.dateFrom.toISOString() } });
+      }
+      if (filter.dateTo) {
+        conditions.push({ firstDay: { lte: filter.dateTo.toISOString() } });
+      }
+    }
+
+    const args: Record<string, unknown> = {};
+    if (conditions.length > 0) {
+      args['where'] = [{ AND: conditions }];
+    }
+    args['order'] = { [filter.eventCategory === 'tournament' ? 'firstDay' : 'season']: 'DESC' };
+
+    return args;
+  }
+
+  // ===== PRIVATE: LEVEL FILTERING (client-side) =====
+
+  private filterByLevel(events: CompetitionEvent[], minLevel: number | null | undefined, maxLevel: number | null | undefined): CompetitionEvent[] {
+    if (!minLevel && !maxLevel) return events;
+
+    return events.filter((event) => {
+      const subEvents = (event as CompetitionEvent & { competitionSubEvents?: CompetitionSubEvent[] }).competitionSubEvents;
+      if (!subEvents || subEvents.length === 0) return true; // keep events without sub-events loaded
+
+      return subEvents.some((se) => {
+        const level = se.level ?? 0;
+        if (minLevel && level < minLevel) return false;
+        if (maxLevel && level > maxLevel) return false;
+        return true;
+      });
+    });
+  }
+
+  private filterByTournamentLevel(events: TournamentEvent[], minLevel: number | null | undefined, maxLevel: number | null | undefined): TournamentEvent[] {
+    if (!minLevel && !maxLevel) return events;
+
+    return events.filter((event) => {
+      const subEvents = (event as TournamentEvent & { tournamentSubEvents?: TournamentSubEvent[] }).tournamentSubEvents;
+      if (!subEvents || subEvents.length === 0) return true;
+
+      return subEvents.some((se) => {
+        const seMin = se.minLevel ?? 0;
+        const seMax = se.maxLevel ?? 99;
+        if (minLevel && seMax < minLevel) return false;
+        if (maxLevel && seMin > maxLevel) return false;
+        return true;
+      });
+    });
+  }
+
+  // ===== PRIVATE: HIERARCHY FLATTENING =====
+
+  private flattenCompetitionHierarchy(
+    events: CompetitionEvent[],
+    syncLevel: SyncLevel,
+    expansionStates: Map<string, boolean>,
+  ): HierarchyDisplayItem[] {
+    const items: HierarchyDisplayItem[] = [];
+
+    for (const event of events) {
+      const subEvents = (event as CompetitionEvent & { competitionSubEvents?: CompetitionSubEvent[] }).competitionSubEvents ?? [];
+      const isEventLevel = syncLevel === 'event';
+      const eventExpanded = expansionStates.get(event.id) ?? false;
+      const hasChildren = !isEventLevel && subEvents.length > 0;
+
+      items.push({
+        id: event.id,
+        name: event.name,
+        level: 0,
+        type: 'event',
+        isSelectable: isEventLevel,
+        hasChildren,
+        expanded: eventExpanded,
+        childCount: subEvents.length,
+        extra: event.type ?? '',
+      });
+
+      if (!isEventLevel && eventExpanded) {
+        for (const subEvent of subEvents) {
+          const draws = (subEvent as CompetitionSubEvent & { competitionDraws?: CompetitionDraw[] }).competitionDraws ?? [];
+          const isSubEventLevel = syncLevel === 'subEvent';
+          const subEventExpanded = expansionStates.get(subEvent.id) ?? false;
+          const subHasChildren = !isSubEventLevel && draws.length > 0;
+
+          items.push({
+            id: subEvent.id,
+            name: subEvent.name,
+            level: 1,
+            type: 'subEvent',
+            isSelectable: isSubEventLevel,
+            hasChildren: subHasChildren,
+            expanded: subEventExpanded,
+            childCount: draws.length,
+            extra: subEvent.level != null ? `Level ${subEvent.level}` : '',
+          });
+
+          if (!isSubEventLevel && subEventExpanded) {
+            for (const draw of draws) {
+              const encounters = (draw as CompetitionDraw & { competitionEncounters?: CompetitionEncounter[] }).competitionEncounters ?? [];
+              const isDrawLevel = syncLevel === 'draw';
+              const drawExpanded = expansionStates.get(draw.id) ?? false;
+              const drawHasChildren = !isDrawLevel && encounters.length > 0;
+
+              items.push({
+                id: draw.id,
+                name: draw.name,
+                level: 2,
+                type: 'draw',
+                isSelectable: isDrawLevel,
+                hasChildren: drawHasChildren,
+                expanded: drawExpanded,
+                childCount: encounters.length,
+                extra: draw.visualCode ?? '',
+              });
+
+              if (!isDrawLevel && drawExpanded) {
+                for (const encounter of encounters) {
+                  const homeTeam = (encounter as CompetitionEncounter & { homeTeam?: { name: string } }).homeTeam;
+                  const awayTeam = (encounter as CompetitionEncounter & { awayTeam?: { name: string } }).awayTeam;
+                  const encounterName = homeTeam && awayTeam
+                    ? `${homeTeam.name} vs ${awayTeam.name}`
+                    : encounter.visualCode ?? encounter.id;
+
+                  items.push({
+                    id: encounter.id,
+                    name: encounterName,
+                    level: 3,
+                    type: 'encounter',
+                    isSelectable: true,
+                    hasChildren: false,
+                    expanded: false,
+                    childCount: 0,
+                    extra: encounter.date ? new Date(encounter.date).toLocaleDateString() : '',
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return items;
+  }
+
+  private flattenTournamentHierarchy(
+    events: TournamentEvent[],
+    syncLevel: SyncLevel,
+    expansionStates: Map<string, boolean>,
+  ): HierarchyDisplayItem[] {
+    const items: HierarchyDisplayItem[] = [];
+
+    for (const event of events) {
+      const subEvents = (event as TournamentEvent & { tournamentSubEvents?: TournamentSubEvent[] }).tournamentSubEvents ?? [];
+      const isEventLevel = syncLevel === 'event';
+      const eventExpanded = expansionStates.get(event.id) ?? false;
+      const hasChildren = !isEventLevel && subEvents.length > 0;
+
+      items.push({
+        id: event.id,
+        name: event.name,
+        level: 0,
+        type: 'event',
+        isSelectable: isEventLevel,
+        hasChildren,
+        expanded: eventExpanded,
+        childCount: subEvents.length,
+        extra: event.phase ?? '',
+      });
+
+      if (!isEventLevel && eventExpanded) {
+        for (const subEvent of subEvents) {
+          const draws = (subEvent as TournamentSubEvent & { drawTournaments?: TournamentDraw[] }).drawTournaments ?? [];
+          const isSubEventLevel = syncLevel === 'subEvent';
+          const subEventExpanded = expansionStates.get(subEvent.id) ?? false;
+          const subHasChildren = !isSubEventLevel && draws.length > 0;
+
+          const levelInfo = subEvent.minLevel != null && subEvent.maxLevel != null
+            ? `Level ${subEvent.minLevel}-${subEvent.maxLevel}`
+            : '';
+
+          items.push({
+            id: subEvent.id,
+            name: subEvent.name,
+            level: 1,
+            type: 'subEvent',
+            isSelectable: isSubEventLevel,
+            hasChildren: subHasChildren,
+            expanded: subEventExpanded,
+            childCount: draws.length,
+            extra: levelInfo,
+          });
+
+          if (!isSubEventLevel && subEventExpanded) {
+            for (const draw of draws) {
+              items.push({
+                id: draw.id,
+                name: draw.name,
+                level: 2,
+                type: 'draw',
+                isSelectable: true,
+                hasChildren: false,
+                expanded: false,
+                childCount: 0,
+                extra: draw.visualCode ?? '',
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return items;
+  }
+
+  // ===== PRIVATE: INITIAL DATA LOADING =====
+
   private async loadInitialData(): Promise<void> {
     try {
       if (!this.auth.loggedIn()) {
         return;
       }
 
-      // Set loading states
       this.webSocketService.setQueueStatsLoading(true);
       this.webSocketService.setRecentJobsLoading(true);
 
-      // Load queue stats
       const syncStatusResult = await lastValueFrom(this.syncService.getStatus());
 
       if (syncStatusResult) {
@@ -76,14 +528,12 @@ export class SyncDashboardService {
         this.webSocketService.setInitialQueueStats(syncStatusResult.queues);
       }
 
-      // Load recent jobs
-      const filterValues = this.filterSignal();
+      const filterValues = this.jobsFilter.value;
       const syncJobsResult = await lastValueFrom(
         this.syncService.getRecentJobs(filterValues?.jobsLimit, filterValues?.jobsStatus || undefined),
       );
 
       if (syncJobsResult) {
-        // Set initial jobs using centralized management
         this.setInitialJobs(syncJobsResult);
       }
     } catch (err) {
@@ -94,188 +544,31 @@ export class SyncDashboardService {
     }
   }
 
-  // Tournaments Resource (mock data for now)
-  private tournamentsResource = resource({
-    params: computed(() => ({ refresh: this.refreshTrigger() })),
-    loader: async () => {
-      try {
-        const tournaments: Tournament[] = [];
-        return tournaments;
-      } catch (err) {
-        console.warn('Failed to load tournaments:', err);
-        // Return empty array instead of throwing to prevent SSR crashes
-        return [];
-      }
-    },
-  });
+  // ===== PRIVATE: JOB HIERARCHY =====
 
-  // Public computed selectors - now delegated to WebSocket service
-  syncStatus = this.webSocketService.syncStatus;
-  queueStats = this.webSocketService.queueStats;
-  queueStatsLoading = this.webSocketService.queueStatsLoading;
-  queueStatsError = computed(() => null); // WebSocket errors handled internally
-
-  recentJobs = computed(() => this._hierarchicalJobs());
-  recentJobsLoading = this.webSocketService.recentJobsLoading;
-  recentJobsError = computed(() => null); // WebSocket errors handled internally
-
-  tournaments = computed(() => this.tournamentsResource.value() ?? []);
-  tournamentsLoading = this.webSocketService.tournamentsLoading;
-  tournamentsError = computed(() => this.tournamentsResource.error()?.message || null);
-
-  // Combined loading state
-  loading = this.webSocketService.loading;
-
-  // Manual refresh method - now reloads initial data instead of triggering resource refresh
-  refresh(): void {
-    this.loadInitialData();
-  }
-
-  // Update filter settings
-  updateJobsLimit(limit: number): void {
-    this.filter.patchValue({ jobsLimit: limit });
-  }
-
-  updateJobsStatus(status: string | null): void {
-    this.filter.patchValue({ jobsStatus: status });
-  }
-
-  updateRefreshInterval(interval: number): void {
-    this.filter.patchValue({ refreshInterval: interval });
-  }
-
-  private handleError(err: HttpErrorResponse): string {
-    // Handle specific error cases
-    if (err.status === 403) {
-      return 'Insufficient permissions to access sync data';
-    }
-    if (err.status === 404) {
-      return 'Sync service not available';
-    }
-    if (err.status === 500) {
-      return 'Sync service error occurred';
-    }
-
-    // Generic error if no cases match
-    return err.statusText || 'An error occurred while loading sync data';
-  }
-
-  /**
-   * Build hierarchical structure from flat job array based on parent-child relationships
-   * @param jobs - Flat array of jobs to build hierarchy from
-   * @param expansionStates - Map of job IDs to their expansion states
-   */
-  private buildJobHierarchy(jobs: SyncJob[], expansionStates: Map<string, boolean>): SyncJob[] {
-    const jobMap = new Map<string, SyncJob>();
-    const rootJobs: SyncJob[] = [];
-    let attachedToParent = 0;
-    let orphanedJobs = 0;
-
-    // First pass: clone jobs and initialize children arrays, build lookup map
-    // Also apply expansion states during cloning
-    const clonedJobs = jobs.map((job) => ({
-      ...job,
-      children: [] as SyncJob[],
-      expanded: expansionStates.get(job.id) ?? false,
-    }));
-    clonedJobs.forEach((job) => {
-      jobMap.set(job.id, job);
-    });
-
-    // Second pass: build hierarchy by attaching children to parents
-    clonedJobs.forEach((job) => {
-      if (job.parentId && jobMap.has(job.parentId)) {
-        // Job has a parent that exists in our list - attach it
-        const parent = jobMap.get(job.parentId);
-        if (parent && Array.isArray(parent.children)) {
-          parent.children.push(job);
-          attachedToParent++;
-        }
-      } else {
-        // True root level job (no parentId) OR orphaned job (parentId but parent not in list)
-        // Both go to roots - orphans will be reattached when their parent arrives
-        if (job.parentId) {
-          orphanedJobs++;
-        }
-        rootJobs.push(job);
-      }
-    });
-
-    // Sort children within each parent by timestamp (newest first)
-    this.sortJobsRecursively(rootJobs);
-
-    return rootJobs;
-  }
-
-  /**
-   * Recursively sort jobs and their children by timestamp (newest first)
-   */
-  private sortJobsRecursively(jobs: SyncJob[]): void {
-    jobs.sort((a, b) => {
-      const timeA = a.timestamp || a.createdAt?.getTime() || 0;
-      const timeB = b.timestamp || b.createdAt?.getTime() || 0;
-      return timeB - timeA; // Newest first
-    });
-
-    jobs.forEach((job) => {
-      if (job.children && job.children.length > 0) {
-        this.sortJobsRecursively(job.children);
-      }
-    });
-  }
-
-  // ===== CENTRALIZED JOB MANAGEMENT =====
-
-  /**
-   * Set initial jobs from GraphQL query
-   */
   private setInitialJobs(jobs: SyncJob[]): void {
-    // Debug: Log incoming jobs to understand parentId distribution
-    const jobsWithParent = jobs.filter((j) => j.parentId);
-    const jobsWithoutParent = jobs.filter((j) => !j.parentId);
-    console.log(`[SyncDashboard] Initial jobs loaded: ${jobs.length} total, ${jobsWithParent.length} with parentId, ${jobsWithoutParent.length} without parentId`);
-
-    // Debug: Check if parent jobs exist for children
-    const parentIds = new Set(jobsWithParent.map((j) => j.parentId));
-    const jobIds = new Set(jobs.map((j) => j.id));
-    const missingParents = [...parentIds].filter((pid) => pid && !jobIds.has(pid));
-    if (missingParents.length > 0) {
-      console.warn(`[SyncDashboard] ${missingParents.length} child jobs have parents not in the list:`, missingParents.slice(0, 5));
-    }
-
-    // Preserve expansion states from existing jobs
     const currentHierarchy = this._hierarchicalJobs();
     const expansionState = new Map<string, boolean>();
     this.collectExpansionStates(currentHierarchy, expansionState);
     this._expansionStates.set(expansionState);
-
-    // Store flat list - computed will automatically rebuild hierarchy
     this._flatJobsList.set([...jobs]);
   }
 
-  /**
-   * Handle job updates from WebSocket
-   */
   private handleJobUpdate(updatedJob: SyncJob): void {
-    // Initialize hierarchy properties if not set
     if (!updatedJob.children) updatedJob.children = [];
     if (updatedJob.expanded === undefined) updatedJob.expanded = false;
 
-    // Update flat list - computed will automatically rebuild hierarchy
     const currentFlatJobs = this._flatJobsList();
     const existingIndex = currentFlatJobs.findIndex((job) => job.id === updatedJob.id);
 
     let updatedFlatJobs: SyncJob[];
     if (existingIndex >= 0) {
-      // Replace existing job
       updatedFlatJobs = [...currentFlatJobs];
       updatedFlatJobs[existingIndex] = updatedJob;
     } else {
-      // Add new job - insert at appropriate position to maintain hierarchy order
       updatedFlatJobs = this.insertJobInProperPosition(updatedJob, currentFlatJobs);
     }
 
-    // If this is a child job, update parent's derived progress based on siblings' completion
     if (updatedJob.parentId) {
       const parentIndex = updatedFlatJobs.findIndex((j) => j.id === updatedJob.parentId);
       if (parentIndex >= 0) {
@@ -292,37 +585,68 @@ export class SyncDashboardService {
     this._flatJobsList.set(updatedFlatJobs);
   }
 
-  /**
-   * Insert a job in the proper position within the flat list to help maintain hierarchy
-   */
+  private buildJobHierarchy(jobs: SyncJob[], expansionStates: Map<string, boolean>): SyncJob[] {
+    const jobMap = new Map<string, SyncJob>();
+    const rootJobs: SyncJob[] = [];
+
+    const clonedJobs = jobs.map((job) => ({
+      ...job,
+      children: [] as SyncJob[],
+      expanded: expansionStates.get(job.id) ?? false,
+    }));
+    clonedJobs.forEach((job) => {
+      jobMap.set(job.id, job);
+    });
+
+    clonedJobs.forEach((job) => {
+      if (job.parentId && jobMap.has(job.parentId)) {
+        const parent = jobMap.get(job.parentId);
+        if (parent && Array.isArray(parent.children)) {
+          parent.children.push(job);
+        }
+      } else {
+        rootJobs.push(job);
+      }
+    });
+
+    this.sortJobsRecursively(rootJobs);
+    return rootJobs;
+  }
+
+  private sortJobsRecursively(jobs: SyncJob[]): void {
+    jobs.sort((a, b) => {
+      const timeA = a.timestamp || a.createdAt?.getTime() || 0;
+      const timeB = b.timestamp || b.createdAt?.getTime() || 0;
+      return timeB - timeA;
+    });
+
+    jobs.forEach((job) => {
+      if (job.children && job.children.length > 0) {
+        this.sortJobsRecursively(job.children);
+      }
+    });
+  }
+
   private insertJobInProperPosition(newJob: SyncJob, currentJobs: SyncJob[]): SyncJob[] {
-    // If the job has a parent, try to place it near the parent
     if (newJob.parentId) {
       const parentIndex = currentJobs.findIndex((job) => job.id === newJob.parentId);
       if (parentIndex >= 0) {
-        // Insert after the parent job
         const updatedJobs = [...currentJobs];
         updatedJobs.splice(parentIndex + 1, 0, newJob);
         return updatedJobs;
       }
 
-      // If parent not found, look for siblings (jobs with same parentId)
       const siblingIndex = currentJobs.findIndex((job) => job.parentId === newJob.parentId);
       if (siblingIndex >= 0) {
-        // Insert near the sibling
         const updatedJobs = [...currentJobs];
         updatedJobs.splice(siblingIndex, 0, newJob);
         return updatedJobs;
       }
     }
 
-    // If no parent relationship found, add at the beginning (most recent)
     return [newJob, ...currentJobs];
   }
 
-  /**
-   * Collect expansion states from current hierarchy
-   */
   private collectExpansionStates(jobs: SyncJob[], stateMap: Map<string, boolean>): void {
     jobs.forEach((job) => {
       if (job.expanded !== undefined) {
@@ -332,54 +656,5 @@ export class SyncDashboardService {
         this.collectExpansionStates(job.children, stateMap);
       }
     });
-  }
-
-  /**
-   * Toggle expansion state of a job
-   */
-  toggleJobExpansion(jobId: string): void {
-    const currentStates = this._expansionStates();
-    const newStates = new Map(currentStates);
-    const currentState = newStates.get(jobId) || false;
-    newStates.set(jobId, !currentState);
-    this._expansionStates.set(newStates);
-  }
-
-  /**
-   * Find a job by ID in the hierarchical structure
-   */
-  private findJobInHierarchy(jobId: string, jobs: SyncJob[]): SyncJob | null {
-    for (const job of jobs) {
-      if (job.id === jobId) {
-        return job;
-      }
-      if (job.children) {
-        const found = this.findJobInHierarchy(jobId, job.children);
-        if (found) {
-          return found;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Flatten hierarchical jobs for table display while preserving structure
-   */
-  flattenJobsForDisplay(jobs: SyncJob[], level = 0): Array<SyncJob & { level: number }> {
-    const flattened: Array<SyncJob & { level: number }> = [];
-
-    jobs.forEach((job) => {
-      // Add the job itself with its level
-      flattened.push({ ...job, level });
-
-      // If job is expanded and has children, add them recursively
-      if (job.expanded && job.children && job.children.length > 0) {
-        const childrenFlattened = this.flattenJobsForDisplay(job.children, level + 1);
-        flattened.push(...childrenFlattened);
-      }
-    });
-
-    return flattened;
   }
 }

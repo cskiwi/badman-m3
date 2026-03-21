@@ -1,7 +1,7 @@
 {
-  "name": "frontend-pages-tournament",
-  "$schema": "{workspaceRoot}/node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "{projectRoot}/src",
+  "name": "sync-admin",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/frontend/pages/sync-admin/src",
   "prefix": "lib",
   "projectType": "library",
   "tags": [],

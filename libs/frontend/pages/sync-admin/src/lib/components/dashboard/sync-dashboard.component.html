@@ -11,38 +11,6 @@
         (onClick)="triggerDiscoverySync()"
         [pTooltip]="'all.sync.dashboard.actions.syncTooltip' | translate"
       />
-      <p-button
-        icon="pi pi-refresh"
-        [label]="'all.sync.dashboard.actions.tournamentSync' | translate"
-        severity="secondary"
-        [loading]="actionLoading()"
-        (onClick)="triggerTournamentSync()"
-        [pTooltip]="'all.sync.dashboard.actions.tournamentSyncTooltip' | translate"
-      />
-      <p-button
-        icon="pi pi-sync"
-        [label]="'all.sync.dashboard.actions.competitionSync' | translate"
-        severity="secondary"
-        [loading]="actionLoading()"
-        (onClick)="triggerCompetitionSync()"
-        [pTooltip]="'all.sync.dashboard.actions.competitionSyncTooltip' | translate"
-      />
-      <p-button
-        icon="pi pi-check-circle"
-        [label]="'all.sync.dashboard.actions.clearCompleted' | translate"
-        severity="warn"
-        [loading]="actionLoading()"
-        (onClick)="clearCompletedJobs()"
-        [pTooltip]="'all.sync.dashboard.actions.clearCompletedTooltip' | translate"
-      />
-      <p-button
-        icon="pi pi-trash"
-        [label]="'all.sync.dashboard.actions.clearAll' | translate"
-        severity="danger"
-        [loading]="actionLoading()"
-        (onClick)="clearAllJobs()"
-        [pTooltip]="'all.sync.dashboard.actions.clearAllTooltip' | translate"
-      />
     </div>
   </div>
 
@@ -60,24 +28,26 @@
     } @else {
       <div class="grid grid-cols-4 gap-4">
         <div class="text-center p-3 rounded-border border-surface border">
-          <div class="text-2xl font-bold text-orange-500">{{ queueStats()?.waiting || 0 }}</div>
+          <div class="text-2xl font-bold" style="color: var(--p-orange-500)">{{ queueStats()?.waiting || 0 }}</div>
           <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.waiting' | translate }}</div>
         </div>
         <div class="text-center p-3 rounded-border border-surface border">
-          <div class="text-2xl font-bold text-blue-500">{{ queueStats()?.active || 0 }}</div>
+          <div class="text-2xl font-bold" style="color: var(--p-blue-500)">{{ queueStats()?.active || 0 }}</div>
           <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.active' | translate }}</div>
         </div>
         <div class="text-center p-3 rounded-border border-surface border">
-          <div class="text-2xl font-bold text-green-500">{{ queueStats()?.completed || 0 }}</div>
+          <div class="text-2xl font-bold" style="color: var(--p-green-500)">{{ queueStats()?.completed || 0 }}</div>
           <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.completed' | translate }}</div>
         </div>
         <div class="text-center p-3 rounded-border border-surface border">
-          <div class="text-2xl font-bold text-red-500">{{ queueStats()?.failed || 0 }}</div>
+          <div class="text-2xl font-bold" style="color: var(--p-red-500)">{{ queueStats()?.failed || 0 }}</div>
           <div class="text-sm text-muted-color">{{ 'all.sync.dashboard.queue.status.failed' | translate }}</div>
         </div>
       </div>
     }
   </p-card>
+
+  
 
   <!-- Recent Jobs -->
   <p-card [header]="'all.sync.dashboard.jobs.title' | translate">
@@ -92,7 +62,6 @@
       <ng-template pTemplate="header">
         <tr>
           <th class="expansion-column"></th>
-          <!-- Expansion column -->
           <th>{{ 'all.sync.dashboard.jobs.jobId' | translate }}</th>
           <th>{{ 'all.sync.dashboard.jobs.type' | translate }}</th>
           <th>{{ 'all.sync.dashboard.jobs.status' | translate }}</th>
@@ -105,7 +74,7 @@
       <ng-template pTemplate="body" let-job>
         <tr [class]="'job-row level-' + getJobLevel(job)">
           <td class="expansion-column">
-            <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
+            <div class="job-indent" [ngStyle]="getJobIndentStyle(getJobLevel(job))">
               @if (hasChildren(job)) {
                 <p-button
                   [icon]="getExpansionIcon(job)"
@@ -120,7 +89,7 @@
             </div>
           </td>
           <td>
-            <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
+            <div class="job-indent" [ngStyle]="getJobIndentStyle(getJobLevel(job))">
               <span class="font-mono text-sm">{{ job.id }}</span>
               @if (getJobLevel(job) > 0) {
                 <div class="child-indicator">{{ 'all.sync.dashboard.jobs.childJob' | translate }}</div>
@@ -128,7 +97,7 @@
             </div>
           </td>
           <td>
-            <div class="job-indent" [ngStyle]="getIndentStyle(getJobLevel(job))">
+            <div class="job-indent" [ngStyle]="getJobIndentStyle(getJobLevel(job))">
               {{ getJobDisplayName(job) }}
               @if (hasChildren(job)) {
                 <span class="children-count ml-2"> ({{ job.children?.length }} {{ 'all.sync.dashboard.jobs.children' | translate }}) </span>
@@ -188,93 +157,212 @@
     </p-table>
   </p-card>
 
-  <!-- Tournaments -->
-  <p-card [header]="'all.sync.dashboard.tournaments.title' | translate">
-    <div class="mb-4 flex gap-4">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input pInputText [placeholder]="'all.sync.dashboard.tournaments.search' | translate" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
-      </span>
-      <p-select
-        [options]="typeOptions()"
-        [(ngModel)]="selectedType"
-        [placeholder]="'all.sync.dashboard.tournaments.filters.allTypes' | translate"
-        (onChange)="onFilterChange()"
-      />
-      <p-select
-        [options]="statusOptions()"
-        [(ngModel)]="selectedStatus"
-        [placeholder]="'all.sync.dashboard.tournaments.filters.allStatuses' | translate"
-        (onChange)="onFilterChange()"
-      />
+  <!-- Schedule Sync -->
+  <p-card [header]="'all.sync.dashboard.scheduling.title' | translate">
+    <!-- Filter row -->
+    <div class="flex flex-wrap gap-4 items-end mb-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.eventCategory' | translate }}</label>
+        <p-select
+          [options]="eventCategoryOptions()"
+          [formControl]="filter.controls.eventCategory"
+          optionLabel="label"
+          optionValue="value"
+        />
+      </div>
+
+      <div class="flex items-end gap-2 pb-1">
+        <p-checkbox
+          [formControl]="filter.controls.official"
+          [binary]="true"
+          inputId="officialFilter"
+        />
+        <label for="officialFilter" class="text-sm font-medium">{{ 'all.sync.dashboard.scheduling.official' | translate }}</label>
+      </div>
+
+      @if (filter.controls.eventCategory.value === 'competition') {
+        <!-- Competition: season (year) selectors -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.seasonFrom' | translate }}</label>
+          <p-inputnumber
+            [formControl]="filter.controls.seasonFrom"
+            [min]="2000"
+            [max]="2050"
+            [useGrouping]="false"
+            [showClear]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.seasonTo' | translate }}</label>
+          <p-inputnumber
+            [formControl]="filter.controls.seasonTo"
+            [min]="2000"
+            [max]="2050"
+            [useGrouping]="false"
+            [showClear]="true"
+          />
+        </div>
+      } @else {
+        <!-- Tournament: date range selectors -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.dateFrom' | translate }}</label>
+          <p-datepicker
+            [formControl]="filter.controls.dateFrom"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            [showClear]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.dateTo' | translate }}</label>
+          <p-datepicker
+            [formControl]="filter.controls.dateTo"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy"
+            [showClear]="true"
+          />
+        </div>
+      }
+
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.minLevel' | translate }}</label>
+        <p-inputnumber
+          [formControl]="filter.controls.minLevel"
+          [min]="0"
+          [max]="20"
+          [showButtons]="true"
+          [showClear]="true"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.maxLevel' | translate }}</label>
+        <p-inputnumber
+          [formControl]="filter.controls.maxLevel"
+          [min]="0"
+          [max]="20"
+          [showButtons]="true"
+          [showClear]="true"
+        />
+      </div>
     </div>
 
-    <p-table [value]="filteredTournaments()" [loading]="loadingTournaments()" [paginator]="true" [rows]="20" responsiveLayout="scroll">
-      <ng-template pTemplate="header">
+    <!-- Action row -->
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex gap-3 items-center">
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium text-muted-color">{{ 'all.sync.dashboard.scheduling.syncLevel' | translate }}</label>
+          <p-select
+            [options]="syncLevelOptions()"
+            [formControl]="filter.controls.syncLevel"
+            optionLabel="label"
+            optionValue="value"
+          />
+        </div>
+
+        <div class="flex items-end gap-2 pb-1">
+          <p-checkbox
+            [formControl]="filter.controls.includeSubComponents"
+            [binary]="true"
+            inputId="includeSubComponents"
+          />
+          <label for="includeSubComponents" class="text-sm font-medium">
+            {{ 'all.sync.dashboard.scheduling.withSubComponents' | translate }}
+          </label>
+        </div>
+
+        <p-button
+          [label]="'all.sync.dashboard.scheduling.scheduleSync' | translate"
+          severity="primary"
+          icon="pi pi-sync"
+          [disabled]="selectedCount() === 0"
+          [loading]="actionLoading()"
+          (onClick)="scheduleSyncForSelected()"
+        />
+      </div>
+
+      <span class="text-muted-color text-sm">
+        {{ selectedCount() }}
+        {{ 'all.sync.dashboard.scheduling.selectedCount' | translate }}
+      </span>
+    </div>
+
+    <!-- Hierarchy table -->
+    <p-table
+      [value]="displayItems()"
+      [loading]="eventsLoading()"
+      [paginator]="true"
+      [rows]="20"
+      class="hierarchical-job-table"
+    >
+      <ng-template #header>
         <tr>
-          <th>{{ 'all.sync.dashboard.tournaments.table.name' | translate }}</th>
-          <th>{{ 'all.sync.dashboard.tournaments.table.type' | translate }}</th>
-          <th>{{ 'all.sync.dashboard.tournaments.table.status' | translate }}</th>
-          <th>{{ 'all.sync.dashboard.tournaments.table.dates' | translate }}</th>
-          <th>{{ 'all.sync.dashboard.tournaments.table.lastSync' | translate }}</th>
-          <th>{{ 'all.sync.dashboard.tournaments.table.syncStatus' | translate }}</th>
-          <th>{{ 'all.sync.dashboard.tournaments.table.actions' | translate }}</th>
+          <th class="expansion-column"></th>
+          <th style="width: 3rem">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="isAllSelected()"
+              (onChange)="toggleSelectAll()"
+            />
+          </th>
+          <th>{{ 'all.sync.dashboard.scheduling.table.name' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.scheduling.table.type' | translate }}</th>
+          <th>{{ 'all.sync.dashboard.scheduling.table.extra' | translate }}</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-tournament>
-        <tr>
-          <td>
-            <div>
-              <div class="font-semibold text-color">{{ tournament.name }}</div>
-              <div class="text-xs text-muted-color">{{ tournament.visualCode }}</div>
+
+      <ng-template #body let-item>
+        <tr [class]="'job-row level-' + item.level">
+          <td class="expansion-column">
+            <div [ngStyle]="getIndentStyle(item.level)">
+              @if (item.hasChildren) {
+                <p-button
+                  [icon]="item.expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                  size="small"
+                  severity="secondary"
+                  [text]="true"
+                  (onClick)="toggleExpansion(item.id)"
+                  class="expansion-button"
+                />
+              }
             </div>
           </td>
           <td>
-            <p-tag [value]="tournament.type" severity="secondary" />
-          </td>
-          <td>
-            <p-tag [value]="tournament.status" [severity]="getTournamentStatusSeverity(tournament.status)" />
-          </td>
-          <td>
-            <div class="text-sm">
-              <div class="text-color">{{ tournament.startDate | date: 'shortDate' }}</div>
-              <div class="text-muted-color">{{ tournament.endDate | date: 'shortDate' }}</div>
-            </div>
-          </td>
-          <td>
-            @if (tournament.lastSyncAt) {
-              <span class="text-sm text-color">{{ tournament.lastSyncAt | date: 'short' }}</span>
-            } @else {
-              <span class="text-sm text-muted-color">{{ 'all.sync.dashboard.tournaments.table.never' | translate }}</span>
+            @if (item.isSelectable) {
+              <p-checkbox
+                [binary]="true"
+                [ngModel]="isSelected(item.id)"
+                (onChange)="toggleSelection(item.id)"
+              />
             }
           </td>
           <td>
-            <p-tag [value]="tournament.syncStatus" [severity]="getSyncStatusSeverity(tournament.syncStatus)" />
+            <div class="flex items-center gap-2" [ngStyle]="getIndentStyle(item.level)">
+              <span [class.font-semibold]="item.level === 0">{{ item.name }}</span>
+              @if (item.hasChildren && !item.expanded) {
+                <span class="children-count">({{ item.childCount }})</span>
+              }
+            </div>
           </td>
           <td>
-            <div class="flex gap-1">
-              <app-sync-button
-                [config]="{
-                  eventId: tournament.id,
-                  eventName: tournament.name,
-                  level: 'event',
-                }"
-              />
-              <p-button
-                icon="pi pi-cog"
-                size="small"
-                severity="secondary"
-                [text]="true"
-                [routerLink]="['/admin/sync/tournament', tournament.id]"
-                [pTooltip]="'all.sync.dashboard.tournaments.table.manage' | translate"
-              />
-            </div>
+            <p-tag
+              [value]="item.type"
+              [severity]="item.type === 'event' ? 'info' : item.type === 'subEvent' ? 'success' : item.type === 'draw' ? 'warn' : 'danger'"
+            />
+          </td>
+          <td>
+            <span class="text-sm text-muted-color">{{ item.extra }}</span>
           </td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
+
+      <ng-template #emptymessage>
         <tr>
-          <td colspan="7" class="text-center p-4 text-muted-color">{{ 'all.sync.dashboard.tournaments.table.noTournamentsFound' | translate }}</td>
+          <td colspan="5" class="text-center p-4 text-muted-color">
+            {{ 'all.sync.dashboard.scheduling.table.noItemsFound' | translate }}
+          </td>
         </tr>
       </ng-template>
     </p-table>
