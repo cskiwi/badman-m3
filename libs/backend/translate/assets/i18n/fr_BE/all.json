@@ -1060,6 +1060,15 @@
       "women": "Femmes",
       "youth": "Jeunes"
     },
+    "view-details": "Voir les détails de l'équipe",
+    "captain-label": "Capitaine",
+    "email-label": "E-mail",
+    "phone-label": "Téléphone",
+    "season-label": "Saison",
+    "preferred-day": "Jour préféré",
+    "preferred-time": "Heure préférée",
+    "no-players": "Aucun joueur",
+    "no-players-description": "Cette équipe n'a pas encore de joueurs.",
     "winRate": "% Vict.",
     "wins": "Victoires"
   },

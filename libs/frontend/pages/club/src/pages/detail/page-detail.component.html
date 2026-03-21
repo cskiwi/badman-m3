@@ -42,13 +42,13 @@
   <p-tabpanels>
     <!-- Teams Tab -->
     <p-tabpanel value="0">
-      <app-club-teams-tab [clubId]="club.id" [season]="currentSeason()" [canEditTeamFn]="canEditTeam.bind(this)" (editTeamClicked)="editTeam($event)" />
+      <app-club-teams-tab [clubId]="club.slug" [season]="currentSeason()" [canEditTeamFn]="canEditTeam.bind(this)" (editTeamClicked)="editTeam($event)" />
     </p-tabpanel>
 
     <!-- Player Roster Tab -->
     <p-tabpanel value="1">
       @defer (on idle) {
-      <app-club-players-tab [clubId]="club.id" [season]="currentSeason()" />
+      <app-club-players-tab [clubId]="club.slug" [season]="currentSeason()" />
       }
     </p-tabpanel>
 
@@ -56,14 +56,14 @@
     <!-- Match Schedule & Results Tab -->
     <p-tabpanel value="2">
       @defer (on idle) {
-      <app-club-schedule-tab [clubId]="club.id" [season]="currentSeason()" />
+      <app-club-schedule-tab [clubId]="club.slug" [season]="currentSeason()" />
       }
     </p-tabpanel>
 
     <!-- Tournaments Tab -->
     <p-tabpanel value="3">
       @defer (on idle) {
-      <app-club-tournaments-tab [clubId]="club.id" [canCreate]="canCreateTournament()" (createTournament)="createTournament()" />
+      <app-club-tournaments-tab [clubId]="club.slug" [canCreate]="canCreateTournament()" (createTournament)="createTournament()" />
       }
 
     </p-tabpanel>

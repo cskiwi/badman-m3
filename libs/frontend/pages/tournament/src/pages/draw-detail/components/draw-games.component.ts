@@ -7,6 +7,13 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { GameStatus, GameType } from '@app/models-enum';
+import {
+  getSetScores as _getSetScores,
+  isBye as _isBye,
+  getGameTeamMemberships,
+  getWinnerIndicator as _getWinnerIndicator,
+  getPlayerLevel as _getPlayerLevel,
+} from '@app/utils/comp';
 
 @Component({
   selector: 'app-draw-games',
@@ -52,59 +59,23 @@ export class DrawGamesComponent {
   }
 
   getTeamMemberships(game: Game, teamNumber: 1 | 2): GamePlayerMembership[] {
-    const memberships = game.gamePlayerMemberships || [];
-    return memberships.filter((m) => m.team === teamNumber);
+    return getGameTeamMemberships(game, teamNumber);
   }
 
   getPlayerLevel(membership: GamePlayerMembership, gameType?: GameType): number | null {
-    if (!gameType) return null;
-
-    switch (gameType) {
-      case GameType.S:
-        return membership.single || null;
-      case GameType.D:
-        return membership.double || null;
-      case GameType.MX:
-        return membership.mix || null;
-      default:
-        return null;
-    }
+    return _getPlayerLevel(membership, gameType);
   }
 
   getWinnerIndicator(game: Game, teamIndex: number): boolean {
-    return game.winner !== null && game.winner !== 0 && game.winner === teamIndex + 1;
+    return _getWinnerIndicator(game, teamIndex);
   }
 
   isBye(game: Game): boolean {
-    const isScorelessBye =
-      game.set1Team1 === null &&
-      game.set1Team2 === null &&
-      game.set2Team1 === null &&
-      game.set2Team2 === null &&
-      game.set3Team1 === null &&
-      game.set3Team2 === null;
-
-    const isPastGame = game.playedAt ? new Date(game.playedAt) < new Date() : false;
-
-    return isScorelessBye && isPastGame;
+    return _isBye(game);
   }
 
   getTeamScores(game: Game): string[] {
-    const team1Sets: number[] = [];
-    const team2Sets: number[] = [];
-
-    if (game.set1Team1 !== null && game.set1Team2 !== null) {
-      team1Sets.push(game.set1Team1!);
-      team2Sets.push(game.set1Team2!);
-    }
-    if (game.set2Team1 !== null && game.set2Team2 !== null) {
-      team1Sets.push(game.set2Team1!);
-      team2Sets.push(game.set2Team2!);
-    }
-    if (game.set3Team1 !== null && game.set3Team2 !== null) {
-      team1Sets.push(game.set3Team1!);
-      team2Sets.push(game.set3Team2!);
-    }
+    const { team1Sets, team2Sets } = _getSetScores(game);
 
     const team1Score = team1Sets.join(' - ') || '-';
     const team2Score = team2Sets.join(' - ') || '-';
@@ -113,22 +84,6 @@ export class DrawGamesComponent {
   }
 
   getSetScores(game: Game): { team1Sets: number[]; team2Sets: number[] } {
-    const team1Sets: number[] = [];
-    const team2Sets: number[] = [];
-
-    if (game.set1Team1 !== null && game.set1Team2 !== null) {
-      team1Sets.push(game.set1Team1!);
-      team2Sets.push(game.set1Team2!);
-    }
-    if (game.set2Team1 !== null && game.set2Team2 !== null) {
-      team1Sets.push(game.set2Team1!);
-      team2Sets.push(game.set2Team2!);
-    }
-    if (game.set3Team1 !== null && game.set3Team2 !== null) {
-      team1Sets.push(game.set3Team1!);
-      team2Sets.push(game.set3Team2!);
-    }
-
-    return { team1Sets, team2Sets };
+    return _getSetScores(game);
   }
 }

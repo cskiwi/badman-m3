@@ -17,6 +17,7 @@ import { TeamGameStatsComponent } from './team-game-stats.component';
 })
 export class TeamCardComponent {
   team = input.required<Team>();
+  clubId = input.required<string>();
   canEdit = input<boolean>(false);
 
   editClicked = output<Team>();
@@ -26,4 +27,5 @@ export class TeamCardComponent {
   togglePlayers() {
     this.expanded = !this.expanded;
   }
+  
 }

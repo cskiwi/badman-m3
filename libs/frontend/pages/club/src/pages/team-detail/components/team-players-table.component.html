@@ -1,0 +1,56 @@
+<section>
+  <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
+    <i class="pi pi-users text-primary-500"></i>
+    Players
+  </h3>
+
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse rounded-border bg-highlight overflow-hidden">
+      <thead class="bg-primary text-primary-contrast">
+        <tr>
+          <th class="p-3 text-left font-semibold">Player</th>
+          <th class="p-3 text-center font-semibold">Type</th>
+          <th class="p-3 text-center font-semibold">Played</th>
+          <th class="p-3 text-center font-semibold">Won</th>
+          <th class="p-3 text-center font-semibold">Lost</th>
+          <th class="p-3 text-center font-semibold">Win %</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (membership of players(); track membership.id) {
+          @let stats = getStats(membership.player?.id);
+          @let winPct = getWinPercentage(stats);
+          <tr class="border-b border-surface-200 hover:bg-highlight-emphasis">
+            <td class="p-3">
+              @if (membership.player?.slug) {
+                <a
+                  [routerLink]="['/players', membership.player.slug]"
+                  class="font-medium text-primary no-underline hover:underline"
+                >
+                  {{ membership.player.fullName }}
+                </a>
+              } @else {
+                <span class="font-medium">{{ membership.player?.fullName || '-' }}</span>
+              }
+            </td>
+            <td class="p-3 text-center">
+              <span class="bg-primary-100 text-primary-800 px-2 py-0.5 rounded text-xs font-medium">
+                {{ membership.membershipType || '-' }}
+              </span>
+            </td>
+            <td class="p-3 text-center text-sm">{{ stats.played }}</td>
+            <td class="p-3 text-center text-sm text-green-600">{{ stats.won }}</td>
+            <td class="p-3 text-center text-sm text-red-600">{{ stats.lost }}</td>
+            <td class="p-3 text-center text-sm font-medium">
+              @if (winPct !== null) {
+                {{ winPct | number: '1.0-0' }}%
+              } @else {
+                -
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

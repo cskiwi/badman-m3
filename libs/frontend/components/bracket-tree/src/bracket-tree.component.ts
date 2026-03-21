@@ -1,6 +1,7 @@
 
 import { Component, computed, input } from '@angular/core';
 import { Game } from '@app/models';
+import { isBye as _isBye } from '@app/utils/comp';
 
 // Extended game type with bracket ordering information
 export type BracketGame = Game & { bracketOrder: number };
@@ -48,6 +49,8 @@ export class BracketTree {
   readonly connectorLength = computed(() => {
     return this.columnGap() / 2;
   });
+
+  public isBye = _isBye;
 
   // Transform games into round-based structure for horizontal bracket display
   bracketRounds = computed<BracketRound[] | null>(() => {
@@ -333,20 +336,6 @@ export class BracketTree {
     }
 
     return sets.join(' ');
-  }
-
-  isBye(game: Game): boolean {
-    const isScorelessBye =
-      game.set1Team1 === null &&
-      game.set1Team2 === null &&
-      game.set2Team1 === null &&
-      game.set2Team2 === null &&
-      game.set3Team1 === null &&
-      game.set3Team2 === null;
-
-    const isPastGame = game.playedAt ? new Date(game.playedAt) < new Date() : false;
-
-    return isScorelessBye && isPastGame;
   }
 
   isGameCompleted(game: Game): boolean {

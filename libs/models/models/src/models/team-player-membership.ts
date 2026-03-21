@@ -42,7 +42,7 @@ export class TeamPlayerMembership extends BaseEntity {
   declare membershipType: TeamMembershipType;
 
   @SortableField()
-  @WhereField()
+  @WhereField({ nullable: true })
   @Column({ nullable: true, type: 'timestamptz' })
   declare end?: Date;
 

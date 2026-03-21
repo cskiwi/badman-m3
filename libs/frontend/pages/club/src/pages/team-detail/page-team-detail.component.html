@@ -1,0 +1,188 @@
+@if (!loading()) {
+  @if (this.team(); as team) {
+    <div class="px-4">
+      <app-page-header>
+        <ng-content title>{{ team.name }}</ng-content>
+        <ng-content subTitle>
+          <div class="info">
+            <div class="sub-text">
+              @if (team.club) {
+                <a [routerLink]="['/clubs', team.club.slug || team.club.id]">{{ team.club.name }}</a>
+                <span class="mx-2">></span>
+              }
+              <span>{{ team.name }}</span>
+            </div>
+          </div>
+        </ng-content>
+      </app-page-header>
+
+      <!-- Team Information -->
+      <section class="draw-info mb-8">
+        <div class="rounded-border bg-highlight p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h3 class="font-semibold text-xl text-primary">{{ team.name }}</h3>
+            </div>
+            <div class="flex gap-2 text-sm">
+              @if (team.type) {
+                <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded">{{ team.type }}</span>
+              }
+              @if (team.abbreviation) {
+                <span class="bg-surface-200 text-color px-2 py-1 rounded font-mono">{{ team.abbreviation }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Team Details -->
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-sm">
+            @if (team.captain) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-user text-xs text-muted-color"></i>
+                <span class="font-medium">{{ 'all.team.captain-label' | translate }}:</span>
+                <a
+                  [routerLink]="['/players', team.captain.slug || team.captain.id]"
+                  class="no-underline hover:underline text-primary"
+                >
+                  {{ team.captain.fullName }}
+                </a>
+              </div>
+            }
+
+            @if (team.email) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-envelope text-xs text-muted-color"></i>
+                <span class="font-medium">{{ 'all.team.email-label' | translate }}:</span>
+                <a [href]="'mailto:' + team.email" class="no-underline hover:underline text-color">
+                  {{ team.email }}
+                </a>
+              </div>
+            }
+
+            @if (team.phone) {
+              <div class="flex items-center gap-2">
+                <i class="pi pi-phone text-xs text-muted-color"></i>
+                <span class="font-medium">{{ 'all.team.phone-label' | translate }}:</span>
+                <a [href]="'tel:' + team.phone" class="no-underline hover:underline text-color">
+                  {{ team.phone }}
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+
+      <div class="px-4">
+    <!-- Players Section -->
+    @if (players().length > 0) {
+      <app-team-players-table [players]="players()" [playerStats]="playerStats()" />
+    } @else {
+        <div class="text-center py-12 text-surface-500">
+          <i class="pi pi-users text-4xl mb-4 block"></i>
+          <h3 class="text-lg font-medium mb-2">{{ 'all.team.no-players' | translate }}</h3>
+          <p>{{ 'all.team.no-players-description' | translate }}</p>
+        </div>
+    }
+      </div>
+
+    <!-- Encounters Section -->
+    <div class="px-4">
+      @if (encounters().length > 0) {
+        <section class="encounters mt-8">
+          <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
+            <!-- Played encounters (most recent first) -->
+            <p-card>
+              <ng-template #title>
+                <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                {{ 'all.competition.played_encounters' | translate }}
+                <span class="text-muted-color text-xs font-normal ml-1">({{ playedEncounters().length }})</span>
+              </ng-template>
+              <ng-template #subtitle />
+              @if (playedEncounters().length > 0) {
+                @for (encounter of playedEncounters(); track encounter.id) {
+                  <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="played" />
+                }
+              } @else {
+                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
+              }
+            </p-card>
+
+            <!-- Upcoming encounters (soonest first) -->
+            <p-card>
+              <ng-template #title>
+                <i class="pi pi-clock text-blue-500 mr-2"></i>
+                {{ 'all.competition.upcoming_encounters' | translate }}
+                <span class="text-muted-color text-xs font-normal ml-1">({{ upcomingEncounters().length }})</span>
+              </ng-template>
+              <ng-template #subtitle />
+              @if (upcomingEncounters().length > 0) {
+                @for (encounter of upcomingEncounters(); track encounter.id) {
+                  <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="upcoming" />
+                }
+              } @else {
+                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
+              }
+            </p-card>
+          </div>
+        </section>
+      } @else {
+        <div class="text-center py-12 text-surface-500">
+          <i class="pi pi-calendar text-4xl mb-4 block"></i>
+          <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
+          <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  <!-- Loading Skeletons -->
+  <div class="px-4">
+    <div class="space-y-6">
+      <!-- Header skeleton -->
+      <div class="space-y-2">
+        <p-skeleton width="25rem" height="2rem" />
+        <p-skeleton width="20rem" height="1rem" />
+      </div>
+
+      <!-- Team info skeleton -->
+      <div class="rounded-border bg-highlight p-6 space-y-4">
+        <div class="flex justify-between">
+          <p-skeleton width="15rem" height="1.5rem" />
+          <p-skeleton width="4rem" height="1.5rem" />
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 space-y-2">
+          <p-skeleton width="8rem" height="1rem" />
+          <p-skeleton width="6rem" height="1rem" />
+          <p-skeleton width="10rem" height="1rem" />
+        </div>
+      </div>
+
+      <!-- Two column skeleton -->
+      <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
+        @for (col of [1, 2]; track col) {
+          <div class="space-y-4">
+            <p-skeleton width="12rem" height="1.5rem" />
+            @for (i of [1, 2, 3]; track i) {
+              <div class="rounded-border bg-highlight p-4 space-y-2">
+                <div class="flex justify-between">
+                  <p-skeleton width="10rem" height="1rem" />
+                  <p-skeleton width="4rem" height="1rem" />
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="px-4">
+    <div class="error flex items-center gap-2 p-4 text-red-600">
+      <i class="pi pi-exclamation-triangle"></i>
+      {{ error() }}
+    </div>
+  </div>
+}

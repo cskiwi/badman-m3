@@ -1067,6 +1067,15 @@ export type I18nTranslations = {
                 "women": string;
                 "youth": string;
             };
+            "view-details": string;
+            "captain-label": string;
+            "email-label": string;
+            "phone-label": string;
+            "season-label": string;
+            "preferred-day": string;
+            "preferred-time": string;
+            "no-players": string;
+            "no-players-description": string;
             "winRate": string;
             "wins": string;
         };

@@ -1060,6 +1060,15 @@
       "women": "Dames",
       "youth": "Jeugd"
     },
+    "view-details": "Teamdetails bekijken",
+    "captain-label": "Kapitein",
+    "email-label": "E-mail",
+    "phone-label": "Telefoon",
+    "season-label": "Seizoen",
+    "preferred-day": "Voorkeurdag",
+    "preferred-time": "Voorkeuruur",
+    "no-players": "Geen spelers",
+    "no-players-description": "Dit team heeft nog geen spelers.",
     "winRate": "Win %",
     "wins": "Overwinningen"
   },
