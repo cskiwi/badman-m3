@@ -1078,6 +1078,7 @@ export type I18nTranslations = {
             "phone-label": string;
             "draw-label": string;
             "view-draw": string;
+            "level-tooltip": string;
             "season-label": string;
             "preferred-day": string;
             "preferred-time": string;

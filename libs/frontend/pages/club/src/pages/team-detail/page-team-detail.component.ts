@@ -8,6 +8,7 @@ import { injectParams } from 'ngxtension/inject-params';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Tag } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { TeamDetailService } from './page-team-detail.service';
 import { TeamPlayersTableComponent } from './components/team-players-table.component';
 
@@ -22,6 +23,7 @@ import { TeamPlayersTableComponent } from './components/team-players-table.compo
     EncounterCardComponent,
     TeamPlayersTableComponent,
     Tag,
+    TooltipModule,
   ],
   templateUrl: './page-team-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

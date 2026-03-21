@@ -1071,6 +1071,7 @@
     "phone-label": "Phone",
     "draw-label": "Draw",
     "view-draw": "View draw",
+    "level-tooltip": "Min / Max level",
     "season-label": "Season",
     "preferred-day": "Preferred Day",
     "preferred-time": "Preferred Time",

@@ -67,6 +67,8 @@
                   </a>
                   @if (subEvent.level != null || subEvent.maxLevel != null) {
                     <p-tag
+                      [pTooltip]="'all.team.level-tooltip' | translate"
+                      tooltipPosition="top"
                       [value]="subEvent.level != null && subEvent.maxLevel != null
                         ? subEvent.level + ' - ' + subEvent.maxLevel
                         : '' + (subEvent.level ?? subEvent.maxLevel)"
