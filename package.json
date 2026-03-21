@@ -14,7 +14,8 @@
     "lint": "nx run-many -t lint",
     "migrate:create": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-generate",
     "migrate": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-run",
-    "migrate:undo": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-revert"
+    "migrate:undo": "npx cross-env RUN_MIGRATIONS=true nx run backend-database:migration-revert",
+    "tunnel": "cloudflared tunnel run angular-dev"
   },
   "private": true,
   "dependencies": {

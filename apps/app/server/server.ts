@@ -20,7 +20,7 @@ export async function app() {
 
   const allowedHost = process.env['BASE_URL'] ?? 'localhost';
   const commonEngine = new CommonEngine({
-    allowedHosts: [allowedHost, 'localhost'],
+    allowedHosts: [allowedHost, 'localhost', 'dev.purr.dev'],
   });
 
   server.set('view engine', 'html');
