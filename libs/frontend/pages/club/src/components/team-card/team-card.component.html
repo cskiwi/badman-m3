@@ -1,6 +1,10 @@
 <div class="border-surface rounded-border border">
   <div class="flex items-center justify-between bg-highlight p-2">
-    <span class="font-semibold text-primary my-2">{{ team().name }}</span>
+    @if (clubId()) {
+      <a [routerLink]="['/clubs', clubId(), 'teams', team().id]" class="font-semibold text-primary my-2 no-underline hover:underline">{{ team().name }}</a>
+    } @else {
+      <span class="font-semibold text-primary my-2">{{ team().name }}</span>
+    }
     <div class="flex items-center gap-2">
       @if (team().abbreviation) {
         <p-badge [value]="team().abbreviation!" />
@@ -91,13 +95,5 @@
       }
     }
 
-    @if (clubId()) {
-      <div class="mt-2 pt-2 border-t border-surface">
-        <a [routerLink]="['/clubs', clubId(), 'teams', team().id]" class="text-xs text-primary no-underline flex items-center gap-1">
-          <i class="pi pi-arrow-right text-xs"></i>
-          {{ 'all.team.view-details' | translate }}
-        </a>
-      </div>
-    }
   </div>
 </div>
