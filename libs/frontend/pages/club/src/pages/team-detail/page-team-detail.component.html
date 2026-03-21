@@ -67,6 +67,30 @@
                 </a>
               </div>
             }
+
+            @if (entry(); as entry) {
+              @if (entry.competitionDraw?.competitionSubEvent; as subEvent) {
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-sitemap text-xs text-muted-color"></i>
+                  <span class="font-medium">{{ 'all.team.draw-label' | translate }}:</span>
+                  <a
+                    [routerLink]="['/competition', subEvent.eventId, 'sub-events', subEvent.id, 'draws', entry.drawId]"
+                    class="no-underline hover:underline text-primary"
+                  >
+                    {{ entry.competitionDraw?.name || ('all.team.view-draw' | translate) }}
+                  </a>
+                  @if (subEvent.level != null || subEvent.maxLevel != null) {
+                    <p-tag
+                      severity="secondary"
+                      [rounded]="true"
+                      [value]="subEvent.level != null && subEvent.maxLevel != null
+                        ? subEvent.level + ' - ' + subEvent.maxLevel
+                        : '' + (subEvent.level ?? subEvent.maxLevel)"
+                    />
+                  }
+                </div>
+              }
+            }
           </div>
         </div>
       </section>

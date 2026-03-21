@@ -7,6 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
+import { Tag } from 'primeng/tag';
 import { TeamDetailService } from './page-team-detail.service';
 import { TeamPlayersTableComponent } from './components/team-players-table.component';
 
@@ -20,6 +21,7 @@ import { TeamPlayersTableComponent } from './components/team-players-table.compo
     CardModule,
     EncounterCardComponent,
     TeamPlayersTableComponent,
+    Tag,
   ],
   templateUrl: './page-team-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +36,7 @@ export class PageTeamDetailComponent {
   team = this.dataService.team;
   players = this.dataService.players;
   playerStats = this.dataService.playerStats;
+  entry = this.dataService.entry;
   encounters = this.dataService.encounters;
   playedEncounters = this.dataService.playedEncounters;
   upcomingEncounters = this.dataService.upcomingEncounters;

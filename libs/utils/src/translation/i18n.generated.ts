@@ -1076,6 +1076,8 @@ export type I18nTranslations = {
             "captain-label": string;
             "email-label": string;
             "phone-label": string;
+            "draw-label": string;
+            "view-draw": string;
             "season-label": string;
             "preferred-day": string;
             "preferred-time": string;

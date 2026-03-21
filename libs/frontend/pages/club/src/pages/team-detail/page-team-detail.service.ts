@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { CompetitionEncounter } from '@app/models';
+import { CompetitionEncounter, Entry } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 
@@ -36,6 +36,7 @@ export class TeamDetailService {
           this.apollo.query<{
             team: any;
             competitionEncounters: CompetitionEncounter[];
+            entries: Entry[];
           }>({
             query: gql`
               query TeamDetail($teamId: ID!, $teamIdStr: String!) {
@@ -82,6 +83,7 @@ export class TeamDetailService {
                   args: { where: [{ OR: [{ homeTeamId: { eq: $teamIdStr } }, { awayTeamId: { eq: $teamIdStr } }] }] }
                 ) {
                   id
+                  drawId
                   date
                   homeScore
                   awayScore
@@ -131,6 +133,25 @@ export class TeamDetailService {
                     }
                   }
                 }
+                entries(args: { where: [{ teamId: { eq: $teamIdStr } }] }) {
+                  id
+                  drawId
+                  competitionDraw {
+                    id
+                    name
+                    competitionSubEvent {
+                      id
+                      name
+                      eventId
+                      level
+                      maxLevel
+                      competitionEvent {
+                        id
+                        name
+                      }
+                    }
+                  }
+                }
               }
             `,
             variables: {
@@ -146,11 +167,13 @@ export class TeamDetailService {
         }
 
         const encounters = (result.data.competitionEncounters || []) as CompetitionEncounter[];
+        const entries = (result.data.entries || []) as Entry[];
 
         this._encounters.set(encounters);
 
         return {
           team: result.data.team,
+          entries,
         };
       } catch (err) {
         console.error(err);
@@ -162,6 +185,71 @@ export class TeamDetailService {
   // Public selectors
   team = computed(() => this.dataResource.value()?.team);
   players = computed(() => this.dataResource.value()?.team?.teamPlayerMemberships ?? []);
+
+  // Fallback drawId from encounters when entries have no draw info
+  private fallbackDrawId = computed(() => {
+    const entries = this.dataResource.value()?.entries ?? [];
+    const hasEntryWithDraw = entries.some(
+      (e) => e.competitionDraw?.competitionSubEvent?.eventId,
+    );
+    if (hasEntryWithDraw) return null;
+
+    return this._encounters().find((e) => e.drawId)?.drawId ?? null;
+  });
+
+  private fallbackDrawResource = resource({
+    params: this.fallbackDrawId,
+    loader: async ({ params: drawId, abortSignal }) => {
+      if (!drawId) return null;
+
+      const result = await lastValueFrom(
+        this.apollo.query<{ competitionDraw: any }>({
+          query: gql`
+            query FallbackDraw($drawId: ID!) {
+              competitionDraw(id: $drawId) {
+                id
+                name
+                competitionSubEvent {
+                  id
+                  name
+                  eventId
+                  level
+                  maxLevel
+                }
+              }
+            }
+          `,
+          variables: { drawId },
+          context: { signal: abortSignal },
+        }),
+      );
+
+      return result?.data?.competitionDraw ?? null;
+    },
+  });
+
+  entry = computed(() => {
+    const entries = this.dataResource.value()?.entries ?? [];
+
+    // Prefer entry with full draw info from entries query
+    const entryWithDraw = entries.find(
+      (e) => e.competitionDraw?.competitionSubEvent?.eventId,
+    );
+    if (entryWithDraw) {
+      return entryWithDraw;
+    }
+
+    // Fallback: use separately fetched draw from encounter drawId
+    const fallbackDraw = this.fallbackDrawResource.value();
+    if (fallbackDraw) {
+      return {
+        drawId: fallbackDraw.id,
+        competitionDraw: fallbackDraw,
+      } as Partial<Entry>;
+    }
+
+    return null;
+  });
 
   playerStats = computed(() => {
     const encounters = this._encounters();
