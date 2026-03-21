@@ -416,6 +416,21 @@ export class SyncResolver {
     };
   }
 
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async clearCompletedJobs(@User() user: Player): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to clear jobs');
+    }
+
+    const removedCount = await this.syncService.clearCompletedJobs();
+
+    return {
+      message: `Cleared ${removedCount} completed jobs (kept jobs with failed children)`,
+      success: true,
+    };
+  }
+
   @Query(() => String)
   @UseGuards(PermGuard)
   async syncQueueStatsByName(@User() user: Player): Promise<string> {

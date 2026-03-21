@@ -1,8 +1,9 @@
-module.exports = {
+ 
+export default {
   displayName: 'sync-admin',
-  preset: '../../../jest.preset.js',
+  preset: '../../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/frontend/pages/sync-admin',
+  coverageDirectory: '../../../../coverage/libs/frontend/pages/sync-admin',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

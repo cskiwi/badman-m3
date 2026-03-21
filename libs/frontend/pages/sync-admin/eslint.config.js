@@ -55,9 +55,11 @@ module.exports = [
         {
           ignoredDependencies: [
             '@angular/core',
-            'primeng',
+            '@angular/router',
             '@ngx-translate/core',
-            '@angular/common'
+            'ngxtension',
+            'primeng',
+            '@angular/forms'
           ],
         },
       ],

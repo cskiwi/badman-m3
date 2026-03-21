@@ -535,6 +535,133 @@ export class SyncService {
   }
 
   /**
+   * Clear only completed jobs, preserving any job tree that contains a failed child.
+   * This keeps the full parent→child structure intact when debugging failures.
+   */
+  async clearCompletedJobs(): Promise<number> {
+    const queues = this.getAllQueues();
+    let removedCount = 0;
+
+    for (const queue of queues) {
+      const completedJobs = await queue.getCompleted();
+
+      for (const job of completedJobs) {
+        // Skip jobs that are part of a flow with failed children
+        if (await this.hasFailedDescendantOrAncestor(job)) {
+          this.logger.debug(`Keeping completed job ${job.id} (has failed relative in tree)`);
+          continue;
+        }
+
+        try {
+          await job.remove();
+          removedCount++;
+        } catch (error) {
+          this.logger.warn(`Failed to remove completed job ${job.id}: ${error instanceof Error ? error.message : error}`);
+        }
+      }
+    }
+
+    this.logger.log(`Cleared ${removedCount} completed jobs`);
+    return removedCount;
+  }
+
+  /**
+   * Check if a job has any failed descendant (child/grandchild) or if any
+   * ancestor's tree contains a failed job. This ensures we preserve the
+   * full tree structure for debugging.
+   */
+  private async hasFailedDescendantOrAncestor(job: any): Promise<boolean> {
+    // Check if this job itself is part of a parent flow
+    const parentId = extractParentId(job);
+    if (parentId) {
+      // Walk up to the root and check the entire tree from there
+      return this.treeHasFailedJob(job);
+    }
+
+    // This is a root job — check descendants
+    return this.hasFailedDescendant(job);
+  }
+
+  private async treeHasFailedJob(job: any): Promise<boolean> {
+    // If the job has a parent, we need to check siblings and the broader tree
+    // The simplest approach: check if any job in the same queue family is failed
+    // by walking the dependency chain
+    const parentId = extractParentId(job);
+    if (parentId) {
+      // This job is a child — find the parent and check the full tree
+      const parentQueueName = job.opts?.parent?.queue;
+      if (parentQueueName) {
+        const queueMap = this.getQueueMap();
+        const shortName = parentQueueName.replace(/^bull:/, '');
+        const parentQueue = queueMap[shortName];
+        if (parentQueue) {
+          const parentJob = await parentQueue.getJob(parentId);
+          if (parentJob) {
+            return this.treeHasFailedJob(parentJob);
+          }
+        }
+      }
+    }
+
+    // We're at the root — check all descendants
+    return this.hasFailedDescendant(job);
+  }
+
+  private async hasFailedDescendant(job: any): Promise<boolean> {
+    if (job.failedReason) return true;
+
+    let dependencies;
+    try {
+      dependencies = await job.getDependencies();
+    } catch {
+      return false;
+    }
+
+    const childJobs = [
+      ...(dependencies?.processed ? Object.values(dependencies.processed) : []),
+      ...(dependencies?.unprocessed ?? []),
+    ];
+
+    // getDependencies returns processed as Record<string, resultValue> and unprocessed as jobKeys
+    // We need to fetch actual child jobs to check their status
+    const childKeys = [];
+    if (dependencies?.processed) {
+      childKeys.push(...Object.keys(dependencies.processed));
+    }
+
+    // Check unprocessed children (these could be failed)
+    for (const childKey of dependencies?.unprocessed ?? []) {
+      // unprocessed items are job keys like "bull:queueName:jobId"
+      const parts = String(childKey).split(':');
+      const childJobId = parts[parts.length - 1];
+      const childQueueName = parts.slice(1, -1).join(':');
+      const queueMap = this.getQueueMap();
+      const childQueue = queueMap[childQueueName];
+      if (childQueue) {
+        const childJob = await childQueue.getJob(childJobId);
+        if (childJob?.failedReason) return true;
+        if (childJob && (await this.hasFailedDescendant(childJob))) return true;
+      }
+    }
+
+    // Check processed children — they might have failed children themselves
+    for (const key of Object.keys(dependencies?.processed ?? {})) {
+      const parts = String(key).split(':');
+      const childJobId = parts[parts.length - 1];
+      const childQueueName = parts.slice(1, -1).join(':');
+      const queueMap = this.getQueueMap();
+      const childQueue = queueMap[childQueueName];
+      if (childQueue) {
+        const childJob = await childQueue.getJob(childJobId);
+        if (childJob?.failedReason) return true;
+        if (childJob && (await this.hasFailedDescendant(childJob))) return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Determine job status based on job properties
    */
   private getJobStatus(job: { failedReason?: string; finishedOn?: number; processedOn?: number }): 'waiting' | 'active' | 'completed' | 'failed' {

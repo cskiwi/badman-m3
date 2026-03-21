@@ -28,6 +28,14 @@
         [pTooltip]="'all.sync.dashboard.actions.competitionSyncTooltip' | translate"
       />
       <p-button
+        icon="pi pi-check-circle"
+        [label]="'all.sync.dashboard.actions.clearCompleted' | translate"
+        severity="warn"
+        [loading]="actionLoading()"
+        (onClick)="clearCompletedJobs()"
+        [pTooltip]="'all.sync.dashboard.actions.clearCompletedTooltip' | translate"
+      />
+      <p-button
         icon="pi pi-trash"
         [label]="'all.sync.dashboard.actions.clearAll' | translate"
         severity="danger"

@@ -1,5 +1,5 @@
 {
-  "name": "sync-admin",
+  "name": "frontend-pages-tournament",
   "$schema": "{workspaceRoot}/node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "{projectRoot}/src",
   "prefix": "lib",
@@ -26,7 +26,7 @@
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "{projectRoot}/jest.config.ts",
-        "tsConfig": "libs/frontend/pages/sync-admin/tsconfig.spec.json"
+        "tsConfig": "libs/frontend/pages/tournament/tsconfig.spec.json"
       }
     },
     "lint": {

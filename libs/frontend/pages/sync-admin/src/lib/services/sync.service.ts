@@ -64,6 +64,15 @@ const CLEAR_ALL_JOBS = gql`
   }
 `;
 
+const CLEAR_COMPLETED_JOBS = gql`
+  mutation ClearCompletedJobs {
+    clearCompletedJobs {
+      message
+      success
+    }
+  }
+`;
+
 const TRIGGER_COMPETITION_STRUCTURE_SYNC = gql`
   mutation TriggerCompetitionSync {
     triggerCompetitionSync {
@@ -134,6 +143,17 @@ export class SyncApiService {
         mutation: CLEAR_ALL_JOBS,
       })
       .pipe(map((result) => result.data?.clearAllJobs ?? ({} as SyncTriggerResponse)));
+  }
+
+  /**
+   * Clear only completed jobs, keeping failed job trees
+   */
+  clearCompletedJobs(): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ clearCompletedJobs: SyncTriggerResponse }>({
+        mutation: CLEAR_COMPLETED_JOBS,
+      })
+      .pipe(map((result) => result.data?.clearCompletedJobs ?? ({} as SyncTriggerResponse)));
   }
 
   /**

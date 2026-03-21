@@ -758,6 +758,11 @@ export type I18nTranslations = {
                     "clearAllError": string;
                     "clearAllSuccess": string;
                     "clearAllTooltip": string;
+                    "clearCompleted": string;
+                    "clearCompletedError": string;
+                    "clearCompletedSuccess": string;
+                    "clearCompletedTooltip": string;
+                    "confirmClearCompleted": string;
                     "competitionSync": string;
                     "competitionSyncError": string;
                     "competitionSyncQueued": string;

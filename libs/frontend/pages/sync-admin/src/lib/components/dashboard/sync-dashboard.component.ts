@@ -189,6 +189,36 @@ export class SyncDashboardComponent implements OnDestroy {
     });
   }
 
+  clearCompletedJobs(): void {
+    this.confirmationService.confirm({
+      message: this.translateService.instant('all.sync.dashboard.actions.confirmClearCompleted'),
+      header: this.translateService.instant('all.sync.dashboard.actions.clearCompleted'),
+      icon: 'pi pi-check-circle',
+      acceptButtonStyleClass: 'p-button-warning',
+      accept: () => {
+        this.actionLoading.set(true);
+        this.syncApiService.clearCompletedJobs().subscribe({
+          next: (response) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('all.common.success'),
+              detail: response.message || this.translateService.instant('all.sync.dashboard.actions.clearCompletedSuccess'),
+            });
+            this.syncService.refresh();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('all.common.error'),
+              detail: this.translateService.instant('all.sync.dashboard.actions.clearCompletedError'),
+            });
+          },
+          complete: () => this.actionLoading.set(false),
+        });
+      },
+    });
+  }
+
   clearAllJobs(): void {
     this.confirmationService.confirm({
       message: this.translateService.instant('all.sync.dashboard.actions.confirmClearAll'),
