@@ -29,7 +29,7 @@
           <div class="flex items-center gap-2 mb-2">
             <i class="pi pi-home text-xs text-muted-color"></i>
             @if (game?.homeTeam?.club?.slug) {
-              <a [routerLink]="['/clubs', game!.homeTeam!.club!.slug!]" class="text-sm font-semibold text-color truncate hover:text-primary no-underline">
+              <a [routerLink]="['/clubs', game!.homeTeam!.club!.slug!, 'teams', game!.homeTeam!.id!]" class="text-sm font-semibold text-color truncate hover:text-primary no-underline">
                 {{ game?.homeTeam?.name || game?.homeTeam?.abbreviation }}
               </a>
             } @else {
@@ -43,7 +43,7 @@
           <div class="flex items-center gap-2">
             <i class="pi pi-compass text-xs text-muted-color"></i>
             @if (game?.awayTeam?.club?.slug) {
-              <a [routerLink]="['/clubs', game!.awayTeam!.club!.slug!]" class="text-sm font-semibold text-color truncate hover:text-primary no-underline">
+              <a [routerLink]="['/clubs', game!.awayTeam!.club!.slug!, 'teams', game!.awayTeam!.id!]" class="text-sm font-semibold text-color truncate hover:text-primary no-underline">
                 {{ game?.awayTeam?.name || game?.awayTeam?.abbreviation }}
               </a>
             } @else {

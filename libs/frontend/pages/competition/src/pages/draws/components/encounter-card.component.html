@@ -5,7 +5,7 @@
         <i class="pi pi-home text-xs text-muted-color"></i>
         @if (encounter().homeTeam?.club?.slug) {
           <a
-            [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]"
+            [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!, 'teams', encounter().homeTeam!.id!]"
             class="text-sm font-semibold text-color truncate hover:text-primary no-underline"
           >
             {{ encounter().homeTeam?.name || encounter().homeTeam?.abbreviation }}
@@ -19,7 +19,7 @@
         <i class="pi pi-compass text-xs text-muted-color"></i>
         @if (encounter().awayTeam?.club?.slug) {
           <a
-            [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]"
+            [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!, 'teams', encounter().awayTeam!.id!]"
             class="text-sm font-semibold text-color truncate hover:text-primary no-underline"
           >
             {{ encounter().awayTeam?.name || encounter().awayTeam?.abbreviation }}
@@ -50,7 +50,7 @@
       <div class="flex items-center gap-2 min-w-0">
         @if (encounter().homeTeam?.club?.slug) {
           <a
-            [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!]"
+            [routerLink]="['/clubs', encounter().homeTeam!.club!.slug!, 'teams', encounter().homeTeam!.id!]"
             class="font-medium text-color no-underline hover:text-primary-600 truncate"
             (click)="$event.stopPropagation()"
           >
@@ -62,7 +62,7 @@
         <span class="text-muted-color flex-none">vs</span>
         @if (encounter().awayTeam?.club?.slug) {
           <a
-            [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!]"
+            [routerLink]="['/clubs', encounter().awayTeam!.club!.slug!, 'teams', encounter().awayTeam!.id!]"
             class="font-medium text-color no-underline hover:text-primary-600 truncate"
             (click)="$event.stopPropagation()"
           >
