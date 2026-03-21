@@ -998,8 +998,11 @@
       },
       "membershipType": {
         "backup": "Remplaçant",
+        "base": "Titulaire",
         "regular": "Régulier"
       },
+      "base-player-tooltip": "Joueur titulaire enregistré pour cette équipe",
+      "encounter-presence": "Présence",
       "name": {
         "label": "Nom de l'équipe",
         "placeholder": {

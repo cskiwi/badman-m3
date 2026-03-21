@@ -1005,8 +1005,11 @@ export type I18nTranslations = {
                 };
                 "membershipType": {
                     "backup": string;
+                    "base": string;
                     "regular": string;
                 };
+                "base-player-tooltip": string;
+                "encounter-presence": string;
                 "name": {
                     "label": string;
                     "placeholder": {

@@ -998,8 +998,11 @@
       },
       "membershipType": {
         "backup": "Reserve",
+        "base": "Basis",
         "regular": "Regulier"
       },
+      "base-player-tooltip": "Geregistreerde basisspeler voor dit team",
+      "encounter-presence": "Aanwezigheid",
       "name": {
         "label": "Teamnaam",
         "placeholder": {

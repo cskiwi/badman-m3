@@ -998,8 +998,11 @@
       },
       "membershipType": {
         "backup": "Backup",
+        "base": "Base",
         "regular": "Regular"
       },
+      "base-player-tooltip": "Registered base player for this team",
+      "encounter-presence": "Presence",
       "name": {
         "label": "Team Name",
         "placeholder": {

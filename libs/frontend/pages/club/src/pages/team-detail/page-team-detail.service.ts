@@ -10,6 +10,8 @@ export interface PlayerStats {
   played: number;
   won: number;
   lost: number;
+  encountersPlayed: number;
+  totalEncounters: number;
 }
 
 export class TeamDetailService {
@@ -129,6 +131,7 @@ export class TeamDetailService {
                       gamePlayer {
                         id
                         fullName
+                        slug
                       }
                     }
                   }
@@ -136,6 +139,13 @@ export class TeamDetailService {
                 entries(args: { where: [{ teamId: { eq: $teamIdStr } }] }) {
                   id
                   drawId
+                  meta {
+                    competition {
+                      players {
+                        id
+                      }
+                    }
+                  }
                   competitionDraw {
                     id
                     name
@@ -184,7 +194,66 @@ export class TeamDetailService {
 
   // Public selectors
   team = computed(() => this.dataResource.value()?.team);
-  players = computed(() => this.dataResource.value()?.team?.teamPlayerMemberships ?? []);
+
+  private basePlayerIds = computed(() => {
+    const entries = this.dataResource.value()?.entries ?? [];
+    const ids = new Set<string>();
+    for (const entry of entries) {
+      for (const p of entry.meta?.competition?.players ?? []) {
+        if (p.id) ids.add(p.id);
+      }
+    }
+    return ids;
+  });
+
+  players = computed(() => {
+    const memberships = this.dataResource.value()?.team?.teamPlayerMemberships ?? [];
+    const baseIds = this.basePlayerIds();
+    const team = this.team();
+    const encounters = this._encounters();
+
+    // Start with existing memberships, flagging base players
+    const memberPlayerIds = new Set<string>();
+    const result = memberships.map((m: any) => {
+      if (m.player?.id) memberPlayerIds.add(m.player.id);
+      return {
+        ...m,
+        isBase: m.player?.id ? baseIds.has(m.player.id) : false,
+      };
+    });
+
+    // Collect players from games who are not in team memberships
+    if (team && encounters.length > 0) {
+      const gameOnlyPlayers = new Map<string, any>();
+
+      for (const encounter of encounters) {
+        if (!encounter.games) continue;
+        const teamNumber = encounter.homeTeam?.id === team.id ? 1 : 2;
+
+        for (const game of encounter.games) {
+          for (const gm of game.gamePlayerMemberships ?? []) {
+            if (gm.team !== teamNumber || !gm.playerId) continue;
+            if (memberPlayerIds.has(gm.playerId)) continue;
+            if (gameOnlyPlayers.has(gm.playerId)) continue;
+            gameOnlyPlayers.set(gm.playerId, {
+              id: `game-${gm.playerId}`,
+              membershipType: 'BACKUP *',
+              isBase: baseIds.has(gm.playerId),
+              player: {
+                id: gm.playerId,
+                fullName: gm.gamePlayer?.fullName,
+                slug: gm.gamePlayer?.slug,
+              },
+            });
+          }
+        }
+      }
+
+      result.push(...gameOnlyPlayers.values());
+    }
+
+    return result;
+  });
 
   // Fallback drawId from encounters when entries have no draw info
   private fallbackDrawId = computed(() => {
@@ -256,13 +325,19 @@ export class TeamDetailService {
     const team = this.team();
     if (!team || encounters.length === 0) return new Map<string, PlayerStats>();
 
+    const now = new Date();
+    const playedEncounters = encounters.filter((e) => e.date && new Date(e.date) < now);
+    const totalEncounters = playedEncounters.length;
     const statsMap = new Map<string, PlayerStats>();
 
-    for (const encounter of encounters) {
+    for (const encounter of playedEncounters) {
       if (!encounter.games) continue;
 
       // Determine which team number (1=home, 2=away) this team is
       const teamNumber = encounter.homeTeam?.id === team.id ? 1 : 2;
+
+      // Track which players were present in this encounter
+      const presentInEncounter = new Set<string>();
 
       for (const game of encounter.games) {
         const memberships = (game.gamePlayerMemberships || []).filter((m: any) => m.team === teamNumber);
@@ -272,8 +347,10 @@ export class TeamDetailService {
           if (!playerId) continue;
 
           if (!statsMap.has(playerId)) {
-            statsMap.set(playerId, { played: 0, won: 0, lost: 0 });
+            statsMap.set(playerId, { played: 0, won: 0, lost: 0, encountersPlayed: 0, totalEncounters });
           }
+
+          presentInEncounter.add(playerId);
 
           const stats = statsMap.get(playerId)!;
           stats.played++;
@@ -285,6 +362,16 @@ export class TeamDetailService {
           }
         }
       }
+
+      // Increment encounter count for each player present
+      for (const playerId of presentInEncounter) {
+        statsMap.get(playerId)!.encountersPlayed++;
+      }
+    }
+
+    // Ensure totalEncounters is set for all entries
+    for (const stats of statsMap.values()) {
+      stats.totalEncounters = totalEncounters;
     }
 
     return statsMap;

@@ -24,6 +24,12 @@
             <p-sortIcon field="membershipType" />
           </div>
         </th>
+        <th pSortableColumn="isBase">
+          <div class="flex items-center gap-2">
+            {{ 'all.team.edit.membershipType.base' | translate }}
+            <p-sortIcon field="isBase" />
+          </div>
+        </th>
         <th pSortableColumn="stats.played">
           <div class="flex items-center gap-2">
             Played
@@ -48,6 +54,12 @@
             <p-sortIcon field="stats.winPct" />
           </div>
         </th>
+        <th pSortableColumn="stats.encounterPct">
+          <div class="flex items-center gap-2">
+            {{ 'all.team.edit.encounter-presence' | translate }}
+            <p-sortIcon field="stats.encounterPct" />
+          </div>
+        </th>
       </tr>
     </ng-template>
     <ng-template #body let-membership>
@@ -69,12 +81,29 @@
             {{ membership.membershipType || '-' }}
           </span>
         </td>
+        <td class="text-center">
+          @if (membership.isBase) {
+            <p-tag
+              severity="success"
+              [value]="'all.team.edit.membershipType.base' | translate"
+              [pTooltip]="'all.team.base-player-tooltip' | translate"
+              tooltipPosition="top"
+            />
+          }
+        </td>
         <td class="text-center text-sm">{{ membership.stats.played }}</td>
         <td class="text-center text-sm text-green-600">{{ membership.stats.won }}</td>
         <td class="text-center text-sm text-red-600">{{ membership.stats.lost }}</td>
         <td class="text-center text-sm font-medium">
           @if (membership.stats.winPct !== null) {
             {{ membership.stats.winPct | number: '1.0-0' }}%
+          } @else {
+            -
+          }
+        </td>
+        <td class="text-center text-sm font-medium">
+          @if (membership.stats.encounterPct !== null) {
+            {{ membership.stats.encounterPct | number: '1.0-0' }}%
           } @else {
             -
           }
