@@ -521,6 +521,20 @@ export class SyncService {
   }
 
   /**
+   * Clear all jobs from all queues (obliterate)
+   */
+  async clearAllJobs(): Promise<void> {
+    const queues = this.getAllQueues();
+
+    await Promise.all(
+      queues.map(async (queue) => {
+        await queue.obliterate({ force: true });
+        this.logger.log(`Obliterated queue: ${queue.name}`);
+      }),
+    );
+  }
+
+  /**
    * Determine job status based on job properties
    */
   private getJobStatus(job: { failedReason?: string; finishedOn?: number; processedOn?: number }): 'waiting' | 'active' | 'completed' | 'failed' {

@@ -763,7 +763,12 @@
         "tournamentSync": "Tournament sync",
         "tournamentSyncError": "Failed to schedule tournament sync",
         "tournamentSyncQueued": "Tournament sync successfully scheduled",
-        "tournamentSyncTooltip": "Synchronize current and upcoming tournaments"
+        "tournamentSyncTooltip": "Synchronize current and upcoming tournaments",
+        "clearAll": "Clear all jobs",
+        "clearAllTooltip": "Remove all jobs from all queues",
+        "confirmClearAll": "Are you sure you want to clear all jobs from all queues? This action cannot be undone.",
+        "clearAllSuccess": "All jobs cleared successfully",
+        "clearAllError": "Failed to clear jobs"
       },
       "jobs": {
         "actions": "Actions",

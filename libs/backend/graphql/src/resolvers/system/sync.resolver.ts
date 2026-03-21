@@ -401,6 +401,21 @@ export class SyncResolver {
     };
   }
 
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async clearAllJobs(@User() user: Player): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to clear jobs');
+    }
+
+    await this.syncService.clearAllJobs();
+
+    return {
+      message: 'All jobs cleared successfully',
+      success: true,
+    };
+  }
+
   @Query(() => String)
   @UseGuards(PermGuard)
   async syncQueueStatsByName(@User() user: Player): Promise<string> {

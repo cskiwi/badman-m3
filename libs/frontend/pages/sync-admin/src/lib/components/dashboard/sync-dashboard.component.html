@@ -27,6 +27,14 @@
         (onClick)="triggerCompetitionSync()"
         [pTooltip]="'all.sync.dashboard.actions.competitionSyncTooltip' | translate"
       />
+      <p-button
+        icon="pi pi-trash"
+        [label]="'all.sync.dashboard.actions.clearAll' | translate"
+        severity="danger"
+        [loading]="actionLoading()"
+        (onClick)="clearAllJobs()"
+        [pTooltip]="'all.sync.dashboard.actions.clearAllTooltip' | translate"
+      />
     </div>
   </div>
 

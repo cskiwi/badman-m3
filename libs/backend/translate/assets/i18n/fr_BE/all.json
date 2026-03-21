@@ -763,7 +763,12 @@
         "tournamentSync": "Synchronisation des tournois",
         "tournamentSyncError": "Échec de la synchronisation des tournois",
         "tournamentSyncQueued": "Synchronisation du tournoi programmée avec succès",
-        "tournamentSyncTooltip": "Synchroniser les tournois en cours et à venir"
+        "tournamentSyncTooltip": "Synchroniser les tournois en cours et à venir",
+        "clearAll": "Effacer tous les jobs",
+        "clearAllTooltip": "Supprimer tous les jobs de toutes les files d'attente",
+        "confirmClearAll": "Êtes-vous sûr de vouloir supprimer tous les jobs de toutes les files d'attente ? Cette action est irréversible.",
+        "clearAllSuccess": "Tous les jobs ont été supprimés avec succès",
+        "clearAllError": "Échec de la suppression des jobs"
       },
       "jobs": {
         "actions": "Actions",

@@ -771,6 +771,11 @@ export type I18nTranslations = {
                     "tournamentSyncError": string;
                     "tournamentSyncQueued": string;
                     "tournamentSyncTooltip": string;
+                    "clearAll": string;
+                    "clearAllTooltip": string;
+                    "confirmClearAll": string;
+                    "clearAllSuccess": string;
+                    "clearAllError": string;
                 };
                 "jobs": {
                     "actions": string;

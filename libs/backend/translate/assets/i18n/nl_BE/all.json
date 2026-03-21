@@ -763,7 +763,12 @@
         "tournamentSync": "Toernooi sync",
         "tournamentSyncError": "Mislukt om toernooi sync te plannen",
         "tournamentSyncQueued": "Toernooi  sync succesvol gepland",
-        "tournamentSyncTooltip": "Synchroniseer huidige en aankomende toernooien"
+        "tournamentSyncTooltip": "Synchroniseer huidige en aankomende toernooien",
+        "clearAll": "Alle jobs wissen",
+        "clearAllTooltip": "Verwijder alle jobs uit alle wachtrijen",
+        "confirmClearAll": "Weet je zeker dat je alle jobs uit alle wachtrijen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+        "clearAllSuccess": "Alle jobs succesvol verwijderd",
+        "clearAllError": "Fout bij het verwijderen van jobs"
       },
       "jobs": {
         "actions": "Acties",

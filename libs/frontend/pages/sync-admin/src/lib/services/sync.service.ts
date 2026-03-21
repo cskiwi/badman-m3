@@ -55,6 +55,15 @@ const TRIGGER_TOURNAMENT_STRUCTURE_SYNC = gql`
   }
 `;
 
+const CLEAR_ALL_JOBS = gql`
+  mutation ClearAllJobs {
+    clearAllJobs {
+      message
+      success
+    }
+  }
+`;
+
 const TRIGGER_COMPETITION_STRUCTURE_SYNC = gql`
   mutation TriggerCompetitionSync {
     triggerCompetitionSync {
@@ -115,6 +124,17 @@ export class SyncApiService {
       .pipe(map((result) => result.data?.triggerCompetitionSync ?? ({} as SyncTriggerResponse)));
   }
 
+
+  /**
+   * Clear all jobs from all queues
+   */
+  clearAllJobs(): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ clearAllJobs: SyncTriggerResponse }>({
+        mutation: CLEAR_ALL_JOBS,
+      })
+      .pipe(map((result) => result.data?.clearAllJobs ?? ({} as SyncTriggerResponse)));
+  }
 
   /**
    * Get recent jobs from the queue
