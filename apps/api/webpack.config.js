@@ -7,13 +7,26 @@ module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/api'),
   },
+  optimization: isProd
+    ? {
+        minimize: true,
+        minimizer: [
+          new (require('terser-webpack-plugin'))({
+            terserOptions: {
+              keep_classnames: true,
+              keep_fnames: true,
+            },
+          }),
+        ],
+      }
+    : undefined,
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
-      optimization: isProd,
+      optimization: false,
       outputHashing: isProd ? 'all' : 'none',
       generatePackageJson: true,
       assets: [
