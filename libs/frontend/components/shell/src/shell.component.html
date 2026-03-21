@@ -118,32 +118,7 @@
                 {{ 'all.players.my-club' | translate }}
               </a>
             }
-            <p-divider />
           }
-
-          <a routerLink="." class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
-            {{ 'all.navigation.home' | translate }}
-          </a>
-          <a routerLink="/players" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
-            {{ 'all.navigation.players' | translate }}
-          </a>
-          <a routerLink="/clubs" class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors" (click)="sidebarVisible = false">
-            {{ 'all.navigation.clubs' | translate }}
-          </a>
-          <a
-            routerLink="/tournament"
-            class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
-            (click)="sidebarVisible = false"
-          >
-            {{ 'all.navigation.tournaments' | translate }}
-          </a>
-          <a
-            routerLink="competition"
-            class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
-            (click)="sidebarVisible = false"
-          >
-            {{ 'all.navigation.competitions' | translate }}
-          </a>
         </nav>
       </aside>
     }
