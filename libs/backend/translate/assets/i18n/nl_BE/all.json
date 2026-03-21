@@ -9,15 +9,15 @@
         "title": "Informatie"
       },
       "searchIndex": {
-        "description": "Beheer zoekindexering operaties",
+        "description": "Beheer index",
         "selectAll": "Alles selecteren",
         "selectNone": "Niets selecteren",
         "selectTypes": "Selecteer types om te indexeren",
         "startIndexing": "Indexering starten",
-        "title": "Zoekindex beheer"
+        "title": "Indexering"
       },
       "sync": {
-        "title": "Toernooi Synchronisatie"
+        "title": "Synchronisatie"
       },
       "teamMatching": {
         "title": "Team Matching"
@@ -283,18 +283,17 @@
     "no_encounters_description": "Deze reeks heeft nog geen geplande wedstrijden.",
     "no_games": "Geen wedstrijden beschikbaar",
     "no_played_encounters": "Nog geen gespeelde wedstrijden.",
-    "no_upcoming_encounters": "Geen komende wedstrijden.",
-    "played_encounters": "Gespeeld",
-    "upcoming_encounters": "Komende wedstrijden",
     "no_qualification": "Geen Kwalificatie Gegevens",
     "no_qualification_description": "Dit kwalificatie schema heeft nog geen kwalificatie gegevens.",
     "no_standings": "Geen Klassement Beschikbaar",
     "no_standings_description": "Dit schema heeft nog geen klassement gegevens.",
+    "no_upcoming_encounters": "Geen komende wedstrijden.",
     "official": "Officiële Competitie",
     "openDate": "Inschrijvingen Open",
     "participant": "Deelnemer",
     "pending": "In afwachting",
     "played": "Gespeeld",
+    "played_encounters": "Gespeeld",
     "player": "Speler",
     "player_team": "Team",
     "points": "Punten",
@@ -333,6 +332,7 @@
       "Other": "",
       "women": "Vrouwen competitie"
     },
+    "upcoming_encounters": "Komende wedstrijden",
     "visualCode": "Visuele Code",
     "won": "Gewonnen"
   },
@@ -747,10 +747,15 @@
   "sync": {
     "dashboard": {
       "actions": {
+        "clearAll": "Alle jobs wissen",
+        "clearAllError": "Fout bij het verwijderen van jobs",
+        "clearAllSuccess": "Alle jobs succesvol verwijderd",
+        "clearAllTooltip": "Verwijder alle jobs uit alle wachtrijen",
         "competitionSync": "Competitie sync",
         "competitionSyncError": "Mislukt om competitie sync te plannen",
         "competitionSyncQueued": "Competitie sync succesvol gepland",
         "competitionSyncTooltip": "Synchroniseer alle ontmoetingen van de afgelopen maand",
+        "confirmClearAll": "Weet je zeker dat je alle jobs uit alle wachtrijen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
         "confirmCompetitionSync": "Competitie sync plannen voor alle ontmoetingen van de afgelopen maand?",
         "confirmDiscovery": "Toernooi discovery sync plannen om nieuwe toernooien te vinden?",
         "confirmTournamentSync": "Sync plannen voor alle huidige en aankomende toernooien?",
@@ -763,12 +768,7 @@
         "tournamentSync": "Toernooi sync",
         "tournamentSyncError": "Mislukt om toernooi sync te plannen",
         "tournamentSyncQueued": "Toernooi  sync succesvol gepland",
-        "tournamentSyncTooltip": "Synchroniseer huidige en aankomende toernooien",
-        "clearAll": "Alle jobs wissen",
-        "clearAllTooltip": "Verwijder alle jobs uit alle wachtrijen",
-        "confirmClearAll": "Weet je zeker dat je alle jobs uit alle wachtrijen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
-        "clearAllSuccess": "Alle jobs succesvol verwijderd",
-        "clearAllError": "Fout bij het verwijderen van jobs"
+        "tournamentSyncTooltip": "Synchroniseer huidige en aankomende toernooien"
       },
       "jobs": {
         "actions": "Acties",
@@ -959,6 +959,8 @@
   },
   "team": {
     "captain": "Kapitein",
+    "captain-label": "Kapitein",
+    "draw-label": "Reeks",
     "edit": {
       "abbreviation": {
         "label": "Afkorting",
@@ -966,6 +968,8 @@
           "text": "Voer afkorting in"
         }
       },
+      "add-to-team": "Toevoegen aan team",
+      "base-player-tooltip": "Geregistreerde basisspeler voor dit team",
       "basePlayers": "Spelers",
       "basic": {
         "title": "Basisinformatie"
@@ -985,9 +989,11 @@
           "text": "Voer team e-mail in"
         }
       },
+      "encounter-presence": "Aanwezigheid",
       "errors": {
         "loadPlayers": "Fout bij laden van beschikbare spelers"
       },
+      "game-only-player-tooltip": "Deze speler staat niet officieel op de teamlijst maar heeft wel wedstrijden gespeeld",
       "members": {
         "actions": "Acties",
         "add": "Lid toevoegen",
@@ -1001,8 +1007,6 @@
         "base": "Basis",
         "regular": "Regulier"
       },
-      "base-player-tooltip": "Geregistreerde basisspeler voor dit team",
-      "encounter-presence": "Aanwezigheid",
       "name": {
         "label": "Teamnaam",
         "placeholder": {
@@ -1030,6 +1034,7 @@
           "text": "Selecteer voorkeurstijd"
         }
       },
+      "remove-from-team": "Verwijderen uit team",
       "season": {
         "label": "Seizoen",
         "placeholder": {
@@ -1050,14 +1055,22 @@
         }
       }
     },
+    "email-label": "E-mail",
     "filterByTeam": "Filter op team",
     "games": "Wedstrijden",
+    "level-tooltip": "Min / Max niveau",
     "name": "Teamnaam",
+    "no-players": "Geen spelers",
+    "no-players-description": "Dit team heeft nog geen spelers.",
     "noTeams": "Geen teams gevonden voor dit seizoen",
     "overview": {
       "title": "Teams Overzicht"
     },
+    "phone-label": "Telefoon",
     "players": "spelers",
+    "preferred-day": "Voorkeurdag",
+    "preferred-time": "Voorkeuruur",
+    "season-label": "Seizoen",
     "type": {
       "f": "Dames",
       "m": "Heren",
@@ -1069,17 +1082,7 @@
       "youth": "Jeugd"
     },
     "view-details": "Teamdetails bekijken",
-    "captain-label": "Kapitein",
-    "email-label": "E-mail",
-    "phone-label": "Telefoon",
-    "draw-label": "Reeks",
     "view-draw": "Bekijk reeks",
-    "level-tooltip": "Min / Max niveau",
-    "season-label": "Seizoen",
-    "preferred-day": "Voorkeurdag",
-    "preferred-time": "Voorkeuruur",
-    "no-players": "Geen spelers",
-    "no-players-description": "Dit team heeft nog geen spelers.",
     "winRate": "Win %",
     "wins": "Overwinningen"
   },

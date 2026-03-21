@@ -9,15 +9,15 @@
         "title": "Information"
       },
       "searchIndex": {
-        "description": "Manage search indexing operations",
+        "description": "Management index",
         "selectAll": "Select All",
         "selectNone": "Select None",
         "selectTypes": "Select Types to Index",
         "startIndexing": "Start Indexing",
-        "title": "Search Index Management"
+        "title": "Indexing"
       },
       "sync": {
-        "title": "Tournament Sync"
+        "title": "Synchronization"
       },
       "teamMatching": {
         "title": "Team Matching"
@@ -283,18 +283,17 @@
     "no_encounters_description": "This draw doesn't have any encounters scheduled yet.",
     "no_games": "No games available",
     "no_played_encounters": "No played encounters yet.",
-    "no_upcoming_encounters": "No upcoming encounters.",
-    "played_encounters": "Played",
-    "upcoming_encounters": "Upcoming",
     "no_qualification": "No Qualification Data",
     "no_qualification_description": "This qualification draw doesn't have qualification data yet.",
     "no_standings": "No Standings Available",
     "no_standings_description": "This draw doesn't have any standings data yet.",
+    "no_upcoming_encounters": "No upcoming encounters.",
     "official": "Official Competition",
     "openDate": "Registration Opens",
     "participant": "Participant",
     "pending": "Pending",
     "played": "Played",
+    "played_encounters": "Played",
     "player": "Player",
     "player_team": "Team",
     "points": "Points",
@@ -333,6 +332,7 @@
       "Other": "Other type",
       "women": "Women's competition"
     },
+    "upcoming_encounters": "Upcoming",
     "visualCode": "Visual Code",
     "won": "Won"
   },
@@ -747,10 +747,15 @@
   "sync": {
     "dashboard": {
       "actions": {
+        "clearAll": "Clear all jobs",
+        "clearAllError": "Failed to clear jobs",
+        "clearAllSuccess": "All jobs cleared successfully",
+        "clearAllTooltip": "Remove all jobs from all queues",
         "competitionSync": "Competition sync",
         "competitionSyncError": "Failed to schedule competition sync",
         "competitionSyncQueued": "Competition sync successfully scheduled",
         "competitionSyncTooltip": "Sync all encounters from the past month",
+        "confirmClearAll": "Are you sure you want to clear all jobs from all queues? This action cannot be undone.",
         "confirmCompetitionSync": "Queue a competition sync for all encounters from the past month?",
         "confirmDiscovery": "Queue a tournament discovery sync to find new tournaments?",
         "confirmTournamentSync": "Sync plans for all current and upcoming tournaments?",
@@ -763,12 +768,7 @@
         "tournamentSync": "Tournament sync",
         "tournamentSyncError": "Failed to schedule tournament sync",
         "tournamentSyncQueued": "Tournament sync successfully scheduled",
-        "tournamentSyncTooltip": "Synchronize current and upcoming tournaments",
-        "clearAll": "Clear all jobs",
-        "clearAllTooltip": "Remove all jobs from all queues",
-        "confirmClearAll": "Are you sure you want to clear all jobs from all queues? This action cannot be undone.",
-        "clearAllSuccess": "All jobs cleared successfully",
-        "clearAllError": "Failed to clear jobs"
+        "tournamentSyncTooltip": "Synchronize current and upcoming tournaments"
       },
       "jobs": {
         "actions": "Actions",
@@ -959,6 +959,8 @@
   },
   "team": {
     "captain": "Captain",
+    "captain-label": "Captain",
+    "draw-label": "Draw",
     "edit": {
       "abbreviation": {
         "label": "Abbreviation",
@@ -966,6 +968,8 @@
           "text": "Enter abbreviation"
         }
       },
+      "add-to-team": "Add to team",
+      "base-player-tooltip": "Registered base player for this team",
       "basePlayers": "Players",
       "basic": {
         "title": "Basic Information"
@@ -985,9 +989,11 @@
           "text": "Enter team email"
         }
       },
+      "encounter-presence": "Presence",
       "errors": {
         "loadPlayers": "Failed to load available players"
       },
+      "game-only-player-tooltip": "This player is not officially on the team roster but has played in matches",
       "members": {
         "actions": "Actions",
         "add": "Add Member",
@@ -1001,8 +1007,6 @@
         "base": "Base",
         "regular": "Regular"
       },
-      "base-player-tooltip": "Registered base player for this team",
-      "encounter-presence": "Presence",
       "name": {
         "label": "Team Name",
         "placeholder": {
@@ -1030,6 +1034,7 @@
           "text": "Select preferred time"
         }
       },
+      "remove-from-team": "Remove from team",
       "season": {
         "label": "Season",
         "placeholder": {
@@ -1050,14 +1055,22 @@
         }
       }
     },
+    "email-label": "Email",
     "filterByTeam": "Filter by team",
     "games": "Games",
+    "level-tooltip": "Min / Max level",
     "name": "Team Name",
+    "no-players": "No Players",
+    "no-players-description": "This team doesn't have any players yet.",
     "noTeams": "No teams found for this season",
     "overview": {
       "title": "Teams Overview"
     },
+    "phone-label": "Phone",
     "players": "players",
+    "preferred-day": "Preferred Day",
+    "preferred-time": "Preferred Time",
+    "season-label": "Season",
     "type": {
       "f": "Women's",
       "m": "Men's",
@@ -1069,17 +1082,7 @@
       "youth": "Youth"
     },
     "view-details": "View team details",
-    "captain-label": "Captain",
-    "email-label": "Email",
-    "phone-label": "Phone",
-    "draw-label": "Draw",
     "view-draw": "View draw",
-    "level-tooltip": "Min / Max level",
-    "season-label": "Season",
-    "preferred-day": "Preferred Day",
-    "preferred-time": "Preferred Time",
-    "no-players": "No Players",
-    "no-players-description": "This team doesn't have any players yet.",
     "winRate": "Win %",
     "wins": "Wins"
   },

@@ -60,6 +60,9 @@
             <p-sortIcon field="stats.encounterPct" />
           </div>
         </th>
+        @if (onAddPlayerToTeam() || onRemovePlayerFromTeam()) {
+          <th></th>
+        }
       </tr>
     </ng-template>
     <ng-template #body let-membership>
@@ -77,9 +80,16 @@
           }
         </td>
         <td class="text-center">
-          <span class="bg-primary-100 text-primary-800 px-2 py-0.5 rounded text-xs font-medium">
-            {{ membership.membershipType || '-' }}
-          </span>
+          @if (membership.isGameOnly) {
+            <p-tag
+              severity="warn"
+              [value]="membership.membershipType || '-'"
+              [pTooltip]="'all.team.edit.game-only-player-tooltip' | translate"
+              tooltipPosition="top"
+            />
+          } @else {
+            <p-tag severity="info" [value]="membership.membershipType || '-'" />
+          }
         </td>
         <td class="text-center">
           @if (membership.isBase) {
@@ -92,8 +102,8 @@
           }
         </td>
         <td class="text-center text-sm">{{ membership.stats.played }}</td>
-        <td class="text-center text-sm text-green-600">{{ membership.stats.won }}</td>
-        <td class="text-center text-sm text-red-600">{{ membership.stats.lost }}</td>
+        <td class="text-center text-sm" style="color: var(--p-green-500)">{{ membership.stats.won }}</td>
+        <td class="text-center text-sm" style="color: var(--p-red-500)">{{ membership.stats.lost }}</td>
         <td class="text-center text-sm font-medium">
           @if (membership.stats.winPct !== null) {
             {{ membership.stats.winPct | number: '1.0-0' }}%
@@ -108,6 +118,32 @@
             -
           }
         </td>
+        @if (onAddPlayerToTeam() || onRemovePlayerFromTeam()) {
+          <td class="text-center">
+            @if (membership.isGameOnly && onAddPlayerToTeam(); as addFn) {
+              <p-button
+                icon="pi pi-user-plus"
+                severity="success"
+                [text]="true"
+                size="small"
+                [pTooltip]="'all.team.edit.add-to-team' | translate"
+                tooltipPosition="top"
+                (onClick)="addFn(membership.player.id)"
+              />
+            }
+            @if (!membership.isGameOnly && onRemovePlayerFromTeam(); as removeFn) {
+              <p-button
+                icon="pi pi-user-minus"
+                severity="danger"
+                [text]="true"
+                size="small"
+                [pTooltip]="'all.team.edit.remove-from-team' | translate"
+                tooltipPosition="top"
+                (onClick)="removeFn(membership.id)"
+              />
+            }
+          </td>
+        }
       </tr>
     </ng-template>
   </p-table>

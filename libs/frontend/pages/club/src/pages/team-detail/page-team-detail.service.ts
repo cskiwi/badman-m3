@@ -219,6 +219,7 @@ export class TeamDetailService {
       return {
         ...m,
         isBase: m.player?.id ? baseIds.has(m.player.id) : false,
+        isGameOnly: false,
       };
     });
 
@@ -239,6 +240,7 @@ export class TeamDetailService {
               id: `game-${gm.playerId}`,
               membershipType: 'BACKUP *',
               isBase: baseIds.has(gm.playerId),
+              isGameOnly: true,
               player: {
                 id: gm.playerId,
                 fullName: gm.gamePlayer?.fullName,
@@ -376,6 +378,56 @@ export class TeamDetailService {
 
     return statsMap;
   });
+
+  async addPlayerToTeam(teamId: string, playerId: string): Promise<void> {
+    try {
+      const result = await lastValueFrom(
+        this.apollo.mutate<{ addTeamPlayerMembership: any }>({
+          mutation: gql`
+            mutation AddTeamMembership($teamId: ID!, $playerId: ID!, $membershipType: String!) {
+              addTeamPlayerMembership(teamId: $teamId, playerId: $playerId, membershipType: $membershipType) {
+                id
+                membershipType
+                player {
+                  id
+                  fullName
+                  slug
+                }
+              }
+            }
+          `,
+          variables: { teamId, playerId, membershipType: 'REGULAR' },
+        }),
+      );
+
+      if (result?.data?.addTeamPlayerMembership) {
+        this.dataResource.reload();
+      }
+    } catch (err) {
+      console.error('Failed to add player to team:', err);
+    }
+  }
+
+  async removePlayerFromTeam(membershipId: string): Promise<void> {
+    try {
+      const result = await lastValueFrom(
+        this.apollo.mutate<{ removeTeamPlayerMembership: boolean }>({
+          mutation: gql`
+            mutation RemoveTeamMembership($id: ID!) {
+              removeTeamPlayerMembership(id: $id)
+            }
+          `,
+          variables: { id: membershipId },
+        }),
+      );
+
+      if (result?.data?.removeTeamPlayerMembership) {
+        this.dataResource.reload();
+      }
+    } catch (err) {
+      console.error('Failed to remove player from team:', err);
+    }
+  }
 
   encounters = this._encounters.asReadonly();
 

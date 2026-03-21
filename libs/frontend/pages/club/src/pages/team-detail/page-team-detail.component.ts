@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { EncounterCardComponent } from '@app/frontend-components/games/encounter-card';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -32,6 +33,7 @@ import { TeamPlayersTableComponent } from './components/team-players-table.compo
 export class PageTeamDetailComponent {
   private readonly dataService = new TeamDetailService();
   private readonly seoService = inject(SeoService);
+  private readonly authService = inject(AuthService);
   readonly teamId = injectParams('teamId');
 
   // selectors
@@ -44,6 +46,12 @@ export class PageTeamDetailComponent {
   upcomingEncounters = this.dataService.upcomingEncounters;
   error = this.dataService.error;
   loading = this.dataService.loading;
+
+  canEditClub = computed(() => {
+    const clubId = this.team()?.club?.id;
+    if (!clubId) return false;
+    return this.authService.hasAnyPermission(['edit-any:club', `${clubId}_edit:club`]);
+  });
 
   constructor() {
     effect(() => {
@@ -67,5 +75,16 @@ export class PageTeamDetailComponent {
 
   onLoadGames = async (encounterId: string): Promise<void> => {
     await this.dataService.loadEncounterGames(encounterId);
+  };
+
+  onAddPlayerToTeam = async (playerId: string): Promise<void> => {
+    const teamId = this.team()?.id;
+    if (teamId) {
+      await this.dataService.addPlayerToTeam(teamId, playerId);
+    }
+  };
+
+  onRemovePlayerFromTeam = async (membershipId: string): Promise<void> => {
+    await this.dataService.removePlayerFromTeam(membershipId);
   };
 }

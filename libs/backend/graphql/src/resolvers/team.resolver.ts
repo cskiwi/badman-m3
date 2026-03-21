@@ -186,8 +186,13 @@ export class TeamResolver {
       throw new NotFoundException(`Team player membership with ID ${id} not found`);
     }
 
-    // Check authorization - only users with edit-any:team claim can modify team memberships
-    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club']);
+    // Check authorization
+    const team = await Team.findOne({ where: { id: membership.teamId } });
+    const canEditTeam = user.hasAnyPermission([
+      'edit-any:team',
+      'edit-any:club',
+      ...(team?.clubId ? [`${team.clubId}_edit:club`] : []),
+    ]);
     if (!canEditTeam) {
       throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
@@ -213,12 +218,6 @@ export class TeamResolver {
       throw new BadRequestException(`Invalid membership type. Must be one of: ${validMembershipTypes.join(', ')}`);
     }
 
-    // Check authorization - only users with edit-any:team claim can add team memberships
-    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club']);
-    if (!canEditTeam) {
-      throw new UnauthorizedException('You do not have permission to modify team memberships');
-    }
-
     // Check if team exists
     const team = await Team.findOne({
       where: { id: teamId },
@@ -226,6 +225,16 @@ export class TeamResolver {
 
     if (!team) {
       throw new NotFoundException(`Team with ID ${teamId} not found`);
+    }
+
+    // Check authorization
+    const canEditTeam = user.hasAnyPermission([
+      'edit-any:team',
+      'edit-any:club',
+      ...(team.clubId ? [`${team.clubId}_edit:club`] : []),
+    ]);
+    if (!canEditTeam) {
+      throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
 
     // Check if player exists
@@ -255,5 +264,35 @@ export class TeamResolver {
     await membership.save();
 
     return membership;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(PermGuard)
+  async removeTeamPlayerMembership(
+    @User() user: Player,
+    @Args('id', { type: () => ID }) id: string,
+  ): Promise<boolean> {
+    const membership = await TeamPlayerMembership.findOne({
+      where: { id },
+    });
+
+    if (!membership) {
+      throw new NotFoundException(`Team player membership with ID ${id} not found`);
+    }
+
+    // Check authorization
+    const team = await Team.findOne({ where: { id: membership.teamId } });
+    const canEditTeam = user.hasAnyPermission([
+      'edit-any:team',
+      'edit-any:club',
+      ...(team?.clubId ? [`${team.clubId}_edit:club`] : []),
+    ]);
+    if (!canEditTeam) {
+      throw new UnauthorizedException('You do not have permission to modify team memberships');
+    }
+
+    await membership.remove();
+
+    return true;
   }
 }

@@ -290,18 +290,17 @@ export type I18nTranslations = {
             "no_encounters_description": string;
             "no_games": string;
             "no_played_encounters": string;
-            "no_upcoming_encounters": string;
-            "played_encounters": string;
-            "upcoming_encounters": string;
             "no_qualification": string;
             "no_qualification_description": string;
             "no_standings": string;
             "no_standings_description": string;
+            "no_upcoming_encounters": string;
             "official": string;
             "openDate": string;
             "participant": string;
             "pending": string;
             "played": string;
+            "played_encounters": string;
             "player": string;
             "player_team": string;
             "points": string;
@@ -340,6 +339,7 @@ export type I18nTranslations = {
                 "Other": string;
                 "women": string;
             };
+            "upcoming_encounters": string;
             "visualCode": string;
             "won": string;
         };
@@ -754,10 +754,15 @@ export type I18nTranslations = {
         "sync": {
             "dashboard": {
                 "actions": {
+                    "clearAll": string;
+                    "clearAllError": string;
+                    "clearAllSuccess": string;
+                    "clearAllTooltip": string;
                     "competitionSync": string;
                     "competitionSyncError": string;
                     "competitionSyncQueued": string;
                     "competitionSyncTooltip": string;
+                    "confirmClearAll": string;
                     "confirmCompetitionSync": string;
                     "confirmDiscovery": string;
                     "confirmTournamentSync": string;
@@ -771,11 +776,6 @@ export type I18nTranslations = {
                     "tournamentSyncError": string;
                     "tournamentSyncQueued": string;
                     "tournamentSyncTooltip": string;
-                    "clearAll": string;
-                    "clearAllTooltip": string;
-                    "confirmClearAll": string;
-                    "clearAllSuccess": string;
-                    "clearAllError": string;
                 };
                 "jobs": {
                     "actions": string;
@@ -966,6 +966,8 @@ export type I18nTranslations = {
         };
         "team": {
             "captain": string;
+            "captain-label": string;
+            "draw-label": string;
             "edit": {
                 "abbreviation": {
                     "label": string;
@@ -973,6 +975,8 @@ export type I18nTranslations = {
                         "text": string;
                     };
                 };
+                "add-to-team": string;
+                "base-player-tooltip": string;
                 "basePlayers": string;
                 "basic": {
                     "title": string;
@@ -992,9 +996,11 @@ export type I18nTranslations = {
                         "text": string;
                     };
                 };
+                "encounter-presence": string;
                 "errors": {
                     "loadPlayers": string;
                 };
+                "game-only-player-tooltip": string;
                 "members": {
                     "actions": string;
                     "add": string;
@@ -1008,8 +1014,6 @@ export type I18nTranslations = {
                     "base": string;
                     "regular": string;
                 };
-                "base-player-tooltip": string;
-                "encounter-presence": string;
                 "name": {
                     "label": string;
                     "placeholder": {
@@ -1037,6 +1041,7 @@ export type I18nTranslations = {
                         "text": string;
                     };
                 };
+                "remove-from-team": string;
                 "season": {
                     "label": string;
                     "placeholder": {
@@ -1057,14 +1062,22 @@ export type I18nTranslations = {
                     };
                 };
             };
+            "email-label": string;
             "filterByTeam": string;
             "games": string;
+            "level-tooltip": string;
             "name": string;
+            "no-players": string;
+            "no-players-description": string;
             "noTeams": string;
             "overview": {
                 "title": string;
             };
+            "phone-label": string;
             "players": string;
+            "preferred-day": string;
+            "preferred-time": string;
+            "season-label": string;
             "type": {
                 "f": string;
                 "m": string;
@@ -1076,17 +1089,7 @@ export type I18nTranslations = {
                 "youth": string;
             };
             "view-details": string;
-            "captain-label": string;
-            "email-label": string;
-            "phone-label": string;
-            "draw-label": string;
             "view-draw": string;
-            "level-tooltip": string;
-            "season-label": string;
-            "preferred-day": string;
-            "preferred-time": string;
-            "no-players": string;
-            "no-players-description": string;
             "winRate": string;
             "wins": string;
         };

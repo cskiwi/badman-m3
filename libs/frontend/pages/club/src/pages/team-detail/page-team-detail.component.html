@@ -85,7 +85,12 @@
       <div class="px-4">
     <!-- Players Section -->
     @if (players().length > 0) {
-      <app-team-players-table [players]="players()" [playerStats]="playerStats()" />
+      <app-team-players-table
+        [players]="players()"
+        [playerStats]="playerStats()"
+        [onAddPlayerToTeam]="canEditClub() ? onAddPlayerToTeam : null"
+        [onRemovePlayerFromTeam]="canEditClub() ? onRemovePlayerFromTeam : null"
+      />
     } @else {
         <div class="text-center py-12 text-surface-500">
           <i class="pi pi-users text-4xl mb-4 block"></i>

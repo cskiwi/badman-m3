@@ -9,15 +9,15 @@
         "title": "Information"
       },
       "searchIndex": {
-        "description": "Gérer les opérations d'indexation de recherche",
+        "description": "Indice de gestion",
         "selectAll": "Tout sélectionner",
         "selectNone": "Ne rien sélectionner",
         "selectTypes": "Sélectionner les types à indexer",
         "startIndexing": "Démarrer l'indexation",
-        "title": "Gestion de l'index de recherche"
+        "title": "Indexation"
       },
       "sync": {
-        "title": "Synchronisation des tournois"
+        "title": "Synchronisation"
       },
       "teamMatching": {
         "title": "Correspondance des équipes"
@@ -283,18 +283,17 @@
     "no_encounters_description": "Cette série n'a pas encore de rencontres programmées.",
     "no_games": "Aucun jeu disponible",
     "no_played_encounters": "Aucune rencontre jouée pour l'instant.",
-    "no_upcoming_encounters": "Aucune rencontre à venir.",
-    "played_encounters": "Joués",
-    "upcoming_encounters": "À venir",
     "no_qualification": "Aucune donnée de qualification",
     "no_qualification_description": "Cette poule de qualification n'a pas encore de données de qualification.",
     "no_standings": "Aucun classement disponible",
     "no_standings_description": "Cette poule n'a pas encore de données de classement.",
+    "no_upcoming_encounters": "Aucune rencontre à venir.",
     "official": "Compétition officielle",
     "openDate": "Ouverture des inscriptions",
     "participant": "Participant",
     "pending": "En attente",
     "played": "Joué",
+    "played_encounters": "Joués",
     "player": "Joueur",
     "player_team": "L'équipe",
     "points": "Points",
@@ -333,6 +332,7 @@
       "Other": "",
       "women": "Compétition féminine"
     },
+    "upcoming_encounters": "À venir",
     "visualCode": "Code visuel",
     "won": "Gagné"
   },
@@ -747,10 +747,15 @@
   "sync": {
     "dashboard": {
       "actions": {
+        "clearAll": "Effacer tous les jobs",
+        "clearAllError": "Échec de la suppression des jobs",
+        "clearAllSuccess": "Tous les jobs ont été supprimés avec succès",
+        "clearAllTooltip": "Supprimer tous les jobs de toutes les files d'attente",
         "competitionSync": "Synchronisation de la concurrence",
         "competitionSyncError": "Échec de la programmation de la synchronisation des compétitions",
         "competitionSyncQueued": "Synchronisation de la compétition programmée avec succès",
         "competitionSyncTooltip": "Synchroniser toutes les rencontres du mois passé",
+        "confirmClearAll": "Êtes-vous sûr de vouloir supprimer tous les jobs de toutes les files d'attente ? Cette action est irréversible.",
         "confirmCompetitionSync": "Les plans de synchronisation de la compétition pour toutes les rencontres du mois dernier ?",
         "confirmDiscovery": "Mettre en file une sync de découverte pour trouver de nouveaux tournois ?",
         "confirmTournamentSync": "Synchroniser les plans de tous les tournois en cours et à venir ?",
@@ -763,12 +768,7 @@
         "tournamentSync": "Synchronisation des tournois",
         "tournamentSyncError": "Échec de la synchronisation des tournois",
         "tournamentSyncQueued": "Synchronisation du tournoi programmée avec succès",
-        "tournamentSyncTooltip": "Synchroniser les tournois en cours et à venir",
-        "clearAll": "Effacer tous les jobs",
-        "clearAllTooltip": "Supprimer tous les jobs de toutes les files d'attente",
-        "confirmClearAll": "Êtes-vous sûr de vouloir supprimer tous les jobs de toutes les files d'attente ? Cette action est irréversible.",
-        "clearAllSuccess": "Tous les jobs ont été supprimés avec succès",
-        "clearAllError": "Échec de la suppression des jobs"
+        "tournamentSyncTooltip": "Synchroniser les tournois en cours et à venir"
       },
       "jobs": {
         "actions": "Actions",
@@ -959,6 +959,8 @@
   },
   "team": {
     "captain": "Capitaine",
+    "captain-label": "Capitaine",
+    "draw-label": "Série",
     "edit": {
       "abbreviation": {
         "label": "Abréviation",
@@ -966,6 +968,8 @@
           "text": "Entrer l'abréviation"
         }
       },
+      "add-to-team": "Ajouter à l'équipe",
+      "base-player-tooltip": "Joueur titulaire enregistré pour cette équipe",
       "basePlayers": "Joueurs",
       "basic": {
         "title": "Informations de base"
@@ -985,9 +989,11 @@
           "text": "Entrer l'e-mail de l'équipe"
         }
       },
+      "encounter-presence": "Présence",
       "errors": {
         "loadPlayers": "Échec du chargement des joueurs disponibles"
       },
+      "game-only-player-tooltip": "Ce joueur ne fait pas officiellement partie de l'équipe mais a joué des matchs",
       "members": {
         "actions": "Actions",
         "add": "Ajouter membre",
@@ -1001,8 +1007,6 @@
         "base": "Titulaire",
         "regular": "Régulier"
       },
-      "base-player-tooltip": "Joueur titulaire enregistré pour cette équipe",
-      "encounter-presence": "Présence",
       "name": {
         "label": "Nom de l'équipe",
         "placeholder": {
@@ -1030,6 +1034,7 @@
           "text": "Sélectionner l'heure préférée"
         }
       },
+      "remove-from-team": "Retirer de l'équipe",
       "season": {
         "label": "Saison",
         "placeholder": {
@@ -1050,14 +1055,22 @@
         }
       }
     },
+    "email-label": "E-mail",
     "filterByTeam": "Filtrer par équipe",
     "games": "Matchs",
+    "level-tooltip": "Niveau min / max",
     "name": "Nom de l'équipe",
+    "no-players": "Aucun joueur",
+    "no-players-description": "Cette équipe n'a pas encore de joueurs.",
     "noTeams": "Aucune équipe trouvée pour cette saison",
     "overview": {
       "title": "Aperçu des équipes"
     },
+    "phone-label": "Téléphone",
     "players": "joueurs",
+    "preferred-day": "Jour préféré",
+    "preferred-time": "Heure préférée",
+    "season-label": "Saison",
     "type": {
       "f": "Femmes",
       "m": "Hommes",
@@ -1069,17 +1082,7 @@
       "youth": "Jeunes"
     },
     "view-details": "Voir les détails de l'équipe",
-    "captain-label": "Capitaine",
-    "email-label": "E-mail",
-    "phone-label": "Téléphone",
-    "draw-label": "Série",
     "view-draw": "Voir la série",
-    "level-tooltip": "Niveau min / max",
-    "season-label": "Saison",
-    "preferred-day": "Jour préféré",
-    "preferred-time": "Heure préférée",
-    "no-players": "Aucun joueur",
-    "no-players-description": "Cette équipe n'a pas encore de joueurs.",
     "winRate": "% Vict.",
     "wins": "Victoires"
   },
