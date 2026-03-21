@@ -4,53 +4,82 @@
     Players
   </h3>
 
-  <div class="overflow-x-auto">
-    <table class="w-full border-collapse rounded-border bg-highlight overflow-hidden">
-      <thead class="bg-primary text-primary-contrast">
-        <tr>
-          <th class="p-3 text-left font-semibold">Player</th>
-          <th class="p-3 text-center font-semibold">Type</th>
-          <th class="p-3 text-center font-semibold">Played</th>
-          <th class="p-3 text-center font-semibold">Won</th>
-          <th class="p-3 text-center font-semibold">Lost</th>
-          <th class="p-3 text-center font-semibold">Win %</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (membership of players(); track membership.id) {
-          @let stats = getStats(membership.player?.id);
-          @let winPct = getWinPercentage(stats);
-          <tr class="border-b border-surface-200 hover:bg-highlight-emphasis">
-            <td class="p-3">
-              @if (membership.player?.slug) {
-                <a
-                  [routerLink]="['/players', membership.player.slug]"
-                  class="font-medium text-primary no-underline hover:underline"
-                >
-                  {{ membership.player.fullName }}
-                </a>
-              } @else {
-                <span class="font-medium">{{ membership.player?.fullName || '-' }}</span>
-              }
-            </td>
-            <td class="p-3 text-center">
-              <span class="bg-primary-100 text-primary-800 px-2 py-0.5 rounded text-xs font-medium">
-                {{ membership.membershipType || '-' }}
-              </span>
-            </td>
-            <td class="p-3 text-center text-sm">{{ stats.played }}</td>
-            <td class="p-3 text-center text-sm text-green-600">{{ stats.won }}</td>
-            <td class="p-3 text-center text-sm text-red-600">{{ stats.lost }}</td>
-            <td class="p-3 text-center text-sm font-medium">
-              @if (winPct !== null) {
-                {{ winPct | number: '1.0-0' }}%
-              } @else {
-                -
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+  <p-table
+    [value]="players()"
+    sortMode="multiple"
+    [multiSortMeta]="defaultSort"
+    [tableStyle]="{ 'min-width': '40rem' }"
+  >
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="player.lastName">
+          <div class="flex items-center gap-2">
+            Player
+            <p-sortIcon field="player.lastName" />
+          </div>
+        </th>
+        <th pSortableColumn="membershipType">
+          <div class="flex items-center gap-2">
+            Type
+            <p-sortIcon field="membershipType" />
+          </div>
+        </th>
+        <th pSortableColumn="stats.played">
+          <div class="flex items-center gap-2">
+            Played
+            <p-sortIcon field="stats.played" />
+          </div>
+        </th>
+        <th pSortableColumn="stats.won">
+          <div class="flex items-center gap-2">
+            Won
+            <p-sortIcon field="stats.won" />
+          </div>
+        </th>
+        <th pSortableColumn="stats.lost">
+          <div class="flex items-center gap-2">
+            Lost
+            <p-sortIcon field="stats.lost" />
+          </div>
+        </th>
+        <th pSortableColumn="stats.winPct">
+          <div class="flex items-center gap-2">
+            Win %
+            <p-sortIcon field="stats.winPct" />
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-membership>
+      <tr>
+        <td>
+          @if (membership.player?.slug) {
+            <a
+              [routerLink]="['/players', membership.player.slug]"
+              class="font-medium text-primary no-underline hover:underline"
+            >
+              {{ membership.player.fullName }}
+            </a>
+          } @else {
+            <span class="font-medium">{{ membership.player?.fullName || '-' }}</span>
+          }
+        </td>
+        <td class="text-center">
+          <span class="bg-primary-100 text-primary-800 px-2 py-0.5 rounded text-xs font-medium">
+            {{ membership.membershipType || '-' }}
+          </span>
+        </td>
+        <td class="text-center text-sm">{{ membership.stats.played }}</td>
+        <td class="text-center text-sm text-green-600">{{ membership.stats.won }}</td>
+        <td class="text-center text-sm text-red-600">{{ membership.stats.lost }}</td>
+        <td class="text-center text-sm font-medium">
+          @if (membership.stats.winPct !== null) {
+            {{ membership.stats.winPct | number: '1.0-0' }}%
+          } @else {
+            -
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </section>
