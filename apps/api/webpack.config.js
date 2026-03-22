@@ -5,6 +5,9 @@ module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/api'),
   },
+  optimization: {
+    concatenateModules: false,
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
