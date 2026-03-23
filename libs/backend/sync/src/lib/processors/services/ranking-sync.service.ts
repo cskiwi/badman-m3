@@ -1,11 +1,10 @@
 import { TournamentApiClient } from '@app/backend-tournament-api';
 import { getRankingProtected } from '@app/backend-ranking';
 import { Player, RankingPlace, RankingSystem } from '@app/models';
-import { RankingSystems } from '@app/models-enum';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue, Job } from 'bullmq';
-import { In } from 'typeorm';
+import { In, Not, IsNull } from 'typeorm';
 import dayjs = require('dayjs');
 import {
   JOB_TYPES,
@@ -47,23 +46,9 @@ export class RankingSyncService {
   ): Promise<void> {
     await updateProgress(0);
 
-    // 1. Find the BBF Rating system in our database
-    const system = await RankingSystem.findOne({
-      where: { rankingSystem: RankingSystems.VISUAL },
-    });
-
-    if (!system) {
-      this.logger.warn('No VISUAL ranking system found in database, skipping ranking sync');
-      await updateProgress(100);
-      return;
-    }
-
-    this.logger.log(`Found ranking system: ${system.name} (${system.id})`);
-    await updateProgress(10);
-
-    // 2. Fetch available ranking systems from the API and find BBF Rating
+    // 1. Fetch available ranking systems from the API
     const rankings = await this.tournamentApiClient.getRankings();
-    const bbfRating = rankings.find((r) => r.Name === system.name) ?? rankings[0];
+    const bbfRating = rankings[0];
 
     if (!bbfRating) {
       this.logger.warn('No rankings returned from API');
@@ -72,24 +57,33 @@ export class RankingSyncService {
     }
 
     this.logger.log(`Using ranking: ${bbfRating.Name} (code: ${bbfRating.Code})`);
-    await updateProgress(20);
+    await updateProgress(10);
 
-    // 3. Fetch categories
+    // 2. Fetch categories
     const apiCategories = await this.tournamentApiClient.getRankingCategories(bbfRating.Code);
     const categories: RankingSyncCategoryData[] = apiCategories
       .filter((c) => c.Name in CATEGORY_DISCIPLINE_MAP)
       .map((c) => ({ code: c.Code, name: c.Name }));
 
     this.logger.log(`Found ${categories.length} relevant categories`);
-    await updateProgress(30);
+    await updateProgress(20);
 
-    // 4. Fetch all publications and filter to those newer than our last sync
+    // 3. Fetch all publications and filter to those newer than our last sync
     const allPublications = await this.tournamentApiClient.getRankingPublications(bbfRating.Code);
-    const checkpointDate = job.data.startDate
-      ? dayjs(job.data.startDate)
-      : system.updateLastUpdate
-        ? dayjs(system.updateLastUpdate)
+
+    let checkpointDate: dayjs.Dayjs;
+    if (job.data.startDate) {
+      checkpointDate = dayjs(job.data.startDate);
+    } else {
+      // Find the latest updateLastUpdate across all ranking systems
+      const latestSystem = await RankingSystem.findOne({
+        where: { updateLastUpdate: Not(IsNull()) },
+        order: { updateLastUpdate: 'DESC' },
+      });
+      checkpointDate = latestSystem?.updateLastUpdate
+        ? dayjs(latestSystem.updateLastUpdate)
         : dayjs().subtract(1, 'week');
+    }
 
     const visiblePublications = allPublications
       .filter((p) => p.Visible)
@@ -106,20 +100,49 @@ export class RankingSyncService {
       return;
     }
 
-    this.logger.log(`Enqueueing ${visiblePublications.length} publications for sync`);
+    this.logger.log(`Found ${visiblePublications.length} publications to process`);
+    await updateProgress(30);
+
+    // 4. Resolve the active ranking system for each publication based on its date
+    const publicationsWithSystem: Array<{
+      pub: (typeof visiblePublications)[number];
+      system: RankingSystem;
+    }> = [];
+
+    for (const pub of visiblePublications) {
+      const system = await RankingSystem.findActiveSystem(pub.date.toDate());
+      if (!system) {
+        this.logger.warn(`No active ranking system for date ${pub.date.format('YYYY-MM-DD')}, skipping`);
+        continue;
+      }
+      publicationsWithSystem.push({ pub, system });
+    }
+
+    if (publicationsWithSystem.length === 0) {
+      this.logger.log('No publications matched an active ranking system');
+      await updateProgress(100);
+      return;
+    }
+
     await updateProgress(50);
 
+    // Track the last publication index per system to update timestamps correctly
+    const lastPublicationPerSystem = new Map<string, number>();
+    for (let i = 0; i < publicationsWithSystem.length; i++) {
+      lastPublicationPerSystem.set(publicationsWithSystem[i].system.id, i);
+    }
+
     // 5. Enqueue one job per publication
-    for (let i = 0; i < visiblePublications.length; i++) {
-      const pub = visiblePublications[i];
-      const isLastPublication = i === visiblePublications.length - 1;
+    for (let i = 0; i < publicationsWithSystem.length; i++) {
+      const { pub, system } = publicationsWithSystem[i];
+      const isLastPublication = lastPublicationPerSystem.get(system.id) === i;
       const usedForUpdate = this.isUpdatePublication(pub.date.toDate());
 
       const data: RankingSyncPublicationJobData = {
         rankingCode: bbfRating.Code,
         systemId: system.id,
         publicationCode: pub.Code,
-        publicationDate: pub.date.toISOString(),
+        publicationDate: pub.date.format('YYYY-MM-DD'),
         usedForUpdate,
         categories,
         isLastPublication,
@@ -134,7 +157,7 @@ export class RankingSyncService {
     }
 
     await updateProgress(100);
-    this.logger.log(`Enqueued ${visiblePublications.length} publication sync jobs`);
+    this.logger.log(`Enqueued ${publicationsWithSystem.length} publication sync jobs`);
   }
 
   async processPublication(
