@@ -1,7 +1,7 @@
 import { InputType, PartialType, OmitType } from '@nestjs/graphql';
 import { CompetitionEvent } from '@app/models';
 
-@InputType()
+@InputType('CompetitionEventUpdateInput')
 export class CompetitionEventUpdateInput extends PartialType(
   OmitType(CompetitionEvent, [
     'id',
@@ -20,7 +20,7 @@ export class CompetitionEventUpdateInput extends PartialType(
   InputType,
 ) {}
 
-@InputType()
+@InputType('CompetitionEventNewInput')
 export class CompetitionEventNewInput extends PartialType(
   OmitType(CompetitionEventUpdateInput, [] as const),
   InputType,

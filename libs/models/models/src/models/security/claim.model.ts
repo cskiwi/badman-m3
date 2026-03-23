@@ -79,8 +79,8 @@ export class Claim extends BaseEntity {
   roles?: Relation<Role[]>;
 }
 
-@InputType()
+@InputType('ClaimUpdateInput')
 export class ClaimUpdateInput extends PartialType(OmitType(Claim, ['createdAt', 'updatedAt'] as const), InputType) {}
 
-@InputType()
+@InputType('ClaimNewInput')
 export class ClaimNewInput extends PartialType(OmitType(ClaimUpdateInput, ['id'] as const), InputType) {}

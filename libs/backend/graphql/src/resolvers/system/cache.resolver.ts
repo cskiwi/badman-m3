@@ -4,7 +4,7 @@ import { Player, TournamentEvent, TournamentSubEvent, TournamentDraw, Competitio
 import { ForbiddenException, Logger, UseGuards } from '@nestjs/common';
 import { Args, Field, ID, Int, Mutation, ObjectType, Resolver } from '@nestjs/graphql';
 
-@ObjectType()
+@ObjectType('CacheClearResponse')
 class CacheClearResponse {
   @Field()
   success!: boolean;

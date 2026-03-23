@@ -1,7 +1,7 @@
 import { Field, InputType, OmitType, PartialType } from '@nestjs/graphql';
 import { TournamentEvent } from '@app/models';
 
-@InputType()
+@InputType('TournamentEventNewInput')
 export class TournamentEventNewInput extends OmitType(
   TournamentEvent,
   [
@@ -28,7 +28,7 @@ export class TournamentEventNewInput extends OmitType(
   declare name: string;
 }
 
-@InputType()
+@InputType('TournamentEventUpdateInput')
 export class TournamentEventUpdateInput extends PartialType(
   OmitType(TournamentEventNewInput, ['clubId'] as const, InputType),
   InputType,

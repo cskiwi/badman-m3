@@ -1,7 +1,7 @@
 import { Field, InputType, ID } from '@nestjs/graphql';
 import { IsNotEmpty, IsOptional, IsEmail, IsUUID, IsString } from 'class-validator';
 
-@InputType()
+@InputType('GuestInfoInput')
 export class GuestInfoInput {
   @Field()
   @IsString()
@@ -19,7 +19,7 @@ export class GuestInfoInput {
   phone?: string;
 }
 
-@InputType()
+@InputType('CartItemInput')
 export class CartItemInput {
   @Field(() => ID)
   @IsUUID()
@@ -42,7 +42,7 @@ export class CartItemInput {
 }
 
 
-@InputType()
+@InputType('AddToCartInput')
 export class AddToCartInput {
   @Field(() => ID)
   @IsUUID()

@@ -10,7 +10,7 @@ export class StartGameInput {
   courtId?: string;
 }
 
-@InputType()
+@InputType('GameUpdateInput')
 export class GameUpdateInput extends PartialType(
   OmitType(Game, ['id', 'createdAt', 'updatedAt', 'gamePlayerMemberships', 'rankingPoints', 'tournamentDraw', 'competitionEncounter'] as const),
   InputType,

@@ -5,7 +5,7 @@ import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { Args, Field, Float, ID, InputType, Int, Mutation, ObjectType, Query, Resolver } from '@nestjs/graphql';
 
 // GraphQL types
-@ObjectType()
+@ObjectType('QueueStats')
 class QueueStats {
   @Field(() => Int)
   waiting!: number;
@@ -20,7 +20,7 @@ class QueueStats {
   failed!: number;
 }
 
-@ObjectType()
+@ObjectType('SyncStatus')
 class SyncStatus {
   @Field()
   status!: string;
@@ -32,7 +32,7 @@ class SyncStatus {
   queues!: QueueStats;
 }
 
-@ObjectType()
+@ObjectType('SyncJob')
 class SyncJob {
   @Field()
   id!: string;
@@ -65,7 +65,7 @@ class SyncJob {
   parentId?: string;
 }
 
-@ObjectType()
+@ObjectType('SyncTriggerResponse')
 class SyncTriggerResponse {
   @Field()
   message!: string;
@@ -74,7 +74,7 @@ class SyncTriggerResponse {
   success!: boolean;
 }
 
-@ObjectType()
+@ObjectType('QueueStatsDetails')
 class QueueStatsDetails {
   @Field(() => Int)
   waiting!: number;
@@ -90,7 +90,7 @@ class QueueStatsDetails {
 }
 
 // Input types for team matching
-@InputType()
+@InputType('UnmatchedTeamInput')
 class UnmatchedTeamInput {
   @Field()
   externalCode!: string;
