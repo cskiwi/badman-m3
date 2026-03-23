@@ -4,6 +4,32 @@
     <h1 class="text-3xl font-bold">{{ 'all.sync.dashboard.title' | translate }}</h1>
     <div class="flex gap-2">
       <p-button
+        icon="pi pi-trash"
+        [label]="'all.sync.dashboard.actions.clearAll' | translate"
+        severity="danger"
+        [outlined]="true"
+        [loading]="actionLoading()"
+        (onClick)="clearAllJobs()"
+        [pTooltip]="'all.sync.dashboard.actions.clearAllTooltip' | translate"
+      />
+      <p-button
+        icon="pi pi-check-circle"
+        [label]="'all.sync.dashboard.actions.clearCompleted' | translate"
+        severity="warn"
+        [outlined]="true"
+        [loading]="actionLoading()"
+        (onClick)="clearCompletedJobs()"
+        [pTooltip]="'all.sync.dashboard.actions.clearCompletedTooltip' | translate"
+      />
+      <p-button
+        icon="pi pi-calendar-plus"
+        [label]="'all.sync.dashboard.actions.rankingSync' | translate"
+        severity="secondary"
+        [loading]="actionLoading()"
+        (onClick)="openRankingSyncDialog()"
+        [pTooltip]="'all.sync.dashboard.actions.rankingSyncTooltip' | translate"
+      />
+      <p-button
         icon="pi pi-search"
         [label]="'all.sync.dashboard.actions.sync' | translate"
         severity="secondary"
@@ -449,6 +475,51 @@
         }
       </div>
     }
+  </p-dialog>
+
+  <p-dialog
+    [(visible)]="rankingDialogVisible"
+    [modal]="true"
+    [closable]="!actionLoading()"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '30rem' }"
+    [header]="'all.sync.dashboard.actions.rankingSyncDialog' | translate"
+  >
+    <div class="flex flex-col gap-4">
+      <p class="text-sm text-muted-color m-0">
+        {{ 'all.sync.dashboard.actions.rankingSyncHelp' | translate }}
+      </p>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-muted-color">
+          {{ 'all.sync.dashboard.actions.rankingSyncStartDate' | translate }}
+        </label>
+        <p-datepicker
+          [(ngModel)]="rankingStartDateValue"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          [showClear]="true"
+          appendTo="body"
+        />
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <p-button
+          [label]="'all.common.cancel' | translate"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="actionLoading()"
+          (onClick)="rankingDialogVisible = false"
+        />
+        <p-button
+          icon="pi pi-calendar-plus"
+          [label]="'all.sync.dashboard.scheduling.scheduleSync' | translate"
+          [loading]="actionLoading()"
+          (onClick)="scheduleRankingSync()"
+        />
+      </div>
+    </div>
   </p-dialog>
 
   <!-- Toast Messages -->

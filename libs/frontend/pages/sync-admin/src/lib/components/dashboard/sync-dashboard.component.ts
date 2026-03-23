@@ -3,6 +3,7 @@ import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import dayjs from 'dayjs';
+import { delay, tap } from 'rxjs';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
@@ -55,6 +56,8 @@ import { SyncDashboardService } from './sync-dashboard.service';
   styleUrl: './sync-dashboard.component.scss',
 })
 export class SyncDashboardComponent implements OnDestroy {
+  private readonly queueMutationDelayMs = 600;
+
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
   private syncService = inject(SyncDashboardService);
@@ -86,6 +89,10 @@ export class SyncDashboardComponent implements OnDestroy {
   jobDetailsVisible = signal(false);
   selectedJob = signal<SyncJob | null>(null);
 
+  // Ranking sync dialog
+  rankingSyncDialogState = signal(false);
+  rankingSyncStartDate = signal<Date | null>(null);
+
   get dialogVisible(): boolean {
     return this.jobDetailsVisible();
   }
@@ -95,6 +102,25 @@ export class SyncDashboardComponent implements OnDestroy {
     if (!value) {
       this.selectedJob.set(null);
     }
+  }
+
+  get rankingDialogVisible(): boolean {
+    return this.rankingSyncDialogState();
+  }
+
+  set rankingDialogVisible(value: boolean) {
+    this.rankingSyncDialogState.set(value);
+    if (!value) {
+      this.rankingSyncStartDate.set(null);
+    }
+  }
+
+  get rankingStartDateValue(): Date | null {
+    return this.rankingSyncStartDate();
+  }
+
+  set rankingStartDateValue(value: Date | null) {
+    this.rankingSyncStartDate.set(value);
   }
 
   // Dropdown options
@@ -177,7 +203,6 @@ export class SyncDashboardComponent implements OnDestroy {
               detail: this.translateService.instant('all.sync.dashboard.scheduling.syncScheduled', { count }),
             });
             this.syncService.deselectAll();
-            this.syncService.refresh();
           },
           error: () => {
             this.messageService.add({
@@ -220,6 +245,132 @@ export class SyncDashboardComponent implements OnDestroy {
           complete: () => this.actionLoading.set(false),
         });
       },
+    });
+  }
+
+  clearAllJobs(): void {
+    this.confirmationService.confirm({
+      message: this.translateService.instant(
+        'all.sync.dashboard.actions.confirmClearAll',
+      ),
+      header: this.translateService.instant(
+        'all.sync.dashboard.actions.clearAll',
+      ),
+      icon: 'pi pi-trash',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.actionLoading.set(true);
+        this.syncApiService.clearAllJobs().pipe(
+          delay(this.queueMutationDelayMs),
+        ).subscribe({
+          next: (result) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('all.common.success'),
+              detail:
+                result.message ||
+                this.translateService.instant(
+                  'all.sync.dashboard.actions.clearAllSuccess',
+                ),
+            });
+            this.syncService.refresh()
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('all.common.error'),
+              detail: this.translateService.instant(
+                'all.sync.dashboard.actions.clearAllError',
+              ),
+            });
+          },
+          complete: () => this.actionLoading.set(false),
+        });
+      },
+    });
+  }
+
+  clearCompletedJobs(): void {
+    this.confirmationService.confirm({
+      message: this.translateService.instant(
+        'all.sync.dashboard.actions.confirmClearCompleted',
+      ),
+      header: this.translateService.instant(
+        'all.sync.dashboard.actions.clearCompleted',
+      ),
+      icon: 'pi pi-check-circle',
+      acceptButtonStyleClass: 'p-button-warning',
+      accept: () => {
+        this.actionLoading.set(true);
+        this.syncApiService.clearCompletedJobs().pipe(delay(this.queueMutationDelayMs)).subscribe({
+          next: (result) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('all.common.success'),
+              detail:
+                result.message ||
+                this.translateService.instant(
+                  'all.sync.dashboard.actions.clearCompletedSuccess',
+                ),
+            });
+            this.syncService.refresh();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('all.common.error'),
+              detail: this.translateService.instant(
+                'all.sync.dashboard.actions.clearCompletedError',
+              ),
+            });
+          },
+          complete: () => this.actionLoading.set(false),
+        });
+      },
+    });
+  }
+
+  openRankingSyncDialog(): void {
+    this.rankingSyncDialogState.set(true);
+  }
+
+  scheduleRankingSync(): void {
+    this.actionLoading.set(true);
+
+    const startDate = this.rankingSyncStartDate();
+    const formattedStartDate = startDate
+      ? dayjs(startDate).format('YYYY-MM-DD')
+      : undefined;
+
+    this.syncApiService.triggerRankingSync(formattedStartDate)
+    .pipe(delay(this.queueMutationDelayMs))
+    .subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translateService.instant('all.common.success'),
+          detail: formattedStartDate
+            ? this.translateService.instant(
+                'all.sync.dashboard.actions.rankingSyncQueuedFrom',
+                { date: formattedStartDate },
+              )
+            : this.translateService.instant(
+                'all.sync.dashboard.actions.rankingSyncQueued',
+              ),
+        });
+          this.syncService.refresh();
+        this.rankingDialogVisible = false;
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('all.common.error'),
+          detail: this.translateService.instant(
+            'all.sync.dashboard.actions.rankingSyncError',
+          ),
+        });
+      },
+      complete: () => this.actionLoading.set(false),
     });
   }
 

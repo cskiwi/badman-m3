@@ -223,6 +223,33 @@ const TRIGGER_DISCOVERY_SYNC = gql`
   }
 `;
 
+const TRIGGER_RANKING_SYNC = gql`
+  mutation TriggerRankingSync($startDate: String) {
+    triggerRankingSync(startDate: $startDate) {
+      message
+      success
+    }
+  }
+`;
+
+const CLEAR_ALL_JOBS = gql`
+  mutation ClearAllJobs {
+    clearAllJobs {
+      message
+      success
+    }
+  }
+`;
+
+const CLEAR_COMPLETED_JOBS = gql`
+  mutation ClearCompletedJobs {
+    clearCompletedJobs {
+      message
+      success
+    }
+  }
+`;
+
 const TRIGGER_EVENTS_SYNC = gql`
   mutation TriggerEventsSync($eventIds: [ID!]!, $includeSubComponents: Boolean!) {
     triggerEventsSync(eventId: $eventIds, includeSubComponents: $includeSubComponents) {
@@ -329,6 +356,31 @@ export class SyncApiService {
         mutation: TRIGGER_DISCOVERY_SYNC,
       })
       .pipe(map((result) => result.data?.triggerDiscoverySync ?? ({} as SyncTriggerResponse)));
+  }
+
+  triggerRankingSync(startDate?: string): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ triggerRankingSync: SyncTriggerResponse }>({
+        mutation: TRIGGER_RANKING_SYNC,
+        variables: { startDate },
+      })
+      .pipe(map((result) => result.data?.triggerRankingSync ?? ({} as SyncTriggerResponse)));
+  }
+
+  clearAllJobs(): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ clearAllJobs: SyncTriggerResponse }>({
+        mutation: CLEAR_ALL_JOBS,
+      })
+      .pipe(map((result) => result.data?.clearAllJobs ?? ({} as SyncTriggerResponse)));
+  }
+
+  clearCompletedJobs(): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ clearCompletedJobs: SyncTriggerResponse }>({
+        mutation: CLEAR_COMPLETED_JOBS,
+      })
+      .pipe(map((result) => result.data?.clearCompletedJobs ?? ({} as SyncTriggerResponse)));
   }
 
   triggerEventsSync(eventIds: string[], includeSubComponents: boolean): Observable<SyncTriggerResponse> {

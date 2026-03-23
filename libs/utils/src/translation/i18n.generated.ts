@@ -776,6 +776,14 @@ export type I18nTranslations = {
                     "discoverySyncQueued": string;
                     "discoverySyncTooltip": string;
                     "fullSync": string;
+                    "rankingSync": string;
+                    "rankingSyncDialog": string;
+                    "rankingSyncError": string;
+                    "rankingSyncHelp": string;
+                    "rankingSyncQueued": string;
+                    "rankingSyncQueuedFrom": string;
+                    "rankingSyncStartDate": string;
+                    "rankingSyncTooltip": string;
                     "sync": string;
                     "tournamentSync": string;
                     "tournamentSyncError": string;
