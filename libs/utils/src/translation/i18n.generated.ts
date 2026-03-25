@@ -632,10 +632,18 @@ export type I18nTranslations = {
         "ranking": {
             "breakdown": {
                 "add-game": {
+                    "add": string;
+                    "effective-level": string;
+                    "lost": string;
+                    "opponent-level": string;
                     "p1t1": string;
                     "p1t2": string;
                     "p2t1": string;
                     "p2t2": string;
+                    "points": string;
+                    "remove": string;
+                    "search-player": string;
+                    "simulated": string;
                     "title": string;
                     "won": string;
                 };

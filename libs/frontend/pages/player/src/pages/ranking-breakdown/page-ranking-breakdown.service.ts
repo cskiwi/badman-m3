@@ -1,11 +1,17 @@
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Game, Player } from '@app/models';
+import { Game, Player, RankingLastPlace } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { Dayjs } from 'dayjs';
 import { lastValueFrom, startWith } from 'rxjs';
+
+export interface PlayerSearchResult {
+  id: string;
+  fullName: string;
+  rankingLastPlaces?: RankingLastPlace[];
+}
 
 export type RankingType = 'single' | 'double' | 'mix';
 
@@ -231,4 +237,47 @@ export class RankingBreakdownService {
   games = computed(() => (this.gamesResource.value() ?? []) as Game[]);
   loading = computed(() => this.gamesResource.isLoading());
   error = computed(() => this.gamesResource.error()?.message || null);
+
+  async searchPlayers(query: string, systemId: string): Promise<PlayerSearchResult[]> {
+    if (!query || query.length < 2) return [];
+
+    try {
+      const result = await lastValueFrom(
+        this.apollo.query<{ players: PlayerSearchResult[] }>({
+          query: gql`
+            query SearchPlayersForSim($args: PlayerArgs, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
+              players(args: $args) {
+                id
+                fullName
+                rankingLastPlaces(args: $rankingLastPlacesArgs) {
+                  id
+                  single
+                  double
+                  mix
+                }
+              }
+            }
+          `,
+          variables: {
+            args: {
+              where: {
+                OR: [
+                  { firstName: { ilike: `%${query}%` } },
+                  { lastName: { ilike: `%${query}%` } },
+                ],
+              },
+              take: 10,
+            },
+            rankingLastPlacesArgs: {
+              where: [{ systemId: { eq: systemId } }],
+            },
+          },
+        }),
+      );
+
+      return result.data?.players ?? [];
+    } catch {
+      return [];
+    }
+  }
 }

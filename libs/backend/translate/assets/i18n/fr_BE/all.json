@@ -625,12 +625,20 @@
   "ranking": {
     "breakdown": {
       "add-game": {
+        "add": "Ajouter un match",
+        "effective-level": "Niveau effectif",
+        "lost": "Perdu",
+        "opponent-level": "Niveau de l'adversaire",
         "p1t1": "Joueur 1 - Equipe 1",
         "p1t2": "Joueur 1 - Equipe 2",
         "p2t1": "Joueur 2 - Equipe 1",
         "p2t2": "Joueur 2 - Equipe 2",
-        "title": "Ajouter une correspondance (fictive)",
-        "won": "L'équipe 1 a gagné ?"
+        "points": "Points",
+        "remove": "Supprimer le match simulé",
+        "search-player": "Rechercher un joueur...",
+        "simulated": "Simulé",
+        "title": "Ajouter un match (fictif)",
+        "won": "Gagné"
       },
       "can-downgrade": "Avec ce nombre de points (<{{points}}), le joueur passera de {{level}} à {{newLevel}}",
       "can-not-downgrade": "Inférieur à {{points}} = chute de {{level}} à {{newLevel}}",

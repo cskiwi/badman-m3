@@ -625,12 +625,20 @@
   "ranking": {
     "breakdown": {
       "add-game": {
+        "add": "Add game",
+        "effective-level": "Effective level",
+        "lost": "Lost",
+        "opponent-level": "Opponent level",
         "p1t1": "Player 1 - Team 1",
         "p1t2": "Player 1 - Team 2",
         "p2t1": "Player 2 - Team 1",
         "p2t2": "Player 2 - Team 2",
+        "points": "Points",
+        "remove": "Remove simulated game",
+        "search-player": "Search player...",
+        "simulated": "Simulated",
         "title": "Add (fictive) game",
-        "won": "Team 1 won?"
+        "won": "Won"
       },
       "can-downgrade": "With this number of points (<{{points}}), the player will drop from {{level}} to {{newLevel}}",
       "can-not-downgrade": "Less than {{points}} = dropping from {{level}} to {{newLevel}}",

@@ -625,12 +625,20 @@
   "ranking": {
     "breakdown": {
       "add-game": {
+        "add": "Wedstrijd toevoegen",
+        "effective-level": "Effectief niveau",
+        "lost": "Verloren",
+        "opponent-level": "Niveau tegenstander",
         "p1t1": "Speler 1 - Team 1",
         "p1t2": "Speler 1 - Team 2",
         "p2t1": "Speler 2 - Team 1",
         "p2t2": "Speler 2 - Team 2",
+        "points": "Punten",
+        "remove": "Gesimuleerde wedstrijd verwijderen",
+        "search-player": "Zoek speler...",
+        "simulated": "Gesimuleerd",
         "title": "Voeg (fictieve) wedstrijd toe",
-        "won": "Team 1 Gewonnen?"
+        "won": "Gewonnen"
       },
       "can-downgrade": "Met dit aantal punten (<{{points}}) zal de speler dalen van {{level}} naar {{newLevel}}",
       "can-not-downgrade": "Minder dan {{points}} = dalen van {{level}} naar {{newLevel}}",
