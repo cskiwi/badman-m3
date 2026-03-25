@@ -36,10 +36,28 @@ export class BracketTree {
   });
 
   /**
-   * Height for match boxes in pixels
+   * Whether this bracket has doubles (2 players per team).
+   * Checks the first game with team members to determine.
+   */
+  readonly isDoubles = computed(() => {
+    const gamesList = this.games();
+    if (!gamesList) return false;
+    for (const game of gamesList) {
+      if (game.gamePlayerMemberships?.length) {
+        const team1Count = game.gamePlayerMemberships.filter((m) => m.team === 1).length;
+        if (team1Count > 1) return true;
+        const team2Count = game.gamePlayerMemberships.filter((m) => m.team === 2).length;
+        if (team2Count > 1) return true;
+      }
+    }
+    return false;
+  });
+
+  /**
+   * Height for match boxes in pixels - taller for doubles to fit stacked names
    */
   readonly matchBoxHeight = computed(() => {
-    return 80;
+    return this.isDoubles() ? 110 : 80;
   });
 
   readonly columnWidth = computed(() => {
@@ -280,18 +298,18 @@ export class BracketTree {
     return 99999;
   }
 
-  getTeamName(game: Game, teamNumber: 1 | 2): string {
+  getTeamNames(game: Game, teamNumber: 1 | 2): string[] {
     if (!game.gamePlayerMemberships || game.gamePlayerMemberships.length === 0) {
-      return '';
+      return [];
     }
 
     const teamMembers = game.gamePlayerMemberships.filter((m) => m.team === teamNumber);
 
     if (teamMembers.length === 0) {
-      return '';
+      return [];
     }
 
-    const names = teamMembers
+    return teamMembers
       .map((membership) => {
         // Try to get the player name in various ways
         const player = membership.gamePlayer;
@@ -318,8 +336,6 @@ export class BracketTree {
         return `Player ${membership.playerId?.slice(-6) || 'Unknown'}`;
       })
       .filter((name) => name && name !== '');
-
-    return names.length > 0 ? names.join(' / ') : '';
   }
 
   getTeamScore(game: Game, teamNumber: 1 | 2): string {

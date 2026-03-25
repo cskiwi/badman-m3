@@ -18,26 +18,30 @@
                 <div class="relative" [style.margin-bottom.px]="isLastGame ? 0 : spacing()[roundIndex]">
                   <!-- Match Box -->
                   <div
-                    class="border-2 border-surface rounded-lg overflow-hidden transition-all duration-200"
+                    class="border-2 border-surface rounded-lg overflow-hidden transition-all duration-200 flex flex-col"
                     [class.border-primary-400]="isGameCompleted(game)"
                     [style.width.px]="matchBoxWidth()"
                     [style.height.px]="matchBoxHeight()"
                   >
                     <!-- Team 1 -->
                     <div
-                      class="flex items-center justify-between px-4 py-3 border-b border-surface"
+                      class="flex items-center justify-between px-4 py-2 border-b border-surface flex-1"
                       [class.bg-highlight]="game.winner === 1"
                       [class.font-semibold]="game.winner === 1"
                       [class.text-color-emphasis]="game.winner === 1"
                     >
-                      <span class="flex-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
-                        @let teamName1 = getTeamName(game, 1);
-                        @if (isBye(game) && !teamName1) {
-                          <span class="text-muted-color italic">Bye</span>
-                        } @else if (teamName1) {
-                          {{ teamName1 }}
+                      <span class="flex-1 overflow-hidden">
+                        @let teamNames1 = getTeamNames(game, 1);
+                        @if (isBye(game) && teamNames1.length === 0) {
+                          <span class="text-muted-color italic text-sm">Bye</span>
+                        } @else if (teamNames1.length > 0) {
+                          <span class="flex flex-col">
+                            @for (name of teamNames1; track name) {
+                              <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap">{{ name }}</span>
+                            }
+                          </span>
                         } @else {
-                          <span class="text-muted-color italic">TBD</span>
+                          <span class="text-muted-color italic text-sm">TBD</span>
                         }
                       </span>
                       @if (!isBye(game)) {
@@ -53,19 +57,23 @@
 
                     <!-- Team 2 -->
                     <div
-                      class="flex items-center justify-between px-4 py-3"
+                      class="flex items-center justify-between px-4 py-2 flex-1"
                       [class.bg-highlight]="game.winner === 2"
                       [class.font-semibold]="game.winner === 2"
                       [class.text-color-emphasis]="game.winner === 2"
                     >
-                      <span class="flex-1 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
-                        @let teamName2 = getTeamName(game, 2);
-                        @if (isBye(game) && !teamName2) {
-                          <span class="text-muted-color italic">Bye</span>
-                        } @else if (teamName2) {
-                          {{ teamName2 }}
+                      <span class="flex-1 overflow-hidden">
+                        @let teamNames2 = getTeamNames(game, 2);
+                        @if (isBye(game) && teamNames2.length === 0) {
+                          <span class="text-muted-color italic text-sm">Bye</span>
+                        } @else if (teamNames2.length > 0) {
+                          <span class="flex flex-col">
+                            @for (name of teamNames2; track name) {
+                              <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap">{{ name }}</span>
+                            }
+                          </span>
                         } @else {
-                          <span class="text-muted-color italic">TBD</span>
+                          <span class="text-muted-color italic text-sm">TBD</span>
                         }
                       </span>
                       @if (!isBye(game)) {
