@@ -17,10 +17,6 @@ export const routes: Route[] = [
             loadComponent: () => import('./pages/detail/page-detail.component').then(m => m.PageDetailComponent),
           },
           {
-            path: 'tournaments',
-            loadChildren: () => import('@app/frontend-pages-tournament').then((m) => m.routes),
-          },
-          {
             path: 'head-to-head',
             loadComponent: () => import('./pages/head-to-head/page-head-to-head.component').then((m) => m.PageHeadToHeadComponent),
           },

@@ -19,7 +19,6 @@ export const routes: Route[] = [
     path: '',
     loadComponent: () => import('@app/frontend-components/layout').then(m => m.CenterLayoutComponent),
     children: [
-      { path: '', loadComponent: () => import('./pages/overview/page-overview.component').then(m => m.PageOverviewComponent) },
       {
         path: 'club/:clubId',
         loadComponent: () => import('./pages/club-detail/page-club-detail.component').then(m => m.PageClubDetailComponent),
