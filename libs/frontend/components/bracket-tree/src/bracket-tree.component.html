@@ -40,13 +40,15 @@
                           <span class="text-muted-color italic">TBD</span>
                         }
                       </span>
-                      <span
-                        class="text-sm font-mono font-bold ml-3 min-w-8 text-right"
-                        [class.text-primary]="game.winner === 1"
-                        [class.text-color]="game.winner !== 1"
-                      >
-                        {{ getTeamScore(game, 1) || '—' }}
-                      </span>
+                      @if (!isBye(game)) {
+                        <span
+                          class="text-sm font-mono font-bold ml-3 min-w-8 text-right"
+                          [class.text-primary]="game.winner === 1"
+                          [class.text-color]="game.winner !== 1"
+                        >
+                          {{ getTeamScore(game, 1) || '—' }}
+                        </span>
+                      }
                     </div>
 
                     <!-- Team 2 -->
@@ -66,13 +68,15 @@
                           <span class="text-muted-color italic">TBD</span>
                         }
                       </span>
-                      <span
-                        class="text-sm font-mono font-bold ml-3 min-w-8 text-right"
-                        [class.text-primary]="game.winner === 2"
-                        [class.text-color]="game.winner !== 2"
-                      >
-                        {{ getTeamScore(game, 2) || '—' }}
-                      </span>
+                      @if (!isBye(game)) {
+                        <span
+                          class="text-sm font-mono font-bold ml-3 min-w-8 text-right"
+                          [class.text-primary]="game.winner === 2"
+                          [class.text-color]="game.winner !== 2"
+                        >
+                          {{ getTeamScore(game, 2) || '—' }}
+                        </span>
+                      }
                     </div>
                   </div>
 

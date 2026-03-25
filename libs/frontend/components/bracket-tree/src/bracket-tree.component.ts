@@ -1,7 +1,7 @@
 
 import { Component, computed, input } from '@angular/core';
 import { Game } from '@app/models';
-import { isBye as _isBye } from '@app/utils/comp';
+import { getSetScores, isBye as _isBye } from '@app/utils/comp';
 
 // Extended game type with bracket ordering information
 export type BracketGame = Game & { bracketOrder: number };
@@ -323,19 +323,9 @@ export class BracketTree {
   }
 
   getTeamScore(game: Game, teamNumber: 1 | 2): string {
-    const sets: string[] = [];
-
-    if (game.set1Team1 !== null && game.set1Team2 !== null) {
-      sets.push(teamNumber === 1 ? String(game.set1Team1) : String(game.set1Team2));
-    }
-    if (game.set2Team1 !== null && game.set2Team2 !== null) {
-      sets.push(teamNumber === 1 ? String(game.set2Team1) : String(game.set2Team2));
-    }
-    if (game.set3Team1 !== null && game.set3Team2 !== null) {
-      sets.push(teamNumber === 1 ? String(game.set3Team1) : String(game.set3Team2));
-    }
-
-    return sets.join(' ');
+    const { team1Sets, team2Sets } = getSetScores(game);
+    const sets = teamNumber === 1 ? team1Sets : team2Sets;
+    return sets.map(String).join(' ');
   }
 
   isGameCompleted(game: Game): boolean {
