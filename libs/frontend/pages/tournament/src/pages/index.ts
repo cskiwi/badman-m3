@@ -11,6 +11,5 @@ export * from './live-kiosk';
 export * from './live-results';
 export * from './live-upcoming';
 export * from './my-enrollments';
-export * from './overview';
 export * from './player-detail';
 export * from './players';

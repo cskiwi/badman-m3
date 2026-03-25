@@ -35,11 +35,12 @@
   <!-- Club Header -->
   <app-page-header class="mb-6">
     <ng-content avatar>
-      <p-avatar [label]="club.abbreviation || club.name.substring(0, 2).toUpperCase()"
+      <p-avatar
+        [label]="club.abbreviation || club.name.substring(0, 2).toUpperCase()"
         size="large"
         shape="circle"
         styleClass="text-primary-contrast bg-primary"
-       />
+      />
     </ng-content>
 
     <ng-content title>{{ club.fullName || club.name }}</ng-content>
@@ -207,12 +208,13 @@
         @if (teamDistributionData()) {
           <p-card header="{{ 'all.club.stats.teamDistribution' | translate }}" class="mt-6">
             <div style="height: 300px; position: relative">
-              <p-chart type="bar"
+              <p-chart
+                type="bar"
                 [data]="teamDistributionData()"
                 [options]="{ responsive: true, maintainAspectRatio: false }"
                 width="100%"
                 height="100%"
-               />
+              />
             </div>
           </p-card>
         }
@@ -369,19 +371,21 @@
                         <div class="flex flex-wrap gap-1">
                           @for (membership of team.teamPlayerMemberships.slice(0, 6); track membership.id) {
                             @if (membership.player) {
-                              <p-avatar [label]="getPlayerInitials(membership.player)"
+                              <p-avatar
+                                [label]="getPlayerInitials(membership.player)"
                                 size="normal"
                                 shape="circle"
                                 [pTooltip]="membership.player.fullName"
-                               />
+                              />
                             }
                           }
                           @if (team.teamPlayerMemberships.length > 6) {
-                            <p-avatar [label]="'+' + (team.teamPlayerMemberships.length - 6)"
+                            <p-avatar
+                              [label]="'+' + (team.teamPlayerMemberships.length - 6)"
                               size="normal"
                               shape="circle"
                               styleClass="bg-surface-200 text-surface-600"
-                             />
+                            />
                           }
                         </div>
                       </div>

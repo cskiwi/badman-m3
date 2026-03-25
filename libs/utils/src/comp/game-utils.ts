@@ -23,15 +23,33 @@ export function getSetScores(game: GameLike): { team1Sets: number[]; team2Sets: 
   const team1Sets: number[] = [];
   const team2Sets: number[] = [];
 
-  if (game.set1Team1 !== null && game.set1Team1 !== undefined && game.set1Team2 !== null && game.set1Team2 !== undefined) {
+  if (
+    game.set1Team1 !== null &&
+    game.set1Team1 !== undefined &&
+    game.set1Team2 !== null &&
+    game.set1Team2 !== undefined &&
+    (game.set1Team1 > 0 || game.set1Team2 > 0)
+  ) {
     team1Sets.push(game.set1Team1);
     team2Sets.push(game.set1Team2);
   }
-  if (game.set2Team1 !== null && game.set2Team1 !== undefined && game.set2Team2 !== null && game.set2Team2 !== undefined) {
+  if (
+    game.set2Team1 !== null &&
+    game.set2Team1 !== undefined &&
+    game.set2Team2 !== null &&
+    game.set2Team2 !== undefined &&
+    (game.set2Team1 > 0 || game.set2Team2 > 0)
+  ) {
     team1Sets.push(game.set2Team1);
     team2Sets.push(game.set2Team2);
   }
-  if (game.set3Team1 !== null && game.set3Team1 !== undefined && game.set3Team2 !== null && game.set3Team2 !== undefined) {
+  if (
+    game.set3Team1 !== null &&
+    game.set3Team1 !== undefined &&
+    game.set3Team2 !== null &&
+    game.set3Team2 !== undefined &&
+    (game.set3Team1 > 0 || game.set3Team2 > 0)
+  ) {
     team1Sets.push(game.set3Team1);
     team2Sets.push(game.set3Team2);
   }
@@ -40,17 +58,9 @@ export function getSetScores(game: GameLike): { team1Sets: number[]; team2Sets: 
 }
 
 export function isBye(game: GameLike): boolean {
-  const isScorelessBye =
-    game.set1Team1 === null &&
-    game.set1Team2 === null &&
-    game.set2Team1 === null &&
-    game.set2Team2 === null &&
-    game.set3Team1 === null &&
-    game.set3Team2 === null;
-
   const isPastGame = game.playedAt ? new Date(game.playedAt) < new Date() : false;
 
-  return isScorelessBye && isPastGame;
+  return getSetScores(game).team1Sets.length === 0 && getSetScores(game).team2Sets.length === 0 && isPastGame;
 }
 
 export function getGameTeamMemberships<T extends MembershipLike>(game: { gamePlayerMemberships?: T[] }, teamNumber: 1 | 2): T[] {
