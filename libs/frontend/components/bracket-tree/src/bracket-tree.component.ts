@@ -1,7 +1,14 @@
 
 import { Component, computed, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Game } from '@app/models';
 import { getSetScores, isBye as _isBye } from '@app/utils/comp';
+
+export interface BracketPlayer {
+  id: string;
+  slug: string;
+  name: string;
+}
 
 // Extended game type with bracket ordering information
 export type BracketGame = Game & { bracketOrder: number };
@@ -14,7 +21,7 @@ export interface BracketRound {
 @Component({
   standalone: true,
   selector: 'app-bracket-tree',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './bracket-tree.component.html',
 })
 export class BracketTree {
@@ -298,7 +305,7 @@ export class BracketTree {
     return 99999;
   }
 
-  getTeamNames(game: Game, teamNumber: 1 | 2): string[] {
+  getTeamPlayers(game: Game, teamNumber: 1 | 2): BracketPlayer[] {
     if (!game.gamePlayerMemberships || game.gamePlayerMemberships.length === 0) {
       return [];
     }
@@ -311,15 +318,17 @@ export class BracketTree {
 
     return teamMembers
       .map((membership) => {
-        // Try to get the player name in various ways
         const player = membership.gamePlayer;
+        const id = player?.id || membership.playerId || '';
+        const slug = player?.slug || id;
+
         if (!player) {
-          return `Player ${membership.playerId?.slice(-6) || 'Unknown'}`;
+          return { id, slug, name: `Player ${membership.playerId?.slice(-6) || 'Unknown'}` };
         }
 
         // Preferred: use fullName property (getter in Player model)
         if (player.fullName && player.fullName.trim()) {
-          return player.fullName.trim();
+          return { id, slug, name: player.fullName.trim() };
         }
 
         // Fallback: construct from firstName and lastName
@@ -328,14 +337,14 @@ export class BracketTree {
           const lastName = player.lastName?.trim() || '';
           const constructedName = `${firstName} ${lastName}`.trim();
           if (constructedName) {
-            return constructedName;
+            return { id, slug, name: constructedName };
           }
         }
 
         // Last resort: use player ID
-        return `Player ${membership.playerId?.slice(-6) || 'Unknown'}`;
+        return { id, slug, name: `Player ${membership.playerId?.slice(-6) || 'Unknown'}` };
       })
-      .filter((name) => name && name !== '');
+      .filter((p) => p.name && p.name !== '');
   }
 
   getTeamScore(game: Game, teamNumber: 1 | 2): string {

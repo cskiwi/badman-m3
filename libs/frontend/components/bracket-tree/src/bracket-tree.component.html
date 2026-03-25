@@ -31,13 +31,16 @@
                       [class.text-color-emphasis]="game.winner === 1"
                     >
                       <span class="flex-1 overflow-hidden">
-                        @let teamNames1 = getTeamNames(game, 1);
-                        @if (isBye(game) && teamNames1.length === 0) {
+                        @let teamPlayers1 = getTeamPlayers(game, 1);
+                        @if (isBye(game) && teamPlayers1.length === 0) {
                           <span class="text-muted-color italic text-sm">Bye</span>
-                        } @else if (teamNames1.length > 0) {
+                        } @else if (teamPlayers1.length > 0) {
                           <span class="flex flex-col">
-                            @for (name of teamNames1; track name) {
-                              <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap">{{ name }}</span>
+                            @for (player of teamPlayers1; track player.id) {
+                              <a
+                                class="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-inherit no-underline"
+                                [routerLink]="['/players', player.slug]"
+                              >{{ player.name }}</a>
                             }
                           </span>
                         } @else {
@@ -63,13 +66,16 @@
                       [class.text-color-emphasis]="game.winner === 2"
                     >
                       <span class="flex-1 overflow-hidden">
-                        @let teamNames2 = getTeamNames(game, 2);
-                        @if (isBye(game) && teamNames2.length === 0) {
+                        @let teamPlayers2 = getTeamPlayers(game, 2);
+                        @if (isBye(game) && teamPlayers2.length === 0) {
                           <span class="text-muted-color italic text-sm">Bye</span>
-                        } @else if (teamNames2.length > 0) {
+                        } @else if (teamPlayers2.length > 0) {
                           <span class="flex flex-col">
-                            @for (name of teamNames2; track name) {
-                              <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap">{{ name }}</span>
+                            @for (player of teamPlayers2; track player.id) {
+                              <a
+                                class="text-sm overflow-hidden text-ellipsis whitespace-nowrap text-inherit no-underline"
+                                [routerLink]="['/players', player.slug]"
+                              >{{ player.name }}</a>
                             }
                           </span>
                         } @else {
