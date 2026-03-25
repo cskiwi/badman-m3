@@ -492,13 +492,11 @@
       "total": "Totaal"
     },
     "info": {
-      "club-display": "Clubnamen worden onder spelernamen getoond (partnerclubs alleen als ze verschillen)",
-      "description": "Analyseer je prestaties met partners en tegen tegenstanders met behulp van onderstaande filters:",
-      "head-to-head-filter": "",
-      "head-to-heads-mode": "",
-      "opponents-mode": "Tegenstanders Modus: Toont spelers tegen wie je hebt gespeeld en je winpercentage tegen hen",
-      "partner-filter": "Partner Filter: In tegenstanders modus, selecteer een specifieke partner om teamprestaties te bekijken",
-      "partners-mode": "Partners Modus: Toont spelers met wie je hebt gespeeld en jullie gecombineerde winpercentage",
+      "club-display": "Clubnamen worden onder spelernamen getoond",
+      "description": "Gebruik de weergavemodus om te schakelen tussen twee perspectieven:",
+      "opponents-mode": "Tegenstanders: toont tegen wie je hebt gespeeld en je winpercentage tegen hen. Je kan ook filteren op partner om resultaten als een specifiek team te bekijken",
+      "partner-filter": "Het filter op tegenstander club is altijd beschikbaar om resultaten per club te verfijnen",
+      "partners-mode": "Partners: toont met wie je hebt gespeeld en jullie gecombineerde winpercentage",
       "title": "Hoe deze pagina werkt"
     },
     "name": "Naam",

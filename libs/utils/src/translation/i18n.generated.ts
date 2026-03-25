@@ -501,8 +501,6 @@ export type I18nTranslations = {
             "info": {
                 "club-display": string;
                 "description": string;
-                "head-to-head-filter": string;
-                "head-to-heads-mode": string;
                 "opponents-mode": string;
                 "partner-filter": string;
                 "partners-mode": string;
