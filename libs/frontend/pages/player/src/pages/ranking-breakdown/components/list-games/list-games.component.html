@@ -380,14 +380,7 @@
     </div>
 
     <!-- Opponent 1 -->
-    <div class="flex flex-col gap-2">
-      <label class="text-sm font-medium text-color">
-        @if (isDoubles()) {
-          {{ 'all.ranking.breakdown.add-game.p2t1' | translate }}
-        } @else {
-          {{ 'all.ranking.breakdown.add-game.opponent-level' | translate }}
-        }
-      </label>
+    <div class="flex flex-row gap-2">
       <p-autocomplete
         [suggestions]="playerSuggestions1()"
         (completeMethod)="searchOpponent($event, 1)"
@@ -395,10 +388,9 @@
         optionLabel="fullName"
         [placeholder]="'all.ranking.breakdown.add-game.search-player' | translate"
         [minLength]="2"
-        styleClass="w-full"
+        style="w-full"
       />
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-muted-color">{{ 'all.ranking.breakdown.add-game.opponent-level' | translate }}:</span>
+      <div class="flex w-36">
         <p-inputnumber
           [ngModel]="addGameOpponentLevel1()"
           (ngModelChange)="addGameOpponentLevel1.set($event)"
@@ -411,10 +403,7 @@
 
     <!-- Opponent 2 (doubles/mix only) -->
     @if (isDoubles()) {
-      <div class="flex flex-col gap-2">
-        <label class="text-sm font-medium text-color">
-          {{ 'all.ranking.breakdown.add-game.p2t2' | translate }}
-        </label>
+      <div class="flex flex-row gap-2">
         <p-autocomplete
           [suggestions]="playerSuggestions2()"
           (completeMethod)="searchOpponent($event, 2)"
@@ -424,8 +413,7 @@
           [minLength]="2"
           styleClass="w-full"
         />
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-muted-color">{{ 'all.ranking.breakdown.add-game.opponent-level' | translate }}:</span>
+        <div class="flex w-36">
           <p-inputnumber
             [ngModel]="addGameOpponentLevel2()"
             (ngModelChange)="addGameOpponentLevel2.set($event)"
@@ -440,9 +428,14 @@
     <!-- Summary -->
     <div class="flex items-center gap-2 text-sm text-muted-color border-t border-surface pt-3">
       <i class="pi pi-info-circle"></i>
-      <span>{{ 'all.ranking.breakdown.add-game.points' | translate }}: <strong class="text-color">{{ simulatedPoints() }}</strong></span>
+      <span
+        >{{ 'all.ranking.breakdown.add-game.points' | translate }}: <strong class="text-color">{{ simulatedPoints() }}</strong></span
+      >
       @if (isDoubles()) {
-        <span class="ml-auto">{{ 'all.ranking.breakdown.add-game.effective-level' | translate }}: <strong class="text-color">{{ effectiveOpponentLevel() }}</strong></span>
+        <span class="ml-auto"
+          >{{ 'all.ranking.breakdown.add-game.effective-level' | translate }}:
+          <strong class="text-color">{{ effectiveOpponentLevel() }}</strong></span
+        >
       }
     </div>
   </div>
