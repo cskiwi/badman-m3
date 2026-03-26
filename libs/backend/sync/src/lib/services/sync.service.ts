@@ -132,17 +132,17 @@ export class SyncService {
   }
 
   /**
-   * Tournament structure sync - runs every 12 hours
+   * Tournament structure sync - runs every midnight
    */
-  @Cron('0 */12 * * *')
+  @Cron('0 0 * * *')
   async scheduleTournamentSync(): Promise<void> {
     await this.queueTournamentSync();
   }
 
   /**
-   * BBF Rating ranking sync - runs every Monday at 4 AM
+   * BBF Rating ranking sync - runs every Monday/Tuesday at 4 PM
    */
-  @Cron('0 4 * * 1')
+  @Cron('0 16 * * 1,2')
   async scheduleRankingSync(): Promise<void> {
     await this.queueRankingSync();
   }
