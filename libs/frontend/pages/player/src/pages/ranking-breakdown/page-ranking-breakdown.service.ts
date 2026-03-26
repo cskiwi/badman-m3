@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Game, Player, RankingLastPlace } from '@app/models';
@@ -113,9 +114,25 @@ const PLAYER_GAMES_QUERY = gql`
   }
 `;
 
+const PLAYERS_BY_IDS_QUERY = gql`
+  query SearchPlayersByIds($args: PlayerArgs, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
+    players(args: $args) {
+      id
+      fullName
+      rankingLastPlaces(args: $rankingLastPlacesArgs) {
+        id
+        single
+        double
+        mix
+      }
+    }
+  }
+`;
+
 @Injectable()
 export class RankingBreakdownService {
   private readonly apollo = inject(Apollo);
+  private readonly http = inject(HttpClient);
 
   // Player slug/id to resolve
   playerSlugOrId = signal<string | null>(null);
@@ -242,30 +259,21 @@ export class RankingBreakdownService {
     if (!query || query.length < 2) return [];
 
     try {
+      const searchResults = await lastValueFrom(
+        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string } }>>(`/api/v1/search`, {
+          params: { query, types: 'players' },
+        }),
+      );
+
+      const playerIds = searchResults.map((r) => r.hit.objectID).filter(Boolean);
+      if (playerIds.length === 0) return [];
+
       const result = await lastValueFrom(
         this.apollo.query<{ players: PlayerSearchResult[] }>({
-          query: gql`
-            query SearchPlayersForSim($args: PlayerArgs, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
-              players(args: $args) {
-                id
-                fullName
-                rankingLastPlaces(args: $rankingLastPlacesArgs) {
-                  id
-                  single
-                  double
-                  mix
-                }
-              }
-            }
-          `,
+          query: PLAYERS_BY_IDS_QUERY,
           variables: {
             args: {
-              where: {
-                OR: [
-                  { firstName: { ilike: `%${query}%` } },
-                  { lastName: { ilike: `%${query}%` } },
-                ],
-              },
+              where: { id: { in: playerIds } },
               take: 10,
             },
             rankingLastPlacesArgs: {
