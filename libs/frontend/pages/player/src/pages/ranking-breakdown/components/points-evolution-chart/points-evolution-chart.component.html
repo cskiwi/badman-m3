@@ -1,0 +1,27 @@
+<p-accordion>
+  <p-accordion-panel value="0">
+    <p-accordion-header>
+      <span class="flex items-center gap-2">
+        <i class="pi pi-chart-line text-primary"></i>
+        <span>Point Evolution History</span>
+      </span>
+    </p-accordion-header>
+    <p-accordion-content>
+      @if (loading()) {
+        <div class="p-4">
+          <p-skeleton height="160px" />
+        </div>
+      } @else if (chartData()) {
+        <div class="p-4" [style.height.px]="chartHeight()+20">
+          <p-chart type="line" [height]="'' + chartHeight()" [data]="chartData()" [options]="chartOptions()" />
+        </div> 
+      } @else {
+        <div class="flex items-center justify-center p-8 text-muted-color text-sm">
+          <i class="pi pi-inbox mr-2"></i>
+          No ranking history available.
+        </div>
+      }
+    </p-accordion-content>
+  </p-accordion-panel>
+</p-accordion>
+

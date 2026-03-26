@@ -13,17 +13,15 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { ListGamesComponent, PeriodSelectionComponent } from './components';
+import { ListGamesComponent, PeriodSelectionComponent, PointsEvolutionChartComponent } from './components';
 import { RankingBreakdownService, RankingType } from './page-ranking-breakdown.service';
 import { ShowLevelService } from '../detail/components/show-level.service';
-import { RankingSystem } from '@app/models';
 import { AuthService } from '@app/frontend-modules-auth/service';
 
 @Component({
   selector: 'app-page-ranking-breakdown',
   templateUrl: './page-ranking-breakdown.component.html',
   styleUrl: './page-ranking-breakdown.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [RankingBreakdownService],
   imports: [
     FormsModule,
@@ -38,10 +36,10 @@ import { AuthService } from '@app/frontend-modules-auth/service';
     ToggleButtonModule,
     ListGamesComponent,
     PeriodSelectionComponent,
+    PointsEvolutionChartComponent,
   ],
 })
 export class PageRankingBreakdownComponent {
-  private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly seoService = inject(SeoService);
@@ -63,7 +61,7 @@ export class PageRankingBreakdownComponent {
   private readonly qpShowDowngrade = injectQueryParams('showDowngrade');
 
   // System
-  system = computed(() => this.systemService.system() as RankingSystem);
+  system = this.systemService.system;
   systemLoaded = this.systemService.loaded;
 
   // Ranking place from show level service

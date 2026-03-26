@@ -61,8 +61,12 @@
             />
             <p-togglebutton
               [(ngModel)]="filter.controls.includeOutOfScopeLatestX.value"
-              onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{ breakdownService.outOfScopeLatestXGames() }}"
-              offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{ breakdownService.outOfScopeLatestXGames() }}"
+              onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{
+                breakdownService.outOfScopeLatestXGames()
+              }}"
+              offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{
+                breakdownService.outOfScopeLatestXGames()
+              }}"
               (onChange)="filter.controls.includeOutOfScopeLatestX.setValue($event.checked)"
             />
           }
@@ -88,6 +92,15 @@
           />
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Point Evolution History -->
+  <section class="mb-6">
+    <div class="rounded-border border border-surface overflow-hidden">
+      @defer (on idle) {
+        <app-points-evolution-chart [playerId]="breakdownService.resolvedPlayerId()!" [system]="system()" [type]="type()" />
+      }
     </div>
   </section>
 
