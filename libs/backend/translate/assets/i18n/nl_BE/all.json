@@ -148,7 +148,8 @@
     "unknown": "Onbekend",
     "viewAll": "Bekijk Alle",
     "viewDetails": "Details bekijken",
-    "yes": "Ja"
+    "yes": "Ja",
+    "required": "Dit veld is verplicht"
   },
   "competition": {
     "bracket_view": "Schema Weergave",
@@ -580,7 +581,8 @@
       "subtitle": "Wijzig speler profiel informatie",
       "tabs": {
         "claims": "Rechten",
-        "profile": "Profiel"
+        "profile": "Profiel",
+        "ranking": "Ranking"
       },
       "title": "Speler Bewerken"
     },
@@ -733,6 +735,21 @@
       "upgrade-average": "Avg. promotie",
       "usedForDowngrade": "Degradatie",
       "usedForUpgrade": "Promotie"
+    },
+    "edit": {
+      "add": "Ranking toevoegen",
+      "date": "Datum",
+      "double": "Dubbel",
+      "double-points": "Dubbel punten",
+      "edit": "Ranking bewerken",
+      "mix": "Mixed",
+      "mix-points": "Mixed punten",
+      "next-ranking": "Volgende ranking",
+      "no-ranking": "Geen rankingdata gevonden",
+      "single": "Enkel",
+      "single-points": "Enkel punten",
+      "update-possible": "Ranking update",
+      "updates": "updates"
     }
   },
   "search": {

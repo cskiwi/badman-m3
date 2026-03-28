@@ -19,6 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { PlayerProfileComponent } from './components/player-profile/player-profile.component';
 import { PlayerClaimsComponent } from './components/player-claims/player-claims.component';
+import { PlayerRankingComponent } from './components/player-ranking/player-ranking.component';
 
 const GET_PLAYER_WITH_DETAILS = gql`
   query GetPlayerWithDetails($id: ID!) {
@@ -57,7 +58,8 @@ const GET_PLAYER_WITH_DETAILS = gql`
     PageHeaderComponent,
     TranslateModule,
     PlayerProfileComponent,
-    PlayerClaimsComponent
+    PlayerClaimsComponent,
+    PlayerRankingComponent,
 ],
   providers: [MessageService],
   templateUrl: './page-edit.component.html',

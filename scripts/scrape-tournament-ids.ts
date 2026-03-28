@@ -81,8 +81,11 @@ function extractTournamentIds(html: string): string[] {
 }
 
 function extractFieldValue(html: string, fieldName: string): string | null {
+  const nameWithoutColon = fieldName.replace(/:$/, '');
+  // The label is in one <td> and the value is in the next <td>:
+  // <td><strong>Field:</strong></td><td ...>value</td>
   const pattern = new RegExp(
-    `<strong>${fieldName}[^<]*<\\/strong>\\s*([^<]+?)\\s*(?:<|$)`,
+    `<strong>${nameWithoutColon}:?[^<]*<\\/strong><\\/td><td[^>]*>\\s*([^<]+?)\\s*(?:<|$)`,
     'i',
   );
   const match = pattern.exec(html);
@@ -107,9 +110,16 @@ function parseOfficialCategory(category: string | null): {
   levelMax: number | null;
 } {
   if (!category) return { official: false, levelMin: null, levelMax: null };
-  const match = /^\s*(\d+)\s*-\s*(\d+)\s*$/.exec(category);
-  if (!match) return { official: false, levelMin: null, levelMax: null };
-  return { official: true, levelMin: Number(match[1]), levelMax: Number(match[2]) };
+
+  // Youth (-11, -13) and veteran (+35, +40) categories have sign-prefixed tokens — not official
+  if (/(?:^|\s)[+-]\d/.test(category)) return { official: false, levelMin: null, levelMax: null };
+
+  // Extract all numbers; official ranking levels are strictly 1–12
+  const numbers = [...category.matchAll(/\d+/g)].map((m) => Number(m[0]));
+  if (numbers.length === 0) return { official: false, levelMin: null, levelMax: null };
+  if (numbers.some((n) => n < 1 || n > 12)) return { official: false, levelMin: null, levelMax: null };
+
+  return { official: true, levelMin: Math.min(...numbers), levelMax: Math.max(...numbers) };
 }
 
 function extractEventName(url: string): string {
@@ -169,7 +179,13 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
 
     if (tournamentIds.length > 0) {
       console.log(` ✅ ${tournamentIds.length} tournament(s)`);
-      for (const id of tournamentIds) {
+      for (let j = 0; j < tournamentIds.length; j++) {
+        const id = tournamentIds[j];
+        const isLast = j === tournamentIds.length - 1;
+        const indent = isLast ? '     ' : '│    ';
+        console.log(
+          `   ${indent} status: ${status ?? '-'} | category: ${category ?? '-'} | group: ${group ?? '-'} | official: ${official}${official ? ` (levels ${levelMin}-${levelMax})` : ''}`,
+        );
         results.push({
           year,
           eventUrl,
@@ -182,8 +198,9 @@ async function scrapeYear(year: number): Promise<TournamentInfo[]> {
           levelMin,
           levelMax,
         });
+        console.log('')
       }
-    } else {
+  } else {
       console.log(' (no tournament link)');
       results.push({
         year,

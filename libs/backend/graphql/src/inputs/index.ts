@@ -1,4 +1,5 @@
 export * from './player.input';
+export * from './ranking-place.input';
 export * from './team.input';
 export * from './claim.input';
 export * from './role.input';

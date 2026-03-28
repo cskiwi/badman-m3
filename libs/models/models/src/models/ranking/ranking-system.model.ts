@@ -265,6 +265,7 @@ export class RankingSystem extends BaseEntity {
     const d = date ?? new Date();
     return RankingSystem.findOne({
       where: {
+        rankingSystem: RankingSystems.BVL,
         startDate: LessThanOrEqual(d),
         endDate: Or(MoreThanOrEqual(d), IsNull()),
       },

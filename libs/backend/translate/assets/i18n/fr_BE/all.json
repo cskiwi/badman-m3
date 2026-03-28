@@ -148,7 +148,8 @@
     "unknown": "Inconnu",
     "viewAll": "Voir Tout",
     "viewDetails": "Voir Détails",
-    "yes": "Oui"
+    "yes": "Oui",
+    "required": "Ce champ est obligatoire"
   },
   "competition": {
     "bracket_view": "Vue en tableau",
@@ -580,7 +581,8 @@
       "subtitle": "Modifier les informations du profil du joueur",
       "tabs": {
         "claims": "Permissions",
-        "profile": "Profil"
+        "profile": "Profil",
+        "ranking": "Classement"
       },
       "title": "Modifier le Joueur"
     },
@@ -733,6 +735,21 @@
       "upgrade-average": "Moyenne. promotion",
       "usedForDowngrade": "Dégradation",
       "usedForUpgrade": "Promotion"
+    },
+    "edit": {
+      "add": "Ajouter classement",
+      "date": "Date",
+      "double": "Double",
+      "double-points": "Points double",
+      "edit": "Modifier classement",
+      "mix": "Mixte",
+      "mix-points": "Points mixte",
+      "next-ranking": "Prochain classement",
+      "no-ranking": "Aucune donnée de classement trouvée",
+      "single": "Simple",
+      "single-points": "Points simple",
+      "update-possible": "Mise à jour classement",
+      "updates": "mises à jour"
     }
   },
   "search": {

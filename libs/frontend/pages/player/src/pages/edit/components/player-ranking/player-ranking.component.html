@@ -1,0 +1,176 @@
+@if (loading()) {
+  <p-progressBar mode="indeterminate" />
+} @else {
+  <div>
+    <p-button
+      [label]="'all.ranking.edit.add' | translate"
+      icon="pi pi-plus"
+      [outlined]="true"
+      (onClick)="openEditDialog()"
+    />
+  </div>
+  <div class="flex flex-col gap-4">
+    <p-accordion [multiple]="true" [value]="['0']">
+      @for (group of rankingGroups(); track $index; let i = $index) {
+        <p-accordion-panel [value]="i.toString()">
+          <p-accordion-header>
+            <div class="flex items-center justify-between w-full pr-4">
+              @if (group[0]) {
+                <span class="font-medium text-color">
+                  {{ group[0].rankingDate | date: 'mediumDate' }}
+                  <span class="text-muted-color ml-2">
+                    {{ group[0].single }} / {{ group[0].double }} / {{ group[0].mix }}
+                  </span>
+                </span>
+              } @else {
+                <span class="font-medium text-color-emphasis">
+                  {{ 'all.ranking.edit.next-ranking' | translate }}
+                </span>
+              }
+              <span class="text-sm text-muted-color">
+                {{ group[1].length }} {{ 'all.ranking.edit.updates' | translate }}
+              </span>
+            </div>
+          </p-accordion-header>
+          <p-accordion-content>
+            <div class="flex flex-col gap-1">
+              @for (place of group[1]; track place.id) {
+                <div
+                  class="flex items-center justify-between p-3 rounded-border cursor-pointer border border-surface hover:bg-emphasis"
+                  (click)="openEditDialog(place)"
+                >
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium text-color">{{ place.rankingDate | date: 'mediumDate' }}</span>
+                      @if (place.updatePossible) {
+                        <span class="text-xs px-2 py-0.5 bg-highlight rounded-border text-color-emphasis">
+                          {{ 'all.ranking.edit.update-possible' | translate }}
+                        </span>
+                      }
+                    </div>
+                    @if (place.singlePoints || place.doublePoints || place.mixPoints) {
+                      <div class="text-sm text-muted-color flex gap-3">
+                        @if (place.singlePoints) {
+                          <span>{{ 'all.ranking.edit.single' | translate }}: {{ place.singlePoints }}</span>
+                        }
+                        @if (place.doublePoints) {
+                          <span>{{ 'all.ranking.edit.double' | translate }}: {{ place.doublePoints }}</span>
+                        }
+                        @if (place.mixPoints) {
+                          <span>{{ 'all.ranking.edit.mix' | translate }}: {{ place.mixPoints }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                  <div class="flex items-center gap-4 text-sm font-medium text-color">
+                    <span>{{ place.single }}</span>
+                    <span class="text-muted-color">/</span>
+                    <span>{{ place.double }}</span>
+                    <span class="text-muted-color">/</span>
+                    <span>{{ place.mix }}</span>
+                    <i class="pi pi-pencil text-muted-color text-xs"></i>
+                  </div>
+                </div>
+              }
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      }
+
+      @if (rankingGroups().length === 0) {
+        <div class="text-center text-muted-color py-8">
+          {{ 'all.ranking.edit.no-ranking' | translate }}
+        </div>
+      }
+    </p-accordion>
+  </div>
+}
+
+<p-dialog
+  [visible]="dialogVisible()"
+  (visibleChange)="dialogVisible.set($event)"
+  [modal]="true"
+  [style]="{ width: '480px' }"
+  [header]="isNewPlace() ? ('all.ranking.edit.add' | translate) : ('all.ranking.edit.edit' | translate)"
+  [closable]="true"
+>
+  <form [formGroup]="editForm" class="flex flex-col gap-4 pt-2">
+    <div class="field">
+      <label class="block mb-1 font-medium text-color">{{ 'all.ranking.edit.date' | translate }}</label>
+      <p-datePicker
+        formControlName="rankingDate"
+        [showIcon]="true"
+        dateFormat="dd/mm/yy"
+        [showButtonBar]="true"
+        styleClass="w-full"
+      />
+      @if (editForm.get('rankingDate')?.invalid && editForm.get('rankingDate')?.touched) {
+        <small class="p-error">{{ 'all.common.required' | translate }}</small>
+      }
+    </div>
+
+    <div class="field flex items-center gap-3">
+      <p-toggleSwitch formControlName="updatePossible" inputId="updatePossible" />
+      <label for="updatePossible" class="text-color">{{ 'all.ranking.edit.update-possible' | translate }}</label>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3">
+      <div class="field">
+        <label class="block mb-1 font-medium text-color">{{ 'all.ranking.edit.single' | translate }}</label>
+        <p-inputNumber formControlName="single" [min]="1" [showButtons]="false" styleClass="w-full" />
+      </div>
+      <div class="field">
+        <label class="block mb-1 font-medium text-color">{{ 'all.ranking.edit.double' | translate }}</label>
+        <p-inputNumber formControlName="double" [min]="1" [showButtons]="false" styleClass="w-full" />
+      </div>
+      <div class="field">
+        <label class="block mb-1 font-medium text-color">{{ 'all.ranking.edit.mix' | translate }}</label>
+        <p-inputNumber formControlName="mix" [min]="1" [showButtons]="false" styleClass="w-full" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3">
+      <div class="field">
+        <label class="block mb-1 text-sm text-muted-color">{{ 'all.ranking.edit.single-points' | translate }}</label>
+        <p-inputNumber formControlName="singlePoints" [min]="0" [showButtons]="false" styleClass="w-full" />
+      </div>
+      <div class="field">
+        <label class="block mb-1 text-sm text-muted-color">{{ 'all.ranking.edit.double-points' | translate }}</label>
+        <p-inputNumber formControlName="doublePoints" [min]="0" [showButtons]="false" styleClass="w-full" />
+      </div>
+      <div class="field">
+        <label class="block mb-1 text-sm text-muted-color">{{ 'all.ranking.edit.mix-points' | translate }}</label>
+        <p-inputNumber formControlName="mixPoints" [min]="0" [showButtons]="false" styleClass="w-full" />
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between">
+      @if (!isNewPlace()) {
+        <p-button
+          [label]="'all.button.delete' | translate"
+          severity="danger"
+          [outlined]="true"
+          icon="pi pi-trash"
+          (onClick)="onDelete()"
+        />
+      } @else {
+        <span></span>
+      }
+      <div class="flex gap-2">
+        <p-button
+          [label]="'all.button.close' | translate"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="dialogVisible.set(false)"
+        />
+        <p-button
+          [label]="'all.button.save' | translate"
+          icon="pi pi-check"
+          (onClick)="onSave()"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

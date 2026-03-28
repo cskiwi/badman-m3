@@ -148,7 +148,8 @@
     "unknown": "Unknown",
     "viewAll": "View All",
     "viewDetails": "View Details",
-    "yes": "Yes"
+    "yes": "Yes",
+    "required": "This field is required"
   },
   "competition": {
     "bracket_view": "Bracket View",
@@ -580,7 +581,8 @@
       "subtitle": "Modify player profile information",
       "tabs": {
         "claims": "Permissions",
-        "profile": "Profile"
+        "profile": "Profile",
+        "ranking": "Ranking"
       },
       "title": "Edit Player"
     },
@@ -733,6 +735,21 @@
       "upgrade-average": "Avg. promotion",
       "usedForDowngrade": "Degradation",
       "usedForUpgrade": "Promotion"
+    },
+    "edit": {
+      "add": "Add ranking",
+      "date": "Date",
+      "double": "Double",
+      "double-points": "Double points",
+      "edit": "Edit ranking",
+      "mix": "Mix",
+      "mix-points": "Mix points",
+      "next-ranking": "Next ranking",
+      "no-ranking": "No ranking data found",
+      "single": "Single",
+      "single-points": "Single points",
+      "update-possible": "Ranking update",
+      "updates": "updates"
     }
   },
   "search": {

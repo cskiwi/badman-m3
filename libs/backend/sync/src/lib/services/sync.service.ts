@@ -15,7 +15,9 @@ import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
   GameSyncJobData,
   JOB_TYPES,
+  RANKING_CALC_QUEUE,
   RANKING_SYNC_QUEUE,
+  RankingCalcInitJobData,
   RankingSyncInitJobData,
   StructureSyncJobData,
   SYNC_QUEUE,
@@ -29,6 +31,8 @@ import {
   TournamentRankingRecalcJobData,
   TournamentSyncJobData,
 } from '../queues/sync.queue';
+import { RankingSystem } from '@app/models';
+import { RankingSystems } from '@app/models-enum';
 
 @Injectable()
 export class SyncService {
@@ -52,6 +56,9 @@ export class SyncService {
     @InjectQueue(RANKING_SYNC_QUEUE)
     private readonly rankingSyncQueue: Queue,
 
+    @InjectQueue(RANKING_CALC_QUEUE)
+    private readonly rankingCalcQueue: Queue,
+
     @InjectFlowProducer(COMPETITION_EVENT_QUEUE)
     private readonly competitionSyncFlow: FlowProducer,
 
@@ -63,7 +70,7 @@ export class SyncService {
    * Get all queue instances as an array for easy iteration
    */
   private getAllQueues(): Queue[] {
-    return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue, this.rankingSyncQueue];
+    return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue, this.rankingSyncQueue, this.rankingCalcQueue];
   }
 
 
@@ -78,6 +85,7 @@ export class SyncService {
       [TOURNAMENT_EVENT_QUEUE]: this.tournamentEventQueue,
       [TEAM_MATCHING_QUEUE]: this.teamMatchingQueue,
       [RANKING_SYNC_QUEUE]: this.rankingSyncQueue,
+      [RANKING_CALC_QUEUE]: this.rankingCalcQueue,
     };
   }
 
@@ -145,6 +153,114 @@ export class SyncService {
   @Cron('0 4 * * 1')
   async scheduleRankingSync(): Promise<void> {
     await this.queueRankingSync();
+  }
+
+  /**
+   * Self-calculated ranking — runs daily at 3 AM, checks all non-VISUAL systems
+   */
+  @Cron('0 3 * * *')
+  async scheduleRankingCalc(): Promise<void> {
+    await this.queueRankingCalc();
+  }
+
+  /**
+   * Enqueue calculation jobs for all non-VISUAL ranking systems that are due
+   */
+  async queueRankingCalc(options?: { startDate?: Date; stopDate?: Date }): Promise<void> {
+    const systems = await RankingSystem.find({ where: { runCurrently: true } });
+
+    for (const system of systems) {
+      if (system.rankingSystem === RankingSystems.VISUAL) continue;
+
+      const snapshotDates = this.getNextSnapshotDates(system, options);
+      for (const { calcDate, isUpdateDate } of snapshotDates) {
+        const data: RankingCalcInitJobData = {
+          systemId: system.id,
+          calcDate: calcDate.toISOString(),
+          isUpdateDate,
+          metadata: {
+            displayName: `Ranking calc: ${system.name} (${calcDate.toISOString().slice(0, 10)})`,
+          },
+        };
+        await this.rankingCalcQueue.add(JOB_TYPES.RANKING_CALC_INIT, data, { priority: 10 });
+        this.logger.log(`Queued ranking calc for ${system.name} on ${calcDate.toISOString()}`);
+      }
+    }
+  }
+
+  private getNextSnapshotDates(
+    system: RankingSystem,
+    options?: { startDate?: Date; stopDate?: Date },
+  ): Array<{ calcDate: Date; isUpdateDate: boolean }> {
+    const { calculationIntervalAmount, calculationIntervalUnit, calculationDayOfWeek } = system;
+
+    if (!calculationIntervalAmount || !calculationIntervalUnit) return [];
+
+    const stopDay = options?.stopDate ? new Date(options.stopDate) : new Date();
+
+    // Start from provided startDate, or last calculation, or 1 interval ago
+    const fromDate =
+      options?.startDate ??
+      system.calculationLastUpdate ??
+      new Date(Date.now() - calculationIntervalAmount * this.unitToMs(calculationIntervalUnit));
+
+    let cursor = new Date(fromDate);
+    // Advance past the last-calculated date by one interval
+    if (system.calculationLastUpdate && !options?.startDate) {
+      cursor = new Date(cursor.getTime() + calculationIntervalAmount * this.unitToMs(calculationIntervalUnit));
+    }
+
+    // Snap to the correct day of week if configured
+    if (calculationDayOfWeek !== undefined && calculationDayOfWeek !== null) {
+      cursor = this.snapToDayOfWeek(cursor, calculationDayOfWeek);
+    }
+
+    const result: Array<{ calcDate: Date; isUpdateDate: boolean }> = [];
+
+    while (cursor <= stopDay) {
+      result.push({ calcDate: new Date(cursor), isUpdateDate: this.isUpdateDue(cursor, system) });
+
+      cursor = new Date(cursor.getTime() + calculationIntervalAmount * this.unitToMs(calculationIntervalUnit));
+      if (calculationDayOfWeek !== undefined && calculationDayOfWeek !== null) {
+        cursor = this.snapToDayOfWeek(cursor, calculationDayOfWeek);
+      }
+    }
+
+    return result;
+  }
+
+  private isUpdateDue(date: Date, system: RankingSystem): boolean {
+    const { updateIntervalAmount, updateIntervalUnit, updateDayOfWeek, updateLastUpdate } = system;
+    if (!updateIntervalAmount || !updateIntervalUnit) return false;
+
+    const nextDue = updateLastUpdate
+      ? new Date(updateLastUpdate.getTime() + updateIntervalAmount * this.unitToMs(updateIntervalUnit))
+      : new Date(0);
+
+    if (date < nextDue) return false;
+
+    if (updateDayOfWeek !== undefined && updateDayOfWeek !== null) {
+      return date.getDay() === updateDayOfWeek;
+    }
+
+    return true;
+  }
+
+  private snapToDayOfWeek(date: Date, targetDay: number): Date {
+    const d = new Date(date);
+    while (d.getDay() !== targetDay) {
+      d.setDate(d.getDate() + 1);
+    }
+    return d;
+  }
+
+  private unitToMs(unit: string): number {
+    switch (unit) {
+      case 'days':   return 86400000;
+      case 'weeks':  return 7 * 86400000;
+      case 'months': return 30 * 86400000; // approximate
+      default:       return 86400000;
+    }
   }
 
   /**

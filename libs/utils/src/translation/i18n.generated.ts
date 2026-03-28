@@ -156,6 +156,7 @@ export type I18nTranslations = {
             "viewAll": string;
             "viewDetails": string;
             "yes": string;
+            "required": string;
         };
         "competition": {
             "bracket_view": string;
@@ -588,6 +589,7 @@ export type I18nTranslations = {
                 "tabs": {
                     "claims": string;
                     "profile": string;
+                    "ranking": string;
                 };
                 "title": string;
             };
@@ -740,6 +742,21 @@ export type I18nTranslations = {
                 "upgrade-average": string;
                 "usedForDowngrade": string;
                 "usedForUpgrade": string;
+            };
+            "edit": {
+                "add": string;
+                "date": string;
+                "double": string;
+                "double-points": string;
+                "edit": string;
+                "mix": string;
+                "mix-points": string;
+                "next-ranking": string;
+                "no-ranking": string;
+                "single": string;
+                "single-points": string;
+                "update-possible": string;
+                "updates": string;
             };
         };
         "search": {

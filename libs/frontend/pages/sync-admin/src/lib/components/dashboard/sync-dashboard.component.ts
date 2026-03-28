@@ -24,6 +24,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { SyncJob } from '../../models';
 import { SyncApiService } from '../../services';
+import { RankingSystemsOverviewComponent } from '../ranking-systems/ranking-systems-overview.component';
 import { SyncDashboardService } from './sync-dashboard.service';
 
 @Component({
@@ -50,6 +51,7 @@ import { SyncDashboardService } from './sync-dashboard.service';
     DatePipe,
     CheckboxModule,
     InputNumberModule,
+    RankingSystemsOverviewComponent,
   ],
   providers: [MessageService, ConfirmationService, SyncDashboardService],
   templateUrl: './sync-dashboard.component.html',

@@ -31,3 +31,16 @@ export interface SyncTriggerResponse {
   message: string;
   success: boolean;
 }
+
+export interface RankingSystemSyncInfo {
+  id: string;
+  name: string;
+  rankingSystem: 'BVL' | 'LFBB' | 'VISUAL' | 'ORIGINAL';
+  runCurrently: boolean;
+  calculationLastUpdate?: string;
+  updateLastUpdate?: string;
+  calculationIntervalAmount?: number;
+  calculationIntervalUnit?: string;
+  updateIntervalAmount?: number;
+  updateIntervalUnit?: string;
+}
