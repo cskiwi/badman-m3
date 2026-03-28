@@ -837,6 +837,7 @@ export type I18nTranslations = {
                     "expand": string;
                     "jobId": string;
                     "noJobsFound": string;
+                    "search": string;
                     "progress": string;
                     "retry": string;
                     "retryError": string;

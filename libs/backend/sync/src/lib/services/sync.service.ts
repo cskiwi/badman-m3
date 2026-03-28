@@ -29,6 +29,9 @@ import {
   COMPETITION_EVENT_QUEUE,
   TournamentDiscoveryJobData,
   TournamentRankingRecalcJobData,
+  TournamentScrapeEventJobData,
+  TournamentScrapeYearJobData,
+  TournamentScrapeYearCleanupJobData,
   TournamentSyncJobData,
 } from '../queues/sync.queue';
 import { RankingSystem } from '@app/models';
@@ -287,6 +290,34 @@ export class SyncService {
   async queueTournamentAddByCode(data: TournamentAddByCodeJobData): Promise<void> {
     await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_ADD_BY_CODE, data, {
       priority: 1,
+    });
+  }
+
+  /**
+   * Queue scraping of the badmintonvlaanderen.be calendar for a given year.
+   * Dispatches individual TOURNAMENT_SCRAPE_EVENT jobs for each calendar event found.
+   */
+  async queueTournamentScrapeYear(data: TournamentScrapeYearJobData): Promise<void> {
+    await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_SCRAPE_YEAR, data, {
+      priority: 2,
+    });
+  }
+
+  /**
+   * Queue a cleanup job to mark official=false for tournaments in a year not found on the calendar.
+   */
+  async queueTournamentScrapeYearCleanup(data: TournamentScrapeYearCleanupJobData): Promise<void> {
+    await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP, data, {
+      priority: 2,
+    });
+  }
+
+  /**
+   * Queue scraping of a single badmintonvlaanderen.be calendar event page.
+   */
+  async queueTournamentScrapeEvent(data: TournamentScrapeEventJobData): Promise<void> {
+    await this.tournamentDiscoveryQueue.add(JOB_TYPES.TOURNAMENT_SCRAPE_EVENT, data, {
+      priority: 2,
     });
   }
 

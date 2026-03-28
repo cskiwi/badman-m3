@@ -830,6 +830,7 @@
         "expand": "Développer",
         "jobId": "ID de tâche",
         "noJobsFound": "Aucune tâche récente trouvée",
+        "search": "Rechercher par ID, nom ou statut…",
         "progress": "Progression",
         "retry": "Réessayer la tâche",
         "retryError": "Échec de la reprise de la tâche {{id}}",

@@ -830,6 +830,7 @@
         "expand": "Uitklappen",
         "jobId": "Job ID",
         "noJobsFound": "Geen recente jobs gevonden",
+        "search": "Zoek op ID, naam of status…",
         "progress": "Voortgang",
         "retry": "Job opnieuw proberen",
         "retryError": "Fout bij opnieuw proberen van job {{id}}",

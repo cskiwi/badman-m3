@@ -830,6 +830,7 @@
         "expand": "Expand",
         "jobId": "Job ID",
         "noJobsFound": "No recent jobs found",
+        "search": "Search by ID, name or status…",
         "progress": "Progress",
         "retry": "Retry Job",
         "retryError": "Failed to retry job {{id}}",

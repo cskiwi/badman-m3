@@ -537,6 +537,58 @@ export class SyncResolver {
     };
   }
 
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerTournamentScrapeYear(
+    @User() user: Player,
+    @Args('year', { type: () => Int }) year: number,
+    @Args('runAdding', { type: () => Boolean, defaultValue: true }) runAdding: boolean,
+    @Args('runCleanup', { type: () => Boolean, defaultValue: true }) runCleanup: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger tournament scrape');
+    }
+
+    await this.syncService.queueTournamentScrapeYear({
+      year,
+      runAdding,
+      runCleanup,
+      metadata: { displayName: `Scrape calendar year ${year}` },
+    });
+
+    return {
+      message: `Tournament calendar scrape for ${year} queued (runAdding=${runAdding}, runCleanup=${runCleanup})`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerTournamentScrapeYears(
+    @User() user: Player,
+    @Args('years', { type: () => [Int] }) years: number[],
+    @Args('runAdding', { type: () => Boolean, defaultValue: true }) runAdding: boolean,
+    @Args('runCleanup', { type: () => Boolean, defaultValue: true }) runCleanup: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger tournament scrape');
+    }
+
+    for (const year of years) {
+      await this.syncService.queueTournamentScrapeYear({
+        year,
+        runAdding,
+        runCleanup,
+        metadata: { displayName: `Scrape calendar year ${year}` },
+      });
+    }
+
+    return {
+      message: `Tournament calendar scrape queued for years: ${years.join(', ')} (runAdding=${runAdding}, runCleanup=${runCleanup})`,
+      success: true,
+    };
+  }
+
   @Mutation(() => TournamentOfficialSyncResult)
   @UseGuards(PermGuard)
   async syncTournamentOfficialStatus(@User() user: Player): Promise<TournamentOfficialSyncResult> {

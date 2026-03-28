@@ -20,6 +20,10 @@ export const JOB_TYPES = {
   // Discovery jobs
   TOURNAMENT_DISCOVERY: 'tournament-discovery',
   TOURNAMENT_ADD_BY_CODE: 'tournament-add-by-code',
+  // Badmintonvlaanderen.be calendar scraping
+  TOURNAMENT_SCRAPE_YEAR: 'tournament-scrape-year',
+  TOURNAMENT_SCRAPE_EVENT: 'tournament-scrape-event',
+  TOURNAMENT_SCRAPE_YEAR_CLEANUP: 'tournament-scrape-year-cleanup',
 
   // Structure sync jobs (events, draws, entries)
   TOURNAMENT_STRUCTURE_SYNC: 'tournament-structure-sync',
@@ -87,7 +91,7 @@ export const ALL_SYNC_QUEUES = [
 
 // Queue to job type mapping for easy reference
 export const QUEUE_JOB_TYPE_MAP = {
-  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE],
+  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE, JOB_TYPES.TOURNAMENT_SCRAPE_YEAR, JOB_TYPES.TOURNAMENT_SCRAPE_EVENT, JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP],
   [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
   [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC, JOB_TYPES.TOURNAMENT_RANKING_RECALC],
   [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
@@ -228,5 +232,26 @@ export interface TeamMatchingJobData {
     strength?: number;
   }>;
   // Display metadata
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentScrapeYearJobData {
+  year: number;
+  /** Whether to queue individual event scrape jobs (default: true) */
+  runAdding?: boolean;
+  /** Whether to queue the year cleanup job to mark absent tournaments (default: true) */
+  runCleanup?: boolean;
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentScrapeEventJobData {
+  year: number;
+  eventUrl: string;
+  eventName: string;
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentScrapeYearCleanupJobData {
+  year: number;
   metadata?: JobDisplayMetadata;
 }

@@ -8,9 +8,13 @@ import {
   TOURNAMENT_DISCOVERY_QUEUE as DISCOVERY_QUEUE,
   TournamentDiscoveryJobData,
   TournamentAddByCodeJobData,
+  TournamentScrapeYearJobData,
+  TournamentScrapeEventJobData,
+  TournamentScrapeYearCleanupJobData,
   JOB_TYPES,
 } from '../queues/sync.queue';
 import { SyncService } from '../services/sync.service';
+import { TournamentScrapeService } from './services/tournament-scrape.service';
 import dayjs = require('dayjs');
 
 @Injectable()
@@ -22,17 +26,38 @@ export class DiscoveryProcessor extends WorkerHost {
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly indexService: IndexService,
     private readonly syncService: SyncService,
+    private readonly tournamentScrapeService: TournamentScrapeService,
   ) {
     super();
   }
 
-  async process(job: Job<TournamentDiscoveryJobData | TournamentAddByCodeJobData, void, string>): Promise<void> {
+  async process(
+    job: Job<TournamentDiscoveryJobData | TournamentAddByCodeJobData | TournamentScrapeYearJobData | TournamentScrapeEventJobData | TournamentScrapeYearCleanupJobData, void, string>,
+  ): Promise<void> {
     this.logger.log(`Processing job: ${job.name} (${job.id})`);
 
+    const updateProgress = async (progress: number) => {
+      await job.updateProgress(progress);
+    };
+
     try {
-      // Handle add by visual code
       if (job.name === JOB_TYPES.TOURNAMENT_ADD_BY_CODE) {
         await this.processAddByCode(job as Job<TournamentAddByCodeJobData>);
+        return;
+      }
+
+      if (job.name === JOB_TYPES.TOURNAMENT_SCRAPE_YEAR) {
+        await this.tournamentScrapeService.processScrapeYear(job as Job<TournamentScrapeYearJobData>, updateProgress);
+        return;
+      }
+
+      if (job.name === JOB_TYPES.TOURNAMENT_SCRAPE_EVENT) {
+        await this.tournamentScrapeService.processScrapeEvent(job as Job<TournamentScrapeEventJobData>, updateProgress);
+        return;
+      }
+
+      if (job.name === JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP) {
+        await this.tournamentScrapeService.processScrapeYearCleanup(job as Job<TournamentScrapeYearCleanupJobData>, updateProgress);
         return;
       }
 
