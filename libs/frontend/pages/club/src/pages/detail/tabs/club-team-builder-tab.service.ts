@@ -121,6 +121,25 @@ const SAVE_TEAM_BUILDER = gql`
   }
 `;
 
+const PLAYER_WITH_RANKINGS_QUERY = gql`
+  query TeamBuilderPlayerRankings($args: PlayerArgs, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
+    players(args: $args) {
+      id
+      fullName
+      firstName
+      lastName
+      gender
+      slug
+      rankingLastPlaces(args: $rankingLastPlacesArgs) {
+        id
+        single
+        double
+        mix
+      }
+    }
+  }
+`;
+
 interface SubEventInfo {
   id: string;
   name: string;
@@ -170,6 +189,12 @@ export class ClubTeamBuilderTabService {
   readonly surveyResponses = signal<SurveyResponse[]>([]);
   readonly initialized = signal(false);
   readonly loadedFromDraft = signal(false);
+
+  // Manually added/removed players
+  // Tracks how many pool slots have been removed per player (not all-or-nothing)
+  readonly removedSlots = signal<Map<string, number>>(new Map());
+  readonly removedPlayers = signal<TeamBuilderPlayer[]>([]);
+  readonly manuallyAddedPlayers = signal<TeamBuilderPlayer[]>([]);
 
   // Sub-event info collected from current season entries (for promotion shifting)
   private subEventsByType = signal<Map<string, SubEventInfo[]>>(new Map());
@@ -262,11 +287,50 @@ export class ClubTeamBuilderTabService {
 
   unassignedPlayers = computed(() => {
     const allTeams = this.teams();
-    const assignedIds = new Set(allTeams.flatMap((t) => t.players.map((p) => p.id)));
+    const activeTeams = allTeams.filter((t) => !t.isMarkedForRemoval);
     const stoppingIds = new Set(this.stoppingPlayers().map((p) => p.id));
 
-    const allPlayers = this.getAllPlayersFromData();
-    return allPlayers.filter((p) => !assignedIds.has(p.id) && !stoppingIds.has(p.id));
+    // Count how many active teams each player is a REGULAR in (backups don't count)
+    const playerTeamCount = new Map<string, number>();
+    for (const team of activeTeams) {
+      for (const player of team.players) {
+        if (player.membershipType === 'REGULAR') {
+          playerTeamCount.set(player.id, (playerTeamCount.get(player.id) ?? 0) + 1);
+        }
+      }
+    }
+
+    const removedSlotsMap = this.removedSlots();
+    const allPlayers = [...this.getAllPlayersFromData(), ...this.manuallyAddedPlayers()];
+    // Deduplicate by ID (manually added player may overlap with data players)
+    const seen = new Set<string>();
+    const uniquePlayers: TeamBuilderPlayer[] = [];
+    for (const p of allPlayers) {
+      if (!seen.has(p.id)) {
+        seen.add(p.id);
+        uniquePlayers.push(p);
+      }
+    }
+
+    const result: TeamBuilderPlayer[] = [];
+
+    for (const p of uniquePlayers) {
+      if (stoppingIds.has(p.id)) continue;
+
+      const currentCount = playerTeamCount.get(p.id) ?? 0;
+      const removedCount = removedSlotsMap.get(p.id) ?? 0;
+      const desiredCount = p.survey?.desiredTeamCount;
+
+      // If survey has a desired count, use it; otherwise default to 1 slot
+      const totalSlots = desiredCount != null && desiredCount > 0 ? desiredCount : 1;
+      const remainingSlots = Math.max(0, totalSlots - currentCount - removedCount);
+
+      for (let i = 0; i < remainingSlots; i++) {
+        result.push(p);
+      }
+    }
+
+    return result;
   });
 
   validationSummary = computed(() => {
@@ -274,6 +338,31 @@ export class ClubTeamBuilderTabService {
     const valid = activeTeams.filter((t) => t.isValid).length;
     const invalid = activeTeams.length - valid;
     const errors = activeTeams.flatMap((t) => t.validationErrors.map((e) => `${t.name}: ${e}`));
+
+    // Cross-team validation: players assigned as REGULAR to more teams than they want (backups don't count)
+    const playerTeamCount = new Map<string, { name: string; count: number; desired: number }>();
+    for (const team of activeTeams) {
+      for (const player of team.players) {
+        if (player.membershipType !== 'REGULAR') continue;
+        const existing = playerTeamCount.get(player.id);
+        if (existing) {
+          existing.count++;
+        } else {
+          playerTeamCount.set(player.id, {
+            name: player.fullName,
+            count: 1,
+            desired: player.survey?.desiredTeamCount ?? 0,
+          });
+        }
+      }
+    }
+
+    for (const [, info] of playerTeamCount) {
+      if (info.desired > 0 && info.count > info.desired) {
+        errors.push(`${info.name}: wants ${info.desired} team(s), assigned to ${info.count}`);
+      }
+    }
+
     return { valid, invalid, total: activeTeams.length, errors };
   });
 
@@ -335,6 +424,7 @@ export class ClubTeamBuilderTabService {
     }
 
     this.initialized.set(true);
+    this.updateTeamCountWarnings();
   }
 
   private collectSubEventInfo() {
@@ -536,10 +626,17 @@ export class ClubTeamBuilderTabService {
 
     this.teams.set(updatedTeams);
     this.stoppingPlayers.set(newStoppingPlayers);
+    this.updateTeamCountWarnings();
   }
 
   movePlayer(playerId: string, fromTeamId: string | null, toTeamId: string | null) {
     const teams = this.teams().map((t) => ({ ...t, players: [...t.players] }));
+
+    // Guard: don't add a player to a team they're already in
+    if (toTeamId && toTeamId !== 'stopping') {
+      const targetTeam = teams.find((t) => t.id === toTeamId);
+      if (targetTeam?.players.some((p) => p.id === playerId)) return;
+    }
 
     let player: TeamBuilderPlayer | undefined;
 
@@ -562,6 +659,7 @@ export class ClubTeamBuilderTabService {
         }
       }
     } else {
+      // From unassigned pool — player may already be in another team (wants multiple teams)
       player = this.unassignedPlayers().find((p) => p.id === playerId);
     }
 
@@ -581,6 +679,7 @@ export class ClubTeamBuilderTabService {
     }
 
     this.teams.set(teams);
+    this.updateTeamCountWarnings();
   }
 
   setMembershipType(playerId: string, teamId: string, type: 'REGULAR' | 'BACKUP') {
@@ -590,6 +689,7 @@ export class ClubTeamBuilderTabService {
       return recalculateTeam({ ...t, players });
     });
     this.teams.set(teams);
+    this.updateTeamCountWarnings();
   }
 
   addTeam(type: 'M' | 'F' | 'MX') {
@@ -636,6 +736,192 @@ export class ClubTeamBuilderTabService {
     const team = teams.find((t) => t.id === teamId);
     teams = this.renumberTeams(teams, team?.type);
     this.teams.set(teams);
+    this.updateTeamCountWarnings();
+  }
+
+  /**
+   * Remove one pool slot for a player. If the player is dragged from a team or stopping zone,
+   * they are removed from that source. Each call removes exactly one slot.
+   */
+  removePlayer(playerId: string, fromTeamId?: string | null) {
+    // Find the player for the restore list (only add once)
+    const existing = this.removedPlayers().find((p) => p.id === playerId);
+    if (!existing) {
+      const player = this.getAllPlayersFromData().find((p) => p.id === playerId)
+        ?? this.teams().flatMap((t) => t.players).find((p) => p.id === playerId)
+        ?? this.stoppingPlayers().find((p) => p.id === playerId)
+        ?? this.manuallyAddedPlayers().find((p) => p.id === playerId);
+
+      if (player) {
+        this.removedPlayers.update((rp) => [...rp, player]);
+      }
+    }
+
+    // If coming from a team, remove the player from that team
+    if (fromTeamId && fromTeamId !== 'stopping') {
+      const teams = this.teams().map((t) => {
+        if (t.id !== fromTeamId) return t;
+        const idx = t.players.findIndex((p) => p.id === playerId);
+        if (idx < 0) return t;
+        const players = [...t.players];
+        players.splice(idx, 1);
+        return recalculateTeam({ ...t, players });
+      });
+      this.teams.set(teams);
+    }
+
+    // If coming from stopping, remove from there
+    if (fromTeamId === 'stopping') {
+      this.stoppingPlayers.update((sp) => {
+        const idx = sp.findIndex((p) => p.id === playerId);
+        if (idx < 0) return sp;
+        const next = [...sp];
+        next.splice(idx, 1);
+        return next;
+      });
+    }
+
+    // Increment the removed slot count by 1
+    this.removedSlots.update((map) => {
+      const next = new Map(map);
+      next.set(playerId, (next.get(playerId) ?? 0) + 1);
+      return next;
+    });
+
+    this.updateTeamCountWarnings();
+  }
+
+  /**
+   * Restore one removed slot for a player back to the pool.
+   */
+  restorePlayer(playerId: string) {
+    this.removedSlots.update((map) => {
+      const next = new Map(map);
+      const current = next.get(playerId) ?? 0;
+      if (current <= 1) {
+        next.delete(playerId);
+      } else {
+        next.set(playerId, current - 1);
+      }
+      return next;
+    });
+
+    // Remove one entry from removedPlayers display list
+    this.removedPlayers.update((rp) => {
+      const idx = rp.findIndex((p) => p.id === playerId);
+      if (idx < 0) return rp;
+      // If this was the last removed slot, remove from display
+      const remaining = this.removedSlots().get(playerId) ?? 0;
+      if (remaining === 0) {
+        return rp.filter((p) => p.id !== playerId);
+      }
+      return rp;
+    });
+  }
+
+  /**
+   * Search for players by name. Club players first, then global search API.
+   */
+  async searchPlayers(query: string): Promise<{ id: string; fullName: string; firstName: string; lastName: string; gender?: string }[]> {
+    if (!query || query.length < 2) return [];
+
+    const normalizedQuery = query.toLowerCase();
+
+    // Club players first
+    const clubPlayers = this.getClubPlayers();
+    const clubMatches = clubPlayers.filter((p) =>
+      p.fullName.toLowerCase().includes(normalizedQuery),
+    );
+
+    // Global search
+    try {
+      const searchResults = await lastValueFrom(
+        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string; fullName?: string; gender?: string } }>>(
+          `/api/v1/search`,
+          { params: { query, types: 'players' } },
+        ),
+      );
+
+      const clubIds = new Set(clubMatches.map((p) => p.id));
+      const globalMatches = searchResults
+        .filter((r) => !clubIds.has(r.hit.objectID))
+        .map((r) => ({
+          id: r.hit.objectID,
+          fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
+          firstName: r.hit.firstName ?? '',
+          lastName: r.hit.lastName ?? '',
+          gender: r.hit.gender,
+        }));
+
+      return [...clubMatches, ...globalMatches];
+    } catch {
+      return clubMatches;
+    }
+  }
+
+  /**
+   * Add an external player (from search) to the pool with rankings.
+   */
+  async addExternalPlayer(playerBasic: { id: string; fullName: string; firstName: string; lastName: string; gender?: string }): Promise<boolean> {
+    // Don't add if already present
+    const allPlayerIds = new Set([
+      ...this.getAllPlayersFromData().map((p) => p.id),
+      ...this.manuallyAddedPlayers().map((p) => p.id),
+    ]);
+    if (allPlayerIds.has(playerBasic.id)) {
+      // If removed, just restore
+      if (this.removedSlots().has(playerBasic.id)) {
+        this.restorePlayer(playerBasic.id);
+        return true;
+      }
+      return false;
+    }
+
+    // Fetch rankings
+    const systemId = this.systemId();
+    let single = 0, double = 0, mix = 0;
+
+    if (systemId) {
+      try {
+        const result = await lastValueFrom(
+          this.apollo.query<{ players: { id: string; rankingLastPlaces?: { single: number; double: number; mix: number }[] }[] }>({
+            query: PLAYER_WITH_RANKINGS_QUERY,
+            variables: {
+              args: { where: { id: { in: [playerBasic.id] } }, take: 1 },
+              rankingLastPlacesArgs: { where: [{ systemId: { eq: systemId } }] },
+            },
+          }),
+        );
+        const fetched = result.data?.players?.[0];
+        const ranking = fetched?.rankingLastPlaces?.[0];
+        if (ranking) {
+          single = ranking.single;
+          double = ranking.double;
+          mix = ranking.mix;
+        }
+      } catch {
+        // Continue without rankings
+      }
+    }
+
+    const tbPlayer: TeamBuilderPlayer = {
+      id: playerBasic.id,
+      fullName: playerBasic.fullName,
+      firstName: playerBasic.firstName,
+      lastName: playerBasic.lastName,
+      gender: playerBasic.gender as 'M' | 'F' | undefined,
+      single,
+      double,
+      mix,
+      lowPerformance: false,
+      encounterPresencePercent: 0,
+      isNewPlayer: true,
+      isStopping: false,
+      membershipType: 'REGULAR',
+    };
+
+    this.manuallyAddedPlayers.update((mp) => [...mp, tbPlayer]);
+    return true;
   }
 
   private buildTeamName(type: string, teamNumber: number): string {
@@ -805,6 +1091,51 @@ export class ClubTeamBuilderTabService {
     }
 
     return Array.from(playerMap.values());
+  }
+
+  /**
+   * Update teamCountWarning on all assigned players by comparing
+   * actual team count vs survey desiredTeamCount.
+   */
+  private updateTeamCountWarnings() {
+    const allTeams = this.teams();
+    const activeTeams = allTeams.filter((t) => !t.isMarkedForRemoval);
+
+    // Count active teams per player (only REGULAR, backups don't count)
+    const playerTeamCount = new Map<string, number>();
+    for (const team of activeTeams) {
+      for (const player of team.players) {
+        if (player.membershipType === 'REGULAR') {
+          playerTeamCount.set(player.id, (playerTeamCount.get(player.id) ?? 0) + 1);
+        }
+      }
+    }
+
+    let changed = false;
+    const updated = allTeams.map((team) => {
+      const updatedPlayers = team.players.map((player) => {
+        const count = playerTeamCount.get(player.id) ?? 0;
+        const desired = player.survey?.desiredTeamCount;
+        let teamCountWarning: string | undefined;
+
+        if (desired != null && desired > 0) {
+          if (count > desired) {
+            teamCountWarning = `Wants ${desired} team(s), assigned to ${count}`;
+          }
+        }
+
+        if (player.teamCountWarning === teamCountWarning) return player;
+        changed = true;
+        return { ...player, teamCountWarning };
+      });
+
+      if (updatedPlayers.every((p, i) => p === team.players[i])) return team;
+      return { ...team, players: updatedPlayers };
+    });
+
+    if (changed) {
+      this.teams.set(updated);
+    }
   }
 
   private handleError(err: HttpErrorResponse): string {

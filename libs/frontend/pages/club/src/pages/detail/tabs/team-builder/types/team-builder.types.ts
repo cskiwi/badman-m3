@@ -25,6 +25,9 @@ export interface TeamBuilderPlayer {
   // Level warning (set per-team context, e.g. player too strong/weak for the subevent)
   levelWarning?: string;
 
+  // Team count warning (cross-team: assigned to more/fewer teams than desired)
+  teamCountWarning?: string;
+
   // Current assignment in builder
   assignedTeamId?: string;
   membershipType: 'REGULAR' | 'BACKUP';

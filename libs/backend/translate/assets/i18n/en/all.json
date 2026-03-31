@@ -89,7 +89,11 @@
       "save": "Save Teams",
       "playerPool": "Unassigned Players",
       "playersStopping": "Players Stopping",
-      "noStoppingPlayers": "No players stopping"
+      "noStoppingPlayers": "No players stopping",
+      "addPlayer": "Add player...",
+      "removePlayer": "Remove Player",
+      "dropToRemove": "Drop here to remove",
+      "removedPlayers": "Removed Players"
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"

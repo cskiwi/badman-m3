@@ -89,7 +89,11 @@
       "save": "Enregistrer les Équipes",
       "playerPool": "Joueurs Non Assignés",
       "playersStopping": "Joueurs qui arrêtent",
-      "noStoppingPlayers": "Aucun joueur qui arrête"
+      "noStoppingPlayers": "Aucun joueur qui arrête",
+      "addPlayer": "Ajouter un joueur...",
+      "removePlayer": "Supprimer le Joueur",
+      "dropToRemove": "Déposez ici pour supprimer",
+      "removedPlayers": "Joueurs Supprimés"
     },
     "winRate": "% Vict.",
     "winRateTrend": "Tendance % Vict."

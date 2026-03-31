@@ -17,6 +17,9 @@
   @if (player().isStopping) {
     <i class="pi pi-times-circle text-red-500 text-xs" pTooltip="Stopping competition" tooltipPosition="top"></i>
   }
+  @if (player().teamCountWarning) {
+    <i class="pi pi-users text-orange-500 text-xs" [pTooltip]="player().teamCountWarning!" tooltipPosition="top"></i>
+  }
   @if (player().levelWarning) {
     <i class="pi pi-ban text-primary-emphasis text-xs" [pTooltip]="player().levelWarning!" tooltipPosition="top"></i>
   }

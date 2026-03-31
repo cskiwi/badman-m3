@@ -34,13 +34,7 @@
     }
 
     <!-- Sort controls -->
-    <p-selectButton
-      [options]="sortOptions"
-      [(ngModel)]="sortBy"
-      optionLabel="label"
-      optionValue="value"
-      size="small"
-    />
+    <p-selectButton [options]="sortOptions" [(ngModel)]="sortBy" optionLabel="label" optionValue="value" size="small" />
     <label class="flex items-center gap-1 text-sm">
       <p-checkbox [(ngModel)]="separateBackups" [binary]="true" />
       Separate backups
@@ -59,12 +53,7 @@
       </div>
     }
 
-    <p-button
-      label="{{ 'all.club.teamBuilder.save' | translate }}"
-      icon="pi pi-save"
-      (onClick)="save()"
-      [disabled]="service.teams().length === 0"
-    />
+    <p-button label="{{ 'all.club.teamBuilder.save' | translate }}" icon="pi pi-save" (onClick)="save()" [disabled]="service.teams().length === 0" />
   </div>
 
   <!-- Main layout: player pool + team cards -->
@@ -74,17 +63,28 @@
       <div class="sticky top-0">
         <h3 class="font-bold mb-2">{{ 'all.club.teamBuilder.playerPool' | translate }}</h3>
 
-        <!-- Search -->
+        <!-- Add player -->
+        <div class="mb-2">
+          <p-autoComplete
+            [(ngModel)]="selectedPlayer"
+            [suggestions]="playerSuggestions()"
+            (completeMethod)="searchPlayerToAdd($event)"
+            (onSelect)="onPlayerSelected($event)"
+            field="fullName"
+            optionLabel="fullName"
+            placeholder="{{ 'all.club.teamBuilder.addPlayer' | translate }}"
+            [minLength]="2"
+            [forceSelection]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          />
+        </div>
+
+        <!-- Search filter -->
         <div class="mb-3">
           <p-iconfield>
             <p-inputicon class="pi pi-search" />
-            <input
-              type="text"
-              pInputText
-              [(ngModel)]="searchQuery"
-              placeholder="Search players..."
-              class="w-full"
-            />
+            <input type="text" pInputText [(ngModel)]="searchQuery" placeholder="Search players..." class="w-full" />
           </p-iconfield>
         </div>
 
@@ -95,7 +95,7 @@
           (cdkDropListDropped)="onPlayerDroppedOnPool($event)"
           class="flex flex-col gap-1 min-h-48 p-2 rounded-border border-2 border-dashed border-surface bg-emphasis max-h-[calc(100vh-280px)] overflow-y-auto"
         >
-          @for (player of filteredUnassignedPlayers; track player.id) {
+          @for (player of filteredUnassignedPlayers; track $index) {
             <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: null }">
               <app-player-chip [player]="player" />
             </div>
@@ -112,7 +112,7 @@
           cdkDropList
           [cdkDropListData]="'stopping'"
           (cdkDropListDropped)="onPlayerDroppedOnStopping($event)"
-          class="flex flex-col gap-1 min-h-24 p-2 rounded-border border-2 border-dashed border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-800 max-h-64 overflow-y-auto"
+          class="flex flex-col gap-1 min-h-16 p-2 rounded-border border-2 border-dashed border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-800 max-h-64 overflow-y-auto"
         >
           @for (player of service.stoppingPlayers(); track player.id) {
             <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: 'stopping' }">
@@ -124,6 +124,46 @@
             </div>
           }
         </div>
+
+        <!-- Remove player drop zone -->
+        <h3 class="font-bold mb-2 mt-4">{{ 'all.club.teamBuilder.removePlayer' | translate }}</h3>
+        <div
+          cdkDropList
+          [cdkDropListData]="'remove'"
+          (cdkDropListDropped)="onPlayerDroppedOnRemove($event)"
+          class="flex flex-col items-center justify-center min-h-16 p-2 rounded-border border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-950/20"
+        >
+          <div class="text-center text-muted-color py-2 text-sm">
+            <i class="pi pi-trash mr-1"></i>
+            {{ 'all.club.teamBuilder.dropToRemove' | translate }}
+          </div>
+        </div>
+
+        <!-- Removed players (restore) -->
+        @if (service.removedPlayers().length > 0) {
+          <h3 class="font-bold mb-2 mt-4">{{ 'all.club.teamBuilder.removedPlayers' | translate }}</h3>
+          <div class="flex flex-col gap-1 max-h-48 overflow-y-auto p-2 rounded-border border border-surface bg-emphasis">
+            @for (player of service.removedPlayers(); track player.id) {
+              <div class="flex items-center gap-2 p-2 rounded-border border border-surface bg-emphasis opacity-60">
+                <span class="text-sm flex-1 truncate">{{ player.fullName }}</span>
+                @if ((service.removedSlots().get(player.id) ?? 0) > 1) {
+                  <span class="text-xs text-muted-color">×{{ service.removedSlots().get(player.id) }}</span>
+                }
+                <button
+                  pButton
+                  icon="pi pi-undo"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="info"
+                  size="small"
+                  pTooltip="Restore one slot"
+                  tooltipPosition="top"
+                  (click)="restorePlayer(player.id)"
+                ></button>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 

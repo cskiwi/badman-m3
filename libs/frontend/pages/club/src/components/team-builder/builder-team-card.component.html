@@ -117,7 +117,7 @@
   }
 
   <!-- Validation errors -->
-  @if (team().validationErrors.length > 0) {
+  @if (team().validationErrors.length > 0 && !team().isMarkedForRemoval) {
     <ng-template #footer>
       <div class="flex flex-col gap-1">
         @for (error of team().validationErrors; track error) {

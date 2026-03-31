@@ -89,7 +89,11 @@
       "save": "Teams Opslaan",
       "playerPool": "Niet-toegewezen Spelers",
       "playersStopping": "Spelers die stoppen",
-      "noStoppingPlayers": "Geen spelers die stoppen"
+      "noStoppingPlayers": "Geen spelers die stoppen",
+      "addPlayer": "Speler toevoegen...",
+      "removePlayer": "Speler Verwijderen",
+      "dropToRemove": "Sleep hier om te verwijderen",
+      "removedPlayers": "Verwijderde Spelers"
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"

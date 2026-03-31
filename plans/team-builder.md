@@ -175,6 +175,31 @@ Club administrators need a tool to build teams for next season based on player s
   - `buildTeamName(type, number)` generates names like "BC Lede 2M" instead of "M 2"
   - Used in `addTeam()` and `renumberTeams()` for consistent naming
 
+- [x] **8.10** Desired team count validation
+  - Added `teamCountWarning?: string` to `TeamBuilderPlayer` interface
+  - `unassignedPlayers` computed now shows players N times in pool based on `desiredTeamCount - currentTeamCount`
+    - Player wants 2 teams → 2 entries in pool; assigned to 1 team → 1 entry remains
+    - Player wants 1 team → 1 entry; once assigned → removed from pool
+    - Players without survey default to 1 slot (original behavior preserved)
+  - `updateTeamCountWarnings()` sets warning on assigned players when in more teams than desired
+  - `movePlayer()` guards against adding a player to a team they're already in
+  - `validationSummary` includes cross-team warnings for over-assigned players
+  - Orange users icon in player chip with tooltip showing the mismatch
+  - Pool template uses `track $index` to support duplicate player entries
+
+- [x] **8.11** Add/remove players from builder
+  - **Remove drop zone**: drag any player (from pool, team, or stopping) onto trash zone to remove entirely
+    - `removePlayer(playerId)` removes from teams, stopping, manually added; tracks in `removedPlayerIds` signal
+    - `unassignedPlayers` excludes removed player IDs
+    - Removed players shown in a restore list with undo button
+    - `restorePlayer(playerId)` re-adds to pool
+  - **Add player autocomplete**: search for any player (club-first, then global API) and add to pool
+    - `searchPlayers(query)` in service uses HTTP search API, same pattern as import dialog
+    - `addExternalPlayer(playerBasic)` fetches rankings via GraphQL, creates `TeamBuilderPlayer`, adds to `manuallyAddedPlayers` signal
+    - If player was previously removed, `addExternalPlayer` auto-restores instead
+    - Duplicate detection prevents adding an already-present player
+  - Translation keys added for EN, NL, FR: `addPlayer`, `removePlayer`, `dropToRemove`, `removedPlayers`
+
 ---
 
 ## File Summary

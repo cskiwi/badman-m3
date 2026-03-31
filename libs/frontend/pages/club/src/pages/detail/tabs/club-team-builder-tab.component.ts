@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CdkDropList, CdkDrag, CdkDragDrop, CdkDropListGroup } from '@angular/cdk/drag-drop';
@@ -18,6 +18,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { ClubTeamBuilderTabService } from './club-team-builder-tab.service';
 import { ImportSurveyDialogComponent } from '../../../components/team-builder/import-survey-dialog.component';
@@ -48,6 +49,7 @@ import { SurveyResponse } from './team-builder/types/survey-response';
     ToastModule,
     CheckboxModule,
     SelectButtonModule,
+    AutoCompleteModule,
     BuilderTeamCardComponent,
     PlayerChipComponent,
   ],
@@ -67,6 +69,10 @@ export class ClubTeamBuilderTabComponent {
   searchQuery = '';
   sortBy: 'name' | 'index' = 'name';
   separateBackups = true;
+
+  // Add player search
+  playerSuggestions = signal<{ id: string; fullName: string; firstName: string; lastName: string; gender?: string }[]>([]);
+  selectedPlayer: { id: string; fullName: string; firstName: string; lastName: string; gender?: string } | null = null;
 
   sortOptions = [
     { label: 'Name', value: 'name' },
@@ -194,6 +200,41 @@ export class ClubTeamBuilderTabComponent {
       icon: validation.invalid > 0 ? 'pi pi-exclamation-triangle' : 'pi pi-save',
       accept: () => this.doSave(),
     });
+  }
+
+  onPlayerDroppedOnRemove(event: CdkDragDrop<string>) {
+    const data = event.item.data as { playerId: string; fromTeamId: string | null };
+    this.service.removePlayer(data.playerId, data.fromTeamId);
+  }
+
+  restorePlayer(playerId: string) {
+    this.service.restorePlayer(playerId);
+  }
+
+  async searchPlayerToAdd(event: { query: string }) {
+    const results = await this.service.searchPlayers(event.query);
+    this.playerSuggestions.set(results);
+  }
+
+  async onPlayerSelected(event: { value: { id: string; fullName: string; firstName: string; lastName: string; gender?: string } }) {
+    const player = event.value;
+    if (!player) return;
+
+    const added = await this.service.addExternalPlayer(player);
+    if (added) {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Player added',
+        detail: `${player.fullName} added to pool`,
+      });
+    } else {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Already present',
+        detail: `${player.fullName} is already in the builder`,
+      });
+    }
+    this.selectedPlayer = null;
   }
 
   private async doSave() {

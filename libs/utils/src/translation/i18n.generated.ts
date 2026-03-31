@@ -97,6 +97,10 @@ export type I18nTranslations = {
                 "playerPool": string;
                 "playersStopping": string;
                 "noStoppingPlayers": string;
+                "addPlayer": string;
+                "removePlayer": string;
+                "dropToRemove": string;
+                "removedPlayers": string;
             };
             "winRate": string;
             "winRateTrend": string;
