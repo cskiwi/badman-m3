@@ -77,6 +77,27 @@ export type I18nTranslations = {
                 "tab": string;
                 "title": string;
             };
+            "teamBuilder": {
+                "tab": string;
+                "import": {
+                    "title": string;
+                    "description": string;
+                    "chooseFile": string;
+                    "matching": string;
+                    "matched": string;
+                    "surveyName": string;
+                    "matchedPlayer": string;
+                    "confidence": string;
+                    "searchPlayer": string;
+                    "confirm": string;
+                    "cancel": string;
+                };
+                "addTeam": string;
+                "save": string;
+                "playerPool": string;
+                "playersStopping": string;
+                "noStoppingPlayers": string;
+            };
             "winRate": string;
             "winRateTrend": string;
         };

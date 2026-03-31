@@ -1,0 +1,48 @@
+<div
+  class="flex items-center gap-2 p-2 rounded-border border border-surface hover:bg-highlight cursor-grab bg-emphasis"
+  [pTooltip]="tooltipContent"
+  tooltipPosition="right"
+  [escape]="false"
+>
+  <!-- Player name -->
+  <span class="font-medium text-sm flex-1 truncate">{{ player().fullName }}</span>
+
+  <!-- Status icons -->
+  @if (player().lowPerformance) {
+    <i class="pi pi-exclamation-triangle text-primary-emphasis text-xs" pTooltip="Low performance this season" tooltipPosition="top"></i>
+  }
+  @if (player().isNewPlayer) {
+    <i class="pi pi-star text-primary text-xs" pTooltip="New player" tooltipPosition="top"></i>
+  }
+  @if (player().isStopping) {
+    <i class="pi pi-times-circle text-red-500 text-xs" pTooltip="Stopping competition" tooltipPosition="top"></i>
+  }
+  @if (player().levelWarning) {
+    <i class="pi pi-ban text-primary-emphasis text-xs" [pTooltip]="player().levelWarning!" tooltipPosition="top"></i>
+  }
+  @if (player().survey?.comments) {
+    <i class="pi pi-comment text-muted-color text-xs" [pTooltip]="player().survey!.comments" tooltipPosition="top"></i>
+  }
+
+  <!-- Ranking levels -->
+  <div class="flex gap-1 text-xs text-muted-color">
+    <span pTooltip="Single" tooltipPosition="top">{{ player().single }}</span>
+    <span>-</span>
+    <span pTooltip="Double" tooltipPosition="top">{{ player().double }}</span>
+    <span>-</span>
+    <span pTooltip="Mixed" tooltipPosition="top">{{ player().mix }}</span>
+  </div>
+
+  <!-- Membership type toggle -->
+  @if (showMembershipToggle()) {
+    <p-tag
+      [value]="player().membershipType === 'REGULAR' ? 'R' : 'B'"
+      [severity]="player().membershipType === 'REGULAR' ? 'success' : 'warn'"
+      [rounded]="true"
+      styleClass="text-xs px-1 py-0 cursor-pointer"
+      (click)="toggleMembership()"
+      pTooltip="Click to toggle Regular/Backup"
+      tooltipPosition="top"
+    />
+  }
+</div>

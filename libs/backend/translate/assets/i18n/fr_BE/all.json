@@ -70,6 +70,27 @@
       "tab": "Tournois",
       "title": "Tournois du Club"
     },
+    "teamBuilder": {
+      "tab": "Composition d'Équipe",
+      "import": {
+        "title": "Importer l'Enquête",
+        "description": "Téléchargez le fichier Excel avec les réponses des joueurs",
+        "chooseFile": "Choisir un Fichier",
+        "matching": "Recherche des joueurs...",
+        "matched": "joueurs trouvés",
+        "surveyName": "Nom de l'Enquête",
+        "matchedPlayer": "Joueur Trouvé",
+        "confidence": "Confiance",
+        "searchPlayer": "Rechercher un joueur...",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
+      },
+      "addTeam": "Ajouter une Équipe",
+      "save": "Enregistrer les Équipes",
+      "playerPool": "Joueurs Non Assignés",
+      "playersStopping": "Joueurs qui arrêtent",
+      "noStoppingPlayers": "Aucun joueur qui arrête"
+    },
     "winRate": "% Vict.",
     "winRateTrend": "Tendance % Vict."
   },

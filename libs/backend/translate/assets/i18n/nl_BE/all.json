@@ -70,6 +70,27 @@
       "tab": "Toernooien",
       "title": "Club Toernooien"
     },
+    "teamBuilder": {
+      "tab": "Ploegopstelling",
+      "import": {
+        "title": "Enquête Importeren",
+        "description": "Upload het Excel-bestand met de spelersenquête",
+        "chooseFile": "Bestand Kiezen",
+        "matching": "Spelers matchen...",
+        "matched": "spelers gematcht",
+        "surveyName": "Naam Enquête",
+        "matchedPlayer": "Gematchte Speler",
+        "confidence": "Betrouwbaarheid",
+        "searchPlayer": "Zoek speler...",
+        "confirm": "Bevestigen",
+        "cancel": "Annuleren"
+      },
+      "addTeam": "Team Toevoegen",
+      "save": "Teams Opslaan",
+      "playerPool": "Niet-toegewezen Spelers",
+      "playersStopping": "Spelers die stoppen",
+      "noStoppingPlayers": "Geen spelers die stoppen"
+    },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
   },

@@ -1,11 +1,13 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { Club, Player, Team, TeamPlayerMembership } from '@app/models';
 import { TeamMembershipType } from '@app/models-enum';
+import { Days } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { ClubArgs, TeamArgs, TeamPlayerMembershipArgs } from '../args';
 import { TeamUpdateInput } from '../inputs';
+import { TeamBuilderTeamInput } from '../inputs/team-builder.input';
 
 @Resolver(() => Team)
 export class TeamResolver {
@@ -292,6 +294,78 @@ export class TeamResolver {
     }
 
     await membership.remove();
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(PermGuard)
+  async saveTeamBuilder(
+    @User() user: Player,
+    @Args('clubId', { type: () => ID }) clubId: string,
+    @Args('season', { type: () => Number }) season: number,
+    @Args('teams', { type: () => [TeamBuilderTeamInput] }) teams: TeamBuilderTeamInput[],
+  ): Promise<boolean> {
+    // Verify club exists
+    const club = await Club.findOne({ where: { id: clubId } });
+    if (!club) {
+      throw new NotFoundException(`Club with ID ${clubId} not found`);
+    }
+
+    // Check authorization
+    const canEdit = user.hasAnyPermission(['edit-any:club', `${clubId}_edit:club`]);
+    if (!canEdit) {
+      throw new UnauthorizedException('You do not have permission to manage teams for this club');
+    }
+
+    for (const teamInput of teams) {
+      let team: Team;
+
+      if (teamInput.teamId) {
+        const existing = await Team.findOne({ where: { id: teamInput.teamId } });
+
+        if (existing && existing.season === season) {
+          team = existing;
+        } else if (existing) {
+          // Clone from current-season team for next season
+          team = new Team();
+          team.clubId = clubId;
+          team.season = season;
+          team.link = existing.link;
+        } else {
+          throw new NotFoundException(`Team with ID ${teamInput.teamId} not found`);
+        }
+      } else {
+        team = new Team();
+        team.clubId = clubId;
+        team.season = season;
+      }
+
+      team.name = teamInput.name;
+      team.type = teamInput.type;
+      if (teamInput.teamNumber != null) team.teamNumber = teamInput.teamNumber;
+      if (teamInput.preferredDay != null) team.preferredDay = teamInput.preferredDay as Days;
+      if (teamInput.captainId != null) team.captainId = teamInput.captainId;
+
+      await team.save();
+
+      // Remove existing memberships for this team
+      const existingMemberships = await TeamPlayerMembership.find({
+        where: { teamId: team.id },
+      });
+      if (existingMemberships.length > 0) {
+        await TeamPlayerMembership.remove(existingMemberships);
+      }
+
+      // Create new memberships
+      for (const playerInput of teamInput.players) {
+        const membership = new TeamPlayerMembership();
+        membership.teamId = team.id;
+        membership.playerId = playerInput.playerId;
+        membership.membershipType = playerInput.membershipType as TeamMembershipType;
+        await membership.save();
+      }
+    }
 
     return true;
   }

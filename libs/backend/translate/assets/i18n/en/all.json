@@ -70,6 +70,27 @@
       "tab": "Tournaments",
       "title": "Club Tournaments"
     },
+    "teamBuilder": {
+      "tab": "Team Builder",
+      "import": {
+        "title": "Import Survey",
+        "description": "Upload the Excel file with player survey responses",
+        "chooseFile": "Choose File",
+        "matching": "Matching players...",
+        "matched": "players matched",
+        "surveyName": "Survey Name",
+        "matchedPlayer": "Matched Player",
+        "confidence": "Confidence",
+        "searchPlayer": "Search player...",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      },
+      "addTeam": "Add Team",
+      "save": "Save Teams",
+      "playerPool": "Unassigned Players",
+      "playersStopping": "Players Stopping",
+      "noStoppingPlayers": "No players stopping"
+    },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
   },
