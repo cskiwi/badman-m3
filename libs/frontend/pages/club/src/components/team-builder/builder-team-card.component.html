@@ -7,9 +7,6 @@
         @if (team().isPromoted) {
           <p-tag value="Promoted" severity="success" icon="pi pi-arrow-up" />
         }
-        @if (team().isMarkedForRemoval) {
-          <p-tag value="Removing" severity="danger" icon="pi pi-times-circle" />
-        }
       </div>
       <div class="flex items-center gap-1">
         @if (!team().isMarkedForRemoval) {
@@ -57,11 +54,13 @@
   <div class="mb-3">
     <div class="flex items-center justify-between text-sm mb-1">
       <span>Team Index</span>
-      <span [class]="{
-        'text-color': indexSeverity === 'success',
-        'text-primary-emphasis': indexSeverity === 'warn',
-        'text-color-emphasis': indexSeverity === 'danger'
-      }">
+      <span
+        [class]="{
+          'text-color': indexSeverity === 'success',
+          'text-primary-emphasis': indexSeverity === 'warn',
+          'text-color-emphasis': indexSeverity === 'danger',
+        }"
+      >
         {{ team().teamIndex }}
         @if (team().maxAllowedIndex) {
           / {{ team().maxAllowedIndex }}
@@ -75,23 +74,12 @@
           [class]="{
             'bg-highlight': indexSeverity === 'success',
             'bg-highlight-emphasis': indexSeverity === 'warn',
-            'bg-primary-emphasis': indexSeverity === 'danger'
+            'bg-primary-emphasis': indexSeverity === 'danger',
           }"
           [style.width.%]="indexPercent"
         ></div>
       </div>
     }
-  </div>
-
-  <!-- Info row -->
-  <div class="flex items-center gap-2 text-sm text-muted-color mb-3">
-    @if (team().preferredDay) {
-      <span><i class="pi pi-calendar text-xs"></i> {{ team().preferredDay }}</span>
-    }
-    @if (team().currentLevel) {
-      <span>Level {{ team().currentLevel }}</span>
-    }
-    <span>{{ regularCount }}R / {{ backupCount }}B</span>
   </div>
 
   @if (team().isMarkedForRemoval) {
@@ -100,42 +88,32 @@
       <span class="text-sm">This team will be removed on save</span>
     </div>
   } @else {
-  <!-- Players drop zone -->
-  <div
-    cdkDropList
-    [cdkDropListData]="team().id"
-    (cdkDropListDropped)="onDrop($event)"
-    class="flex flex-col gap-1 min-h-24 p-2 rounded-border border-2 border-dashed border-surface bg-emphasis"
-  >
-    @for (player of sortedPlayers().regulars; track player.id) {
-      <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
-        <app-player-chip
-          [player]="player"
-          [showMembershipToggle]="true"
-          (membershipToggled)="onMembershipToggle(player.id, $event)"
-        />
-      </div>
-    }
-    @if (sortedPlayers().backups.length > 0) {
-      <div class="border-t border-surface my-1 pt-1">
-        <span class="text-xs text-muted-color">Backups</span>
-      </div>
-      @for (player of sortedPlayers().backups; track player.id) {
+    <!-- Players drop zone -->
+    <div
+      cdkDropList
+      [cdkDropListData]="team().id"
+      (cdkDropListDropped)="onDrop($event)"
+      class="flex flex-col gap-1 min-h-24 p-2 rounded-border border-2 border-dashed border-surface bg-emphasis"
+    >
+      @for (player of sortedPlayers().regulars; track player.id) {
         <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
-          <app-player-chip
-            [player]="player"
-            [showMembershipToggle]="true"
-            (membershipToggled)="onMembershipToggle(player.id, $event)"
-          />
+          <app-player-chip [player]="player" [showMembershipToggle]="true" (membershipToggled)="onMembershipToggle(player.id, $event)" />
         </div>
       }
-    }
-    @if (team().players.length === 0) {
-      <div class="text-center text-muted-color py-4 text-sm">
-        Drop players here
-      </div>
-    }
-  </div>
+      @if (sortedPlayers().backups.length > 0) {
+        <div class="border-t border-surface my-1 pt-1">
+          <span class="text-xs text-muted-color">Backups</span>
+        </div>
+        @for (player of sortedPlayers().backups; track player.id) {
+          <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
+            <app-player-chip [player]="player" [showMembershipToggle]="true" (membershipToggled)="onMembershipToggle(player.id, $event)" />
+          </div>
+        }
+      }
+      @if (team().players.length === 0) {
+        <div class="text-center text-muted-color py-4 text-sm">Drop players here</div>
+      }
+    </div>
   }
 
   <!-- Validation errors -->
