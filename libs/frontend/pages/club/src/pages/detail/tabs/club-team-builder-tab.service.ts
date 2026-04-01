@@ -386,8 +386,8 @@ export class ClubTeamBuilderTabService {
       const regularCount = playerTeamCount.get(player.id)?.count ?? 0;
       const available = Math.max(0, desired + adjustment - regularCount);
 
-      if (available === 0 && regularCount < desired) {
-        crossTeamWarnings.push(`${player.fullName}: wants ${desired} team(s), only in ${regularCount} (no slots left in pool)`);
+      if (regularCount > 0 && regularCount < desired) {
+        crossTeamWarnings.push(`${player.fullName}: wants ${desired} team(s), only assigned to ${regularCount}`);
       }
     }
 
@@ -1155,6 +1155,7 @@ export class ClubTeamBuilderTabService {
       }
     }
 
+    const adjustmentsMap = this.slotAdjustments();
     let changed = false;
     const updated = allTeams.map((team) => {
       const updatedPlayers = team.players.map((player) => {
@@ -1165,6 +1166,8 @@ export class ClubTeamBuilderTabService {
         if (desired != null && desired > 0) {
           if (count > desired) {
             teamCountWarning = `Wants ${desired} team(s), assigned to ${count}`;
+          } else if (count > 0 && count < desired) {
+            teamCountWarning = `Wants ${desired} team(s), only assigned to ${count}`;
           }
         }
 
