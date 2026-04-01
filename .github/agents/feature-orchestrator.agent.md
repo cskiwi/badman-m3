@@ -2,7 +2,7 @@
 name: "feature-orchestrator"
 description: "Decomposes full-stack feature requests and delegates frontend/backend work to the Angular Expert and NestJS Expert agents."
 argument-hint: "Describe the feature you want to build (e.g., 'add a club ranking page with filtering')"
-tools: ['read', 'search']
+tools: ['read', 'search', 'vscode/askQuestions']
 handoffs:
   - label: "Implement Backend"
     agent: "NestJS Expert"

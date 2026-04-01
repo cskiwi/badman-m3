@@ -40,6 +40,8 @@
     </div>
   </div>
 
+
+
   <!-- Queue Statistics -->
   <p-card [header]="'all.sync.dashboard.queue.title' | translate">
     @if (loadingStats()) {
@@ -77,6 +79,16 @@
 
   <!-- Recent Jobs -->
   <p-card [header]="'all.sync.dashboard.jobs.title' | translate">
+    <div class="mb-3">
+      <input
+        pInputText
+        type="text"
+        [ngModel]="jobSearchQuery()"
+        (ngModelChange)="jobSearchQuery.set($event)"
+        [placeholder]="'all.sync.dashboard.jobs.search' | translate"
+        class="w-full"
+      />
+    </div>
     <p-table
       [value]="displayJobs()"
       [loading]="loadingJobs()"
@@ -181,6 +193,11 @@
         </tr>
       </ng-template>
     </p-table>
+  </p-card>
+
+    <!-- Ranking Systems Overview -->
+  <p-card header="Ranking Systems">
+    <app-ranking-systems-overview />
   </p-card>
 
   <!-- Schedule Sync -->

@@ -6,7 +6,7 @@ import {
   CompetitionEvent,
   TournamentEvent,
 } from '@app/models';
-import { SyncJob, SyncStatus, SyncTriggerResponse } from '../models/sync.models';
+import { RankingSystemSyncInfo, SyncJob, SyncStatus, SyncTriggerResponse } from '../models/sync.models';
 
 // ===== Queries =====
 
@@ -232,6 +232,32 @@ const TRIGGER_RANKING_SYNC = gql`
   }
 `;
 
+const TRIGGER_RANKING_CALC = gql`
+  mutation TriggerRankingCalc($systemId: ID!, $startDate: String, $stopDate: String) {
+    triggerRankingCalc(systemId: $systemId, startDate: $startDate, stopDate: $stopDate) {
+      message
+      success
+    }
+  }
+`;
+
+const GET_RANKING_SYSTEMS = gql`
+  query GetRankingSystemsForSync {
+    rankingSystems {
+      id
+      name
+      rankingSystem
+      runCurrently
+      calculationLastUpdate
+      updateLastUpdate
+      calculationIntervalAmount
+      calculationIntervalUnit
+      updateIntervalAmount
+      updateIntervalUnit
+    }
+  }
+`;
+
 const CLEAR_ALL_JOBS = gql`
   mutation ClearAllJobs {
     clearAllJobs {
@@ -365,6 +391,24 @@ export class SyncApiService {
         variables: { startDate },
       })
       .pipe(map((result) => result.data?.triggerRankingSync ?? ({} as SyncTriggerResponse)));
+  }
+
+  triggerRankingCalc(systemId: string, startDate?: string, stopDate?: string): Observable<SyncTriggerResponse> {
+    return this.apollo
+      .mutate<{ triggerRankingCalc: SyncTriggerResponse }>({
+        mutation: TRIGGER_RANKING_CALC,
+        variables: { systemId, startDate, stopDate },
+      })
+      .pipe(map((result) => result.data?.triggerRankingCalc ?? ({} as SyncTriggerResponse)));
+  }
+
+  getRankingSystems(): Observable<RankingSystemSyncInfo[]> {
+    return this.apollo
+      .query<{ rankingSystems: RankingSystemSyncInfo[] }>({
+        query: GET_RANKING_SYSTEMS,
+        fetchPolicy: 'network-only',
+      })
+      .pipe(map((result) => result.data?.rankingSystems ?? []));
   }
 
   clearAllJobs(): Observable<SyncTriggerResponse> {

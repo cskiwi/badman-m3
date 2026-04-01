@@ -13,6 +13,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -24,6 +25,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { SyncJob } from '../../models';
 import { SyncApiService } from '../../services';
+import { RankingSystemsOverviewComponent } from '../ranking-systems/ranking-systems-overview.component';
 import { SyncDashboardService } from './sync-dashboard.service';
 
 @Component({
@@ -50,6 +52,8 @@ import { SyncDashboardService } from './sync-dashboard.service';
     DatePipe,
     CheckboxModule,
     InputNumberModule,
+    InputTextModule,
+    RankingSystemsOverviewComponent,
   ],
   providers: [MessageService, ConfirmationService, SyncDashboardService],
   templateUrl: './sync-dashboard.component.html',
@@ -71,10 +75,19 @@ export class SyncDashboardComponent implements OnDestroy {
   // Jobs
   recentJobs = this.syncService.recentJobs;
   loadingJobs = this.syncService.recentJobsLoading;
+  jobSearchQuery = signal('');
 
   displayJobs = computed(() => {
     const jobs = this.recentJobs();
-    return this.syncService.flattenJobsForDisplay(jobs);
+    const flat = this.syncService.flattenJobsForDisplay(jobs);
+    const query = this.jobSearchQuery().trim().toLowerCase();
+    if (!query) return flat;
+    return flat.filter(
+      (job) =>
+        job.id?.toString().toLowerCase().includes(query) ||
+        this.getJobDisplayName(job).toLowerCase().includes(query) ||
+        job.status?.toLowerCase().includes(query),
+    );
   });
 
   // Scheduling

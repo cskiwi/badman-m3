@@ -1,0 +1,209 @@
+@if (service.loading()) {
+  <div class="flex flex-col gap-4 p-4">
+    <p-skeleton height="3rem" />
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      @for (i of [1, 2, 3]; track i) {
+        <p-skeleton height="20rem" />
+      }
+    </div>
+  </div>
+} @else if (service.error()) {
+  <p-message severity="error" [text]="service.error()!" />
+} @else {
+  <!-- Toolbar -->
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <p-button
+      label="{{ 'all.club.teamBuilder.import.title' | translate }}"
+      icon="pi pi-file-excel"
+      severity="success"
+      (onClick)="openImportDialog()"
+    />
+
+    <p-select
+      [options]="teamTypeOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="{{ 'all.club.teamBuilder.addTeam' | translate }}"
+      (onChange)="addTeam($event.value)"
+      [style]="{ 'width': '160px' }"
+    />
+
+    <!-- Draft indicator -->
+    @if (service.loadedFromDraft()) {
+      <p-tag value="Loaded from saved draft" severity="info" icon="pi pi-history" />
+    }
+
+    <!-- Performance loading indicator -->
+    @if (service.performanceLoading()) {
+      <p-tag value="Loading performance data…" severity="secondary" icon="pi pi-spin pi-spinner" />
+    }
+
+    <!-- Sort controls -->
+    <p-selectButton [options]="sortOptions" [(ngModel)]="sortBy" optionLabel="label" optionValue="value" size="small" />
+    <label class="flex items-center gap-1 text-sm">
+      <p-checkbox [(ngModel)]="separateBackups" [binary]="true" />
+      Separate backups
+    </label>
+
+    <p-button
+      icon="pi pi-cog"
+      [label]="'all.club.teamBuilder.settings.title' | translate"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="openSettingsDialog()"
+    />
+
+    <div class="flex-1"></div>
+
+    <!-- Validation summary -->
+    @if (service.validationSummary(); as summary) {
+      <div class="flex items-center gap-2">
+        <p-tag
+          [value]="summary.valid + '/' + summary.total + ' valid' + (summary.warnings > 0 ? ' · ' + summary.warnings + ' warning(s)' : '')"
+          [severity]="summary.invalid > 0 ? 'warn' : summary.warnings > 0 ? 'warn' : 'success'"
+          icon="{{ summary.invalid > 0 || summary.warnings > 0 ? 'pi pi-exclamation-triangle' : 'pi pi-check' }}"
+        />
+      </div>
+    }
+
+    <p-button label="{{ 'all.club.teamBuilder.save' | translate }}" icon="pi pi-save" (onClick)="save()" [disabled]="service.teams().length === 0" />
+  </div>
+
+  <!-- Main layout: player pool + team cards -->
+  <div class="flex gap-4" cdkDropListGroup>
+    <!-- Player pool (left sidebar) -->
+    <div class="w-72 shrink-0">
+      <div class="sticky top-0">
+        <h3 class="font-bold mb-2">{{ 'all.club.teamBuilder.playerPool' | translate }}</h3>
+
+        <!-- Add player -->
+        <div class="mb-2">
+          <p-autoComplete
+            [(ngModel)]="selectedPlayer"
+            [suggestions]="playerSuggestions()"
+            (completeMethod)="searchPlayerToAdd($event)"
+            (onSelect)="onPlayerSelected($event)"
+            field="fullName"
+            optionLabel="fullName"
+            placeholder="{{ 'all.club.teamBuilder.addPlayer' | translate }}"
+            [minLength]="2"
+            [forceSelection]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          />
+        </div>
+
+        <!-- Search filter -->
+        <div class="mb-3">
+          <p-iconfield>
+            <p-inputicon class="pi pi-search" />
+            <input type="text" pInputText [(ngModel)]="searchQuery" placeholder="Search players..." class="w-full" />
+          </p-iconfield>
+        </div>
+
+        <!-- Unassigned players list -->
+        <div
+          cdkDropList
+          [cdkDropListData]="'pool'"
+          (cdkDropListDropped)="onPlayerDroppedOnPool($event)"
+          class="flex flex-col gap-1 min-h-48 p-2 rounded-border border-2 border-dashed border-surface bg-emphasis max-h-[calc(100vh-280px)] overflow-y-auto"
+        >
+          @for (player of filteredUnassignedPlayers; track $index) {
+            <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: null }">
+              <app-player-chip [player]="player" (playerClicked)="openEditSurveyDialog($event)" />
+            </div>
+          } @empty {
+            <div class="text-center text-muted-color py-4 text-sm">
+              {{ searchQuery ? 'No players match search' : 'All players assigned' }}
+            </div>
+          }
+        </div>
+
+        <!-- Players stopping -->
+        <h3 class="font-bold mb-2 mt-4">{{ 'all.club.teamBuilder.playersStopping' | translate }}</h3>
+        <div
+          cdkDropList
+          [cdkDropListData]="'stopping'"
+          (cdkDropListDropped)="onPlayerDroppedOnStopping($event)"
+          class="flex flex-col gap-1 min-h-16 p-2 rounded-border border-2 border-dashed border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-800 max-h-64 overflow-y-auto"
+        >
+          @for (player of service.stoppingPlayers(); track player.id) {
+            <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: 'stopping' }">
+              <app-player-chip [player]="player" (playerClicked)="openEditSurveyDialog($event)" />
+            </div>
+          } @empty {
+            <div class="text-center text-muted-color py-4 text-sm">
+              {{ 'all.club.teamBuilder.noStoppingPlayers' | translate }}
+            </div>
+          }
+        </div>
+
+        <!-- Remove player drop zone -->
+        <h3 class="font-bold mb-2 mt-4">{{ 'all.club.teamBuilder.removePlayer' | translate }}</h3>
+        <div
+          cdkDropList
+          [cdkDropListData]="'remove'"
+          (cdkDropListDropped)="onPlayerDroppedOnRemove($event)"
+          class="flex flex-col items-center justify-center min-h-16 p-2 rounded-border border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-950/20"
+        >
+          <div class="text-center text-muted-color py-2 text-sm">
+            <i class="pi pi-trash mr-1"></i>
+            {{ 'all.club.teamBuilder.dropToRemove' | translate }}
+          </div>
+        </div>
+
+        <!-- Removed players (restore) -->
+        @if (service.removedPlayers().length > 0) {
+          <h3 class="font-bold mb-2 mt-4">{{ 'all.club.teamBuilder.removedPlayers' | translate }}</h3>
+          <div class="flex flex-col gap-1 max-h-48 overflow-y-auto p-2 rounded-border border border-surface bg-emphasis">
+            @for (player of service.removedPlayers(); track player.id) {
+              <div class="flex items-center gap-2 p-2 rounded-border border border-surface bg-emphasis opacity-60">
+                <span class="text-sm flex-1 truncate">{{ player.fullName }}</span>
+                @if ((service.slotAdjustments().get(player.id) ?? 0) < -1) {
+                  <span class="text-xs text-muted-color">×{{ -(service.slotAdjustments().get(player.id) ?? 0) }}</span>
+                }
+                <button
+                  pButton
+                  icon="pi pi-undo"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="info"
+                  size="small"
+                  pTooltip="Restore one slot"
+                  tooltipPosition="top"
+                  (click)="restorePlayer(player.id)"
+                ></button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Team cards grid -->
+    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+      @for (team of service.sortedTeams(); track team.id) {
+        <app-builder-team-card
+          [team]="team"
+          [sortBy]="sortBy"
+          [separateBackups]="separateBackups"
+          (playerDropped)="onPlayerDroppedOnTeam($event)"
+          (removeTeamClicked)="removeTeam(team.id)"
+          (markForRemovalClicked)="markTeamForRemoval(team.id)"
+          (membershipToggled)="onMembershipToggled(team.id, $event)"
+          (subEventChanged)="onSubEventChanged(team.id, $event)"
+          (subEventClicked)="openSubEventDialog(team)"
+          (playerClicked)="openEditSurveyDialog($event)"
+        />
+      } @empty {
+        <div class="col-span-full text-center text-muted-color py-8">
+          <i class="pi pi-users text-4xl mb-2"></i>
+          <p>No teams yet. Load data or add a team to get started.</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <p-confirmDialog />
+  <p-toast />
+}

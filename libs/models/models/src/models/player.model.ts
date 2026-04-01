@@ -23,7 +23,7 @@ import { Claim } from './security/claim.model';
 @Entity('Players')
 @Index(['firstName', 'lastName'])
 export class Player extends BaseEntity {
-  @Field(() => ID)
+  @WhereField(() => ID)
   @PrimaryGeneratedColumn('uuid')
   declare id: string;
 

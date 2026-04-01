@@ -1,4 +1,5 @@
 export * from './player.input';
+export * from './ranking-place.input';
 export * from './team.input';
 export * from './claim.input';
 export * from './role.input';
@@ -12,3 +13,4 @@ export * from './tournament-checkin.input';
 export * from './tournament-court.input';
 export * from './enrollment.input';
 export * from './competition-event.input';
+export * from './team-builder.input';

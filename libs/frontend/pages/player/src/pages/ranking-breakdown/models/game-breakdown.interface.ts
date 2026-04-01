@@ -7,6 +7,7 @@ export interface GameBreakdown extends Game {
   dropsNextPeriod?: boolean;
   team: (GamePlayerMembership | undefined)[];
   opponent: (GamePlayerMembership | undefined)[];
+  simulated?: boolean;
 
   // Upgrade calculations
   totalPointsUpgrade?: number;

@@ -74,8 +74,8 @@ export class Club extends BaseEntity {
   @Column({ type: 'character varying', length: 255, nullable: true })
   declare country?: string;
 
-  @SortableField(() => ClubPlayerMembership)
-  @OneToMany(() => ClubPlayerMembership, (clubPlayerMembership) => clubPlayerMembership.player)
+  @SortableField(() => [ClubPlayerMembership])
+  @OneToMany(() => ClubPlayerMembership, (clubPlayerMembership) => clubPlayerMembership.club)
   declare clubPlayerMemberships: Relation<ClubPlayerMembership[]>;
 
   @SortableField(() => [Team])

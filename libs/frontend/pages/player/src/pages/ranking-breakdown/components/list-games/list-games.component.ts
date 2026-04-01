@@ -3,19 +3,25 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RankingLastPlace, RankingSystem } from '@app/models';
+import type { GamePlayerMembership, RankingPoint } from '@app/models';
 import { GameBreakdownType, GetGameResultType } from '@app/utils/comp';
+import { GameType } from '@app/models-enum';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { startWith } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
+import { AutoCompleteCompleteEvent, AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
+import { DialogModule } from 'primeng/dialog';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { CheckboxModule } from 'primeng/checkbox';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { GameBreakdown } from '../../models';
-import { RankingBreakdownService, RankingType } from '../../page-ranking-breakdown.service';
+import { PlayerSearchResult, RankingBreakdownService, RankingType } from '../../page-ranking-breakdown.service';
 import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
 
 dayjs.extend(isSameOrAfter);
@@ -32,6 +38,10 @@ dayjs.extend(isSameOrAfter);
     TranslateModule,
     TableModule,
     ButtonModule,
+    AutoCompleteModule,
+    DialogModule,
+    InputNumberModule,
+    SelectButtonModule,
     TooltipModule,
     ToggleButtonModule,
     CheckboxModule,
@@ -70,6 +80,41 @@ export class ListGamesComponent {
   excludedGameIds = signal<Set<string>>(new Set());
   latestXOverrides = signal<Map<string, boolean>>(new Map()); // force in/out of latest X window
 
+  // Simulated games
+  simulatedGames = signal<GameBreakdown[]>([]);
+  showAddGameDialog = signal(false);
+  addGameWon = signal(true);
+  addGameOpponentLevel1 = signal<number>(8);
+  addGameOpponentLevel2 = signal<number>(8);
+  wonOptions: { label: string; value: boolean }[] = [];
+
+  // Player search for opponent levels
+  playerSuggestions1 = signal<PlayerSearchResult[]>([]);
+  playerSuggestions2 = signal<PlayerSearchResult[]>([]);
+  selectedOpponentName1 = signal<string | null>(null);
+  selectedOpponentName2 = signal<string | null>(null);
+
+  isDoubles = computed(() => this.type() === 'double' || this.type() === 'mix');
+  effectiveOpponentLevel = computed(() => {
+    if (this.isDoubles()) {
+      return Math.round((this.addGameOpponentLevel1() + this.addGameOpponentLevel2()) / 2);
+    }
+    return this.addGameOpponentLevel1();
+  });
+  simulatedPoints = computed(() => {
+    const sys = this.system();
+    const won = this.addGameWon();
+    const opponentLevel = this.effectiveOpponentLevel();
+
+    if (!sys?.pointsWhenWinningAgainst || !won) {
+      return 0;
+    }
+
+    const amountOfLevels = sys.amountOfLevels ?? 12;
+    const idx = amountOfLevels - opponentLevel;
+    return sys.pointsWhenWinningAgainst[idx] ?? 0;
+  });
+
   start = computed(() => this.filterSignal()?.start as Dayjs | null);
   next = computed(() => this.filterSignal()?.next as Dayjs | null);
 
@@ -80,8 +125,9 @@ export class ListGamesComponent {
     const allGames = this.games();
     const excluded = this.excludedGameIds();
     const latestXOvr = this.latestXOverrides();
+    const simulated = this.simulatedGames();
 
-    if (!startPeriod || !playerData || !sys || allGames.length <= 0) {
+    if (!startPeriod || !playerData || !sys || (allGames.length <= 0 && simulated.length <= 0)) {
       return [];
     }
 
@@ -92,7 +138,11 @@ export class ListGamesComponent {
         .filter((x) => dayjs(x.playedAt).isSameOrAfter(startPeriod) && !excluded.has(x.id))
         .map((x) => structuredClone(x) as GameBreakdown);
 
-      this._addBreakdownInfo(games);
+      // Merge simulated games
+      games.push(...simulated.map((x) => structuredClone(x)));
+
+      this._addBreakdownInfo(games.filter((x) => !x.simulated));
+      this._addBreakdownInfoSimulated(games.filter((x) => x.simulated));
       this._determineUsedForRanking(games, latestXOvr);
       this._calculateAverageUpgrade(games);
     });
@@ -127,11 +177,14 @@ export class ListGamesComponent {
   });
 
   excludedCount = computed(() => this.excludedGameIds().size);
-  hasOverrides = computed(() => this.excludedGameIds().size > 0 || this.latestXOverrides().size > 0);
+  simulatedCount = computed(() => this.simulatedGames().length);
+  hasOverrides = computed(() => this.excludedGameIds().size > 0 || this.latestXOverrides().size > 0 || this.simulatedGames().length > 0);
+
+  showRemoveColumn = computed(() => this.enableRemoveGames() || this.simulatedGames().length > 0);
 
   totalColumns = computed(() => {
     let cols = 5; // status icons, date, team, opponent, points
-    if (this.enableRemoveGames()) cols++;
+    if (this.showRemoveColumn()) cols++;
     if (this.enableToggleLatestX()) cols++; // single shared "in latest X" column
     if (this.showUpgrade()) cols += 3; // # badge, used checkbox, average
     if (this.showDowngrade()) cols += 3; // # badge, used checkbox, average
@@ -149,6 +202,11 @@ export class ListGamesComponent {
     const latestXOvr = this.latestXOverrides();
 
     return this.currGames().filter((x) => {
+      // Simulated games should always be visible
+      if (x.simulated) {
+        return true;
+      }
+
       // Games with manual overrides should always stay visible
       if (latestXOvr.has(x.id)) {
         return true;
@@ -226,14 +284,15 @@ export class ListGamesComponent {
   wonGames = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.WON).length);
   lostGamesIgnored = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_IGNORED).length);
   outOfScopeGamesUpgrade = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_UPGRADE && !x.inLatestX).length);
-  outOfScopeGamesDowngrade = computed(
-    () => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_DOWNGRADE && !x.inLatestX).length,
-  );
-  outOfScopeLatestXGames = computed(
-    () => this.currGames().filter((x) => !x.inLatestX && x.type !== GameBreakdownType.LOST_IGNORED).length,
-  );
+  outOfScopeGamesDowngrade = computed(() => this.currGames().filter((x) => x.type === GameBreakdownType.LOST_DOWNGRADE && !x.inLatestX).length);
+  outOfScopeLatestXGames = computed(() => this.currGames().filter((x) => !x.inLatestX && x.type !== GameBreakdownType.LOST_IGNORED).length);
 
   constructor() {
+    this.wonOptions = [
+      { label: this.translateService.instant('all.ranking.breakdown.add-game.won'), value: true },
+      { label: this.translateService.instant('all.ranking.breakdown.add-game.lost'), value: false },
+    ];
+
     // Sync counts to service so parent can display them
     effect(() => {
       this.breakdownService.lostGamesUpgrade.set(this.lostGamesUpgrade());
@@ -251,7 +310,6 @@ export class ListGamesComponent {
     for (const game of games) {
       const myMembership = game.gamePlayerMemberships?.find((gpm) => gpm.playerId === playerData.id);
       const myTeam = myMembership?.team;
-
 
       if (!game.gameType) {
         console.warn(`Game ${game.id} has no gameType`);
@@ -307,6 +365,49 @@ export class ListGamesComponent {
     }
   }
 
+  private _addBreakdownInfoSimulated(games: GameBreakdown[]) {
+    const sys = this.system();
+    const nextPeriod = this.next();
+
+    for (const game of games) {
+      game.dropsNextPeriod = nextPeriod ? dayjs(game.playedAt).isBefore(nextPeriod) : false;
+
+      // Set usedForUpgrade/usedForDowngrade based on game type
+      if (game.type === GameBreakdownType.WON) {
+        game.usedForUpgrade = true;
+        game.usedForDowngrade = true;
+      } else if (game.type === GameBreakdownType.LOST_UPGRADE) {
+        game.usedForUpgrade = true;
+        game.usedForDowngrade = false;
+      } else if (game.type === GameBreakdownType.LOST_DOWNGRADE) {
+        game.usedForUpgrade = true;
+        game.usedForDowngrade = true;
+      } else {
+        game.usedForUpgrade = false;
+        game.usedForDowngrade = false;
+      }
+
+      // defaults for calculated fields
+      game.inLatestX = false;
+      game.canUpgrade = false;
+      game.canDowngrade = false;
+      game.outOfScopeLatestXUpgrade = false;
+      game.outOfScopeLatestXDowngrade = false;
+      game.countUpgrade = undefined;
+      game.countDowngrade = undefined;
+      game.devideUpgrade = undefined;
+      game.devideDowngrade = undefined;
+      game.devideUpgradeCorrected = undefined;
+      game.devideDowngradeCorrected = undefined;
+      game.totalPointsUpgrade = undefined;
+      game.totalPointsDowngrade = undefined;
+      game.avgUpgrade = undefined;
+      game.avgDowngrade = undefined;
+      game.highestAvgUpgrade = undefined;
+      game.highestAvgDowngrade = undefined;
+    }
+  }
+
   toggleLatestX(game: GameBreakdown) {
     this.latestXOverrides.update((map) => {
       const next = new Map(map);
@@ -326,7 +427,155 @@ export class ListGamesComponent {
   restoreAllGames() {
     this.excludedGameIds.set(new Set());
     this.latestXOverrides.set(new Map());
+    this.simulatedGames.set([]);
   }
+
+  openAddGameDialog() {
+    const rankingPlaceData = this.rankingPlace();
+    const gameType = this.type();
+    const playerLevel = rankingPlaceData?.[gameType] ?? 8;
+    this.addGameOpponentLevel1.set(playerLevel);
+    this.addGameOpponentLevel2.set(playerLevel);
+    this.addGameWon.set(true);
+    this.playerSuggestions1.set([]);
+    this.playerSuggestions2.set([]);
+    this.selectedOpponentName1.set(null);
+    this.selectedOpponentName2.set(null);
+    this.showAddGameDialog.set(true);
+  }
+
+  async searchOpponent(event: AutoCompleteCompleteEvent, slot: 1 | 2) {
+    const systemId = this.filter.get('systemId')?.value;
+    if (!systemId) return;
+
+    const results = await this.breakdownService.searchPlayers(event.query, systemId);
+    if (slot === 1) {
+      this.playerSuggestions1.set(results);
+    } else {
+      this.playerSuggestions2.set(results);
+    }
+  }
+
+  selectOpponent(event: AutoCompleteSelectEvent, slot: 1 | 2) {
+    const player = event.value as PlayerSearchResult;
+    const gameType = this.type();
+    const level = player.rankingLastPlaces?.[0]?.[gameType] ?? 12;
+    if (slot === 1) {
+      this.addGameOpponentLevel1.set(level);
+      this.selectedOpponentName1.set(player.fullName);
+    } else {
+      this.addGameOpponentLevel2.set(level);
+      this.selectedOpponentName2.set(player.fullName);
+    }
+  }
+
+  addSimulatedGame() {
+    const sys = this.system();
+    const rankingPlaceData = this.rankingPlace();
+    const gameType = this.type();
+    const playerLevel = rankingPlaceData?.[gameType] ?? 12;
+    const opponentLevel = this.effectiveOpponentLevel();
+    const won = this.addGameWon();
+    const points = this.simulatedPoints();
+
+    const differenceInLevel = opponentLevel - playerLevel;
+
+    let enumGameType = GameType.S;
+    switch (gameType) {
+      case 'double':
+        enumGameType = GameType.D;
+        break;
+      case 'mix':
+        enumGameType = GameType.MX;
+        break;
+    }
+
+    const type = GetGameResultType(won, enumGameType, {
+      differenceInLevel,
+      system: sys,
+    });
+
+    const now = new Date();
+    const simGameId = `sim-${crypto.randomUUID()}`;
+
+    const teamMember: Partial<GamePlayerMembership> = {
+      id: `sim-team-${crypto.randomUUID()}`,
+      playerId: this.player().id,
+      gameId: simGameId,
+      team: 1,
+    };
+    teamMember[gameType] = playerLevel;
+    (teamMember as Record<string, unknown>)['gamePlayer'] = { fullName: `You` };
+
+    const opponentMembers: Partial<GamePlayerMembership>[] = [];
+    const opp1Level = this.addGameOpponentLevel1();
+    const opp1: Partial<GamePlayerMembership> = {
+      id: `sim-opp1-${crypto.randomUUID()}`,
+      playerId: '',
+      gameId: simGameId,
+      team: 2,
+    };
+    opp1[gameType] = opp1Level;
+    (opp1 as Record<string, unknown>)['gamePlayer'] = { fullName: this.selectedOpponentName1() ?? `Opponent 1` };
+    opponentMembers.push(opp1);
+
+    if (this.isDoubles()) {
+      const opp2Level = this.addGameOpponentLevel2();
+      const opp2: Partial<GamePlayerMembership> = {
+        id: `sim-opp2-${crypto.randomUUID()}`,
+        playerId: '',
+        gameId: simGameId,
+        team: 2,
+      };
+      opp2[gameType] = opp2Level;
+      (opp2 as Record<string, unknown>)['gamePlayer'] = { fullName: this.selectedOpponentName2() ?? `Opponent 2` };
+      opponentMembers.push(opp2);
+    }
+
+    const rankingPoint = {
+      id: `sim-rp-${crypto.randomUUID()}`,
+      createdAt: now,
+      updatedAt: now,
+      points,
+      differenceInLevel,
+      playerId: this.player().id,
+      gameId: simGameId,
+      systemId: sys.id,
+    } as Partial<RankingPoint> as RankingPoint;
+
+    const simGame: Partial<GameBreakdown> = {
+      id: simGameId,
+      createdAt: now,
+      updatedAt: now,
+      playedAt: now,
+      linkId: 'simulated',
+      linkType: 'simulated',
+      winner: won ? 1 : 2,
+      gameType: enumGameType,
+      gamePlayerMemberships: [teamMember as GamePlayerMembership, ...opponentMembers as GamePlayerMembership[]],
+      rankingPoints: [rankingPoint as RankingPoint],
+      points,
+      type,
+      simulated: true,
+      team: [teamMember as GamePlayerMembership],
+      opponent: opponentMembers as GamePlayerMembership[],
+      dropsNextPeriod: false,
+      inLatestX: false,
+      usedForUpgrade: false,
+      usedForDowngrade: false,
+      canUpgrade: false,
+      canDowngrade: false,
+    };
+
+    this.simulatedGames.update((games) => [...games, simGame as GameBreakdown]);
+    this.showAddGameDialog.set(false);
+  }
+
+  removeSimulatedGame(game: GameBreakdown) {
+    this.simulatedGames.update((games) => games.filter((g) => g.id !== game.id));
+  }
+
+
 
   private _determineUsedForRanking(games: GameBreakdown[], latestXOverrides: Map<string, boolean>) {
     const sys = this.system();

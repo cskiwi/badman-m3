@@ -1,7 +1,9 @@
 import { PermGuard, User } from '@app/backend-authorization';
 import { SyncService } from '@app/backend-sync';
-import { Player } from '@app/models';
-import { ForbiddenException, UseGuards } from '@nestjs/common';
+import { Player, TournamentEvent } from '@app/models';
+import { ForbiddenException, Logger, UseGuards } from '@nestjs/common';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Args, Field, Float, ID, InputType, Int, Mutation, ObjectType, Query, Resolver } from '@nestjs/graphql';
 
 // GraphQL types
@@ -114,8 +116,25 @@ class UnmatchedTeamInput {
   strength?: number;
 }
 
+@ObjectType('TournamentOfficialSyncResult')
+class TournamentOfficialSyncResult {
+  @Field(() => Int)
+  updated!: number;
+
+  @Field(() => Int)
+  alreadyCorrect!: number;
+
+  @Field(() => Int)
+  notFound!: number;
+
+  @Field(() => Int)
+  recalcQueued!: number;
+}
+
 @Resolver()
 export class SyncResolver {
+  private readonly logger = new Logger(SyncResolver.name);
+
   constructor(private readonly syncService: SyncService) {}
 
   @Query(() => SyncStatus)
@@ -465,6 +484,31 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
+  async triggerRankingCalc(
+    @User() user: Player,
+    @Args('systemId', { type: () => ID }) systemId: string,
+    @Args('startDate', { nullable: true }) startDate?: string,
+    @Args('stopDate', { nullable: true }) stopDate?: string,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger ranking calculation');
+    }
+
+    await this.syncService.queueRankingCalc({
+      startDate: startDate ? new Date(startDate) : undefined,
+      stopDate: stopDate ? new Date(stopDate) : undefined,
+    });
+
+    return {
+      message: startDate
+        ? `Ranking calculation queued for system ${systemId} from ${startDate}`
+        : `Ranking calculation queued for system ${systemId}`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
   async clearAllJobs(@User() user: Player): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to clear jobs');
@@ -491,6 +535,118 @@ export class SyncResolver {
       message: `Cleared ${removedCount} completed jobs (kept jobs with failed children)`,
       success: true,
     };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerTournamentScrapeYear(
+    @User() user: Player,
+    @Args('year', { type: () => Int }) year: number,
+    @Args('runAdding', { type: () => Boolean, defaultValue: true }) runAdding: boolean,
+    @Args('runCleanup', { type: () => Boolean, defaultValue: true }) runCleanup: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger tournament scrape');
+    }
+
+    await this.syncService.queueTournamentScrapeYear({
+      year,
+      runAdding,
+      runCleanup,
+      metadata: { displayName: `Scrape calendar year ${year}` },
+    });
+
+    return {
+      message: `Tournament calendar scrape for ${year} queued (runAdding=${runAdding}, runCleanup=${runCleanup})`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => SyncTriggerResponse)
+  @UseGuards(PermGuard)
+  async triggerTournamentScrapeYears(
+    @User() user: Player,
+    @Args('years', { type: () => [Int] }) years: number[],
+    @Args('runAdding', { type: () => Boolean, defaultValue: true }) runAdding: boolean,
+    @Args('runCleanup', { type: () => Boolean, defaultValue: true }) runCleanup: boolean,
+  ): Promise<SyncTriggerResponse> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to trigger tournament scrape');
+    }
+
+    for (const year of years) {
+      await this.syncService.queueTournamentScrapeYear({
+        year,
+        runAdding,
+        runCleanup,
+        metadata: { displayName: `Scrape calendar year ${year}` },
+      });
+    }
+
+    return {
+      message: `Tournament calendar scrape queued for years: ${years.join(', ')} (runAdding=${runAdding}, runCleanup=${runCleanup})`,
+      success: true,
+    };
+  }
+
+  @Mutation(() => TournamentOfficialSyncResult)
+  @UseGuards(PermGuard)
+  async syncTournamentOfficialStatus(@User() user: Player): Promise<TournamentOfficialSyncResult> {
+    if (!(await user.hasAnyPermission(['change:job']))) {
+      throw new ForbiddenException('Insufficient permissions to sync tournament official status');
+    }
+
+    const jsonPath = join(process.cwd(), 'scripts', 'tournament-ids-output.json');
+    const raw = readFileSync(jsonPath, 'utf-8');
+    const data = JSON.parse(raw) as {
+      tournaments: { tournamentId: string; official: boolean; eventName: string }[];
+    };
+
+    const entries = data.tournaments.filter((t) => t.tournamentId);
+
+    let updated = 0;
+    let alreadyCorrect = 0;
+    let notFound = 0;
+    let recalcQueued = 0;
+
+    for (const entry of entries) {
+      const tournament = await TournamentEvent.findOne({
+        where: { visualCode: entry.tournamentId },
+      });
+
+      if (!tournament) {
+        notFound++;
+        continue;
+      }
+
+      if (tournament.official === entry.official) {
+        alreadyCorrect++;
+        continue;
+      }
+
+      tournament.official = entry.official;
+      await tournament.save();
+      updated++;
+
+      const action = entry.official ? 'create' : 'remove';
+      await this.syncService.queueTournamentRankingRecalc({
+        tournamentId: tournament.id,
+        action,
+        metadata: {
+          displayName: `Ranking point ${action} for ${tournament.name}`,
+          eventName: tournament.name,
+        },
+      });
+      recalcQueued++;
+
+      this.logger.log(`Updated "${tournament.name}" official=${entry.official}, queued recalc (${action})`);
+    }
+
+    this.logger.log(
+      `syncTournamentOfficialStatus done — updated: ${updated}, alreadyCorrect: ${alreadyCorrect}, notFound: ${notFound}, recalcQueued: ${recalcQueued}`,
+    );
+
+    return { updated, alreadyCorrect, notFound, recalcQueued };
   }
 
   @Query(() => String)

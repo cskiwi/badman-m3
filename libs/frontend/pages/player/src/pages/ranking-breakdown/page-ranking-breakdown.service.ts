@@ -1,11 +1,18 @@
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Game, Player } from '@app/models';
+import { Game, Player, RankingLastPlace } from '@app/models';
 import { GameStatus, GameType } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { Dayjs } from 'dayjs';
 import { lastValueFrom, startWith } from 'rxjs';
+
+export interface PlayerSearchResult {
+  id: string;
+  fullName: string;
+  rankingLastPlaces?: RankingLastPlace[];
+}
 
 export type RankingType = 'single' | 'double' | 'mix';
 
@@ -107,9 +114,25 @@ const PLAYER_GAMES_QUERY = gql`
   }
 `;
 
+const PLAYERS_BY_IDS_QUERY = gql`
+  query SearchPlayersByIds($args: PlayerArgs, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
+    players(args: $args) {
+      id
+      fullName
+      rankingLastPlaces(args: $rankingLastPlacesArgs) {
+        id
+        single
+        double
+        mix
+      }
+    }
+  }
+`;
+
 @Injectable()
 export class RankingBreakdownService {
   private readonly apollo = inject(Apollo);
+  private readonly http = inject(HttpClient);
 
   // Player slug/id to resolve
   playerSlugOrId = signal<string | null>(null);
@@ -231,4 +254,38 @@ export class RankingBreakdownService {
   games = computed(() => (this.gamesResource.value() ?? []) as Game[]);
   loading = computed(() => this.gamesResource.isLoading());
   error = computed(() => this.gamesResource.error()?.message || null);
+
+  async searchPlayers(query: string, systemId: string): Promise<PlayerSearchResult[]> {
+    if (!query || query.length < 2) return [];
+
+    try {
+      const searchResults = await lastValueFrom(
+        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string } }>>(`/api/v1/search`, {
+          params: { query, types: 'players' },
+        }),
+      );
+
+      const playerIds = searchResults.map((r) => r.hit.objectID).filter(Boolean);
+      if (playerIds.length === 0) return [];
+
+      const result = await lastValueFrom(
+        this.apollo.query<{ players: PlayerSearchResult[] }>({
+          query: PLAYERS_BY_IDS_QUERY,
+          variables: {
+            args: {
+              where: { id: { in: playerIds } },
+              take: 10,
+            },
+            rankingLastPlacesArgs: {
+              where: [{ systemId: { eq: systemId } }],
+            },
+          },
+        }),
+      );
+
+      return result.data?.players ?? [];
+    } catch {
+      return [];
+    }
+  }
 }

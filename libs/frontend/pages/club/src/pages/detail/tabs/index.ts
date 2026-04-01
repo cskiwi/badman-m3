@@ -6,3 +6,5 @@ export * from './club-schedule-tab.component';
 export * from './club-schedule-tab.service';
 export * from './club-tournaments-tab.component';
 export * from './club-tournaments-tab.service';
+export * from './club-team-builder-tab.component';
+export * from './club-team-builder-tab.service';

@@ -6,6 +6,7 @@ export const COMPETITION_EVENT_QUEUE = 'competition-event';
 export const TOURNAMENT_EVENT_QUEUE = 'tournament-event';
 export const TEAM_MATCHING_QUEUE = 'team-matching';
 export const RANKING_SYNC_QUEUE = 'ranking-sync';
+export const RANKING_CALC_QUEUE = 'ranking-calc';
 
 // Legacy queue name for backwards compatibility
 export const SYNC_QUEUE = 'sync';
@@ -19,6 +20,10 @@ export const JOB_TYPES = {
   // Discovery jobs
   TOURNAMENT_DISCOVERY: 'tournament-discovery',
   TOURNAMENT_ADD_BY_CODE: 'tournament-add-by-code',
+  // Badmintonvlaanderen.be calendar scraping
+  TOURNAMENT_SCRAPE_YEAR: 'tournament-scrape-year',
+  TOURNAMENT_SCRAPE_EVENT: 'tournament-scrape-event',
+  TOURNAMENT_SCRAPE_YEAR_CLEANUP: 'tournament-scrape-year-cleanup',
 
   // Structure sync jobs (events, draws, entries)
   TOURNAMENT_STRUCTURE_SYNC: 'tournament-structure-sync',
@@ -35,6 +40,11 @@ export const JOB_TYPES = {
   // BBF Rating ranking sync
   RANKING_SYNC_INIT: 'ranking-sync-init',
   RANKING_SYNC_PUBLICATION: 'ranking-sync-publication',
+  // Self-calculated ranking (non-VISUAL systems)
+  RANKING_CALC_INIT: 'ranking-calc-init',
+  RANKING_CALC_PERIOD: 'ranking-calc-period',
+  RANKING_CALC_PLAYER_BATCH: 'ranking-calc-player-batch',
+  RANKING_CALC_FINALIZE: 'ranking-calc-finalize',
 } as const;
 
 // Helper function to create dynamic job names
@@ -76,15 +86,17 @@ export const ALL_SYNC_QUEUES = [
   TOURNAMENT_EVENT_QUEUE,
   TEAM_MATCHING_QUEUE,
   RANKING_SYNC_QUEUE,
+  RANKING_CALC_QUEUE,
 ] as const;
 
 // Queue to job type mapping for easy reference
 export const QUEUE_JOB_TYPE_MAP = {
-  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE],
+  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE, JOB_TYPES.TOURNAMENT_SCRAPE_YEAR, JOB_TYPES.TOURNAMENT_SCRAPE_EVENT, JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP],
   [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
   [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC, JOB_TYPES.TOURNAMENT_RANKING_RECALC],
   [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
   [RANKING_SYNC_QUEUE]: [JOB_TYPES.RANKING_SYNC_INIT, JOB_TYPES.RANKING_SYNC_PUBLICATION],
+  [RANKING_CALC_QUEUE]: [JOB_TYPES.RANKING_CALC_INIT, JOB_TYPES.RANKING_CALC_PERIOD, JOB_TYPES.RANKING_CALC_PLAYER_BATCH, JOB_TYPES.RANKING_CALC_FINALIZE],
   [SYNC_QUEUE]: [], // Legacy queue
 } as const;
 
@@ -171,6 +183,42 @@ export interface RankingSyncPublicationJobData {
   metadata?: JobDisplayMetadata;
 }
 
+// Self-calculated ranking job data interfaces (non-VISUAL systems)
+
+export interface RankingCalcInitJobData {
+  systemId: string;
+  calcDate: string;      // ISO — the snapshot date
+  isUpdateDate: boolean; // true when level changes are allowed
+  metadata?: JobDisplayMetadata;
+}
+
+export interface RankingCalcPeriodJobData {
+  systemId: string;
+  periodDate: string;  // ISO — becomes RankingPlace.rankingDate
+  windowStart: string; // ISO — periodDate - periodAmount/periodUnit
+  windowEnd: string;   // ISO — same as periodDate (exclusive upper bound)
+  isUpdateDate: boolean;
+  metadata?: JobDisplayMetadata;
+}
+
+export interface RankingCalcPlayerBatchJobData {
+  systemId: string;
+  periodDate: string;
+  windowStart: string;
+  windowEnd: string;
+  playerIds: string[]; // IDs of players in this batch (~100 per batch)
+  isUpdateDate: boolean;
+  batchKey: string;    // Redis key: ranking-calc:{systemId}:{periodDate}:remaining
+  metadata?: JobDisplayMetadata;
+}
+
+export interface RankingCalcFinalizeJobData {
+  systemId: string;
+  calcDate: string;
+  isUpdateDate: boolean;
+  metadata?: JobDisplayMetadata;
+}
+
 export interface TeamMatchingJobData {
   tournamentCode: string;
   eventCode?: string;
@@ -184,5 +232,26 @@ export interface TeamMatchingJobData {
     strength?: number;
   }>;
   // Display metadata
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentScrapeYearJobData {
+  year: number;
+  /** Whether to queue individual event scrape jobs (default: true) */
+  runAdding?: boolean;
+  /** Whether to queue the year cleanup job to mark absent tournaments (default: true) */
+  runCleanup?: boolean;
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentScrapeEventJobData {
+  year: number;
+  eventUrl: string;
+  eventName: string;
+  metadata?: JobDisplayMetadata;
+}
+
+export interface TournamentScrapeYearCleanupJobData {
+  year: number;
   metadata?: JobDisplayMetadata;
 }

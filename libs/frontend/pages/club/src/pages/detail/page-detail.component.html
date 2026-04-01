@@ -37,6 +37,12 @@
       <i class="pi pi-trophy mr-2"></i>
       {{ 'all.club.tournaments.tab' | translate }}
     </p-tab>
+    @if (canAccessTeamBuilder()) {
+      <p-tab value="4">
+        <i class="pi pi-wrench mr-2"></i>
+        {{ 'all.club.teamBuilder.tab' | translate }}
+      </p-tab>
+    }
   </p-tablist>
 
   <p-tabpanels>
@@ -67,6 +73,15 @@
       }
 
     </p-tabpanel>
+
+    <!-- Team Builder Tab -->
+    @if (canAccessTeamBuilder()) {
+      <p-tabpanel value="4">
+        @defer (on idle) {
+        <app-club-team-builder-tab [clubId]="club.slug" [season]="currentSeason()" />
+        }
+      </p-tabpanel>
+    }
   </p-tabpanels>
 </p-tabs>
 }

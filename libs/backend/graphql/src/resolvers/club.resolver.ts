@@ -3,7 +3,12 @@ import { ClubPlayerMembership, Club, Team, Player, TournamentEvent } from '@app/
 import { IsUUID } from '@app/utils';
 import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { ClubArgs, TeamArgs, TournamentEventArgs } from '../args';
+import {
+  ClubArgs,
+  ClubPlayerMembershipArgs,
+  TeamArgs,
+  TournamentEventArgs,
+} from '../args';
 
 @Resolver(() => Club)
 export class ClubResolver {
@@ -37,6 +42,33 @@ export class ClubResolver {
   ): Promise<Club[]> {
     const args = ClubArgs.toFindOneOptions(inputArgs);
     return Club.find(args);
+  }
+
+  @ResolveField(() => [ClubPlayerMembership])
+  async clubPlayerMemberships(
+    @Parent() { id }: Club,
+    @Args('args', {
+      type: () => ClubPlayerMembershipArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof ClubPlayerMembershipArgs>,
+  ) {
+    const args = ClubPlayerMembershipArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        clubId: id,
+      }));
+    } else {
+      args.where = [
+        {
+          clubId: id,
+        },
+      ];
+    }
+
+    return ClubPlayerMembership.find(args);
   }
 
   @ResolveField(() => [Team], { nullable: true })
