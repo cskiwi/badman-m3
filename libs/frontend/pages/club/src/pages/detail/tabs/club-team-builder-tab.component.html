@@ -146,8 +146,8 @@
             @for (player of service.removedPlayers(); track player.id) {
               <div class="flex items-center gap-2 p-2 rounded-border border border-surface bg-emphasis opacity-60">
                 <span class="text-sm flex-1 truncate">{{ player.fullName }}</span>
-                @if ((service.removedSlots().get(player.id) ?? 0) > 1) {
-                  <span class="text-xs text-muted-color">×{{ service.removedSlots().get(player.id) }}</span>
+                @if ((service.slotAdjustments().get(player.id) ?? 0) < -1) {
+                  <span class="text-xs text-muted-color">×{{ -(service.slotAdjustments().get(player.id) ?? 0) }}</span>
                 }
                 <button
                   pButton

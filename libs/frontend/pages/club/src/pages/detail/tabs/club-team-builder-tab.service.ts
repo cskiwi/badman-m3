@@ -191,8 +191,9 @@ export class ClubTeamBuilderTabService {
   readonly loadedFromDraft = signal(false);
 
   // Manually added/removed players
-  // Tracks how many pool slots have been removed per player (not all-or-nothing)
-  readonly removedSlots = signal<Map<string, number>>(new Map());
+  // slotAdjustments: negative = net removed slots, positive = extra slots added.
+  // Pool formula: remainingSlots = max(0, desiredSlots + adjustment - regularTeamCount)
+  readonly slotAdjustments = signal<Map<string, number>>(new Map());
   readonly removedPlayers = signal<TeamBuilderPlayer[]>([]);
   readonly manuallyAddedPlayers = signal<TeamBuilderPlayer[]>([]);
 
@@ -300,7 +301,7 @@ export class ClubTeamBuilderTabService {
       }
     }
 
-    const removedSlotsMap = this.removedSlots();
+    const adjustments = this.slotAdjustments();
     const allPlayers = [...this.getAllPlayersFromData(), ...this.manuallyAddedPlayers()];
     // Deduplicate by ID (manually added player may overlap with data players)
     const seen = new Set<string>();
@@ -318,12 +319,12 @@ export class ClubTeamBuilderTabService {
       if (stoppingIds.has(p.id)) continue;
 
       const currentCount = playerTeamCount.get(p.id) ?? 0;
-      const removedCount = removedSlotsMap.get(p.id) ?? 0;
+      const adjustment = adjustments.get(p.id) ?? 0;
       const desiredCount = p.survey?.desiredTeamCount;
 
       // If survey has a desired count, use it; otherwise default to 1 slot
-      const totalSlots = desiredCount != null && desiredCount > 0 ? desiredCount : 1;
-      const remainingSlots = Math.max(0, totalSlots - currentCount - removedCount);
+      const baseSlots = desiredCount != null && desiredCount > 0 ? desiredCount : 1;
+      const remainingSlots = Math.max(0, baseSlots + adjustment - currentCount);
 
       for (let i = 0; i < remainingSlots; i++) {
         result.push(p);
@@ -360,6 +361,20 @@ export class ClubTeamBuilderTabService {
     for (const [, info] of playerTeamCount) {
       if (info.desired > 0 && info.count > info.desired) {
         errors.push(`${info.name}: wants ${info.desired} team(s), assigned to ${info.count}`);
+      }
+    }
+
+    // Warn about removed players who are below their desired team count
+    const adjustments = this.slotAdjustments();
+    for (const player of this.removedPlayers()) {
+      const desired = player.survey?.desiredTeamCount ?? 0;
+      if (desired <= 0) continue;
+      const adjustment = adjustments.get(player.id) ?? 0;
+      if (adjustment >= 0) continue; // not net-removed
+      const regularCount = playerTeamCount.get(player.id)?.count ?? 0;
+      const available = Math.max(0, desired + adjustment - regularCount);
+      if (available === 0 && regularCount < desired) {
+        errors.push(`${player.fullName}: wants ${desired} team(s), but slot(s) removed from pool`);
       }
     }
 
@@ -740,24 +755,11 @@ export class ClubTeamBuilderTabService {
   }
 
   /**
-   * Remove one pool slot for a player. If the player is dragged from a team or stopping zone,
-   * they are removed from that source. Each call removes exactly one slot.
+   * Remove one pool slot for a player. Decrements slotAdjustments by 1.
+   * If dragged from a team or stopping zone, also removes them from that source.
    */
   removePlayer(playerId: string, fromTeamId?: string | null) {
-    // Find the player for the restore list (only add once)
-    const existing = this.removedPlayers().find((p) => p.id === playerId);
-    if (!existing) {
-      const player = this.getAllPlayersFromData().find((p) => p.id === playerId)
-        ?? this.teams().flatMap((t) => t.players).find((p) => p.id === playerId)
-        ?? this.stoppingPlayers().find((p) => p.id === playerId)
-        ?? this.manuallyAddedPlayers().find((p) => p.id === playerId);
-
-      if (player) {
-        this.removedPlayers.update((rp) => [...rp, player]);
-      }
-    }
-
-    // If coming from a team, remove the player from that team
+    // If coming from a team, remove the player from that specific team
     if (fromTeamId && fromTeamId !== 'stopping') {
       const teams = this.teams().map((t) => {
         if (t.id !== fromTeamId) return t;
@@ -781,42 +783,44 @@ export class ClubTeamBuilderTabService {
       });
     }
 
-    // Increment the removed slot count by 1
-    this.removedSlots.update((map) => {
-      const next = new Map(map);
-      next.set(playerId, (next.get(playerId) ?? 0) + 1);
-      return next;
-    });
+    // Decrement slot adjustment by 1
+    const nextAdjustments = new Map(this.slotAdjustments());
+    nextAdjustments.set(playerId, (nextAdjustments.get(playerId) ?? 0) - 1);
+    this.slotAdjustments.set(nextAdjustments);
+
+    // Ensure player is in the display list (add once)
+    if (!this.removedPlayers().some((p) => p.id === playerId)) {
+      const player = this.getAllPlayersFromData().find((p) => p.id === playerId)
+        ?? this.teams().flatMap((t) => t.players).find((p) => p.id === playerId)
+        ?? this.stoppingPlayers().find((p) => p.id === playerId)
+        ?? this.manuallyAddedPlayers().find((p) => p.id === playerId);
+      if (player) {
+        this.removedPlayers.update((rp) => [...rp, player]);
+      }
+    }
 
     this.updateTeamCountWarnings();
   }
 
   /**
-   * Restore one removed slot for a player back to the pool.
+   * Restore one removed slot for a player (increments slotAdjustments by 1).
+   * Removes from the display list once adjustment is no longer negative.
    */
   restorePlayer(playerId: string) {
-    this.removedSlots.update((map) => {
-      const next = new Map(map);
-      const current = next.get(playerId) ?? 0;
-      if (current <= 1) {
-        next.delete(playerId);
-      } else {
-        next.set(playerId, current - 1);
-      }
-      return next;
-    });
+    const nextAdjustments = new Map(this.slotAdjustments());
+    const current = nextAdjustments.get(playerId) ?? 0;
+    const next = current + 1;
+    if (next === 0) {
+      nextAdjustments.delete(playerId);
+    } else {
+      nextAdjustments.set(playerId, next);
+    }
+    this.slotAdjustments.set(nextAdjustments);
 
-    // Remove one entry from removedPlayers display list
-    this.removedPlayers.update((rp) => {
-      const idx = rp.findIndex((p) => p.id === playerId);
-      if (idx < 0) return rp;
-      // If this was the last removed slot, remove from display
-      const remaining = this.removedSlots().get(playerId) ?? 0;
-      if (remaining === 0) {
-        return rp.filter((p) => p.id !== playerId);
-      }
-      return rp;
-    });
+    // Remove from display list once adjustment is no longer negative
+    if (next >= 0) {
+      this.removedPlayers.update((rp) => rp.filter((p) => p.id !== playerId));
+    }
   }
 
   /**
@@ -863,18 +867,29 @@ export class ClubTeamBuilderTabService {
    * Add an external player (from search) to the pool with rankings.
    */
   async addExternalPlayer(playerBasic: { id: string; fullName: string; firstName: string; lastName: string; gender?: string }): Promise<boolean> {
-    // Don't add if already present
-    const allPlayerIds = new Set([
+    const knownIds = new Set([
       ...this.getAllPlayersFromData().map((p) => p.id),
       ...this.manuallyAddedPlayers().map((p) => p.id),
     ]);
-    if (allPlayerIds.has(playerBasic.id)) {
-      // If removed, just restore
-      if (this.removedSlots().has(playerBasic.id)) {
-        this.restorePlayer(playerBasic.id);
-        return true;
+
+    if (knownIds.has(playerBasic.id)) {
+      // Player already known — add one extra slot (covers backup + additional team needs,
+      // and also un-does a prior removal if adjustment is negative)
+      const nextAdjustments = new Map(this.slotAdjustments());
+      const current = nextAdjustments.get(playerBasic.id) ?? 0;
+      const next = current + 1;
+      if (next === 0) {
+        nextAdjustments.delete(playerBasic.id);
+      } else {
+        nextAdjustments.set(playerBasic.id, next);
       }
-      return false;
+      this.slotAdjustments.set(nextAdjustments);
+
+      // If this brought the player out of "removed" state, clean up display list
+      if (current < 0 && next >= 0) {
+        this.removedPlayers.update((rp) => rp.filter((p) => p.id !== playerBasic.id));
+      }
+      return true;
     }
 
     // Fetch rankings
