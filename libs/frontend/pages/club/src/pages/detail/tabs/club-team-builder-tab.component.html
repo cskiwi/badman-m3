@@ -33,6 +33,11 @@
       <p-tag value="Loaded from saved draft" severity="info" icon="pi pi-history" />
     }
 
+    <!-- Performance loading indicator -->
+    @if (service.performanceLoading()) {
+      <p-tag value="Loading performance data…" severity="secondary" icon="pi pi-spin pi-spinner" />
+    }
+
     <!-- Sort controls -->
     <p-selectButton [options]="sortOptions" [(ngModel)]="sortBy" optionLabel="label" optionValue="value" size="small" />
     <label class="flex items-center gap-1 text-sm">

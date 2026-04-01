@@ -15,6 +15,7 @@ import {
 import { SurveyResponse } from './team-builder/types/survey-response';
 import { MatchResult } from './team-builder/services/player-matcher.service';
 import { calculateTeamIndex, recalculateTeam } from './team-builder/utils/team-index-calculator';
+import { evaluatePerformance, EncounterStats } from './team-builder/utils/performance-flags';
 
 const TEAM_BUILDER_DATA_QUERY = gql`
   query TeamBuilderData(
@@ -221,6 +222,23 @@ const PLAYER_WITH_RANKINGS_QUERY = gql`
   }
 `;
 
+const TEAM_PERFORMANCE_QUERY = gql`
+  query TeamBuilderPerformance($encounterArgs: CompetitionEncounterArgs) {
+    competitionEncounters(args: $encounterArgs) {
+      id
+      homeTeamId
+      awayTeamId
+      games {
+        id
+        gamePlayerMemberships {
+          playerId
+          team
+        }
+      }
+    }
+  }
+`;
+
 interface TeamBuilderQueryData {
   club: Club;
 }
@@ -240,6 +258,7 @@ export class ClubTeamBuilderTabService {
   readonly matchedImportPlayers = signal<Player[]>([]);
   readonly initialized = signal(false);
   readonly loadedFromDraft = signal(false);
+  readonly performanceLoading = signal(false);
 
   // Manually added/removed players
   // slotAdjustments: negative = net removed slots, positive = extra slots added.
@@ -548,6 +567,142 @@ export class ClubTeamBuilderTabService {
 
     this.initialized.set(true);
     this.updateTeamCountWarnings();
+
+    // Load performance data asynchronously after initialization
+    this.loadPerformanceData();
+  }
+
+  async loadPerformanceData() {
+    const currentTeams = this.currentTeams();
+    if (currentTeams.length === 0) return;
+
+    // Collect draw IDs from current season entries
+    const drawIds = new Set<string>();
+    const teamIdToDrawIds = new Map<string, string[]>();
+
+    for (const team of currentTeams) {
+      const entries = team.entries ?? [];
+      for (const entry of entries) {
+        const drawId = (entry as any)?.competitionDraw?.id;
+        if (drawId) {
+          drawIds.add(drawId);
+          if (!teamIdToDrawIds.has(team.id)) {
+            teamIdToDrawIds.set(team.id, []);
+          }
+          teamIdToDrawIds.get(team.id)!.push(drawId);
+        }
+      }
+    }
+
+    if (drawIds.size === 0) return;
+
+    this.performanceLoading.set(true);
+
+    try {
+      const result = await lastValueFrom(
+        this.apollo.query<{
+          competitionEncounters: {
+            id: string;
+            homeTeamId?: string;
+            awayTeamId?: string;
+            games?: {
+              id: string;
+              gamePlayerMemberships?: { playerId: string; team?: number }[];
+            }[];
+          }[];
+        }>({
+          query: TEAM_PERFORMANCE_QUERY,
+          variables: {
+            encounterArgs: {
+              where: [{ drawId: { in: Array.from(drawIds) } }],
+            },
+          },
+          fetchPolicy: 'network-only',
+        }),
+      );
+
+      const encounters = result.data?.competitionEncounters ?? [];
+
+      // Build per-player per-team stats: how many encounters and how many they played in
+      const statsMap = new Map<string, EncounterStats>();
+
+      // Map each team's encounters
+      const teamEncounterCounts = new Map<string, number>();
+      for (const encounter of encounters) {
+        const homeId = encounter.homeTeamId;
+        const awayId = encounter.awayTeamId;
+        if (homeId) teamEncounterCounts.set(homeId, (teamEncounterCounts.get(homeId) ?? 0) + 1);
+        if (awayId) teamEncounterCounts.set(awayId, (teamEncounterCounts.get(awayId) ?? 0) + 1);
+
+        // Determine which players played in this encounter from game player memberships
+        const playersInEncounter = new Set<string>();
+        for (const game of encounter.games ?? []) {
+          for (const membership of game.gamePlayerMemberships ?? []) {
+            if (membership.playerId) {
+              playersInEncounter.add(membership.playerId);
+            }
+          }
+        }
+
+        // Track per-player participation for both home and away teams
+        for (const teamId of [homeId, awayId]) {
+          if (!teamId) continue;
+          for (const playerId of playersInEncounter) {
+            const key = `${playerId}:${teamId}`;
+            if (!statsMap.has(key)) {
+              statsMap.set(key, {
+                playerId,
+                teamId,
+                totalEncounters: 0,
+                playedEncounters: 0,
+                wins: 0,
+                losses: 0,
+              });
+            }
+            const stats = statsMap.get(key)!;
+            stats.playedEncounters++;
+          }
+        }
+      }
+
+      // Set total encounter counts for each player-team combo
+      for (const [key, stats] of statsMap) {
+        stats.totalEncounters = teamEncounterCounts.get(stats.teamId) ?? 0;
+      }
+
+      // Apply performance data to players in current builder teams
+      const teamIdMap = new Map<string, string>();
+      for (const currentTeam of currentTeams) {
+        // Map current-season team IDs to builder team IDs
+        const builderTeam = this.teams().find(
+          (t) => t.id === currentTeam.id || (t as any).link === currentTeam.id,
+        );
+        if (builderTeam) {
+          teamIdMap.set(currentTeam.id, builderTeam.id);
+        }
+      }
+
+      const updatedTeams = this.teams().map((team) => {
+        const currentTeamId = [...teamIdMap.entries()].find(([, builderId]) => builderId === team.id)?.[0] ?? team.id;
+        const updatedPlayers = team.players.map((player) => {
+          const key = `${player.id}:${currentTeamId}`;
+          const stats = statsMap.get(key);
+          const perf = evaluatePerformance(stats);
+          return {
+            ...player,
+            lowPerformance: perf.lowPerformance,
+            encounterPresencePercent: perf.encounterPresencePercent,
+          };
+        });
+        return { ...team, players: updatedPlayers };
+      });
+
+      this.teams.set(updatedTeams);
+    } catch (err) {
+      console.error('Failed to load performance data', err);
+    } finally {
+      this.performanceLoading.set(false);
+    }
   }
 
   private collectSubEventInfo() {

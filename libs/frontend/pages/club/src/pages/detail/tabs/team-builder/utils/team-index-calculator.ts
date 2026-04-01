@@ -17,7 +17,7 @@ export function getPlayerRanking(player: TeamBuilderPlayer): { single: number; d
  *
  * Rules:
  * - Only REGULAR members count (not BACKUP)
- * - Take the 4 players with the highest contribution (weakest = highest level numbers)
+ * - Take the 4 best players (lowest contribution = strongest)
  * - M/F subevents: sum of (single + double) per player
  * - MX subevents: sum of (single + double + mix) per player
  */
@@ -28,9 +28,9 @@ export function calculateTeamIndex(players: TeamBuilderPlayer[], teamType: 'M' |
 
   const contributions = regularPlayers
     .map((p) => getPlayerContribution(p, teamType))
-    .sort((a, b) => b - a); // descending: weakest (highest numbers) first
+    .sort((a, b) => a - b); // ascending: strongest (lowest numbers) first
 
-  // Take the 4 weakest players
+  // Take the 4 best (strongest) players
   const base = contributions.slice(0, 4);
 
   return base.reduce((sum, c) => sum + c, 0);
