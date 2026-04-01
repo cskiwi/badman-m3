@@ -29,12 +29,12 @@
 
   <!-- Ranking levels -->
   <div class="flex gap-1 text-xs text-muted-color">
-    <span pTooltip="Single" tooltipPosition="top">{{ player().single }}</span>
+    <span pTooltip="Single" tooltipPosition="top">{{ ranking().single }}</span>
     <span>-</span>
-    <span pTooltip="Double" tooltipPosition="top">{{ player().double }}</span>
+    <span pTooltip="Double" tooltipPosition="top">{{ ranking().double }}</span>
     @if (showMixedRanking()) {
       <span>-</span>
-      <span pTooltip="Mixed" tooltipPosition="top">{{ player().mix }}</span>
+      <span pTooltip="Mixed" tooltipPosition="top">{{ ranking().mix }}</span>
     }
   </div>
 
@@ -59,11 +59,11 @@
     <div class="flex items-center justify-between">
       <span class="font-bold">{{ player().fullName }}</span>
       <div class="flex gap-1 text-xs text-muted-color">
-        <span>{{ player().single }}</span>
+        <span>{{ ranking().single }}</span>
         <span>-</span>
-        <span>{{ player().double }}</span>
+        <span>{{ ranking().double }}</span>
         <span>-</span>
-        <span>{{ player().mix }}</span>
+        <span>{{ ranking().mix }}</span>
       </div>
     </div>
 

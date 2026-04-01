@@ -3,7 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Apollo } from 'apollo-angular';
 import { of } from 'rxjs';
 import { SurveyResponse } from '../types/survey-response';
-import { MatchedPlayer, PlayerMatcherService } from './player-matcher.service';
+import { Player } from '@app/models';
+import { PlayerMatcherService } from './player-matcher.service';
 
 describe('PlayerMatcherService', () => {
   let service: PlayerMatcherService;
@@ -70,7 +71,7 @@ describe('PlayerMatcherService', () => {
   });
 });
 
-function createPlayer(id: string, fullName: string): MatchedPlayer {
+function createPlayer(id: string, fullName: string): Player {
   const [firstName, ...rest] = fullName.split(' ');
 
   return {
@@ -79,7 +80,7 @@ function createPlayer(id: string, fullName: string): MatchedPlayer {
     firstName,
     lastName: rest.join(' '),
     rankingLastPlaces: [],
-  };
+  } as Player;
 }
 
 function createSurvey(fullName: string): SurveyResponse {

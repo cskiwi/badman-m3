@@ -1,12 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CdkDropList, CdkDrag, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
-import { TeamBuilderPlayer, TeamBuilderTeam } from '../../pages/detail/tabs/team-builder/types/team-builder.types';
+import {
+  TEAM_BUILDER_AUTO_SUB_EVENT,
+  TeamBuilderPlayer,
+  TeamBuilderTeam,
+} from '../../pages/detail/tabs/team-builder/types/team-builder.types';
 import { getPlayerContribution } from '../../pages/detail/tabs/team-builder/utils/team-index-calculator';
 import { PlayerChipComponent } from './player-chip.component';
 
@@ -15,12 +21,14 @@ import { PlayerChipComponent } from './player-chip.component';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     CdkDropList,
     CdkDrag,
     TranslateModule,
     CardModule,
     TagModule,
     ButtonModule,
+    SelectModule,
     TooltipModule,
     PlayerChipComponent,
   ],
@@ -28,9 +36,12 @@ import { PlayerChipComponent } from './player-chip.component';
   templateUrl: './builder-team-card.component.html',
 })
 export class BuilderTeamCardComponent {
+  readonly autoSubEventValue = TEAM_BUILDER_AUTO_SUB_EVENT;
+
   team = input.required<TeamBuilderTeam>();
   sortBy = input<'name' | 'index'>('name');
   separateBackups = input(true);
+  subEventOptions = input<{ label: string; value: string }[]>([]);
 
   sortedPlayers = computed(() => {
     const players = [...this.team().players];
@@ -67,24 +78,56 @@ export class BuilderTeamCardComponent {
   });
 
   playerDropped = output<CdkDragDrop<string>>();
-  promoteClicked = output<void>();
   removeTeamClicked = output<void>();
   markForRemovalClicked = output<void>();
   membershipToggled = output<{ playerId: string; type: 'REGULAR' | 'BACKUP' }>();
   playerClicked = output<TeamBuilderPlayer>();
+  subEventChanged = output<string>();
 
   get indexPercent(): number {
     const t = this.team();
-    if (!t.maxAllowedIndex) return 0;
-    return Math.min((t.teamIndex / t.maxAllowedIndex) * 100, 100);
+    const max = t.selectedSubEvent?.maxBaseIndex;
+    if (max == null || max <= 0) return 0;
+    return Math.min((t.teamIndex / max) * 100, 100);
   }
 
   get indexSeverity(): 'success' | 'warn' | 'danger' {
     const t = this.team();
-    if (!t.maxAllowedIndex) return 'success';
-    if (t.teamIndex > t.maxAllowedIndex) return 'danger';
-    if (t.teamIndex > t.maxAllowedIndex * 0.9) return 'warn';
+    const min = t.selectedSubEvent?.minBaseIndex;
+    const max = t.selectedSubEvent?.maxBaseIndex;
+    if (min != null && t.teamIndex < min) return 'danger';
+    if (max == null) return 'success';
+    if (t.teamIndex > max) return 'danger';
+    if (t.teamIndex > max * 0.9) return 'warn';
     return 'success';
+  }
+
+  get selectedSubEventValue(): string {
+    const t = this.team();
+    if (!t.subEventManuallyOverridden) {
+      return this.autoSubEventValue;
+    }
+    return t.selectedSubEvent?.id ?? this.autoSubEventValue;
+  }
+
+  get indexRangeLabel(): string {
+    const t = this.team();
+    const min = t.selectedSubEvent?.minBaseIndex;
+    const max = t.selectedSubEvent?.maxBaseIndex;
+    if (min == null && max == null) {
+      return '—';
+    }
+    return `${min ?? '?'} - ${max ?? '?'}`;
+  }
+
+  get levelRangeLabel(): string {
+    const t = this.team();
+    const minLevel = t.selectedSubEvent?.level;
+    const maxLevel = t.selectedSubEvent?.maxLevel;
+    if (minLevel == null && maxLevel == null) {
+      return '—';
+    }
+    return `${minLevel ?? '?'} - ${maxLevel ?? '?'}`;
   }
 
   get regularCount(): number {
@@ -101,5 +144,9 @@ export class BuilderTeamCardComponent {
 
   onMembershipToggle(playerId: string, type: 'REGULAR' | 'BACKUP') {
     this.membershipToggled.emit({ playerId, type });
+  }
+
+  onSubEventSelectionChange(value: string) {
+    this.subEventChanged.emit(value);
   }
 }

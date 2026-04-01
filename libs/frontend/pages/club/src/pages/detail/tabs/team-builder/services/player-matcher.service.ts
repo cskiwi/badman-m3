@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Player } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { SurveyResponse } from '../types/survey-response';
@@ -26,25 +27,9 @@ const OPTIONAL_NAME_PARTS = new Set([
   'della',
 ]);
 
-export interface MatchedPlayer {
-  id: string;
-  fullName: string;
-  firstName: string;
-  lastName: string;
-  gender?: string;
-  slug?: string;
-  memberId?: string;
-  rankingLastPlaces?: {
-    id: string;
-    single: number;
-    double: number;
-    mix: number;
-  }[];
-}
-
 export interface MatchResult {
   survey: SurveyResponse;
-  player: MatchedPlayer | null;
+  player: Player | null;
   confidence: 'high' | 'medium' | 'low' | 'none';
   editing?: boolean;
   createNew?: boolean;
@@ -79,7 +64,7 @@ export class PlayerMatcherService {
    * Match survey responses to players. First tries to match against club players,
    * then falls back to the global search API for unmatched responses.
    */
-  async matchPlayers(responses: SurveyResponse[], systemId: string, clubPlayers: MatchedPlayer[]): Promise<MatchResult[]> {
+  async matchPlayers(responses: SurveyResponse[], systemId: string, clubPlayers: Player[]): Promise<MatchResult[]> {
     const results: MatchResult[] = [];
 
     // First pass: match against club players locally
@@ -144,7 +129,7 @@ export class PlayerMatcherService {
    * Search for players by name. First filters club players locally,
    * then appends results from the global search API (excluding duplicates).
    */
-  async searchPlayerByName(query: string, clubPlayers: MatchedPlayer[]): Promise<MatchedPlayer[]> {
+  async searchPlayerByName(query: string, clubPlayers: Player[]): Promise<Player[]> {
     if (!query || query.length < 2) return [];
 
     const normalizedQuery = query.toLowerCase();
@@ -173,7 +158,7 @@ export class PlayerMatcherService {
           fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
           firstName: r.hit.firstName ?? '',
           lastName: r.hit.lastName ?? '',
-        }));
+        } as Player));
 
       return [...clubMatches, ...globalMatches];
     } catch {
@@ -181,7 +166,7 @@ export class PlayerMatcherService {
     }
   }
 
-  private matchAgainstClubPlayers(survey: SurveyResponse, clubPlayers: MatchedPlayer[]): MatchResult {
+  private matchAgainstClubPlayers(survey: SurveyResponse, clubPlayers: Player[]): MatchResult {
     const exactNameMatch = this.findExactNameMatch(survey.fullName, clubPlayers);
     if (exactNameMatch) {
       return { survey, player: exactNameMatch, confidence: 'high' };
@@ -196,7 +181,7 @@ export class PlayerMatcherService {
       return { survey, player: null, confidence: 'none' };
     }
 
-    let bestMatch: MatchedPlayer | null = null;
+    let bestMatch: Player | null = null;
     let bestConfidence: 'high' | 'medium' | 'low' | 'none' = 'none';
 
     for (const player of clubPlayers) {
@@ -224,8 +209,8 @@ export class PlayerMatcherService {
 
   private findExactNameMatch(
     surveyName: string,
-    clubPlayers: MatchedPlayer[],
-  ): MatchedPlayer | null {
+    clubPlayers: Player[],
+  ): Player | null {
     const normalizedSurveyName = this.normalizeText(surveyName, true);
     if (!normalizedSurveyName) {
       return null;
@@ -238,8 +223,8 @@ export class PlayerMatcherService {
 
   private matchByMemberId(
     survey: SurveyResponse,
-    clubPlayers: MatchedPlayer[],
-  ): MatchedPlayer | null {
+    clubPlayers: Player[],
+  ): Player | null {
     const surveyIdentifiers = this.getSurveyIdentifiers(survey);
     if (surveyIdentifiers.length === 0) {
       return null;
@@ -276,12 +261,12 @@ export class PlayerMatcherService {
       }
 
       const topHit = searchResults[0].hit;
-      const player: MatchedPlayer = {
+      const player = {
         id: topHit.objectID,
         fullName: topHit.fullName ?? `${topHit.firstName ?? ''} ${topHit.lastName ?? ''}`.trim(),
         firstName: topHit.firstName ?? '',
         lastName: topHit.lastName ?? '',
-      };
+      } as Player;
 
       const confidence = this.calculateConfidence(survey.fullName, player.fullName);
 
@@ -358,10 +343,10 @@ export class PlayerMatcherService {
     return normalized.replace(/[^a-z0-9]/g, '');
   }
 
-  private async fetchPlayersWithRankings(playerIds: string[], systemId: string): Promise<MatchedPlayer[]> {
+  private async fetchPlayersWithRankings(playerIds: string[], systemId: string): Promise<Player[]> {
     try {
       const result = await lastValueFrom(
-        this.apollo.query<{ players: MatchedPlayer[] }>({
+        this.apollo.query<{ players: Player[] }>({
           query: PLAYERS_BY_IDS_QUERY,
           variables: {
             args: {

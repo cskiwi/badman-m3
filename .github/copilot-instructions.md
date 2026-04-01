@@ -24,6 +24,7 @@ The `vscode_askQuestions` tool is ONLY for requesting user input and decisions.
 5. Do NOT use `vscode_askQuestions` tool for communicating analysis, feedback, or progress—use regular chat output instead (then follow with `vscode_askQuestions` tool).
 6. NEVER return a response without using the `vscode_askQuestions` tool: After EVERY response, use the `vscode_askQuestions` tool. If a dialog is canceled, interrupted, or ends unexpectedly, simply ask the vscode_askQuestions again.
 7. Required pattern: Every interaction follows this pattern: Regular chat output (if applicable) → `vscode_askQuestions` tool call asking for next steps.
+8. NO Subagents should be used!
 
 ## Examples
 - ✓ Regular chat: "I found 3 inconsistencies in the plan..."  

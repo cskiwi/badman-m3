@@ -25,6 +25,7 @@ import { ImportSurveyDialogComponent } from '../../../components/team-builder/im
 import { EditSurveyDialogComponent } from '../../../components/team-builder/edit-survey-dialog.component';
 import { BuilderTeamCardComponent } from '../../../components/team-builder/builder-team-card.component';
 import { PlayerChipComponent } from '../../../components/team-builder/player-chip.component';
+import { Player } from '@app/models';
 import { MatchResult } from './team-builder/services/player-matcher.service';
 import { TeamBuilderPlayer } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
@@ -74,8 +75,8 @@ export class ClubTeamBuilderTabComponent {
   separateBackups = true;
 
   // Add player search
-  playerSuggestions = signal<{ id: string; fullName: string; firstName: string; lastName: string; gender?: string }[]>([]);
-  selectedPlayer: { id: string; fullName: string; firstName: string; lastName: string; gender?: string } | null = null;
+  playerSuggestions = signal<Player[]>([]);
+  selectedPlayer: Player | null = null;
 
   sortOptions = [
     { label: 'Name', value: 'name' },
@@ -186,8 +187,8 @@ export class ClubTeamBuilderTabComponent {
     this.service.setMembershipType(event.playerId, teamId, event.type);
   }
 
-  promoteTeam(teamId: string) {
-    this.service.promoteTeam(teamId);
+  onSubEventChanged(teamId: string, selection: string) {
+    this.service.setTeamSubEvent(teamId, selection);
   }
 
   removeTeam(teamId: string) {
@@ -241,7 +242,7 @@ export class ClubTeamBuilderTabComponent {
     this.playerSuggestions.set(results);
   }
 
-  async onPlayerSelected(event: { value: { id: string; fullName: string; firstName: string; lastName: string; gender?: string } }) {
+  async onPlayerSelected(event: { value: Player }) {
     const player = event.value;
     if (!player) return;
 

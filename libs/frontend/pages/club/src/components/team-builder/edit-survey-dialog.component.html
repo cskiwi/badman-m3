@@ -4,11 +4,11 @@
     <i class="pi pi-user text-lg"></i>
     <span class="font-bold text-lg">{{ player.fullName }}</span>
     <div class="flex gap-1 text-sm text-muted-color ml-auto">
-      <span>{{ player.single }}</span>
+      <span>{{ ranking().single}}</span>
       <span>-</span>
-      <span>{{ player.double }}</span>
+      <span>{{ ranking().double}}</span>
       <span>-</span>
-      <span>{{ player.mix }}</span>
+      <span>{{ ranking().mix}}</span>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
   <div class="grid grid-cols-2 gap-3">
     <div class="flex flex-col gap-1">
       <label class="text-sm font-semibold text-muted-color">Teams wanted</label>
-      <p-inputNumber [(ngModel)]="desiredTeamCount" [min]="0" [max]="4" [showButtons]="true" styleClass="w-full" />
+      <p-inputNumber [(ngModel)]="desiredTeamCount" [min]="0" [showButtons]="true" styleClass="w-full" />
     </div>
     <div class="flex flex-col gap-1">
       <label class="text-sm font-semibold text-muted-color">Preferred play day</label>

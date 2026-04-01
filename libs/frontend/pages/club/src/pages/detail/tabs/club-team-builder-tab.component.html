@@ -174,11 +174,12 @@
           [team]="team"
           [sortBy]="sortBy"
           [separateBackups]="separateBackups"
+          [subEventOptions]="service.getSubEventOptions(team.type)"
           (playerDropped)="onPlayerDroppedOnTeam($event)"
-          (promoteClicked)="promoteTeam(team.id)"
           (removeTeamClicked)="removeTeam(team.id)"
           (markForRemovalClicked)="markTeamForRemoval(team.id)"
           (membershipToggled)="onMembershipToggled(team.id, $event)"
+          (subEventChanged)="onSubEventChanged(team.id, $event)"
           (playerClicked)="openEditSurveyDialog($event)"
         />
       } @empty {

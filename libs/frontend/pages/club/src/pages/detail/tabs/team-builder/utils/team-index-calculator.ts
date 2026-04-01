@@ -1,6 +1,18 @@
 import { TeamBuilderPlayer, TeamBuilderTeam } from '../types/team-builder.types';
 
 /**
+ * Extract ranking values from a player's rankingLastPlaces relation.
+ */
+export function getPlayerRanking(player: TeamBuilderPlayer): { single: number; double: number; mix: number } {
+  const ranking = player.rankingLastPlaces?.[0];
+  return {
+    single: ranking?.single ?? 0,
+    double: ranking?.double ?? 0,
+    mix: ranking?.mix ?? 0,
+  };
+}
+
+/**
  * Calculate the team index (base index) for a team.
  *
  * Rules:
@@ -25,10 +37,11 @@ export function calculateTeamIndex(players: TeamBuilderPlayer[], teamType: 'M' |
 }
 
 export function getPlayerContribution(player: TeamBuilderPlayer, teamType: 'M' | 'F' | 'MX'): number {
+  const { single, double, mix } = getPlayerRanking(player);
   if (teamType === 'MX') {
-    return (player.single ?? 0) + (player.double ?? 0) + (player.mix ?? 0);
+    return single + double + mix;
   }
-  return (player.single ?? 0) + (player.double ?? 0);
+  return single + double;
 }
 
 /**
@@ -44,9 +57,16 @@ export function validateTeam(team: TeamBuilderTeam): string[] {
     errors.push(`Need at least 4 regular players, have ${regularPlayers.length}`);
   }
 
+  const minAllowedIndex = team.selectedSubEvent?.minBaseIndex;
+  const maxAllowedIndex = team.selectedSubEvent?.maxBaseIndex;
+
+  if (minAllowedIndex != null && team.teamIndex < minAllowedIndex) {
+    errors.push(`Team index ${team.teamIndex} is below minimum ${minAllowedIndex}`);
+  }
+
   // Team index check
-  if (team.maxAllowedIndex != null && team.teamIndex > team.maxAllowedIndex) {
-    errors.push(`Team index ${team.teamIndex} exceeds maximum ${team.maxAllowedIndex}`);
+  if (maxAllowedIndex != null && team.teamIndex > maxAllowedIndex) {
+    errors.push(`Team index ${team.teamIndex} exceeds maximum ${maxAllowedIndex}`);
   }
 
   // Gender constraints
@@ -62,28 +82,17 @@ export function validateTeam(team: TeamBuilderTeam): string[] {
     }
   }
 
-  // Max level check: warn if player level number exceeds subevent maxLevel
-  // (higher number = weaker player, so exceeding maxLevel means too weak for this level)
-  if (team.maxLevel != null) {
-    const playersBeyondMax = regularPlayers.filter(
-      (p) => p.single > team.maxLevel! || p.double > team.maxLevel!,
-    );
-    if (playersBeyondMax.length > 0) {
-      errors.push(
-        `${playersBeyondMax.length} player(s) exceed max level ${team.maxLevel}: ${playersBeyondMax.map((p) => p.fullName).join(', ')}`,
-      );
-    }
-  }
-
   // Min level check: warn if player is too strong for the subevent
   // (lower number = stronger, minLevel is the ceiling for how strong a player can be)
-  if (team.minLevel != null) {
-    const playersTooStrong = regularPlayers.filter(
-      (p) => p.single < team.minLevel! && p.single > 0,
-    );
+  const minLevel = team.selectedSubEvent?.level;
+  if (minLevel != null) {
+    const playersTooStrong = regularPlayers.filter((p) => {
+      const { single } = getPlayerRanking(p);
+      return single < minLevel && single > 0;
+    });
     if (playersTooStrong.length > 0) {
       errors.push(
-        `${playersTooStrong.length} player(s) may be too strong for level ${team.minLevel}: ${playersTooStrong.map((p) => p.fullName).join(', ')}`,
+        `${playersTooStrong.length} player(s) may be too strong for level ${minLevel}: ${playersTooStrong.map((p) => p.fullName).join(', ')}`,
       );
     }
   }
@@ -98,14 +107,14 @@ export function recalculateTeam(team: TeamBuilderTeam): TeamBuilderTeam {
   team.teamIndex = calculateTeamIndex(team.players, team.type);
 
   // Set per-player level warnings
+  const levelThreshold = team.selectedSubEvent?.level;
   for (const player of team.players) {
     player.levelWarning = undefined;
     if (player.membershipType !== 'REGULAR') continue;
 
-    if (team.maxLevel != null && (player.single > team.maxLevel || player.double > team.maxLevel)) {
-      player.levelWarning = `Level too high for this subevent (max: ${team.maxLevel})`;
-    } else if (team.minLevel != null && player.single > 0 && player.single < team.minLevel) {
-      player.levelWarning = `May be too strong for level ${team.minLevel}`;
+    const { single, double } = getPlayerRanking(player);
+    if (levelThreshold != null && (single < levelThreshold || double < levelThreshold)) {
+      player.levelWarning = `Level too high for this subevent (max: ${levelThreshold})`;
     }
   }
 

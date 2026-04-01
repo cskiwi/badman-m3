@@ -135,9 +135,11 @@ Club administrators need a tool to build teams for next season based on player s
 
 ### Phase 8: Edge Cases and Polish
 
-- [x] **8.1** Promotion handling
-  - `collectSubEventInfo()` builds map of sub-events by type for level shifting
-  - `promoteTeam()` shifts to next higher level (level - 1), updates `maxAllowedIndex` from sub-event data
+- [x] **8.1** Standing-based promotion/demotion and sub-event assignment
+  - Team builder now loads each entry's `standing`, `competitionDraw`, and `competitionSubEvents` so sub-event selection can be derived from the actual competition data
+  - Default next-season sub-event is determined from standing position plus draw `risers`/`fallers`
+  - Teams that neither rise nor fall auto-check whether their team index still fits the selected sub-event's `minBaseIndex`/`maxBaseIndex` range and switch to the matching sub-event when needed
+  - Team cards show the selected sub-event details below the team index and allow manual override back to `Auto` or to a specific sub-event
 
 - [x] **8.2** Existing next-season teams
   - `nextSeasonResource` checks for existing teams in `season + 1`

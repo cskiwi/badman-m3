@@ -10,7 +10,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ExcelParserService } from '../../pages/detail/tabs/team-builder/services/excel-parser.service';
-import { MatchResult, PlayerMatcherService, MatchedPlayer } from '../../pages/detail/tabs/team-builder/services/player-matcher.service';
+import { Player } from '@app/models';
+import { MatchResult, PlayerMatcherService } from '../../pages/detail/tabs/team-builder/services/player-matcher.service';
 import { SurveyResponse } from '../../pages/detail/tabs/team-builder/types/survey-response';
 
 @Component({
@@ -37,13 +38,13 @@ export class ImportSurveyDialogComponent {
   private readonly playerMatcher = inject(PlayerMatcherService);
 
   readonly systemId: string = this.config.data?.systemId ?? '';
-  readonly clubPlayers: MatchedPlayer[] = this.config.data?.clubPlayers ?? [];
+  readonly clubPlayers: Player[] = this.config.data?.clubPlayers ?? [];
   readonly clubId: string = this.config.data?.clubId ?? '';
 
   step = signal<'upload' | 'matching' | 'review'>('upload');
   loading = signal(false);
   matchResults = signal<MatchResult[]>([]);
-  playerSuggestions = signal<MatchedPlayer[]>([]);
+  playerSuggestions = signal<Player[]>([]);
 
   async onFileSelected(event: { files: File[] }) {
     const file = event.files?.[0];
@@ -70,7 +71,7 @@ export class ImportSurveyDialogComponent {
     this.playerSuggestions.set(results);
   }
 
-  onPlayerSelected(result: MatchResult, player: MatchedPlayer) {
+  onPlayerSelected(result: MatchResult, player: Player) {
     result.player = player;
     result.confidence = 'high';
     result.editing = false;

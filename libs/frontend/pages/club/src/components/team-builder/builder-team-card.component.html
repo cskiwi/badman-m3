@@ -3,25 +3,13 @@
     <div class="flex items-center justify-between p-3 pb-0">
       <div class="flex items-center gap-2">
         <span class="font-bold text-lg" [class.line-through]="team().isMarkedForRemoval">{{ team().name }}</span>
-        <p-tag [value]="team().type" [severity]="team().type === 'MX' ? 'info' : team().type === 'M' ? 'success' : 'warn'" [rounded]="true" />
         @if (team().isPromoted) {
-          <p-tag value="Promoted" severity="success" icon="pi pi-arrow-up" />
+          <p-tag severity="success" icon="pi pi-arrow-up" tooltip="Promoted" />
+        } @else if (team().isDemoted) {
+          <p-tag severity="warn" icon="pi pi-arrow-down" tooltip="Demoted" />
         }
       </div>
       <div class="flex items-center gap-1">
-        @if (!team().isMarkedForRemoval) {
-          <button
-            pButton
-            icon="pi pi-arrow-up"
-            [rounded]="true"
-            [text]="true"
-            severity="info"
-            size="small"
-            pTooltip="Toggle promotion"
-            tooltipPosition="top"
-            (click)="promoteClicked.emit()"
-          ></button>
-        }
         <button
           pButton
           [icon]="team().isMarkedForRemoval ? 'pi pi-undo' : 'pi pi-ban'"
@@ -62,12 +50,12 @@
         }"
       >
         {{ team().teamIndex }}
-        @if (team().maxAllowedIndex) {
-          / {{ team().maxAllowedIndex }}
+        @if (team().selectedSubEvent?.maxBaseIndex != null) {
+          / {{ team().selectedSubEvent?.maxBaseIndex }}
         }
       </span>
     </div>
-    @if (team().maxAllowedIndex) {
+    @if (team().selectedSubEvent?.maxBaseIndex != null) {
       <div class="w-full bg-emphasis rounded-full h-2">
         <div
           class="h-2 rounded-full transition-all"
@@ -80,6 +68,39 @@
         ></div>
       </div>
     }
+
+    <div class="mt-2 flex flex-col gap-1 text-xs text-muted-color">
+      <div class="flex items-center justify-between gap-2">
+        <span>Sub-event</span>
+        <span class="text-right">{{ team().selectedSubEvent?.name || '—' }}</span>
+      </div>
+      <div class="flex items-center justify-between gap-2">
+        <span>Index range</span>
+        <span>{{ indexRangeLabel }}</span>
+      </div>
+      <div class="flex items-center justify-between gap-2">
+        <span>Level range</span>
+        <span>{{ levelRangeLabel }}</span>
+      </div>
+      @if (team().standingPosition != null) {
+        <div class="flex items-center justify-between gap-2">
+          <span>Standing</span>
+          <span>#{{ team().standingPosition }}</span>
+        </div>
+      }
+      @if (subEventOptions().length > 1) {
+        <p-select
+          [options]="subEventOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="selectedSubEventValue"
+          placeholder="Select sub-event"
+          appendTo="body"
+          styleClass="w-full mt-2"
+          (onChange)="onSubEventSelectionChange($event.value)"
+        />
+      }
+    </div>
   </div>
 
   @if (team().isMarkedForRemoval) {
@@ -150,7 +171,7 @@
               />
             </div>
           }
-          <div class="border-t border-surface my-1 pt-1">
+          <div class="my-1 pt-1">
             <div class="flex items-center gap-1 mb-1">
               <i class="pi pi-venus text-pink-500 text-xs"></i>
               <span class="text-xs font-semibold text-muted-color">Females ({{ sortedPlayers().backupFemales.length }})</span>

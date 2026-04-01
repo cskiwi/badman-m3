@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
-import { Team } from '@app/models';
+import { Club, CompetitionSubEvent, Entry, Player, Team } from '@app/models';
 import { UseForTeamName } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
@@ -13,7 +13,7 @@ import {
   TeamBuilderTeam,
 } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
-import { MatchResult, MatchedPlayer } from './team-builder/services/player-matcher.service';
+import { MatchResult } from './team-builder/services/player-matcher.service';
 import { calculateTeamIndex, recalculateTeam } from './team-builder/utils/team-index-calculator';
 
 const TEAM_BUILDER_DATA_QUERY = gql`
@@ -196,60 +196,8 @@ const PLAYER_WITH_RANKINGS_QUERY = gql`
   }
 `;
 
-interface SubEventInfo {
-  id: string;
-  name: string;
-  level?: number;
-  maxLevel?: number;
-  minBaseIndex?: number;
-  maxBaseIndex?: number;
-  eventType?: string;
-}
-
-interface StandingInfo {
-  position?: number;
-  size?: number;
-  riser?: boolean;
-  faller?: boolean;
-}
-
-interface CompetitionDrawInfo {
-  id: string;
-  size?: number;
-  risers?: number;
-  fallers?: number;
-}
-
-interface TeamEntryInfo {
-  id: string;
-  meta?: { competition?: { teamIndex?: number } };
-  standing?: StandingInfo;
-  competitionDraw?: CompetitionDrawInfo;
-  competitionSubEvents?: SubEventInfo[];
-}
-
-interface TeamBuilderData {
-  club: {
-    id: string;
-    name: string;
-    teamName: string;
-    fullName?: string;
-    abbreviation: string;
-    useForTeamName: UseForTeamName;
-    clubPlayerMemberships?: {
-      id: string;
-      active?: boolean;
-      player?: MatchedPlayer | null;
-    }[];
-    teams: (Team & { entries?: TeamEntryInfo[] })[];
-  };
-}
-
-interface NextSeasonData {
-  club: {
-    id: string;
-    teams: (Team & { link?: string })[];
-  };
+interface TeamBuilderQueryData {
+  club: Club;
 }
 
 export class ClubTeamBuilderTabService {
@@ -264,7 +212,7 @@ export class ClubTeamBuilderTabService {
   readonly teams = signal<TeamBuilderTeam[]>([]);
   readonly stoppingPlayers = signal<TeamBuilderPlayer[]>([]);
   readonly surveyResponses = signal<SurveyResponse[]>([]);
-  readonly matchedImportPlayers = signal<MatchedPlayer[]>([]);
+  readonly matchedImportPlayers = signal<Player[]>([]);
   readonly initialized = signal(false);
   readonly loadedFromDraft = signal(false);
 
@@ -276,7 +224,7 @@ export class ClubTeamBuilderTabService {
   readonly manuallyAddedPlayers = signal<TeamBuilderPlayer[]>([]);
 
   // Sub-event info collected from current season entries for automatic selection and validation.
-  private subEventsByType = signal<Map<string, SubEventInfo[]>>(new Map());
+  private subEventsByType = signal<Map<string, CompetitionSubEvent[]>>(new Map());
 
   // Data resource for current season teams
   private dataResource = resource({
@@ -290,7 +238,7 @@ export class ClubTeamBuilderTabService {
 
       try {
         const result = await lastValueFrom(
-          this.apollo.query<TeamBuilderData>({
+          this.apollo.query<TeamBuilderQueryData>({
             query: TEAM_BUILDER_DATA_QUERY,
             variables: {
               clubId: params.clubId,
@@ -322,7 +270,7 @@ export class ClubTeamBuilderTabService {
 
       try {
         const result = await lastValueFrom(
-          this.apollo.query<NextSeasonData>({
+          this.apollo.query<TeamBuilderQueryData>({
             query: NEXT_SEASON_TEAMS_QUERY,
             variables: { clubId: params.clubId, season: params.season },
             context: { signal: abortSignal },
@@ -487,16 +435,12 @@ export class ClubTeamBuilderTabService {
 
   nextSeason = computed(() => (this.season() ?? 0) + 1);
 
-  /**
-   * Get all active club players as MatchedPlayer objects, suitable for
-   * passing to PlayerMatcherService for local matching.
-   */
-  getClubPlayers(): { id: string; fullName: string; firstName: string; lastName: string; gender?: string; slug?: string; memberId?: string }[] {
+  getClubPlayers(): Player[] {
     const data = this.dataResource.value();
     const memberships = data?.club?.clubPlayerMemberships ?? [];
     if (memberships.length === 0) return [];
 
-    const playerMap = new Map<string, { id: string; fullName: string; firstName: string; lastName: string; gender?: string; slug?: string; memberId?: string }>();
+    const playerMap = new Map<string, Player>();
 
     for (const membership of memberships) {
       if (membership.active === false || !membership.player) continue;
@@ -504,15 +448,7 @@ export class ClubTeamBuilderTabService {
       const player = membership.player;
       if (!player?.id || playerMap.has(player.id)) continue;
 
-      playerMap.set(player.id, {
-        id: player.id,
-        fullName: player.fullName ?? '',
-        firstName: player.firstName ?? '',
-        lastName: player.lastName ?? '',
-        gender: player.gender,
-        slug: player.slug,
-        memberId: player.memberId,
-      });
+      playerMap.set(player.id, player);
     }
 
     return Array.from(playerMap.values());
@@ -549,7 +485,7 @@ export class ClubTeamBuilderTabService {
 
   private collectSubEventInfo() {
     const currentTeams = this.currentTeams();
-    const byType = new Map<string, SubEventInfo[]>();
+    const byType = new Map<string, CompetitionSubEvent[]>();
 
     for (const team of currentTeams) {
       const entries = team.entries ?? [];
@@ -557,11 +493,12 @@ export class ClubTeamBuilderTabService {
         const subEvent = this.getPrimaryCompetitionSubEvent(entry);
         if (subEvent) {
           const type = subEvent.eventType ?? team.type;
+          if (!type) continue;
           if (!byType.has(type)) {
             byType.set(type, []);
           }
           const existing = byType.get(type)!;
-          if (!existing.some((s: SubEventInfo) => s.id === subEvent.id)) {
+          if (!existing.some((s: CompetitionSubEvent) => s.id === subEvent.id)) {
             existing.push(subEvent);
           }
         }
@@ -570,7 +507,7 @@ export class ClubTeamBuilderTabService {
 
     // Sort each type's sub-events by level ascending
     for (const [, subs] of byType) {
-      subs.sort((a: SubEventInfo, b: SubEventInfo) => (a.level ?? 0) - (b.level ?? 0));
+      subs.sort((a: CompetitionSubEvent, b: CompetitionSubEvent) => (a.level ?? 0) - (b.level ?? 0));
     }
 
     this.subEventsByType.set(byType);
@@ -613,18 +550,20 @@ export class ClubTeamBuilderTabService {
     this.teams.set(teams);
   }
 
-  private formatSubEventOptionLabel(subEvent: SubEventInfo) {
+  private formatSubEventOptionLabel(subEvent: CompetitionSubEvent) {
     const name = subEvent.name?.trim() || (subEvent.level != null ? `Level ${subEvent.level}` : 'Unnamed');
     const min = subEvent.minBaseIndex ?? '?';
     const max = subEvent.maxBaseIndex ?? '?';
     return `${name} (${min}-${max})`;
   }
 
-  private getPrimaryCompetitionSubEvent(entry?: TeamEntryInfo): SubEventInfo | undefined {
-    return entry?.competitionSubEvents?.[0];
+  private getPrimaryCompetitionSubEvent(entry?: Entry): CompetitionSubEvent | undefined {
+    // The GraphQL resolver exposes 'competitionSubEvents' (plural, returning an array),
+    // but the Entry model only types the singular 'competitionSubEvent' relation.
+    return (entry as any)?.competitionSubEvents?.[0];
   }
 
-  private resolveStandingOutcome(entry?: TeamEntryInfo): TeamBuilderStandingOutcome {
+  private resolveStandingOutcome(entry?: Entry): TeamBuilderStandingOutcome {
     const standing = entry?.standing;
     const draw = entry?.competitionDraw;
 
@@ -648,11 +587,11 @@ export class ClubTeamBuilderTabService {
     return 'UNCHANGED';
   }
 
-  private getOriginalSubEvent(team: Pick<TeamBuilderTeam, 'type' | 'originalSubEventId' | 'currentLevel'>): SubEventInfo | undefined {
-    return this.findSubEvent(team.type, team.originalSubEventId, team.currentLevel);
+  private getOriginalSubEvent(team: Pick<TeamBuilderTeam, 'originalSubEvent'>): CompetitionSubEvent | undefined {
+    return team.originalSubEvent;
   }
 
-  private findSubEvent(type: 'M' | 'F' | 'MX', id?: string, level?: number): SubEventInfo | undefined {
+  private findSubEvent(type: 'M' | 'F' | 'MX', id?: string, level?: number): CompetitionSubEvent | undefined {
     const subEvents = this.subEventsByType().get(type) ?? [];
 
     if (id) {
@@ -669,7 +608,7 @@ export class ClubTeamBuilderTabService {
     return undefined;
   }
 
-  private findMatchingSubEvent(type: 'M' | 'F' | 'MX', referenceIndex: number, preferredSubEventId?: string): SubEventInfo | undefined {
+  private findMatchingSubEvent(type: 'M' | 'F' | 'MX', referenceIndex: number, preferredSubEventId?: string): CompetitionSubEvent | undefined {
     if (referenceIndex <= 0) {
       return undefined;
     }
@@ -686,7 +625,7 @@ export class ClubTeamBuilderTabService {
     return subEvents.find((subEvent) => this.isIndexWithinSubEvent(referenceIndex, subEvent));
   }
 
-  private isIndexWithinSubEvent(referenceIndex: number, subEvent?: SubEventInfo): boolean {
+  private isIndexWithinSubEvent(referenceIndex: number, subEvent?: CompetitionSubEvent): boolean {
     if (!subEvent) {
       return false;
     }
@@ -698,31 +637,27 @@ export class ClubTeamBuilderTabService {
   }
 
   private resolveAutomaticSubEvent(
-    team: Pick<TeamBuilderTeam, 'type' | 'standingOutcome' | 'currentLevel' | 'originalSubEventId'>,
+    team: Pick<TeamBuilderTeam, 'type' | 'standingOutcome' | 'originalSubEvent'>,
     referenceIndex: number,
-  ): SubEventInfo | undefined {
+  ): CompetitionSubEvent | undefined {
     const originalSubEvent = this.getOriginalSubEvent(team);
+    const currentLevel = originalSubEvent?.level;
 
-    if (team.standingOutcome === 'PROMOTED' && team.currentLevel != null) {
-      return this.findSubEvent(team.type, undefined, team.currentLevel - 1) ?? originalSubEvent;
+    if (team.standingOutcome === 'PROMOTED' && currentLevel != null) {
+      return this.findSubEvent(team.type, undefined, currentLevel - 1) ?? originalSubEvent;
     }
 
-    if (team.standingOutcome === 'DEMOTED' && team.currentLevel != null) {
-      return this.findSubEvent(team.type, undefined, team.currentLevel + 1) ?? originalSubEvent;
+    if (team.standingOutcome === 'DEMOTED' && currentLevel != null) {
+      return this.findSubEvent(team.type, undefined, currentLevel + 1) ?? originalSubEvent;
     }
 
     return this.findMatchingSubEvent(team.type, referenceIndex, originalSubEvent?.id) ?? originalSubEvent;
   }
 
-  private applySelectedSubEvent(team: TeamBuilderTeam, subEvent?: SubEventInfo): TeamBuilderTeam {
+  private applySelectedSubEvent(team: TeamBuilderTeam, subEvent?: CompetitionSubEvent): TeamBuilderTeam {
     return recalculateTeam({
       ...team,
-      subEventId: subEvent?.id,
-      subEventName: subEvent?.name,
-      minAllowedIndex: subEvent?.minBaseIndex,
-      maxAllowedIndex: subEvent?.maxBaseIndex,
-      minLevel: subEvent?.level,
-      maxLevel: subEvent?.maxLevel,
+      selectedSubEvent: subEvent,
     });
   }
 
@@ -732,7 +667,7 @@ export class ClubTeamBuilderTabService {
     }
 
     if (team.subEventManuallyOverridden) {
-      return this.applySelectedSubEvent(team, this.findSubEvent(team.type, team.subEventId) ?? this.getOriginalSubEvent(team));
+      return this.applySelectedSubEvent(team, this.findSubEvent(team.type, team.selectedSubEvent?.id) ?? this.getOriginalSubEvent(team));
     }
 
     const regularPlayerCount = team.players.filter((player) => player.membershipType === 'REGULAR').length;
@@ -742,38 +677,27 @@ export class ClubTeamBuilderTabService {
     return this.applySelectedSubEvent(team, this.resolveAutomaticSubEvent(team, referenceIndex));
   }
 
-  private createBuilderTeam(team: Team, players: TeamBuilderPlayer[], entry?: TeamEntryInfo): TeamBuilderTeam {
+  private createBuilderTeam(team: Team, players: TeamBuilderPlayer[], entry?: Entry): TeamBuilderTeam {
     const subEvent = this.getPrimaryCompetitionSubEvent(entry);
     const standingOutcome = this.resolveStandingOutcome(entry);
 
     return this.recalculateManagedTeam({
-      id: team.id,
-      name: team.name ?? '',
-      type: (team.type as 'M' | 'F' | 'MX') ?? 'M',
-      teamNumber: team.teamNumber,
-      preferredDay: team.preferredDay,
-      captainId: team.captainId,
+      ...team,
       isNew: false,
       isPromoted: standingOutcome === 'PROMOTED',
       isDemoted: standingOutcome === 'DEMOTED',
       isMarkedForRemoval: false,
       standingOutcome,
       standingPosition: entry?.standing?.position,
-      originalSubEventId: subEvent?.id,
+      originalSubEvent: subEvent,
       originalTeamIndex: entry?.meta?.competition?.teamIndex,
-      subEventId: subEvent?.id,
-      subEventName: subEvent?.name,
-      minAllowedIndex: subEvent?.minBaseIndex,
-      maxAllowedIndex: subEvent?.maxBaseIndex,
-      minLevel: subEvent?.level,
-      maxLevel: subEvent?.maxLevel,
-      currentLevel: subEvent?.level,
+      selectedSubEvent: subEvent,
       subEventManuallyOverridden: false,
       players,
       teamIndex: 0,
       isValid: true,
       validationErrors: [],
-    });
+    } as TeamBuilderTeam);
   }
 
   private initializeFromDraft(nextTeams: (Team & { link?: string })[]) {
@@ -782,7 +706,7 @@ export class ClubTeamBuilderTabService {
     const currentPlayerIds = this.getCurrentSeasonPlayerIds();
 
     // Map next-season teams to builder teams, inheriting sub-event info from current season via link
-    const currentTeamMap = new Map<string, Team & { entries?: TeamEntryInfo[] }>();
+    const currentTeamMap = new Map<string, Team>();
     for (const currentTeam of this.currentTeams()) {
       currentTeamMap.set(currentTeam.id, currentTeam);
       if (currentTeam.link) {
@@ -827,19 +751,10 @@ export class ClubTeamBuilderTabService {
   ): TeamBuilderPlayer[] {
     return (team.teamPlayerMemberships ?? []).map((m: any) => {
       const player = m.player;
-      const ranking = player?.rankingLastPlaces?.[0];
       const survey = surveyMap.get(player?.id);
 
       return {
-        id: player?.id ?? '',
-        fullName: player?.fullName ?? '',
-        firstName: player?.firstName ?? '',
-        lastName: player?.lastName ?? '',
-        gender: player?.gender as 'M' | 'F' | undefined,
-        slug: player?.slug,
-        single: ranking?.single ?? 0,
-        double: ranking?.double ?? 0,
-        mix: ranking?.mix ?? 0,
+        ...player,
         survey,
         lowPerformance: false,
         encounterPresencePercent: 100,
@@ -847,7 +762,7 @@ export class ClubTeamBuilderTabService {
         isStopping: survey?.stoppingCompetition ?? false,
         assignedTeamId: team.id,
         membershipType: m.membershipType ?? 'REGULAR',
-      } satisfies TeamBuilderPlayer;
+      } as TeamBuilderPlayer;
     });
   }
 
@@ -930,7 +845,7 @@ export class ClubTeamBuilderTabService {
 
         const result = await lastValueFrom(
           this.apollo.mutate<{
-            createPlayersForTeamBuilder: { id: string; fullName: string; firstName: string; lastName: string; gender?: string; slug?: string }[];
+            createPlayersForTeamBuilder: Player[];
           }>({
             mutation: CREATE_PLAYERS_FOR_TEAM_BUILDER,
             variables: { clubId, players: playersInput },
@@ -945,14 +860,7 @@ export class ClubTeamBuilderTabService {
           toCreate[i].survey.matchedPlayerId = created.id;
           toCreate[i].survey.matchedPlayerName = created.fullName;
           toCreate[i].survey.matchConfidence = 'high';
-          toCreate[i].player = {
-            id: created.id,
-            fullName: created.fullName,
-            firstName: created.firstName,
-            lastName: created.lastName,
-            gender: created.gender,
-            slug: created.slug,
-          };
+          toCreate[i].player = created;
         }
       } catch (err) {
         console.error('Failed to create new players', err);
@@ -971,8 +879,8 @@ export class ClubTeamBuilderTabService {
     this.applySurveyData(surveys);
   }
 
-  private collectMatchedImportPlayers(results: MatchResult[]): MatchedPlayer[] {
-    const playerMap = new Map<string, MatchedPlayer>();
+  private collectMatchedImportPlayers(results: MatchResult[]): Player[] {
+    const playerMap = new Map<string, Player>();
 
     for (const result of results) {
       if (result.player) {
@@ -1111,7 +1019,7 @@ export class ClubTeamBuilderTabService {
   addTeam(type: 'M' | 'F' | 'MX') {
     const teams = this.teams();
     const teamNumber = teams.filter((t) => t.type === type && !t.isMarkedForRemoval).length + 1;
-    const newTeam: TeamBuilderTeam = {
+    const newTeam = {
       id: crypto.randomUUID(),
       name: this.buildTeamName(type, teamNumber),
       type,
@@ -1126,7 +1034,7 @@ export class ClubTeamBuilderTabService {
       teamIndex: 0,
       isValid: false,
       validationErrors: ['Need at least 4 regular players, have 0'],
-    };
+    } as unknown as TeamBuilderTeam;
     this.teams.set([...teams, newTeam]);
   }
 
@@ -1240,7 +1148,7 @@ export class ClubTeamBuilderTabService {
   /**
    * Search for players by name. Club players first, then global search API.
    */
-  async searchPlayers(query: string): Promise<{ id: string; fullName: string; firstName: string; lastName: string; gender?: string }[]> {
+  async searchPlayers(query: string): Promise<Player[]> {
     if (!query || query.length < 2) return [];
 
     const normalizedQuery = query.toLowerCase();
@@ -1268,8 +1176,8 @@ export class ClubTeamBuilderTabService {
           fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
           firstName: r.hit.firstName ?? '',
           lastName: r.hit.lastName ?? '',
-          gender: r.hit.gender,
-        }));
+          gender: r.hit.gender as 'M' | 'F' | undefined,
+        } as Player));
 
       return [...clubMatches, ...globalMatches];
     } catch {
@@ -1280,7 +1188,7 @@ export class ClubTeamBuilderTabService {
   /**
    * Add an external player (from search) to the pool with rankings.
    */
-  async addExternalPlayer(playerBasic: { id: string; fullName: string; firstName: string; lastName: string; gender?: string }): Promise<boolean> {
+  async addExternalPlayer(playerBasic: Player): Promise<boolean> {
     const knownIds = new Set([
       ...this.getAllPlayersFromData().map((p) => p.id),
       ...this.manuallyAddedPlayers().map((p) => p.id),
@@ -1308,12 +1216,12 @@ export class ClubTeamBuilderTabService {
 
     // Fetch rankings
     const systemId = this.systemId();
-    let single = 0, double = 0, mix = 0;
+    let fetchedPlayer: Player | undefined;
 
     if (systemId) {
       try {
         const result = await lastValueFrom(
-          this.apollo.query<{ players: { id: string; rankingLastPlaces?: { single: number; double: number; mix: number }[] }[] }>({
+          this.apollo.query<{ players: Player[] }>({
             query: PLAYER_WITH_RANKINGS_QUERY,
             variables: {
               args: { where: { id: { in: [playerBasic.id] } }, take: 1 },
@@ -1321,33 +1229,20 @@ export class ClubTeamBuilderTabService {
             },
           }),
         );
-        const fetched = result.data?.players?.[0];
-        const ranking = fetched?.rankingLastPlaces?.[0];
-        if (ranking) {
-          single = ranking.single;
-          double = ranking.double;
-          mix = ranking.mix;
-        }
+        fetchedPlayer = result.data?.players?.[0];
       } catch {
         // Continue without rankings
       }
     }
 
-    const tbPlayer: TeamBuilderPlayer = {
-      id: playerBasic.id,
-      fullName: playerBasic.fullName,
-      firstName: playerBasic.firstName,
-      lastName: playerBasic.lastName,
-      gender: playerBasic.gender as 'M' | 'F' | undefined,
-      single,
-      double,
-      mix,
+    const tbPlayer = {
+      ...(fetchedPlayer ?? playerBasic),
       lowPerformance: false,
       encounterPresencePercent: 0,
       isNewPlayer: true,
       isStopping: false,
-      membershipType: 'REGULAR',
-    };
+      membershipType: 'REGULAR' as const,
+    } as TeamBuilderPlayer;
 
     this.manuallyAddedPlayers.update((mp) => [...mp, tbPlayer]);
     return true;
@@ -1436,26 +1331,17 @@ export class ClubTeamBuilderTabService {
         const player = m.player;
         if (!player || playerMap.has(player.id)) continue;
 
-        const ranking = player.rankingLastPlaces?.[0];
         const survey = this.surveyResponses().find((s) => s.matchedPlayerId === player.id);
 
         playerMap.set(player.id, {
-          id: player.id,
-          fullName: player.fullName ?? '',
-          firstName: player.firstName ?? '',
-          lastName: player.lastName ?? '',
-          gender: player.gender as 'M' | 'F' | undefined,
-          slug: player.slug,
-          single: ranking?.single ?? 0,
-          double: ranking?.double ?? 0,
-          mix: ranking?.mix ?? 0,
+          ...player,
           survey,
           lowPerformance: false,
           encounterPresencePercent: 100,
           isNewPlayer: !currentPlayerIds.has(player.id),
           isStopping: survey?.stoppingCompetition ?? false,
           membershipType: 'REGULAR',
-        });
+        } as TeamBuilderPlayer);
       }
     }
 
@@ -1464,25 +1350,20 @@ export class ClubTeamBuilderTabService {
       if (!s.matchedPlayerId || playerMap.has(s.matchedPlayerId)) continue;
 
       const importedPlayer = importedPlayerMap.get(s.matchedPlayerId);
-      const ranking = importedPlayer?.rankingLastPlaces?.[0];
 
       playerMap.set(s.matchedPlayerId, {
+        ...importedPlayer,
         id: s.matchedPlayerId,
         fullName: importedPlayer?.fullName ?? s.matchedPlayerName ?? s.fullName,
         firstName: importedPlayer?.firstName ?? s.firstName,
         lastName: importedPlayer?.lastName ?? s.lastName,
-        gender: importedPlayer?.gender as 'M' | 'F' | undefined,
-        slug: importedPlayer?.slug,
-        single: ranking?.single ?? 0,
-        double: ranking?.double ?? 0,
-        mix: ranking?.mix ?? 0,
         survey: s,
         lowPerformance: false,
         encounterPresencePercent: 0,
         isNewPlayer: !currentPlayerIds.has(s.matchedPlayerId),
         isStopping: s.stoppingCompetition,
         membershipType: 'REGULAR',
-      });
+      } as TeamBuilderPlayer);
     }
 
     return Array.from(playerMap.values());

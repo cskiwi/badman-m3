@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -36,6 +36,16 @@ export class EditSurveyDialogComponent implements OnInit {
   unavailabilityPeriodsTeam2 = '';
   comments = '';
   stoppingCompetition = false;
+
+  ranking = computed(() => {
+    const p = this.player;
+    const r = p.rankingLastPlaces?.[0];
+    return {
+      single: r?.single ?? 0,
+      double: r?.double ?? 0,
+      mix: r?.mix ?? 0,
+    };
+  });
 
   ngOnInit() {
     const survey = this.player?.survey;
