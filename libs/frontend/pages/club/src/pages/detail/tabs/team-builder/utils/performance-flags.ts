@@ -14,27 +14,37 @@ export interface EncounterStats {
 }
 
 export interface PerformanceResult {
+  /** Whether the player has low performance (win rate below threshold) */
   lowPerformance: boolean;
-  encounterPresencePercent: number;
+  /** Whether the player has low presence (attendance below threshold) */
+  lowPresence: boolean;
+  /** Win rate: wins / games played * 100 */
+  performancePercent: number;
+  /** Attendance rate: encounters played / total encounters * 100 */
+  presencePercent: number;
 }
 
-const LOW_PRESENCE_THRESHOLD = 45;
+const LOW_PERFORMANCE_THRESHOLD = 35;
+const LOW_PRESENCE_THRESHOLD = 40;
 
 /**
- * Determine if a player has low performance in their current team.
+ * Determine if a player has low performance or low presence in their current team.
  *
- * Flags a player if:
- * - Their encounter presence is below 30%
+ * - Performance = win rate (wins / games played)
+ * - Presence = attendance (encounters present / total encounters)
  */
 export function evaluatePerformance(stats: EncounterStats | undefined): PerformanceResult {
-  if (!stats || stats.playedGames === 0) {
-    return { lowPerformance: false, encounterPresencePercent: 0 };
+  if (!stats || stats.totalEncounters === 0) {
+    return { lowPerformance: false, lowPresence: false, performancePercent: 0, presencePercent: 0 };
   }
 
-  const presencePercent = Math.round((stats.wins / stats.playedGames) * 100);
+  const presencePercent = Math.round((stats.playedEncounters / stats.totalEncounters) * 100);
+  const performancePercent = stats.playedGames > 0 ? Math.round((stats.wins / stats.playedGames) * 100) : 0;
 
   return {
-    lowPerformance: presencePercent < LOW_PRESENCE_THRESHOLD,
-    encounterPresencePercent: presencePercent,
+    lowPerformance: stats.playedGames > 0 && performancePercent < LOW_PERFORMANCE_THRESHOLD,
+    lowPresence: presencePercent < LOW_PRESENCE_THRESHOLD,
+    performancePercent,
+    presencePercent,
   };
 }

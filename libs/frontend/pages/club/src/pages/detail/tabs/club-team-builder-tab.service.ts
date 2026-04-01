@@ -727,7 +727,9 @@ export class ClubTeamBuilderTabService {
             return {
               ...player,
               lowPerformance: false,
-              encounterPresencePercent: 0,
+              lowPresence: false,
+              performancePercent: 0,
+              presencePercent: 0,
             };
           }
           const key = `${player.id}:${currentTeamId}`;
@@ -736,7 +738,9 @@ export class ClubTeamBuilderTabService {
           return {
             ...player,
             lowPerformance: perf.lowPerformance,
-            encounterPresencePercent: perf.encounterPresencePercent,
+            lowPresence: perf.lowPresence,
+            performancePercent: perf.performancePercent,
+            presencePercent: perf.presencePercent,
           };
         });
         return { ...team, players: updatedPlayers };
@@ -1218,7 +1222,9 @@ export class ClubTeamBuilderTabService {
         ...player,
         survey,
         lowPerformance: false,
-        encounterPresencePercent: 100,
+        lowPresence: false,
+        performancePercent: 0,
+        presencePercent: 100,
         isNewPlayer: !currentPlayerIds.has(player?.id),
         isStopping: survey?.stoppingCompetition ?? false,
         assignedTeamId: team.id,
@@ -1699,7 +1705,9 @@ export class ClubTeamBuilderTabService {
     const tbPlayer = {
       ...(fetchedPlayer ?? playerBasic),
       lowPerformance: false,
-      encounterPresencePercent: 0,
+      lowPresence: false,
+      performancePercent: 0,
+      presencePercent: 0,
       isNewPlayer: true,
       isStopping: false,
       membershipType: 'REGULAR' as const,
@@ -1798,7 +1806,9 @@ export class ClubTeamBuilderTabService {
           ...player,
           survey,
           lowPerformance: false,
-          encounterPresencePercent: 100,
+          lowPresence: false,
+          performancePercent: 0,
+          presencePercent: 100,
           isNewPlayer: !currentPlayerIds.has(player.id),
           isStopping: survey?.stoppingCompetition ?? false,
           membershipType: 'REGULAR',
@@ -1820,7 +1830,9 @@ export class ClubTeamBuilderTabService {
         lastName: importedPlayer?.lastName ?? s.lastName,
         survey: s,
         lowPerformance: false,
-        encounterPresencePercent: 0,
+        lowPresence: false,
+        performancePercent: 0,
+        presencePercent: 0,
         isNewPlayer: !currentPlayerIds.has(s.matchedPlayerId),
         isStopping: s.stoppingCompetition,
         membershipType: 'REGULAR',

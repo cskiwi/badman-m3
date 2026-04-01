@@ -17,7 +17,9 @@ type PlainShape<T> = {
 export interface TeamBuilderPlayer extends PlainShape<Player> {
   survey?: SurveyResponse;
   lowPerformance: boolean;
-  encounterPresencePercent: number;
+  lowPresence: boolean;
+  performancePercent: number;
+  presencePercent: number;
   isNewPlayer: boolean;
   isStopping: boolean;
   levelWarning?: string;

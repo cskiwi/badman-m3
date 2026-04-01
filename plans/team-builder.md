@@ -318,6 +318,17 @@ Club administrators need a tool to build teams for next season based on player s
 | `libs/backend/translate/assets/i18n/nl_BE/all.json`   | NL translation keys                  |
 | `libs/backend/translate/assets/i18n/fr_BE/all.json`   | FR translation keys                  |
 
+- [x] **8.22** Fix presence vs performance metric split
+  - Root cause: `evaluatePerformance()` was calculating `wins / playedGames` (win rate) but naming the field `encounterPresencePercent` and displaying it as "presence" in the UI — mixing up two distinct concepts
+  - Fix: split into two separate metrics:
+    - **Performance** = win rate (`wins / playedGames * 100`), flags `lowPerformance` when below 35%
+    - **Presence** = attendance (`playedEncounters / totalEncounters * 100`), flags `lowPresence` when below 50%
+  - Updated `PerformanceResult` interface with `lowPresence`, `performancePercent`, `presencePercent`
+  - Updated `TeamBuilderPlayer` interface: replaced `encounterPresencePercent` with `performancePercent`, `presencePercent`, added `lowPresence`
+  - Player chip now shows separate icons: exclamation-triangle for low performance, clock for low presence
+  - Popover shows both metrics when flagged: "Low performance (X% win rate)" and "Low presence (Y% attendance)"
+  - All default values in service updated across 5 locations
+
 ---
 
 ## Verification

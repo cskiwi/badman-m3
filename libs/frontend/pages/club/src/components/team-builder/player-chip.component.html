@@ -9,7 +9,10 @@
 
   <!-- Status icons -->
   @if (player().lowPerformance) {
-    <i class="pi pi-exclamation-triangle text-primary-emphasis text-xs" pTooltip="Low performance this season" tooltipPosition="top"></i>
+    <i class="pi pi-exclamation-triangle text-primary-emphasis text-xs" pTooltip="Low performance ({{ player().performancePercent }}% win rate)" tooltipPosition="top"></i>
+  }
+  @if (player().lowPresence) {
+    <i class="pi pi-clock text-orange-500 text-xs" pTooltip="Low presence ({{ player().presencePercent }}% attendance)" tooltipPosition="top"></i>
   }
   @if (player().isNewPlayer) {
     <i class="pi pi-star text-primary text-xs" pTooltip="New player" tooltipPosition="top"></i>
@@ -68,7 +71,7 @@
     </div>
 
     <!-- Warnings & errors -->
-    @if (player().lowPerformance || player().isStopping || player().levelWarning || player().teamCountWarning || player().isNewPlayer) {
+    @if (player().lowPerformance || player().lowPresence || player().isStopping || player().levelWarning || player().teamCountWarning || player().isNewPlayer) {
       <div class="flex flex-col gap-1">
         @if (player().isStopping) {
           <div class="flex items-center gap-2 text-red-500 text-xs">
@@ -79,7 +82,13 @@
         @if (player().lowPerformance) {
           <div class="flex items-center gap-2 text-primary-emphasis text-xs">
             <i class="pi pi-exclamation-triangle"></i>
-            <span>Low performance this season ({{ player().encounterPresencePercent }}% presence)</span>
+            <span>Low performance ({{ player().performancePercent }}% win rate)</span>
+          </div>
+        }
+        @if (player().lowPresence) {
+          <div class="flex items-center gap-2 text-orange-500 text-xs">
+            <i class="pi pi-clock"></i>
+            <span>Low presence ({{ player().presencePercent }}% attendance)</span>
           </div>
         }
         @if (player().isNewPlayer) {
@@ -177,7 +186,7 @@
       </div>
     }
 
-    @if (!player().survey && !player().lowPerformance && !player().isStopping && !player().levelWarning && !player().teamCountWarning && !player().isNewPlayer) {
+    @if (!player().survey && !player().lowPerformance && !player().lowPresence && !player().isStopping && !player().levelWarning && !player().teamCountWarning && !player().isNewPlayer) {
       <span class="text-xs text-muted-color">No survey data available</span>
     }
   </div>
