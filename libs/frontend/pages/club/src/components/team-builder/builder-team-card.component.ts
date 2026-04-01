@@ -1,15 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { CdkDropList, CdkDrag, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
+import { ProgressBar } from 'primeng/progressbar';
 import {
-  TEAM_BUILDER_AUTO_SUB_EVENT,
   TeamBuilderPlayer,
   TeamBuilderTeam,
 } from '../../pages/detail/tabs/team-builder/types/team-builder.types';
@@ -21,27 +19,23 @@ import { PlayerChipComponent } from './player-chip.component';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     CdkDropList,
     CdkDrag,
     TranslateModule,
     CardModule,
     TagModule,
     ButtonModule,
-    SelectModule,
     TooltipModule,
+    ProgressBar,
     PlayerChipComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './builder-team-card.component.html',
 })
 export class BuilderTeamCardComponent {
-  readonly autoSubEventValue = TEAM_BUILDER_AUTO_SUB_EVENT;
-
   team = input.required<TeamBuilderTeam>();
   sortBy = input<'name' | 'index'>('name');
   separateBackups = input(true);
-  subEventOptions = input<{ label: string; value: string }[]>([]);
 
   sortedPlayers = computed(() => {
     const players = [...this.team().players];
@@ -83,6 +77,7 @@ export class BuilderTeamCardComponent {
   membershipToggled = output<{ playerId: string; type: 'REGULAR' | 'BACKUP' }>();
   playerClicked = output<TeamBuilderPlayer>();
   subEventChanged = output<string>();
+  subEventClicked = output<void>();
 
   get indexPercent(): number {
     const t = this.team();
@@ -97,17 +92,30 @@ export class BuilderTeamCardComponent {
     const max = t.selectedSubEvent?.maxBaseIndex;
     if (min != null && t.teamIndex < min) return 'danger';
     if (max == null) return 'success';
-    if (t.teamIndex > max) return 'danger';
-    if (t.teamIndex > max * 0.9) return 'warn';
+    if (t.teamIndex > max) return 'warn';
     return 'success';
   }
 
-  get selectedSubEventValue(): string {
-    const t = this.team();
-    if (!t.subEventManuallyOverridden) {
-      return this.autoSubEventValue;
+  get indexProgressClass(): string {
+    switch (this.indexSeverity) {
+      case 'danger':
+        return 'team-index-danger';
+      case 'warn':
+        return 'team-index-warn';
+      default:
+        return '';
     }
-    return t.selectedSubEvent?.id ?? this.autoSubEventValue;
+  }
+
+  get indexBarColor(): string {
+    switch (this.indexSeverity) {
+      case 'danger':
+        return 'var(--p-red-500)';
+      case 'warn':
+        return 'var(--p-orange-500)';
+      default:
+        return 'var(--p-primary-color)';
+    }
   }
 
   get indexRangeLabel(): string {
@@ -148,5 +156,9 @@ export class BuilderTeamCardComponent {
 
   onSubEventSelectionChange(value: string) {
     this.subEventChanged.emit(value);
+  }
+
+  onSubEventClick() {
+    this.subEventClicked.emit();
   }
 }

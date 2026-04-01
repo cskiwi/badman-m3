@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
 import { Club, CompetitionSubEvent, Entry, Player, Team } from '@app/models';
-import { UseForTeamName } from '@app/models-enum';
+import { LevelType, UseForTeamName } from '@app/models-enum';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { sortTeams } from '@app/utils/sorts';
@@ -29,6 +29,7 @@ const TEAM_BUILDER_DATA_QUERY = gql`
       fullName
       abbreviation
       useForTeamName
+      state
       clubPlayerMemberships {
         id
         active
@@ -112,6 +113,11 @@ const TEAM_BUILDER_DATA_QUERY = gql`
             minBaseIndex
             maxBaseIndex
             eventType
+            competitionEvent {
+              id
+              type
+              state
+            }
           }
         }
       }
@@ -153,6 +159,25 @@ const NEXT_SEASON_TEAMS_QUERY = gql`
             }
           }
         }
+      }
+    }
+  }
+`;
+
+const AVAILABLE_SUB_EVENTS_QUERY = gql`
+  query AvailableCompetitionSubEvents($season: Float!) {
+    competitionEvents(args: { where: [{ season: { eq: $season }, official: { eq: true } }] }) {
+      id
+      type
+      state
+      competitionSubEvents {
+        id
+        name
+        level
+        maxLevel
+        minBaseIndex
+        maxBaseIndex
+        eventType
       }
     }
   }
@@ -226,6 +251,16 @@ export class ClubTeamBuilderTabService {
   // Sub-event info collected from current season entries for automatic selection and validation.
   private subEventsByType = signal<Map<string, CompetitionSubEvent[]>>(new Map());
 
+  // All available sub-events from the season, keyed by `${LevelType}:${GenderType}` (e.g. "LIGA:M").
+  // Used for cross-event transitions (Liga ↔ Prov ↔ National).
+  private allSubEventsByKey = signal<Map<string, CompetitionSubEvent[]>>(new Map());
+
+  // Tracks the parent event level type and state for each sub-event (by sub-event ID).
+  private subEventContext = signal<Map<string, { levelType: LevelType; state?: string }>>(new Map());
+
+  // Club state (province) for Prov sub-event matching.
+  clubState = computed(() => this.dataResource.value()?.club?.state);
+
   // Data resource for current season teams
   private dataResource = resource({
     params: () => ({
@@ -280,6 +315,38 @@ export class ClubTeamBuilderTabService {
         return result.data;
       } catch {
         return null;
+      }
+    },
+  });
+
+  // Resource for all available competition sub-events in the current season.
+  // Used for cross-event transitions (Liga ↔ Prov ↔ National).
+  private availableSubEventsResource = resource({
+    params: () => ({
+      season: this.season(),
+    }),
+    loader: async ({ params, abortSignal }) => {
+      if (!params.season) return null;
+
+      try {
+        const result = await lastValueFrom(
+          this.apollo.query<{
+            competitionEvents: {
+              id: string;
+              type: LevelType;
+              state?: string;
+              competitionSubEvents?: CompetitionSubEvent[];
+            }[];
+          }>({
+            query: AVAILABLE_SUB_EVENTS_QUERY,
+            variables: { season: params.season },
+            context: { signal: abortSignal },
+            fetchPolicy: 'network-only',
+          }),
+        );
+        return result.data?.competitionEvents ?? [];
+      } catch {
+        return [];
       }
     },
   });
@@ -486,6 +553,7 @@ export class ClubTeamBuilderTabService {
   private collectSubEventInfo() {
     const currentTeams = this.currentTeams();
     const byType = new Map<string, CompetitionSubEvent[]>();
+    const context = new Map<string, { levelType: LevelType; state?: string }>();
 
     for (const team of currentTeams) {
       const entries = team.entries ?? [];
@@ -501,6 +569,12 @@ export class ClubTeamBuilderTabService {
           if (!existing.some((s: CompetitionSubEvent) => s.id === subEvent.id)) {
             existing.push(subEvent);
           }
+
+          // Track event level type (Liga/Prov/National) from the resolved competitionEvent
+          const eventInfo = (subEvent as any).competitionEvent;
+          if (eventInfo?.type) {
+            context.set(subEvent.id, { levelType: eventInfo.type as LevelType, state: eventInfo.state });
+          }
         }
       }
     }
@@ -511,17 +585,91 @@ export class ClubTeamBuilderTabService {
     }
 
     this.subEventsByType.set(byType);
+    this.subEventContext.set(context);
+
+    // Process all available sub-events from the season (for cross-event transitions)
+    this.processAvailableSubEvents();
+  }
+
+  private processAvailableSubEvents() {
+    const events = this.availableSubEventsResource.value() ?? [];
+    const byKey = new Map<string, CompetitionSubEvent[]>();
+    const context = new Map(this.subEventContext());
+
+    for (const event of events) {
+      const levelType = event.type;
+      for (const subEvent of event.competitionSubEvents ?? []) {
+        const genderType = subEvent.eventType ?? '';
+        const key = `${levelType}:${genderType}`;
+        if (!byKey.has(key)) {
+          byKey.set(key, []);
+        }
+        const list = byKey.get(key)!;
+        if (!list.some((s) => s.id === subEvent.id)) {
+          list.push(subEvent);
+        }
+
+        // Also populate context for these sub-events
+        if (!context.has(subEvent.id)) {
+          context.set(subEvent.id, { levelType, state: event.state });
+        }
+      }
+    }
+
+    // Sort by level ascending
+    for (const [, subs] of byKey) {
+      subs.sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
+    }
+
+    this.allSubEventsByKey.set(byKey);
+    this.subEventContext.set(context);
   }
 
   getSubEventOptions(type: 'M' | 'F' | 'MX') {
-    const subEvents = this.subEventsByType().get(type) ?? [];
-    return [
+    // Include sub-events from all event types (Liga, Prov, National) for the given gender
+    // Prov sub-events are filtered by the club's province
+    const options: { label: string; value: string }[] = [
       { label: 'Auto', value: TEAM_BUILDER_AUTO_SUB_EVENT },
-      ...subEvents.map((subEvent) => ({
-        label: this.formatSubEventOptionLabel(subEvent),
-        value: subEvent.id,
-      })),
     ];
+    const clubState = this.clubState();
+    const context = this.subEventContext();
+
+    for (const levelType of [LevelType.NATIONAL, LevelType.LIGA, LevelType.PROV]) {
+      const key = `${levelType}:${type}`;
+      const subEvents = this.allSubEventsByKey().get(key) ?? [];
+      for (const subEvent of subEvents) {
+        // For Prov events, only show sub-events from the club's province
+        if (levelType === LevelType.PROV && clubState) {
+          const ctx = context.get(subEvent.id);
+          if (ctx?.state && ctx.state !== clubState) continue;
+        }
+        options.push({
+          label: `[${levelType}] ${this.formatSubEventOptionLabel(subEvent)}`,
+          value: subEvent.id,
+        });
+      }
+    }
+
+    return options;
+  }
+
+  getAllSubEvents(type: 'M' | 'F' | 'MX'): CompetitionSubEvent[] {
+    const result: CompetitionSubEvent[] = [];
+    const clubState = this.clubState();
+    const context = this.subEventContext();
+
+    for (const levelType of [LevelType.NATIONAL, LevelType.LIGA, LevelType.PROV]) {
+      const key = `${levelType}:${type}`;
+      const subEvents = this.allSubEventsByKey().get(key) ?? [];
+      for (const subEvent of subEvents) {
+        if (levelType === LevelType.PROV && clubState) {
+          const ctx = context.get(subEvent.id);
+          if (ctx?.state && ctx.state !== clubState) continue;
+        }
+        result.push(subEvent);
+      }
+    }
+    return result;
   }
 
   setTeamSubEvent(teamId: string, selection: string) {
@@ -592,12 +740,19 @@ export class ClubTeamBuilderTabService {
   }
 
   private findSubEvent(type: 'M' | 'F' | 'MX', id?: string, level?: number): CompetitionSubEvent | undefined {
+    // Search in current season entries first
     const subEvents = this.subEventsByType().get(type) ?? [];
 
     if (id) {
       const byId = subEvents.find((subEvent) => subEvent.id === id);
       if (byId) {
         return byId;
+      }
+
+      // Also search in all available sub-events (for cross-event manual selections)
+      for (const [, subs] of this.allSubEventsByKey()) {
+        const found = subs.find((s) => s.id === id);
+        if (found) return found;
       }
     }
 
@@ -606,6 +761,57 @@ export class ClubTeamBuilderTabService {
     }
 
     return undefined;
+  }
+
+  /**
+   * Find a sub-event in a specific event level type (Liga/Prov/National) and gender type.
+   */
+  private findSubEventInEventType(
+    levelType: LevelType,
+    genderType: 'M' | 'F' | 'MX',
+    level?: number,
+    state?: string,
+  ): CompetitionSubEvent | undefined {
+    const key = `${levelType}:${genderType}`;
+    const subEvents = this.allSubEventsByKey().get(key) ?? [];
+
+    if (state) {
+      // Filter by state first (for Prov)
+      const stateFiltered = subEvents.filter((s) => {
+        const ctx = this.subEventContext().get(s.id);
+        return ctx?.state === state;
+      });
+
+      if (level != null) {
+        return stateFiltered.find((s) => s.level === level);
+      }
+      return stateFiltered[0]; // First (lowest level)
+    }
+
+    if (level != null) {
+      return subEvents.find((s) => s.level === level);
+    }
+    return subEvents[0]; // First (lowest level)
+  }
+
+  /**
+   * Get the highest level number (lowest tier) within an event type and gender.
+   */
+  private getHighestLevel(levelType: LevelType, genderType: 'M' | 'F' | 'MX', state?: string): number | undefined {
+    const key = `${levelType}:${genderType}`;
+    const subEvents = this.allSubEventsByKey().get(key) ?? [];
+
+    let filtered = subEvents;
+    if (state) {
+      filtered = subEvents.filter((s) => {
+        const ctx = this.subEventContext().get(s.id);
+        return ctx?.state === state;
+      });
+    }
+
+    if (filtered.length === 0) return undefined;
+    // Sub-events are sorted by level ascending, last one is highest
+    return filtered[filtered.length - 1].level ?? undefined;
   }
 
   private findMatchingSubEvent(type: 'M' | 'F' | 'MX', referenceIndex: number, preferredSubEventId?: string): CompetitionSubEvent | undefined {
@@ -642,13 +848,56 @@ export class ClubTeamBuilderTabService {
   ): CompetitionSubEvent | undefined {
     const originalSubEvent = this.getOriginalSubEvent(team);
     const currentLevel = originalSubEvent?.level;
+    const subEventCtx = originalSubEvent ? this.subEventContext().get(originalSubEvent.id) : undefined;
+    const currentEventType = subEventCtx?.levelType;
+    const clubState = this.clubState();
 
     if (team.standingOutcome === 'PROMOTED' && currentLevel != null) {
-      return this.findSubEvent(team.type, undefined, currentLevel - 1) ?? originalSubEvent;
+      // Try promoting within the same event type (level - 1)
+      if (currentEventType) {
+        const stateForSearch = currentEventType === LevelType.PROV ? clubState : undefined;
+        const sameEventTarget = this.findSubEventInEventType(currentEventType, team.type, currentLevel - 1, stateForSearch);
+        if (sameEventTarget) return sameEventTarget;
+      }
+
+      // Cross-event promotion: PROV level 1 → LIGA highest level
+      if (currentEventType === LevelType.PROV && currentLevel === 1) {
+        const highestLigaLevel = this.getHighestLevel(LevelType.LIGA, team.type);
+        if (highestLigaLevel != null) {
+          return this.findSubEventInEventType(LevelType.LIGA, team.type, highestLigaLevel);
+        }
+      }
+
+      // Cross-event promotion: LIGA top → NATIONAL
+      if (currentEventType === LevelType.LIGA && currentLevel === 1) {
+        const highestNationalLevel = this.getHighestLevel(LevelType.NATIONAL, team.type);
+        if (highestNationalLevel != null) {
+          return this.findSubEventInEventType(LevelType.NATIONAL, team.type, highestNationalLevel);
+        }
+      }
+
+      return originalSubEvent;
     }
 
     if (team.standingOutcome === 'DEMOTED' && currentLevel != null) {
-      return this.findSubEvent(team.type, undefined, currentLevel + 1) ?? originalSubEvent;
+      // Try demoting within the same event type (level + 1)
+      if (currentEventType) {
+        const stateForSearch = currentEventType === LevelType.PROV ? clubState : undefined;
+        const sameEventTarget = this.findSubEventInEventType(currentEventType, team.type, currentLevel + 1, stateForSearch);
+        if (sameEventTarget) return sameEventTarget;
+      }
+
+      // Cross-event demotion: LIGA bottom → PROV level 1 (same state as club)
+      if (currentEventType === LevelType.LIGA) {
+        return this.findSubEventInEventType(LevelType.PROV, team.type, 1, clubState) ?? originalSubEvent;
+      }
+
+      // Cross-event demotion: NATIONAL → LIGA level 1
+      if (currentEventType === LevelType.NATIONAL) {
+        return this.findSubEventInEventType(LevelType.LIGA, team.type, 1) ?? originalSubEvent;
+      }
+
+      return originalSubEvent;
     }
 
     return this.findMatchingSubEvent(team.type, referenceIndex, originalSubEvent?.id) ?? originalSubEvent;
@@ -674,7 +923,19 @@ export class ClubTeamBuilderTabService {
     const calculatedIndex = calculateTeamIndex(team.players, team.type);
     const referenceIndex = regularPlayerCount >= 4 ? calculatedIndex : (team.originalTeamIndex ?? calculatedIndex);
 
-    return this.applySelectedSubEvent(team, this.resolveAutomaticSubEvent(team, referenceIndex));
+    const resolvedSubEvent = this.resolveAutomaticSubEvent(team, referenceIndex);
+
+    // If the standing says PROMOTED/DEMOTED but the resolved sub-event is still the original
+    // (e.g. already at the lowest level), override the flags to UNCHANGED
+    const effectivelyUnchanged =
+      (team.standingOutcome === 'PROMOTED' || team.standingOutcome === 'DEMOTED') &&
+      resolvedSubEvent?.id === team.originalSubEvent?.id;
+
+    const updatedTeam = effectivelyUnchanged
+      ? { ...team, isPromoted: false, isDemoted: false, standingOutcome: 'UNCHANGED' as const }
+      : team;
+
+    return this.applySelectedSubEvent(updatedTeam, resolvedSubEvent);
   }
 
   private createBuilderTeam(team: Team, players: TeamBuilderPlayer[], entry?: Entry): TeamBuilderTeam {

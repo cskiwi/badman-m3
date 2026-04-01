@@ -139,7 +139,11 @@ Club administrators need a tool to build teams for next season based on player s
   - Team builder now loads each entry's `standing`, `competitionDraw`, and `competitionSubEvents` so sub-event selection can be derived from the actual competition data
   - Default next-season sub-event is determined from standing position plus draw `risers`/`fallers`
   - Teams that neither rise nor fall auto-check whether their team index still fits the selected sub-event's `minBaseIndex`/`maxBaseIndex` range and switch to the matching sub-event when needed
-  - Team cards show the selected sub-event details below the team index and allow manual override back to `Auto` or to a specific sub-event
+  - `resolveAutomaticSubEvent` uses `findSubEventInEventType` (scoped to the same event type: Liga/Prov/National) instead of the generic `findSubEvent` (which mixed levels across event types). For Prov searches, the club's `state` is passed to match province-specific sub-events
+  - Team cards show clickable sub-event labels with a pencil icon; clicking opens a dialog to select a different sub-event grouped by event type (Liga/Prov/National) instead of the previous inline dropdown
+  - If a team is at the lowest/highest level and can't actually promote/demote, the flags are overridden to UNCHANGED
+  - Team index progress bar uses PrimeNG `p-progressbar` with color-coded severity: red when below `minBaseIndex` (team too strong), orange when above `maxBaseIndex` (team too weak), green/primary when within range
+  - Sub-event options filtered by club's province for Prov events
 
 - [x] **8.2** Existing next-season teams
   - `nextSeasonResource` checks for existing teams in `season + 1`

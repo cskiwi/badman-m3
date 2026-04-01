@@ -44,9 +44,9 @@
       <span>Team Index</span>
       <span
         [class]="{
-          'text-color': indexSeverity === 'success',
-          'text-primary-emphasis': indexSeverity === 'warn',
-          'text-color-emphasis': indexSeverity === 'danger',
+          'text-green-500': indexSeverity === 'success',
+          'text-orange-500': indexSeverity === 'warn',
+          'text-red-500': indexSeverity === 'danger',
         }"
       >
         {{ team().teamIndex }}
@@ -56,24 +56,57 @@
       </span>
     </div>
     @if (team().selectedSubEvent?.maxBaseIndex != null) {
-      <div class="w-full bg-emphasis rounded-full h-2">
-        <div
-          class="h-2 rounded-full transition-all"
-          [class]="{
-            'bg-highlight': indexSeverity === 'success',
-            'bg-highlight-emphasis': indexSeverity === 'warn',
-            'bg-primary-emphasis': indexSeverity === 'danger',
-          }"
-          [style.width.%]="indexPercent"
-        ></div>
-      </div>
+      <p-progressbar
+        [value]="indexPercent"
+        [showValue]="false"
+        [style]="{ height: '0.5rem', '--p-progressbar-value-background': indexBarColor }"
+      />
+      @if (indexSeverity === 'danger') {
+        <div class="text-xs mt-1" [class.text-red-500]="true">
+          <i class="pi pi-exclamation-triangle text-xs"></i>
+          Team is too strong for this sub-event
+        </div>
+      } @else if (indexSeverity === 'warn') {
+        <div class="text-xs mt-1 text-orange-500">
+          <i class="pi pi-info-circle text-xs"></i>
+          Team index exceeds max but is allowed
+        </div>
+      }
     }
 
     <div class="mt-2 flex flex-col gap-1 text-xs text-muted-color">
       <div class="flex items-center justify-between gap-2">
-        <span>Sub-event</span>
-        <span class="text-right">{{ team().selectedSubEvent?.name || '—' }}</span>
+        <span>Current sub-event</span>
+        @if (team().isPromoted || team().isDemoted) {
+          <span class="text-right">{{ team().originalSubEvent?.name || '—' }}</span>
+        } @else {
+          <span
+            class="text-right cursor-pointer underline decoration-dashed hover:text-primary"
+            pTooltip="Click to change sub-event"
+            tooltipPosition="top"
+            (click)="onSubEventClick()"
+          >
+            {{ team().selectedSubEvent?.name || team().originalSubEvent?.name || '—' }}
+            <i class="pi pi-pencil text-xs ml-1"></i>
+          </span>
+        }
       </div>
+      @if (team().isPromoted || team().isDemoted) {
+        <div class="flex items-center justify-between gap-2">
+          <span>New sub-event</span>
+          <span
+            class="text-right font-semibold cursor-pointer underline decoration-dashed hover:text-primary"
+            [class.text-green-500]="team().isPromoted"
+            [class.text-red-500]="team().isDemoted"
+            pTooltip="Click to change sub-event"
+            tooltipPosition="top"
+            (click)="onSubEventClick()"
+          >
+            {{ team().selectedSubEvent?.name || '—' }}
+            <i class="pi pi-pencil text-xs ml-1"></i>
+          </span>
+        </div>
+      }
       <div class="flex items-center justify-between gap-2">
         <span>Index range</span>
         <span>{{ indexRangeLabel }}</span>
@@ -87,18 +120,6 @@
           <span>Standing</span>
           <span>#{{ team().standingPosition }}</span>
         </div>
-      }
-      @if (subEventOptions().length > 1) {
-        <p-select
-          [options]="subEventOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="selectedSubEventValue"
-          placeholder="Select sub-event"
-          appendTo="body"
-          styleClass="w-full mt-2"
-          (onChange)="onSubEventSelectionChange($event.value)"
-        />
       }
     </div>
   </div>

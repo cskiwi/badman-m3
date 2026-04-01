@@ -1,0 +1,59 @@
+<div class="flex flex-col gap-3">
+  @if (currentSubEvent) {
+    <div class="text-sm text-muted-color">
+      Current: <span class="font-semibold">{{ currentSubEvent.name }}</span>
+    </div>
+  }
+
+  <div class="flex flex-col gap-1">
+    <!-- Auto option -->
+    <div
+      class="p-3 rounded-border border cursor-pointer transition-colors"
+      [class.border-primary]="selectedId === autoValue"
+      [class.bg-highlight]="selectedId === autoValue"
+      [class.border-surface]="selectedId !== autoValue"
+      [class.hover:bg-emphasis]="selectedId !== autoValue"
+      (click)="select(autoValue)"
+    >
+      <div class="flex items-center justify-between">
+        <span class="font-semibold">Auto</span>
+        @if (selectedId === autoValue) {
+          <i class="pi pi-check text-primary"></i>
+        }
+      </div>
+      <span class="text-xs text-muted-color">Automatically determine based on standing and team index</span>
+    </div>
+
+    @for (group of groupedOptions; track group.levelType) {
+      <div class="mt-2">
+        <span class="text-xs font-bold text-muted-color uppercase">{{ group.levelType }}</span>
+      </div>
+      @for (option of group.subEvents; track option.id) {
+        <div
+          class="p-3 rounded-border border cursor-pointer transition-colors"
+          [class.border-primary]="selectedId === option.id"
+          [class.bg-highlight]="selectedId === option.id"
+          [class.border-surface]="selectedId !== option.id"
+          [class.hover:bg-emphasis]="selectedId !== option.id"
+          (click)="select(option.id)"
+        >
+          <div class="flex items-center justify-between">
+            <span class="font-semibold">{{ option.name || 'Level ' + option.level }}</span>
+            @if (selectedId === option.id) {
+              <i class="pi pi-check text-primary"></i>
+            }
+          </div>
+          <span class="text-xs text-muted-color">
+            Index: {{ option.minBaseIndex ?? '?' }} – {{ option.maxBaseIndex ?? '?' }}
+            &nbsp;|&nbsp; Level: {{ option.level ?? '?' }} – {{ option.maxLevel ?? '?' }}
+          </span>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button label="Cancel" severity="secondary" [text]="true" (click)="cancel()" />
+    <p-button label="Apply" (click)="apply()" />
+  </div>
+</div>

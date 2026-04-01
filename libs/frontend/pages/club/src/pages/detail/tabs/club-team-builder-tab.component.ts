@@ -23,11 +23,12 @@ import { SubEventTypeEnum } from '@app/models-enum';
 import { ClubTeamBuilderTabService } from './club-team-builder-tab.service';
 import { ImportSurveyDialogComponent } from '../../../components/team-builder/import-survey-dialog.component';
 import { EditSurveyDialogComponent } from '../../../components/team-builder/edit-survey-dialog.component';
+import { SubEventDialogComponent } from '../../../components/team-builder/sub-event-dialog.component';
 import { BuilderTeamCardComponent } from '../../../components/team-builder/builder-team-card.component';
 import { PlayerChipComponent } from '../../../components/team-builder/player-chip.component';
 import { Player } from '@app/models';
 import { MatchResult } from './team-builder/services/player-matcher.service';
-import { TeamBuilderPlayer } from './team-builder/types/team-builder.types';
+import { TEAM_BUILDER_AUTO_SUB_EVENT, TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
 
 @Component({
@@ -189,6 +190,31 @@ export class ClubTeamBuilderTabComponent {
 
   onSubEventChanged(teamId: string, selection: string) {
     this.service.setTeamSubEvent(teamId, selection);
+  }
+
+  openSubEventDialog(team: TeamBuilderTeam) {
+    const options = this.service.getSubEventOptions(team.type);
+    const allSubEvents = this.service.getAllSubEvents(team.type);
+    const currentValue = team.subEventManuallyOverridden
+      ? (team.selectedSubEvent?.id ?? TEAM_BUILDER_AUTO_SUB_EVENT)
+      : TEAM_BUILDER_AUTO_SUB_EVENT;
+
+    const ref = this.dialogService.open(SubEventDialogComponent, {
+      header: `Sub-event — ${team.name}`,
+      width: '500px',
+      data: {
+        currentSubEvent: team.originalSubEvent,
+        options,
+        allSubEvents,
+        selectedValue: currentValue,
+      },
+    });
+
+    ref?.onClose.subscribe((selection: string | null) => {
+      if (selection != null) {
+        this.service.setTeamSubEvent(team.id, selection);
+      }
+    });
   }
 
   removeTeam(teamId: string) {
