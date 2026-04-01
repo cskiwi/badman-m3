@@ -154,7 +154,7 @@ export class Team extends BaseEntity {
   declare club?: Relation<Club>;
 
   // belongs to club
-  @SortableField(() => Entry, { nullable: true })
+  @SortableField(() => [Entry], { nullable: true })
   @OneToMany(() => Entry, (entry) => entry.team)
   declare entries?: Relation<Entry[]>;
 }

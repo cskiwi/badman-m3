@@ -566,10 +566,6 @@ export class TournamentDrawResolver {
       ];
     }
 
-    if (!args.relations?.includes('standing')) {
-      args.relations = [...(args.relations || []), 'standing'];
-    }
-
     return Entry.find(args);
   }
 

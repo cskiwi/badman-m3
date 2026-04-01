@@ -77,6 +77,48 @@ export type I18nTranslations = {
                 "tab": string;
                 "title": string;
             };
+            "teamBuilder": {
+                "tab": string;
+                "import": {
+                    "title": string;
+                    "description": string;
+                    "chooseFile": string;
+                    "matching": string;
+                    "matched": string;
+                    "total": string;
+                    "toCreate": string;
+                    "createNew": string;
+                    "willCreate": string;
+                    "surveyName": string;
+                    "matchedPlayer": string;
+                    "confidence": string;
+                    "searchPlayer": string;
+                    "confirm": string;
+                    "cancel": string;
+                };
+                "addTeam": string;
+                "save": string;
+                "playerPool": string;
+                "playersStopping": string;
+                "noStoppingPlayers": string;
+                "addPlayer": string;
+                "removePlayer": string;
+                "dropToRemove": string;
+                "removedPlayers": string;
+                "settings": {
+                    "title": string;
+                    "presenceThreshold": string;
+                    "presenceThresholdHelp": string;
+                    "performanceThreshold": string;
+                    "performanceThresholdHelp": string;
+                    "minPlayersPerTeam": string;
+                    "minPlayersPerTeamHelp": string;
+                    "minMalesPerMxTeam": string;
+                    "minFemalesPerMxTeam": string;
+                    "maxPlayersPerTeam": string;
+                    "maxPlayersPerTeamHelp": string;
+                };
+            };
             "winRate": string;
             "winRateTrend": string;
         };

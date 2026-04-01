@@ -137,7 +137,7 @@ export class IndexService implements OnModuleInit {
       .select(['player.id', 'player.slug', 'player.memberId', 'player.firstName', 'player.lastName', 'player.gender', 'club.id'])
       .leftJoinAndSelect('player.clubPlayerMemberships', 'clubPlayerMemberships')
       .leftJoinAndSelect('clubPlayerMemberships.club', 'club')
-      .where('player.competitionPlayer = true');
+      .where('player.slug IS NOT NULL and player.firstName IS NOT NULL and player.lastName IS NOT NULL');
 
     const players = await playerQry.getMany();
 

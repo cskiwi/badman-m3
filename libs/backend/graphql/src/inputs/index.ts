@@ -13,3 +13,4 @@ export * from './tournament-checkin.input';
 export * from './tournament-court.input';
 export * from './enrollment.input';
 export * from './competition-event.input';
+export * from './team-builder.input';

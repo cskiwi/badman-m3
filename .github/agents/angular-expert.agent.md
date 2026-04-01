@@ -1,7 +1,7 @@
 ---
 description: Implements Angular features following modern Angular 20+ patterns with PrimeNG and TypeScript best practices.
 name: "Angular Expert"
-tools: [execute, read, edit, search, 'primeng/*']
+tools: [execute, read, edit, search, 'primeng/*', 'vscode/askQuestions']
 ---
 
 # Angular Expert Agent

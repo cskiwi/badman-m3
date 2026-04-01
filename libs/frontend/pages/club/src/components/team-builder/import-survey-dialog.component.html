@@ -1,0 +1,130 @@
+<div class="p-4">
+  @switch (step()) {
+    @case ('upload') {
+      <div class="flex flex-col items-center gap-4 py-8">
+        <i class="pi pi-file-excel text-4xl text-primary"></i>
+        <p class="text-lg">{{ 'all.club.teamBuilder.import.description' | translate }}</p>
+        <p-fileUpload
+          mode="basic"
+          accept=".xlsx,.xls"
+          [maxFileSize]="10000000"
+          chooseLabel="{{ 'all.club.teamBuilder.import.chooseFile' | translate }}"
+          (onSelect)="onFileSelected($event)"
+          [auto]="true"
+        />
+      </div>
+    }
+
+    @case ('matching') {
+      <div class="flex flex-col items-center gap-4 py-8">
+        <p class="text-lg">{{ 'all.club.teamBuilder.import.matching' | translate }}</p>
+        <p-progressbar mode="indeterminate" [style]="{ height: '6px', width: '100%' }" />
+      </div>
+    }
+
+    @case ('review') {
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <span class="font-medium">
+            {{ matchedCount }} {{ 'all.club.teamBuilder.import.matched' | translate }}
+            @if (createNewCount > 0) {
+              , {{ createNewCount }} {{ 'all.club.teamBuilder.import.toCreate' | translate }}
+            }
+            / {{ totalCount }} {{ 'all.club.teamBuilder.import.total' | translate }}
+          </span>
+        </div>
+
+        <p-table [value]="matchResults()" [scrollable]="true" scrollHeight="400px" styleClass="p-datatable-sm">
+          <ng-template #header>
+            <tr>
+              <th>{{ 'all.club.teamBuilder.import.surveyName' | translate }}</th>
+              <th>{{ 'all.club.teamBuilder.import.matchedPlayer' | translate }}</th>
+              <th>{{ 'all.club.teamBuilder.import.confidence' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-result>
+            <tr>
+              <td>{{ result.survey.fullName }}</td>
+              <td>
+                @if (result.player && !result.editing) {
+                  <div class="flex items-center gap-2">
+                    <span>{{ result.player.fullName }}</span>
+                    <button
+                      class="p-button p-button-text p-button-sm p-button-rounded"
+                      style="width: 1.5rem; height: 1.5rem; padding: 0"
+                      (click)="result.editing = true; matchResults.set([...matchResults()])"
+                    >
+                      <i class="pi pi-pencil text-xs"></i>
+                    </button>
+                  </div>
+                } @else if (!result.player && !result.editing) {
+                  <div class="flex items-center gap-2">
+                    @if (result.createNew) {
+                      <span class="text-green-600">
+                        <i class="pi pi-user-plus mr-1"></i>
+                        {{ 'all.club.teamBuilder.import.willCreate' | translate }}:
+                        {{ result.survey.firstName }} {{ result.survey.lastName }}
+                      </span>
+                      <button
+                        class="p-button p-button-text p-button-sm p-button-rounded p-button-danger"
+                        style="width: 1.5rem; height: 1.5rem; padding: 0"
+                        (click)="toggleCreateNew(result)"
+                      >
+                        <i class="pi pi-times text-xs"></i>
+                      </button>
+                    } @else {
+                      <p-button
+                        [label]="'all.club.teamBuilder.import.createNew' | translate"
+                        icon="pi pi-user-plus"
+                        severity="success"
+                        size="small"
+                        [text]="true"
+                        (onClick)="toggleCreateNew(result)"
+                      />
+                      <button
+                        class="p-button p-button-text p-button-sm p-button-rounded"
+                        style="width: 1.5rem; height: 1.5rem; padding: 0"
+                        (click)="result.editing = true; matchResults.set([...matchResults()])"
+                      >
+                        <i class="pi pi-search text-xs"></i>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <p-autoComplete
+                    [suggestions]="playerSuggestions()"
+                    (completeMethod)="searchPlayer($event)"
+                    (onSelect)="onPlayerSelected(result, $event.value)"
+                    field="fullName"
+                    [minLength]="2"
+                    optionLabel="fullName"
+                    [placeholder]="'all.club.teamBuilder.import.searchPlayer' | translate"
+                  />
+                }
+              </td>
+              <td>
+                @if (result.player) {
+                  <p-tag [value]="result.confidence" [severity]="getConfidenceSeverity(result.confidence)" />
+                } @else if (result.createNew) {
+                  <p-tag value="new" severity="success" />
+                } @else {
+                  <p-tag value="none" severity="info" />
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+        <div class="flex justify-end gap-2 mt-4">
+          <p-button label="{{ 'all.club.teamBuilder.import.cancel' | translate }}" severity="secondary" (onClick)="cancel()" />
+          <p-button
+            label="{{ 'all.club.teamBuilder.import.confirm' | translate }}"
+            icon="pi pi-check"
+            (onClick)="confirm()"
+            [disabled]="actionableCount === 0"
+          />
+        </div>
+      </div>
+    }
+  }
+</div>

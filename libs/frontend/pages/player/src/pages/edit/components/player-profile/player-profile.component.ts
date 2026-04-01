@@ -20,7 +20,7 @@ import { AuthService } from '@app/frontend-modules-auth/service';
 
 // UpdatePlayer mutation for updating player profile information
 const UPDATE_PLAYER_PROFILE = gql`
-  mutation UpdatePlayer($playerId: ID!, $input: UpdatePlayerInput!) {
+  mutation UpdatePlayer($playerId: ID!, $input: PlayerUpdateInput!) {
     updatePlayer(playerId: $playerId, input: $input) {
       id
       firstName

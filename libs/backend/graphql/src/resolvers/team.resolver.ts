@@ -1,11 +1,13 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { Club, Player, Team, TeamPlayerMembership } from '@app/models';
-import { TeamMembershipType } from '@app/models-enum';
+import { Club, ClubPlayerMembership, Entry, Player, Team, TeamPlayerMembership } from '@app/models';
+import { ClubMembershipType, TeamMembershipType } from '@app/models-enum';
+import { Days } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { ClubArgs, TeamArgs, TeamPlayerMembershipArgs } from '../args';
+import { ClubArgs, EntryArgs, TeamArgs, TeamPlayerMembershipArgs } from '../args';
 import { TeamUpdateInput } from '../inputs';
+import { CreatePlayerForTeamBuilderInput, TeamBuilderTeamInput } from '../inputs/team-builder.input';
 
 @Resolver(() => Team)
 export class TeamResolver {
@@ -96,6 +98,34 @@ export class TeamResolver {
 
     return Club.findOne(args);
   }
+
+
+  @ResolveField(() => [Entry], { nullable: true })
+    async entries(
+      @Parent() { id }: Team,
+      @Args('args', {
+        type: () => EntryArgs,
+        nullable: true,
+      })
+      inputArgs?: InstanceType<typeof EntryArgs>,
+    ): Promise<Entry[]> {
+      const args = EntryArgs.toFindManyOptions(inputArgs);
+  
+      if (args.where?.length > 0) {
+        args.where = args.where.map((where) => ({
+          ...where,
+          teamId: id,
+        }));
+      } else {
+        args.where = [
+          {
+            teamId: id,
+          },
+        ];
+      }
+  
+      return Entry.find(args);
+    }
 
   @ResolveField(() => Player, { nullable: true })
   async captain(@Parent() { captainId }: Team) {
@@ -294,5 +324,137 @@ export class TeamResolver {
     await membership.remove();
 
     return true;
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(PermGuard)
+  async saveTeamBuilder(
+    @User() user: Player,
+    @Args('clubId', { type: () => ID }) clubId: string,
+    @Args('season', { type: () => Number }) season: number,
+    @Args('teams', { type: () => [TeamBuilderTeamInput] }) teams: TeamBuilderTeamInput[],
+  ): Promise<boolean> {
+    // Verify club exists
+    const club = await Club.findOne({ where: { id: clubId } });
+    if (!club) {
+      throw new NotFoundException(`Club with ID ${clubId} not found`);
+    }
+
+    // Check authorization
+    const canEdit = user.hasAnyPermission(['edit-any:club', `${clubId}_edit:club`]);
+    if (!canEdit) {
+      throw new UnauthorizedException('You do not have permission to manage teams for this club');
+    }
+
+    for (const teamInput of teams) {
+      let team: Team;
+
+      if (teamInput.teamId) {
+        const existing = await Team.findOne({ where: { id: teamInput.teamId } });
+
+        if (existing && existing.season === season) {
+          team = existing;
+        } else if (existing) {
+          // Clone from current-season team for next season
+          team = new Team();
+          team.clubId = clubId;
+          team.season = season;
+          team.link = existing.link;
+        } else {
+          throw new NotFoundException(`Team with ID ${teamInput.teamId} not found`);
+        }
+      } else {
+        team = new Team();
+        team.clubId = clubId;
+        team.season = season;
+      }
+
+      team.name = teamInput.name;
+      team.type = teamInput.type;
+      if (teamInput.teamNumber != null) team.teamNumber = teamInput.teamNumber;
+      if (teamInput.preferredDay != null) team.preferredDay = teamInput.preferredDay as Days;
+      if (teamInput.captainId != null) team.captainId = teamInput.captainId;
+
+      await team.save();
+
+      // Remove existing memberships for this team
+      const existingMemberships = await TeamPlayerMembership.find({
+        where: { teamId: team.id },
+      });
+      if (existingMemberships.length > 0) {
+        await TeamPlayerMembership.remove(existingMemberships);
+      }
+
+      // Create new memberships
+      for (const playerInput of teamInput.players) {
+        const membership = new TeamPlayerMembership();
+        membership.teamId = team.id;
+        membership.playerId = playerInput.playerId;
+        membership.membershipType = playerInput.membershipType as TeamMembershipType;
+        await membership.save();
+      }
+    }
+
+    return true;
+  }
+
+  @Mutation(() => [Player])
+  @UseGuards(PermGuard)
+  async createPlayersForTeamBuilder(
+    @User() user: Player,
+    @Args('clubId', { type: () => ID }) clubId: string,
+    @Args('players', { type: () => [CreatePlayerForTeamBuilderInput] }) players: CreatePlayerForTeamBuilderInput[],
+  ): Promise<Player[]> {
+    const club = await Club.findOne({ where: { id: clubId } });
+    if (!club) {
+      throw new NotFoundException(`Club with ID ${clubId} not found`);
+    }
+
+    const canEdit = user.hasAnyPermission(['edit-any:club', `${clubId}_edit:club`]);
+    if (!canEdit) {
+      throw new UnauthorizedException('You do not have permission to manage players for this club');
+    }
+
+    const createdPlayers: Player[] = [];
+
+    for (const input of players) {
+      const firstName = input.firstName?.trim();
+      const lastName = input.lastName?.trim();
+
+      if (!firstName || !lastName) {
+        throw new BadRequestException('firstName and lastName are required');
+      }
+
+      const newPlayer = new Player();
+      newPlayer.firstName = firstName;
+      newPlayer.lastName = lastName;
+      newPlayer.gender = (input.gender === 'M' || input.gender === 'F') ? input.gender : undefined;
+      newPlayer.slug = this.generatePlayerSlug(firstName, lastName);
+      newPlayer.competitionPlayer = true;
+      await newPlayer.save();
+
+      // Create club membership
+      const membership = new ClubPlayerMembership();
+      membership.playerId = newPlayer.id;
+      membership.clubId = clubId;
+      membership.start = new Date();
+      membership.confirmed = true;
+      membership.membershipType = ClubMembershipType.NORMAL;
+      await membership.save();
+
+      createdPlayers.push(newPlayer);
+    }
+
+    return createdPlayers;
+  }
+
+  private generatePlayerSlug(firstName: string, lastName: string): string {
+    const base = `${firstName}-${lastName}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    // Add random suffix to ensure uniqueness
+    const suffix = Math.random().toString(36).substring(2, 8);
+    return `${base}-${suffix}`;
   }
 }
