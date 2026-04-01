@@ -6,10 +6,15 @@ import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 import { sortTeams } from '@app/utils/sorts';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
-import { TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
+import {
+  TEAM_BUILDER_AUTO_SUB_EVENT,
+  TeamBuilderPlayer,
+  TeamBuilderStandingOutcome,
+  TeamBuilderTeam,
+} from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
 import { MatchResult, MatchedPlayer } from './team-builder/services/player-matcher.service';
-import { recalculateTeam } from './team-builder/utils/team-index-calculator';
+import { calculateTeamIndex, recalculateTeam } from './team-builder/utils/team-index-calculator';
 
 const TEAM_BUILDER_DATA_QUERY = gql`
   query TeamBuilderData(
@@ -48,6 +53,7 @@ const TEAM_BUILDER_DATA_QUERY = gql`
         id
         name
         season
+        link
         type
         abbreviation
         teamNumber
@@ -85,6 +91,18 @@ const TEAM_BUILDER_DATA_QUERY = gql`
             competition {
               teamIndex
             }
+          }
+          standing {
+            position
+            size
+            riser
+            faller
+          }
+          competitionDraw {
+            id
+            size
+            risers
+            fallers
           }
           competitionSubEvents {
             id
@@ -188,6 +206,28 @@ interface SubEventInfo {
   eventType?: string;
 }
 
+interface StandingInfo {
+  position?: number;
+  size?: number;
+  riser?: boolean;
+  faller?: boolean;
+}
+
+interface CompetitionDrawInfo {
+  id: string;
+  size?: number;
+  risers?: number;
+  fallers?: number;
+}
+
+interface TeamEntryInfo {
+  id: string;
+  meta?: { competition?: { teamIndex?: number } };
+  standing?: StandingInfo;
+  competitionDraw?: CompetitionDrawInfo;
+  competitionSubEvents?: SubEventInfo[];
+}
+
 interface TeamBuilderData {
   club: {
     id: string;
@@ -201,13 +241,7 @@ interface TeamBuilderData {
       active?: boolean;
       player?: MatchedPlayer | null;
     }[];
-    teams: (Team & {
-      entries?: {
-        id: string;
-        meta?: { competition?: { teamIndex?: number } };
-        subEvent?: SubEventInfo;
-      }[];
-    })[];
+    teams: (Team & { entries?: TeamEntryInfo[] })[];
   };
 }
 
@@ -241,7 +275,7 @@ export class ClubTeamBuilderTabService {
   readonly removedPlayers = signal<TeamBuilderPlayer[]>([]);
   readonly manuallyAddedPlayers = signal<TeamBuilderPlayer[]>([]);
 
-  // Sub-event info collected from current season entries (for promotion shifting)
+  // Sub-event info collected from current season entries for automatic selection and validation.
   private subEventsByType = signal<Map<string, SubEventInfo[]>>(new Map());
 
   // Data resource for current season teams
@@ -518,16 +552,17 @@ export class ClubTeamBuilderTabService {
     const byType = new Map<string, SubEventInfo[]>();
 
     for (const team of currentTeams) {
-      const entries = (team as any).entries ?? [];
+      const entries = team.entries ?? [];
       for (const entry of entries) {
-        if (entry.subEvent) {
-          const type = entry.subEvent.eventType ?? team.type;
+        const subEvent = this.getPrimaryCompetitionSubEvent(entry);
+        if (subEvent) {
+          const type = subEvent.eventType ?? team.type;
           if (!byType.has(type)) {
             byType.set(type, []);
           }
           const existing = byType.get(type)!;
-          if (!existing.some((s: SubEventInfo) => s.id === entry.subEvent.id)) {
-            existing.push(entry.subEvent);
+          if (!existing.some((s: SubEventInfo) => s.id === subEvent.id)) {
+            existing.push(subEvent);
           }
         }
       }
@@ -541,44 +576,228 @@ export class ClubTeamBuilderTabService {
     this.subEventsByType.set(byType);
   }
 
+  getSubEventOptions(type: 'M' | 'F' | 'MX') {
+    const subEvents = this.subEventsByType().get(type) ?? [];
+    return [
+      { label: 'Auto', value: TEAM_BUILDER_AUTO_SUB_EVENT },
+      ...subEvents.map((subEvent) => ({
+        label: this.formatSubEventOptionLabel(subEvent),
+        value: subEvent.id,
+      })),
+    ];
+  }
+
+  setTeamSubEvent(teamId: string, selection: string) {
+    const teams = this.teams().map((team) => {
+      if (team.id !== teamId) return team;
+
+      if (selection === TEAM_BUILDER_AUTO_SUB_EVENT) {
+        return this.recalculateManagedTeam({
+          ...team,
+          subEventManuallyOverridden: false,
+        });
+      }
+
+      const subEvent = this.findSubEvent(team.type, selection);
+      if (!subEvent) return team;
+
+      return this.applySelectedSubEvent(
+        {
+          ...team,
+          subEventManuallyOverridden: true,
+        },
+        subEvent,
+      );
+    });
+
+    this.teams.set(teams);
+  }
+
+  private formatSubEventOptionLabel(subEvent: SubEventInfo) {
+    const name = subEvent.name?.trim() || (subEvent.level != null ? `Level ${subEvent.level}` : 'Unnamed');
+    const min = subEvent.minBaseIndex ?? '?';
+    const max = subEvent.maxBaseIndex ?? '?';
+    return `${name} (${min}-${max})`;
+  }
+
+  private getPrimaryCompetitionSubEvent(entry?: TeamEntryInfo): SubEventInfo | undefined {
+    return entry?.competitionSubEvents?.[0];
+  }
+
+  private resolveStandingOutcome(entry?: TeamEntryInfo): TeamBuilderStandingOutcome {
+    const standing = entry?.standing;
+    const draw = entry?.competitionDraw;
+
+    if (!standing && !draw) {
+      return 'UNCHANGED';
+    }
+
+    const position = standing?.position;
+    const drawSize = standing?.size ?? draw?.size;
+    const risers = draw?.risers ?? 0;
+    const fallers = draw?.fallers ?? 0;
+
+    if (standing?.riser || (position != null && risers > 0 && position <= risers)) {
+      return 'PROMOTED';
+    }
+
+    if (standing?.faller || (position != null && drawSize != null && fallers > 0 && position > drawSize - fallers)) {
+      return 'DEMOTED';
+    }
+
+    return 'UNCHANGED';
+  }
+
+  private getOriginalSubEvent(team: Pick<TeamBuilderTeam, 'type' | 'originalSubEventId' | 'currentLevel'>): SubEventInfo | undefined {
+    return this.findSubEvent(team.type, team.originalSubEventId, team.currentLevel);
+  }
+
+  private findSubEvent(type: 'M' | 'F' | 'MX', id?: string, level?: number): SubEventInfo | undefined {
+    const subEvents = this.subEventsByType().get(type) ?? [];
+
+    if (id) {
+      const byId = subEvents.find((subEvent) => subEvent.id === id);
+      if (byId) {
+        return byId;
+      }
+    }
+
+    if (level != null) {
+      return subEvents.find((subEvent) => subEvent.level === level);
+    }
+
+    return undefined;
+  }
+
+  private findMatchingSubEvent(type: 'M' | 'F' | 'MX', referenceIndex: number, preferredSubEventId?: string): SubEventInfo | undefined {
+    if (referenceIndex <= 0) {
+      return undefined;
+    }
+
+    const subEvents = this.subEventsByType().get(type) ?? [];
+
+    if (preferredSubEventId) {
+      const preferred = subEvents.find((subEvent) => subEvent.id === preferredSubEventId);
+      if (preferred && this.isIndexWithinSubEvent(referenceIndex, preferred)) {
+        return preferred;
+      }
+    }
+
+    return subEvents.find((subEvent) => this.isIndexWithinSubEvent(referenceIndex, subEvent));
+  }
+
+  private isIndexWithinSubEvent(referenceIndex: number, subEvent?: SubEventInfo): boolean {
+    if (!subEvent) {
+      return false;
+    }
+
+    const aboveMin = subEvent.minBaseIndex == null || referenceIndex >= subEvent.minBaseIndex;
+    const belowMax = subEvent.maxBaseIndex == null || referenceIndex <= subEvent.maxBaseIndex;
+
+    return aboveMin && belowMax;
+  }
+
+  private resolveAutomaticSubEvent(
+    team: Pick<TeamBuilderTeam, 'type' | 'standingOutcome' | 'currentLevel' | 'originalSubEventId'>,
+    referenceIndex: number,
+  ): SubEventInfo | undefined {
+    const originalSubEvent = this.getOriginalSubEvent(team);
+
+    if (team.standingOutcome === 'PROMOTED' && team.currentLevel != null) {
+      return this.findSubEvent(team.type, undefined, team.currentLevel - 1) ?? originalSubEvent;
+    }
+
+    if (team.standingOutcome === 'DEMOTED' && team.currentLevel != null) {
+      return this.findSubEvent(team.type, undefined, team.currentLevel + 1) ?? originalSubEvent;
+    }
+
+    return this.findMatchingSubEvent(team.type, referenceIndex, originalSubEvent?.id) ?? originalSubEvent;
+  }
+
+  private applySelectedSubEvent(team: TeamBuilderTeam, subEvent?: SubEventInfo): TeamBuilderTeam {
+    return recalculateTeam({
+      ...team,
+      subEventId: subEvent?.id,
+      subEventName: subEvent?.name,
+      minAllowedIndex: subEvent?.minBaseIndex,
+      maxAllowedIndex: subEvent?.maxBaseIndex,
+      minLevel: subEvent?.level,
+      maxLevel: subEvent?.maxLevel,
+    });
+  }
+
+  private recalculateManagedTeam(team: TeamBuilderTeam): TeamBuilderTeam {
+    if (team.isMarkedForRemoval) {
+      return recalculateTeam(team);
+    }
+
+    if (team.subEventManuallyOverridden) {
+      return this.applySelectedSubEvent(team, this.findSubEvent(team.type, team.subEventId) ?? this.getOriginalSubEvent(team));
+    }
+
+    const regularPlayerCount = team.players.filter((player) => player.membershipType === 'REGULAR').length;
+    const calculatedIndex = calculateTeamIndex(team.players, team.type);
+    const referenceIndex = regularPlayerCount >= 4 ? calculatedIndex : (team.originalTeamIndex ?? calculatedIndex);
+
+    return this.applySelectedSubEvent(team, this.resolveAutomaticSubEvent(team, referenceIndex));
+  }
+
+  private createBuilderTeam(team: Team, players: TeamBuilderPlayer[], entry?: TeamEntryInfo): TeamBuilderTeam {
+    const subEvent = this.getPrimaryCompetitionSubEvent(entry);
+    const standingOutcome = this.resolveStandingOutcome(entry);
+
+    return this.recalculateManagedTeam({
+      id: team.id,
+      name: team.name ?? '',
+      type: (team.type as 'M' | 'F' | 'MX') ?? 'M',
+      teamNumber: team.teamNumber,
+      preferredDay: team.preferredDay,
+      captainId: team.captainId,
+      isNew: false,
+      isPromoted: standingOutcome === 'PROMOTED',
+      isDemoted: standingOutcome === 'DEMOTED',
+      isMarkedForRemoval: false,
+      standingOutcome,
+      standingPosition: entry?.standing?.position,
+      originalSubEventId: subEvent?.id,
+      originalTeamIndex: entry?.meta?.competition?.teamIndex,
+      subEventId: subEvent?.id,
+      subEventName: subEvent?.name,
+      minAllowedIndex: subEvent?.minBaseIndex,
+      maxAllowedIndex: subEvent?.maxBaseIndex,
+      minLevel: subEvent?.level,
+      maxLevel: subEvent?.maxLevel,
+      currentLevel: subEvent?.level,
+      subEventManuallyOverridden: false,
+      players,
+      teamIndex: 0,
+      isValid: true,
+      validationErrors: [],
+    });
+  }
+
   private initializeFromDraft(nextTeams: (Team & { link?: string })[]) {
     const surveys = this.surveyResponses();
     const surveyMap = this.buildSurveyMap(surveys);
     const currentPlayerIds = this.getCurrentSeasonPlayerIds();
 
     // Map next-season teams to builder teams, inheriting sub-event info from current season via link
-    const currentTeamMap = new Map(this.currentTeams().map((t) => [t.id, t]));
+    const currentTeamMap = new Map<string, Team & { entries?: TeamEntryInfo[] }>();
+    for (const currentTeam of this.currentTeams()) {
+      currentTeamMap.set(currentTeam.id, currentTeam);
+      if (currentTeam.link) {
+        currentTeamMap.set(currentTeam.link, currentTeam);
+      }
+    }
 
     const builderTeams: TeamBuilderTeam[] = nextTeams.map((team) => {
       // Find linked current-season team for sub-event constraints
       const linkedTeam = team.link ? currentTeamMap.get(team.link) : undefined;
-      const entry = linkedTeam ? (linkedTeam as any).entries?.[0] : undefined;
-      const subEvent = entry?.subEvent;
+      const entry = linkedTeam?.entries?.[0];
 
       const players = this.buildPlayers(team, surveyMap, currentPlayerIds);
 
-      const builderTeam: TeamBuilderTeam = {
-        id: team.id,
-        name: team.name ?? '',
-        type: (team.type as 'M' | 'F' | 'MX') ?? 'M',
-        teamNumber: team.teamNumber,
-        preferredDay: team.preferredDay,
-        captainId: team.captainId,
-        isNew: false,
-        isPromoted: false,
-        isMarkedForRemoval: false,
-        subEventId: subEvent?.id,
-        maxAllowedIndex: subEvent?.maxBaseIndex,
-        minLevel: subEvent?.level,
-        maxLevel: subEvent?.maxLevel,
-        currentLevel: subEvent?.level,
-        players,
-        teamIndex: 0,
-        isValid: true,
-        validationErrors: [],
-      };
-
-      return recalculateTeam(builderTeam);
+      return this.createBuilderTeam(team, players, entry);
     });
 
     this.teams.set(builderTeams);
@@ -591,33 +810,11 @@ export class ClubTeamBuilderTabService {
     const currentPlayerIds = this.getCurrentSeasonPlayerIds();
 
     const builderTeams: TeamBuilderTeam[] = currentTeams.map((team) => {
-      const entry = (team as any).entries?.[0];
-      const subEvent = entry?.subEvent;
+      const entry = team.entries?.[0];
 
       const players = this.buildPlayers(team, surveyMap, currentPlayerIds);
 
-      const builderTeam: TeamBuilderTeam = {
-        id: team.id,
-        name: team.name ?? '',
-        type: (team.type as 'M' | 'F' | 'MX') ?? 'M',
-        teamNumber: team.teamNumber,
-        preferredDay: team.preferredDay,
-        captainId: team.captainId,
-        isNew: false,
-        isPromoted: false,
-        isMarkedForRemoval: false,
-        subEventId: subEvent?.id,
-        maxAllowedIndex: subEvent?.maxBaseIndex,
-        minLevel: subEvent?.level,
-        maxLevel: subEvent?.maxLevel,
-        currentLevel: subEvent?.level,
-        players,
-        teamIndex: 0,
-        isValid: true,
-        validationErrors: [],
-      };
-
-      return recalculateTeam(builderTeam);
+      return this.createBuilderTeam(team, players, entry);
     });
 
     this.teams.set(builderTeams);
@@ -707,7 +904,7 @@ export class ClubTeamBuilderTabService {
         }
       }
 
-      return recalculateTeam({ ...team, players: remainingPlayers });
+      return this.recalculateManagedTeam({ ...team, players: remainingPlayers });
     });
 
     this.teams.set(updatedTeams);
@@ -812,7 +1009,7 @@ export class ClubTeamBuilderTabService {
         const idx = fromTeam.players.findIndex((p) => p.id === playerId);
         if (idx >= 0) {
           player = fromTeam.players.splice(idx, 1)[0];
-          recalculateTeam(fromTeam);
+          Object.assign(fromTeam, this.recalculateManagedTeam(fromTeam));
         }
       }
     } else {
@@ -829,7 +1026,7 @@ export class ClubTeamBuilderTabService {
       if (toTeam) {
         player = { ...player, assignedTeamId: toTeamId };
         toTeam.players.push(player);
-        recalculateTeam(toTeam);
+        Object.assign(toTeam, this.recalculateManagedTeam(toTeam));
       }
     } else if (player && !toTeamId) {
       player = { ...player, assignedTeamId: undefined };
@@ -843,7 +1040,7 @@ export class ClubTeamBuilderTabService {
     const teams = this.teams().map((t) => {
       if (t.id !== teamId) return t;
       const players = t.players.map((p) => (p.id === playerId ? { ...p, membershipType: type } : p));
-      return recalculateTeam({ ...t, players });
+      return this.recalculateManagedTeam({ ...t, players });
     });
     this.teams.set(teams);
     this.updateTeamCountWarnings();
@@ -867,9 +1064,9 @@ export class ClubTeamBuilderTabService {
 
       if (isStopping) {
         // Remove from team, will be added to stopping list below
-        return recalculateTeam({ ...team, players: team.players.filter((p) => p.id !== playerId) });
+        return this.recalculateManagedTeam({ ...team, players: team.players.filter((p) => p.id !== playerId) });
       }
-      return recalculateTeam({ ...team, players: updateInArray(team.players) });
+      return this.recalculateManagedTeam({ ...team, players: updateInArray(team.players) });
     });
 
     // Update in stopping players
@@ -921,7 +1118,10 @@ export class ClubTeamBuilderTabService {
       teamNumber,
       isNew: true,
       isPromoted: false,
+      isDemoted: false,
       isMarkedForRemoval: false,
+      standingOutcome: 'UNCHANGED',
+      subEventManuallyOverridden: false,
       players: [],
       teamIndex: 0,
       isValid: false,
@@ -978,7 +1178,7 @@ export class ClubTeamBuilderTabService {
         if (idx < 0) return t;
         const players = [...t.players];
         players.splice(idx, 1);
-        return recalculateTeam({ ...t, players });
+        return this.recalculateManagedTeam({ ...t, players });
       });
       this.teams.set(teams);
     }
@@ -1172,48 +1372,6 @@ export class ClubTeamBuilderTabService {
       if (t.teamNumber === teamNumber) return t;
       return { ...t, teamNumber, name: this.buildTeamName(t.type, teamNumber) };
     });
-  }
-
-  /**
-   * Toggle promotion for a team. When promoted, shift to the next higher level's constraints.
-   * Level numbers go up (level 1 is highest/strongest), so promotion = level - 1.
-   */
-  promoteTeam(teamId: string) {
-    const teams = this.teams().map((t) => {
-      if (t.id !== teamId) return t;
-
-      const promoted = !t.isPromoted;
-      const subEvents = this.subEventsByType().get(t.type) ?? [];
-
-      if (promoted && t.currentLevel != null) {
-        // Find the next higher level (lower number)
-        const targetLevel = t.currentLevel - 1;
-        const targetSubEvent = subEvents.find((s: SubEventInfo) => s.level === targetLevel);
-
-        return recalculateTeam({
-          ...t,
-          isPromoted: true,
-          minLevel: targetSubEvent?.level ?? targetLevel,
-          maxLevel: targetSubEvent?.maxLevel,
-          maxAllowedIndex: targetSubEvent?.maxBaseIndex ?? t.maxAllowedIndex,
-          subEventId: targetSubEvent?.id ?? t.subEventId,
-        });
-      } else {
-        // Revert to original level
-        const originalSubEvent = subEvents.find((s: SubEventInfo) => s.level === t.currentLevel);
-
-        return recalculateTeam({
-          ...t,
-          isPromoted: false,
-          minLevel: t.currentLevel,
-          maxLevel: originalSubEvent?.maxLevel ?? t.maxLevel,
-          maxAllowedIndex: originalSubEvent?.maxBaseIndex ?? t.maxAllowedIndex,
-          subEventId: originalSubEvent?.id ?? t.subEventId,
-        });
-      }
-    });
-
-    this.teams.set(teams);
   }
 
   /**
