@@ -46,7 +46,10 @@ export class BuilderTeamCardComponent {
       if (sort === 'index') {
         return getPlayerContribution(a, teamType) - getPlayerContribution(b, teamType);
       }
-      return a.lastName.localeCompare(b.lastName);
+      // Name sort with ranking as secondary: single, double (and mix for MX)
+      const nameCompare = a.lastName.localeCompare(b.lastName);
+      if (nameCompare !== 0) return nameCompare;
+      return getPlayerContribution(a, teamType) - getPlayerContribution(b, teamType);
     };
 
     let regulars: TeamBuilderPlayer[];

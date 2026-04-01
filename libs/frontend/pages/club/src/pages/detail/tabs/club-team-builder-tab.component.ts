@@ -29,6 +29,7 @@ import { BuilderTeamCardComponent } from '../../../components/team-builder/build
 import { PlayerChipComponent } from '../../../components/team-builder/player-chip.component';
 import { Player } from '@app/models';
 import { MatchResult } from './team-builder/services/player-matcher.service';
+import { getPlayerContribution } from './team-builder/utils/team-index-calculator';
 import { TEAM_BUILDER_AUTO_SUB_EVENT, TeamBuilderConfig, TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
 
@@ -108,11 +109,20 @@ export class ClubTeamBuilderTabComponent {
   }
 
   get filteredUnassignedPlayers() {
-    const players = this.service.unassignedPlayers();
-    if (!this.searchQuery) return players;
+    let players = this.service.unassignedPlayers();
 
-    const query = this.searchQuery.toLowerCase();
-    return players.filter((p) => p.fullName.toLowerCase().includes(query));
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      players = players.filter((p) => p.fullName.toLowerCase().includes(query));
+    }
+
+    // Sort by ranking contribution (single + double; MX players also include mix)
+    return [...players].sort((a, b) => {
+      const teamType = (a.gender === 'M' || a.gender === 'F') ? a.gender : 'MX';
+      const contribA = getPlayerContribution(a, teamType as 'M' | 'F' | 'MX');
+      const contribB = getPlayerContribution(b, teamType as 'M' | 'F' | 'MX');
+      return contribA - contribB;
+    });
   }
 
   openImportDialog() {
