@@ -1,4 +1,4 @@
-import { TeamBuilderPlayer, TeamBuilderTeam } from '../types/team-builder.types';
+import { TeamBuilderConfig, TeamBuilderPlayer, TeamBuilderTeam, DEFAULT_TEAM_BUILDER_CONFIG } from '../types/team-builder.types';
 
 /**
  * Extract ranking values from a player's rankingLastPlaces relation.
@@ -48,13 +48,30 @@ export function getPlayerContribution(player: TeamBuilderPlayer, teamType: 'M' |
  * Validate a team's composition against competition rules.
  * Returns an array of error messages (empty = valid).
  */
-export function validateTeam(team: TeamBuilderTeam): string[] {
+export function validateTeam(team: TeamBuilderTeam, config: TeamBuilderConfig = DEFAULT_TEAM_BUILDER_CONFIG): string[] {
   const errors: string[] = [];
   const regularPlayers = team.players.filter((p) => p.membershipType === 'REGULAR');
 
   // Minimum player count
-  if (regularPlayers.length < 4) {
-    errors.push(`Need at least 4 regular players, have ${regularPlayers.length}`);
+  if (regularPlayers.length < config.minPlayersPerTeam) {
+    errors.push(`Need at least ${config.minPlayersPerTeam} regular players, have ${regularPlayers.length}`);
+  }
+
+  // MX gender minimum checks
+  if (team.type === 'MX') {
+    const maleCount = regularPlayers.filter((p) => p.gender === 'M').length;
+    const femaleCount = regularPlayers.filter((p) => p.gender === 'F').length;
+    if (maleCount < config.minMalesPerMxTeam) {
+      errors.push(`Need at least ${config.minMalesPerMxTeam} male regular player(s), have ${maleCount}`);
+    }
+    if (femaleCount < config.minFemalesPerMxTeam) {
+      errors.push(`Need at least ${config.minFemalesPerMxTeam} female regular player(s), have ${femaleCount}`);
+    }
+  }
+
+  // Maximum player count (regular + backup)
+  if (team.players.length > config.maxPlayersPerTeam) {
+    errors.push(`Maximum ${config.maxPlayersPerTeam} players allowed, have ${team.players.length}`);
   }
 
   const minAllowedIndex = team.selectedSubEvent?.minBaseIndex;
@@ -103,7 +120,7 @@ export function validateTeam(team: TeamBuilderTeam): string[] {
 /**
  * Recalculate team index, per-player warnings, and validation for a team (mutates in place).
  */
-export function recalculateTeam(team: TeamBuilderTeam): TeamBuilderTeam {
+export function recalculateTeam(team: TeamBuilderTeam, config: TeamBuilderConfig = DEFAULT_TEAM_BUILDER_CONFIG): TeamBuilderTeam {
   team.teamIndex = calculateTeamIndex(team.players, team.type);
 
   // Set per-player level warnings
@@ -118,7 +135,7 @@ export function recalculateTeam(team: TeamBuilderTeam): TeamBuilderTeam {
     }
   }
 
-  team.validationErrors = validateTeam(team);
+  team.validationErrors = validateTeam(team, config);
   team.isValid = team.validationErrors.length === 0;
   return team;
 }

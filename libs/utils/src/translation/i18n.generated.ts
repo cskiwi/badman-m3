@@ -105,6 +105,19 @@ export type I18nTranslations = {
                 "removePlayer": string;
                 "dropToRemove": string;
                 "removedPlayers": string;
+                "settings": {
+                    "title": string;
+                    "presenceThreshold": string;
+                    "presenceThresholdHelp": string;
+                    "performanceThreshold": string;
+                    "performanceThresholdHelp": string;
+                    "minPlayersPerTeam": string;
+                    "minPlayersPerTeamHelp": string;
+                    "minMalesPerMxTeam": string;
+                    "minFemalesPerMxTeam": string;
+                    "maxPlayersPerTeam": string;
+                    "maxPlayersPerTeamHelp": string;
+                };
             };
             "winRate": string;
             "winRateTrend": string;

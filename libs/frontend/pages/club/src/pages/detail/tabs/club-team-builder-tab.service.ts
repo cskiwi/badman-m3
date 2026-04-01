@@ -8,9 +8,11 @@ import { sortTeams } from '@app/utils/sorts';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import {
   TEAM_BUILDER_AUTO_SUB_EVENT,
+  TeamBuilderConfig,
   TeamBuilderPlayer,
   TeamBuilderStandingOutcome,
   TeamBuilderTeam,
+  DEFAULT_TEAM_BUILDER_CONFIG,
 } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
 import { MatchResult } from './team-builder/services/player-matcher.service';
@@ -260,6 +262,9 @@ export class ClubTeamBuilderTabService {
   readonly initialized = signal(false);
   readonly loadedFromDraft = signal(false);
   readonly performanceLoading = signal(false);
+
+  // Configurable thresholds
+  readonly config = signal<TeamBuilderConfig>({ ...DEFAULT_TEAM_BUILDER_CONFIG });
 
   // Manually added/removed players
   // slotAdjustments: negative = net removed slots, positive = extra slots added.
@@ -522,6 +527,17 @@ export class ClubTeamBuilderTabService {
 
   nextSeason = computed(() => (this.season() ?? 0) + 1);
 
+  sortedTeams = computed(() => {
+    const teams = this.teams();
+    return [...teams].sort((a, b) => {
+      // Removed teams go last
+      if (a.isMarkedForRemoval !== b.isMarkedForRemoval) {
+        return a.isMarkedForRemoval ? 1 : -1;
+      }
+      return sortTeams(a, b);
+    });
+  });
+
   getClubPlayers(): Player[] {
     const data = this.dataResource.value();
     const memberships = data?.club?.clubPlayerMemberships ?? [];
@@ -547,6 +563,12 @@ export class ClubTeamBuilderTabService {
 
   setSeason(season: number | null) {
     this.season.set(season);
+  }
+
+  updateConfig(config: Partial<TeamBuilderConfig>) {
+    this.config.update((c) => ({ ...c, ...config }));
+    // Re-validate all teams with new config
+    this.teams.set(this.teams().map((t) => this.recalculateManagedTeam(t)));
   }
 
   /**
@@ -734,7 +756,8 @@ export class ClubTeamBuilderTabService {
           }
           const key = `${player.id}:${currentTeamId}`;
           const stats = statsMap.get(key);
-          const perf = evaluatePerformance(stats);
+          const cfg = this.config();
+          const perf = evaluatePerformance(stats, cfg.performanceThreshold, cfg.presenceThreshold);
           return {
             ...player,
             lowPerformance: perf.lowPerformance,
@@ -1111,12 +1134,12 @@ export class ClubTeamBuilderTabService {
     return recalculateTeam({
       ...team,
       selectedSubEvent: subEvent,
-    });
+    }, this.config());
   }
 
   private recalculateManagedTeam(team: TeamBuilderTeam): TeamBuilderTeam {
     if (team.isMarkedForRemoval) {
-      return recalculateTeam(team);
+      return recalculateTeam(team, this.config());
     }
 
     if (team.subEventManuallyOverridden) {
@@ -1125,7 +1148,7 @@ export class ClubTeamBuilderTabService {
 
     const regularPlayerCount = team.players.filter((player) => player.membershipType === 'REGULAR').length;
     const calculatedIndex = calculateTeamIndex(team.players, team.type);
-    const referenceIndex = regularPlayerCount >= 4 ? calculatedIndex : (team.originalTeamIndex ?? calculatedIndex);
+    const referenceIndex = regularPlayerCount >= this.config().minPlayersPerTeam ? calculatedIndex : (team.originalTeamIndex ?? calculatedIndex);
 
     const resolvedSubEvent = this.resolveAutomaticSubEvent(team, referenceIndex);
 
@@ -1500,7 +1523,7 @@ export class ClubTeamBuilderTabService {
       players: [],
       teamIndex: 0,
       isValid: false,
-      validationErrors: ['Need at least 4 regular players, have 0'],
+      validationErrors: [`Need at least ${this.config().minPlayersPerTeam} regular players, have 0`],
     } as unknown as TeamBuilderTeam;
     this.teams.set([...teams, newTeam]);
   }

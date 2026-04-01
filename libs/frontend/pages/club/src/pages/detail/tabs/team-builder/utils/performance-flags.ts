@@ -33,7 +33,11 @@ const LOW_PRESENCE_THRESHOLD = 40;
  * - Performance = win rate (wins / games played)
  * - Presence = attendance (encounters present / total encounters)
  */
-export function evaluatePerformance(stats: EncounterStats | undefined): PerformanceResult {
+export function evaluatePerformance(
+  stats: EncounterStats | undefined,
+  performanceThreshold = LOW_PERFORMANCE_THRESHOLD,
+  presenceThreshold = LOW_PRESENCE_THRESHOLD,
+): PerformanceResult {
   if (!stats || stats.totalEncounters === 0) {
     return { lowPerformance: false, lowPresence: false, performancePercent: 0, presencePercent: 0 };
   }
@@ -42,8 +46,8 @@ export function evaluatePerformance(stats: EncounterStats | undefined): Performa
   const performancePercent = stats.playedGames > 0 ? Math.round((stats.wins / stats.playedGames) * 100) : 0;
 
   return {
-    lowPerformance: stats.playedGames > 0 && performancePercent < LOW_PERFORMANCE_THRESHOLD,
-    lowPresence: presencePercent < LOW_PRESENCE_THRESHOLD,
+    lowPerformance: stats.playedGames > 0 && performancePercent < performanceThreshold,
+    lowPresence: presencePercent < presenceThreshold,
     performancePercent,
     presencePercent,
   };

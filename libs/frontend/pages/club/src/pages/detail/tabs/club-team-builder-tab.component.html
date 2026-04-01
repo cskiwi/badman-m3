@@ -45,6 +45,14 @@
       Separate backups
     </label>
 
+    <p-button
+      icon="pi pi-cog"
+      [label]="'all.club.teamBuilder.settings.title' | translate"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="openSettingsDialog()"
+    />
+
     <div class="flex-1"></div>
 
     <!-- Validation summary -->
@@ -174,7 +182,7 @@
 
     <!-- Team cards grid -->
     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-      @for (team of service.teams(); track team.id) {
+      @for (team of service.sortedTeams(); track team.id) {
         <app-builder-team-card
           [team]="team"
           [sortBy]="sortBy"

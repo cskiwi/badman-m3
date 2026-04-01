@@ -97,7 +97,20 @@
       "addPlayer": "Add player...",
       "removePlayer": "Remove Player",
       "dropToRemove": "Drop here to remove",
-      "removedPlayers": "Removed Players"
+      "removedPlayers": "Removed Players",
+      "settings": {
+        "title": "Settings",
+        "presenceThreshold": "Presence threshold",
+        "presenceThresholdHelp": "Flag players below this attendance percentage",
+        "performanceThreshold": "Performance threshold",
+        "performanceThresholdHelp": "Flag players below this win rate percentage",
+        "minPlayersPerTeam": "Min regular players per team",
+        "minPlayersPerTeamHelp": "Minimum number of regular players for M/F teams",
+        "minMalesPerMxTeam": "Min males in MX team",
+        "minFemalesPerMxTeam": "Min females in MX team",
+        "maxPlayersPerTeam": "Max players per team",
+        "maxPlayersPerTeamHelp": "Maximum total players (regular + backup) per team"
+      }
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"

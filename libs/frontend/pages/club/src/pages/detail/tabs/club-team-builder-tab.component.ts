@@ -24,11 +24,12 @@ import { ClubTeamBuilderTabService } from './club-team-builder-tab.service';
 import { ImportSurveyDialogComponent } from '../../../components/team-builder/import-survey-dialog.component';
 import { EditSurveyDialogComponent } from '../../../components/team-builder/edit-survey-dialog.component';
 import { SubEventDialogComponent } from '../../../components/team-builder/sub-event-dialog.component';
+import { SettingsDialogComponent } from '../../../components/team-builder/settings-dialog.component';
 import { BuilderTeamCardComponent } from '../../../components/team-builder/builder-team-card.component';
 import { PlayerChipComponent } from '../../../components/team-builder/player-chip.component';
 import { Player } from '@app/models';
 import { MatchResult } from './team-builder/services/player-matcher.service';
-import { TEAM_BUILDER_AUTO_SUB_EVENT, TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
+import { TEAM_BUILDER_AUTO_SUB_EVENT, TeamBuilderConfig, TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
 
 @Component({
@@ -160,6 +161,25 @@ export class ClubTeamBuilderTabComponent {
 
   addTeam(type: 'M' | 'F' | 'MX') {
     this.service.addTeam(type);
+  }
+
+  openSettingsDialog() {
+    const ref = this.dialogService.open(SettingsDialogComponent, {
+      header: 'Team Builder Settings',
+      width: '500px',
+      data: { config: this.service.config() },
+    });
+
+    ref?.onClose.subscribe((config: TeamBuilderConfig | null) => {
+      if (config) {
+        this.service.updateConfig(config);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Settings updated',
+          detail: 'Team builder settings have been updated',
+        });
+      }
+    });
   }
 
   onPlayerDroppedOnTeam(event: CdkDragDrop<string>) {

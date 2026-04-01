@@ -286,7 +286,7 @@ Club administrators need a tool to build teams for next season based on player s
 
 ## File Summary
 
-### New Files Created (15 files)
+### New Files Created (16 files)
 
 | #   | File                                                                    | Purpose                                  |
 | --- | ----------------------------------------------------------------------- | ---------------------------------------- |
@@ -303,6 +303,7 @@ Club administrators need a tool to build teams for next season based on player s
 | 11  | `.../components/team-builder/builder-team-card.component.ts` (+html)    | Droppable team column                    |
 | 12  | `.../components/team-builder/import-survey-dialog.component.ts` (+html) | Excel import dialog                      |
 | 13  | `libs/backend/graphql/src/inputs/team-builder.input.ts`                 | GraphQL input types for save             |
+| 14  | `.../components/team-builder/settings-dialog.component.ts` (+html)      | Configurable settings dialog             |
 
 ### Modified Files (8 files)
 
@@ -328,6 +329,22 @@ Club administrators need a tool to build teams for next season based on player s
   - Player chip now shows separate icons: exclamation-triangle for low performance, clock for low presence
   - Popover shows both metrics when flagged: "Low performance (X% win rate)" and "Low presence (Y% attendance)"
   - All default values in service updated across 5 locations
+
+---
+
+### Phase 9: Configurable Settings Dialog
+
+- [x] **9.1** Configurable team builder thresholds via settings dialog
+  - Added `TeamBuilderConfig` interface and `DEFAULT_TEAM_BUILDER_CONFIG` to `team-builder.types.ts`
+  - Configurable values: `presenceThreshold` (default 40%), `performanceThreshold` (default 35%), `minPlayersPerTeam` (default 4), `minMalesPerMxTeam` (default 2), `minFemalesPerMxTeam` (default 2), `maxPlayersPerTeam` (default 12)
+  - Added `config` signal and `updateConfig()` method to `ClubTeamBuilderTabService`
+  - `updateConfig()` re-validates all teams immediately after threshold changes
+  - `evaluatePerformance()` now accepts optional `performanceThreshold` and `presenceThreshold` parameters
+  - `validateTeam()` and `recalculateTeam()` now accept optional `TeamBuilderConfig` parameter
+  - Validation enforces: min regular players, min males/females for MX teams, max players per team
+  - Created `SettingsDialogComponent` at `components/team-builder/settings-dialog.component.ts` (+html)
+  - Settings button (gear icon) added to the toolbar in the team builder tab
+  - Translation keys added for EN, NL, FR
 
 ---
 

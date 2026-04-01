@@ -97,7 +97,20 @@
       "addPlayer": "Ajouter un joueur...",
       "removePlayer": "Supprimer le Joueur",
       "dropToRemove": "Déposez ici pour supprimer",
-      "removedPlayers": "Joueurs Supprimés"
+      "removedPlayers": "Joueurs Supprimés",
+      "settings": {
+        "title": "Paramètres",
+        "presenceThreshold": "Seuil de présence",
+        "presenceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de présence",
+        "performanceThreshold": "Seuil de performance",
+        "performanceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de victoire",
+        "minPlayersPerTeam": "Min joueurs réguliers par équipe",
+        "minPlayersPerTeamHelp": "Nombre minimum de joueurs réguliers pour les équipes H/D",
+        "minMalesPerMxTeam": "Min hommes en équipe MX",
+        "minFemalesPerMxTeam": "Min femmes en équipe MX",
+        "maxPlayersPerTeam": "Max joueurs par équipe",
+        "maxPlayersPerTeamHelp": "Nombre maximum total de joueurs (régulier + remplaçant) par équipe"
+      }
     },
     "winRate": "% Vict.",
     "winRateTrend": "Tendance % Vict."

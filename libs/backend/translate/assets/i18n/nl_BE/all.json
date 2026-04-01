@@ -97,7 +97,20 @@
       "addPlayer": "Speler toevoegen...",
       "removePlayer": "Speler Verwijderen",
       "dropToRemove": "Sleep hier om te verwijderen",
-      "removedPlayers": "Verwijderde Spelers"
+      "removedPlayers": "Verwijderde Spelers",
+      "settings": {
+        "title": "Instellingen",
+        "presenceThreshold": "Aanwezigheidsdrempel",
+        "presenceThresholdHelp": "Markeer spelers onder dit aanwezigheidspercentage",
+        "performanceThreshold": "Prestatiedrempel",
+        "performanceThresholdHelp": "Markeer spelers onder dit winstpercentage",
+        "minPlayersPerTeam": "Min reguliere spelers per team",
+        "minPlayersPerTeamHelp": "Minimum aantal reguliere spelers voor M/V teams",
+        "minMalesPerMxTeam": "Min mannen in MX team",
+        "minFemalesPerMxTeam": "Min vrouwen in MX team",
+        "maxPlayersPerTeam": "Max spelers per team",
+        "maxPlayersPerTeamHelp": "Maximum totaal spelers (regulier + reserve) per team"
+      }
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
