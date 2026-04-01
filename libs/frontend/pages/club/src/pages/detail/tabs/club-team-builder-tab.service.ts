@@ -338,9 +338,10 @@ export class ClubTeamBuilderTabService {
     const activeTeams = this.teams().filter((t) => !t.isMarkedForRemoval);
     const valid = activeTeams.filter((t) => t.isValid).length;
     const invalid = activeTeams.length - valid;
-    const errors = activeTeams.flatMap((t) => t.validationErrors.map((e) => `${t.name}: ${e}`));
+    const teamErrors = activeTeams.flatMap((t) => t.validationErrors.map((e) => `${t.name}: ${e}`));
+    const crossTeamWarnings: string[] = [];
 
-    // Cross-team validation: players assigned as REGULAR to more teams than they want (backups don't count)
+    // Count REGULAR assignments per player across active teams
     const playerTeamCount = new Map<string, { name: string; count: number; desired: number }>();
     for (const team of activeTeams) {
       for (const player of team.players) {
@@ -358,13 +359,14 @@ export class ClubTeamBuilderTabService {
       }
     }
 
+    // Over-assigned: player is REGULAR in more teams than desired
     for (const [, info] of playerTeamCount) {
       if (info.desired > 0 && info.count > info.desired) {
-        errors.push(`${info.name}: wants ${info.desired} team(s), assigned to ${info.count}`);
+        crossTeamWarnings.push(`${info.name}: wants ${info.desired} team(s), assigned to ${info.count}`);
       }
     }
 
-    // Warn about removed players who are below their desired team count
+    // Under-assigned: player has been removed from pool but hasn't filled their desired count
     const adjustments = this.slotAdjustments();
     for (const player of this.removedPlayers()) {
       const desired = player.survey?.desiredTeamCount ?? 0;
@@ -374,11 +376,17 @@ export class ClubTeamBuilderTabService {
       const regularCount = playerTeamCount.get(player.id)?.count ?? 0;
       const available = Math.max(0, desired + adjustment - regularCount);
       if (available === 0 && regularCount < desired) {
-        errors.push(`${player.fullName}: wants ${desired} team(s), but slot(s) removed from pool`);
+        crossTeamWarnings.push(`${player.fullName}: wants ${desired} team(s), but slot(s) removed from pool`);
       }
     }
 
-    return { valid, invalid, total: activeTeams.length, errors };
+    return {
+      valid,
+      invalid,
+      total: activeTeams.length,
+      errors: [...teamErrors, ...crossTeamWarnings],
+      warnings: crossTeamWarnings.length,
+    };
   });
 
   nextSeason = computed(() => (this.season() ?? 0) + 1);
@@ -755,12 +763,19 @@ export class ClubTeamBuilderTabService {
   }
 
   /**
-   * Remove one pool slot for a player. Decrements slotAdjustments by 1.
-   * If dragged from a team or stopping zone, also removes them from that source.
+   * Remove one pool slot for a player. Only decrements slotAdjustments when
+   * removing from the pool or removing a REGULAR team assignment. Removing a
+   * BACKUP from a team only cleans up that assignment — it never consumed a slot.
    */
   removePlayer(playerId: string, fromTeamId?: string | null) {
+    let wasBackupInTeam = false;
+
     // If coming from a team, remove the player from that specific team
     if (fromTeamId && fromTeamId !== 'stopping') {
+      const sourceTeam = this.teams().find((t) => t.id === fromTeamId);
+      const playerInTeam = sourceTeam?.players.find((p) => p.id === playerId);
+      wasBackupInTeam = playerInTeam?.membershipType === 'BACKUP';
+
       const teams = this.teams().map((t) => {
         if (t.id !== fromTeamId) return t;
         const idx = t.players.findIndex((p) => p.id === playerId);
@@ -783,10 +798,13 @@ export class ClubTeamBuilderTabService {
       });
     }
 
-    // Decrement slot adjustment by 1
-    const nextAdjustments = new Map(this.slotAdjustments());
-    nextAdjustments.set(playerId, (nextAdjustments.get(playerId) ?? 0) - 1);
-    this.slotAdjustments.set(nextAdjustments);
+    // Only consume a pool slot when removing from pool or removing a REGULAR assignment.
+    // Removing a BACKUP does not affect pool slots (backups never counted as used slots).
+    if (!wasBackupInTeam) {
+      const nextAdjustments = new Map(this.slotAdjustments());
+      nextAdjustments.set(playerId, (nextAdjustments.get(playerId) ?? 0) - 1);
+      this.slotAdjustments.set(nextAdjustments);
+    }
 
     // Ensure player is in the display list (add once)
     if (!this.removedPlayers().some((p) => p.id === playerId)) {

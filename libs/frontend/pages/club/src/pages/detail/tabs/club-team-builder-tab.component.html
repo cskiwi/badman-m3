@@ -46,9 +46,9 @@
     @if (service.validationSummary(); as summary) {
       <div class="flex items-center gap-2">
         <p-tag
-          [value]="summary.valid + '/' + summary.total + ' valid'"
-          [severity]="summary.invalid === 0 ? 'success' : 'warn'"
-          icon="{{ summary.invalid === 0 ? 'pi pi-check' : 'pi pi-exclamation-triangle' }}"
+          [value]="summary.valid + '/' + summary.total + ' valid' + (summary.warnings > 0 ? ' · ' + summary.warnings + ' warning(s)' : '')"
+          [severity]="summary.invalid > 0 ? 'warn' : summary.warnings > 0 ? 'warn' : 'success'"
+          icon="{{ summary.invalid > 0 || summary.warnings > 0 ? 'pi pi-exclamation-triangle' : 'pi pi-check' }}"
         />
       </div>
     }
