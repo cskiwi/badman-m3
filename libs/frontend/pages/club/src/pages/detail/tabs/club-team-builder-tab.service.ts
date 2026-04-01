@@ -230,6 +230,7 @@ const TEAM_PERFORMANCE_QUERY = gql`
       awayTeamId
       games {
         id
+        winner
         gamePlayerMemberships {
           playerId
           team
@@ -576,29 +577,23 @@ export class ClubTeamBuilderTabService {
     const currentTeams = this.currentTeams();
     if (currentTeams.length === 0) return;
 
-    // Collect draw IDs from current season entries
+    // Collect team IDs and draw IDs from current season teams
+    const teamIds = currentTeams.map((t) => t.id);
     const drawIds = new Set<string>();
-    const teamIdToDrawIds = new Map<string, string[]>();
-
     for (const team of currentTeams) {
-      const entries = team.entries ?? [];
-      for (const entry of entries) {
+      for (const entry of team.entries ?? []) {
         const drawId = (entry as any)?.competitionDraw?.id;
-        if (drawId) {
-          drawIds.add(drawId);
-          if (!teamIdToDrawIds.has(team.id)) {
-            teamIdToDrawIds.set(team.id, []);
-          }
-          teamIdToDrawIds.get(team.id)!.push(drawId);
-        }
+        if (drawId) drawIds.add(drawId);
       }
     }
 
-    if (drawIds.size === 0) return;
+    if (teamIds.length === 0 || drawIds.size === 0) return;
 
     this.performanceLoading.set(true);
 
     try {
+      const drawIdArray = Array.from(drawIds);
+      const now = new Date().toISOString();
       const result = await lastValueFrom(
         this.apollo.query<{
           competitionEncounters: {
@@ -607,6 +602,7 @@ export class ClubTeamBuilderTabService {
             awayTeamId?: string;
             games?: {
               id: string;
+              winner?: number;
               gamePlayerMemberships?: { playerId: string; team?: number }[];
             }[];
           }[];
@@ -614,7 +610,10 @@ export class ClubTeamBuilderTabService {
           query: TEAM_PERFORMANCE_QUERY,
           variables: {
             encounterArgs: {
-              where: [{ drawId: { in: Array.from(drawIds) } }],
+              where: [
+                { homeTeamId: { in: teamIds }, drawId: { in: drawIdArray }, date: { lte: now } },
+                { awayTeamId: { in: teamIds }, drawId: { in: drawIdArray }, date: { lte: now } },
+              ],
             },
           },
           fetchPolicy: 'network-only',
@@ -626,28 +625,59 @@ export class ClubTeamBuilderTabService {
       // Build per-player per-team stats: how many encounters and how many they played in
       const statsMap = new Map<string, EncounterStats>();
 
-      // Map each team's encounters
+      // Map each team's encounters (only count when both homeTeamId and awayTeamId are present)
+      const teamIdsSet = new Set(teamIds);
       const teamEncounterCounts = new Map<string, number>();
       for (const encounter of encounters) {
         const homeId = encounter.homeTeamId;
         const awayId = encounter.awayTeamId;
-        if (homeId) teamEncounterCounts.set(homeId, (teamEncounterCounts.get(homeId) ?? 0) + 1);
-        if (awayId) teamEncounterCounts.set(awayId, (teamEncounterCounts.get(awayId) ?? 0) + 1);
+        // Only count the encounter if both teams are present (skip BYE/forfeit encounters)
+        if (!homeId || !awayId) continue;
+        if (teamIdsSet.has(homeId)) teamEncounterCounts.set(homeId, (teamEncounterCounts.get(homeId) ?? 0) + 1);
+        if (teamIdsSet.has(awayId)) teamEncounterCounts.set(awayId, (teamEncounterCounts.get(awayId) ?? 0) + 1);
 
-        // Determine which players played in this encounter from game player memberships
-        const playersInEncounter = new Set<string>();
+        // Separate players by team (1 = home, 2 = away) using gamePlayerMembership.team
+        // Track which players were present in at least one game (for encounter presence)
+        const homePlayers = new Set<string>();
+        const awayPlayers = new Set<string>();
+        // Track per-player games played and wins/losses in this encounter
+        const playerGames = new Map<string, number>();
+        const playerWins = new Map<string, number>();
+        const playerLosses = new Map<string, number>();
         for (const game of encounter.games ?? []) {
+          const gameWinner = game.winner; // 1 = home wins, 2 = away wins
           for (const membership of game.gamePlayerMemberships ?? []) {
             if (membership.playerId) {
-              playersInEncounter.add(membership.playerId);
+              if (membership.team === 1) {
+                homePlayers.add(membership.playerId);
+                playerGames.set(membership.playerId, (playerGames.get(membership.playerId) ?? 0) + 1);
+                if (gameWinner === 1) {
+                  playerWins.set(membership.playerId, (playerWins.get(membership.playerId) ?? 0) + 1);
+                } else if (gameWinner === 2) {
+                  playerLosses.set(membership.playerId, (playerLosses.get(membership.playerId) ?? 0) + 1);
+                }
+              } else if (membership.team === 2) {
+                awayPlayers.add(membership.playerId);
+                playerGames.set(membership.playerId, (playerGames.get(membership.playerId) ?? 0) + 1);
+                if (gameWinner === 2) {
+                  playerWins.set(membership.playerId, (playerWins.get(membership.playerId) ?? 0) + 1);
+                } else if (gameWinner === 1) {
+                  playerLosses.set(membership.playerId, (playerLosses.get(membership.playerId) ?? 0) + 1);
+                }
+              }
             }
           }
         }
 
-        // Track per-player participation for both home and away teams
-        for (const teamId of [homeId, awayId]) {
-          if (!teamId) continue;
-          for (const playerId of playersInEncounter) {
+        // Track participation only for our club's teams
+        // Each encounter: +1 to totalEncounters for the team, +1 to playedEncounters if player was present
+        const teamPlayerPairs: [string | undefined, Set<string>][] = [
+          [homeId, homePlayers],
+          [awayId, awayPlayers],
+        ];
+        for (const [teamId, players] of teamPlayerPairs) {
+          if (!teamId || !teamIdsSet.has(teamId)) continue;
+          for (const playerId of players) {
             const key = `${playerId}:${teamId}`;
             if (!statsMap.has(key)) {
               statsMap.set(key, {
@@ -655,15 +685,22 @@ export class ClubTeamBuilderTabService {
                 teamId,
                 totalEncounters: 0,
                 playedEncounters: 0,
+                playedGames: 0,
                 wins: 0,
                 losses: 0,
               });
             }
             const stats = statsMap.get(key)!;
+            // Player was present in this encounter (played at least 1 game)
             stats.playedEncounters++;
+            stats.playedGames += playerGames.get(playerId) ?? 0;
+            stats.wins += playerWins.get(playerId) ?? 0;
+            stats.losses += playerLosses.get(playerId) ?? 0;
           }
         }
       }
+
+      console.log('Team performance stats map', statsMap.get("44a91c31-e7c8-45bc-8d19-f3e8fd885b95:ba76bb3b-b081-48ca-8f39-a1edeb72e0d7"));
 
       // Set total encounter counts for each player-team combo
       for (const [key, stats] of statsMap) {
@@ -685,6 +722,14 @@ export class ClubTeamBuilderTabService {
       const updatedTeams = this.teams().map((team) => {
         const currentTeamId = [...teamIdMap.entries()].find(([, builderId]) => builderId === team.id)?.[0] ?? team.id;
         const updatedPlayers = team.players.map((player) => {
+          // Skip performance evaluation for backup players
+          if (player.membershipType === 'BACKUP') {
+            return {
+              ...player,
+              lowPerformance: false,
+              encounterPresencePercent: 0,
+            };
+          }
           const key = `${player.id}:${currentTeamId}`;
           const stats = statsMap.get(key);
           const perf = evaluatePerformance(stats);
