@@ -366,17 +366,28 @@ export class ClubTeamBuilderTabService {
       }
     }
 
-    // Under-assigned: player has been removed from pool but hasn't filled their desired count
+    // Under-assigned: check every player with a survey desired count.
+    // If they have zero remaining pool slots AND fewer regular assignments than desired, warn.
+    // This does not rely on removedPlayers — it derives purely from the slot formula.
     const adjustments = this.slotAdjustments();
-    for (const player of this.removedPlayers()) {
-      const desired = player.survey?.desiredTeamCount ?? 0;
+    const stoppingIds = new Set(this.stoppingPlayers().map((p) => p.id));
+    const allKnownPlayers = [...this.getAllPlayersFromData(), ...this.manuallyAddedPlayers()];
+    const seenIds = new Set<string>();
+
+    for (const player of allKnownPlayers) {
+      if (seenIds.has(player.id)) continue;
+      seenIds.add(player.id);
+      if (stoppingIds.has(player.id)) continue;
+
+      const desired = Number(player.survey?.desiredTeamCount ?? 0);
       if (desired <= 0) continue;
+
       const adjustment = adjustments.get(player.id) ?? 0;
-      if (adjustment >= 0) continue; // not net-removed
       const regularCount = playerTeamCount.get(player.id)?.count ?? 0;
       const available = Math.max(0, desired + adjustment - regularCount);
+
       if (available === 0 && regularCount < desired) {
-        crossTeamWarnings.push(`${player.fullName}: wants ${desired} team(s), but slot(s) removed from pool`);
+        crossTeamWarnings.push(`${player.fullName}: wants ${desired} team(s), only in ${regularCount} (no slots left in pool)`);
       }
     }
 
