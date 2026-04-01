@@ -108,6 +108,7 @@
               [showMembershipToggle]="true"
               [showMixedRanking]="true"
               (membershipToggled)="onMembershipToggle(player.id, $event)"
+              (playerClicked)="playerClicked.emit($event)"
             />
           </div>
         }
@@ -125,6 +126,7 @@
               [showMembershipToggle]="true"
               [showMixedRanking]="true"
               (membershipToggled)="onMembershipToggle(player.id, $event)"
+              (playerClicked)="playerClicked.emit($event)"
             />
           </div>
         }
@@ -144,6 +146,7 @@
                 [showMembershipToggle]="true"
                 [showMixedRanking]="true"
                 (membershipToggled)="onMembershipToggle(player.id, $event)"
+                (playerClicked)="playerClicked.emit($event)"
               />
             </div>
           }
@@ -160,6 +163,7 @@
                 [showMembershipToggle]="true"
                 [showMixedRanking]="true"
                 (membershipToggled)="onMembershipToggle(player.id, $event)"
+                (playerClicked)="playerClicked.emit($event)"
               />
             </div>
           }
@@ -173,6 +177,7 @@
               [showMembershipToggle]="true"
               [showMixedRanking]="false"
               (membershipToggled)="onMembershipToggle(player.id, $event)"
+              (playerClicked)="playerClicked.emit($event)"
             />
           </div>
         }
@@ -187,6 +192,7 @@
                 [showMembershipToggle]="true"
                 [showMixedRanking]="false"
                 (membershipToggled)="onMembershipToggle(player.id, $event)"
+                (playerClicked)="playerClicked.emit($event)"
               />
             </div>
           }

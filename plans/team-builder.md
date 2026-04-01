@@ -251,7 +251,7 @@ Club administrators need a tool to build teams for next season based on player s
 
 - [x] **8.19** Player info popover replacing tooltip
   - Replaced plain-text `pTooltip` on player chip with a PrimeNG `Popover` component
-  - Clicking a player chip opens a rich popover showing:
+  - Hovering a player chip opens a rich popover showing:
     - Player name and full ranking (single - double - mix)
     - All warnings/errors: stopping, low performance, new player, level warning, team count warning
     - Survey remarks always visible (even for stopping players)
@@ -259,6 +259,22 @@ Club administrators need a tool to build teams for next season based on player s
   - Falls back to "No survey data available" when no survey or warnings exist
   - Status icons (warning, star, etc.) remain on the chip for at-a-glance visibility
   - Removed old `tooltipContent` getter and `[pTooltip]` binding from chip container
+
+- [x] **8.20** Edit survey dialog on player double-click
+  - Double-clicking a player chip (in pool, teams, or stopping zone) opens a PrimeNG DynamicDialog
+  - Dialog allows editing all survey fields: teams wanted, preferred day, team preferences (1st/2nd choice for teams 1&2), 75% availability, unavailability periods, comments, and stopping competition flag
+  - Pre-populates existing survey data or shows empty form for players without survey
+  - On save, `updatePlayerSurvey()` in the service propagates changes across all locations (teams, stopping, manually added)
+  - If "stopping competition" is toggled in the dialog, player is automatically moved to/from the stopping pool
+  - `EditSurveyDialogComponent` created at `components/team-builder/edit-survey-dialog.component.ts` (+html)
+  - `playerClicked` output added to `PlayerChipComponent` and `BuilderTeamCardComponent`
+  - Popover only shows 75% availability when the answer is negative (Nee/No), styled in red
+
+- [x] **8.21** Fix Excel import missing survey fields
+  - Root cause: `sheet_to_json` without `defval` omitted keys for empty cells, so `Object.keys(rawRows[0])` only returned headers where the first data row had values — any column empty in the first row was never discovered for any player
+  - Fix: added `defval: ''` to `sheet_to_json` options so all columns produce keys in every row
+  - Reverted `COLUMN_MAP` to exact header patterns from the actual survey Excel (no variations)
+  - Reverted header matching from `includes` back to `startsWith` to prevent false positives (e.g., `'id'` matching inside `'aanwezigheid'`)
 
 ---
 

@@ -20,6 +20,14 @@ export class PlayerChipComponent {
   showMixedRanking = input(true);
 
   membershipToggled = output<'REGULAR' | 'BACKUP'>();
+  playerClicked = output<TeamBuilderPlayer>();
+
+  /** Returns true when the 75% availability answer is negative (i.e., player cannot meet 75%) */
+  isNegative75(value: string | undefined): boolean {
+    if (!value) return false;
+    const v = value.trim().toLowerCase();
+    return v === 'nee' || v === 'no' || v === 'false' || v === 'non';
+  }
 
   toggleMembership() {
     const current = this.player().membershipType;

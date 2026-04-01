@@ -22,9 +22,12 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SubEventTypeEnum } from '@app/models-enum';
 import { ClubTeamBuilderTabService } from './club-team-builder-tab.service';
 import { ImportSurveyDialogComponent } from '../../../components/team-builder/import-survey-dialog.component';
+import { EditSurveyDialogComponent } from '../../../components/team-builder/edit-survey-dialog.component';
 import { BuilderTeamCardComponent } from '../../../components/team-builder/builder-team-card.component';
 import { PlayerChipComponent } from '../../../components/team-builder/player-chip.component';
 import { MatchResult } from './team-builder/services/player-matcher.service';
+import { TeamBuilderPlayer } from './team-builder/types/team-builder.types';
+import { SurveyResponse } from './team-builder/types/survey-response';
 
 @Component({
   selector: 'app-club-team-builder-tab',
@@ -129,6 +132,25 @@ export class ClubTeamBuilderTabComponent {
           severity: 'success',
           summary: 'Survey imported',
           detail: `${matchedCount} matched, ${createdCount} new players created`,
+        });
+      }
+    });
+  }
+
+  openEditSurveyDialog(player: TeamBuilderPlayer) {
+    const ref = this.dialogService.open(EditSurveyDialogComponent, {
+      header: `Edit Survey — ${player.fullName}`,
+      width: '600px',
+      data: { player },
+    });
+
+    ref?.onClose.subscribe((updatedSurvey: SurveyResponse | null) => {
+      if (updatedSurvey) {
+        this.service.updatePlayerSurvey(player.id, updatedSurvey);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Survey updated',
+          detail: `Survey data updated for ${player.fullName}`,
         });
       }
     });

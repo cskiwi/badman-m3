@@ -71,6 +71,7 @@ export class BuilderTeamCardComponent {
   removeTeamClicked = output<void>();
   markForRemovalClicked = output<void>();
   membershipToggled = output<{ playerId: string; type: 'REGULAR' | 'BACKUP' }>();
+  playerClicked = output<TeamBuilderPlayer>();
 
   get indexPercent(): number {
     const t = this.team();

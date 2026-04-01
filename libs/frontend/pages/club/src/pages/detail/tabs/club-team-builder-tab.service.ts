@@ -849,6 +849,68 @@ export class ClubTeamBuilderTabService {
     this.updateTeamCountWarnings();
   }
 
+  /**
+   * Update a player's survey data across all locations (teams, stopping, manually added).
+   * Also updates the isStopping flag and moves the player accordingly.
+   */
+  updatePlayerSurvey(playerId: string, survey: SurveyResponse) {
+    const isStopping = survey.stoppingCompetition;
+
+    // Helper to update player survey in an array
+    const updateInArray = (arr: TeamBuilderPlayer[]) =>
+      arr.map((p) => (p.id === playerId ? { ...p, survey, isStopping } : p));
+
+    // Update in teams
+    const updatedTeams = this.teams().map((team) => {
+      const playerInTeam = team.players.find((p) => p.id === playerId);
+      if (!playerInTeam) return team;
+
+      if (isStopping) {
+        // Remove from team, will be added to stopping list below
+        return recalculateTeam({ ...team, players: team.players.filter((p) => p.id !== playerId) });
+      }
+      return recalculateTeam({ ...team, players: updateInArray(team.players) });
+    });
+
+    // Update in stopping players
+    let stoppingPlayers = this.stoppingPlayers();
+    const wasInStopping = stoppingPlayers.some((p) => p.id === playerId);
+
+    if (isStopping && !wasInStopping) {
+      // Find the player from any source
+      const player =
+        this.teams()
+          .flatMap((t) => t.players)
+          .find((p) => p.id === playerId) ??
+        this.manuallyAddedPlayers().find((p) => p.id === playerId) ??
+        this.getAllPlayersFromData().find((p) => p.id === playerId);
+      if (player) {
+        stoppingPlayers = [...stoppingPlayers, { ...player, survey, isStopping: true, assignedTeamId: undefined }];
+      }
+    } else if (!isStopping && wasInStopping) {
+      // Remove from stopping
+      stoppingPlayers = stoppingPlayers.filter((p) => p.id !== playerId);
+    } else {
+      stoppingPlayers = updateInArray(stoppingPlayers);
+    }
+
+    // Update in manually added players
+    const manuallyAdded = updateInArray(this.manuallyAddedPlayers());
+
+    // Update survey responses signal
+    const surveys = this.surveyResponses().map((s) => (s.matchedPlayerId === playerId ? survey : s));
+    const existingSurvey = surveys.find((s) => s.matchedPlayerId === playerId);
+    if (!existingSurvey) {
+      surveys.push(survey);
+    }
+
+    this.teams.set(updatedTeams);
+    this.stoppingPlayers.set(stoppingPlayers);
+    this.manuallyAddedPlayers.set(manuallyAdded);
+    this.surveyResponses.set(surveys);
+    this.updateTeamCountWarnings();
+  }
+
   addTeam(type: 'M' | 'F' | 'MX') {
     const teams = this.teams();
     const teamNumber = teams.filter((t) => t.type === type && !t.isMarkedForRemoval).length + 1;

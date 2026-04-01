@@ -35,7 +35,7 @@ export class ExcelParserService {
     const buffer = await file.arrayBuffer();
     const workbook = XLSX.read(buffer, { type: 'array' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
+    const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' });
 
     if (rawRows.length === 0) return [];
 
@@ -74,6 +74,7 @@ export class ExcelParserService {
       const normalized = header.trim().toLowerCase();
 
       for (const [field, patterns] of Object.entries(COLUMN_MAP)) {
+        if (map.has(field)) continue;
         if (patterns.some((pattern) => normalized.startsWith(pattern))) {
           map.set(field, header);
           break;

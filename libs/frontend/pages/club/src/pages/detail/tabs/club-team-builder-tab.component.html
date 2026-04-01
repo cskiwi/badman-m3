@@ -97,7 +97,7 @@
         >
           @for (player of filteredUnassignedPlayers; track $index) {
             <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: null }">
-              <app-player-chip [player]="player" />
+              <app-player-chip [player]="player" (playerClicked)="openEditSurveyDialog($event)" />
             </div>
           } @empty {
             <div class="text-center text-muted-color py-4 text-sm">
@@ -116,7 +116,7 @@
         >
           @for (player of service.stoppingPlayers(); track player.id) {
             <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: 'stopping' }">
-              <app-player-chip [player]="player" />
+              <app-player-chip [player]="player" (playerClicked)="openEditSurveyDialog($event)" />
             </div>
           } @empty {
             <div class="text-center text-muted-color py-4 text-sm">
@@ -179,6 +179,7 @@
           (removeTeamClicked)="removeTeam(team.id)"
           (markForRemovalClicked)="markTeamForRemoval(team.id)"
           (membershipToggled)="onMembershipToggled(team.id, $event)"
+          (playerClicked)="openEditSurveyDialog($event)"
         />
       } @empty {
         <div class="col-span-full text-center text-muted-color py-8">

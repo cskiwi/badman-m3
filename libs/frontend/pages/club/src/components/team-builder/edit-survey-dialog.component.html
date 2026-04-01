@@ -1,0 +1,94 @@
+<div class="flex flex-col gap-4">
+  <!-- Player info header -->
+  <div class="flex items-center gap-2 p-3 rounded-border bg-emphasis">
+    <i class="pi pi-user text-lg"></i>
+    <span class="font-bold text-lg">{{ player?.fullName }}</span>
+    <div class="flex gap-1 text-sm text-muted-color ml-auto">
+      <span>{{ player?.single }}</span>
+      <span>-</span>
+      <span>{{ player?.double }}</span>
+      <span>-</span>
+      <span>{{ player?.mix }}</span>
+    </div>
+  </div>
+
+  <!-- Stopping competition -->
+  <div class="flex items-center gap-2">
+    <p-checkbox [(ngModel)]="stoppingCompetition" [binary]="true" inputId="stopping" />
+    <label for="stopping" class="font-semibold text-red-500">Stopping competition</label>
+  </div>
+
+  <!-- General preferences -->
+  <div class="grid grid-cols-2 gap-3">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-muted-color">Teams wanted</label>
+      <p-inputNumber [(ngModel)]="desiredTeamCount" [min]="0" [max]="4" [showButtons]="true" styleClass="w-full" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-semibold text-muted-color">Preferred play day</label>
+      <input type="text" pInputText [(ngModel)]="preferredPlayDay" class="w-full" />
+    </div>
+  </div>
+
+  <!-- Team 1 preferences -->
+  <div class="flex flex-col gap-2">
+    <span class="text-sm font-bold">Team 1 preferences</span>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">1st choice</label>
+        <input type="text" pInputText [(ngModel)]="team1Choice1" class="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">2nd choice</label>
+        <input type="text" pInputText [(ngModel)]="team1Choice2" class="w-full" />
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">Can meet 75%</label>
+        <input type="text" pInputText [(ngModel)]="canMeet75PercentTeam1" class="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">Unavailability periods</label>
+        <input type="text" pInputText [(ngModel)]="unavailabilityPeriodsTeam1" class="w-full" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Team 2 preferences -->
+  <div class="flex flex-col gap-2">
+    <span class="text-sm font-bold">Team 2 preferences</span>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">1st choice</label>
+        <input type="text" pInputText [(ngModel)]="team2Choice1" class="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">2nd choice</label>
+        <input type="text" pInputText [(ngModel)]="team2Choice2" class="w-full" />
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">Can meet 75%</label>
+        <input type="text" pInputText [(ngModel)]="canMeet75PercentTeam2" class="w-full" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm text-muted-color">Unavailability periods</label>
+        <input type="text" pInputText [(ngModel)]="unavailabilityPeriodsTeam2" class="w-full" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments -->
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-semibold text-muted-color">Comments / Remarks</label>
+    <textarea pTextarea [(ngModel)]="comments" [rows]="3" class="w-full" [autoResize]="true"></textarea>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-2 pt-2 border-t border-surface">
+    <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="cancel()" />
+    <p-button label="Save" icon="pi pi-check" (onClick)="save()" />
+  </div>
+</div>

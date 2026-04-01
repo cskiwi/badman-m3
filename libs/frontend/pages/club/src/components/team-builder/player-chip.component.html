@@ -2,6 +2,7 @@
   class="flex items-center gap-2 p-2 rounded-border border border-surface hover:bg-highlight cursor-grab bg-emphasis"
   (mouseenter)="popover.show($event)"
   (mouseleave)="popover.hide()"
+  (dblclick)="playerClicked.emit(player()); $event.stopPropagation()"
 >
   <!-- Player name -->
   <span class="font-medium text-sm flex-1 truncate">{{ player().fullName }}</span>
@@ -44,7 +45,7 @@
       [severity]="player().membershipType === 'REGULAR' ? 'success' : 'warn'"
       [rounded]="true"
       styleClass="text-xs px-1 py-0 cursor-pointer"
-      (click)="toggleMembership(); $event.stopPropagation()"
+      (click)="toggleMembership(); $event.stopPropagation(); $event.preventDefault()"
       pTooltip="Click to toggle Regular/Backup"
       tooltipPosition="top"
     />
@@ -150,14 +151,14 @@
           </div>
         }
 
-        @if (survey.canMeet75PercentTeam1 || survey.canMeet75PercentTeam2) {
+        @if (isNegative75(survey.canMeet75PercentTeam1) || isNegative75(survey.canMeet75PercentTeam2)) {
           <div class="flex flex-col gap-0.5">
-            <span class="text-xs font-semibold text-muted-color">Availability (75%)</span>
-            @if (survey.canMeet75PercentTeam1) {
-              <span class="text-xs">Team 1: {{ survey.canMeet75PercentTeam1 }}</span>
+            <span class="text-xs font-semibold text-red-500">Cannot meet 75%</span>
+            @if (isNegative75(survey.canMeet75PercentTeam1)) {
+              <span class="text-xs text-red-500">Team 1: {{ survey.canMeet75PercentTeam1 }}</span>
             }
-            @if (survey.canMeet75PercentTeam2) {
-              <span class="text-xs">Team 2: {{ survey.canMeet75PercentTeam2 }}</span>
+            @if (isNegative75(survey.canMeet75PercentTeam2)) {
+              <span class="text-xs text-red-500">Team 2: {{ survey.canMeet75PercentTeam2 }}</span>
             }
           </div>
         }
