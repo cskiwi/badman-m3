@@ -1,8 +1,7 @@
 <div
   class="flex items-center gap-2 p-2 rounded-border border border-surface hover:bg-highlight cursor-grab bg-emphasis"
-  [pTooltip]="tooltipContent"
-  tooltipPosition="right"
-  [escape]="false"
+  (mouseenter)="popover.show($event)"
+  (mouseleave)="popover.hide()"
 >
   <!-- Player name -->
   <span class="font-medium text-sm flex-1 truncate">{{ player().fullName }}</span>
@@ -24,7 +23,7 @@
     <i class="pi pi-ban text-primary-emphasis text-xs" [pTooltip]="player().levelWarning!" tooltipPosition="top"></i>
   }
   @if (player().survey?.comments) {
-    <i class="pi pi-comment text-muted-color text-xs" [pTooltip]="player().survey!.comments" tooltipPosition="top"></i>
+    <i class="pi pi-comment text-muted-color text-xs"></i>
   }
 
   <!-- Ranking levels -->
@@ -32,8 +31,10 @@
     <span pTooltip="Single" tooltipPosition="top">{{ player().single }}</span>
     <span>-</span>
     <span pTooltip="Double" tooltipPosition="top">{{ player().double }}</span>
-    <span>-</span>
-    <span pTooltip="Mixed" tooltipPosition="top">{{ player().mix }}</span>
+    @if (showMixedRanking()) {
+      <span>-</span>
+      <span pTooltip="Mixed" tooltipPosition="top">{{ player().mix }}</span>
+    }
   </div>
 
   <!-- Membership type toggle -->
@@ -43,9 +44,140 @@
       [severity]="player().membershipType === 'REGULAR' ? 'success' : 'warn'"
       [rounded]="true"
       styleClass="text-xs px-1 py-0 cursor-pointer"
-      (click)="toggleMembership()"
+      (click)="toggleMembership(); $event.stopPropagation()"
       pTooltip="Click to toggle Regular/Backup"
       tooltipPosition="top"
     />
   }
 </div>
+
+<!-- Player info popover -->
+<p-popover #popover>
+  <div class="flex flex-col gap-2 min-w-64 max-w-80">
+    <!-- Player header -->
+    <div class="flex items-center justify-between">
+      <span class="font-bold">{{ player().fullName }}</span>
+      <div class="flex gap-1 text-xs text-muted-color">
+        <span>{{ player().single }}</span>
+        <span>-</span>
+        <span>{{ player().double }}</span>
+        <span>-</span>
+        <span>{{ player().mix }}</span>
+      </div>
+    </div>
+
+    <!-- Warnings & errors -->
+    @if (player().lowPerformance || player().isStopping || player().levelWarning || player().teamCountWarning || player().isNewPlayer) {
+      <div class="flex flex-col gap-1">
+        @if (player().isStopping) {
+          <div class="flex items-center gap-2 text-red-500 text-xs">
+            <i class="pi pi-times-circle"></i>
+            <span>Stopping competition</span>
+          </div>
+        }
+        @if (player().lowPerformance) {
+          <div class="flex items-center gap-2 text-primary-emphasis text-xs">
+            <i class="pi pi-exclamation-triangle"></i>
+            <span>Low performance this season ({{ player().encounterPresencePercent }}% presence)</span>
+          </div>
+        }
+        @if (player().isNewPlayer) {
+          <div class="flex items-center gap-2 text-primary text-xs">
+            <i class="pi pi-star"></i>
+            <span>New player</span>
+          </div>
+        }
+        @if (player().levelWarning) {
+          <div class="flex items-center gap-2 text-primary-emphasis text-xs">
+            <i class="pi pi-ban"></i>
+            <span>{{ player().levelWarning }}</span>
+          </div>
+        }
+        @if (player().teamCountWarning) {
+          <div class="flex items-center gap-2 text-orange-500 text-xs">
+            <i class="pi pi-users"></i>
+            <span>{{ player().teamCountWarning }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Survey data -->
+    @if (player().survey; as survey) {
+      <div class="border-t border-surface pt-2 flex flex-col gap-1 text-sm">
+        @if (survey.comments) {
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs font-semibold text-muted-color">Remarks</span>
+            <span class="text-sm">{{ survey.comments }}</span>
+          </div>
+        }
+
+        @if (survey.desiredTeamCount) {
+          <div class="flex justify-between">
+            <span class="text-xs text-muted-color">Teams wanted</span>
+            <span class="text-xs">{{ survey.desiredTeamCount }}</span>
+          </div>
+        }
+
+        @if (survey.preferredPlayDay) {
+          <div class="flex justify-between">
+            <span class="text-xs text-muted-color">Preferred day</span>
+            <span class="text-xs">{{ survey.preferredPlayDay }}</span>
+          </div>
+        }
+
+        @if (survey.team1Choice1 || survey.team1Choice2) {
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs font-semibold text-muted-color">Team 1 preference</span>
+            @if (survey.team1Choice1) {
+              <span class="text-xs">1st choice: {{ survey.team1Choice1 }}</span>
+            }
+            @if (survey.team1Choice2) {
+              <span class="text-xs">2nd choice: {{ survey.team1Choice2 }}</span>
+            }
+          </div>
+        }
+
+        @if (survey.team2Choice1 || survey.team2Choice2) {
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs font-semibold text-muted-color">Team 2 preference</span>
+            @if (survey.team2Choice1) {
+              <span class="text-xs">1st choice: {{ survey.team2Choice1 }}</span>
+            }
+            @if (survey.team2Choice2) {
+              <span class="text-xs">2nd choice: {{ survey.team2Choice2 }}</span>
+            }
+          </div>
+        }
+
+        @if (survey.canMeet75PercentTeam1 || survey.canMeet75PercentTeam2) {
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs font-semibold text-muted-color">Availability (75%)</span>
+            @if (survey.canMeet75PercentTeam1) {
+              <span class="text-xs">Team 1: {{ survey.canMeet75PercentTeam1 }}</span>
+            }
+            @if (survey.canMeet75PercentTeam2) {
+              <span class="text-xs">Team 2: {{ survey.canMeet75PercentTeam2 }}</span>
+            }
+          </div>
+        }
+
+        @if (survey.unavailabilityPeriodsTeam1 || survey.unavailabilityPeriodsTeam2) {
+          <div class="flex flex-col gap-0.5">
+            <span class="text-xs font-semibold text-muted-color">Unavailability</span>
+            @if (survey.unavailabilityPeriodsTeam1) {
+              <span class="text-xs">Team 1: {{ survey.unavailabilityPeriodsTeam1 }}</span>
+            }
+            @if (survey.unavailabilityPeriodsTeam2) {
+              <span class="text-xs">Team 2: {{ survey.unavailabilityPeriodsTeam2 }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (!player().survey && !player().lowPerformance && !player().isStopping && !player().levelWarning && !player().teamCountWarning && !player().isNewPlayer) {
+      <span class="text-xs text-muted-color">No survey data available</span>
+    }
+  </div>
+</p-popover>

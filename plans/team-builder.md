@@ -249,6 +249,17 @@ Club administrators need a tool to build teams for next season based on player s
   - M/F team cards remain unchanged (flat list)
   - `sortedPlayers` computed extended with `regularMales`, `regularFemales`, `backupMales`, `backupFemales` arrays
 
+- [x] **8.19** Player info popover replacing tooltip
+  - Replaced plain-text `pTooltip` on player chip with a PrimeNG `Popover` component
+  - Clicking a player chip opens a rich popover showing:
+    - Player name and full ranking (single - double - mix)
+    - All warnings/errors: stopping, low performance, new player, level warning, team count warning
+    - Survey remarks always visible (even for stopping players)
+    - Full survey data: teams wanted, preferred day, team preferences, availability, unavailability
+  - Falls back to "No survey data available" when no survey or warnings exist
+  - Status icons (warning, star, etc.) remain on the chip for at-a-glance visibility
+  - Removed old `tooltipContent` getter and `[pTooltip]` binding from chip container
+
 ---
 
 ## File Summary
