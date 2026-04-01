@@ -2,7 +2,7 @@
 description: 'Expert at designing and creating VS Code custom agents with optimal configurations'
 name: Agent creator
 argument-hint: Describe the agent role, purpose, and required capabilities
-tools: [vscode, read, edit, search, web]
+tools: [vscode, read, edit, search, web, 'vscode/askQuestions']
 ---
 
 # Agent creator

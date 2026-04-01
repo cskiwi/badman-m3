@@ -2,7 +2,7 @@
 description: Migrates Angular frontend projects to the latest compatible Angular, PrimeNG, and @ambe-web-framework versions. Handles both incremental upgrades and full legacy migrations from pre-Angular 14.
 name: Frontend Migrator
 argument-hint: Leave empty for a full project plan, or provide a feature/component path (e.g. src/app/features/invoices) to migrate that scope only
-tools: [vscode, read, edit, execute, search, web, 'primeng/*', 'agent']
+tools: [vscode, read, edit, execute, search, web, 'primeng/*', 'agent', 'vscode/askQuestions']
 handoffs:
   - label: Migrate next feature
     agent: Frontend Migrator

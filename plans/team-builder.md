@@ -19,7 +19,7 @@ Club administrators need a tool to build teams for next season based on player s
 ### Architecture Decisions
 
 - **Client-side Excel parsing** using `xlsx` (SheetJS) -- no backend upload infrastructure needed
-- **Player matching** first matches against club players locally, then falls back to the global search API (`GET /api/v1/search?query=<name>&types=players`) + GraphQL for full player data with rankings. Manual search in the dialog also prioritizes club players before global results (same autocomplete pattern as `list-games.component.html`)
+- **Player matching** first checks all active players linked to the club locally, including normalized `memberId` fallback matching via survey identifiers, then falls back to the global search API (`GET /api/v1/search?query=<name>&types=players`) + GraphQL for full player data with rankings. Manual search in the dialog also prioritizes club players before global results (same autocomplete pattern as `list-games.component.html`)
 - **Drag-and-drop** via `@angular/cdk/drag-drop` (already in dependencies) -- better cross-container support than PrimeNG DragDrop
 - **State management** via Angular signals in a dedicated service
 - **Save** via a new `saveTeamBuilder` GraphQL mutation that batch-creates/updates teams and memberships for next season
@@ -47,7 +47,7 @@ Club administrators need a tool to build teams for next season based on player s
 
 - [x] **2.2** Create player matcher service with club-first matching
   - `libs/frontend/pages/club/src/pages/detail/tabs/team-builder/services/player-matcher.service.ts`
-  - `matchPlayers()` first matches survey names against club players locally, then falls back to global search API for unmatched
+  - `matchPlayers()` first checks all active club players locally, then tries normalized `memberId` matches from `externalId` and `linkedContactIds`, then falls back to global search API for unmatched
   - `searchPlayerByName()` returns club player matches first, then appends global API results (deduplicated)
   - `MatchResult` includes `createNew` flag for unmatched players to be created in the database
 
@@ -98,7 +98,7 @@ Club administrators need a tool to build teams for next season based on player s
 
 - [x] **5.1** Create team builder tab service
   - `libs/frontend/pages/club/src/pages/detail/tabs/club-team-builder-tab.service.ts`
-  - `processImportResults()` handles both matched and create-new results: calls `createPlayersForTeamBuilder` mutation for unmatched entries, then applies all survey data via `applySurveyData()`
+  - `processImportResults()` handles both matched and create-new results: calls `createPlayersForTeamBuilder` mutation for unmatched entries, caches the matched GraphQL player payloads for non-team players, then applies all survey data via `applySurveyData()`
 
 - [x] **5.2** Create team builder tab component
   - `libs/frontend/pages/club/src/pages/detail/tabs/club-team-builder-tab.component.ts`
@@ -220,6 +220,17 @@ Club administrators need a tool to build teams for next season based on player s
   - Import summary shows count of matched + newly created players
   - Translation keys added for EN, NL, FR: `toCreate`, `createNew`, `willCreate`, `total`
 
+- [x] **8.13** Match club-only survey players before treating them as new
+  - Team builder data now loads all active club players for import matching, not only players in the current season teams
+  - Member ID matching normalizes `externalId`, `linkedContactIds`, and `player.memberId` to survive punctuation and special-character differences
+  - Survey-matched players outside the current season teams retain their GraphQL `rankingLastPlaces` when they are added to the builder pool
+
+- [x] **8.14** Resolve club memberships on `Club` for team-builder import
+  - Added `Club.clubPlayerMemberships` resolver support in GraphQL so the team builder can load local club players from the single-club query without null-field runtime errors
+
+- [x] **8.15** Fix `Club.clubPlayerMemberships` schema metadata
+  - Corrected the `Club` model field to expose `clubPlayerMemberships` as a list and fixed the TypeORM inverse relation to `membership.club`, preventing GraphQL from treating an array result as a single `ClubPlayerMembership`
+
 ---
 
 ## File Summary
@@ -266,6 +277,7 @@ Club administrators need a tool to build teams for next season based on player s
    - Navigate to club detail page
    - Verify Team Builder tab appears (only for users with edit permission)
    - Click "Import Survey" -> upload Excel -> verify parsed rows and player matching
+  - Verify a club member without a current-team assignment is matched locally and shows the latest ranking in the pool
    - Verify unassigned players appear in pool with ranking levels
    - Drag players between teams -> verify teamIndex recalculates in real-time
    - Verify validation errors appear when index exceeds max

@@ -1,7 +1,7 @@
 ---
 description: Generates and maintains C# XML documentation comments for .NET APIs following official standards and best practices.
 name: ".NET XML Doc Writer"
-tools: [vscode, read, edit, search]
+tools: [vscode, read, edit, search, 'vscode/askQuestions']
 ---
 
 # .NET XML Documentation Writer Agent

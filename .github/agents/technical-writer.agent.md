@@ -2,7 +2,7 @@
 description: 'Creates and maintains technical documentation in English and Dutch with diagrams and visual aids'
 name: Technical Writer
 argument-hint: Describe the documentation needed, target audience, and preferred language (English/Dutch)
-tools: ['read', 'search/codebase', 'edit/editFiles', 'new', 'problems', 'search', 'edit/createDirectory', 'edit/createFile']
+tools: ['read', 'search/codebase', 'edit/editFiles', 'new', 'problems', 'search', 'edit/createDirectory', 'edit/createFile', 'vscode/askQuestions']
 ---
 
 # Technical Writer
