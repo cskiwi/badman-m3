@@ -39,18 +39,31 @@ export class BuilderTeamCardComponent {
 
     const compareFn = (a: TeamBuilderPlayer, b: TeamBuilderPlayer) => {
       if (sort === 'index') {
-        return getPlayerContribution(b, teamType) - getPlayerContribution(a, teamType);
+        return getPlayerContribution(a, teamType) - getPlayerContribution(b, teamType);
       }
       return a.lastName.localeCompare(b.lastName);
     };
 
+    let regulars: TeamBuilderPlayer[];
+    let backups: TeamBuilderPlayer[];
+
     if (this.separateBackups()) {
-      const regulars = players.filter((p) => p.membershipType === 'REGULAR').sort(compareFn);
-      const backups = players.filter((p) => p.membershipType === 'BACKUP').sort(compareFn);
-      return { regulars, backups };
+      regulars = players.filter((p) => p.membershipType === 'REGULAR').sort(compareFn);
+      backups = players.filter((p) => p.membershipType === 'BACKUP').sort(compareFn);
+    } else {
+      regulars = players.sort(compareFn);
+      backups = [];
     }
 
-    return { regulars: players.sort(compareFn), backups: [] as TeamBuilderPlayer[] };
+    const isMX = teamType === 'MX';
+    return {
+      regulars,
+      backups,
+      regularMales: isMX ? regulars.filter((p) => p.gender === 'M') : [],
+      regularFemales: isMX ? regulars.filter((p) => p.gender === 'F') : [],
+      backupMales: isMX ? backups.filter((p) => p.gender === 'M') : [],
+      backupFemales: isMX ? backups.filter((p) => p.gender === 'F') : [],
+    };
   });
 
   playerDropped = output<CdkDragDrop<string>>();

@@ -9,6 +9,7 @@ Club administrators need a tool to build teams for next season based on player s
 - **Keep existing teams** with their ranking where possible
 - **Promotion**: if a team promotes, reflect that in the new season
 - **Min level tracking**: ensure a player can remain at the subevent level
+- **Ranking display**: M/F doubles team cards show only single + double rankings; MX cards also show mixed ranking
 - **Team index validation**: `teamIndex <= maxBaseIndex` from `CompetitionSubEvent`
   - M/F subevents: sum of (single + double) of the 4 highest-indexed (weakest) regular players
   - MX subevents: sum of (single + double + mix) of the 4 highest-indexed regular players
@@ -230,6 +231,23 @@ Club administrators need a tool to build teams for next season based on player s
 
 - [x] **8.15** Fix `Club.clubPlayerMemberships` schema metadata
   - Corrected the `Club` model field to expose `clubPlayerMemberships` as a list and fixed the TypeORM inverse relation to `membership.club`, preventing GraphQL from treating an array result as a single `ClubPlayerMembership`
+
+- [x] **8.16** Tighten internal name matching around initials
+  - Local club matching now prefers an exact full-name hit before fuzzy matching
+  - Fuzzy matching ignores one-letter initials as substring matches, preventing names like `Franky R. Mercy` from falsely matching unrelated names that merely contain the letter `r`
+  - Added a regression spec covering the Franky/Mirko/Karam mismatch case and the intended `Franky Mercy` → `Franky R. Mercy` local match
+
+- [x] **8.17** Contextual ranking display for doubles teams
+  - `app-player-chip` now supports hiding the mixed ranking
+  - Builder team cards show only single and double rankings for M/F doubles teams
+  - MX teams and player pool cards continue to show single, double, and mixed rankings
+
+- [x] **8.18** Gender split display for mixed (MX) teams
+  - MX team cards now visually separate males and females with labeled sections
+  - Each section shows a gender icon (♂/♀) and count (e.g. "Males (3)", "Females (2)")
+  - Regulars and backups each have their own male/female subsections
+  - M/F team cards remain unchanged (flat list)
+  - `sortedPlayers` computed extended with `regularMales`, `regularFemales`, `backupMales`, `backupFemales` arrays
 
 ---
 

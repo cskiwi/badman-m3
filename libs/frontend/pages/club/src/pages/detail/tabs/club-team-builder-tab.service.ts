@@ -8,11 +8,15 @@ import { sortTeams } from '@app/utils/sorts';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
-import { MatchResult } from './team-builder/services/player-matcher.service';
+import { MatchResult, MatchedPlayer } from './team-builder/services/player-matcher.service';
 import { recalculateTeam } from './team-builder/utils/team-index-calculator';
 
 const TEAM_BUILDER_DATA_QUERY = gql`
-  query TeamBuilderData($clubId: ID!, $season: Float!) {
+  query TeamBuilderData(
+    $clubId: ID!
+    $season: Float!
+    $rankingLastPlacesArgs: RankingLastPlaceArgs
+  ) {
     club(id: $clubId) {
       id
       name
@@ -20,6 +24,26 @@ const TEAM_BUILDER_DATA_QUERY = gql`
       fullName
       abbreviation
       useForTeamName
+      clubPlayerMemberships {
+        id
+        active
+        player {
+          id
+          slug
+          fullName
+          firstName
+          lastName
+          gender
+          memberId
+          rankingLastPlaces(args: $rankingLastPlacesArgs) {
+            id
+            single
+            double
+            mix
+            systemId
+          }
+        }
+      }
       teams(args: { where: [{ season: { eq: $season } }], take: 50, order: { name: ASC } }) {
         id
         name
@@ -46,7 +70,7 @@ const TEAM_BUILDER_DATA_QUERY = gql`
             lastName
             gender
             memberId
-            rankingLastPlaces {
+            rankingLastPlaces(args: $rankingLastPlacesArgs) {
               id
               single
               double
@@ -172,6 +196,11 @@ interface TeamBuilderData {
     fullName?: string;
     abbreviation: string;
     useForTeamName: UseForTeamName;
+    clubPlayerMemberships?: {
+      id: string;
+      active?: boolean;
+      player?: MatchedPlayer | null;
+    }[];
     teams: (Team & {
       entries?: {
         id: string;
@@ -201,6 +230,7 @@ export class ClubTeamBuilderTabService {
   readonly teams = signal<TeamBuilderTeam[]>([]);
   readonly stoppingPlayers = signal<TeamBuilderPlayer[]>([]);
   readonly surveyResponses = signal<SurveyResponse[]>([]);
+  readonly matchedImportPlayers = signal<MatchedPlayer[]>([]);
   readonly initialized = signal(false);
   readonly loadedFromDraft = signal(false);
 
@@ -219,6 +249,7 @@ export class ClubTeamBuilderTabService {
     params: () => ({
       clubId: this.clubId(),
       season: this.season(),
+      systemId: this.systemId(),
     }),
     loader: async ({ params, abortSignal }) => {
       if (!params.clubId || !params.season) return null;
@@ -227,7 +258,13 @@ export class ClubTeamBuilderTabService {
         const result = await lastValueFrom(
           this.apollo.query<TeamBuilderData>({
             query: TEAM_BUILDER_DATA_QUERY,
-            variables: { clubId: params.clubId, season: params.season },
+            variables: {
+              clubId: params.clubId,
+              season: params.season,
+              rankingLastPlacesArgs: params.systemId
+                ? { where: [{ systemId: { eq: params.systemId } }] }
+                : undefined,
+            },
             context: { signal: abortSignal },
             fetchPolicy: 'network-only',
           }),
@@ -417,30 +454,31 @@ export class ClubTeamBuilderTabService {
   nextSeason = computed(() => (this.season() ?? 0) + 1);
 
   /**
-   * Get all club players from current season teams as MatchedPlayer objects,
-   * suitable for passing to PlayerMatcherService for local matching.
+   * Get all active club players as MatchedPlayer objects, suitable for
+   * passing to PlayerMatcherService for local matching.
    */
   getClubPlayers(): { id: string; fullName: string; firstName: string; lastName: string; gender?: string; slug?: string; memberId?: string }[] {
     const data = this.dataResource.value();
-    if (!data?.club?.teams) return [];
+    const memberships = data?.club?.clubPlayerMemberships ?? [];
+    if (memberships.length === 0) return [];
 
     const playerMap = new Map<string, { id: string; fullName: string; firstName: string; lastName: string; gender?: string; slug?: string; memberId?: string }>();
 
-    for (const team of data.club.teams) {
-      for (const m of (team as any).teamPlayerMemberships ?? []) {
-        const player = m.player;
-        if (!player || playerMap.has(player.id)) continue;
+    for (const membership of memberships) {
+      if (membership.active === false || !membership.player) continue;
 
-        playerMap.set(player.id, {
-          id: player.id,
-          fullName: player.fullName ?? '',
-          firstName: player.firstName ?? '',
-          lastName: player.lastName ?? '',
-          gender: player.gender,
-          slug: player.slug,
-          memberId: player.memberId,
-        });
-      }
+      const player = membership.player;
+      if (!player?.id || playerMap.has(player.id)) continue;
+
+      playerMap.set(player.id, {
+        id: player.id,
+        fullName: player.fullName ?? '',
+        firstName: player.firstName ?? '',
+        lastName: player.lastName ?? '',
+        gender: player.gender,
+        slug: player.slug,
+        memberId: player.memberId,
+      });
     }
 
     return Array.from(playerMap.values());
@@ -724,12 +762,28 @@ export class ClubTeamBuilderTabService {
       }
     }
 
+    this.matchedImportPlayers.set(
+      this.collectMatchedImportPlayers(results),
+    );
+
     // Collect surveys from all matched + newly created results
     const surveys = results
       .filter((r) => r.player)
       .map((r) => r.survey);
 
     this.applySurveyData(surveys);
+  }
+
+  private collectMatchedImportPlayers(results: MatchResult[]): MatchedPlayer[] {
+    const playerMap = new Map<string, MatchedPlayer>();
+
+    for (const result of results) {
+      if (result.player) {
+        playerMap.set(result.player.id, result.player);
+      }
+    }
+
+    return Array.from(playerMap.values());
   }
 
   movePlayer(playerId: string, fromTeamId: string | null, toTeamId: string | null) {
@@ -1153,6 +1207,9 @@ export class ClubTeamBuilderTabService {
 
     const playerMap = new Map<string, TeamBuilderPlayer>();
     const currentPlayerIds = this.getCurrentSeasonPlayerIds();
+    const importedPlayerMap = new Map(
+      this.matchedImportPlayers().map((player) => [player.id, player]),
+    );
 
     for (const team of data.club.teams) {
       for (const m of (team as any).teamPlayerMemberships ?? []) {
@@ -1184,23 +1241,28 @@ export class ClubTeamBuilderTabService {
 
     // Also add survey-matched players not in any current team
     for (const s of this.surveyResponses()) {
-      if (s.matchedPlayerId && !playerMap.has(s.matchedPlayerId)) {
-        playerMap.set(s.matchedPlayerId, {
-          id: s.matchedPlayerId,
-          fullName: s.matchedPlayerName ?? s.fullName,
-          firstName: '',
-          lastName: '',
-          single: 0,
-          double: 0,
-          mix: 0,
-          survey: s,
-          lowPerformance: false,
-          encounterPresencePercent: 0,
-          isNewPlayer: true,
-          isStopping: s.stoppingCompetition,
-          membershipType: 'REGULAR',
-        });
-      }
+      if (!s.matchedPlayerId || playerMap.has(s.matchedPlayerId)) continue;
+
+      const importedPlayer = importedPlayerMap.get(s.matchedPlayerId);
+      const ranking = importedPlayer?.rankingLastPlaces?.[0];
+
+      playerMap.set(s.matchedPlayerId, {
+        id: s.matchedPlayerId,
+        fullName: importedPlayer?.fullName ?? s.matchedPlayerName ?? s.fullName,
+        firstName: importedPlayer?.firstName ?? s.firstName,
+        lastName: importedPlayer?.lastName ?? s.lastName,
+        gender: importedPlayer?.gender as 'M' | 'F' | undefined,
+        slug: importedPlayer?.slug,
+        single: ranking?.single ?? 0,
+        double: ranking?.double ?? 0,
+        mix: ranking?.mix ?? 0,
+        survey: s,
+        lowPerformance: false,
+        encounterPresencePercent: 0,
+        isNewPlayer: !currentPlayerIds.has(s.matchedPlayerId),
+        isStopping: s.stoppingCompetition,
+        membershipType: 'REGULAR',
+      });
     }
 
     return Array.from(playerMap.values());

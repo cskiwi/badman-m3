@@ -95,19 +95,101 @@
       (cdkDropListDropped)="onDrop($event)"
       class="flex flex-col gap-1 min-h-24 p-2 rounded-border border-2 border-dashed border-surface bg-emphasis"
     >
-      @for (player of sortedPlayers().regulars; track player.id) {
-        <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
-          <app-player-chip [player]="player" [showMembershipToggle]="true" (membershipToggled)="onMembershipToggle(player.id, $event)" />
+      @if (team().type === 'MX') {
+        <!-- MX teams: split by gender -->
+        <div class="flex items-center gap-1 mb-1">
+          <i class="pi pi-mars text-blue-500 text-xs"></i>
+          <span class="text-xs font-semibold text-muted-color">Males ({{ sortedPlayers().regularMales.length }})</span>
         </div>
-      }
-      @if (sortedPlayers().backups.length > 0) {
-        <div class="border-t border-surface my-1 pt-1">
-          <span class="text-xs text-muted-color">Backups</span>
-        </div>
-        @for (player of sortedPlayers().backups; track player.id) {
+        @for (player of sortedPlayers().regularMales; track player.id) {
           <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
-            <app-player-chip [player]="player" [showMembershipToggle]="true" (membershipToggled)="onMembershipToggle(player.id, $event)" />
+            <app-player-chip
+              [player]="player"
+              [showMembershipToggle]="true"
+              [showMixedRanking]="true"
+              (membershipToggled)="onMembershipToggle(player.id, $event)"
+            />
           </div>
+        }
+
+        <div class="border-t border-surface my-1 pt-1">
+          <div class="flex items-center gap-1 mb-1">
+            <i class="pi pi-venus text-pink-500 text-xs"></i>
+            <span class="text-xs font-semibold text-muted-color">Females ({{ sortedPlayers().regularFemales.length }})</span>
+          </div>
+        </div>
+        @for (player of sortedPlayers().regularFemales; track player.id) {
+          <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
+            <app-player-chip
+              [player]="player"
+              [showMembershipToggle]="true"
+              [showMixedRanking]="true"
+              (membershipToggled)="onMembershipToggle(player.id, $event)"
+            />
+          </div>
+        }
+
+        @if (sortedPlayers().backups.length > 0) {
+          <div class="border-t-2 border-surface my-2 pt-1">
+            <span class="text-xs text-muted-color font-bold">Backups</span>
+          </div>
+          <div class="flex items-center gap-1 mb-1">
+            <i class="pi pi-mars text-blue-500 text-xs"></i>
+            <span class="text-xs font-semibold text-muted-color">Males ({{ sortedPlayers().backupMales.length }})</span>
+          </div>
+          @for (player of sortedPlayers().backupMales; track player.id) {
+            <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
+              <app-player-chip
+                [player]="player"
+                [showMembershipToggle]="true"
+                [showMixedRanking]="true"
+                (membershipToggled)="onMembershipToggle(player.id, $event)"
+              />
+            </div>
+          }
+          <div class="border-t border-surface my-1 pt-1">
+            <div class="flex items-center gap-1 mb-1">
+              <i class="pi pi-venus text-pink-500 text-xs"></i>
+              <span class="text-xs font-semibold text-muted-color">Females ({{ sortedPlayers().backupFemales.length }})</span>
+            </div>
+          </div>
+          @for (player of sortedPlayers().backupFemales; track player.id) {
+            <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
+              <app-player-chip
+                [player]="player"
+                [showMembershipToggle]="true"
+                [showMixedRanking]="true"
+                (membershipToggled)="onMembershipToggle(player.id, $event)"
+              />
+            </div>
+          }
+        }
+      } @else {
+        <!-- M/F teams: flat list -->
+        @for (player of sortedPlayers().regulars; track player.id) {
+          <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
+            <app-player-chip
+              [player]="player"
+              [showMembershipToggle]="true"
+              [showMixedRanking]="false"
+              (membershipToggled)="onMembershipToggle(player.id, $event)"
+            />
+          </div>
+        }
+        @if (sortedPlayers().backups.length > 0) {
+          <div class="border-t border-surface my-1 pt-1">
+            <span class="text-xs text-muted-color">Backups</span>
+          </div>
+          @for (player of sortedPlayers().backups; track player.id) {
+            <div cdkDrag [cdkDragData]="{ playerId: player.id, fromTeamId: team().id }">
+              <app-player-chip
+                [player]="player"
+                [showMembershipToggle]="true"
+                [showMixedRanking]="false"
+                (membershipToggled)="onMembershipToggle(player.id, $event)"
+              />
+            </div>
+          }
         }
       }
       @if (team().players.length === 0) {
