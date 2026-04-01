@@ -8,6 +8,7 @@ import { sortTeams } from '@app/utils/sorts';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { TeamBuilderPlayer, TeamBuilderTeam } from './team-builder/types/team-builder.types';
 import { SurveyResponse } from './team-builder/types/survey-response';
+import { MatchResult } from './team-builder/services/player-matcher.service';
 import { recalculateTeam } from './team-builder/utils/team-index-calculator';
 
 const TEAM_BUILDER_DATA_QUERY = gql`
@@ -118,6 +119,19 @@ const NEXT_SEASON_TEAMS_QUERY = gql`
 const SAVE_TEAM_BUILDER = gql`
   mutation SaveTeamBuilder($clubId: ID!, $season: Float!, $teams: [TeamBuilderTeamInput!]!) {
     saveTeamBuilder(clubId: $clubId, season: $season, teams: $teams)
+  }
+`;
+
+const CREATE_PLAYERS_FOR_TEAM_BUILDER = gql`
+  mutation CreatePlayersForTeamBuilder($clubId: ID!, $players: [CreatePlayerForTeamBuilderInput!]!) {
+    createPlayersForTeamBuilder(clubId: $clubId, players: $players) {
+      id
+      fullName
+      firstName
+      lastName
+      gender
+      slug
+    }
   }
 `;
 
@@ -661,6 +675,61 @@ export class ClubTeamBuilderTabService {
     this.teams.set(updatedTeams);
     this.stoppingPlayers.set(newStoppingPlayers);
     this.updateTeamCountWarnings();
+  }
+
+  /**
+   * Process import dialog results: create new players for unmatched entries marked
+   * as "create new", then apply all survey data.
+   */
+  async processImportResults(results: MatchResult[]) {
+    const clubId = this.clubId();
+    const toCreate = results.filter((r) => !r.player && r.createNew && r.survey.firstName && r.survey.lastName);
+
+    if (toCreate.length > 0 && clubId) {
+      try {
+        const playersInput = toCreate.map((r) => ({
+          firstName: r.survey.firstName,
+          lastName: r.survey.lastName,
+          gender: undefined as string | undefined,
+        }));
+
+        const result = await lastValueFrom(
+          this.apollo.mutate<{
+            createPlayersForTeamBuilder: { id: string; fullName: string; firstName: string; lastName: string; gender?: string; slug?: string }[];
+          }>({
+            mutation: CREATE_PLAYERS_FOR_TEAM_BUILDER,
+            variables: { clubId, players: playersInput },
+          }),
+        );
+
+        const createdPlayers = result.data?.createPlayersForTeamBuilder ?? [];
+
+        // Match created players back to survey entries by index
+        for (let i = 0; i < toCreate.length && i < createdPlayers.length; i++) {
+          const created = createdPlayers[i];
+          toCreate[i].survey.matchedPlayerId = created.id;
+          toCreate[i].survey.matchedPlayerName = created.fullName;
+          toCreate[i].survey.matchConfidence = 'high';
+          toCreate[i].player = {
+            id: created.id,
+            fullName: created.fullName,
+            firstName: created.firstName,
+            lastName: created.lastName,
+            gender: created.gender,
+            slug: created.slug,
+          };
+        }
+      } catch (err) {
+        console.error('Failed to create new players', err);
+      }
+    }
+
+    // Collect surveys from all matched + newly created results
+    const surveys = results
+      .filter((r) => r.player)
+      .map((r) => r.survey);
+
+    this.applySurveyData(surveys);
   }
 
   movePlayer(playerId: string, fromTeamId: string | null, toTeamId: string | null) {

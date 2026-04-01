@@ -25,6 +25,7 @@ export interface MatchResult {
   player: MatchedPlayer | null;
   confidence: 'high' | 'medium' | 'low' | 'none';
   editing?: boolean;
+  createNew?: boolean;
 }
 
 const PLAYERS_BY_IDS_QUERY = gql`

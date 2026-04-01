@@ -85,6 +85,10 @@ export type I18nTranslations = {
                     "chooseFile": string;
                     "matching": string;
                     "matched": string;
+                    "total": string;
+                    "toCreate": string;
+                    "createNew": string;
+                    "willCreate": string;
                     "surveyName": string;
                     "matchedPlayer": string;
                     "confidence": string;

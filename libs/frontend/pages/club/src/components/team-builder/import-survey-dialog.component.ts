@@ -38,6 +38,7 @@ export class ImportSurveyDialogComponent {
 
   readonly systemId: string = this.config.data?.systemId ?? '';
   readonly clubPlayers: MatchedPlayer[] = this.config.data?.clubPlayers ?? [];
+  readonly clubId: string = this.config.data?.clubId ?? '';
 
   step = signal<'upload' | 'matching' | 'review'>('upload');
   loading = signal(false);
@@ -89,19 +90,29 @@ export class ImportSurveyDialogComponent {
     }
   }
 
+  toggleCreateNew(result: MatchResult) {
+    result.createNew = !result.createNew;
+    this.matchResults.set([...this.matchResults()]);
+  }
+
   get matchedCount(): number {
     return this.matchResults().filter((r) => r.player).length;
+  }
+
+  get createNewCount(): number {
+    return this.matchResults().filter((r) => !r.player && r.createNew).length;
   }
 
   get totalCount(): number {
     return this.matchResults().length;
   }
 
+  get actionableCount(): number {
+    return this.matchedCount + this.createNewCount;
+  }
+
   confirm() {
-    const surveys = this.matchResults()
-      .filter((r) => r.player)
-      .map((r) => r.survey);
-    this.dialogRef.close(surveys);
+    this.dialogRef.close(this.matchResults());
   }
 
   cancel() {

@@ -49,13 +49,16 @@ Club administrators need a tool to build teams for next season based on player s
   - `libs/frontend/pages/club/src/pages/detail/tabs/team-builder/services/player-matcher.service.ts`
   - `matchPlayers()` first matches survey names against club players locally, then falls back to global search API for unmatched
   - `searchPlayerByName()` returns club player matches first, then appends global API results (deduplicated)
+  - `MatchResult` includes `createNew` flag for unmatched players to be created in the database
 
 - [x] **2.3** Create import survey dialog component with inline player search
   - `libs/frontend/pages/club/src/components/team-builder/import-survey-dialog.component.ts`
   - `libs/frontend/pages/club/src/components/team-builder/import-survey-dialog.component.html`
-  - Receives `clubPlayers` via dialog config data for local-first matching
+  - Receives `clubPlayers` and `clubId` via dialog config data for local-first matching
   - Uses `p-autoComplete` (same pattern as ranking breakdown list-games) for manual player search
   - Matched players can be overridden via edit button that shows the autocomplete
+  - Unmatched players can be marked as "Create New" — will create a new Player record in the database
+  - Returns full `MatchResult[]` (instead of just surveys) to support create-new flow
 
 ---
 
@@ -71,15 +74,22 @@ Club administrators need a tool to build teams for next season based on player s
 
 ---
 
-### Phase 4: Backend -- Save Mutation
+### Phase 4: Backend -- Save Mutation & Player Creation
 
 - [x] **4.1** Create GraphQL input types
   - `libs/backend/graphql/src/inputs/team-builder.input.ts`
+  - Added `CreatePlayerForTeamBuilderInput` (firstName, lastName, gender) for creating new players
 
 - [x] **4.2** Add `saveTeamBuilder` mutation to team resolver
   - Modified: `libs/backend/graphql/src/resolvers/team.resolver.ts`
 
-- [x] **4.3** Export new input types
+- [x] **4.3** Add `createPlayersForTeamBuilder` mutation to team resolver
+  - Creates `Player` records with `competitionPlayer: true`
+  - Creates `ClubPlayerMembership` (type NORMAL) linking new player to the club
+  - Generates unique slug for each player
+  - Returns created players with IDs for frontend use
+
+- [x] **4.4** Export new input types
   - Modified: `libs/backend/graphql/src/inputs/index.ts`
 
 ---
@@ -88,6 +98,7 @@ Club administrators need a tool to build teams for next season based on player s
 
 - [x] **5.1** Create team builder tab service
   - `libs/frontend/pages/club/src/pages/detail/tabs/club-team-builder-tab.service.ts`
+  - `processImportResults()` handles both matched and create-new results: calls `createPlayersForTeamBuilder` mutation for unmatched entries, then applies all survey data via `applySurveyData()`
 
 - [x] **5.2** Create team builder tab component
   - `libs/frontend/pages/club/src/pages/detail/tabs/club-team-builder-tab.component.ts`
@@ -199,6 +210,15 @@ Club administrators need a tool to build teams for next season based on player s
     - If player was previously removed, `addExternalPlayer` auto-restores instead
     - Duplicate detection prevents adding an already-present player
   - Translation keys added for EN, NL, FR: `addPlayer`, `removePlayer`, `dropToRemove`, `removedPlayers`
+
+- [x] **8.12** Create new players for unmatched survey entries
+  - Unmatched survey entries in the import dialog now have a "Create New" button instead of being silently dropped
+  - Admin can toggle "Create New" on/off per unmatched entry
+  - On confirm, `processImportResults()` calls `createPlayersForTeamBuilder` GraphQL mutation to create `Player` records in the database
+  - Each created player gets a `ClubPlayerMembership` linking them to the club
+  - Created players are automatically matched back to their survey entries and included in `applySurveyData()`
+  - Import summary shows count of matched + newly created players
+  - Translation keys added for EN, NL, FR: `toCreate`, `createNew`, `willCreate`, `total`
 
 ---
 

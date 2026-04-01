@@ -9,6 +9,18 @@ export class TeamBuilderPlayerInput {
   declare membershipType: string;
 }
 
+@InputType('CreatePlayerForTeamBuilderInput')
+export class CreatePlayerForTeamBuilderInput {
+  @Field()
+  declare firstName: string;
+
+  @Field()
+  declare lastName: string;
+
+  @Field({ nullable: true })
+  declare gender?: string;
+}
+
 @InputType('TeamBuilderTeamInput')
 export class TeamBuilderTeamInput {
   @Field(() => ID, { nullable: true })

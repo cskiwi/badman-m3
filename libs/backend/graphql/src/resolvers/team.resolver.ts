@@ -1,13 +1,13 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { Club, Player, Team, TeamPlayerMembership } from '@app/models';
-import { TeamMembershipType } from '@app/models-enum';
+import { Club, ClubPlayerMembership, Player, Team, TeamPlayerMembership } from '@app/models';
+import { ClubMembershipType, TeamMembershipType } from '@app/models-enum';
 import { Days } from '@app/models-enum';
 import { IsUUID } from '@app/utils';
 import { BadRequestException, NotFoundException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { ClubArgs, TeamArgs, TeamPlayerMembershipArgs } from '../args';
 import { TeamUpdateInput } from '../inputs';
-import { TeamBuilderTeamInput } from '../inputs/team-builder.input';
+import { CreatePlayerForTeamBuilderInput, TeamBuilderTeamInput } from '../inputs/team-builder.input';
 
 @Resolver(() => Team)
 export class TeamResolver {
@@ -368,5 +368,65 @@ export class TeamResolver {
     }
 
     return true;
+  }
+
+  @Mutation(() => [Player])
+  @UseGuards(PermGuard)
+  async createPlayersForTeamBuilder(
+    @User() user: Player,
+    @Args('clubId', { type: () => ID }) clubId: string,
+    @Args('players', { type: () => [CreatePlayerForTeamBuilderInput] }) players: CreatePlayerForTeamBuilderInput[],
+  ): Promise<Player[]> {
+    const club = await Club.findOne({ where: { id: clubId } });
+    if (!club) {
+      throw new NotFoundException(`Club with ID ${clubId} not found`);
+    }
+
+    const canEdit = user.hasAnyPermission(['edit-any:club', `${clubId}_edit:club`]);
+    if (!canEdit) {
+      throw new UnauthorizedException('You do not have permission to manage players for this club');
+    }
+
+    const createdPlayers: Player[] = [];
+
+    for (const input of players) {
+      const firstName = input.firstName?.trim();
+      const lastName = input.lastName?.trim();
+
+      if (!firstName || !lastName) {
+        throw new BadRequestException('firstName and lastName are required');
+      }
+
+      const newPlayer = new Player();
+      newPlayer.firstName = firstName;
+      newPlayer.lastName = lastName;
+      newPlayer.gender = (input.gender === 'M' || input.gender === 'F') ? input.gender : undefined;
+      newPlayer.slug = this.generatePlayerSlug(firstName, lastName);
+      newPlayer.competitionPlayer = true;
+      await newPlayer.save();
+
+      // Create club membership
+      const membership = new ClubPlayerMembership();
+      membership.playerId = newPlayer.id;
+      membership.clubId = clubId;
+      membership.start = new Date();
+      membership.confirmed = true;
+      membership.membershipType = ClubMembershipType.NORMAL;
+      await membership.save();
+
+      createdPlayers.push(newPlayer);
+    }
+
+    return createdPlayers;
+  }
+
+  private generatePlayerSlug(firstName: string, lastName: string): string {
+    const base = `${firstName}-${lastName}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    // Add random suffix to ensure uniqueness
+    const suffix = Math.random().toString(36).substring(2, 8);
+    return `${base}-${suffix}`;
   }
 }

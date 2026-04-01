@@ -25,7 +25,13 @@
     @case ('review') {
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-          <span class="font-medium"> {{ matchedCount }} / {{ totalCount }} {{ 'all.club.teamBuilder.import.matched' | translate }} </span>
+          <span class="font-medium">
+            {{ matchedCount }} {{ 'all.club.teamBuilder.import.matched' | translate }}
+            @if (createNewCount > 0) {
+              , {{ createNewCount }} {{ 'all.club.teamBuilder.import.toCreate' | translate }}
+            }
+            / {{ totalCount }} {{ 'all.club.teamBuilder.import.total' | translate }}
+          </span>
         </div>
 
         <p-table [value]="matchResults()" [scrollable]="true" scrollHeight="400px" styleClass="p-datatable-sm">
@@ -51,6 +57,39 @@
                       <i class="pi pi-pencil text-xs"></i>
                     </button>
                   </div>
+                } @else if (!result.player && !result.editing) {
+                  <div class="flex items-center gap-2">
+                    @if (result.createNew) {
+                      <span class="text-green-600">
+                        <i class="pi pi-user-plus mr-1"></i>
+                        {{ 'all.club.teamBuilder.import.willCreate' | translate }}:
+                        {{ result.survey.firstName }} {{ result.survey.lastName }}
+                      </span>
+                      <button
+                        class="p-button p-button-text p-button-sm p-button-rounded p-button-danger"
+                        style="width: 1.5rem; height: 1.5rem; padding: 0"
+                        (click)="toggleCreateNew(result)"
+                      >
+                        <i class="pi pi-times text-xs"></i>
+                      </button>
+                    } @else {
+                      <p-button
+                        [label]="'all.club.teamBuilder.import.createNew' | translate"
+                        icon="pi pi-user-plus"
+                        severity="success"
+                        size="small"
+                        [text]="true"
+                        (onClick)="toggleCreateNew(result)"
+                      />
+                      <button
+                        class="p-button p-button-text p-button-sm p-button-rounded"
+                        style="width: 1.5rem; height: 1.5rem; padding: 0"
+                        (click)="result.editing = true; matchResults.set([...matchResults()])"
+                      >
+                        <i class="pi pi-search text-xs"></i>
+                      </button>
+                    }
+                  </div>
                 } @else {
                   <p-autoComplete
                     [suggestions]="playerSuggestions()"
@@ -66,6 +105,8 @@
               <td>
                 @if (result.player) {
                   <p-tag [value]="result.confidence" [severity]="getConfidenceSeverity(result.confidence)" />
+                } @else if (result.createNew) {
+                  <p-tag value="new" severity="success" />
                 } @else {
                   <p-tag value="none" severity="info" />
                 }
@@ -80,7 +121,7 @@
             label="{{ 'all.club.teamBuilder.import.confirm' | translate }}"
             icon="pi pi-check"
             (onClick)="confirm()"
-            [disabled]="matchedCount === 0"
+            [disabled]="actionableCount === 0"
           />
         </div>
       </div>

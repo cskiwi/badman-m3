@@ -24,7 +24,7 @@ import { ClubTeamBuilderTabService } from './club-team-builder-tab.service';
 import { ImportSurveyDialogComponent } from '../../../components/team-builder/import-survey-dialog.component';
 import { BuilderTeamCardComponent } from '../../../components/team-builder/builder-team-card.component';
 import { PlayerChipComponent } from '../../../components/team-builder/player-chip.component';
-import { SurveyResponse } from './team-builder/types/survey-response';
+import { MatchResult } from './team-builder/services/player-matcher.service';
 
 @Component({
   selector: 'app-club-team-builder-tab',
@@ -116,16 +116,19 @@ export class ClubTeamBuilderTabComponent {
       data: {
         systemId: this.service.systemId(),
         clubPlayers: this.service.getClubPlayers(),
+        clubId: this.clubId(),
       },
     });
 
-    ref?.onClose.subscribe((surveys: SurveyResponse[] | null) => {
-      if (surveys) {
-        this.service.applySurveyData(surveys);
+    ref?.onClose.subscribe(async (results: MatchResult[] | null) => {
+      if (results) {
+        await this.service.processImportResults(results);
+        const matchedCount = results.filter((r) => r.player).length;
+        const createdCount = results.filter((r) => !r.player && r.createNew).length;
         this.messageService.add({
           severity: 'success',
           summary: 'Survey imported',
-          detail: `${surveys.length} player responses matched`,
+          detail: `${matchedCount} matched, ${createdCount} new players created`,
         });
       }
     });
