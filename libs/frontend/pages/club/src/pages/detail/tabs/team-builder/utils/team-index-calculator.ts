@@ -26,6 +26,21 @@ export function calculateTeamIndex(players: TeamBuilderPlayer[], teamType: 'M' |
 
   if (regularPlayers.length === 0) return 0;
 
+  if (teamType === 'MX') {
+    // MX: top 2 males + top 2 females (sorted by contribution ascending = strongest first)
+    const males = regularPlayers
+      .filter((p) => p.gender === 'M')
+      .map((p) => getPlayerContribution(p, teamType))
+      .sort((a, b) => a - b)
+      .slice(0, 2);
+    const females = regularPlayers
+      .filter((p) => p.gender === 'F')
+      .map((p) => getPlayerContribution(p, teamType))
+      .sort((a, b) => a - b)
+      .slice(0, 2);
+    return [...males, ...females].reduce((sum, c) => sum + c, 0);
+  }
+
   const contributions = regularPlayers
     .map((p) => getPlayerContribution(p, teamType))
     .sort((a, b) => a - b); // ascending: strongest (lowest numbers) first
