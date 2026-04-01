@@ -12,13 +12,13 @@ export interface PerformanceResult {
   encounterPresencePercent: number;
 }
 
-const LOW_PRESENCE_THRESHOLD = 50;
+const LOW_PRESENCE_THRESHOLD = 30;
 
 /**
  * Determine if a player has low performance in their current team.
  *
  * Flags a player if:
- * - Their encounter presence is below 50%
+ * - Their encounter presence is below 30%
  */
 export function evaluatePerformance(stats: EncounterStats | undefined): PerformanceResult {
   if (!stats || stats.totalEncounters === 0) {
