@@ -57,6 +57,7 @@ export class TournamentRankingRecalcService {
 
   private async removeRankingPoints(games: Game[]): Promise<void> {
     const gameIds = games.map((g) => g.id);
+
     const rankingPoints = await RankingPoint.find({
       where: { gameId: In(gameIds) },
     });

@@ -1,8 +1,9 @@
-import { AllowAnonymous } from '@app/backend-authorization';
+import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { Player, RankingGroup, RankingPlace, RankingSystem } from '@app/models';
-import { NotFoundException } from '@nestjs/common';
-import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { RankingPlaceArgs } from '../args';
+import { RankingPlaceNewInput, RankingPlaceUpdateInput } from '../inputs';
 
 @Resolver(() => RankingPlace)
 export class RankingPlaceResolver {
@@ -28,6 +29,61 @@ export class RankingPlaceResolver {
   ): Promise<RankingPlace[]> {
     const args = RankingPlaceArgs.toFindManyOptions(inputArgs);
     return RankingPlace.find(args);
+  }
+
+  @Mutation(() => RankingPlace)
+  @UseGuards(PermGuard)
+  async newRankingPlace(
+    @User() user: Player,
+    @Args('data') data: RankingPlaceNewInput,
+  ): Promise<RankingPlace> {
+    if (!(await user.hasAnyPermission(['edit-any:ranking', `${data.playerId}_edit:ranking`]))) {
+      throw new ForbiddenException('You do not have permission to create ranking places');
+    }
+
+    const place = RankingPlace.create({
+      ...data,
+    });
+
+    return place.save();
+  }
+
+  @Mutation(() => RankingPlace)
+  @UseGuards(PermGuard)
+  async updateRankingPlace(
+    @User() user: Player,
+    @Args('data') data: RankingPlaceUpdateInput,
+  ): Promise<RankingPlace> {
+    const place = await RankingPlace.findOne({ where: { id: data.id } });
+    if (!place) {
+      throw new NotFoundException(`RankingPlace with id ${data.id} not found`);
+    }
+
+    if (!(await user.hasAnyPermission(['edit-any:ranking', `${place.playerId}_edit:ranking`]))) {
+      throw new ForbiddenException('You do not have permission to update ranking places');
+    }
+
+    Object.assign(place, data);
+    return place.save();
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(PermGuard)
+  async removeRankingPlace(
+    @User() user: Player,
+    @Args('id', { type: () => ID }) id: string,
+  ): Promise<boolean> {
+    const place = await RankingPlace.findOne({ where: { id } });
+    if (!place) {
+      throw new NotFoundException(`RankingPlace with id ${id} not found`);
+    }
+
+    if (!(await user.hasAnyPermission(['edit-any:ranking', `${place.playerId}_edit:ranking`]))) {
+      throw new ForbiddenException('You do not have permission to remove ranking places');
+    }
+
+    await place.remove();
+    return true;
   }
 
   @ResolveField(() => Player, { nullable: true })

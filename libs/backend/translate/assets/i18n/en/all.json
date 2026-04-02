@@ -70,6 +70,48 @@
       "tab": "Tournaments",
       "title": "Club Tournaments"
     },
+    "teamBuilder": {
+      "tab": "Team Builder",
+      "import": {
+        "title": "Import Survey",
+        "description": "Upload the Excel file with player survey responses",
+        "chooseFile": "Choose File",
+        "matching": "Matching players...",
+        "matched": "players matched",
+        "total": "total",
+        "toCreate": "to create",
+        "createNew": "Create New",
+        "willCreate": "Will create",
+        "surveyName": "Survey Name",
+        "matchedPlayer": "Matched Player",
+        "confidence": "Confidence",
+        "searchPlayer": "Search player...",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      },
+      "addTeam": "Add Team",
+      "save": "Save Teams",
+      "playerPool": "Unassigned Players",
+      "playersStopping": "Players Stopping",
+      "noStoppingPlayers": "No players stopping",
+      "addPlayer": "Add player...",
+      "removePlayer": "Remove Player",
+      "dropToRemove": "Drop here to remove",
+      "removedPlayers": "Removed Players",
+      "settings": {
+        "title": "Settings",
+        "presenceThreshold": "Presence threshold",
+        "presenceThresholdHelp": "Flag players below this attendance percentage",
+        "performanceThreshold": "Performance threshold",
+        "performanceThresholdHelp": "Flag players below this win rate percentage",
+        "minPlayersPerTeam": "Min regular players per team",
+        "minPlayersPerTeamHelp": "Minimum number of regular players for M/F teams",
+        "minMalesPerMxTeam": "Min males in MX team",
+        "minFemalesPerMxTeam": "Min females in MX team",
+        "maxPlayersPerTeam": "Max players per team",
+        "maxPlayersPerTeamHelp": "Maximum total players (regular + backup) per team"
+      }
+    },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
   },
@@ -148,7 +190,8 @@
     "unknown": "Unknown",
     "viewAll": "View All",
     "viewDetails": "View Details",
-    "yes": "Yes"
+    "yes": "Yes",
+    "required": "This field is required"
   },
   "competition": {
     "bracket_view": "Bracket View",
@@ -580,7 +623,8 @@
       "subtitle": "Modify player profile information",
       "tabs": {
         "claims": "Permissions",
-        "profile": "Profile"
+        "profile": "Profile",
+        "ranking": "Ranking"
       },
       "title": "Edit Player"
     },
@@ -733,6 +777,21 @@
       "upgrade-average": "Avg. promotion",
       "usedForDowngrade": "Degradation",
       "usedForUpgrade": "Promotion"
+    },
+    "edit": {
+      "add": "Add ranking",
+      "date": "Date",
+      "double": "Double",
+      "double-points": "Double points",
+      "edit": "Edit ranking",
+      "mix": "Mix",
+      "mix-points": "Mix points",
+      "next-ranking": "Next ranking",
+      "no-ranking": "No ranking data found",
+      "single": "Single",
+      "single-points": "Single points",
+      "update-possible": "Ranking update",
+      "updates": "updates"
     }
   },
   "search": {
@@ -813,6 +872,7 @@
         "expand": "Expand",
         "jobId": "Job ID",
         "noJobsFound": "No recent jobs found",
+        "search": "Search by ID, name or status…",
         "progress": "Progress",
         "retry": "Retry Job",
         "retryError": "Failed to retry job {{id}}",

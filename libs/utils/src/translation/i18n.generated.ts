@@ -77,6 +77,48 @@ export type I18nTranslations = {
                 "tab": string;
                 "title": string;
             };
+            "teamBuilder": {
+                "tab": string;
+                "import": {
+                    "title": string;
+                    "description": string;
+                    "chooseFile": string;
+                    "matching": string;
+                    "matched": string;
+                    "total": string;
+                    "toCreate": string;
+                    "createNew": string;
+                    "willCreate": string;
+                    "surveyName": string;
+                    "matchedPlayer": string;
+                    "confidence": string;
+                    "searchPlayer": string;
+                    "confirm": string;
+                    "cancel": string;
+                };
+                "addTeam": string;
+                "save": string;
+                "playerPool": string;
+                "playersStopping": string;
+                "noStoppingPlayers": string;
+                "addPlayer": string;
+                "removePlayer": string;
+                "dropToRemove": string;
+                "removedPlayers": string;
+                "settings": {
+                    "title": string;
+                    "presenceThreshold": string;
+                    "presenceThresholdHelp": string;
+                    "performanceThreshold": string;
+                    "performanceThresholdHelp": string;
+                    "minPlayersPerTeam": string;
+                    "minPlayersPerTeamHelp": string;
+                    "minMalesPerMxTeam": string;
+                    "minFemalesPerMxTeam": string;
+                    "maxPlayersPerTeam": string;
+                    "maxPlayersPerTeamHelp": string;
+                };
+            };
             "winRate": string;
             "winRateTrend": string;
         };
@@ -156,6 +198,7 @@ export type I18nTranslations = {
             "viewAll": string;
             "viewDetails": string;
             "yes": string;
+            "required": string;
         };
         "competition": {
             "bracket_view": string;
@@ -588,6 +631,7 @@ export type I18nTranslations = {
                 "tabs": {
                     "claims": string;
                     "profile": string;
+                    "ranking": string;
                 };
                 "title": string;
             };
@@ -741,6 +785,21 @@ export type I18nTranslations = {
                 "usedForDowngrade": string;
                 "usedForUpgrade": string;
             };
+            "edit": {
+                "add": string;
+                "date": string;
+                "double": string;
+                "double-points": string;
+                "edit": string;
+                "mix": string;
+                "mix-points": string;
+                "next-ranking": string;
+                "no-ranking": string;
+                "single": string;
+                "single-points": string;
+                "update-possible": string;
+                "updates": string;
+            };
         };
         "search": {
             "noResults": string;
@@ -820,6 +879,7 @@ export type I18nTranslations = {
                     "expand": string;
                     "jobId": string;
                     "noJobsFound": string;
+                    "search": string;
                     "progress": string;
                     "retry": string;
                     "retryError": string;

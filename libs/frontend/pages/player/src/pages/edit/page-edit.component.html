@@ -2,7 +2,7 @@
   @if (this.player(); as player) {
     <app-page-header>
       <i avatar class="pi pi-user-edit text-2xl"></i>
-      <span title>{{ 'all.player.edit.title' | translate }} - {{ player.fullName }}</span>
+      <span title>{{ 'all.player.edit.title' | translate }} - {{ player.fullName }}  </span>
       <ng-container subTitle>
         <span>{{ 'all.player.edit.subtitle' | translate }}</span>
       </ng-container>
@@ -32,6 +32,8 @@
           />
         </div>
       </ng-container>
+
+      
     </app-page-header>
 
     <div class="p-4">
@@ -56,6 +58,10 @@
             <i class="pi pi-shield mr-2"></i>
             {{ 'all.player.edit.tabs.claims' | translate }}
           </p-tab>
+          <p-tab value="2">
+            <i class="pi pi-chart-bar mr-2"></i>
+            {{ 'all.player.edit.tabs.ranking' | translate }}
+          </p-tab>
         </p-tablist>
 
         <p-tabpanels>
@@ -65,6 +71,10 @@
 
           <p-tabpanel value="1">
             <app-player-claims [player]="player" />
+          </p-tabpanel>
+
+          <p-tabpanel value="2">
+            <app-player-ranking [player]="player" />
           </p-tabpanel>
         </p-tabpanels>
       </p-tabs>
@@ -83,6 +93,3 @@
     <span>{{ errorMessage }}</span>
   </div>
 }
-
-<!-- Toast Messages -->
-<p-toast position="top-right" />

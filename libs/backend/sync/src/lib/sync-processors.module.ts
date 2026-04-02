@@ -19,6 +19,8 @@ import {
   TeamMatchingService,
   TeamSyncService,
   DiscoveryProcessor,
+  RankingCalcProcessor,
+  RankingCalcService,
   RankingSyncProcessor,
   RankingSyncService,
   TournamentDrawSyncService,
@@ -28,11 +30,12 @@ import {
   TournamentGameSyncService,
   TournamentPlanningService,
   TournamentRankingRecalcService,
+  TournamentScrapeService,
   TournamentStandingSyncService,
   TournamentSyncService,
   TournamentSubEventSyncService,
 } from './processors';
-import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, RANKING_SYNC_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
+import { ALL_SYNC_QUEUES, COMPETITION_EVENT_QUEUE, RANKING_CALC_QUEUE, RANKING_SYNC_QUEUE, TOURNAMENT_EVENT_QUEUE } from './queues/sync.queue';
 import { SyncService } from './services/sync.service';
 
 @Module({
@@ -84,6 +87,9 @@ import { SyncService } from './services/sync.service';
     BullModule.registerFlowProducer({
       name: RANKING_SYNC_QUEUE,
     }),
+    BullModule.registerFlowProducer({
+      name: RANKING_CALC_QUEUE,
+    }),
     TournamentApiModule,
     SearchModule.forRootAsync({
       isGlobal: true,
@@ -114,6 +120,7 @@ import { SyncService } from './services/sync.service';
     CompetitionEventProcessor,
     TournamentEventProcessor,
     TeamMatchingProcessor,
+    RankingCalcProcessor,
     RankingSyncProcessor,
     // Competition sync services
     CompetitionSyncService,
@@ -132,11 +139,14 @@ import { SyncService } from './services/sync.service';
     TournamentDrawSyncService,
     TournamentEntrySyncService,
     TournamentRankingRecalcService,
+    TournamentScrapeService,
     TournamentStandingSyncService,
     TournamentPlanningService,
     // Shared sync services
     TeamMatchingService,
     TeamSyncService,
+    // Ranking calc (non-VISUAL systems)
+    RankingCalcService,
     // Ranking sync
     RankingSyncService,
   ],

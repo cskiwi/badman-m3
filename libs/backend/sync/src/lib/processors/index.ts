@@ -1,5 +1,6 @@
 export * from './competition-event.processor';
 export * from './discovery.processor';
+export * from './ranking-calc.processor';
 export * from './ranking-sync.processor';
 export * from './services';
 export * from './team-matching.processor';

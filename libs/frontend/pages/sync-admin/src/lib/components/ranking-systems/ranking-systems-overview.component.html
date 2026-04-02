@@ -1,0 +1,216 @@
+<p-toast />
+
+<!-- Ranking Systems Table -->
+<p-table
+  [value]="systems()"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  styleClass="p-datatable-sm"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Status</th>
+      <th>Last Calculation</th>
+      <th>Last Level Update</th>
+      <th>Interval</th>
+      <th class="text-right">Actions</th>
+    </tr>
+  </ng-template>
+
+  @if (loading()) {
+    <ng-template pTemplate="body">
+      @for (i of [1, 2, 3]; track i) {
+        <tr>
+          @for (col of [1, 2, 3, 4, 5, 6, 7]; track col) {
+            <td><p-skeleton height="1.5rem" /></td>
+          }
+        </tr>
+      }
+    </ng-template>
+  }
+
+  <ng-template pTemplate="body" let-system>
+    @if (!loading()) {
+      <tr>
+        <td class="font-medium">{{ system.name }}</td>
+
+        <td>
+          <p-tag
+            [value]="system.rankingSystem"
+            [severity]="system.rankingSystem === 'VISUAL' ? 'info' : 'secondary'"
+          />
+        </td>
+
+        <td>
+          <p-tag
+            [value]="getStatusLabel(system)"
+            [severity]="getStatusSeverity(system)"
+          />
+        </td>
+
+        <td>
+          @if (system.calculationLastUpdate) {
+            {{ system.calculationLastUpdate | date: 'dd/MM/yyyy' }}
+          } @else {
+            <span class="text-surface-400">—</span>
+          }
+        </td>
+
+        <td>
+          @if (system.updateLastUpdate) {
+            {{ system.updateLastUpdate | date: 'dd/MM/yyyy' }}
+          } @else {
+            <span class="text-surface-400">—</span>
+          }
+        </td>
+
+        <td class="text-surface-500 text-sm">
+          @if (system.calculationIntervalAmount && system.calculationIntervalUnit) {
+            Every {{ system.calculationIntervalAmount }} {{ system.calculationIntervalUnit }}
+          } @else {
+            <span class="text-surface-400">—</span>
+          }
+        </td>
+
+        <td class="text-right">
+          @if (system.rankingSystem === 'VISUAL') {
+            <p-button
+              icon="pi pi-sync"
+              label="Sync now"
+              size="small"
+              severity="secondary"
+              [outlined]="true"
+              [loading]="actionLoading()"
+              (onClick)="openRankingSyncDialog()"
+              pTooltip="Sync BBF rating from external API"
+            />
+          } @else {
+            <p-button
+              icon="pi pi-calculator"
+              label="Calculate"
+              size="small"
+              severity="secondary"
+              [outlined]="true"
+              [disabled]="system.runCurrently"
+              [loading]="actionLoading()"
+              (onClick)="openCalcDialog(system)"
+              [pTooltip]="system.runCurrently ? 'Queue ranking calculation' : 'System is inactive'"
+            />
+          }
+        </td>
+      </tr>
+    }
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    @if (!loading() && systems().length === 0) {
+      <tr>
+        <td colspan="7" class="text-center text-surface-400 py-4">No ranking systems found</td>
+      </tr>
+    }
+  </ng-template>
+</p-table>
+
+<!-- Calc dialog (non-VISUAL) -->
+<p-dialog
+  [(visible)]="calcDialogOpen"
+  [modal]="true"
+  [closable]="!actionLoading()"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '28rem' }"
+  [header]="'Calculate: ' + (selectedSystem()?.name ?? '')"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <p class="text-surface-500 text-sm m-0">
+      Leave both dates empty to calculate only what's overdue based on the system's interval.
+      Set a date range to recalculate a specific period.
+    </p>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">From date (optional)</label>
+      <p-datepicker
+        [(ngModel)]="calcStartDate"
+        [showIcon]="true"
+        [showClear]="true"
+        dateFormat="dd/mm/yy"
+        placeholder="Start of recalculation range"
+        [style]="{ width: '100%' }"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">To date (optional)</label>
+      <p-datepicker
+        [(ngModel)]="calcStopDate"
+        [showIcon]="true"
+        [showClear]="true"
+        dateFormat="dd/mm/yy"
+        placeholder="End of recalculation range"
+        [style]="{ width: '100%' }"
+      />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="actionLoading()"
+      (onClick)="calcDialogOpen = false"
+    />
+    <p-button
+      icon="pi pi-play"
+      label="Queue calculation"
+      [loading]="actionLoading()"
+      (onClick)="triggerCalc()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- Sync dialog (VISUAL) -->
+<p-dialog
+  [(visible)]="rankingSyncDialogOpen"
+  [modal]="true"
+  [closable]="!actionLoading()"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '28rem' }"
+  header="BBF Rating Sync"
+>
+  <div class="flex flex-col gap-4 pt-2">
+    <p class="text-surface-500 text-sm m-0">
+      Sync BBF rating data from the external API. Leave empty to sync from the last known publication.
+    </p>
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">From date (optional)</label>
+      <p-datepicker
+        [(ngModel)]="rankingSyncStartDate"
+        [showIcon]="true"
+        [showClear]="true"
+        dateFormat="dd/mm/yy"
+        placeholder="Sync from this date"
+        [style]="{ width: '100%' }"
+      />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="actionLoading()"
+      (onClick)="rankingSyncDialogOpen = false"
+    />
+    <p-button
+      icon="pi pi-sync"
+      label="Start sync"
+      [loading]="actionLoading()"
+      (onClick)="triggerRankingSync()"
+    />
+  </ng-template>
+</p-dialog>

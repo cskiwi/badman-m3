@@ -1,5 +1,5 @@
-import { CompetitionDraw, Entry, Player, Standing, Team, TournamentDraw } from '@app/models';
-import { NotFoundException } from '@nestjs/common';
+import { CompetitionDraw, CompetitionSubEvent, Entry, Player, Standing, Team, TournamentDraw, TournamentSubEvent } from '@app/models';
+import { NotFoundException, Res } from '@nestjs/common';
 import { Args, ID, Query, Resolver, ResolveField, Parent } from '@nestjs/graphql';
 import { EntryArgs } from '../../args';
 
@@ -80,6 +80,20 @@ export class EntryResolver {
   async tournamentDraw(@Parent() entry: Entry): Promise<TournamentDraw | null> {
     return TournamentDraw.findOne({
       where: { id: entry.drawId },
+    });
+  }
+
+  @ResolveField(() => [TournamentSubEvent], { nullable: true })
+  async tournamentSubEvents(@Parent() entry: Entry): Promise<TournamentSubEvent[] | null> {
+    return TournamentSubEvent.find({
+      where: { id: entry.subEventId },
+    });
+  }
+
+  @ResolveField(() => [CompetitionSubEvent], { nullable: true })
+  async competitionSubEvents(@Parent() entry: Entry): Promise<CompetitionSubEvent[] | null> {
+    return CompetitionSubEvent.find({
+      where: { id: entry.subEventId },
     });
   }
 }
