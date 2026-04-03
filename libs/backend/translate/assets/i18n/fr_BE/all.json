@@ -27,6 +27,7 @@
   },
   "button": {
     "add": "Ajouter",
+    "agree": "D'accord",
     "apply": "Appliquer",
     "back": "Retour",
     "cancel": "Annuler",
@@ -34,6 +35,7 @@
     "confirm": "Confirmer",
     "create": "Créer",
     "delete": "Supprimer",
+    "download": "Télécharger",
     "edit": "Modifier",
     "generate": "Générer",
     "refresh": "Actualiser",
@@ -55,6 +57,48 @@
     "schedule": "Calendrier",
     "seasonalPerformance": "Performance Saisonnière",
     "stats": "Statistiques du Club",
+    "teamBuilder": {
+      "addPlayer": "Ajouter un joueur...",
+      "addTeam": "Ajouter une Équipe",
+      "dropToRemove": "Déposez ici pour supprimer",
+      "import": {
+        "cancel": "Annuler",
+        "chooseFile": "Choisir un Fichier",
+        "confidence": "Confiance",
+        "confirm": "Confirmer",
+        "createNew": "Créer Nouveau",
+        "description": "Téléchargez le fichier Excel avec les réponses des joueurs",
+        "matched": "joueurs trouvés",
+        "matchedPlayer": "Joueur Trouvé",
+        "matching": "Recherche des joueurs...",
+        "searchPlayer": "Rechercher un joueur...",
+        "surveyName": "Nom de l'Enquête",
+        "title": "Importer l'Enquête",
+        "toCreate": "à créer",
+        "total": "total",
+        "willCreate": "Sera créé"
+      },
+      "noStoppingPlayers": "Aucun joueur qui arrête",
+      "playerPool": "Joueurs Non Assignés",
+      "playersStopping": "Joueurs qui arrêtent",
+      "removedPlayers": "Joueurs Supprimés",
+      "removePlayer": "Supprimer le Joueur",
+      "save": "Enregistrer les Équipes",
+      "settings": {
+        "maxPlayersPerTeam": "Max joueurs par équipe",
+        "maxPlayersPerTeamHelp": "Nombre maximum total de joueurs (régulier + remplaçant) par équipe",
+        "minFemalesPerMxTeam": "Min femmes en équipe MX",
+        "minMalesPerMxTeam": "Min hommes en équipe MX",
+        "minPlayersPerTeam": "Min joueurs réguliers par équipe",
+        "minPlayersPerTeamHelp": "Nombre minimum de joueurs réguliers pour les équipes H/D",
+        "performanceThreshold": "Seuil de performance",
+        "performanceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de victoire",
+        "presenceThreshold": "Seuil de présence",
+        "presenceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de présence",
+        "title": "Paramètres"
+      },
+      "tab": "Composition d'Équipe"
+    },
     "teamComparison": "Comparaison des Équipes",
     "totalGames": "Matchs",
     "totalPlayers": "Joueurs",
@@ -69,48 +113,6 @@
       "phase": "Phase",
       "tab": "Tournois",
       "title": "Tournois du Club"
-    },
-    "teamBuilder": {
-      "tab": "Composition d'Équipe",
-      "import": {
-        "title": "Importer l'Enquête",
-        "description": "Téléchargez le fichier Excel avec les réponses des joueurs",
-        "chooseFile": "Choisir un Fichier",
-        "matching": "Recherche des joueurs...",
-        "matched": "joueurs trouvés",
-        "total": "total",
-        "toCreate": "à créer",
-        "createNew": "Créer Nouveau",
-        "willCreate": "Sera créé",
-        "surveyName": "Nom de l'Enquête",
-        "matchedPlayer": "Joueur Trouvé",
-        "confidence": "Confiance",
-        "searchPlayer": "Rechercher un joueur...",
-        "confirm": "Confirmer",
-        "cancel": "Annuler"
-      },
-      "addTeam": "Ajouter une Équipe",
-      "save": "Enregistrer les Équipes",
-      "playerPool": "Joueurs Non Assignés",
-      "playersStopping": "Joueurs qui arrêtent",
-      "noStoppingPlayers": "Aucun joueur qui arrête",
-      "addPlayer": "Ajouter un joueur...",
-      "removePlayer": "Supprimer le Joueur",
-      "dropToRemove": "Déposez ici pour supprimer",
-      "removedPlayers": "Joueurs Supprimés",
-      "settings": {
-        "title": "Paramètres",
-        "presenceThreshold": "Seuil de présence",
-        "presenceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de présence",
-        "performanceThreshold": "Seuil de performance",
-        "performanceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de victoire",
-        "minPlayersPerTeam": "Min joueurs réguliers par équipe",
-        "minPlayersPerTeamHelp": "Nombre minimum de joueurs réguliers pour les équipes H/D",
-        "minMalesPerMxTeam": "Min hommes en équipe MX",
-        "minFemalesPerMxTeam": "Min femmes en équipe MX",
-        "maxPlayersPerTeam": "Max joueurs par équipe",
-        "maxPlayersPerTeamHelp": "Nombre maximum total de joueurs (régulier + remplaçant) par équipe"
-      }
     },
     "winRate": "% Vict.",
     "winRateTrend": "Tendance % Vict."
@@ -182,6 +184,7 @@
     "level": "Niveau",
     "name": "Nom",
     "no": "Non",
+    "required": "Ce champ est obligatoire",
     "save": "Enregistrer",
     "search": "Rechercher",
     "season": "Saison",
@@ -190,8 +193,7 @@
     "unknown": "Inconnu",
     "viewAll": "Voir Tout",
     "viewDetails": "Voir Détails",
-    "yes": "Oui",
-    "required": "Ce champ est obligatoire"
+    "yes": "Oui"
   },
   "competition": {
     "bracket_view": "Vue en tableau",
@@ -357,6 +359,64 @@
     "subEvent": "Section",
     "subEvents": "Série",
     "team": "Équipe",
+    "team-assembly": {
+      "captain": "Capitaine d'équipe",
+      "change-team": "En modifiant l'équipe, vous pouvez changer les joueurs affichés par défaut et les remplaçants.",
+      "club": "Club",
+      "disclaimer": "Avertissement: Ce module de composition est en version bêta et peut exceptionnellement contenir des erreurs. Vérifiez toujours votre composition en tenant compte du règlement C320.",
+      "double1": "Double 1",
+      "double2": "Double 2",
+      "double3": "Double 3",
+      "double4": "Double 4",
+      "download": "Télécharger",
+      "encounter": "Rencontre",
+      "errors": {
+        "already": "Joueur déjà présent comme titulaire.",
+        "club-base-other-team": "<strong>{player.fullName}</strong> est joueur de base d'une autre équipe",
+        "comp-status": "{player.fullName} n'est pas inscrit pour la compétition",
+        "comp-status-html": "<strong>{player.fullName}</strong> n'est pas inscrit pour la compétition",
+        "none": "Aucune erreur trouvée",
+        "not-enough-players": "Trop peu de titulaires sont actuellement alignés pour la rencontre.",
+        "player-above-lower": "Un joueur avec un indice de formation plus élevé est aligné devant ce joueur.",
+        "player-gender": "<strong>{player.fullName}</strong> est un(e) {player.gender} mais un(e) {gender} était attendu(e)",
+        "player-genders": "<strong>{player1.fullName}</strong> ({player1.gender}) et <strong>{player2.fullName}</strong> ({player2.gender}) n'ont pas le genre correct pour <strong>{game}</strong>",
+        "player-max-double-games": "<strong>{player.fullName}</strong> peut jouer un maximum de {max} doubles",
+        "player-max-mix-games": "<strong>{player.fullName}</strong> peut jouer un maximum de {max} doubles mixtes",
+        "player-max-mixed-games": "<strong>{player.fullName}</strong> peut jouer un maximum de {max} doubles mixtes",
+        "player-max-single-games": "<strong>{player.fullName}</strong> peut jouer un maximum de {max} simples",
+        "player-min-level": "<strong>{player.fullName}</strong> a un indice de <strong>{player.ranking}</strong> en {rankingType} et doit être au minimum <strong>{minLevel}</strong>.",
+        "player-order-doubles": "<strong>{team2player1.fullName}</strong> et <strong>{team2player2.fullName}</strong> en <strong>{game2}</strong> ont un classement combiné plus élevé que <strong>{team1player1.fullName}</strong> et <strong>{team1player2.fullName}</strong> en <strong>{game1}</strong>.",
+        "player-order-highest": "<strong>{team2player1.fullName}</strong> ou <strong>{team2player2.fullName}</strong> en <strong>{game2}</strong> a un meilleur classement individuel que <strong>{team1player1.fullName}</strong> ou <strong>{team1player2.fullName}</strong> en <strong>{game1}</strong>",
+        "player-order-single": "<strong>{player2.fullName}</strong> en <strong>{game2}</strong> a un classement plus élevé que <strong>{player1.fullName}</strong> en <strong>{game1}</strong>.",
+        "players-above-lower": "Une paire avec un indice de formation plus élevé est alignée devant cette paire.",
+        "team-index": "L'indice d'équipe des titulaires est de <strong>{teamIndex}</strong> et doit être au minimum de <strong>{baseIndex}</strong>.",
+        "team-to-strong": "L'indice d'équipe des titulaires est de <strong>{teamIndex}</strong> et ne peut pas descendre en dessous de la limite de la division <strong>{minIndex}</strong>.",
+        "title": "Erreurs",
+        "to-much": "Un joueur peut jouer un maximum de 2 doubles (mixtes) et 1 simple."
+      },
+      "info": "Remarques concernant la composition d'équipe",
+      "level-exemption": "Le joueur est exempté des restrictions de classement",
+      "mix1": "Double hommes",
+      "mix2": "Double dames",
+      "mix3": "Mixte 1",
+      "mix4": "Mixte 2",
+      "players": {
+        "backup": "Joueurs remplaçants",
+        "base": "Titulaires",
+        "team": "Joueurs de base",
+        "title": "Titulaires possibles"
+      },
+      "season": "Saison",
+      "single1": "Simple 1",
+      "single2": "Simple 2",
+      "single3": "Simple 3",
+      "single4": "Simple 4",
+      "substitude": "Remplaçants",
+      "team": "Équipe",
+      "team-index": "L'indice d'équipe des titulaires est de <strong>{current}</strong> et doit être au minimum de <strong>{team}</strong>.",
+      "team-index-ignored": "L'indice d'équipe des joueurs de base peut être ignoré pour la 1ère équipe.",
+      "title": "Composition d'équipe"
+    },
     "teams": "Équipes",
     "title": "Tournois & Compétitions",
     "tooltip": {
@@ -498,6 +558,10 @@
     "tournament": "Tournoi",
     "winRate": "Taux de victoire",
     "wins": "Victoires"
+  },
+  "gender": {
+    "females": "Dames",
+    "males": "Hommes"
   },
   "head-to-head": {
     "amount-of-games": "Nombre de correspondances",
@@ -820,12 +884,12 @@
         "clearCompletedError": "Échec de la suppression des jobs terminés",
         "clearCompletedSuccess": "Jobs terminés supprimés avec succès",
         "clearCompletedTooltip": "Supprimer les jobs terminés, garder les jobs échoués pour le débogage",
-        "confirmClearCompleted": "Effacer tous les jobs terminés? Les jobs avec des enfants échoués seront conservés pour le débogage.",
         "competitionSync": "Synchronisation de la concurrence",
         "competitionSyncError": "Échec de la programmation de la synchronisation des compétitions",
         "competitionSyncQueued": "Synchronisation de la compétition programmée avec succès",
         "competitionSyncTooltip": "Synchroniser toutes les rencontres du mois passé",
         "confirmClearAll": "Êtes-vous sûr de vouloir supprimer tous les jobs de toutes les files d'attente ? Cette action est irréversible.",
+        "confirmClearCompleted": "Effacer tous les jobs terminés? Les jobs avec des enfants échoués seront conservés pour le débogage.",
         "confirmCompetitionSync": "Les plans de synchronisation de la compétition pour toutes les rencontres du mois dernier ?",
         "confirmDiscovery": "Mettre en file une sync de découverte pour trouver de nouveaux tournois ?",
         "confirmTournamentSync": "Synchroniser les plans de tous les tournois en cours et à venir ?",
@@ -872,12 +936,12 @@
         "expand": "Développer",
         "jobId": "ID de tâche",
         "noJobsFound": "Aucune tâche récente trouvée",
-        "search": "Rechercher par ID, nom ou statut…",
         "progress": "Progression",
         "retry": "Réessayer la tâche",
         "retryError": "Échec de la reprise de la tâche {{id}}",
         "retryHeader": "Réessayer la tâche",
         "retrySuccess": "Tâche {{id}} mise en file d'attente pour reprise",
+        "search": "Rechercher par ID, nom ou statut…",
         "status": "Statut",
         "title": "Tâches de synchronisation récentes",
         "type": "Type",
@@ -901,6 +965,19 @@
           "waiting": "En attente"
         },
         "title": "Statistiques de la file"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Actions",
+          "created": "Créé",
+          "duration": "Durée",
+          "jobId": "ID de tâche",
+          "progress": "Progression",
+          "status": "Statut",
+          "type": "Type"
+        },
+        "noJobs": "Aucune tâche récente trouvée",
+        "title": "Tâches de synchronisation récentes"
       },
       "scheduling": {
         "competition": "Compétition",
@@ -932,19 +1009,6 @@
         "title": "Planifier Sync",
         "tournament": "Tournoi",
         "withSubComponents": "Avec sous-composants"
-      },
-      "recentJobs": {
-        "headers": {
-          "actions": "Actions",
-          "created": "Créé",
-          "duration": "Durée",
-          "jobId": "ID de tâche",
-          "progress": "Progression",
-          "status": "Statut",
-          "type": "Type"
-        },
-        "noJobs": "Aucune tâche récente trouvée",
-        "title": "Tâches de synchronisation récentes"
       },
       "title": "Synchronisation d'événements",
       "tournaments": {
@@ -1677,5 +1741,135 @@
     "unlimited": "",
     "visualCode": "Code visuel",
     "women": ""
+  },
+  "v1": {
+    "teamFormation": {
+      "buttons": {
+        "cancel": "",
+        "print": "",
+        "save": ""
+      },
+      "errors": {
+        "already": "",
+        "club-base-other-team": "",
+        "comp-status": "",
+        "comp-status-html": "",
+        "none": "",
+        "not-enough-players": "",
+        "player-above-lower": "",
+        "player-gender": "",
+        "player-genders": "",
+        "player-max-double-games": "",
+        "player-max-mix-games": "",
+        "player-max-mixed-games": "",
+        "player-max-single-games": "",
+        "player-min-level": "",
+        "player-order-doubles": "",
+        "player-order-highest": "",
+        "player-order-single": "",
+        "players-above-lower": "",
+        "team-index": "",
+        "team-to-strong": "",
+        "title": "",
+        "to-much": ""
+      },
+      "info": {
+        "basePlayers": "",
+        "errors": "",
+        "params": {
+          "double1": "",
+          "double2": "",
+          "double3": "",
+          "double4": "",
+          "gender": {
+            "female": "",
+            "females": "",
+            "long": {
+              "F": "",
+              "M": "",
+              "MX": ""
+            },
+            "longs": {
+              "F": "",
+              "M": ""
+            },
+            "male": "",
+            "males": "",
+            "mix": "",
+            "national": "",
+            "select": "",
+            "short": {
+              "female": "",
+              "male": "",
+              "mix": ""
+            },
+            "title": ""
+          },
+          "mix1": "",
+          "mix2": "",
+          "mix3": "",
+          "mix4": "",
+          "ranking": {
+            "double": "",
+            "mix": "",
+            "single": ""
+          },
+          "single1": "",
+          "single2": "",
+          "single3": "",
+          "single4": ""
+        },
+        "title": "",
+        "titulars": ""
+      },
+      "messages": {
+        "downloaded": "",
+        "saved": ""
+      },
+      "notFound": "",
+      "teamFormation": {
+        "categories": {
+          "captainId": "",
+          "doubleMen": "",
+          "doubleWomen": "",
+          "mixDouble": "",
+          "singleMan": "",
+          "singleWoman": "",
+          "subtitudes": ""
+        },
+        "disabledTitle": "",
+        "labels": {
+          "captainId": "",
+          "doubleMen": "",
+          "doubleMen1": "",
+          "doubleMen2": "",
+          "doubleMen3": "",
+          "doubleMen4": "",
+          "doubleWomen": "",
+          "doubleWomen1": "",
+          "doubleWomen2": "",
+          "doubleWomen3": "",
+          "doubleWomen4": "",
+          "mixDouble1": "",
+          "mixDouble2": "",
+          "singleMan1": "",
+          "singleMan2": "",
+          "singleMan3": "",
+          "singleMan4": "",
+          "singleWoman1": "",
+          "singleWoman2": "",
+          "singleWoman3": "",
+          "singleWoman4": "",
+          "subtitudes": ""
+        },
+        "noClub": "",
+        "selectPlayer": "",
+        "title": ""
+      },
+      "title": "",
+      "warnings": {
+        "subtitute-team-index": ""
+      }
+    }
   }
 }

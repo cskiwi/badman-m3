@@ -34,6 +34,7 @@ export type I18nTranslations = {
         };
         "button": {
             "add": string;
+            "agree": string;
             "apply": string;
             "back": string;
             "cancel": string;
@@ -41,6 +42,7 @@ export type I18nTranslations = {
             "confirm": string;
             "create": string;
             "delete": string;
+            "download": string;
             "edit": string;
             "generate": string;
             "refresh": string;
@@ -62,6 +64,48 @@ export type I18nTranslations = {
             "schedule": string;
             "seasonalPerformance": string;
             "stats": string;
+            "teamBuilder": {
+                "addPlayer": string;
+                "addTeam": string;
+                "dropToRemove": string;
+                "import": {
+                    "cancel": string;
+                    "chooseFile": string;
+                    "confidence": string;
+                    "confirm": string;
+                    "createNew": string;
+                    "description": string;
+                    "matched": string;
+                    "matchedPlayer": string;
+                    "matching": string;
+                    "searchPlayer": string;
+                    "surveyName": string;
+                    "title": string;
+                    "toCreate": string;
+                    "total": string;
+                    "willCreate": string;
+                };
+                "noStoppingPlayers": string;
+                "playerPool": string;
+                "playersStopping": string;
+                "removedPlayers": string;
+                "removePlayer": string;
+                "save": string;
+                "settings": {
+                    "maxPlayersPerTeam": string;
+                    "maxPlayersPerTeamHelp": string;
+                    "minFemalesPerMxTeam": string;
+                    "minMalesPerMxTeam": string;
+                    "minPlayersPerTeam": string;
+                    "minPlayersPerTeamHelp": string;
+                    "performanceThreshold": string;
+                    "performanceThresholdHelp": string;
+                    "presenceThreshold": string;
+                    "presenceThresholdHelp": string;
+                    "title": string;
+                };
+                "tab": string;
+            };
             "teamComparison": string;
             "totalGames": string;
             "totalPlayers": string;
@@ -76,48 +120,6 @@ export type I18nTranslations = {
                 "phase": string;
                 "tab": string;
                 "title": string;
-            };
-            "teamBuilder": {
-                "tab": string;
-                "import": {
-                    "title": string;
-                    "description": string;
-                    "chooseFile": string;
-                    "matching": string;
-                    "matched": string;
-                    "total": string;
-                    "toCreate": string;
-                    "createNew": string;
-                    "willCreate": string;
-                    "surveyName": string;
-                    "matchedPlayer": string;
-                    "confidence": string;
-                    "searchPlayer": string;
-                    "confirm": string;
-                    "cancel": string;
-                };
-                "addTeam": string;
-                "save": string;
-                "playerPool": string;
-                "playersStopping": string;
-                "noStoppingPlayers": string;
-                "addPlayer": string;
-                "removePlayer": string;
-                "dropToRemove": string;
-                "removedPlayers": string;
-                "settings": {
-                    "title": string;
-                    "presenceThreshold": string;
-                    "presenceThresholdHelp": string;
-                    "performanceThreshold": string;
-                    "performanceThresholdHelp": string;
-                    "minPlayersPerTeam": string;
-                    "minPlayersPerTeamHelp": string;
-                    "minMalesPerMxTeam": string;
-                    "minFemalesPerMxTeam": string;
-                    "maxPlayersPerTeam": string;
-                    "maxPlayersPerTeamHelp": string;
-                };
             };
             "winRate": string;
             "winRateTrend": string;
@@ -189,6 +191,7 @@ export type I18nTranslations = {
             "level": string;
             "name": string;
             "no": string;
+            "required": string;
             "save": string;
             "search": string;
             "season": string;
@@ -198,7 +201,6 @@ export type I18nTranslations = {
             "viewAll": string;
             "viewDetails": string;
             "yes": string;
-            "required": string;
         };
         "competition": {
             "bracket_view": string;
@@ -364,6 +366,64 @@ export type I18nTranslations = {
             "subEvent": string;
             "subEvents": string;
             "team": string;
+            "team-assembly": {
+                "captain": string;
+                "change-team": string;
+                "club": string;
+                "disclaimer": string;
+                "double1": string;
+                "double2": string;
+                "double3": string;
+                "double4": string;
+                "download": string;
+                "encounter": string;
+                "errors": {
+                    "already": string;
+                    "club-base-other-team": string;
+                    "comp-status": string;
+                    "comp-status-html": string;
+                    "none": string;
+                    "not-enough-players": string;
+                    "player-above-lower": string;
+                    "player-gender": string;
+                    "player-genders": string;
+                    "player-max-double-games": string;
+                    "player-max-mix-games": string;
+                    "player-max-mixed-games": string;
+                    "player-max-single-games": string;
+                    "player-min-level": string;
+                    "player-order-doubles": string;
+                    "player-order-highest": string;
+                    "player-order-single": string;
+                    "players-above-lower": string;
+                    "team-index": string;
+                    "team-to-strong": string;
+                    "title": string;
+                    "to-much": string;
+                };
+                "info": string;
+                "level-exemption": string;
+                "mix1": string;
+                "mix2": string;
+                "mix3": string;
+                "mix4": string;
+                "players": {
+                    "backup": string;
+                    "base": string;
+                    "team": string;
+                    "title": string;
+                };
+                "season": string;
+                "single1": string;
+                "single2": string;
+                "single3": string;
+                "single4": string;
+                "substitude": string;
+                "team": string;
+                "team-index": string;
+                "team-index-ignored": string;
+                "title": string;
+            };
             "teams": string;
             "title": string;
             "tooltip": {
@@ -505,6 +565,10 @@ export type I18nTranslations = {
             "tournament": string;
             "winRate": string;
             "wins": string;
+        };
+        "gender": {
+            "females": string;
+            "males": string;
         };
         "head-to-head": {
             "amount-of-games": string;
@@ -827,12 +891,12 @@ export type I18nTranslations = {
                     "clearCompletedError": string;
                     "clearCompletedSuccess": string;
                     "clearCompletedTooltip": string;
-                    "confirmClearCompleted": string;
                     "competitionSync": string;
                     "competitionSyncError": string;
                     "competitionSyncQueued": string;
                     "competitionSyncTooltip": string;
                     "confirmClearAll": string;
+                    "confirmClearCompleted": string;
                     "confirmCompetitionSync": string;
                     "confirmDiscovery": string;
                     "confirmTournamentSync": string;
@@ -879,12 +943,12 @@ export type I18nTranslations = {
                     "expand": string;
                     "jobId": string;
                     "noJobsFound": string;
-                    "search": string;
                     "progress": string;
                     "retry": string;
                     "retryError": string;
                     "retryHeader": string;
                     "retrySuccess": string;
+                    "search": string;
                     "status": string;
                     "title": string;
                     "type": string;
@@ -907,6 +971,19 @@ export type I18nTranslations = {
                         "failed": string;
                         "waiting": string;
                     };
+                    "title": string;
+                };
+                "recentJobs": {
+                    "headers": {
+                        "actions": string;
+                        "created": string;
+                        "duration": string;
+                        "jobId": string;
+                        "progress": string;
+                        "status": string;
+                        "type": string;
+                    };
+                    "noJobs": string;
                     "title": string;
                 };
                 "scheduling": {
@@ -939,19 +1016,6 @@ export type I18nTranslations = {
                     "title": string;
                     "tournament": string;
                     "withSubComponents": string;
-                };
-                "recentJobs": {
-                    "headers": {
-                        "actions": string;
-                        "created": string;
-                        "duration": string;
-                        "jobId": string;
-                        "progress": string;
-                        "status": string;
-                        "type": string;
-                    };
-                    "noJobs": string;
-                    "title": string;
                 };
                 "title": string;
                 "tournaments": {
@@ -1684,6 +1748,136 @@ export type I18nTranslations = {
             "unlimited": string;
             "visualCode": string;
             "women": string;
+        };
+        "v1": {
+            "teamFormation": {
+                "buttons": {
+                    "cancel": string;
+                    "print": string;
+                    "save": string;
+                };
+                "errors": {
+                    "already": string;
+                    "club-base-other-team": string;
+                    "comp-status": string;
+                    "comp-status-html": string;
+                    "none": string;
+                    "not-enough-players": string;
+                    "player-above-lower": string;
+                    "player-gender": string;
+                    "player-genders": string;
+                    "player-max-double-games": string;
+                    "player-max-mix-games": string;
+                    "player-max-mixed-games": string;
+                    "player-max-single-games": string;
+                    "player-min-level": string;
+                    "player-order-doubles": string;
+                    "player-order-highest": string;
+                    "player-order-single": string;
+                    "players-above-lower": string;
+                    "team-index": string;
+                    "team-to-strong": string;
+                    "title": string;
+                    "to-much": string;
+                };
+                "info": {
+                    "basePlayers": string;
+                    "errors": string;
+                    "params": {
+                        "double1": string;
+                        "double2": string;
+                        "double3": string;
+                        "double4": string;
+                        "gender": {
+                            "female": string;
+                            "females": string;
+                            "long": {
+                                "F": string;
+                                "M": string;
+                                "MX": string;
+                            };
+                            "longs": {
+                                "F": string;
+                                "M": string;
+                            };
+                            "male": string;
+                            "males": string;
+                            "mix": string;
+                            "national": string;
+                            "select": string;
+                            "short": {
+                                "female": string;
+                                "male": string;
+                                "mix": string;
+                            };
+                            "title": string;
+                        };
+                        "mix1": string;
+                        "mix2": string;
+                        "mix3": string;
+                        "mix4": string;
+                        "ranking": {
+                            "double": string;
+                            "mix": string;
+                            "single": string;
+                        };
+                        "single1": string;
+                        "single2": string;
+                        "single3": string;
+                        "single4": string;
+                    };
+                    "title": string;
+                    "titulars": string;
+                };
+                "messages": {
+                    "downloaded": string;
+                    "saved": string;
+                };
+                "notFound": string;
+                "teamFormation": {
+                    "categories": {
+                        "captainId": string;
+                        "doubleMen": string;
+                        "doubleWomen": string;
+                        "mixDouble": string;
+                        "singleMan": string;
+                        "singleWoman": string;
+                        "subtitudes": string;
+                    };
+                    "disabledTitle": string;
+                    "labels": {
+                        "captainId": string;
+                        "doubleMen": string;
+                        "doubleMen1": string;
+                        "doubleMen2": string;
+                        "doubleMen3": string;
+                        "doubleMen4": string;
+                        "doubleWomen": string;
+                        "doubleWomen1": string;
+                        "doubleWomen2": string;
+                        "doubleWomen3": string;
+                        "doubleWomen4": string;
+                        "mixDouble1": string;
+                        "mixDouble2": string;
+                        "singleMan1": string;
+                        "singleMan2": string;
+                        "singleMan3": string;
+                        "singleMan4": string;
+                        "singleWoman1": string;
+                        "singleWoman2": string;
+                        "singleWoman3": string;
+                        "singleWoman4": string;
+                        "subtitudes": string;
+                    };
+                    "noClub": string;
+                    "selectPlayer": string;
+                    "title": string;
+                };
+                "title": string;
+                "warnings": {
+                    "subtitute-team-index": string;
+                };
+            };
         };
     };
 };

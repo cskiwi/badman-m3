@@ -1,3 +1,4 @@
+export * from './assembly-output.resolver';
 export * from './competition-assembly.resolver';
 export * from './competition-draw.resolver';
 export * from './competition-encounter-change-date.resolver';

@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+/* CDK drag-drop animations (cannot be done in Tailwind) */
+.cdk-drag-preview {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: var(--p-border-radius);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging {
+  background-color: var(--p-content-background);
+}

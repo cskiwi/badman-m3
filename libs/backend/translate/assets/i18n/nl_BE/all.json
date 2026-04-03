@@ -27,6 +27,7 @@
   },
   "button": {
     "add": "Toevoegen",
+    "agree": "Akkoord",
     "apply": "Toepassen",
     "back": "Terug",
     "cancel": "Annuleren",
@@ -34,6 +35,7 @@
     "confirm": "Bevestigen",
     "create": "Aanmaken",
     "delete": "Verwijderen",
+    "download": "Downloaden",
     "edit": "Bewerken",
     "generate": "Genereren",
     "refresh": "Vernieuwen",
@@ -55,6 +57,48 @@
     "schedule": "Programma",
     "seasonalPerformance": "Seizoensprestaties",
     "stats": "Club Statistieken",
+    "teamBuilder": {
+      "addPlayer": "Speler toevoegen...",
+      "addTeam": "Team Toevoegen",
+      "dropToRemove": "Sleep hier om te verwijderen",
+      "import": {
+        "cancel": "Annuleren",
+        "chooseFile": "Bestand Kiezen",
+        "confidence": "Betrouwbaarheid",
+        "confirm": "Bevestigen",
+        "createNew": "Nieuw Aanmaken",
+        "description": "Upload het Excel-bestand met de spelersenquête",
+        "matched": "spelers gematcht",
+        "matchedPlayer": "Gematchte Speler",
+        "matching": "Spelers matchen...",
+        "searchPlayer": "Zoek speler...",
+        "surveyName": "Naam Enquête",
+        "title": "Enquête Importeren",
+        "toCreate": "aan te maken",
+        "total": "totaal",
+        "willCreate": "Wordt aangemaakt"
+      },
+      "noStoppingPlayers": "Geen spelers die stoppen",
+      "playerPool": "Niet-toegewezen Spelers",
+      "playersStopping": "Spelers die stoppen",
+      "removedPlayers": "Verwijderde Spelers",
+      "removePlayer": "Speler Verwijderen",
+      "save": "Teams Opslaan",
+      "settings": {
+        "maxPlayersPerTeam": "Max spelers per team",
+        "maxPlayersPerTeamHelp": "Maximum totaal spelers (regulier + reserve) per team",
+        "minFemalesPerMxTeam": "Min vrouwen in MX team",
+        "minMalesPerMxTeam": "Min mannen in MX team",
+        "minPlayersPerTeam": "Min reguliere spelers per team",
+        "minPlayersPerTeamHelp": "Minimum aantal reguliere spelers voor M/V teams",
+        "performanceThreshold": "Prestatiedrempel",
+        "performanceThresholdHelp": "Markeer spelers onder dit winstpercentage",
+        "presenceThreshold": "Aanwezigheidsdrempel",
+        "presenceThresholdHelp": "Markeer spelers onder dit aanwezigheidspercentage",
+        "title": "Instellingen"
+      },
+      "tab": "Ploegopstelling"
+    },
     "teamComparison": "Team Vergelijking",
     "totalGames": "Wedstrijden",
     "totalPlayers": "Spelers",
@@ -69,48 +113,6 @@
       "phase": "Fase",
       "tab": "Toernooien",
       "title": "Club Toernooien"
-    },
-    "teamBuilder": {
-      "tab": "Ploegopstelling",
-      "import": {
-        "title": "Enquête Importeren",
-        "description": "Upload het Excel-bestand met de spelersenquête",
-        "chooseFile": "Bestand Kiezen",
-        "matching": "Spelers matchen...",
-        "matched": "spelers gematcht",
-        "total": "totaal",
-        "toCreate": "aan te maken",
-        "createNew": "Nieuw Aanmaken",
-        "willCreate": "Wordt aangemaakt",
-        "surveyName": "Naam Enquête",
-        "matchedPlayer": "Gematchte Speler",
-        "confidence": "Betrouwbaarheid",
-        "searchPlayer": "Zoek speler...",
-        "confirm": "Bevestigen",
-        "cancel": "Annuleren"
-      },
-      "addTeam": "Team Toevoegen",
-      "save": "Teams Opslaan",
-      "playerPool": "Niet-toegewezen Spelers",
-      "playersStopping": "Spelers die stoppen",
-      "noStoppingPlayers": "Geen spelers die stoppen",
-      "addPlayer": "Speler toevoegen...",
-      "removePlayer": "Speler Verwijderen",
-      "dropToRemove": "Sleep hier om te verwijderen",
-      "removedPlayers": "Verwijderde Spelers",
-      "settings": {
-        "title": "Instellingen",
-        "presenceThreshold": "Aanwezigheidsdrempel",
-        "presenceThresholdHelp": "Markeer spelers onder dit aanwezigheidspercentage",
-        "performanceThreshold": "Prestatiedrempel",
-        "performanceThresholdHelp": "Markeer spelers onder dit winstpercentage",
-        "minPlayersPerTeam": "Min reguliere spelers per team",
-        "minPlayersPerTeamHelp": "Minimum aantal reguliere spelers voor M/V teams",
-        "minMalesPerMxTeam": "Min mannen in MX team",
-        "minFemalesPerMxTeam": "Min vrouwen in MX team",
-        "maxPlayersPerTeam": "Max spelers per team",
-        "maxPlayersPerTeamHelp": "Maximum totaal spelers (regulier + reserve) per team"
-      }
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
@@ -182,6 +184,7 @@
     "level": "Niveau",
     "name": "Naam",
     "no": "Nee",
+    "required": "Dit veld is verplicht",
     "save": "Opslaan",
     "search": "Zoeken",
     "season": "Seizoen",
@@ -190,8 +193,7 @@
     "unknown": "Onbekend",
     "viewAll": "Bekijk Alle",
     "viewDetails": "Details bekijken",
-    "yes": "Ja",
-    "required": "Dit veld is verplicht"
+    "yes": "Ja"
   },
   "competition": {
     "bracket_view": "Schema Weergave",
@@ -357,6 +359,64 @@
     "subEvent": "Onderdeel",
     "subEvents": "Reeksen",
     "team": "Team",
+    "team-assembly": {
+      "captain": "Ploegkapitein",
+      "change-team": "Door het team te bewerken kun je de standaard getoonde spelers en de reservespelers veranderen.",
+      "club": "Club",
+      "disclaimer": "Disclaimer: Deze opstellingsmodule is een betaversie en kan uitzonderlijk nog fouten bevatten. Controleer daarom altijd kritisch je opstelling rekening houdende met reglement C320.",
+      "double1": "Dubbel 1",
+      "double2": "Dubbel 2",
+      "double3": "Dubbel 3",
+      "double4": "Dubbel 4",
+      "download": "Download",
+      "encounter": "Ontmoeting",
+      "errors": {
+        "already": "Speler al als titularis aanwezig.",
+        "club-base-other-team": "<strong>{player.fullName}</strong> is basisspeler van een ander team",
+        "comp-status": "{player.fullName} staat niet ingeschreven voor de competitie",
+        "comp-status-html": "<strong>{player.fullName}</strong> staat niet ingeschreven voor de competitie",
+        "none": "Geen fouten gevonden",
+        "not-enough-players": "Te weinig titularissen zijn momenteel opgesteld voor de ontmoeting.",
+        "player-above-lower": "Speler met hogere opstellingsindex staat voor deze speler opgesteld.",
+        "player-gender": "<strong>{player.fullName}</strong> is een {player.gender} maar een {gender} was verwacht",
+        "player-genders": "<strong>{player1.fullName}</strong> ({player1.gender}) en {player2.gender} ({player2gender}) zijn niet het correcte geslacht voor <strong>{game}</strong>",
+        "player-max-double-games": "<strong>{player.fullName}</strong> mag maximaal {max} dubbels spelen",
+        "player-max-mix-games": "<strong>{player.fullName}</strong> mag maximaal {max} gemengd dubbels spelen",
+        "player-max-mixed-games": "<strong>{player.fullName}</strong> kan maar een maximum van {max} gemengd dubbel wedstrijd spelen",
+        "player-max-single-games": "<strong>{player.fullName}</strong> mag maximaal {max} enkels spelen",
+        "player-min-level": "<strong>{player.fullName}</strong> heeft een discipline-index van <strong>{player.ranking}</strong> in {rankingType} en mag minimaal <strong>{minLevel}</strong> zijn.",
+        "player-order-doubles": "<strong>{team2player1.fullName}</strong> en <strong>{team2player2.fullName}</strong> in <strong>{game2}</strong> hebben een beter gecombineerd klassement dan <strong>{team1player1.fullName}</strong> en <strong>{team1player2.fullName}</strong> in <strong>{game1}</strong>.",
+        "player-order-highest": "<strong>{team2player1.fullName}</strong> of <strong>{team2player2.fullName}</strong> in <strong>{game2}</strong> heeft een beter individueel klassement dan <strong>{team1player1.fullName}</strong> of <strong>{team1player2.fullName}</strong> in <strong>{game1}</strong>",
+        "player-order-single": "<strong>{player2.fullName}</strong> in <strong>{game2}</strong> heeft een beter klassement dan <strong>{player1.fullName}</strong> in <strong>{game1}</strong>",
+        "players-above-lower": "Paar met hogere opstellingsindex staat voor dit paar opgesteld.",
+        "team-index": "Ploegindex titularissen is <strong>{teamIndex}</strong> en mag minimaal <strong>{baseIndex}</strong> zijn.",
+        "team-to-strong": "Ploegindex titularissen is <strong>{teamIndex}</strong> en mag niet onder de grens van de afdeling <strong>{minIndex}</strong> komen.",
+        "title": "Fouten",
+        "to-much": "Speler mag maximaal 2 (gemengd) dubbels en 1 enkel spelen."
+      },
+      "info": "Opmerkingen bij opstelling",
+      "level-exemption": "Speler is vrijgesteld van de ranking restricties",
+      "mix1": "Heren Dubbel",
+      "mix2": "Dames Dubbel",
+      "mix3": "Gemengd 1",
+      "mix4": "Gemengd 2",
+      "players": {
+        "backup": "Reservespelers",
+        "base": "Titularissen",
+        "team": "Basisspelers",
+        "title": "Mogelijke titularissen"
+      },
+      "season": "Seizoen",
+      "single1": "Enkel 1",
+      "single2": "Enkel 2",
+      "single3": "Enkel 3",
+      "single4": "Enkel 4",
+      "substitude": "Invallers",
+      "team": "Team",
+      "team-index": "Ploegindex titularissen is <strong>{current}</strong> en mag minimaal <strong>{team}</strong> zijn.",
+      "team-index-ignored": "Ploegindex basisspelers mag onderschreden worden bij de 1e ploeg.",
+      "title": "Ploegopstelling"
+    },
     "teams": "Teams",
     "title": "Toernooien & Competities",
     "tooltip": {
@@ -498,6 +558,10 @@
     "tournament": "Toernooi",
     "winRate": "Winpercentage",
     "wins": "Overwinningen"
+  },
+  "gender": {
+    "females": "Dames",
+    "males": "Heren"
   },
   "head-to-head": {
     "amount-of-games": "Aantal wedstrijden",
@@ -820,12 +884,12 @@
         "clearCompletedError": "Fout bij het verwijderen van voltooide jobs",
         "clearCompletedSuccess": "Voltooide jobs succesvol verwijderd",
         "clearCompletedTooltip": "Verwijder voltooide jobs, bewaar gefaalde jobs voor debugging",
-        "confirmClearCompleted": "Alle voltooide jobs wissen? Jobs met gefaalde kinderen worden bewaard voor debugging.",
         "competitionSync": "Competitie sync",
         "competitionSyncError": "Mislukt om competitie sync te plannen",
         "competitionSyncQueued": "Competitie sync succesvol gepland",
         "competitionSyncTooltip": "Synchroniseer alle ontmoetingen van de afgelopen maand",
         "confirmClearAll": "Weet je zeker dat je alle jobs uit alle wachtrijen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+        "confirmClearCompleted": "Alle voltooide jobs wissen? Jobs met gefaalde kinderen worden bewaard voor debugging.",
         "confirmCompetitionSync": "Competitie sync plannen voor alle ontmoetingen van de afgelopen maand?",
         "confirmDiscovery": "Toernooi discovery sync plannen om nieuwe toernooien te vinden?",
         "confirmTournamentSync": "Sync plannen voor alle huidige en aankomende toernooien?",
@@ -872,12 +936,12 @@
         "expand": "Uitklappen",
         "jobId": "Job ID",
         "noJobsFound": "Geen recente jobs gevonden",
-        "search": "Zoek op ID, naam of status…",
         "progress": "Voortgang",
         "retry": "Job opnieuw proberen",
         "retryError": "Fout bij opnieuw proberen van job {{id}}",
         "retryHeader": "Job Opnieuw Proberen",
         "retrySuccess": "Job {{id}} in wachtrij geplaatst voor heruitvoering",
+        "search": "Zoek op ID, naam of status…",
         "status": "Status",
         "title": "Recente Sync Jobs",
         "type": "Type",
@@ -901,6 +965,19 @@
           "waiting": "Wachtend"
         },
         "title": "Wachtrij Statistieken"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Acties",
+          "created": "Aangemaakt",
+          "duration": "Duur",
+          "jobId": "Job ID",
+          "progress": "Voortgang",
+          "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "Geen recente jobs gevonden",
+        "title": "Recente Sync Jobs"
       },
       "scheduling": {
         "competition": "Competitie",
@@ -932,19 +1009,6 @@
         "title": "Sync Plannen",
         "tournament": "Tornooi",
         "withSubComponents": "Met subcomponenten"
-      },
-      "recentJobs": {
-        "headers": {
-          "actions": "Acties",
-          "created": "Aangemaakt",
-          "duration": "Duur",
-          "jobId": "Job ID",
-          "progress": "Voortgang",
-          "status": "Status",
-          "type": "Type"
-        },
-        "noJobs": "Geen recente jobs gevonden",
-        "title": "Recente Sync Jobs"
       },
       "title": "Synchronisatie Evenementen",
       "tournaments": {
@@ -1677,5 +1741,135 @@
     "unlimited": "Onbeperkt",
     "visualCode": "Visuele Code",
     "women": "Dames"
+  },
+  "v1": {
+    "teamFormation": {
+      "buttons": {
+        "cancel": "Annuleren",
+        "print": "Afdrukken",
+        "save": "Opslaan"
+      },
+      "errors": {
+        "already": "Speler is al geselecteerd als titularis.",
+        "club-base-other-team": "{playerFullName} is basisspeler van een ander team",
+        "comp-status": "{playerFullName} is niet gemarkeerd als competitie speler",
+        "comp-status-html": "{playerFullName} is niet gemarkeerd als competitie speler",
+        "none": "Geen fouten gevonden",
+        "not-enough-players": "Te weinig titularissen zijn opgesteld voor de wedstrijd.",
+        "player-above-lower": "Speler met een hogere opstellingsindex is opgesteld vóór deze speler",
+        "player-gender": "{playerFullName} is een {playerGender}, maar {gender} wordt verwacht",
+        "player-genders": "{player1FullName} ({player1Gender}) en {player2FullName} ({player2Gender}) hebben niet het juiste geslacht voor {game}",
+        "player-max-double-games": "{playerFullName} mag maximaal {max} dubbels spelen",
+        "player-max-mix-games": "{playerFullName} mag maximaal {max} gemengde dubbels spelen",
+        "player-max-mixed-games": "{playerFullName} mag maximaal {max} gemengde dubbels spelen",
+        "player-max-single-games": "{playerFullName} mag maximaal {max} enkels spelen",
+        "player-min-level": "{playerFullName} heeft een index van {playerRanking} in {rankingType} en moet minimaal {minLevel} zijn.",
+        "player-order-doubles": "{team2player1FullName} en {team2player2FullName} in {game2} hebben een hogere gecombineerde index dan {team1player1FullName} en {team1player2FullName} in {game1}.",
+        "player-order-highest": "{team2player1FullName} of {team2player2FullName} in {game2} heeft een betere individuele ranking dan {team1player1FullName} of {team1player2FullName} in {game1}.",
+        "player-order-single": "{player2FullName} in {game2} heeft een hogere index dan {player1FullName} in {game1}.",
+        "players-above-lower": "Paar met een hogere opstellingsindex is opgesteld vóór dit paar.",
+        "team-index": "Teamindex titularissen is {teamIndex} en moet minimaal {baseIndex} zijn",
+        "team-to-strong": "Teamindex titularissen is {teamIndex} en mag niet lager zijn dan toegestaan in de divisie {minIndex}",
+        "title": "Fouten",
+        "to-much": "Een speler mag maximaal 2 (gemengde) dubbels en 1 enkel spelen."
+      },
+      "info": {
+        "basePlayers": "Basis spelers",
+        "errors": "Fouten",
+        "params": {
+          "double1": "Dubbel 1",
+          "double2": "Dubbel 2",
+          "double3": "Dubbel 3",
+          "double4": "Dubbel 4",
+          "gender": {
+            "female": "Vrouw",
+            "females": "Vrouwen",
+            "long": {
+              "F": "Vrouw",
+              "M": "Man",
+              "MX": "Gemengd"
+            },
+            "longs": {
+              "F": "Vrouw",
+              "M": "Man"
+            },
+            "male": "Man",
+            "males": "Mannen",
+            "mix": "Gemengd",
+            "national": "Nationaal",
+            "select": "Selecteer",
+            "short": {
+              "female": "V",
+              "male": "M",
+              "mix": "MX"
+            },
+            "title": "Geslacht"
+          },
+          "mix1": "Mannendubbel",
+          "mix2": "Vrouwendubbel",
+          "mix3": "Gemengd 1",
+          "mix4": "Gemengd 2",
+          "ranking": {
+            "double": "Dubbel",
+            "mix": "Gemengd",
+            "single": "Enkel"
+          },
+          "single1": "Enkel 1",
+          "single2": "Enkel 2",
+          "single3": "Enkel 3",
+          "single4": "Enkel 4"
+        },
+        "title": "Info",
+        "titulars": "Titularissen"
+      },
+      "messages": {
+        "downloaded": "Ploegopstelling gedownload",
+        "saved": "Ploegopstelling opgeslagen"
+      },
+      "notFound": "Geen ploegopstelling gevonden",
+      "teamFormation": {
+        "categories": {
+          "captainId": "Kapitein",
+          "doubleMen": "Dubbel Mannen",
+          "doubleWomen": "Dubbel Vrouwen",
+          "mixDouble": "Gemengd Dubbel",
+          "singleMan": "Enkel Man",
+          "singleWoman": "Enkel Vrouw",
+          "subtitudes": "Reservespelers"
+        },
+        "disabledTitle": "Spelers",
+        "labels": {
+          "captainId": "Kapitein",
+          "doubleMen": "Dubbel Mannen",
+          "doubleMen1": "Dubbel Mannen 1",
+          "doubleMen2": "Dubbel Mannen 2",
+          "doubleMen3": "Dubbel Mannen 3",
+          "doubleMen4": "Dubbel Mannen 4",
+          "doubleWomen": "Dubbel Vrouwen",
+          "doubleWomen1": "Dubbel Vrouwen 1",
+          "doubleWomen2": "Dubbel Vrouwen 2",
+          "doubleWomen3": "Dubbel Vrouwen 3",
+          "doubleWomen4": "Dubbel Vrouwen 4",
+          "mixDouble1": "Gemengd 1",
+          "mixDouble2": "Gemengd 2",
+          "singleMan1": "Enkel Man 1",
+          "singleMan2": "Enkel Man 2",
+          "singleMan3": "Enkel Man 3",
+          "singleMan4": "Enkel Man 4",
+          "singleWoman1": "Enkel Vrouw 1",
+          "singleWoman2": "Enkel Vrouw 2",
+          "singleWoman3": "Enkel Vrouw 3",
+          "singleWoman4": "Enkel Vrouw 4",
+          "subtitudes": "Reservespelers"
+        },
+        "noClub": "Team heeft geen club",
+        "selectPlayer": "Selecteer speler",
+        "title": "Selecteer spelers"
+      },
+      "title": "Ploegopstelling",
+      "warnings": {
+        "subtitute-team-index": "s"
+      }
+    }
   }
 }

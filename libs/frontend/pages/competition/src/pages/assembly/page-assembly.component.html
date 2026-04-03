@@ -1,0 +1,94 @@
+<app-page-header title="all.competition.team-assembly.title" />
+
+<section class="flex flex-col md:flex-row gap-4 pb-4 items-start px-4">
+  <div class="flex flex-wrap gap-4 flex-1">
+    <p-floatLabel class="min-w-[180px] flex-1">
+      <p-select
+        [options]="seasons()"
+        [ngModel]="selectedSeason()"
+        (ngModelChange)="onSeasonChange($event)"
+        styleClass="w-full"
+        inputId="season-select"
+      />
+      <label for="season-select">{{ 'all.competition.team-assembly.season' | translate }}</label>
+    </p-floatLabel>
+
+    <p-floatLabel class="min-w-[180px] flex-1">
+      <p-autoComplete
+        [suggestions]="clubSuggestions()"
+        (completeMethod)="searchClub($event)"
+        (onSelect)="onClubSelect($event.value)"
+        (onClear)="onClubClear()"
+        optionLabel="name"
+        [forceSelection]="true"
+        [ngModel]="selectedClub()"
+        inputId="club-select"
+        styleClass="w-full"
+      />
+      <label for="club-select">{{ 'all.competition.team-assembly.club' | translate }}</label>
+    </p-floatLabel>
+
+    <p-floatLabel class="min-w-[180px] flex-1">
+      <p-select
+        [options]="teams()"
+        [ngModel]="selectedTeamId()"
+        (ngModelChange)="onTeamChange($event)"
+        optionLabel="name"
+        optionValue="id"
+        [optionGroupLabel]="'type'"
+        [optionGroupChildren]="'teams'"
+        [group]="true"
+        [disabled]="!selectedClub()"
+        styleClass="w-full"
+        inputId="team-select"
+      />
+      <label for="team-select">{{ 'all.competition.team-assembly.team' | translate }}</label>
+    </p-floatLabel>
+
+    <p-floatLabel class="min-w-[180px] flex-1">
+      <p-select
+        [options]="encounters()"
+        [ngModel]="selectedEncounterId()"
+        (ngModelChange)="onEncounterChange($event)"
+        optionLabel="label"
+        optionValue="id"
+        [showClear]="true"
+        [disabled]="!selectedTeamId()"
+        styleClass="w-full"
+        inputId="encounter-select"
+      />
+      <label for="encounter-select">{{ 'all.competition.team-assembly.encounter' | translate }}</label>
+    </p-floatLabel>
+  </div>
+  <div class="flex shrink-0">
+    <p-button
+      [label]="'all.button.download' | translate"
+      icon="pi pi-download"
+      [loading]="pdfLoading()"
+      [disabled]="pdfLoading()"
+      (onClick)="download()"
+      severity="secondary"
+      [outlined]="true"
+    />
+    @if (loggedIn()) {
+      <p-button icon="pi pi-chevron-down" [outlined]="true" severity="secondary" (onClick)="saveMenu.toggle($event)" />
+      <p-menu #saveMenu [model]="saveMenuItems()" [popup]="true" />
+    }
+  </div>
+</section>
+
+<section class="assembly-section">
+  <app-assembly [formGroup]="dataService.formGroup" (validationOverview)="templateUpdated($event)" />
+</section>
+
+<p-dialog header="There are warnings" [visible]="showValidationDialog()" [modal]="true" [closable]="true" (onHide)="onDialogCancel()">
+  @if (validationOverview()?.template) {
+    <ng-container *ngTemplateOutlet="validationOverview()!.template" />
+  }
+  <ng-template pTemplate="footer">
+    <p-button [label]="'all.button.agree' | translate" (onClick)="onDialogConfirm()" severity="primary" />
+    <p-button [label]="'all.button.cancel' | translate" (onClick)="onDialogCancel()" severity="secondary" [outlined]="true" />
+  </ng-template>
+</p-dialog>
+
+<p-toast />

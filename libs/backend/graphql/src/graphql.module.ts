@@ -16,6 +16,7 @@ import {
   ClubPlayerMembershipResolver,
   ClubResolver,
   CommentResolver,
+  AssemblyOutputResolver,
   CompetitionAssemblyResolver,
   CompetitionDrawResolver,
   CompetitionEncounterChangeDateResolver,
@@ -68,6 +69,7 @@ import { EnrollmentCapacityService } from './services/tournament/enrollment-capa
 import { EnrollmentCartService } from './services/tournament/enrollment-cart.service';
 import { EnrollmentValidationService } from './services/tournament/enrollment-validation.service';
 import { EnrollmentService } from './services/tournament/enrollment.service';
+import { AssemblyValidationService } from './services/assembly/assembly-validation.service';
 @Module({
   imports: [
     ConfigModule,
@@ -137,6 +139,7 @@ import { EnrollmentService } from './services/tournament/enrollment.service';
     CompetitionDrawResolver,
     CompetitionEncounterResolver,
     CompetitionAssemblyResolver,
+    AssemblyOutputResolver,
     CompetitionGroupSubEventMembershipResolver,
     TournamentEventResolver,
     TournamentSubEventResolver,
@@ -151,6 +154,7 @@ import { EnrollmentService } from './services/tournament/enrollment.service';
     EnrollmentCartService,
     EnrollmentValidationService,
     EnrollmentCapacityService, 
+    AssemblyValidationService,
     GroupSubeventMembershipResolver,
     LocationEventMembershipResolver,
     PlayerPermissionsResolver,

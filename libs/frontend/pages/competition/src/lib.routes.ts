@@ -11,6 +11,10 @@ export const routes: Route[] = [
     children: [
       { path: '', loadComponent: () => import('./pages/overview/page-overview.component').then(m => m.PageOverviewComponent) },
       {
+        path: 'assembly',
+        loadComponent: () => import('./pages/assembly/page-assembly.component').then(m => m.PageAssemblyComponent),
+      },
+      {
         path: ':competitionId',
         children: [
           {

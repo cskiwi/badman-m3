@@ -20,6 +20,7 @@ const UPCOMING_GAMES_QUERY = gql`
           id
           competitionEvent {
             id
+            season
           }
         }
       }
