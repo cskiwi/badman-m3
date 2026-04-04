@@ -216,6 +216,40 @@ export class AssemblyService {
     [TeamMembershipType.BACKUP]: [],
   });
 
+  // Available players selection (checked as participating)
+  availablePlayerIds = signal<Set<string>>(new Set());
+
+  availablePlayers = computed(() => {
+    const ids = this.availablePlayerIds();
+    const all = [...this.players()[TeamMembershipType.REGULAR], ...this.players()[TeamMembershipType.BACKUP]];
+    return all.filter((p) => ids.has(p.id));
+  });
+
+  togglePlayerAvailability(playerId: string) {
+    this.availablePlayerIds.update((ids) => {
+      const next = new Set(ids);
+      if (next.has(playerId)) {
+        next.delete(playerId);
+      } else {
+        next.add(playerId);
+      }
+      return next;
+    });
+  }
+
+  setAllPlayersAvailable(available: boolean) {
+    if (available) {
+      const all = [...this.players()[TeamMembershipType.REGULAR], ...this.players()[TeamMembershipType.BACKUP]];
+      this.availablePlayerIds.set(new Set(all.map((p) => p.id)));
+    } else {
+      this.availablePlayerIds.set(new Set());
+    }
+  }
+
+  isPlayerAvailable(playerId: string): boolean {
+    return this.availablePlayerIds().has(playerId);
+  }
+
   // Slot arrays
   single1 = signal<PlayerWithRanking[]>([]);
   single2 = signal<PlayerWithRanking[]>([]);
@@ -347,6 +381,9 @@ export class AssemblyService {
       // Categorize players
       const categorized = this.categorizePlayers(teamData);
       this.players.set(categorized);
+
+      // Default all regular players as available
+      this.availablePlayerIds.set(new Set(categorized[TeamMembershipType.REGULAR].map((p) => p.id)));
 
       // Set level exceptions
       const exceptions = new Map<string, boolean>();

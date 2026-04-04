@@ -34,9 +34,12 @@ import { MessageModule } from 'primeng/message';
 import { AssemblyPlayerComponent } from '../assembly-player/assembly-player.component';
 import { AssemblyMessageComponent } from '../assembly-message/assembly-message.component';
 import { AssemblyService, PlayerWithRanking } from '../../page-assembly.service';
+import { AssemblyGeneratorService, GenerateStrategy, TimeRange } from '../../assembly-generator.service';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { Player } from '@app/models';
 import { TeamMembershipType } from '@app/models-enum';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-assembly',
@@ -58,6 +61,8 @@ import { TeamMembershipType } from '@app/models-enum';
     ButtonModule,
     TooltipModule,
     MessageModule,
+    CheckboxModule,
+    InputTextModule,
     AssemblyPlayerComponent,
     AssemblyMessageComponent,
   ],
@@ -67,6 +72,7 @@ import { TeamMembershipType } from '@app/models-enum';
 })
 export class AssemblyComponent {
   private readonly authService = inject(AuthService);
+  private readonly generatorService = inject(AssemblyGeneratorService);
 
   formGroup = input.required<FormGroup>();
   readonly dataService = inject(AssemblyService);
@@ -76,6 +82,23 @@ export class AssemblyComponent {
   validationTemplate = viewChild<TemplateRef<HTMLElement>>('validationOverviewTemplate');
 
   isMobile = signal(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  // Auto-generate state
+  generating = signal(false);
+  selectedTimeRange = signal<TimeRange>('season');
+  selectedWeeks = signal(52);
+
+  timeRangeOptions = [
+    { label: 'all.competition.team-assembly.auto-generate.this-season', value: 'season' as TimeRange },
+    { label: 'all.competition.team-assembly.auto-generate.last-season', value: 'last-season' as TimeRange },
+    { label: 'all.competition.team-assembly.auto-generate.last-x-weeks', value: 'last-weeks' as TimeRange },
+  ];
+
+  allPlayersSelected = computed(() => {
+    const all = [...this.dataService.players()[TeamMembershipType.REGULAR], ...this.dataService.players()[TeamMembershipType.BACKUP]];
+    if (all.length === 0) return false;
+    return all.every((p) => this.dataService.isPlayerAvailable(p.id));
+  });
 
   lists = [
     'playerList',
@@ -257,4 +280,35 @@ export class AssemblyComponent {
     if (!clubId) return false;
     return this.authService.hasAnyPermission([`${clubId}_edit:team`, 'edit-any:club']);
   });
+
+  toggleAllPlayers(selected: boolean) {
+    this.dataService.setAllPlayersAvailable(selected);
+  }
+
+  async generateAssembly(strategy: GenerateStrategy) {
+    this.generating.set(true);
+    try {
+      await this.generatorService.generate({
+        strategy,
+        timeRange: this.selectedTimeRange(),
+        weeks: this.selectedWeeks(),
+      });
+    } finally {
+      this.generating.set(false);
+    }
+  }
+
+  clearAssembly() {
+    this.dataService.single1.set([]);
+    this.dataService.single2.set([]);
+    this.dataService.single3.set([]);
+    this.dataService.single4.set([]);
+    this.dataService.double1.set([]);
+    this.dataService.double2.set([]);
+    this.dataService.double3.set([]);
+    this.dataService.double4.set([]);
+    this.dataService.substitutes.set([]);
+    this.dataService.syncFormFromSlots();
+    this.dataService.validate();
+  }
 }

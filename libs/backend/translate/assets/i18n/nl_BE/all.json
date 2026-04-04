@@ -360,6 +360,18 @@
     "subEvents": "Reeksen",
     "team": "Team",
     "team-assembly": {
+      "auto-generate": {
+        "best-results": "Beste resultaten",
+        "clear": "Opstelling wissen",
+        "last-season": "Vorig seizoen",
+        "last-x-weeks": "Laatste X weken",
+        "random": "Willekeurig",
+        "this-season": "Dit seizoen",
+        "time-range": "Tijdsbereik",
+        "title": "Automatisch opstelling genereren",
+        "variations": "Variaties",
+        "weeks": "Weken"
+      },
       "captain": "Ploegkapitein",
       "change-team": "Door het team te bewerken kun je de standaard getoonde spelers en de reservespelers veranderen.",
       "club": "Club",
@@ -402,11 +414,12 @@
       "mix4": "Gemengd 2",
       "players": {
         "backup": "Reservespelers",
-        "base": "Titularissen",
-        "team": "Basisspelers",
+        "base": "Basisspelers",
+        "team": "Titularissen",
         "title": "Mogelijke titularissen"
       },
       "season": "Seizoen",
+      "select-all": "Alle spelers selecteren/deselecteren",
       "single1": "Enkel 1",
       "single2": "Enkel 2",
       "single3": "Enkel 3",

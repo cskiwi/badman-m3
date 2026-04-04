@@ -367,6 +367,18 @@ export type I18nTranslations = {
             "subEvents": string;
             "team": string;
             "team-assembly": {
+                "auto-generate": {
+                    "best-results": string;
+                    "clear": string;
+                    "last-season": string;
+                    "last-x-weeks": string;
+                    "random": string;
+                    "this-season": string;
+                    "time-range": string;
+                    "title": string;
+                    "variations": string;
+                    "weeks": string;
+                };
                 "captain": string;
                 "change-team": string;
                 "club": string;
@@ -414,6 +426,7 @@ export type I18nTranslations = {
                     "title": string;
                 };
                 "season": string;
+                "select-all": string;
                 "single1": string;
                 "single2": string;
                 "single3": string;

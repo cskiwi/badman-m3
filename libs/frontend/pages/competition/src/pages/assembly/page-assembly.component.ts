@@ -21,6 +21,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { MessageService } from 'primeng/api';
 import { AssemblyComponent } from './components/assembly/assembly.component';
 import { AssemblyService } from './page-assembly.service';
+import { AssemblyGeneratorService } from './assembly-generator.service';
 
 @Component({
   selector: 'app-page-assembly',
@@ -40,7 +41,7 @@ import { AssemblyService } from './page-assembly.service';
     PageHeaderComponent,
     AssemblyComponent,
   ],
-  providers: [MessageService, AssemblyService],
+  providers: [MessageService, AssemblyService, AssemblyGeneratorService],
   templateUrl: './page-assembly.component.html',
   styleUrl: './page-assembly.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

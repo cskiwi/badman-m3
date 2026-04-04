@@ -4,9 +4,11 @@
   <section class="flex flex-col gap-4">
     <!-- Information Panels -->
     <div class="flex flex-wrap gap-4 max-md:flex-col">
-      <p-fieldset [legend]="'all.competition.team-assembly.players.base' | translate" class="flex-1 min-w-[250px]">
-        <div class="font-bold mb-2">Index: {{ dataService.base().index }}</div>
-        @for (player of dataService.base().players; track player.id) {
+      
+
+      <p-fieldset [legend]="'all.competition.team-assembly.players.team' | translate" class="flex-1 min-w-[250px]">
+        <div class="font-bold mb-2">Index: {{ dataService.titulars().index }}</div>
+        @for (player of dataService.titulars().players; track player.id) {
           <div class="flex justify-between items-center py-1">
             <span>{{ player.firstName }} {{ player.lastName }}</span>
             @if (dataService.isException(player.id)) {
@@ -25,9 +27,9 @@
         }
       </p-fieldset>
 
-      <p-fieldset [legend]="'all.competition.team-assembly.players.team' | translate" class="flex-1 min-w-[250px]">
-        <div class="font-bold mb-2">Index: {{ dataService.titulars().index }}</div>
-        @for (player of dataService.titulars().players; track player.id) {
+      <p-fieldset [legend]="'all.competition.team-assembly.players.base' | translate" class="flex-1 min-w-[250px]">
+        <div class="font-bold mb-2">Index: {{ dataService.base().index }}</div>
+        @for (player of dataService.base().players; track player.id) {
           <div class="flex justify-between items-center py-1">
             <span>{{ player.firstName }} {{ player.lastName }}</span>
             @if (dataService.isException(player.id)) {
@@ -161,16 +163,32 @@
             (cdkDropListDropped)="drop($event)"
             [cdkDropListSortingDisabled]="true"
           >
-            <label class="font-bold mb-2">{{ 'all.competition.team-assembly.players.title' | translate }}</label>
-            @for (item of dataService.players()['REGULAR']; track item.id) {
-              <app-assembly-player
-                class="cursor-grab active:cursor-grabbing"
-                [player]="item"
-                [levelException]="dataService.isException(item.id)"
-                [eventType]="dataService.type()!"
-                [cdkDragData]="item"
-                cdkDrag
+            <div class="flex justify-between items-center mb-2">
+              <label class="font-bold">{{ 'all.competition.team-assembly.players.title' | translate }}</label>
+              <p-checkbox
+                [binary]="true"
+                [ngModel]="allPlayersSelected()"
+                (ngModelChange)="toggleAllPlayers($event)"
+                [pTooltip]="'all.competition.team-assembly.select-all' | translate"
               />
+            </div>
+            @for (item of dataService.players()['REGULAR']; track item.id) {
+              <div class="flex items-center gap-1">
+                <p-checkbox
+                  [binary]="true"
+                  [ngModel]="dataService.isPlayerAvailable(item.id)"
+                  (ngModelChange)="dataService.togglePlayerAvailability(item.id)"
+                  [pTooltip]="'all.competition.team-assembly.auto-generate.player-joining' | translate"
+                />
+                <app-assembly-player
+                  class="cursor-grab active:cursor-grabbing flex-1"
+                  [player]="item"
+                  [levelException]="dataService.isException(item.id)"
+                  [eventType]="dataService.type()!"
+                  [cdkDragData]="item"
+                  cdkDrag
+                />
+              </div>
             }
             @if (dataService.players()['BACKUP'].length > 0) {
               <p-divider />
@@ -185,14 +203,22 @@
               @if (dataService.showBackup()) {
                 <div class="flex flex-col gap-1">
                   @for (item of dataService.players()['BACKUP']; track item.id) {
-                    <app-assembly-player
-                      class="cursor-grab active:cursor-grabbing"
-                      [player]="item"
-                      [levelException]="dataService.isException(item.id)"
-                      [eventType]="dataService.type()!"
-                      [cdkDragData]="item"
-                      cdkDrag
-                    />
+                    <div class="flex items-center gap-1">
+                      <p-checkbox
+                        [binary]="true"
+                        [ngModel]="dataService.isPlayerAvailable(item.id)"
+                        (ngModelChange)="dataService.togglePlayerAvailability(item.id)"
+                        [pTooltip]="'all.competition.team-assembly.auto-generate.player-joining' | translate"
+                      />
+                      <app-assembly-player
+                        class="cursor-grab active:cursor-grabbing flex-1"
+                        [player]="item"
+                        [levelException]="dataService.isException(item.id)"
+                        [eventType]="dataService.type()!"
+                        [cdkDragData]="item"
+                        cdkDrag
+                      />
+                    </div>
                   }
                 </div>
               }
@@ -224,6 +250,94 @@
               />
             </div>
           }
+
+          <!-- Auto-Generate Assembly -->
+          <div class="mt-4 p-2 border border-surface rounded-border">
+            <label class="font-bold mb-2 block">{{ 'all.competition.team-assembly.auto-generate.title' | translate }}</label>
+
+            <div class="flex flex-col gap-2 mb-3">
+              <p-floatLabel>
+                <p-select
+                  [options]="timeRangeOptions"
+                  [(ngModel)]="selectedTimeRange"
+                  optionValue="value"
+                  class="w-full"
+                  inputId="time-range-select"
+                >
+                  <ng-template let-option pTemplate="selectedItem">
+                    {{ option.label | translate }}
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    {{ option.label | translate }}
+                  </ng-template>
+                </p-select>
+                <label for="time-range-select">{{ 'all.competition.team-assembly.auto-generate.time-range' | translate }}</label>
+              </p-floatLabel>
+
+              @if (selectedTimeRange() === 'last-weeks') {
+                <p-floatLabel>
+                  <input
+                    pInputText
+                    type="number"
+                    [(ngModel)]="selectedWeeks"
+                    class="w-full"
+                    id="weeks-input"
+                    min="1"
+                    max="52"
+                  />
+                  <label for="weeks-input">{{ 'all.competition.team-assembly.auto-generate.weeks' | translate }}</label>
+                </p-floatLabel>
+              }
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <p-button
+                [label]="'all.competition.team-assembly.auto-generate.variations' | translate"
+                icon="pi pi-sync"
+                [outlined]="true"
+                severity="info"
+                [loading]="generating()"
+                [disabled]="generating() || dataService.availablePlayers().length === 0"
+                (onClick)="generateAssembly('variations')"
+                class="w-full"
+                styleClass="w-full"
+                [pTooltip]="'all.competition.team-assembly.auto-generate.variations-tooltip' | translate"
+              />
+              <p-button
+                [label]="'all.competition.team-assembly.auto-generate.best-results' | translate"
+                icon="pi pi-star"
+                [outlined]="true"
+                severity="success"
+                [loading]="generating()"
+                [disabled]="generating() || dataService.availablePlayers().length === 0"
+                (onClick)="generateAssembly('best-results')"
+                class="w-full"
+                styleClass="w-full"
+                [pTooltip]="'all.competition.team-assembly.auto-generate.best-results-tooltip' | translate"
+              />
+              <p-button
+                [label]="'all.competition.team-assembly.auto-generate.random' | translate"
+                icon="pi pi-bolt"
+                [outlined]="true"
+                severity="warn"
+                [loading]="generating()"
+                [disabled]="generating() || dataService.availablePlayers().length === 0"
+                (onClick)="generateAssembly('random')"
+                class="w-full"
+                styleClass="w-full"
+                [pTooltip]="'all.competition.team-assembly.auto-generate.random-tooltip' | translate"
+              />
+              <p-button
+                [label]="'all.competition.team-assembly.auto-generate.clear' | translate"
+                icon="pi pi-trash"
+                [outlined]="true"
+                severity="danger"
+                (onClick)="clearAssembly()"
+                class="w-full"
+                styleClass="w-full"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- Game Slots -->

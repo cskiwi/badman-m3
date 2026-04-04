@@ -360,6 +360,18 @@
     "subEvents": "Series",
     "team": "Team",
     "team-assembly": {
+      "auto-generate": {
+        "best-results": "Best results",
+        "clear": "Clear assembly",
+        "last-season": "Last season",
+        "last-x-weeks": "Last X weeks",
+        "random": "Random",
+        "this-season": "This season",
+        "time-range": "Time range",
+        "title": "Auto-generate assembly",
+        "variations": "Variations",
+        "weeks": "Weeks"
+      },
       "captain": "Team captain",
       "change-team": "By editing the team you can change the default players shown, and who are the backups.",
       "club": "Club",
@@ -402,11 +414,12 @@
       "mix4": "Mixed 2",
       "players": {
         "backup": "Backup players",
-        "base": "Titulars",
-        "team": "Base players",
+        "base": "Base players",
+        "team": "Titulars",
         "title": "Possible titulars"
       },
       "season": "Season",
+      "select-all": "Select/deselect all players",
       "single1": "Single 1",
       "single2": "Single 2",
       "single3": "Single 3",

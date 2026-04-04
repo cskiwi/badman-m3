@@ -360,6 +360,18 @@
     "subEvents": "Série",
     "team": "Équipe",
     "team-assembly": {
+      "auto-generate": {
+        "best-results": "Meilleurs résultats",
+        "clear": "Effacer la composition",
+        "last-season": "Saison précédente",
+        "last-x-weeks": "Dernières X semaines",
+        "random": "Aléatoire",
+        "this-season": "Cette saison",
+        "time-range": "Période",
+        "title": "Générer automatiquement la composition",
+        "variations": "Variations",
+        "weeks": "Semaines"
+      },
       "captain": "Capitaine d'équipe",
       "change-team": "En modifiant l'équipe, vous pouvez changer les joueurs affichés par défaut et les remplaçants.",
       "club": "Club",
@@ -402,11 +414,12 @@
       "mix4": "Mixte 2",
       "players": {
         "backup": "Joueurs remplaçants",
-        "base": "Titulaires",
-        "team": "Joueurs de base",
+        "base": "Joueurs de base",
+        "team": "Titulaires",
         "title": "Titulaires possibles"
       },
       "season": "Saison",
+      "select-all": "Sélectionner/désélectionner tous les joueurs",
       "single1": "Simple 1",
       "single2": "Simple 2",
       "single3": "Simple 3",
