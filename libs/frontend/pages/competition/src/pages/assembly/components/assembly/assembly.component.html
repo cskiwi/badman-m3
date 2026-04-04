@@ -80,7 +80,7 @@
               [placeholder]="'Select player 1'"
               [showClear]="true"
               (onChange)="onSlotPlayerChange(slotId, 0, $event.value)"
-              styleClass="w-full"
+              class="w-full"
             />
             <p-select
               [options]="getAvailablePlayers(slotId, 1)"
@@ -90,7 +90,7 @@
               [placeholder]="'Select player 2'"
               [showClear]="true"
               (onChange)="onSlotPlayerChange(slotId, 1, $event.value)"
-              styleClass="w-full mt-2"
+              class="w-full mt-2"
             />
           </p-fieldset>
         }
@@ -104,7 +104,7 @@
               [placeholder]="'Select player'"
               [showClear]="true"
               (onChange)="onSlotPlayerChange(slotId, 0, $event.value)"
-              styleClass="w-full"
+              class="w-full"
             />
           </p-fieldset>
         }
@@ -115,7 +115,7 @@
             [placeholder]="'Select substitute'"
             [showClear]="true"
             (onChange)="onSlotPlayerChange('substituteList', dataService.substitutes().length, $event.value)"
-            styleClass="w-full"
+            class="w-full"
           />
         </p-fieldset>
 

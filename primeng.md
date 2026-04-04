@@ -891,7 +891,7 @@ Integration between PrimeNG and Tailwind CSS.
 
 ## Animations
 
-The plugin also adds extended animation utilities that can be used with the styleclass and animateonscroll directives.
+The plugin also adds extended animation utilities that can be used with the class and animateonscroll directives.
 
 ```html
 <p-select [(ngModel)]="animation" [options]="animations" placeholder="Select One" class="w-full sm:w-44" />
@@ -978,7 +978,7 @@ A headless PrimeNG dialog with a custom UI.
 
 ```html
 <p-button (click)="showDialog()" icon="pi pi-user" label="Login" />
-    <p-dialog maskStyleClass="backdrop-blur-sm" [(visible)]="visible" styleClass="!border-0 !bg-transparent">
+    <p-dialog maskclass="backdrop-blur-sm" [(visible)]="visible" class="!border-0 !bg-transparent">
         <ng-template #headless>
             <div
                 class="flex flex-col px-8 py-8 gap-6 rounded-2xl"
@@ -1068,14 +1068,14 @@ A headless PrimeNG dialog with a custom UI.
                         label="Cancel"
                         (click)="closeDialog()"
                         [text]="true"
-                        styleClass="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
+                        class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
                         class="w-full"
                     />
                     <p-button
                         label="Sign-In"
                         (click)="closeDialog()"
                         [text]="true"
-                        styleClass="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
+                        class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
                         class="w-full"
                     />
                 </div>
@@ -1218,7 +1218,7 @@ Migration guide to PrimeNG v20.
 
 ## Backwardcompatible
 
-Form Enhancements In this iteration, all form components have been reviewed and new demos for template-driven and reactive forms have been added. During this work, limitations have been identified and resolved as well. In addition, we've introduced a new property named invalid to the form components that you may use style a component as invalid. In previous versions, form components style themselves as invalid using a built-in style like the following. This style is opinionated as it is specifally for invalid and dirty states ignoring other potential UX requirements like touched/untouched or form submit. In v20, the new invalid provides full control to highlight a component a invalid. This styling change is backward compatible, meaning the opinionated ng-invalid.ng-dirty class is still included however in future versions, it will be removed. PrimeUIX Themes PrimeUIX is a shared package between all Prime libraries, this shared approach allows PrimeTek teams to share theming and the Design team who is responsible for the Figma UI Kit to work on a single design file, which is the single source of truth. Prior to v20, PrimeNG has its own fork in default styles and for the design tokens {{ '@' }}primeng/themes package is required. With v20, PrimeNG receives the styles from {{ '@' }}primeuix/styles under the hood and the design tokens as theme presets are loaded from {{ '@' }}primeuix/themes . The components need to be adjusted to fit in the PrimeUIX theming by using the host element where applicable, as a result for the components that use host element (&lt;p-* /&gt;) as their main container, the styleClass became obselete since native class attribute is already available on the custom element. Refer to the documentation of a particular component to find out if styleClass is deprecated. All of these changes are backward compatible, {{ '@' }}primeng/themes use {{ '@' }}primeuix/themes internally, and migration is easy as replacing the dependency {{ '@' }}primeng/themes with {{ '@' }}primeuix/themes in your application.
+Form Enhancements In this iteration, all form components have been reviewed and new demos for template-driven and reactive forms have been added. During this work, limitations have been identified and resolved as well. In addition, we've introduced a new property named invalid to the form components that you may use style a component as invalid. In previous versions, form components style themselves as invalid using a built-in style like the following. This style is opinionated as it is specifally for invalid and dirty states ignoring other potential UX requirements like touched/untouched or form submit. In v20, the new invalid provides full control to highlight a component a invalid. This styling change is backward compatible, meaning the opinionated ng-invalid.ng-dirty class is still included however in future versions, it will be removed. PrimeUIX Themes PrimeUIX is a shared package between all Prime libraries, this shared approach allows PrimeTek teams to share theming and the Design team who is responsible for the Figma UI Kit to work on a single design file, which is the single source of truth. Prior to v20, PrimeNG has its own fork in default styles and for the design tokens {{ '@' }}primeng/themes package is required. With v20, PrimeNG receives the styles from {{ '@' }}primeuix/styles under the hood and the design tokens as theme presets are loaded from {{ '@' }}primeuix/themes . The components need to be adjusted to fit in the PrimeUIX theming by using the host element where applicable, as a result for the components that use host element (&lt;p-* /&gt;) as their main container, the class became obselete since native class attribute is already available on the custom element. Refer to the documentation of a particular component to find out if class is deprecated. All of these changes are backward compatible, {{ '@' }}primeng/themes use {{ '@' }}primeuix/themes internally, and migration is easy as replacing the dependency {{ '@' }}primeng/themes with {{ '@' }}primeuix/themes in your application.
 
 ## Breaking
 
@@ -1226,7 +1226,7 @@ Our team has put in great deal of effort while updating PrimeNG, and there are n
 
 ## Deprecations
 
-The following items are marked as deprecated. API Deprecated Since Replacement Removal Status @primeng/themes v20 @primeuix/themes v22 pTemplate v20 ng-template with a template reference variable v22 styleClass *(for host enabled components) v20 class v22 Global inputStyle config v20 inputVariant v22 CamelCase Selectors v20 Kebab case v22 pButton iconPos, loadingIcon, icon and label properties v20 pButtonIcon and pButtonLabel directives v22 pButton buttonProps property v20 Use button properties directly on the element v22 p-button badgeClass property v20 badgeSeverity property v22 AutoComplete minLength property v20 minQueryLength v22 OrganizationChart preserveSpace property v20 Obselete property, had no use v22 Paginator dropdownAppendTo property v20 appendTo v22 Message text and escape properties v20 Content projection v22 Password maxLength property v20 maxlength property v22 TreeSelect containerStyle/containerStyleClass properties v20 style and class v22 Table responsiveLayout property v20 Always defaults to scroll, stack mode needs custom implementation v22 TreeSelect default template v20 value template v22 pBadge directive v20 OverlayBadge component v22 clearFilterIcon template of Table v20 Obsolete, not utilized. v22 Inplace closable property. v20 Use templating with closeCallback . v22
+The following items are marked as deprecated. API Deprecated Since Replacement Removal Status @primeng/themes v20 @primeuix/themes v22 pTemplate v20 ng-template with a template reference variable v22 class *(for host enabled components) v20 class v22 Global inputStyle config v20 inputVariant v22 CamelCase Selectors v20 Kebab case v22 pButton iconPos, loadingIcon, icon and label properties v20 pButtonIcon and pButtonLabel directives v22 pButton buttonProps property v20 Use button properties directly on the element v22 p-button badgeClass property v20 badgeSeverity property v22 AutoComplete minLength property v20 minQueryLength v22 OrganizationChart preserveSpace property v20 Obselete property, had no use v22 Paginator dropdownAppendTo property v20 appendTo v22 Message text and escape properties v20 Content projection v22 Password maxLength property v20 maxlength property v22 TreeSelect containerStyle/containerclass properties v20 style and class v22 Table responsiveLayout property v20 Always defaults to scroll, stack mode needs custom implementation v22 TreeSelect default template v20 value template v22 pBadge directive v20 OverlayBadge component v22 clearFilterIcon template of Table v20 Obsolete, not utilized. v22 Inplace closable property. v20 Use templating with closeCallback . v22
 
 ## Overview
 
@@ -1234,7 +1234,7 @@ PrimeNG v20 is an evolution rather than a revolution compared to v18/v19 that in
 
 ## Removals
 
-The list of items that were deprecated in previous releases and removed in this iteration. API Deprecated Since Replacement Status in v20 Calendar v18 DatePicker Dropdown v18 Select InputSwitch v18 ToggleSwitch OverlayPanel v18 Popover Sidebar v18 Drawer Chips v18 AutoComplete in multiple mode without typehead option TabMenu v18 Tabs without panels Steps v18 Stepper without panels Messages v18 Message InlineMessage v18 Message TabView v18 Tabs Accordion activeIndex property v18 value property Accordion headerAriaLevel property v18 AccordionHeader aria-level attribute AccordionTab v18 AccordionPanel, AccordionHeader, AccordionContent AutoComplete field property v18 optionLabel property AutoComplete itemSize property v18 virtualScrollItemSize property pDefer v18 Angular deferred views pAutoFocus autofocus property v18 Default attribute directive {{ '[pAutoFocus]="true|false"' }} Badge size property v18 badgeSize property DatePicker monthNavigator, yearNavigator, yearRange, locale properties v18 Obsolete, not utilized. Dialog positionLeft, responsive, breakpoint properties v18 Obsolete, not utilized. InputMask autoFocus property v18 autofocus property. MultiSelect checkicon template v18 headercheckboxicon and itemcheckboxicon . MultiSelect/Select baseZIndex, autoZIndex, showTransitionOptions, hideTransitionOptions v14 overlayOptions property Rating onCancel event and cancelIcon template v18 Obsolete, not utilized. MultiSelect defaultLabel property v18 placeholder property. MultiSelect/Select itemSize property v18 virtualScrollItemSize property Select autoDisplayFirst property v17 Set initial value by model instead TreeSelect showTransitionOptions, hideTransitionOptions v14 overlayOptions property Panel expandIcon and collapseIcon properties v18 headericons template StyleClass enterClass/leaveClass properties v18 enterFromClass and leaveFromClass properties Table scrollDirection property 14 Obsolete, not utilized. Table responsive property 14 An horizontal scroll is displayed for smaller screens Table/TreeTable virtualRowHeight property v18 virtualScrollItemSize property Table autoLayout property v18 Table always uses autoLayout as implementation requirement Tree virtualNodeHeight property v18 virtualScrollItemSize property
+The list of items that were deprecated in previous releases and removed in this iteration. API Deprecated Since Replacement Status in v20 Calendar v18 DatePicker Dropdown v18 Select InputSwitch v18 ToggleSwitch OverlayPanel v18 Popover Sidebar v18 Drawer Chips v18 AutoComplete in multiple mode without typehead option TabMenu v18 Tabs without panels Steps v18 Stepper without panels Messages v18 Message InlineMessage v18 Message TabView v18 Tabs Accordion activeIndex property v18 value property Accordion headerAriaLevel property v18 AccordionHeader aria-level attribute AccordionTab v18 AccordionPanel, AccordionHeader, AccordionContent AutoComplete field property v18 optionLabel property AutoComplete itemSize property v18 virtualScrollItemSize property pDefer v18 Angular deferred views pAutoFocus autofocus property v18 Default attribute directive {{ '[pAutoFocus]="true|false"' }} Badge size property v18 badgeSize property DatePicker monthNavigator, yearNavigator, yearRange, locale properties v18 Obsolete, not utilized. Dialog positionLeft, responsive, breakpoint properties v18 Obsolete, not utilized. InputMask autoFocus property v18 autofocus property. MultiSelect checkicon template v18 headercheckboxicon and itemcheckboxicon . MultiSelect/Select baseZIndex, autoZIndex, showTransitionOptions, hideTransitionOptions v14 overlayOptions property Rating onCancel event and cancelIcon template v18 Obsolete, not utilized. MultiSelect defaultLabel property v18 placeholder property. MultiSelect/Select itemSize property v18 virtualScrollItemSize property Select autoDisplayFirst property v17 Set initial value by model instead TreeSelect showTransitionOptions, hideTransitionOptions v14 overlayOptions property Panel expandIcon and collapseIcon properties v18 headericons template class enterClass/leaveClass properties v18 enterFromClass and leaveFromClass properties Table scrollDirection property 14 Obsolete, not utilized. Table responsive property 14 An horizontal scroll is displayed for smaller screens Table/TreeTable virtualRowHeight property v18 virtualScrollItemSize property Table autoLayout property v18 Table always uses autoLayout as implementation requirement Tree virtualNodeHeight property v18 virtualScrollItemSize property
 
 ---
 
@@ -1325,9 +1325,9 @@ Panels can be controlled programmatically using value property as a model.
 
 ```html
 <div class="flex mb-4 gap-2 justify-end">
-        <p-button (onClick)="active = '0'" [rounded]="true" label="1" styleClass="w-8 h-8 p-0" [outlined]="active !== '0'" />
-        <p-button (onClick)="active = '1'" [rounded]="true" label="2" styleClass="w-8 h-8 p-0" [outlined]="active !== '1'" />
-        <p-button (onClick)="active = '2'" [rounded]="true" label="3" styleClass="w-8 h-8 p-0" [outlined]="active !== '2'" />
+        <p-button (onClick)="active = '0'" [rounded]="true" label="1" class="w-8 h-8 p-0" [outlined]="active !== '0'" />
+        <p-button (onClick)="active = '1'" [rounded]="true" label="2" class="w-8 h-8 p-0" [outlined]="active !== '1'" />
+        <p-button (onClick)="active = '2'" [rounded]="true" label="3" class="w-8 h-8 p-0" [outlined]="active !== '2'" />
     </div>
 
     <p-accordion [(value)]="active">
@@ -1723,7 +1723,7 @@ Accordion groups a collection of contents in tabs.
 |------|------|---------|-------------|
 | value | ModelSignal<string \| number \| string[] \| number[]> | undefined | Value of the active tab. |
 | multiple | InputSignalWithTransform<boolean, any> | false | When enabled, multiple tabs can be activated at the same time. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | expandIcon | string | - | Icon of a collapsed tab. |
 | collapseIcon | string | - | Icon of an expanded tab. |
 | selectOnFocus | InputSignalWithTransform<boolean, any> | false | When enabled, the focused tab is activated. |
@@ -2191,7 +2191,7 @@ When showClear is enabled, a clear icon is displayed to clear the value.
 **Basic Usage:**
 
 ```html
-<p-autocomplete [(ngModel)]="value" [suggestions]="items" (completeMethod)="search($event)" [showClear]="true" inputStyleClass="w-56" />
+<p-autocomplete [(ngModel)]="value" [suggestions]="items" (completeMethod)="search($event)" [showClear]="true" inputclass="w-56" />
 ```
 
 <details>
@@ -3201,11 +3201,11 @@ AutoComplete is an input component that provides real-time suggestions when bein
 | minQueryLength | number | - | Minimum number of characters to initiate a search. |
 | delay | number | 300 | Delay between keystrokes to wait before sending a query. |
 | panelStyle | { [klass: string]: any } | - | Inline style of the overlay panel element. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
-| panelStyleClass | string | - | Style class of the overlay panel element. |
+| class | string | - | Style class of the component. **(Deprecated)** |
+| panelclass | string | - | Style class of the overlay panel element. |
 | inputStyle | { [klass: string]: any } | - | Inline style of the input field. |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
-| inputStyleClass | string | - | Inline style of the input field. |
+| inputclass | string | - | Inline style of the input field. |
 | placeholder | string | - | Hint text for the input field. |
 | readonly | boolean | false | When present, it specifies that the input cannot be typed. |
 | scrollHeight | string | 200px | Maximum height of the suggestions panel. |
@@ -3767,7 +3767,7 @@ Avatar represents people using icons, labels and images.
 | image | string | - | Defines the image to display. |
 | size | "large" \| "xlarge" \| "normal" | normal | Size of the element. |
 | shape | "circle" \| "square" | square | Shape of the element. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | ariaLabel | string | - | Establishes a string value that labels the component. |
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
 | dt | InputSignal<Object> | undefined | Defines scoped design tokens of the component. |
@@ -4051,7 +4051,7 @@ Badge Directive is directive usage of badge component.
 | severity | "success" \| "info" \| "warn" \| "danger" \| "secondary" \| "contrast" | - | Severity type of the badge. |
 | value | string \| number | - | Value to display inside the badge. |
 | badgeStyle | { [klass: string]: any } | - | Inline style of the element. |
-| badgeStyleClass | string | - | Class of the element. |
+| badgeclass | string | - | Class of the element. |
 | dt | InputSignal<Object> | undefined | Defines scoped design tokens of the component. |
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<any> | undefined | Used to pass attributes to DOM elements inside the component. |
@@ -4065,7 +4065,7 @@ Badge is a small status indicator for another element.
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| styleClass | InputSignal<string> | ... | Class of the element. **(Deprecated)** |
+| class | InputSignal<string> | ... | Class of the element. **(Deprecated)** |
 | badgeSize | InputSignal<"small" \| "large" \| "xlarge"> | ... | Size of the badge, valid options are "large" and "xlarge". |
 | size | InputSignal<"small" \| "large" \| "xlarge"> | ... | Size of the badge, valid options are "large" and "xlarge". |
 | severity | InputSignal<"success" \| "info" \| "warn" \| "danger" \| "secondary" \| "contrast"> | ... | Severity type of the badge. |
@@ -4224,7 +4224,7 @@ BlockUI can either block other components or the whole page.
 | target | any | - | Name of the local ng-template variable referring to another component. |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | blocked | boolean | - | Current blocked state as a boolean. |
 
 ### Templates
@@ -4381,7 +4381,7 @@ Breadcrumb provides contextual information about page hierarchy.
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | model | MenuItem[] | - | An array of menuitems. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | home | MenuItem | - | MenuItem configuration for the home icon. |
 | homeAriaLabel | string | - | Defines a string that labels the home icon for accessibility. |
 
@@ -4477,8 +4477,8 @@ Buttons have built-in badge support with badge and badgeClass properties.
 **Basic Usage:**
 
 ```html
-<p-button label="Emails" badge="2" styleClass="m-0" />
-<p-button label="Messages" icon="pi pi-users" badge="2" badgeSeverity="contrast" styleClass="m-0" [outlined]="true" />
+<p-button label="Emails" badge="2" class="m-0" />
+<p-button label="Messages" icon="pi pi-users" badge="2" badgeSeverity="contrast" class="m-0" [outlined]="true" />
 ```
 
 <details>
@@ -5124,7 +5124,7 @@ Button is an extension to standard button element with icons and theming.
 | size | "small" \| "large" | - | Defines the size of the button. |
 | variant | "text" \| "outlined" | - | Specifies the variant of the component. |
 | style | { [klass: string]: any } | - | Inline style of the element. |
-| styleClass | string | - | Class of the element. |
+| class | string | - | Class of the element. |
 | badgeClass | string | - | Style class of the badge. **(Deprecated)** |
 | badgeSeverity | "success" \| "info" \| "warn" \| "danger" \| "help" \| "primary" \| "secondary" \| "contrast" | secondary | Severity type of the badge. |
 | ariaLabel | string | - | Used to define a string that autocomplete attribute the current element. |
@@ -5385,8 +5385,8 @@ Card content can be customized further with subHeader , header and footer proper
     </p>
     <ng-template #footer>
         <div class="flex gap-4 mt-1">
-            <p-button label="Cancel" severity="secondary" class="w-full" [outlined]="true" styleClass="w-full" />
-            <p-button label="Save" class="w-full" styleClass="w-full" />
+            <p-button label="Cancel" severity="secondary" class="w-full" [outlined]="true" class="w-full" />
+            <p-button label="Save" class="w-full" class="w-full" />
         </div>
     </ng-template>
 </p-card>
@@ -5453,7 +5453,7 @@ Card is a flexible container component.
 | header | string | - | Header of the card. |
 | subheader | string | - | Subheader of the card. |
 | style | { [klass: string]: any } | - | Inline style of the element. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 
 ### Templates
 
@@ -5538,7 +5538,7 @@ Carousel requires a collection of items as its value along with a template to re
                 <div class="mt-0 font-semibold text-xl">{{ '$' + product.price }}</div>
                 <span>
                     <p-button icon="pi pi-heart" severity="secondary" [outlined]="true" />
-                    <p-button icon="pi pi-shopping-cart" styleClass="ml-2" />
+                    <p-button icon="pi pi-shopping-cart" class="ml-2" />
                 </span>
             </div>
         </div>
@@ -5586,7 +5586,7 @@ When autoplayInterval is defined in milliseconds, items are scrolled automatical
                 <div class="mt-0 font-semibold text-xl">{{ '$' + product.price }}</div>
                 <span>
                     <p-button icon="pi pi-heart" severity="secondary" [outlined]="true" />
-                    <p-button icon="pi pi-shopping-cart" styleClass="ml-2" />
+                    <p-button icon="pi pi-shopping-cart" class="ml-2" />
                 </span>
             </div>
         </div>
@@ -5715,7 +5715,7 @@ Number of items to scroll is specified with the numScroll option.
                             [value]="product.inventoryStatus"
                             [severity]="getSeverity(product.inventoryStatus)"
                             class="absolute"
-                            styleClass="dark:!bg-surface-900"
+                            class="dark:!bg-surface-900"
                             [ngStyle]="{ 'left.px': 5, 'top.px': 5 }" />
                     </div>
                 </div>
@@ -5728,7 +5728,7 @@ Number of items to scroll is specified with the numScroll option.
                     </div>
                     <span>
                         <p-button icon="pi pi-heart" severity="secondary" [outlined]="true" />
-                        <p-button icon="pi pi-shopping-cart" styleClass="ml-2" />
+                        <p-button icon="pi pi-shopping-cart" class="ml-2" />
                     </span>
                 </div>
             </div>
@@ -5840,7 +5840,7 @@ Carousel supports specific configuration per screen size with the responsiveOpti
                 <div class="mt-0 font-semibold text-xl">{{ '$' + product.price }}</div>
                 <span>
                     <p-button icon="pi pi-heart" severity="secondary" [outlined]="true" />
-                    <p-button icon="pi pi-shopping-cart" styleClass="ml-2" />
+                    <p-button icon="pi pi-shopping-cart" class="ml-2" />
                 </span>
             </div>
         </div>
@@ -5979,7 +5979,7 @@ Custom content projection is available using the header and footer templates.
                     </div>
                     <span>
                         <p-button icon="pi pi-heart" severity="secondary" [outlined]="true" />
-                        <p-button icon="pi pi-shopping-cart" styleClass="ml-2" />
+                        <p-button icon="pi pi-shopping-cart" class="ml-2" />
                     </span>
                 </div>
             </div>
@@ -6093,7 +6093,7 @@ To create a vertical Carousel, orientation needs to be set to vertical along wit
                 <div class="mt-0 font-semibold text-xl">{{ '$' + product.price }}</div>
                 <span>
                     <p-button icon="pi pi-heart" severity="secondary" [outlined]="true" />
-                    <p-button icon="pi pi-shopping-cart" styleClass="ml-2" />
+                    <p-button icon="pi pi-shopping-cart" class="ml-2" />
                 </span>
             </div>
         </div>
@@ -6204,14 +6204,14 @@ Carousel is a content slider featuring various customization options.
 | contentClass | string | - | Style class of main content. |
 | indicatorsContentClass | string | - | Style class of the indicator items. |
 | indicatorsContentStyle | { [klass: string]: any } | - | Inline style of the indicator items. |
-| indicatorStyleClass | string | - | Style class of the indicators. |
+| indicatorclass | string | - | Style class of the indicators. |
 | indicatorStyle | { [klass: string]: any } | - | Style of the indicators. |
 | value | any[] | - | An array of objects to display. |
 | circular | boolean | false | Defines if scrolling would be infinite. |
 | showIndicators | boolean | true | Whether to display indicator container. |
 | showNavigators | boolean | true | Whether to display navigation buttons in container. |
 | autoplayInterval | number | 0 | Time in milliseconds to scroll items automatically. |
-| styleClass | string | - | Style class of the viewport container. **(Deprecated)** |
+| class | string | - | Style class of the viewport container. **(Deprecated)** |
 | prevButtonProps | ButtonProps | ... | Used to pass all properties of the ButtonProps to the Button component. |
 | nextButtonProps | ButtonProps | ... | Used to pass all properties of the ButtonProps to the Button component. |
 
@@ -7641,7 +7641,7 @@ CascadeSelect is a form component to select a value from a nested structure of o
 | focusOnHover | boolean | true | Fields used when filtering the options, defaults to optionLabel. |
 | selectOnFocus | boolean | false | Determines if the option will be selected on focus. |
 | autoOptionFocus | boolean | false | Whether to focus on the first visible or selected element when the overlay panel is shown. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | options | string \| string[] | - | An array of selectitems to display as the available options. |
 | optionLabel | string | - | Property name or getter function to use as the label of an option. |
 | optionValue | string | - | Property name or getter function to use as the value of an option, defaults to the option itself when not defined. |
@@ -7656,7 +7656,7 @@ CascadeSelect is a form component to select a value from a nested structure of o
 | inputLabel | string | - | Label of the input for accessibility. |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
 | showClear | boolean | false | When enabled, a clear icon is displayed to clear the value. |
-| panelStyleClass | string | - | Style class of the overlay panel. |
+| panelclass | string | - | Style class of the overlay panel. |
 | panelStyle | { [klass: string]: any } | - | Inline style of the overlay panel. |
 | overlayOptions | OverlayOptions | - | Whether to use overlay API feature. The properties of overlay API can be used like an object in it. |
 | autofocus | boolean | false | When present, it specifies that the component should automatically get focus on load. |
@@ -9639,7 +9639,7 @@ Checkbox is an extension to standard checkbox element with theming.
 | tabindex | number | - | Index of the element in tabbing order. |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
 | inputStyle | { [klass: string]: any } | - | Inline style of the input element. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | inputClass | string | - | Style class of the input element. |
 | indeterminate | boolean | false | When present, it specifies input state as indeterminate. |
 | formControl | FormControl<any> | - | Form control value. |
@@ -9864,7 +9864,7 @@ Chip represents people using icons, labels and images.
 | icon | string | - | Defines the icon to display. |
 | image | string | - | Defines the image to display. |
 | alt | string | - | Alt attribute of the image. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | disabled | boolean | false | When present, it specifies that the element should be disabled. |
 | removable | boolean | false | Whether to display a remove icon. |
 | removeIcon | string | - | Icon of the remove element. |
@@ -10191,7 +10191,7 @@ ColorPicker groups a collection of contents in tabs.
 | invalid | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have invalid state style. |
 | disabled | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have disabled state style. |
 | name | InputSignal<string> | undefined | When present, it specifies that the name of the input. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | showTransitionOptions | string | .12s cubic-bezier(0, 0, 0.2, 1) | Transition options of the show animation. **(Deprecated)** |
 | hideTransitionOptions | string | .1s linear | Transition options of the hide animation. **(Deprecated)** |
 | inline | boolean | false | Whether to display as an overlay or not. |
@@ -10304,8 +10304,8 @@ Headless mode allows you to customize the entire user interface instead of the d
                 <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
                 <p class="mb-0">{{ message.message }}</p>
                 <div class="flex items-center gap-2 mt-6">
-                    <p-button label="Save" (onClick)="onAccept()" styleClass="w-32"></p-button>
-                    <p-button label="Cancel" [outlined]="true" (onClick)="onReject()" styleClass="w-32"></p-button>
+                    <p-button label="Save" (onClick)="onAccept()" class="w-32"></p-button>
+                    <p-button label="Cancel" [outlined]="true" (onClick)="onReject()" class="w-32"></p-button>
                 </div>
             </div>
         }
@@ -10370,18 +10370,18 @@ The position property of the confirm options is used to display a Dialog at all 
 <p-toast />
 <p-confirmdialog key="positionDialog" [position]="position" />
 <div class="flex flex-wrap justify-center gap-2 mb-4">
-    <p-button (click)="confirmPosition('left')" icon="pi pi-arrow-right" label="Left" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="confirmPosition('right')" icon="pi pi-arrow-left" label="Right" severity="secondary" styleClass="min-w-40" />
+    <p-button (click)="confirmPosition('left')" icon="pi pi-arrow-right" label="Left" severity="secondary" class="min-w-40" />
+    <p-button (click)="confirmPosition('right')" icon="pi pi-arrow-left" label="Right" severity="secondary" class="min-w-40" />
 </div>
 <div class="flex flex-wrap justify-center gap-2 mb-4">
-    <p-button (click)="confirmPosition('topleft')" icon="pi pi-arrow-down" label="TopLeft" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="confirmPosition('top')" icon="pi pi-arrow-down" label="Top" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="confirmPosition('topright')" icon="pi pi-arrow-down" label="TopRight" severity="secondary" styleClass="min-w-40" />
+    <p-button (click)="confirmPosition('topleft')" icon="pi pi-arrow-down" label="TopLeft" severity="secondary" class="min-w-40" />
+    <p-button (click)="confirmPosition('top')" icon="pi pi-arrow-down" label="Top" severity="secondary" class="min-w-40" />
+    <p-button (click)="confirmPosition('topright')" icon="pi pi-arrow-down" label="TopRight" severity="secondary" class="min-w-40" />
 </div>
 <div class="flex flex-wrap justify-center gap-2">
-    <p-button (click)="confirmPosition('bottomleft')" icon="pi pi-arrow-up" label="BottomLeft" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="confirmPosition('bottom')" icon="pi pi-arrow-up" label="Bottom" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="confirmPosition('bottomright')" icon="pi pi-arrow-up" label="BottomRight" severity="secondary" styleClass="min-w-40" />
+    <p-button (click)="confirmPosition('bottomleft')" icon="pi pi-arrow-up" label="BottomLeft" severity="secondary" class="min-w-40" />
+    <p-button (click)="confirmPosition('bottom')" icon="pi pi-arrow-up" label="Bottom" severity="secondary" class="min-w-40" />
+    <p-button (click)="confirmPosition('bottomright')" icon="pi pi-arrow-up" label="BottomRight" severity="secondary" class="min-w-40" />
 </div>
 ```
 
@@ -10414,7 +10414,7 @@ export class ConfirmDialogPositionDemo {
             message: 'Are you sure you want to proceed?',
             header: 'Confirmation',
             icon: 'pi pi-info-circle',
-            rejectButtonStyleClass: 'p-button-text',
+            rejectButtonclass: 'p-button-text',
             rejectButtonProps: {
                 label: 'Cancel',
                 severity: 'secondary',
@@ -10532,8 +10532,8 @@ ConfirmDialog uses a Dialog UI that is integrated with the Confirmation API.
 | icon | string | - | Icon to display next to message. |
 | message | string | - | Message of the confirmation. |
 | style | { [klass: string]: any } | - | Inline style of the element. |
-| styleClass | string | - | Class of the element. |
-| maskStyleClass | string | - | Specify the CSS class(es) for styling the mask element |
+| class | string | - | Class of the element. |
+| maskclass | string | - | Specify the CSS class(es) for styling the mask element |
 | acceptIcon | string | - | Icon of the accept button. |
 | acceptLabel | string | - | Label of the accept button. |
 | closeAriaLabel | string | - | Defines a string that labels the close button for accessibility. |
@@ -10543,8 +10543,8 @@ ConfirmDialog uses a Dialog UI that is integrated with the Confirmation API.
 | rejectLabel | string | - | Label of the reject button. |
 | rejectAriaLabel | string | - | Defines a string that labels the reject button for accessibility. |
 | rejectVisible | boolean | true | Visibility of the reject button. |
-| acceptButtonStyleClass | string | - | Style class of the accept button. |
-| rejectButtonStyleClass | string | - | Style class of the reject button. |
+| acceptButtonclass | string | - | Style class of the accept button. |
+| rejectButtonclass | string | - | Style class of the reject button. |
 | closeOnEscape | boolean | true | Specifies if pressing escape key should hide the dialog. |
 | dismissableMask | boolean | false | Specifies if clicking the modal background should hide the dialog. |
 | blockScroll | boolean | true | Determines whether scrolling behavior should be blocked within the component. |
@@ -10812,7 +10812,7 @@ ConfirmPopup displays a confirmation overlay displayed relatively to its target.
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | visible | InputSignal<boolean> | ... | Defines if the component is visible. |
 | motionOptions | InputSignal<MotionOptions> | ... | The motion options. |
 | appendTo | InputSignal<any> | 'body' | Target element to attach the overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). |
@@ -11349,7 +11349,7 @@ ContextMenu displays an overlay menu on right click of its target. Note that com
 | target | string \| HTMLElement | - | Local template variable name of the element to attach the context menu. |
 | global | boolean | false | Attaches the menu to document instead of a particular item. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
 | id | string | - | Current id state as a string. |
@@ -12244,7 +12244,7 @@ DataView displays data in grid or list layout with pagination and sorting featur
 | pageLinks | number | 5 | Number of page links to display in paginator. |
 | rowsPerPageOptions | any[] \| number[] | - | Array of integer/object values to display inside rows per page dropdown of paginator |
 | paginatorPosition | "top" \| "bottom" \| "both" | bottom | Position of the paginator. |
-| paginatorStyleClass | string | - | Custom style class for paginator |
+| paginatorclass | string | - | Custom style class for paginator |
 | alwaysShowPaginator | boolean | true | Whether to show it even there is only one page. |
 | paginatorDropdownAppendTo | any | - | Target element to attach the paginator dropdown overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). |
 | paginatorDropdownScrollHeight | string | 200px | Paginator dropdown height of the viewport in pixels, a scrollbar is defined if height of list exceeds this value. |
@@ -12256,8 +12256,8 @@ DataView displays data in grid or list layout with pagination and sorting featur
 | lazy | boolean | false | Defines if data is loaded and interacted with in lazy manner. |
 | lazyLoadOnInit | boolean | true | Whether to call lazy loading on initialization. |
 | emptyMessage | string | - | Text to display when there is no data. Defaults to global value in i18n translation configuration. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
-| gridStyleClass | string | - | Style class of the grid. |
+| class | string | - | Style class of the component. **(Deprecated)** |
+| gridclass | string | - | Style class of the grid. |
 | trackBy | Function | ... | Function to optimize the dom operations by delegating to ngForTrackBy, default algorithm checks for object identity. |
 | filterBy | string | - | Comma separated list of fields in the object graph to search against. |
 | filterLocale | string | - | Locale to use in filtering. The default locale is the host environment's current locale. |
@@ -12442,7 +12442,7 @@ When showClear is enabled, a clear icon is displayed to clear the value.
 **Basic Usage:**
 
 ```html
-<p-datepicker [(ngModel)]="date" [showClear]="true" inputStyleClass="w-56" />
+<p-datepicker [(ngModel)]="date" [showClear]="true" inputclass="w-56" />
 ```
 
 <details>
@@ -13303,10 +13303,10 @@ DatePicker is a form component to work with dates.
 | step | InputSignal<number> | undefined | Unless the step is set to the any literal, the value must be min + an integral multiple of the step. |
 | minlength | InputSignal<number> | undefined | The number of characters (code points) must not be less than the value of the attribute, if non-empty. |
 | maxlength | InputSignal<number> | undefined | The number of characters (code points) must not exceed the value of the attribute. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | inputStyle | { [klass: string]: any } | - | Inline style of the input field. |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
-| inputStyleClass | string | - | Style class of the input field. |
+| inputclass | string | - | Style class of the input field. |
 | placeholder | string | - | Placeholder text for the input. |
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
@@ -13335,12 +13335,12 @@ DatePicker is a form component to work with dates.
 | selectionMode | "multiple" \| "single" \| "range" | single | Defines the quantity of the selection, valid values are "single", "multiple" and "range". |
 | maxDateCount | number | - | Maximum number of selectable dates in multiple mode. |
 | showButtonBar | boolean | false | Whether to display today and clear buttons at the footer |
-| todayButtonStyleClass | string | - | Style class of the today button. |
-| clearButtonStyleClass | string | - | Style class of the clear button. |
+| todayButtonclass | string | - | Style class of the today button. |
+| clearButtonclass | string | - | Style class of the clear button. |
 | autofocus | boolean | false | When present, it specifies that the component should automatically get focus on load. |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
-| panelStyleClass | string | - | Style class of the datetimepicker container element. |
+| panelclass | string | - | Style class of the datetimepicker container element. |
 | panelStyle | any | - | Inline style of the datetimepicker container element. |
 | keepInvalid | boolean | false | Keep invalid value when input blur. |
 | hideOnDateTimeSelect | boolean | true | Whether to hide the overlay on date selection. |
@@ -13628,7 +13628,7 @@ Headless mode allows you to customize the entire user interface instead of the d
 
 ```html
 <p-button (click)="showDialog()" icon="pi pi-user" label="Login" />
-<p-dialog maskStyleClass="backdrop-blur-sm" [(visible)]="visible" styleClass="!border-0 !bg-transparent">
+<p-dialog maskclass="backdrop-blur-sm" [(visible)]="visible" class="!border-0 !bg-transparent">
     <ng-template #headless>
         <div
             class="flex flex-col px-8 py-8 gap-6 rounded-2xl"
@@ -13665,14 +13665,14 @@ Headless mode allows you to customize the entire user interface instead of the d
                     label="Cancel"
                     (click)="closeDialog()"
                     [text]="true"
-                    styleClass="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
+                    class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
                     class="w-full"
                 />
                 <p-button
                     label="Sign-In"
                     (click)="closeDialog()"
                     [text]="true"
-                    styleClass="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
+                    class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"
                     class="w-full"
                 />
             </div>
@@ -13911,18 +13911,18 @@ The position property is used to display a Dialog at all edges and corners of th
 
 ```html
 <div class="flex flex-wrap justify-center gap-2 mb-2">
-    <p-button (click)="showDialog('left')" icon="pi pi-arrow-right" label="Left" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="showDialog('right')" icon="pi pi-arrow-left" label="Right" severity="secondary" styleClass="min-w-40" />
+    <p-button (click)="showDialog('left')" icon="pi pi-arrow-right" label="Left" severity="secondary" class="min-w-40" />
+    <p-button (click)="showDialog('right')" icon="pi pi-arrow-left" label="Right" severity="secondary" class="min-w-40" />
 </div>
 <div class="flex flex-wrap justify-center gap-2 mb-2">
-    <p-button (click)="showDialog('topleft')" icon="pi pi-arrow-down-right" label="TopLeft" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="showDialog('top')" icon="pi pi-arrow-down" label="Top" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="showDialog('topright')" icon="pi pi-arrow-down-left" label="TopRight" severity="secondary" styleClass="min-w-40" />
+    <p-button (click)="showDialog('topleft')" icon="pi pi-arrow-down-right" label="TopLeft" severity="secondary" class="min-w-40" />
+    <p-button (click)="showDialog('top')" icon="pi pi-arrow-down" label="Top" severity="secondary" class="min-w-40" />
+    <p-button (click)="showDialog('topright')" icon="pi pi-arrow-down-left" label="TopRight" severity="secondary" class="min-w-40" />
 </div>
 <div class="flex flex-wrap justify-center gap-2">
-    <p-button (click)="showDialog('bottomleft')" icon="pi pi-arrow-up-right" label="BottomLeft" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="showDialog('bottom')" icon="pi pi-arrow-up" label="Bottom" severity="secondary" styleClass="min-w-40" />
-    <p-button (click)="showDialog('bottomright')" icon="pi pi-arrow-up-left" label="BottomRight" severity="secondary" styleClass="min-w-40" />
+    <p-button (click)="showDialog('bottomleft')" icon="pi pi-arrow-up-right" label="BottomLeft" severity="secondary" class="min-w-40" />
+    <p-button (click)="showDialog('bottom')" icon="pi pi-arrow-up" label="Bottom" severity="secondary" class="min-w-40" />
+    <p-button (click)="showDialog('bottomright')" icon="pi pi-arrow-up-left" label="BottomRight" severity="secondary" class="min-w-40" />
 </div>
 <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visible" [position]="position" [style]="{ width: '25rem' }">
     <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
@@ -14135,15 +14135,15 @@ Dialog is a container to display content in an overlay window.
 | draggable | boolean | true | Enables dragging to change the position using header. |
 | resizable | boolean | true | Enables resizing of the content. |
 | contentStyle | any | - | Style of the content section. |
-| contentStyleClass | string | - | Style class of the content. |
+| contentclass | string | - | Style class of the content. |
 | modal | boolean | false | Defines if background should be blocked when dialog is displayed. |
 | closeOnEscape | boolean | true | Specifies if pressing escape key should hide the dialog. |
 | dismissableMask | boolean | false | Specifies if clicking the modal background should hide the dialog. |
 | rtl | boolean | false | When enabled dialog is displayed in RTL direction. |
 | closable | boolean | true | Adds a close icon to the header to hide the dialog. |
 | breakpoints | any | - | Object literal to define widths per screen size. |
-| styleClass | string | - | Style class of the component. |
-| maskStyleClass | string | - | Style class of the mask. |
+| class | string | - | Style class of the component. |
+| maskclass | string | - | Style class of the mask. |
 | maskStyle | { [klass: string]: any } | - | Style of the mask. |
 | showHeader | boolean | true | Whether to show the header or not. |
 | blockScroll | boolean | false | Whether background scroll should be blocked when dialog is visible. |
@@ -14367,7 +14367,7 @@ Sample implementation of a login form using a divider with content.
             <input pInputText id="password" type="password" />
         </div>
         <div class="flex">
-            <p-button label="Login" icon="pi pi-user" class="w-full max-w-[17.35rem]" styleClass="w-full mx-auto" />
+            <p-button label="Login" icon="pi pi-user" class="w-full max-w-[17.35rem]" class="w-full mx-auto" />
         </div>
     </div>
     <div class="w-full md:w-2/12">
@@ -14375,7 +14375,7 @@ Sample implementation of a login form using a divider with content.
         <p-divider layout="horizontal" class="!flex md:!hidden" align="center"><b>OR</b></p-divider>
     </div>
     <div class="w-full md:w-5/12 flex items-center justify-center py-5">
-        <p-button label="Sign Up" icon="pi pi-user-plus" severity="success" class="w-full max-w-[17.35rem]" styleClass="w-full mx-auto" />
+        <p-button label="Sign Up" icon="pi pi-user-plus" severity="success" class="w-full max-w-[17.35rem]" class="w-full mx-auto" />
     </div>
 </div>
 ```
@@ -14493,7 +14493,7 @@ Divider is used to separate contents.
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<DividerPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | layout | "vertical" \| "horizontal" | horizontal | Specifies the orientation. |
 | type | "solid" \| "dashed" \| "dotted" | solid | Border style type. |
 | align | "right" \| "left" \| "top" \| "bottom" \| "center" | - | Alignment of the content. |
@@ -14772,7 +14772,7 @@ export class DockAdvancedDemo implements OnInit, OnDestroy {
         this.menubarItems = [
             {
                 label: 'Finder',
-                styleClass: 'menubar-root'
+                class: 'menubar-root'
             },
             {
                 label: 'File',
@@ -14991,7 +14991,7 @@ Dock is a navigation component consisting of menuitems.
 | pt | InputSignal<DockPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | id | string | - | Current id state as a string. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | model | MenuItem[] | null | MenuModel instance to define the action items. |
 | position | "right" \| "left" \| "top" \| "bottom" | bottom | Position of element. |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
@@ -15610,7 +15610,7 @@ Headless mode allows you to customize the entire user interface instead of the d
                     <span class="font-semibold text-2xl text-primary">Your Logo</span>
                 </span>
                 <span>
-                    <p-button type="button" (click)="closeCallback($event)" icon="pi pi-times" rounded="true" outlined="true" styleClass="h-8 w-8"></p-button>
+                    <p-button type="button" (click)="closeCallback($event)" icon="pi pi-times" rounded="true" outlined="true" class="h-8 w-8"></p-button>
                 </span>
             </div>
             <div class="overflow-y-auto">
@@ -15618,7 +15618,7 @@ Headless mode allows you to customize the entire user interface instead of the d
                     <li>
                         <div
                             pRipple
-                            pStyleClass="@next"
+                            pclass="@next"
                             enterFromClass="hidden"
                             enterActiveClass="animate-slidedown"
                             leaveToClass="hidden"
@@ -15644,7 +15644,7 @@ Headless mode allows you to customize the entire user interface instead of the d
                             <li>
                                 <a
                                     pRipple
-                                    pStyleClass="@next"
+                                    pclass="@next"
                                     enterFromClass="hidden"
                                     enterActiveClass="animate-slidedown"
                                     leaveToClass="hidden"
@@ -15659,7 +15659,7 @@ Headless mode allows you to customize the entire user interface instead of the d
                                     <li>
                                         <a
                                             pRipple
-                                            pStyleClass="@next"
+                                            pclass="@next"
                                             enterFromClass="hidden"
                                             enterActiveClass="animate-slidedown"
                                             leaveToClass="hidden"
@@ -15731,7 +15731,7 @@ Headless mode allows you to customize the entire user interface instead of the d
                     <li>
                         <div
                             pRipple
-                            pStyleClass="@next"
+                            pclass="@next"
                             enterFromClass="hidden"
                             enterActiveClass="animate-slidedown"
                             leaveToClass="hidden"
@@ -15786,14 +15786,14 @@ import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
-import { StyleClass } from 'primeng/styleclass';
+import { class } from 'primeng/class';
 import { Drawer } from 'primeng/drawer';
 
 @Component({
     selector: 'drawer-headless-demo',
     templateUrl: './drawer-headless-demo.html',
     standalone: true,
-    imports: [DrawerModule, ButtonModule, Ripple, AvatarModule, StyleClass]
+    imports: [DrawerModule, ButtonModule, Ripple, AvatarModule, class]
 })
 export class DrawerHeadlessDemo {
     @ViewChild('drawerRef') drawerRef!: Drawer;
@@ -15896,7 +15896,7 @@ Drawer dimension can be defined with style or class properties, this responsive 
 **Basic Usage:**
 
 ```html
-<p-drawer header="Drawer" [(visible)]="visible" styleClass="!w-full md:!w-80 lg:!w-[30rem]">
+<p-drawer header="Drawer" [(visible)]="visible" class="!w-full md:!w-80 lg:!w-[30rem]">
     <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit...
     </p>
@@ -15993,7 +15993,7 @@ Sidebar is a panel component displayed as an overlay at the edges of the screen.
 | motionOptions | InputSignal<MotionOptions> | ... | The motion options. |
 | blockScroll | boolean | false | Whether to block scrolling of the document when drawer is active. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | ariaCloseLabel | string | - | Aria label of the close icon. |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
@@ -16592,7 +16592,7 @@ Editor groups a collection of contents in tabs.
 | disabled | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have disabled state style. |
 | name | InputSignal<string> | undefined | When present, it specifies that the name of the input. |
 | style | { [klass: string]: any } | - | Inline style of the container. |
-| styleClass | string | - | Style class of the container. **(Deprecated)** |
+| class | string | - | Style class of the container. **(Deprecated)** |
 | placeholder | string | - | Placeholder text to show when editor is empty. |
 | formats | string[] | - | Whitelist of formats to display, see [here](https://quilljs.com/docs/formats/) for available options. |
 | modules | object | - | Modules configuration of Editor, see [here](https://quilljs.com/docs/modules/) for available options. |
@@ -16801,7 +16801,7 @@ Fieldset is a grouping component with the optional content toggle feature.
 | legend | string | - | Header text of the fieldset. |
 | toggleable | boolean | false | When specified, content can toggled by clicking the legend. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | transitionOptions | string | 400ms cubic-bezier(0.86, 0, 0.07, 1) | Transition options of the panel animation. **(Deprecated)** |
 | motionOptions | InputSignal<MotionOptions> | ... | The motion options. |
 | collapsed | boolean | - | Defines the initial state of content, supports one or two-way binding as well. |
@@ -17220,7 +17220,7 @@ FileUpload is an advanced uploader with dragdrop support, multi file uploads, au
 | invalidFileLimitMessageDetail | string | limit is {0} at most. | Detail message of the invalid file type. |
 | invalidFileLimitMessageSummary | string | Maximum number of files exceeded,  | Summary message of the invalid file type. |
 | style | { [klass: string]: any } | - | Inline style of the element. |
-| styleClass | string | - | Class of the element. |
+| class | string | - | Class of the element. |
 | previewWidth | number | 50 | Width of the image thumbnail in pixels. |
 | chooseLabel | string | - | Label of the choose button. Defaults to PrimeNG Locale configuration. |
 | uploadLabel | string | - | Label of the upload button. Defaults to PrimeNG Locale configuration. |
@@ -17234,10 +17234,10 @@ FileUpload is an advanced uploader with dragdrop support, multi file uploads, au
 | headers | HttpHeaders | - | HttpHeaders class represents the header configuration options for an HTTP request. |
 | customUpload | boolean | false | Whether to use the default upload or a manual implementation defined in uploadHandler callback. Defaults to PrimeNG Locale configuration. |
 | fileLimit | number | - | Maximum number of files that can be uploaded. |
-| uploadStyleClass | string | - | Style class of the upload button. |
-| cancelStyleClass | string | - | Style class of the cancel button. |
-| removeStyleClass | string | - | Style class of the remove button. |
-| chooseStyleClass | string | - | Style class of the choose button. |
+| uploadclass | string | - | Style class of the upload button. |
+| cancelclass | string | - | Style class of the cancel button. |
+| removeclass | string | - | Style class of the remove button. |
+| chooseclass | string | - | Style class of the choose button. |
 | chooseButtonProps | ButtonProps | - | Used to pass all properties of the ButtonProps to the choose button inside the component. |
 | uploadButtonProps | ButtonProps | ... | Used to pass all properties of the ButtonProps to the upload button inside the component. |
 | cancelButtonProps | ButtonProps | ... | Used to pass all properties of the ButtonProps to the cancel button inside the component. |
@@ -17641,7 +17641,7 @@ FocusTrap is applied to a container element with the pFocusTrap directive.
         <label for="accept">I agree to the terms and conditions.</label>
     </div>
 
-    <p-button type="submit" label="Submit" class="mt-2" styleClass="w-full" />
+    <p-button type="submit" label="Submit" class="mt-2" class="w-full" />
 </div>
 ```
 
@@ -18078,7 +18078,7 @@ Galleria can be controlled programmatically using the activeIndex property.
 ```html
 <div class="mb-4">
     <p-button type="button" icon="pi pi-minus" (click)="prev()" />
-    <p-button type="button" icon="pi pi-plus" (click)="next()" severity="secondary" styleClass="ml-2" />
+    <p-button type="button" icon="pi pi-plus" (click)="next()" severity="secondary" class="ml-2" />
 </div>
 <p-galleria [(value)]="images" [responsiveOptions]="responsiveOptions" [containerStyle]="{ 'max-width': '640px' }" [numVisible]="5" [(activeIndex)]="activeIndex">
     <ng-template #item let-item>
@@ -18783,7 +18783,7 @@ IconField wraps an input and an icon.
 | pt | InputSignal<IconFieldPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | iconPosition | "right" \| "left" | left | Position of the icon. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 
 ## Pass Through Options
 
@@ -19334,7 +19334,7 @@ Inplace provides an easy to do editing and display at the same time where clicki
 | closable | boolean | false | Displays a button to switch back to display mode. **(Deprecated)** |
 | disabled | boolean | false | When present, it specifies that the element should be disabled. |
 | preventClick | boolean | false | Allows to prevent clicking. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | closeIcon | string | - | Icon to display in the close button. **(Deprecated)** |
 | closeAriaLabel | string | - | Establishes a string value that labels the close button. |
 
@@ -19456,7 +19456,7 @@ Buttons can be placed at either side of an input element.
         <p-button icon="pi pi-search" severity="secondary" variant="text" (click)="menu.toggle($event)" />
     </p-inputgroup-addon>
 </p-inputgroup>
-<p-menu #menu [model]="items" popup styleClass="!min-w-fit" />
+<p-menu #menu [model]="items" popup class="!min-w-fit" />
 
 <p-inputgroup>
     <p-inputgroup-addon>
@@ -19723,7 +19723,7 @@ InputGroup displays text, icon, buttons and other content can be grouped next to
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<InputGroupPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 
 ## Pass Through Options
 
@@ -20319,7 +20319,7 @@ InputMask component is used to enter input in a certain format such as numeric, 
 | showClear | boolean | false | When enabled, a clear icon is displayed to clear the value. |
 | style | { [klass: string]: any } | - | Inline style of the input field. |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
-| styleClass | string | - | Style class of the input field. |
+| class | string | - | Style class of the input field. |
 | placeholder | string | - | Advisory information to display on input. |
 | tabindex | string | - | Specifies tab order of the element. |
 | title | string | - | Title text of the input text. |
@@ -20445,7 +20445,7 @@ When showClear is enabled, a clear icon is displayed to clear the value.
 **Basic Usage:**
 
 ```html
-<p-inputnumber [(ngModel)]="value" inputId="price_input" mode="currency" currency="USD" locale="en-US" [showClear]="true" inputStyleClass="w-56" />
+<p-inputnumber [(ngModel)]="value" inputId="price_input" mode="currency" currency="USD" locale="en-US" [showClear]="true" inputclass="w-56" />
 ```
 
 <details>
@@ -21065,7 +21065,7 @@ InputNumber is an input component to provide numerical input.
 | format | boolean | true | Whether to format the value. |
 | buttonLayout | string | stacked | Layout of the buttons, valid values are "stacked" (default), "horizontal" and "vertical". |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | placeholder | string | - | Advisory information to display on input. |
 | tabindex | number | - | Specifies tab order of the element. |
 | title | string | - | Title text of the input text. |
@@ -21091,7 +21091,7 @@ InputNumber is an input component to provide numerical input.
 | prefix | string | - | Text to display before the value. |
 | suffix | string | - | Text to display after the value. |
 | inputStyle | any | - | Inline style of the input field. |
-| inputStyleClass | string | - | Style class of the input field. |
+| inputclass | string | - | Style class of the input field. |
 | showClear | boolean | false | When enabled, a clear icon is displayed to clear the value. |
 | autofocus | boolean | false | When present, it specifies that the component should automatically get focus on load. |
 
@@ -21560,7 +21560,7 @@ Input Otp is used to enter one time passwords.
 | readonly | boolean | false | When present, it specifies that an input field is read-only. |
 | tabindex | number | null | Index of the element in tabbing order. |
 | length | number | 4 | Number of characters to initiate. |
-| styleClass | string | - | Style class of the input element. |
+| class | string | - | Style class of the input element. |
 | mask | boolean | false | Mask pattern. |
 | integerOnly | boolean | false | When present, it specifies that an input field is integer-only. |
 | autofocus | boolean | false | When present, it specifies that the component should automatically get focus on load. |
@@ -22789,7 +22789,7 @@ Knob is a form component to define number inputs with a dial.
 | invalid | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have invalid state style. |
 | disabled | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have disabled state style. |
 | name | InputSignal<string> | undefined | When present, it specifies that the name of the input. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
 | ariaLabelledBy | string | - | Specifies one or more IDs in the DOM that labels the input field. |
 | tabindex | number | 0 | Index of the element in tabbing order. |
@@ -23578,9 +23578,9 @@ ListBox is used to select one or more values from a list of items.
 | scrollHeight | string | 14rem | Height of the viewport in pixels, a scrollbar is defined if height of list exceeds this value. |
 | tabindex | number | 0 | Index of the element in tabbing order. |
 | multiple | boolean | false | When specified, allows selecting multiple values. |
-| styleClass | string | - | Style class of the container. **(Deprecated)** |
+| class | string | - | Style class of the container. **(Deprecated)** |
 | listStyle | { [klass: string]: any } | - | Inline style of the list element. |
-| listStyleClass | string | - | Style class of the list element. |
+| listclass | string | - | Style class of the list element. |
 | readonly | boolean | false | When present, it specifies that the element value cannot be changed. |
 | checkbox | boolean | false | When specified, allows selecting items with checkboxes. |
 | filter | boolean | false | When specified, displays a filter input at header. |
@@ -24156,7 +24156,7 @@ MegaMenu is navigation component that displays submenus together.
 | pt | InputSignal<MegaMenuPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | model | MegaMenuItem[] | - | An array of menuitems. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | orientation | string | horizontal | Defines the orientation. |
 | id | string | - | Current id state as a string. |
 | ariaLabel | string | - | Defines a string value that labels an interactive element. |
@@ -24557,7 +24557,7 @@ Menu offers item customization with the item template that receives the menuitem
 **Basic Usage:**
 
 ```html
-<p-menu [model]="items" class="flex justify-center" styleClass="w-full md:w-60">
+<p-menu [model]="items" class="flex justify-center" class="w-full md:w-60">
     <ng-template #start>
         <span class="inline-flex items-center gap-1 px-2 py-2">
             <svg width="33" height="35" viewBox="0 0 33 35" fill="none" xmlns="http://www.w3.org/2000/svg" class="block mx-auto">
@@ -24676,7 +24676,7 @@ Menu is a navigation / command component that supports dynamic and static positi
 | model | MenuItem[] | - | An array of menuitems. |
 | popup | boolean | false | Defines if menu would displayed as a popup. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
 | showTransitionOptions | string | .12s cubic-bezier(0, 0, 0.2, 1) | Transition options of the show animation. **(Deprecated)** |
@@ -25075,7 +25075,7 @@ Menubar is a horizontal menu component.
 | pt | InputSignal<MenubarPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | model | MenuItem[] | - | An array of menuitems. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
 | autoDisplay | boolean | true | Whether to show a root submenu on mouse over. |
@@ -25295,7 +25295,7 @@ Validation errors in a form are displayed with the error severity.
 
 ```html
 <div class="flex flex-col gap-4">
-    <p-message severity="error" icon="pi pi-times-circle" styleClass="mb-2">Validation Failed</p-message>
+    <p-message severity="error" icon="pi pi-times-circle" class="mb-2">Validation Failed</p-message>
     <div class="flex flex-col gap-1">
         <input pInputText placeholder="Username" [(ngModel)]="username" aria-label="username" [invalid]="!username" />
         @if (!username) {
@@ -25341,7 +25341,7 @@ The icon of a message is specified with the icon property.
 **Basic Usage:**
 
 ```html
-<p-message severity="info" icon="pi pi-send" text="Info Message" styleClass="h-full" />
+<p-message severity="info" icon="pi pi-send" text="Info Message" class="h-full" />
 <p-message severity="success">
     <ng-template #icon>
         <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
@@ -25557,7 +25557,7 @@ Message groups a collection of contents in tabs.
 | text | string | - | Text content. **(Deprecated)** |
 | escape | boolean | true | Whether displaying messages would be escaped or not. **(Deprecated)** |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | closable | boolean | false | Whether the message can be closed manually using the close icon. |
 | icon | string | undefined | Icon to display in the message. |
 | closeIcon | string | undefined | Icon to display in the message close button. |
@@ -25886,7 +25886,7 @@ MeterGroup provides templating support for labels, meter items, and content arou
     <ng-template #label>
         <div class="flex flex-wrap gap-4">
             <ng-container *ngFor="let meterItem of value; let index = index">
-                <p-card class="flex-1" styleClass="border border-surface shadow-none">
+                <p-card class="flex-1" class="border border-surface shadow-none">
                     <div class="flex justify-between gap-8">
                         <div class="flex flex-col gap-1">
                             <span class="text-surface-500 dark:text-surface-400 text-sm">{{ meterItem.label }}</span>
@@ -25998,7 +25998,7 @@ MeterGroup displays scalar measurements within a known range.
 | orientation | "vertical" \| "horizontal" | horizontal | Specifies the layout of the component, valid values are 'horizontal' and 'vertical'. |
 | labelPosition | "start" \| "end" | end | Specifies the label position of the component, valid values are 'start' and 'end'. |
 | labelOrientation | "vertical" \| "horizontal" | horizontal | Specifies the label orientation of the component, valid values are 'horizontal' and 'vertical'. |
-| styleClass | string | - | Style class of the element. **(Deprecated)** |
+| class | string | - | Style class of the element. **(Deprecated)** |
 
 ### Templates
 
@@ -27022,9 +27022,9 @@ MultiSelect is used to select multiple items from a collection.
 | name | InputSignal<string> | undefined | When present, it specifies that the name of the input. |
 | id | string | - | Unique identifier of the component |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
-| styleClass | string | - | Style class of the element. **(Deprecated)** |
+| class | string | - | Style class of the element. **(Deprecated)** |
 | panelStyle | any | - | Inline style of the overlay panel. |
-| panelStyleClass | string | - | Style class of the overlay panel element. |
+| panelclass | string | - | Style class of the overlay panel element. |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
 | readonly | boolean | false | When present, it specifies that the component cannot be edited. |
 | group | boolean | false | Whether to display options as grouped when nested options are provided. |
@@ -27065,7 +27065,7 @@ MultiSelect is used to select multiple items from a collection.
 | tooltip | string | - | Advisory information to display in a tooltip on hover. |
 | tooltipPosition | "right" \| "left" \| "top" \| "bottom" | right | Position of the tooltip. |
 | tooltipPositionStyle | string | absolute | Type of CSS position. |
-| tooltipStyleClass | string | - | Style class of the tooltip. |
+| tooltipclass | string | - | Style class of the tooltip. |
 | autofocusFilter | boolean | false | Applies focus to the filter element when the overlay is shown. |
 | display | string | comma | Defines how the selected items are displayed. |
 | autocomplete | string | off | Defines the autocomplete is active. |
@@ -27589,7 +27589,7 @@ OrderList is used to manage the order of a collection.
 | pt | InputSignal<OrderListPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | header | string | - | Text for the caption. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | tabindex | number | - | Index of the element in tabbing order. |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
 | ariaLabelledBy | string | - | Specifies one or more IDs in the DOM that labels the input field. |
@@ -27736,7 +27736,7 @@ export class OrganizationChartColoredDemo {
         {
             expanded: true,
             type: 'person',
-            styleClass: '!bg-indigo-100 !text-indigo-900 rounded-xl',
+            class: '!bg-indigo-100 !text-indigo-900 rounded-xl',
             data: {
                 image: 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png',
                 name: 'Amy Elsner',
@@ -27746,7 +27746,7 @@ export class OrganizationChartColoredDemo {
                 {
                     expanded: true,
                     type: 'person',
-                    styleClass: '!bg-purple-100 !text-purple-900 rounded-xl',
+                    class: '!bg-purple-100 !text-purple-900 rounded-xl',
                     data: {
                         image: 'https://primefaces.org/cdn/primeng/images/demo/avatar/annafali.png',
                         name: 'Anna Fali',
@@ -27755,18 +27755,18 @@ export class OrganizationChartColoredDemo {
                     children: [
                         {
                             label: 'Sales',
-                            styleClass: '!bg-purple-100 !text-purple-900 rounded-xl',
+                            class: '!bg-purple-100 !text-purple-900 rounded-xl',
                         },
                         {
                             label: 'Marketing',
-                            styleClass: '!bg-purple-100 !text-purple-900 rounded-xl',
+                            class: '!bg-purple-100 !text-purple-900 rounded-xl',
                         },
                     ],
                 },
                 {
                     expanded: true,
                     type: 'person',
-                    styleClass: '!bg-teal-100 !text-teal-900 rounded-xl',
+                    class: '!bg-teal-100 !text-teal-900 rounded-xl',
                     data: {
                         image: 'https://primefaces.org/cdn/primeng/images/demo/avatar/stephenshaw.png',
                         name: 'Stephen Shaw',
@@ -27775,11 +27775,11 @@ export class OrganizationChartColoredDemo {
                     children: [
                         {
                             label: 'Development',
-                            styleClass: '!bg-teal-100 !text-teal-900 rounded-xl',
+                            class: '!bg-teal-100 !text-teal-900 rounded-xl',
                         },
                         {
                             label: 'UI/UX Design',
-                            styleClass: '!bg-teal-100 !text-teal-900 rounded-xl',
+                            class: '!bg-teal-100 !text-teal-900 rounded-xl',
                         },
                     ],
                 },
@@ -27978,7 +27978,7 @@ OrganizationChart visualizes hierarchical organization data.
 | pt | InputSignal<OrganizationChartPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | value | TreeNode<any>[] | - | An array of nested TreeNodes. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | selectionMode | "multiple" \| "single" | - | Defines the selection mode. |
 | collapsible | boolean | false | Whether the nodes can be expanded or toggled. |
 | preserveSpace | boolean | true | Whether the space allocated by a node is preserved when hidden. **(Deprecated)** |
@@ -28106,7 +28106,7 @@ Overlay is a container to display content in an overlay window. All the options 
 
 ```html
 <p-button (click)="toggle()" label="Show Overlay"></p-button>
-<p-overlay [(visible)]="overlayVisible" [responsive]="{ breakpoint: '640px', direction: 'bottom', contentStyleClass: 'h-20rem' }" contentStyleClass="p-6 bg-surface-0 dark:bg-surface-900 shadow rounded-border">
+<p-overlay [(visible)]="overlayVisible" [responsive]="{ breakpoint: '640px', direction: 'bottom', contentclass: 'h-20rem' }" contentclass="p-6 bg-surface-0 dark:bg-surface-900 shadow rounded-border">
     Content
 </p-overlay>
 ```
@@ -28185,9 +28185,9 @@ import { PrimeNG } from 'primeng/config';
 
 const responsiveOptions: ResponsiveOverlayOptions = {
     // style?: any;                                     // Style of component in given breakpoint or media query
-    // styleClass?: string;                             // Style class of component in given breakpoint or media query
+    // class?: string;                             // Style class of component in given breakpoint or media query
     // contentStyle?: any;                              // Style of content in given breakpoint or media query
-    // contentStyleClass?: string;                      // Style class of content in given breakpoint or media query
+    // contentclass?: string;                      // Style class of content in given breakpoint or media query
     // breakpoint?: string;                             // Breakpoint required to show component in modal mode. Exp: '640px', '10rem' etc.
     // media?: string;                                  // Media query required to show component in modal mode. Exp: '@media screen and (max-width: 640px)', '@media screen and (min-width: 640px) and (max-width: 900px)' etc.
     // direction?: ResponsiveOverlayDirectionType;      // Direction in which the component will be displayed in modal mode.
@@ -28201,7 +28201,7 @@ this.primeng.overlayOptions: OverlayOptions = {
 
 ## Style
 
-The style and styleClass are used to define styles that will be added to all overlay components. In addition, it can be used in contentStyle and contentStyleClass classes.
+The style and class are used to define styles that will be added to all overlay components. In addition, it can be used in contentStyle and contentclass classes.
 
 ## Target
 
@@ -28226,7 +28226,7 @@ Content can be customized with the content template.
 
 ```html
 <p-button (click)="toggle()" label="Show Overlay"></p-button>
-<p-overlay [(visible)]="overlayVisible" [responsive]="{ breakpoint: '640px', direction: 'bottom', contentStyleClass: 'h-20rem' }" contentStyleClass="p-6 bg-surface-0 dark:bg-surface-900 shadow rounded-border">
+<p-overlay [(visible)]="overlayVisible" [responsive]="{ breakpoint: '640px', direction: 'bottom', contentclass: 'h-20rem' }" contentclass="p-6 bg-surface-0 dark:bg-surface-900 shadow rounded-border">
     <ng-template #content let-option>
         Content - {{option.mode}}
     </ng-template>
@@ -28272,9 +28272,9 @@ This API allows overlay components to be controlled from the PrimeNG. In this wa
 | visible | boolean | - | The visible property is an input that determines the visibility of the component. |
 | mode | string | - | The mode property is an input that determines the overlay mode type or string. |
 | style | { [klass: string]: any } | - | The style property is an input that determines the style object for the component. |
-| styleClass | string | - | The styleClass property is an input that determines the CSS class(es) for the component. |
+| class | string | - | The class property is an input that determines the CSS class(es) for the component. |
 | contentStyle | { [klass: string]: any } | - | The contentStyle property is an input that determines the style object for the content of the component. |
-| contentStyleClass | string | - | The contentStyleClass property is an input that determines the CSS class(es) for the content of the component. |
+| contentclass | string | - | The contentclass property is an input that determines the CSS class(es) for the content of the component. |
 | target | string | - | The target property is an input that specifies the target element or selector for the component. |
 | autoZIndex | boolean | - | The autoZIndex determines whether to automatically manage layering. Its default value is 'false'. |
 | baseZIndex | number | - | The baseZIndex is base zIndex value to use in layering. |
@@ -28536,7 +28536,7 @@ Paginator is a generic component to display content in paged format.
 | pt | InputSignal<PaginatorPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | pageLinkSize | number | 5 | Number of page links to display. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | alwaysShow | boolean | true | Whether to show it even there is only one page. |
 | dropdownAppendTo | any | - | Target element to attach the dropdown overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). **(Deprecated)** |
 | templateLeft | TemplateRef<PaginatorTemplateContext> | - | Template instance to inject into the left side of the paginator. |
@@ -28809,7 +28809,7 @@ Panel is a container with the optional content toggle feature.
 | toggleable | boolean | false | Defines if content of panel can be expanded and collapsed. |
 | _header | string | - | Header text of the panel. |
 | collapsed | boolean | - | Defines the initial state of panel content, supports one or two-way binding as well. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | iconPos | "center" \| "start" \| "end" | end | Position of the icons. |
 | showHeader | boolean | true | Specifies if header of panel cannot be displayed. |
 | toggler | "icon" \| "header" | icon | Specifies the toggler element to toggle the panel content. |
@@ -29463,7 +29463,7 @@ PanelMenu is a hybrid of Accordion and Tree components.
 | pt | InputSignal<PanelMenuPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | model | MenuItem[] | - | An array of menuitems. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | multiple | boolean | false | Whether multiple tabs can be activated at the same time or not. |
 | transitionOptions | string | 400ms cubic-bezier(0.86, 0, 0.07, 1) | Transition options of the animation. **(Deprecated)** |
 | motionOptions | InputSignal<MotionOptions> | ... | The motion options. |
@@ -29601,7 +29601,7 @@ When showClear is enabled, a clear icon is displayed to clear the value.
 **Basic Usage:**
 
 ```html
-<p-password [(ngModel)]="value" [feedback]="false" autocomplete="off" [showClear]="true" inputStyleClass="w-56" />
+<p-password [(ngModel)]="value" [feedback]="false" autocomplete="off" [showClear]="true" inputclass="w-56" />
 ```
 
 <details>
@@ -30197,8 +30197,8 @@ Password displays strength indicator for password fields.
 | inputId | string | - | Identifier of the accessible input element. |
 | feedback | boolean | true | Whether to show the strength indicator or not. |
 | toggleMask | boolean | false | Whether to show an icon to display the password as plain text. |
-| inputStyleClass | string | - | Style class of the input field. |
-| styleClass | string | - | Style class of the element. **(Deprecated)** |
+| inputclass | string | - | Style class of the input field. |
+| class | string | - | Style class of the element. **(Deprecated)** |
 | inputStyle | { [klass: string]: any } | - | Inline style of the input field. |
 | showTransitionOptions | string | .12s cubic-bezier(0, 0, 0.2, 1) | Transition options of the show animation. **(Deprecated)** |
 | hideTransitionOptions | string | .1s linear | Transition options of the hide animation. **(Deprecated)** |
@@ -30567,7 +30567,7 @@ PickList is used to reorder items between different lists.
 | metaKeySelection | boolean | false | Defines how multiple items can be selected, when true metaKey needs to be pressed to select or unselect an item and when set to false selection of each item can be toggled individually. On touch enabled devices, metaKeySelection is turned off automatically. |
 | dragdrop | boolean | false | Whether to enable dragdrop based reordering. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | sourceStyle | any | - | Inline style of the source list element. |
 | targetStyle | any | - | Inline style of the target list element. |
 | showSourceControls | boolean | true | Whether to show buttons of source list. |
@@ -30820,7 +30820,7 @@ Place the Popover outside of the data iteration components to avoid rendering it
                         [label]="'Buy Now | $' + selectedProduct.price"
                         [disabled]="selectedProduct.inventoryStatus === 'OUTOFSTOCK'"
                         class="flex-auto"
-                        styleClass="w-full whitespace-nowrap"
+                        class="w-full whitespace-nowrap"
                         (onClick)="hidePopover()"
                     />
                     <p-button icon="pi pi-heart" outlined (onClick)="hidePopover()" />
@@ -30926,7 +30926,7 @@ In this sample, data is retrieved from the content inside the popover.
 **Basic Usage:**
 
 ```html
-<p-button type="button" [label]="selectedMember ? selectedMember.name : 'Select Member'" (onClick)="toggle($event)" styleClass="min-w-48" />
+<p-button type="button" [label]="selectedMember ? selectedMember.name : 'Select Member'" (onClick)="toggle($event)" class="min-w-48" />
 
 <p-popover #op>
     <div class="flex flex-col gap-4">
@@ -31064,7 +31064,7 @@ Popover is a container component that can overlay other components on page.
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
 | dismissable | boolean | true | Enables to hide the overlay when outside is clicked. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | appendTo | InputSignal<any> | 'self' | Target element to attach the overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | ariaCloseLabel | string | - | Aria label of the close icon. |
@@ -31286,8 +31286,8 @@ ProgressBar is a process status indicator.
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | value | number | - | Current value of the progress. |
 | showValue | boolean | true | Whether to display the progress bar value. |
-| styleClass | string | - | Style class of the element. **(Deprecated)** |
-| valueStyleClass | string | - | Style class of the value element. |
+| class | string | - | Style class of the element. **(Deprecated)** |
+| valueclass | string | - | Style class of the value element. |
 | unit | string | % | Unit sign appended to the value. |
 | mode | "indeterminate" \| "determinate" | 'determinate' | Defines the mode of the progress |
 | color | string | - | Color for the background of the progress. |
@@ -31402,7 +31402,7 @@ ProgressSpinner is a process status indicator.
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<ProgressSpinnerPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | strokeWidth | string | 2 | Width of the circle stroke. |
 | fill | string | none | Color for the background of the circle. |
 | animationDuration | string | 2s | Duration of the rotate animation. |
@@ -31876,7 +31876,7 @@ RadioButton is an extension to standard radio button element with theming.
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
 | ariaLabel | string | - | Used to define a string that labels the input element. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | autofocus | boolean | false | When present, it specifies that the component should automatically get focus on load. |
 | binary | boolean | false | Allows to select a boolean value. |
 | variant | InputSignal<"outlined" \| "filled"> | undefined | Specifies the input variant of the component. |
@@ -32493,7 +32493,7 @@ VirtualScroller requires items as the data to display, itemSize for the dimensio
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="50" scrollHeight="200px" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" scrollHeight="200px" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32509,7 +32509,7 @@ Scroll delay is adjusted by using delay property.
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="50" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32517,7 +32517,7 @@ Scroll delay is adjusted by using delay property.
     </ng-template>
 </p-virtualscroller>
 
-<p-virtualscroller [items]="items" [itemSize]="50" [delay]="150" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" [delay]="150" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32525,7 +32525,7 @@ Scroll delay is adjusted by using delay property.
     </ng-template>
 </p-virtualscroller>
 
-<p-virtualscroller [items]="items" [itemSize]="50" [delay]="500" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" [delay]="500" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32571,7 +32571,7 @@ Scrolling can be enabled vertically and horizontally when orientation is set as 
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="[50, 100]" orientation="both" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="[50, 100]" orientation="both" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             <div *ngFor="let el of item" style="width: 100px">{{ el }}</div>
@@ -32617,7 +32617,7 @@ Setting orientation to horizontal enables scrolling horizontally. In this case, 
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="50" scrollHeight="200px" orientation="horizontal" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" scrollHeight="200px" orientation="horizontal" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" style="writing-mode: vertical-lr; width: 50px;" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }">
             {{ item }}
@@ -32680,7 +32680,7 @@ Lazy mode is handy to deal with large datasets where instead of loading the enti
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="50" [showLoader]="true" [delay]="250" [loading]="lazyLoading" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" [showLoader]="true" [delay]="250" [loading]="lazyLoading" [lazy]="true" (onLazyLoad)="onLazyLoad($event)" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32756,7 +32756,7 @@ Busy state is enabled by adding showLoader property which blocks the UI with a m
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="50" [showLoader]="true" [delay]="250" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="50" [showLoader]="true" [delay]="250" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32764,7 +32764,7 @@ Busy state is enabled by adding showLoader property which blocks the UI with a m
     </ng-template>
 </p-virtualscroller>
 
- <p-virtualscroller [items]="items" [itemSize]="50" [showLoader]="true" [delay]="250" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+ <p-virtualscroller [items]="items" [itemSize]="50" [showLoader]="true" [delay]="250" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32820,7 +32820,7 @@ Scrolling to a specific index can be done with the scrollToIndex function.
 
 ```html
 <p-button label="Reset" (click)="reset()" />
-<p-virtualscroller #sc [items]="items" [itemSize]="50" scrollHeight="200px" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller #sc [items]="items" [itemSize]="50" scrollHeight="200px" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex items-center p-2" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }" style="height: 50px;">
             {{ item }}
@@ -32874,7 +32874,7 @@ Scroller content is customizable by using ng-template . Valid values are content
 **Basic Usage:**
 
 ```html
-<p-virtualscroller [items]="items" [itemSize]="25 * 7" [showLoader]="true" [delay]="250" [numToleratedItems]="20" styleClass="border border-surface" [style]="{ width: '200px', height: '200px' }">
+<p-virtualscroller [items]="items" [itemSize]="25 * 7" [showLoader]="true" [delay]="250" [numToleratedItems]="20" class="border border-surface" [style]="{ width: '200px', height: '200px' }">
     <ng-template #item let-item let-options="options">
         <div class="flex flex-col align-items-strech" [ngClass]="{ 'bg-surface-100 dark:bg-surface-700': options.odd }">
             <div class="flex items-center px-2" style="height: 25px">Item: {{ item }}</div>
@@ -32949,7 +32949,7 @@ Scroller is a performance-approach to handle huge data efficiently.
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | id | string | - | Unique identifier of the element. |
 | style | any | - | Inline style of the component. |
-| styleClass | string | - | Style class of the element. |
+| class | string | - | Style class of the element. |
 | tabindex | number | - | Index of the element in tabbing order. |
 | items | any[] | - | An array of objects to display. |
 | itemSize | number \| number[] | - | The height/width of item according to orientation. |
@@ -33125,7 +33125,7 @@ ScrollPanel is a cross browser, lightweight and themable alternative to native b
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<ScrollPanelPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | step | number | 5 | Step factor to scroll the content while pressing the arrow keys. |
 
 ### Templates
@@ -33250,7 +33250,7 @@ ScrollTop gets displayed after a certain scroll position and used to navigates t
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<ScrollTopPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Class of the element. |
+| class | string | - | Class of the element. |
 | style | { [klass: string]: any } | - | Inline style of the element. |
 | target | "window" \| "parent" | window | Target of the ScrollTop. |
 | threshold | number | 400 | Defines the threshold value of the vertical scroll position of the target to toggle the visibility. |
@@ -34480,8 +34480,8 @@ Select is used to choose an item from a collection of options.
 | scrollHeight | string | 200px | Height of the viewport in pixels, a scrollbar is defined if height of list exceeds this value. |
 | filter | boolean | false | When specified, displays an input field to filter the items on keyup. |
 | panelStyle | { [klass: string]: any } | - | Inline style of the overlay panel element. |
-| styleClass | string | - | Style class of the element. **(Deprecated)** |
-| panelStyleClass | string | - | Style class of the overlay panel element. |
+| class | string | - | Style class of the element. **(Deprecated)** |
+| panelclass | string | - | Style class of the overlay panel element. |
 | readonly | boolean | false | When present, it specifies that the component cannot be edited. |
 | editable | boolean | false | When present, custom value instead of predefined options can be entered using the editable input field. |
 | tabindex | number | 0 | Index of the element in tabbing order. |
@@ -34519,7 +34519,7 @@ Select is used to choose an item from a collection of options.
 | tooltip | string | - | Advisory information to display in a tooltip on hover. |
 | tooltipPosition | "right" \| "left" \| "top" \| "bottom" | right | Position of the tooltip. |
 | tooltipPositionStyle | string | absolute | Type of CSS position. |
-| tooltipStyleClass | string | - | Style class of the tooltip. |
+| tooltipclass | string | - | Style class of the tooltip. |
 | focusOnHover | boolean | true | Fields used when filtering the options, defaults to optionLabel. |
 | selectOnFocus | boolean | false | Determines if the option will be selected on focus. |
 | autoOptionFocus | boolean | false | Whether to focus on the first visible or selected element when the overlay panel is shown. |
@@ -35102,7 +35102,7 @@ SelectButton is used to choose single or multiple items from a list using button
 | tabindex | number | 0 | Index of the element in tabbing order. |
 | multiple | boolean | false | When specified, allows selecting multiple values. |
 | allowEmpty | boolean | true | Whether selection can not be cleared. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
 | dataKey | string | - | A property to uniquely identify a value in options. |
 | autofocus | boolean | false | When present, it specifies that the component should automatically get focus on load. |
@@ -35390,7 +35390,7 @@ Skeleton is a placeholder to display instead of the actual content.
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<SkeletonPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | shape | string | rectangle | Shape of the element. |
 | borderRadius | string | - | Border radius of the element, defaults to value from theme. |
 | size | string | - | Size of the skeleton. |
@@ -35770,7 +35770,7 @@ Slider is a component to provide input with a drag handle.
 | orientation | "vertical" \| "horizontal" | horizontal | Orientation of the slider. |
 | step | number | - | Step factor to increment/decrement the value. |
 | range | boolean | false | When specified, allows two boundary values to be picked. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
 | tabindex | number | 0 | Index of the element in tabbing order. |
@@ -36203,7 +36203,7 @@ SpeedDial offers item customization with the item template that receives the men
 ```html
 <p-speeddial [model]="items" direction="up" [transitionDelay]="80" style="position: 'absolute'">
     <ng-template #button let-toggleCallback="toggleCallback">
-        <p-button outlined styleClass="border" (click)="toggleCallback($event)">
+        <p-button outlined class="border" (click)="toggleCallback($event)">
             <svg width="31" height="33" viewBox="0 0 31 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="..." fill="var(--p-primary-color)" />
             </svg>
@@ -37375,9 +37375,9 @@ SplitButton groups a set of commands in an overlay with a default command.
 | label | string | - | Text of the button. |
 | tooltip | string | - | Tooltip for the main button. |
 | tooltipOptions | TooltipOptions | - | Tooltip options for the main button. |
-| styleClass | string | - | Class of the element. **(Deprecated)** |
+| class | string | - | Class of the element. **(Deprecated)** |
 | menuStyle | { [klass: string]: any } | - | Inline style of the overlay menu. |
-| menuStyleClass | string | - | Style class of the overlay menu. |
+| menuclass | string | - | Style class of the overlay menu. |
 | dropdownIcon | string | - | Name of the dropdown icon. |
 | appendTo | InputSignal<any> | 'body' | Target element to attach the overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). |
 | dir | string | - | Indicates the direction of the element. |
@@ -37620,8 +37620,8 @@ Splitter is utilized to separate and resize panels.
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<SplitterPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
-| panelStyleClass | string | - | Style class of the panel. |
+| class | string | - | Style class of the component. **(Deprecated)** |
+| panelclass | string | - | Style class of the panel. |
 | panelStyle | { [klass: string]: any } | - | Inline style of the panel. |
 | stateStorage | string | session | Defines where a stateful splitter keeps its state, valid values are 'session' for sessionStorage and 'local' for localStorage. |
 | stateKey | string | null | Storage identifier of a stateful Splitter. |
@@ -38306,9 +38306,9 @@ Steps can be controlled programmatically using activeIndex property.
 
 ```html
 <div class="flex mb-8 gap-2 justify-end">
-    <p-button (click)="active = 0" [rounded]="true" label="1" styleClass="w-8 h-8 p-0" [outlined]="active !== 0" />
-    <p-button (click)="active = 1" [rounded]="true" label="2" styleClass="w-8 h-8 p-0" [outlined]="active !== 1" />
-    <p-button (click)="active = 2" [rounded]="true" label="3" styleClass="w-8 h-8 p-0" [outlined]="active !== 2" />
+    <p-button (click)="active = 0" [rounded]="true" label="1" class="w-8 h-8 p-0" [outlined]="active !== 0" />
+    <p-button (click)="active = 1" [rounded]="true" label="2" class="w-8 h-8 p-0" [outlined]="active !== 1" />
+    <p-button (click)="active = 2" [rounded]="true" label="3" class="w-8 h-8 p-0" [outlined]="active !== 2" />
 </div>
 <p-steps [activeIndex]="active" [model]="items" />
 ```
@@ -38531,9 +38531,9 @@ Following is the list of structural style classes, for theming classes visit the
 
 ---
 
-# Angular StyleClass Component
+# Angular class Component
 
-StyleClass manages css classes declaratively to during enter/leave animations or just to toggle classes on an element.
+class manages css classes declaratively to during enter/leave animations or just to toggle classes on an element.
 
 ## Animation
 
@@ -38544,9 +38544,9 @@ Classes to apply during enter and leave animations are specified using the enter
 ```html
 <div class="flex flex-col items-center">
     <div>
-        <p-button pStyleClass=".box1" enterFromClass="my-hidden" enterActiveClass="my-fadein" label="FadeIn" class="mr-2" />
+        <p-button pclass=".box1" enterFromClass="my-hidden" enterActiveClass="my-fadein" label="FadeIn" class="mr-2" />
         <p-button
-            pStyleClass=".box1"
+            pclass=".box1"
             leaveActiveClass="my-fadeout"
             leaveToClass="my-hidden"
             label="FadeOut"
@@ -38566,14 +38566,14 @@ Classes to apply during enter and leave animations are specified using the enter
 <div class="flex flex-col items-center">
     <div>
         <p-button
-            pStyleClass=".box2"
+            pclass=".box2"
             enterFromClass="hidden"
             enterActiveClass="animate-slidedown"
             label="SlideDown"
             class="mr-2"
         />
         <p-button
-            pStyleClass=".box2"
+            pclass=".box2"
             leaveActiveClass="animate-slideup"
             leaveToClass="hidden"
             label="SlideUp"
@@ -38597,14 +38597,14 @@ Classes to apply during enter and leave animations are specified using the enter
 
 ```typescript
 import { Component } from '@angular/core';
-import { StyleClassModule } from 'primeng/styleclass';
+import { classModule } from 'primeng/class';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: './style-class-animation-demo',
     templateUrl: './style-class-animation-demo.html',
     standalone: true,
-    imports: [StyleClassModule, ButtonModule],
+    imports: [classModule, ButtonModule],
     styles: [
         \`:host ::ng-deep {
                 @keyframes my-fadein {
@@ -38639,7 +38639,7 @@ import { ButtonModule } from 'primeng/button';
             } \`
     ],
 })
-export class StyleClassAnimationDemo {}
+export class classAnimationDemo {}
 ```
 </details>
 
@@ -38652,7 +38652,7 @@ When hideOnResize is enabled, the leave animation is triggered automatically whe
 ```html
 <div class="flex flex-wrap justify-center gap-4">
     <div class="flex flex-col items-center gap-4 w-[25rem]">
-        <p-button pStyleClass=".window-responsive-box" enterFromClass="hidden" enterActiveClass="animate-fadein" leaveActiveClass="animate-fadeout" leaveToClass="hidden" [hideOnResize]="true" label="Show Window Responsive Content" />
+        <p-button pclass=".window-responsive-box" enterFromClass="hidden" enterActiveClass="animate-fadein" leaveActiveClass="animate-fadeout" leaveToClass="hidden" [hideOnResize]="true" label="Show Window Responsive Content" />
         <div class="window-responsive-box hidden animate-duration-300 border border-lg border-surface">
             <div class="p-4 flex flex-col gap-2">
                 <h3 class="text-xl font-bold">Window Responsive Panel</h3>
@@ -38664,7 +38664,7 @@ When hideOnResize is enabled, the leave animation is triggered automatically whe
 
     <div class="flex flex-col items-center gap-4 w-[25rem]">
         <p-button
-            pStyleClass=".resizable-container"
+            pclass=".resizable-container"
             enterFromClass="hidden"
             enterActiveClass="animate-fadein"
             leaveActiveClass="animate-fadeout"
@@ -38690,14 +38690,14 @@ When hideOnResize is enabled, the leave animation is triggered automatically whe
 
 ```typescript
 import { Component } from '@angular/core';
-import { StyleClass } from 'primeng/styleclass';
+import { class } from 'primeng/class';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'hide-on-resize-demo',
     templateUrl: './hide-on-resize-demo.html',
     standalone: true,
-    imports: [StyleClass, ButtonModule]
+    imports: [class, ButtonModule]
 })
 export class HideOnResizeDemo {}
 ```
@@ -38709,18 +38709,18 @@ export class HideOnResizeDemo {}
 <summary>TypeScript Example</summary>
 
 ```typescript
-import { StyleClassModule } from 'primeng/styleclass';
+import { classModule } from 'primeng/class';
 ```
 </details>
 
 ## Toggle Class
 
-StyleClass has two modes, toggleClass to simply add-remove a class and enter/leave animations. The target element to change the styling is defined with the selector property that accepts any valid CSS selector or keywords including &#64;next , prev , parent , grandparent
+class has two modes, toggleClass to simply add-remove a class and enter/leave animations. The target element to change the styling is defined with the selector property that accepts any valid CSS selector or keywords including &#64;next , prev , parent , grandparent
 
 **Basic Usage:**
 
 ```html
-<p-button label="Toggle Display" pStyleClass="@next" toggleClass="hidden" />
+<p-button label="Toggle Display" pclass="@next" toggleClass="hidden" />
 <input type="text" pInputText class="hidden mt-4" />
 ```
 
@@ -38729,7 +38729,7 @@ StyleClass has two modes, toggleClass to simply add-remove a class and enter/lea
 
 ```typescript
 import { Component } from '@angular/core';
-import { StyleClass } from 'primeng/styleclass';
+import { class } from 'primeng/class';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 
@@ -38737,9 +38737,9 @@ import { ButtonModule } from 'primeng/button';
     selector: 'style-class-toggle-class-demo',
     templateUrl: './style-class-toggle-class-demo.html',
     standalone: true,
-    imports: [StyleClass, InputTextModule, ButtonModule]
+    imports: [class, InputTextModule, ButtonModule]
 })
-export class StyleClassToggleClassDemo {}
+export class classToggleClassDemo {}
 ```
 </details>
 
@@ -45116,15 +45116,15 @@ Table displays data in tabular format.
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | frozenColumns | any[] | - | An array of objects to represent dynamic columns that are frozen. |
 | frozenValue | any[] | - | An array of objects to display as frozen. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | tableStyle | { [klass: string]: any } | - | Inline style of the table. |
-| tableStyleClass | string | - | Style class of the table. |
+| tableclass | string | - | Style class of the table. |
 | paginator | boolean | false | When specified as true, enables the pagination. |
 | pageLinks | number | 5 | Number of page links to display in paginator. |
 | rowsPerPageOptions | any[] | - | Array of integer/object values to display inside rows per page dropdown of paginator |
 | alwaysShowPaginator | boolean | true | Whether to show it even there is only one page. |
 | paginatorPosition | "top" \| "bottom" \| "both" | bottom | Position of the paginator, options are "top", "bottom" or "both". |
-| paginatorStyleClass | string | - | Custom style class for paginator |
+| paginatorclass | string | - | Custom style class for paginator |
 | paginatorDropdownAppendTo | any | - | Target element to attach the paginator dropdown overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). |
 | paginatorDropdownScrollHeight | string | 200px | Paginator dropdown height of the viewport in pixels, a scrollbar is defined if height of list exceeds this value. |
 | currentPageReportTemplate | string | {currentPage} of {totalPages} | Template of the current page report element. Available placeholders are {currentPage},{totalPages},{rows},{first},{last} and {totalRecords} |
@@ -45459,9 +45459,9 @@ Tabs can be controlled programmatically using value property as a model.
 
 ```html
 <div class="flex mb-2 gap-2 justify-end">
-    <p-button (onClick)="value = 0" rounded="true" styleClass="w-8 h-8 p-0" [outlined]="value !== 0" label="1" />
-    <p-button (onClick)="value = 1" rounded="true" styleClass="w-8 h-8 p-0" [outlined]="value !== 1" label="2" />
-    <p-button (onClick)="value = 2" rounded="true" styleClass="w-8 h-8 p-0" [outlined]="value !== 2" label="3" />
+    <p-button (onClick)="value = 0" rounded="true" class="w-8 h-8 p-0" [outlined]="value !== 0" label="1" />
+    <p-button (onClick)="value = 1" rounded="true" class="w-8 h-8 p-0" [outlined]="value !== 1" label="2" />
+    <p-button (onClick)="value = 2" rounded="true" class="w-8 h-8 p-0" [outlined]="value !== 2" label="3" />
 </div>
 <p-tabs [value]="value">
     <p-tablist>
@@ -46144,7 +46144,7 @@ Tag component is used to categorize content.
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<TagPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | severity | "success" \| "info" \| "warn" \| "danger" \| "secondary" \| "contrast" | - | Severity type of the tag. |
 | value | string | - | Value to display inside the tag. |
 | icon | string | - | Icon of the tag to display next to the value. |
@@ -46252,7 +46252,7 @@ Terminal is a text based user interface.
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | welcomeMessage | string | - | Initial text to display on terminal. |
 | prompt | string | - | Prompt text for each command. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 
 ## Pass Through Options
 
@@ -47296,7 +47296,7 @@ TieredMenu displays submenus in nested overlays.
 | model | MenuItem[] | - | An array of menuitems. |
 | popup | boolean | false | Defines if menu would displayed as a popup. |
 | style | { [klass: string]: any } | - | Inline style of the component. |
-| styleClass | string | - | Style class of the component. |
+| class | string | - | Style class of the component. |
 | breakpoint | string | 960px | The breakpoint to define the maximum width boundary. |
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
@@ -47682,7 +47682,7 @@ Timeline visualizes a series of chained events.
 | pt | InputSignal<TimelinePassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | value | any[] | - | An array of events to display. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | align | string | left | Position of the timeline bar relative to the content. Valid values are "left", "right" for vertical layout and "top", "bottom" for horizontal layout. |
 | layout | "vertical" \| "horizontal" | vertical | Orientation of the timeline. |
 
@@ -47872,7 +47872,7 @@ export class ToastHeadlessDemo {
                 sticky: true,
                 severity: 'custom',
                 summary: 'Uploading your files.',
-                styleClass: 'backdrop-blur-lg rounded-2xl',
+                class: 'backdrop-blur-lg rounded-2xl',
             });
             this.visible = true;
             this.progress = 0;
@@ -48336,7 +48336,7 @@ Toast is used to display messages in an overlay.
 | autoZIndex | boolean | true | Whether to automatically manage layering. |
 | baseZIndex | number | 0 | Base zIndex value to use in layering. |
 | life | number | 3000 | The default time to display messages for in milliseconds. |
-| styleClass | string | - | Inline class of the component. **(Deprecated)** |
+| class | string | - | Inline class of the component. **(Deprecated)** |
 | position | ToastPositionType | - | Position of the toast in viewport. |
 | preventOpenDuplicates | boolean | false | It does not add the new message if there is already a toast displayed with the same content |
 | preventDuplicates | boolean | false | Displays only once a message with the same content. |
@@ -48801,7 +48801,7 @@ ToggleButton is used to select a boolean value using a button.
 | offIcon | string | - | Icon for the off state. |
 | ariaLabel | string | - | Defines a string that labels the input for accessibility. |
 | ariaLabelledBy | string | - | Establishes relationships between the component and label(s) where its value should be one or more element IDs. |
-| styleClass | string | - | Style class of the element. **(Deprecated)** |
+| class | string | - | Style class of the element. **(Deprecated)** |
 | inputId | string | - | Identifier of the focus input to match a label defined for the component. |
 | tabindex | number | 0 | Index of the element in tabbing order. |
 | iconPos | "right" \| "left" | left | Position of the icon. |
@@ -49184,7 +49184,7 @@ ToggleSwitch is used to select a boolean value.
 | invalid | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have invalid state style. |
 | disabled | InputSignalWithTransform<boolean, unknown> | false | When present, it specifies that the component should have disabled state style. |
 | name | InputSignal<string> | undefined | When present, it specifies that the name of the input. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | tabindex | number | - | Index of the element in tabbing order. |
 | inputId | string | - | Identifier of the input element. |
 | readonly | boolean | false | When present, it specifies that the component cannot be edited. |
@@ -49377,7 +49377,7 @@ Toolbar is a grouping component for buttons and other content.
 | unstyled | InputSignal<boolean> | undefined | Indicates whether the component should be rendered without styles. |
 | pt | InputSignal<ToolbarPassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | ariaLabelledBy | string | - | Defines a string value that labels an interactive element. |
 
 ### Templates
@@ -49650,7 +49650,7 @@ Tooltip directive provides advisory information for a component.
 | tooltipPosition | string | - | Position of the tooltip. |
 | tooltipEvent | any | hover | Event to show the tooltip. |
 | positionStyle | string | - | Type of CSS position. |
-| tooltipStyleClass | string | - | Style class of the tooltip. |
+| tooltipclass | string | - | Style class of the tooltip. |
 | tooltipZIndex | string | - | Whether the z-index should be managed automatically to always go on top or have a fixed value. |
 | escape | boolean | true | By default the tooltip contents are rendered as text. Set to false to support html tags in the content. |
 | showDelay | number | - | Delay to show the tooltip in milliseconds. |
@@ -50702,7 +50702,7 @@ Tree is used to display hierarchical data.
 | selectionMode | "multiple" \| "single" \| "checkbox" | - | Defines the selection mode. |
 | loadingMode | "icon" \| "mask" | mask | Loading mode display. |
 | selection | any | - | A single treenode instance or an array to refer to the selections. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | contextMenu | any | - | Context menu instance. |
 | contextMenuSelection | ModelSignal<TreeNode<any>> | ... | Selected node with a context menu. |
 | draggableScope | any | - | Scope of the draggable nodes to match a droppableScope. |
@@ -52151,11 +52151,11 @@ TreeSelect is a form component to choose from hierarchical data.
 | placeholder | string | - | Label to display when there are no selections. |
 | panelClass | string \| string[] \| Set<string> \| { [klass: string]: any } | - | Style class of the overlay panel. |
 | panelStyle | { [klass: string]: any } | - | Inline style of the panel element. |
-| panelStyleClass | string | - | Style class of the panel element. |
+| panelclass | string | - | Style class of the panel element. |
 | containerStyle | { [klass: string]: any } | - | Inline style of the container element. **(Deprecated)** |
-| containerStyleClass | string | - | Style class of the container element. **(Deprecated)** |
+| containerclass | string | - | Style class of the container element. **(Deprecated)** |
 | labelStyle | { [klass: string]: any } | - | Inline style of the label element. |
-| labelStyleClass | string | - | Style class of the label element. |
+| labelclass | string | - | Style class of the label element. |
 | overlayOptions | OverlayOptions | - | Specifies the options for the overlay. |
 | emptyMessage | string | - | Text to display when there are no options available. Defaults to value from PrimeNG locale configuration. |
 | filter | boolean | false | When specified, displays an input field to filter the items. |
@@ -55094,9 +55094,9 @@ TreeTable is used to display hierarchical data in tabular format.
 | pt | InputSignal<TreeTablePassThrough> | undefined | Used to pass attributes to DOM elements inside the component. |
 | ptOptions | InputSignal<PassThroughOptions> | undefined | Used to configure passthrough(pt) options of the component. |
 | columns | any[] | - | An array of objects to represent dynamic columns. |
-| styleClass | string | - | Style class of the component. **(Deprecated)** |
+| class | string | - | Style class of the component. **(Deprecated)** |
 | tableStyle | { [klass: string]: any } | - | Inline style of the table. |
-| tableStyleClass | string | - | Style class of the table. |
+| tableclass | string | - | Style class of the table. |
 | autoLayout | boolean | false | Whether the cell widths scale according to their content or not. |
 | lazy | boolean | false | Defines if data is loaded and interacted with in lazy manner. |
 | lazyLoadOnInit | boolean | true | Whether to call lazy loading on initialization. |
@@ -55107,7 +55107,7 @@ TreeTable is used to display hierarchical data in tabular format.
 | rowsPerPageOptions | any[] | - | Array of integer/object values to display inside rows per page dropdown of paginator |
 | alwaysShowPaginator | boolean | true | Whether to show it even there is only one page. |
 | paginatorPosition | "top" \| "bottom" \| "both" | bottom | Position of the paginator. |
-| paginatorStyleClass | string | - | Custom style class for paginator |
+| paginatorclass | string | - | Custom style class for paginator |
 | paginatorDropdownAppendTo | any | - | Target element to attach the paginator dropdown overlay, valid values are "body" or a local ng-template variable of another element (note: use binding with brackets for template variables, e.g. [appendTo]="mydiv" for a div element having #mydiv as variable name). |
 | currentPageReportTemplate | string | {currentPage} of {totalPages} | Template of the current page report element. Available placeholders are {currentPage},{totalPages},{rows},{first},{last} and {totalRecords} |
 | showCurrentPageReport | boolean | false | Whether to display current page report. |

@@ -7,7 +7,7 @@
         [options]="seasons()"
         [ngModel]="selectedSeason()"
         (ngModelChange)="onSeasonChange($event)"
-        styleClass="w-full"
+        class="w-full"
         inputId="season-select"
       />
       <label for="season-select">{{ 'all.competition.team-assembly.season' | translate }}</label>
@@ -23,7 +23,7 @@
         [forceSelection]="true"
         [ngModel]="selectedClub()"
         inputId="club-select"
-        styleClass="w-full"
+        class="w-full"
       />
       <label for="club-select">{{ 'all.competition.team-assembly.club' | translate }}</label>
     </p-floatLabel>
@@ -39,7 +39,7 @@
         [optionGroupChildren]="'teams'"
         [group]="true"
         [disabled]="!selectedClub()"
-        styleClass="w-full"
+        class="w-full"
         inputId="team-select"
       />
       <label for="team-select">{{ 'all.competition.team-assembly.team' | translate }}</label>
@@ -54,7 +54,7 @@
         optionValue="id"
         [showClear]="true"
         [disabled]="!selectedTeamId()"
-        styleClass="w-full"
+        class="w-full"
         inputId="encounter-select"
       />
       <label for="encounter-select">{{ 'all.competition.team-assembly.encounter' | translate }}</label>
