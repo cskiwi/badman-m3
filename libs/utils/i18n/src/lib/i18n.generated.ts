@@ -62,6 +62,48 @@ export type I18nTranslations = {
             "schedule": string;
             "seasonalPerformance": string;
             "stats": string;
+            "teamBuilder": {
+                "addPlayer": string;
+                "addTeam": string;
+                "dropToRemove": string;
+                "import": {
+                    "cancel": string;
+                    "chooseFile": string;
+                    "confidence": string;
+                    "confirm": string;
+                    "createNew": string;
+                    "description": string;
+                    "matched": string;
+                    "matchedPlayer": string;
+                    "matching": string;
+                    "searchPlayer": string;
+                    "surveyName": string;
+                    "title": string;
+                    "toCreate": string;
+                    "total": string;
+                    "willCreate": string;
+                };
+                "noStoppingPlayers": string;
+                "playerPool": string;
+                "playersStopping": string;
+                "removedPlayers": string;
+                "removePlayer": string;
+                "save": string;
+                "settings": {
+                    "maxPlayersPerTeam": string;
+                    "maxPlayersPerTeamHelp": string;
+                    "minFemalesPerMxTeam": string;
+                    "minMalesPerMxTeam": string;
+                    "minPlayersPerTeam": string;
+                    "minPlayersPerTeamHelp": string;
+                    "performanceThreshold": string;
+                    "performanceThresholdHelp": string;
+                    "presenceThreshold": string;
+                    "presenceThresholdHelp": string;
+                    "title": string;
+                };
+                "tab": string;
+            };
             "teamComparison": string;
             "totalGames": string;
             "totalPlayers": string;
@@ -76,48 +118,6 @@ export type I18nTranslations = {
                 "phase": string;
                 "tab": string;
                 "title": string;
-            };
-            "teamBuilder": {
-                "tab": string;
-                "import": {
-                    "title": string;
-                    "description": string;
-                    "chooseFile": string;
-                    "matching": string;
-                    "matched": string;
-                    "total": string;
-                    "toCreate": string;
-                    "createNew": string;
-                    "willCreate": string;
-                    "surveyName": string;
-                    "matchedPlayer": string;
-                    "confidence": string;
-                    "searchPlayer": string;
-                    "confirm": string;
-                    "cancel": string;
-                };
-                "addTeam": string;
-                "save": string;
-                "playerPool": string;
-                "playersStopping": string;
-                "noStoppingPlayers": string;
-                "addPlayer": string;
-                "removePlayer": string;
-                "dropToRemove": string;
-                "removedPlayers": string;
-                "settings": {
-                    "title": string;
-                    "presenceThreshold": string;
-                    "presenceThresholdHelp": string;
-                    "performanceThreshold": string;
-                    "performanceThresholdHelp": string;
-                    "minPlayersPerTeam": string;
-                    "minPlayersPerTeamHelp": string;
-                    "minMalesPerMxTeam": string;
-                    "minFemalesPerMxTeam": string;
-                    "maxPlayersPerTeam": string;
-                    "maxPlayersPerTeamHelp": string;
-                };
             };
             "winRate": string;
             "winRateTrend": string;
@@ -189,6 +189,7 @@ export type I18nTranslations = {
             "level": string;
             "name": string;
             "no": string;
+            "required": string;
             "save": string;
             "search": string;
             "season": string;
@@ -198,7 +199,6 @@ export type I18nTranslations = {
             "viewAll": string;
             "viewDetails": string;
             "yes": string;
-            "required": string;
         };
         "competition": {
             "bracket_view": string;
@@ -827,12 +827,12 @@ export type I18nTranslations = {
                     "clearCompletedError": string;
                     "clearCompletedSuccess": string;
                     "clearCompletedTooltip": string;
-                    "confirmClearCompleted": string;
                     "competitionSync": string;
                     "competitionSyncError": string;
                     "competitionSyncQueued": string;
                     "competitionSyncTooltip": string;
                     "confirmClearAll": string;
+                    "confirmClearCompleted": string;
                     "confirmCompetitionSync": string;
                     "confirmDiscovery": string;
                     "confirmTournamentSync": string;
@@ -879,12 +879,12 @@ export type I18nTranslations = {
                     "expand": string;
                     "jobId": string;
                     "noJobsFound": string;
-                    "search": string;
                     "progress": string;
                     "retry": string;
                     "retryError": string;
                     "retryHeader": string;
                     "retrySuccess": string;
+                    "search": string;
                     "status": string;
                     "title": string;
                     "type": string;
@@ -907,6 +907,19 @@ export type I18nTranslations = {
                         "failed": string;
                         "waiting": string;
                     };
+                    "title": string;
+                };
+                "recentJobs": {
+                    "headers": {
+                        "actions": string;
+                        "created": string;
+                        "duration": string;
+                        "jobId": string;
+                        "progress": string;
+                        "status": string;
+                        "type": string;
+                    };
+                    "noJobs": string;
                     "title": string;
                 };
                 "scheduling": {
@@ -940,18 +953,10 @@ export type I18nTranslations = {
                     "tournament": string;
                     "withSubComponents": string;
                 };
-                "recentJobs": {
-                    "headers": {
-                        "actions": string;
-                        "created": string;
-                        "duration": string;
-                        "jobId": string;
-                        "progress": string;
-                        "status": string;
-                        "type": string;
-                    };
-                    "noJobs": string;
-                    "title": string;
+                "tabs": {
+                    "cronJobs": string;
+                    "ranking": string;
+                    "syncPlans": string;
                 };
                 "title": string;
                 "tournaments": {
@@ -1024,11 +1029,6 @@ export type I18nTranslations = {
                         "competition": string;
                         "tournament": string;
                     };
-                };
-                "tabs": {
-                    "cronJobs": string;
-                    "ranking": string;
-                    "syncPlans": string;
                 };
             };
             "lastSync": string;
