@@ -108,8 +108,7 @@ export class EnrollmentsTabService {
       confirmed: all.filter((e) => e.status === EnrollmentStatus.CONFIRMED).length,
       pending: all.filter((e) => e.status === EnrollmentStatus.PENDING).length,
       waitingList: all.filter((e) => e.status === EnrollmentStatus.WAITING_LIST).length,
-      cancelled: all.filter((e) => e.status === EnrollmentStatus.CANCELLED || e.status === EnrollmentStatus.WITHDRAWN)
-        .length,
+      cancelled: all.filter((e) => e.status === EnrollmentStatus.CANCELLED || e.status === EnrollmentStatus.WITHDRAWN).length,
     };
   });
 

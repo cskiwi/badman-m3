@@ -3,7 +3,15 @@ import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace, R
 import { IsUUID } from '@app/utils';
 import { NotFoundException, UseGuards, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql';
-import { ClubPlayerMembershipArgs, GamePlayerMembershipArgs, PlayerArgs, RankingLastPlaceArgs, RankingPlaceArgs, TeamPlayerMembershipArgs, ClaimArgs } from '../args';
+import {
+  ClubPlayerMembershipArgs,
+  GamePlayerMembershipArgs,
+  PlayerArgs,
+  RankingLastPlaceArgs,
+  RankingPlaceArgs,
+  TeamPlayerMembershipArgs,
+  ClaimArgs,
+} from '../args';
 import dayjs from 'dayjs';
 import { PlayerUpdateInput } from '../inputs';
 

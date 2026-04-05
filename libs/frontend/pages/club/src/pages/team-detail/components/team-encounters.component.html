@@ -5,10 +5,7 @@
     @for (encounter of encounters(); track encounter.id) {
       <div class="bg-surface-card border border-surface-border rounded-lg hover:bg-surface-hover transition-colors">
         <!-- Encounter header (clickable to expand) -->
-        <div
-          class="flex items-center justify-between p-4 cursor-pointer"
-          (click)="toggleEncounter(encounter.id)"
-        >
+        <div class="flex items-center justify-between p-4 cursor-pointer" (click)="toggleEncounter(encounter.id)">
           <div class="flex items-center gap-3">
             @if (encounter.date) {
               <span class="bg-emphasis text-muted-color px-2 py-1 rounded text-xs font-medium">
@@ -16,23 +13,19 @@
               </span>
             }
             <div class="flex items-center gap-2 text-sm">
-              <span
-                [class.font-semibold]="isHomeTeam(encounter)"
-                [class.text-primary]="isHomeTeam(encounter)"
-              >
+              <span [class.font-semibold]="isHomeTeam(encounter)" [class.text-primary]="isHomeTeam(encounter)">
                 {{ encounter.homeTeam?.name || encounter.homeTeam?.abbreviation || 'Home' }}
               </span>
               <span class="text-muted-color">vs</span>
-              <span
-                [class.font-semibold]="!isHomeTeam(encounter)"
-                [class.text-primary]="!isHomeTeam(encounter)"
-              >
+              <span [class.font-semibold]="!isHomeTeam(encounter)" [class.text-primary]="!isHomeTeam(encounter)">
                 {{ encounter.awayTeam?.name || encounter.awayTeam?.abbreviation || 'Away' }}
               </span>
             </div>
           </div>
           <div class="flex items-center gap-3">
-            @if (encounter.homeScore !== null && encounter.homeScore !== undefined && encounter.awayScore !== null && encounter.awayScore !== undefined) {
+            @if (
+              encounter.homeScore !== null && encounter.homeScore !== undefined && encounter.awayScore !== null && encounter.awayScore !== undefined
+            ) {
               <span class="font-semibold text-sm">{{ encounter.homeScore }} - {{ encounter.awayScore }}</span>
             }
             @if (getResult(encounter); as result) {
@@ -88,7 +81,9 @@
                     <div class="flex flex-col flex-1 min-w-0">
                       @if (isBye(game)) {
                         <div class="flex items-center h-16">
-                          <span class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic">
+                          <span
+                            class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic"
+                          >
                             Bye
                           </span>
                         </div>
@@ -98,18 +93,13 @@
                             @for (membership of getTeamMemberships(game, teamNumber); track membership.id; let playerIndex = $index) {
                               <div
                                 class="flex items-center gap-2 min-w-0"
-                                [class]="
-                                  getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'
-                                "
+                                [class]="getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'"
                               >
                                 @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
                                   <i class="pi pi-crown text-yellow-500 text-xs"></i>
                                 }
                                 @if (membership.gamePlayer.id) {
-                                  <a
-                                    [routerLink]="['/players', membership.gamePlayer.id]"
-                                    class="truncate text-sm no-underline text-current"
-                                  >
+                                  <a [routerLink]="['/players', membership.gamePlayer.id]" class="truncate text-sm no-underline text-current">
                                     {{ membership.gamePlayer.fullName || 'Unknown' }}
                                   </a>
                                 } @else {
@@ -131,7 +121,9 @@
                     <div class="absolute left-75 flex flex-col">
                       @if (isBye(game)) {
                         <div class="flex items-center h-16">
-                          <span class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic">
+                          <span
+                            class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic"
+                          >
                             Bye
                           </span>
                         </div>
@@ -140,9 +132,7 @@
                         <div class="flex items-center h-8">
                           <div class="flex gap-1">
                             @for (setScore of setScores.team1Sets; track $index) {
-                              <span
-                                class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold"
-                              >
+                              <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
                                 {{ setScore }}
                               </span>
                             }
@@ -151,9 +141,7 @@
                         <div class="flex items-center h-8">
                           <div class="flex gap-1">
                             @for (setScore of setScores.team2Sets; track $index) {
-                              <span
-                                class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold"
-                              >
+                              <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
                                 {{ setScore }}
                               </span>
                             }

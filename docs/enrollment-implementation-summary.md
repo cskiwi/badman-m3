@@ -21,14 +21,18 @@ This document provides a comprehensive summary of the general enrollment page im
 ## Overview
 
 ### Problem Statement
+
 The current tournament enrollment system has a single `tournament.phase` field that controls ALL sub-event enrollments. This prevents:
+
 - Independent enrollment windows per discipline
 - Staggered enrollment periods
 - Flexible capacity management
 - Multi-event enrollment in a single transaction
 
 ### Solution Implemented
+
 A comprehensive enrollment system featuring:
+
 - **Per-sub-event enrollment control** with independent phases and dates
 - **Shopping cart model** for multi-discipline enrollment
 - **Automatic waiting list management** with database triggers
@@ -42,9 +46,11 @@ A comprehensive enrollment system featuring:
 ### Migrations (All Executed Successfully ✅)
 
 #### Migration 1: Schema Extensions
+
 **File**: `libs/backend/database/src/migrations/1734178000000-add-enrollment-control-fields.ts`
 
 **Changes**:
+
 - Added 10 enrollment control fields to `SubEventTournaments` table
 - Created `EnrollmentSessions` table (8 fields + relationships)
 - Created `EnrollmentSessionItems` table (11 fields + relationships)
@@ -53,6 +59,7 @@ A comprehensive enrollment system featuring:
 - Added 3 data integrity check constraints
 
 **New Fields on SubEventTournaments**:
+
 ```sql
 enrollmentOpenDate       timestamptz    -- When enrollment opens for this event
 enrollmentCloseDate      timestamptz    -- When enrollment closes
@@ -67,9 +74,11 @@ enrollmentNotes          text           -- Notes for organizers
 ```
 
 #### Migration 2: Data Migration
+
 **File**: `libs/backend/database/src/migrations/1734178100000-migrate-enrollment-data.ts`
 
 **Changes**:
+
 - Migrated tournament-level enrollment dates to all sub-events
 - Calculated and backfilled current enrollment counts
 - Set enrollment phases based on tournament phase
@@ -78,9 +87,11 @@ enrollmentNotes          text           -- Notes for organizers
 **Result**: Zero data loss, all existing enrollments preserved
 
 #### Migration 3: Tracking & Automation
+
 **File**: `libs/backend/database/src/migrations/1734178200000-enhance-enrollment-tracking.ts`
 
 **Changes**:
+
 - Added 11 tracking fields to `TournamentEnrollments`
 - Created 4 database triggers for automation:
   1. `update_subevent_enrollment_count()` - Auto-maintain enrollment counts
@@ -89,6 +100,7 @@ enrollmentNotes          text           -- Notes for organizers
   4. `set_enrollment_timestamps()` - Auto-set status change timestamps
 
 **New Fields on TournamentEnrollments**:
+
 ```sql
 sessionId                      uuid         -- Link to enrollment cart
 enrollmentSource               varchar(50)  -- MANUAL/PUBLIC_FORM/IMPORT/AUTO_PROMOTED
@@ -109,17 +121,20 @@ withdrawnAt                    timestamptz  -- Withdrawal timestamp
 All triggers are production-ready and handle edge cases:
 
 **1. Auto-Update Enrollment Counts**
+
 ```sql
 CREATE TRIGGER enrollment_count_trigger
 AFTER INSERT OR UPDATE OR DELETE ON event."TournamentEnrollments"
 FOR EACH ROW
 EXECUTE FUNCTION update_subevent_enrollment_count();
 ```
+
 - Maintains `currentEnrollmentCount` and `confirmedEnrollmentCount`
 - Handles INSERT, UPDATE (status changes), and DELETE
 - Atomic updates prevent race conditions
 
 **2. Auto-Update Enrollment Phase**
+
 ```sql
 CREATE TRIGGER enrollment_phase_trigger
 BEFORE UPDATE ON event."SubEventTournaments"
@@ -127,22 +142,26 @@ FOR EACH ROW
 WHEN (OLD."currentEnrollmentCount" IS DISTINCT FROM NEW."currentEnrollmentCount")
 EXECUTE FUNCTION update_enrollment_phase();
 ```
+
 - Automatically transitions phase to FULL when capacity reached
 - Reopens to OPEN when spots become available
 - Only runs when enrollment count changes
 
 **3. Waiting List Audit Log**
+
 ```sql
 CREATE TRIGGER waitlist_log_trigger
 AFTER INSERT OR UPDATE ON event."TournamentEnrollments"
 FOR EACH ROW
 EXECUTE FUNCTION log_waitlist_changes();
 ```
+
 - Logs: ADDED, PROMOTED, POSITION_CHANGED, REMOVED
 - Tracks whether promotion was automatic or manual
 - Complete transparency for users
 
 **4. Auto-Set Timestamps**
+
 ```sql
 CREATE TRIGGER enrollment_timestamps_trigger
 BEFORE UPDATE ON event."TournamentEnrollments"
@@ -150,6 +169,7 @@ FOR EACH ROW
 WHEN (OLD."status" IS DISTINCT FROM NEW."status")
 EXECUTE FUNCTION set_enrollment_timestamps();
 ```
+
 - Sets `confirmedAt` when status → CONFIRMED
 - Sets `cancelledAt` when status → CANCELLED
 - Sets `withdrawnAt` when status → WITHDRAWN
@@ -161,44 +181,48 @@ EXECUTE FUNCTION set_enrollment_timestamps();
 ### New Models Created
 
 #### EnrollmentSession
+
 **File**: `libs/models/models/src/models/event/tournament/enrollment-session.model.ts`
 
 Shopping cart for multi-event enrollment:
+
 ```typescript
 @Entity('EnrollmentSessions', { schema: 'event' })
 export class EnrollmentSession {
   id: string;
-  sessionKey: string;              // Unique session identifier
-  playerId?: string;               // Authenticated user
+  sessionKey: string; // Unique session identifier
+  playerId?: string; // Authenticated user
   status: EnrollmentSessionStatus; // PENDING/COMPLETED/EXPIRED/CANCELLED
-  expiresAt: Date;                 // 24-hour expiration
-  ipAddress?: string;              // For analytics
-  userAgent?: string;              // Device tracking
-  totalSubEvents: number;          // Cart item count
-  completedAt?: Date;              // When submitted
+  expiresAt: Date; // 24-hour expiration
+  ipAddress?: string; // For analytics
+  userAgent?: string; // Device tracking
+  totalSubEvents: number; // Cart item count
+  completedAt?: Date; // When submitted
 
-  items: EnrollmentSessionItem[];  // Cart items
+  items: EnrollmentSessionItem[]; // Cart items
   tournamentEvent: TournamentEvent;
 }
 ```
 
 #### EnrollmentSessionItem
+
 **File**: `libs/models/models/src/models/event/tournament/enrollment-session-item.model.ts`
 
 Individual cart line items:
+
 ```typescript
 @Entity('EnrollmentSessionItems', { schema: 'event' })
 export class EnrollmentSessionItem {
   id: string;
   sessionId: string;
   tournamentSubEventId: string;
-  preferredPartnerId?: string;        // For doubles
+  preferredPartnerId?: string; // For doubles
   isGuestEnrollment: boolean;
   guestName?: string;
   guestEmail?: string;
   guestPhone?: string;
   validationStatus: ItemValidationStatus; // PENDING/VALID/INVALID_*
-  validationErrors?: string;         // JSONB error details
+  validationErrors?: string; // JSONB error details
   notes?: string;
 
   session: EnrollmentSession;
@@ -208,19 +232,21 @@ export class EnrollmentSessionItem {
 ```
 
 #### WaitingListLog
+
 **File**: `libs/models/models/src/models/event/tournament/waiting-list-log.model.ts`
 
 Complete audit trail:
+
 ```typescript
 @Entity('WaitingListLogs', { schema: 'event' })
 export class WaitingListLog {
   id: string;
   enrollmentId: string;
   tournamentSubEventId: string;
-  action: WaitingListAction;  // ADDED/PROMOTED/POSITION_CHANGED/REMOVED
+  action: WaitingListAction; // ADDED/PROMOTED/POSITION_CHANGED/REMOVED
   previousPosition?: number;
   newPosition?: number;
-  triggeredBy?: string;       // SYSTEM/MANUAL/AUTO_PROMOTE
+  triggeredBy?: string; // SYSTEM/MANUAL/AUTO_PROMOTE
   notes?: string;
   createdAt: Date;
 
@@ -232,9 +258,11 @@ export class WaitingListLog {
 ### Updated Models
 
 #### TournamentSubEvent
+
 Added 10 enrollment control fields (see Database Layer section above)
 
 #### TournamentEnrollment
+
 Added 11 tracking fields (see Database Layer section above)
 
 ---
@@ -244,11 +272,13 @@ Added 11 tracking fields (see Database Layer section above)
 All services follow clean architecture principles with dependency injection, proper error handling, and comprehensive TypeScript typing.
 
 ### EnrollmentValidationService
+
 **File**: `libs/backend/graphql/src/services/tournament/enrollment-validation.service.ts`
 
 **Purpose**: Validate enrollment eligibility and bulk enrollments
 
 **Key Methods**:
+
 ```typescript
 // Check if a player can enroll in a sub-event
 async checkEligibility(
@@ -272,6 +302,7 @@ async validatePartner(
 ```
 
 **Validation Checks**:
+
 - ✅ Enrollment phase (OPEN or WAITLIST_ONLY)
 - ✅ Enrollment window dates (per-event and tournament-level fallback)
 - ✅ Level requirements (min/max level per event)
@@ -281,10 +312,11 @@ async validatePartner(
 - ✅ Cross-event conflicts (warns about multiple singles/doubles)
 
 **Return Types**:
+
 ```typescript
 interface EnrollmentEligibility {
   eligible: boolean;
-  reasons: string[];           // Human-readable error messages
+  reasons: string[]; // Human-readable error messages
   hasInvitation: boolean;
   meetsLevelRequirement: boolean;
   isAlreadyEnrolled: boolean;
@@ -294,17 +326,19 @@ interface EnrollmentEligibility {
 
 interface CartValidationResult {
   valid: boolean;
-  errors: CartValidationError[];  // Typed errors per sub-event
-  warnings: string[];             // Non-blocking warnings
+  errors: CartValidationError[]; // Typed errors per sub-event
+  warnings: string[]; // Non-blocking warnings
 }
 ```
 
 ### EnrollmentCartService
+
 **File**: `libs/backend/graphql/src/services/tournament/enrollment-cart.service.ts`
 
 **Purpose**: Manage enrollment shopping cart sessions
 
 **Key Methods**:
+
 ```typescript
 // Find or create cart for user
 async findOrCreateCart(
@@ -338,6 +372,7 @@ async cleanupExpiredCarts(): Promise<number>
 ```
 
 **Features**:
+
 - ✅ Supports both authenticated users (playerId) and guests (sessionKey)
 - ✅ 24-hour automatic expiration
 - ✅ Prevents duplicate sub-event additions
@@ -346,11 +381,13 @@ async cleanupExpiredCarts(): Promise<number>
 - ✅ Eager loading with relations for performance
 
 ### EnrollmentCapacityService
+
 **File**: `libs/backend/graphql/src/services/tournament/enrollment-capacity.service.ts`
 
 **Purpose**: Manage enrollment capacity and waiting lists
 
 **Key Methods**:
+
 ```typescript
 // Get capacity info for a sub-event
 async getCapacity(subEventId: string): Promise<CapacityInfo>
@@ -376,12 +413,13 @@ async promoteFromWaitingList(
 ```
 
 **Return Type**:
+
 ```typescript
 interface CapacityInfo {
-  maxEntries: number | null;         // null = unlimited
+  maxEntries: number | null; // null = unlimited
   currentEnrollmentCount: number;
   confirmedEnrollmentCount: number;
-  availableSpots: number;            // -1 = unlimited
+  availableSpots: number; // -1 = unlimited
   waitingListCount: number;
   isFull: boolean;
   hasWaitingList: boolean;
@@ -389,6 +427,7 @@ interface CapacityInfo {
 ```
 
 **Auto-Promotion Logic**:
+
 1. Checks if auto-promotion is enabled on sub-event
 2. Verifies capacity is available
 3. Gets next person on waiting list (ordered by position)
@@ -397,11 +436,13 @@ interface CapacityInfo {
 6. Database trigger logs the promotion
 
 ### EnrollmentService
+
 **File**: `libs/backend/graphql/src/services/tournament/enrollment.service.ts`
 
 **Purpose**: Main business logic orchestration
 
 **Key Methods**:
+
 ```typescript
 // Bulk enroll in multiple sub-events (atomic transaction)
 async bulkEnroll(
@@ -434,6 +475,7 @@ async getEnrollmentsForSubEvent(
 ```
 
 **Bulk Enrollment Flow**:
+
 1. **Pre-Validation**: Validates all sub-events upfront
 2. **Transaction Start**: Creates database transaction
 3. **Create Enrollments**: Creates enrollment for each sub-event
@@ -446,12 +488,13 @@ async getEnrollmentsForSubEvent(
 5. **Commit or Rollback**: All-or-nothing atomicity
 
 **Return Type**:
+
 ```typescript
 interface BulkEnrollmentResult {
   success: boolean;
-  enrollments: TournamentEnrollment[];  // Empty if failed
-  errors: BulkEnrollmentError[];        // Empty if successful
-  partialSuccess: boolean;              // Currently always false (atomic)
+  enrollments: TournamentEnrollment[]; // Empty if failed
+  errors: BulkEnrollmentError[]; // Empty if successful
+  partialSuccess: boolean; // Currently always false (atomic)
 }
 ```
 
@@ -460,35 +503,43 @@ interface BulkEnrollmentResult {
 ## Architecture Decisions
 
 ### 1. Atomic Transactions
+
 **Decision**: Use database transactions for bulk enrollments
 **Rationale**: Ensures all-or-nothing behavior. If any enrollment fails, entire operation rolls back
 **Trade-off**: Cannot have partial success, but data integrity is guaranteed
 
 ### 2. Database Triggers
+
 **Decision**: Use PostgreSQL triggers for enrollment count and waiting list management
 **Rationale**:
+
 - Prevents race conditions
 - Ensures counts are always accurate
 - Reduces application logic complexity
 - Complete audit trail automatically
-**Trade-off**: Slight performance overhead, but negligible compared to benefits
+  **Trade-off**: Slight performance overhead, but negligible compared to benefits
 
 ### 3. Service Layer Separation
+
 **Decision**: Split into 4 specialized services instead of one monolithic service
 **Rationale**:
+
 - **Validation**: Reusable across different enrollment flows
 - **Cart**: Isolated shopping cart logic
 - **Capacity**: Centralized capacity management
 - **Enrollment**: Orchestrates the above services
-**Benefit**: High cohesion, low coupling, testable in isolation
+  **Benefit**: High cohesion, low coupling, testable in isolation
 
 ### 4. Backward Compatibility
+
 **Decision**: Preserve existing tournament.phase checks as fallback
 **Rationale**:
+
 - Zero breaking changes for existing tournaments
 - Gradual migration path
 - Dual-mode operation during transition
-**Implementation**:
+  **Implementation**:
+
 ```typescript
 // Fallback to tournament-level dates if per-event dates not set
 if (!subEvent.enrollmentOpenDate && subEvent.tournamentEvent?.enrollmentOpenDate) {
@@ -500,15 +551,19 @@ if (!subEvent.enrollmentOpenDate && subEvent.tournamentEvent?.enrollmentOpenDate
 ```
 
 ### 5. Optimistic Concurrency
+
 **Decision**: Rely on database constraints for duplicate prevention
 **Rationale**:
+
 - Unique index on (tournamentSubEventId, playerId)
 - Prevents race conditions at database level
 - Application handles constraint violation gracefully
 
 ### 6. Validation Separation
+
 **Decision**: Separate validation from mutation
 **Rationale**:
+
 - Allows frontend to validate before submission
 - Better UX (show errors before attempting enrollment)
 - Reduces failed transactions
@@ -520,12 +575,14 @@ if (!subEvent.enrollmentOpenDate && subEvent.tournamentEvent?.enrollmentOpenDate
 ### Phase 3: GraphQL API Layer (Ready to Implement)
 
 **Required Files**:
+
 1. `libs/backend/graphql/src/dto/tournament/enrollment-cart.input.ts` - Input types
 2. `libs/backend/graphql/src/dto/tournament/bulk-enrollment.output.ts` - Output types
 3. `libs/backend/graphql/src/resolvers/event/tournament/enrollment-queries.resolver.ts`
 4. `libs/backend/graphql/src/resolvers/event/tournament/enrollment-mutations.resolver.ts`
 
 **Queries to Implement**:
+
 ```graphql
 availableSubEvents(tournamentId: ID!, filters: SubEventFilters): [TournamentSubEvent!]!
 enrollmentCart(tournamentId: ID!, sessionId: String): EnrollmentCart
@@ -533,6 +590,7 @@ validateBulkEnrollment(tournamentId: ID!, subEventIds: [ID!]!, partnerPreference
 ```
 
 **Mutations to Implement**:
+
 ```graphql
 addToEnrollmentCart(tournamentId: ID!, items: [CartItemInput!]!, sessionId: String): EnrollmentCart!
 removeFromEnrollmentCart(cartId: ID!, subEventIds: [ID!]!): EnrollmentCart!
@@ -546,6 +604,7 @@ bulkEnrollInTournament(tournamentId: ID!, subEventIds: [ID!]!, partnerPreference
 **Reference**: `docs/enrollment-frontend-architecture.md` (complete specification)
 
 **Components to Create**:
+
 1. `PageGeneralEnrollmentComponent` - Smart container
 2. `EnrollmentHeaderComponent` - Statistics display
 3. `EnrollmentFiltersComponent` - Search and filters
@@ -555,23 +614,27 @@ bulkEnrollInTournament(tournamentId: ID!, subEventIds: [ID!]!, partnerPreference
 7. `CapacityIndicatorComponent` - Visual capacity bars
 
 **Routing**:
+
 - New route: `/tournament/:id/enroll`
 - Deep linking: `/tournament/:id/enroll?selected=uuid1,uuid2`
 
 ### Phase 5: Testing
 
 **Unit Tests**:
+
 - Each service method
 - Edge cases (full events, waiting list, partner matching)
 - Validation logic
 
 **Integration Tests**:
+
 - Bulk enrollment transaction rollback
 - Waiting list auto-promotion
 - Partner confirmation workflow
 - Cart expiration cleanup
 
 **E2E Tests**:
+
 - Complete enrollment flow
 - Multi-event enrollment
 - Waiting list scenario
@@ -582,37 +645,41 @@ bulkEnrollInTournament(tournamentId: ID!, subEventIds: [ID!]!, partnerPreference
 ## File Reference
 
 ### Documentation (4 files)
-| File | Lines | Purpose |
-|------|-------|---------|
-| `docs/enrollment-schema-design.md` | 1,054 | Complete database design and migration strategy |
-| `docs/enrollment-api-architecture.md` | ~800 | GraphQL API specification and resolver design |
-| `docs/enrollment-frontend-architecture.md` | ~900 | Angular component architecture and UI design |
-| `docs/enrollment-implementation-summary.md` | This file | Comprehensive implementation summary |
+
+| File                                        | Lines     | Purpose                                         |
+| ------------------------------------------- | --------- | ----------------------------------------------- |
+| `docs/enrollment-schema-design.md`          | 1,054     | Complete database design and migration strategy |
+| `docs/enrollment-api-architecture.md`       | ~800      | GraphQL API specification and resolver design   |
+| `docs/enrollment-frontend-architecture.md`  | ~900      | Angular component architecture and UI design    |
+| `docs/enrollment-implementation-summary.md` | This file | Comprehensive implementation summary            |
 
 ### Database Migrations (3 files)
-| File | Purpose | Status |
-|------|---------|--------|
-| `libs/backend/database/src/migrations/1734178000000-add-enrollment-control-fields.ts` | Schema extensions | ✅ Executed |
-| `libs/backend/database/src/migrations/1734178100000-migrate-enrollment-data.ts` | Data migration | ✅ Executed |
-| `libs/backend/database/src/migrations/1734178200000-enhance-enrollment-tracking.ts` | Triggers & tracking | ✅ Executed |
+
+| File                                                                                  | Purpose             | Status      |
+| ------------------------------------------------------------------------------------- | ------------------- | ----------- |
+| `libs/backend/database/src/migrations/1734178000000-add-enrollment-control-fields.ts` | Schema extensions   | ✅ Executed |
+| `libs/backend/database/src/migrations/1734178100000-migrate-enrollment-data.ts`       | Data migration      | ✅ Executed |
+| `libs/backend/database/src/migrations/1734178200000-enhance-enrollment-tracking.ts`   | Triggers & tracking | ✅ Executed |
 
 ### Entity Models (6 files)
-| File | Entity | Status |
-|------|--------|--------|
-| `libs/models/models/src/models/event/tournament/tournament-sub-event.model.ts` | TournamentSubEvent | ✅ Updated |
-| `libs/models/models/src/models/event/tournament/tournament-enrollment.model.ts` | TournamentEnrollment | ✅ Updated |
-| `libs/models/models/src/models/event/tournament/enrollment-session.model.ts` | EnrollmentSession | ✅ Created |
+
+| File                                                                              | Entity                | Status     |
+| --------------------------------------------------------------------------------- | --------------------- | ---------- |
+| `libs/models/models/src/models/event/tournament/tournament-sub-event.model.ts`    | TournamentSubEvent    | ✅ Updated |
+| `libs/models/models/src/models/event/tournament/tournament-enrollment.model.ts`   | TournamentEnrollment  | ✅ Updated |
+| `libs/models/models/src/models/event/tournament/enrollment-session.model.ts`      | EnrollmentSession     | ✅ Created |
 | `libs/models/models/src/models/event/tournament/enrollment-session-item.model.ts` | EnrollmentSessionItem | ✅ Created |
-| `libs/models/models/src/models/event/tournament/waiting-list-log.model.ts` | WaitingListLog | ✅ Created |
-| `libs/models/models/src/models/event/tournament/index.ts` | Exports | ✅ Updated |
+| `libs/models/models/src/models/event/tournament/waiting-list-log.model.ts`        | WaitingListLog        | ✅ Created |
+| `libs/models/models/src/models/event/tournament/index.ts`                         | Exports               | ✅ Updated |
 
 ### Services (4 files)
-| File | Service | Status |
-|------|---------|--------|
+
+| File                                                                            | Service                     | Status     |
+| ------------------------------------------------------------------------------- | --------------------------- | ---------- |
 | `libs/backend/graphql/src/services/tournament/enrollment-validation.service.ts` | EnrollmentValidationService | ✅ Created |
-| `libs/backend/graphql/src/services/tournament/enrollment-cart.service.ts` | EnrollmentCartService | ✅ Created |
-| `libs/backend/graphql/src/services/tournament/enrollment-capacity.service.ts` | EnrollmentCapacityService | ✅ Created |
-| `libs/backend/graphql/src/services/tournament/enrollment.service.ts` | EnrollmentService | ✅ Created |
+| `libs/backend/graphql/src/services/tournament/enrollment-cart.service.ts`       | EnrollmentCartService       | ✅ Created |
+| `libs/backend/graphql/src/services/tournament/enrollment-capacity.service.ts`   | EnrollmentCapacityService   | ✅ Created |
+| `libs/backend/graphql/src/services/tournament/enrollment.service.ts`            | EnrollmentService           | ✅ Created |
 
 ---
 

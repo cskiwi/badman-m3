@@ -8,7 +8,6 @@ import { lastValueFrom } from 'rxjs';
 import { getSeason } from '@app/utils/comp';
 import { sortTeams } from '@app/utils/sorts';
 
-
 export class DetailService {
   private readonly apollo = inject(Apollo);
 
@@ -121,13 +120,12 @@ export class DetailService {
         );
 
         const teams = teamsResult.data?.club?.teams || [];
-        const teamIds = teams.map(t => t.id);
+        const teamIds = teams.map((t) => t.id);
 
         // If no teams, return early
         if (teamIds.length === 0) {
           return { teams: [], encounters: [] };
         }
-
 
         return {
           teams: [...teams].sort(sortTeams),
@@ -160,7 +158,7 @@ export class DetailService {
     if (dbSeasons.length > 0) {
       return [...dbSeasons]
         .sort((a, b) => b - a) // Sort descending (newest first)
-        .map(season => ({ label: `${season}`, value: season }));
+        .map((season) => ({ label: `${season}`, value: season }));
     }
 
     // Fallback to hardcoded range if no seasons in database

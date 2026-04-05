@@ -1,23 +1,8 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
 import { Player, TournamentEnrollment, TournamentSubEvent, TournamentEvent } from '@app/models';
 import { EnrollmentStatus, TournamentPhase, GameType } from '@app/models-enum';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  Args,
-  ID,
-  Int,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { BadRequestException, ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver, registerEnumType } from '@nestjs/graphql';
 import { IsNull, Not } from 'typeorm';
 import { EnrollPlayerInput, EnrollGuestInput, UpdateEnrollmentInput } from '../../../inputs';
 import { TournamentEnrollmentArgs } from '../../../args';
@@ -34,9 +19,7 @@ export class TournamentEnrollmentResolver {
 
   @Query(() => TournamentEnrollment)
   @AllowAnonymous()
-  async tournamentEnrollment(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<TournamentEnrollment> {
+  async tournamentEnrollment(@Args('id', { type: () => ID }) id: string): Promise<TournamentEnrollment> {
     const enrollment = await TournamentEnrollment.findOne({
       where: { id },
     });
@@ -101,9 +84,7 @@ export class TournamentEnrollmentResolver {
 
   @Query(() => [TournamentEnrollment], { description: 'Get waiting list for a sub-event' })
   @AllowAnonymous()
-  async waitingList(
-    @Args('subEventId', { type: () => ID }) subEventId: string,
-  ): Promise<TournamentEnrollment[]> {
+  async waitingList(@Args('subEventId', { type: () => ID }) subEventId: string): Promise<TournamentEnrollment[]> {
     return TournamentEnrollment.find({
       where: {
         tournamentSubEventId: subEventId,
@@ -115,9 +96,7 @@ export class TournamentEnrollmentResolver {
 
   @Query(() => [TournamentEnrollment], { description: 'Get players looking for a partner in a sub-event' })
   @AllowAnonymous()
-  async lookingForPartner(
-    @Args('subEventId', { type: () => ID }) subEventId: string,
-  ): Promise<TournamentEnrollment[]> {
+  async lookingForPartner(@Args('subEventId', { type: () => ID }) subEventId: string): Promise<TournamentEnrollment[]> {
     // Get the sub-event to check if it's doubles
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: subEventId },
@@ -146,10 +125,7 @@ export class TournamentEnrollmentResolver {
 
   @Mutation(() => TournamentEnrollment, { description: 'Enroll the current player in a tournament sub-event' })
   @UseGuards(PermGuard)
-  async enrollInTournament(
-    @User() user: Player,
-    @Args('input') input: EnrollPlayerInput,
-  ): Promise<TournamentEnrollment> {
+  async enrollInTournament(@User() user: Player, @Args('input') input: EnrollPlayerInput): Promise<TournamentEnrollment> {
     // Validate sub-event exists
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: input.tournamentSubEventId },
@@ -264,9 +240,7 @@ export class TournamentEnrollmentResolver {
 
   @Mutation(() => TournamentEnrollment, { description: 'Enroll a guest in a tournament sub-event' })
   @AllowAnonymous()
-  async enrollGuest(
-    @Args('input') input: EnrollGuestInput,
-  ): Promise<TournamentEnrollment> {
+  async enrollGuest(@Args('input') input: EnrollGuestInput): Promise<TournamentEnrollment> {
     // Validate sub-event exists
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: input.tournamentSubEventId },
@@ -369,10 +343,7 @@ export class TournamentEnrollmentResolver {
     }
 
     // Cannot update cancelled/withdrawn enrollments
-    if (
-      enrollment.status === EnrollmentStatus.CANCELLED ||
-      enrollment.status === EnrollmentStatus.WITHDRAWN
-    ) {
+    if (enrollment.status === EnrollmentStatus.CANCELLED || enrollment.status === EnrollmentStatus.WITHDRAWN) {
       throw new BadRequestException('Cannot update a cancelled or withdrawn enrollment');
     }
 
@@ -429,10 +400,7 @@ export class TournamentEnrollmentResolver {
 
   @Mutation(() => TournamentEnrollment, { description: 'Cancel/withdraw from an enrollment' })
   @UseGuards(PermGuard)
-  async cancelEnrollment(
-    @User() user: Player,
-    @Args('enrollmentId', { type: () => ID }) enrollmentId: string,
-  ): Promise<TournamentEnrollment> {
+  async cancelEnrollment(@User() user: Player, @Args('enrollmentId', { type: () => ID }) enrollmentId: string): Promise<TournamentEnrollment> {
     const enrollment = await TournamentEnrollment.findOne({
       where: { id: enrollmentId },
       relations: ['tournamentSubEvent'],
@@ -451,10 +419,7 @@ export class TournamentEnrollmentResolver {
     }
 
     // Already cancelled?
-    if (
-      enrollment.status === EnrollmentStatus.CANCELLED ||
-      enrollment.status === EnrollmentStatus.WITHDRAWN
-    ) {
+    if (enrollment.status === EnrollmentStatus.CANCELLED || enrollment.status === EnrollmentStatus.WITHDRAWN) {
       throw new BadRequestException('This enrollment is already cancelled');
     }
 
@@ -489,10 +454,7 @@ export class TournamentEnrollmentResolver {
 
   @Mutation(() => TournamentEnrollment, { description: 'Promote a player from the waiting list (organizer only)' })
   @UseGuards(PermGuard)
-  async promoteFromWaitingList(
-    @User() user: Player,
-    @Args('enrollmentId', { type: () => ID }) enrollmentId: string,
-  ): Promise<TournamentEnrollment> {
+  async promoteFromWaitingList(@User() user: Player, @Args('enrollmentId', { type: () => ID }) enrollmentId: string): Promise<TournamentEnrollment> {
     // Check admin permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to promote players from waiting list');

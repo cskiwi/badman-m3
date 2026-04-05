@@ -13,7 +13,7 @@ import { TeamGameStatsComponent } from './team-game-stats.component';
   standalone: true,
   imports: [RouterModule, TranslateModule, BadgeModule, ButtonModule, SkeletonModule, PhoneNumberPipe, TeamGameStatsComponent],
   templateUrl: './team-card.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeamCardComponent {
   team = input.required<Team>();
@@ -27,5 +27,4 @@ export class TeamCardComponent {
   togglePlayers() {
     this.expanded = !this.expanded;
   }
-  
 }

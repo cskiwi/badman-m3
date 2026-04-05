@@ -76,7 +76,7 @@ export class ClubSearchService {
     isActive: new FormControl<boolean | null>(null),
     hasWebsite: new FormControl<boolean | null>(null),
     foundedAfter: new FormControl<number | null>(null),
-    foundedBefore: new FormControl<number | null>(null)
+    foundedBefore: new FormControl<number | null>(null),
   });
 
   // Pagination and view controls
@@ -84,32 +84,27 @@ export class ClubSearchService {
     first: 0,
     rows: 12,
     page: 0,
-    pageCount: 0
+    pageCount: 0,
   });
 
   sortBy = signal<SortOption>({
     label: 'Name A-Z',
     value: 'name-asc',
     field: 'name',
-    order: 'ASC'
+    order: 'ASC',
   });
 
   viewMode = signal<ViewMode>({
     label: 'Grid View',
     value: 'grid',
-    icon: 'pi pi-th-large'
+    icon: 'pi pi-th-large',
   });
 
   // Autocomplete query
   autocompleteQuery = new FormControl<string>('');
 
   // Convert form to signal for resource with debounce
-  private filterSignal = toSignal(
-    this.filter.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    )
-  );
+  private filterSignal = toSignal(this.filter.valueChanges.pipe(debounceTime(300), distinctUntilChanged()));
 
   private paginationSignal = computed(() => this.pagination());
   private sortSignal = computed(() => this.sortBy());
@@ -120,15 +115,15 @@ export class ClubSearchService {
       this.autocompleteQuery.valueChanges.pipe(
         debounceTime(200),
         distinctUntilChanged(),
-        filter(query => (query?.length ?? 0) >= 2)
-      )
+        filter((query) => (query?.length ?? 0) >= 2),
+      ),
     ),
     loader: async ({ params }) => {
       if (!params || params.length < 2) return [];
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ clubsAutocomplete: ClubAutoCompleteItem[] }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ clubsAutocomplete: ClubAutoCompleteItem[] }>({
             query: gql`
               query ClubsAutocomplete($query: String!) {
                 clubsAutocomplete(query: $query) {
@@ -142,7 +137,8 @@ export class ClubSearchService {
               }
             `,
             variables: { query: params },
-          }));
+          }),
+        );
 
         return result?.data.clubsAutocomplete ?? [];
       } catch (err) {
@@ -157,12 +153,12 @@ export class ClubSearchService {
     params: computed(() => ({
       filters: this.filterSignal(),
       pagination: this.paginationSignal(),
-      sort: this.sortSignal()
+      sort: this.sortSignal(),
     })),
     loader: async ({ params, abortSignal }) => {
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<ClubsQueryResponse>({
+        const result = await lastValueFrom(
+          this.apollo.query<ClubsQueryResponse>({
             query: gql`
               query ClubSearch($args: ClubArgs, $pagination: PaginationArgs, $sort: [OrderByClause!]) {
                 clubs(args: $args, pagination: $pagination, orderBy: $sort) {
@@ -212,26 +208,27 @@ export class ClubSearchService {
               }
             `,
             variables: {
-              args: { 
+              args: {
                 where: this._buildWhereClause(params?.filters),
               },
               pagination: {
                 skip: params?.pagination.first || 0,
-                take: params?.pagination.rows || 12
+                take: params?.pagination.rows || 12,
               },
-              sort: this._buildSortClause(params?.sort)
+              sort: this._buildSortClause(params?.sort),
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data) {
           throw new Error('No data received');
         }
 
-        const clubs: ClubWithStats[] = (result.data.clubs || []).map(club => ({
+        const clubs: ClubWithStats[] = (result.data.clubs || []).map((club) => ({
           ...club,
           playersCount: club.clubPlayerMemberships?.length || 0,
-          teamsCount: club.teams?.length || 0
+          teamsCount: club.teams?.length || 0,
         }));
 
         // Update pagination
@@ -239,13 +236,13 @@ export class ClubSearchService {
         const currentPagination = this.pagination();
         this.pagination.set({
           ...currentPagination,
-          pageCount: Math.ceil(totalCount / currentPagination.rows)
+          pageCount: Math.ceil(totalCount / currentPagination.rows),
         });
 
         return {
           clubs,
           totalCount,
-          aggregations: result.data.clubsAggregations
+          aggregations: result.data.clubsAggregations,
         };
       } catch (err) {
         throw new Error(this.handleError(err as HttpErrorResponse));
@@ -258,7 +255,7 @@ export class ClubSearchService {
   totalCount = computed(() => this.clubsResource.value()?.totalCount ?? 0);
   aggregations = computed(() => this.clubsResource.value()?.aggregations);
   autocompleteOptions = computed(() => this.autocompleteResource.value() ?? []);
-  
+
   error = computed(() => this.clubsResource.error()?.message || null);
   loading = computed(() => this.clubsResource.isLoading());
   autocompleteLoading = computed(() => this.autocompleteResource.isLoading());
@@ -271,9 +268,8 @@ export class ClubSearchService {
       currentPageClubs: clubs.length,
       totalPlayers: clubs.reduce((sum, club) => sum + (club.playersCount || 0), 0),
       totalTeams: clubs.reduce((sum, club) => sum + (club.teamsCount || 0), 0),
-      averagePlayersPerClub: clubs.length > 0 ? 
-        Math.round(clubs.reduce((sum, club) => sum + (club.playersCount || 0), 0) / clubs.length) : 0,
-      activeClubs: clubs.filter(club => club.isActive).length
+      averagePlayersPerClub: clubs.length > 0 ? Math.round(clubs.reduce((sum, club) => sum + (club.playersCount || 0), 0) / clubs.length) : 0,
+      activeClubs: clubs.filter((club) => club.isActive).length,
     };
   });
 
@@ -282,7 +278,7 @@ export class ClubSearchService {
     const agg = this.aggregations();
     const base = [{ label: 'All States', value: null }];
     if (agg?.states) {
-      base.push(...agg.states.map(s => ({ label: `${s.name} (${s.count})`, value: s.name })));
+      base.push(...agg.states.map((s) => ({ label: `${s.name} (${s.count})`, value: s.name })));
     }
     return base;
   });
@@ -291,7 +287,7 @@ export class ClubSearchService {
     const agg = this.aggregations();
     const base = [{ label: 'All Countries', value: null }];
     if (agg?.countries) {
-      base.push(...agg.countries.map(c => ({ label: `${c.name} (${c.count})`, value: c.name })));
+      base.push(...agg.countries.map((c) => ({ label: `${c.name} (${c.count})`, value: c.name })));
     }
     return base;
   });
@@ -300,7 +296,7 @@ export class ClubSearchService {
     const agg = this.aggregations();
     const base = [{ label: 'All Divisions', value: null }];
     if (agg?.divisions) {
-      base.push(...agg.divisions.map(d => ({ label: `${d.name} (${d.count})`, value: d.name })));
+      base.push(...agg.divisions.map((d) => ({ label: `${d.name} (${d.count})`, value: d.name })));
     }
     return base;
   });
@@ -315,13 +311,13 @@ export class ClubSearchService {
     { label: 'Least Teams', value: 'teams-asc', field: 'teamsCount', order: 'ASC' },
     { label: 'Recently Founded', value: 'founded-desc', field: 'foundedYear', order: 'DESC' },
     { label: 'Oldest First', value: 'founded-asc', field: 'foundedYear', order: 'ASC' },
-    { label: 'Last Activity', value: 'activity-desc', field: 'lastActivity', order: 'DESC' }
+    { label: 'Last Activity', value: 'activity-desc', field: 'lastActivity', order: 'DESC' },
   ];
 
   // View mode options
   viewModeOptions: ViewMode[] = [
     { label: 'Grid View', value: 'grid', icon: 'pi pi-th-large' },
-    { label: 'List View', value: 'list', icon: 'pi pi-list' }
+    { label: 'List View', value: 'list', icon: 'pi pi-list' },
   ];
 
   // Page size options
@@ -329,7 +325,7 @@ export class ClubSearchService {
     { label: '12 per page', value: 12 },
     { label: '24 per page', value: 24 },
     { label: '48 per page', value: 48 },
-    { label: '96 per page', value: 96 }
+    { label: '96 per page', value: 96 },
   ];
 
   // Methods
@@ -339,7 +335,7 @@ export class ClubSearchService {
       first: 0,
       rows: 12,
       page: 0,
-      pageCount: 0
+      pageCount: 0,
     });
   }
 
@@ -348,14 +344,14 @@ export class ClubSearchService {
       first: event.first,
       rows: event.rows,
       page: event.page,
-      pageCount: event.pageCount
+      pageCount: event.pageCount,
     });
   }
 
   onSortChange(sortOption: SortOption): void {
     this.sortBy.set(sortOption);
     // Reset to first page when sorting changes
-    this.pagination.update(p => ({ ...p, first: 0, page: 0 }));
+    this.pagination.update((p) => ({ ...p, first: 0, page: 0 }));
   }
 
   onViewModeChange(viewMode: ViewMode): void {
@@ -363,12 +359,12 @@ export class ClubSearchService {
   }
 
   onPageSizeChange(pageSize: number): void {
-    this.pagination.update(p => ({
+    this.pagination.update((p) => ({
       ...p,
       rows: pageSize,
       first: 0,
       page: 0,
-      pageCount: Math.ceil(this.totalCount() / pageSize)
+      pageCount: Math.ceil(this.totalCount() / pageSize),
     }));
   }
 
@@ -422,9 +418,9 @@ export class ClubSearchService {
       const searchTerms = this._parseSearchQuery(params.query);
       if (searchTerms.length > 0) {
         where.OR = [
-          ...searchTerms.map(term => ({ name: { ilike: `%${term}%` } })),
-          ...searchTerms.map(term => ({ fullName: { ilike: `%${term}%` } })),
-          ...searchTerms.map(term => ({ abbreviation: { ilike: `%${term}%` } })),
+          ...searchTerms.map((term) => ({ name: { ilike: `%${term}%` } })),
+          ...searchTerms.map((term) => ({ fullName: { ilike: `%${term}%` } })),
+          ...searchTerms.map((term) => ({ abbreviation: { ilike: `%${term}%` } })),
         ];
       }
     }
@@ -495,7 +491,7 @@ export class ClubSearchService {
       .toLowerCase()
       .replace(/[;\\/:*?"<>|&',]/g, ' ')
       .split(' ')
-      .map(part => part.trim())
-      .filter(part => part.length > 0);
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
   }
 }

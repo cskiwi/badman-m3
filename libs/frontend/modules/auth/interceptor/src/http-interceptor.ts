@@ -1,8 +1,4 @@
-import {
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-} from '@angular/common/http';
+import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AUTH_KEY } from '@app/frontend-modules-auth/service';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';

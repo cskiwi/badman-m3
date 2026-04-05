@@ -62,7 +62,7 @@
 //     const svgImage = `
 //       <svg width="${this.width}" height="${this.height}" xmlns="http://www.w3.org/2000/svg">
 //         <rect width="${this.width}" height="${this.height}" fill="${this.backgroundColor}" />
-      
+
 //         ${this.getGeneralInfo(player)}
 //         ${this.getRanking(player)}
 //         ${this.getStats(games)}
@@ -140,7 +140,6 @@
 //                 <text x="20" y="0" fill="${this.textColor}">${tournaments}</text>
 //                 <text x="20" y="30" fill="${this.subTextColor}">Tournament</text>
 //             </g>
-            
 
 //             <g transform="translate(350, 500)">
 //             <text x="20" y="0" fill="${this.textColor}">
@@ -171,7 +170,6 @@
 //                 <text x="20" y="30" fill="${this.subTextColor}">Wins</text>
 //             </g>
 
-            
 //             <g transform="translate(950, 500)">
 //                 <text x="20" y="0" fill="${this.textColor}">${losses}</text>
 //                 <text x="20" y="30" fill="${this.subTextColor}">Losses</text>
@@ -196,7 +194,7 @@
 //                 }" />
 //               `,
 //               )
-//               .join('')} 
+//               .join('')}
 //         </g>`;
 //   }
 // }

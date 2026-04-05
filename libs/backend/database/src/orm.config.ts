@@ -9,7 +9,7 @@ const entities = Object.values(Models).filter((value) => {
   if (typeof value !== 'function' || !value.prototype) return false;
 
   // Exclude TypeScript enums (they're objects with both numeric and string keys)
-  if (typeof value === 'object' && Object.keys(value).some(k => !isNaN(Number(k)))) return false;
+  if (typeof value === 'object' && Object.keys(value).some((k) => !isNaN(Number(k)))) return false;
 
   // Check if it extends BaseEntity (TypeORM entity base class)
   let proto = value.prototype;

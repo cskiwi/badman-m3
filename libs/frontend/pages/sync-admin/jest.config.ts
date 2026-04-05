@@ -1,4 +1,3 @@
- 
 export default {
   displayName: 'sync-admin',
   preset: '../../../../jest.preset.js',

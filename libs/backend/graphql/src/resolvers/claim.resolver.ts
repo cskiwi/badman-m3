@@ -59,7 +59,7 @@ export class ClaimResolver {
 
     // Validate that all provided claim IDs exist and are global claims
     const claims = await Claim.find({
-      where: claimIds.map(id => ({ id })),
+      where: claimIds.map((id) => ({ id })),
     });
 
     if (claims.length !== claimIds.length) {
@@ -67,7 +67,7 @@ export class ClaimResolver {
     }
 
     // Ensure all claims are global type
-    const nonGlobalClaims = claims.filter(claim => claim.type !== SecurityType.GLOBAL);
+    const nonGlobalClaims = claims.filter((claim) => claim.type !== SecurityType.GLOBAL);
     if (nonGlobalClaims.length > 0) {
       throw new BadRequestException('Only global claims can be assigned through this endpoint');
     }

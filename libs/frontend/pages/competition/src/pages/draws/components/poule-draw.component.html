@@ -26,17 +26,21 @@
             <tr class="border-b border-surface-200 hover:bg-highlight-emphasis relative">
               <!-- Visual indicator for riser/faller -->
               @if (entry.standing?.riser) {
-                <td class="absolute left-0 top-0 bottom-0 w-1 bg-green-500" 
-                    [pTooltip]="'all.competition.tooltip.riser' | translate" 
-                    tooltipPosition="right"></td>
+                <td
+                  class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"
+                  [pTooltip]="'all.competition.tooltip.riser' | translate"
+                  tooltipPosition="right"
+                ></td>
               } @else if (entry.standing?.faller) {
-                <td class="absolute left-0 top-0 bottom-0 w-1 bg-red-500" 
-                    [pTooltip]="'all.competition.tooltip.faller' | translate" 
-                    tooltipPosition="right"></td>
+                <td
+                  class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"
+                  [pTooltip]="'all.competition.tooltip.faller' | translate"
+                  tooltipPosition="right"
+                ></td>
               } @else {
                 <td></td>
               }
-              
+
               <td class="p-3 font-semibold text-primary pl-4">{{ entry.standing?.position }}</td>
               <td class="p-3">
                 @if (entry.team?.club?.slug) {

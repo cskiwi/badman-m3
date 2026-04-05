@@ -17,7 +17,7 @@ import { DatePipe } from '@angular/common';
   imports: [TranslateModule, SkeletonModule, TableModule, ButtonModule, TagModule, TooltipModule, RouterLink, DatePipe],
   providers: [ClubTournamentsTabService],
   templateUrl: './club-tournaments-tab.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClubTournamentsTabComponent {
   readonly service = inject(ClubTournamentsTabService);

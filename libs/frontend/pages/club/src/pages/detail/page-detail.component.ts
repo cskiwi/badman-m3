@@ -14,7 +14,13 @@ import { SelectModule } from 'primeng/select';
 import { TabsModule } from 'primeng/tabs';
 import { TeamEditComponent } from '../../components/team-edit/team-edit.component';
 import { DetailService } from './page-detail.service';
-import { ClubScheduleTabComponent, ClubTeamsTabComponent, ClubTournamentsTabComponent, ClubPlayersTabComponent, ClubTeamBuilderTabComponent } from './tabs';
+import {
+  ClubScheduleTabComponent,
+  ClubTeamsTabComponent,
+  ClubTournamentsTabComponent,
+  ClubPlayersTabComponent,
+  ClubTeamBuilderTabComponent,
+} from './tabs';
 
 @Component({
   selector: 'app-page-detail',
@@ -69,12 +75,7 @@ export class PageDetailComponent {
 
   canCreateTournament(): boolean {
     const clubId = this.clubId();
-    return this.auth.hasAnyPermission([
-      'create-any:tournament',
-      'edit-any:club',
-      `${clubId}_edit:club`,
-      `${clubId}_create:tournament`,
-    ]);
+    return this.auth.hasAnyPermission(['create-any:tournament', 'edit-any:club', `${clubId}_edit:club`, `${clubId}_create:tournament`]);
   }
 
   createTournament(): void {

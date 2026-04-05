@@ -21,9 +21,7 @@ export class TournamentEventResolver {
   constructor(private readonly syncService: SyncService) {}
 
   @Query(() => TournamentEvent)
-  async tournamentEvent(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<TournamentEvent> {
+  async tournamentEvent(@Args('id', { type: () => ID }) id: string): Promise<TournamentEvent> {
     const comp = IsUUID(id)
       ? await TournamentEvent.findOne({
           where: {
@@ -45,7 +43,7 @@ export class TournamentEventResolver {
 
   @Query(() => [TournamentEvent])
   async tournamentEvents(
-    @Args('args',  { type: () => TournamentEventArgs, nullable: true  })
+    @Args('args', { type: () => TournamentEventArgs, nullable: true })
     inputArgs?: InstanceType<typeof TournamentEventArgs>,
   ): Promise<TournamentEvent[]> {
     const args = TournamentEventArgs.toFindOneOptions(inputArgs);
@@ -91,10 +89,7 @@ export class TournamentEventResolver {
 
   @Mutation(() => TournamentEvent, { description: 'Create a new tournament event' })
   @UseGuards(PermGuard)
-  async createTournamentEvent(
-    @User() user: Player,
-    @Args('data') data: TournamentEventNewInput,
-  ): Promise<TournamentEvent> {
+  async createTournamentEvent(@User() user: Player, @Args('data') data: TournamentEventNewInput): Promise<TournamentEvent> {
     // Check permission - user must have create permission for tournaments
     const hasPermission = user.hasAnyPermission([
       'create-any:tournament',
@@ -194,10 +189,7 @@ export class TournamentEventResolver {
 
   @Mutation(() => Boolean, { description: 'Delete a tournament event' })
   @UseGuards(PermGuard)
-  async deleteTournamentEvent(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<boolean> {
+  async deleteTournamentEvent(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<boolean> {
     const tournament = await TournamentEvent.findOne({ where: { id } });
 
     if (!tournament) {

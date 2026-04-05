@@ -46,8 +46,8 @@ export class ClubsService {
     params: this.filterSignal,
     loader: async ({ params, abortSignal }) => {
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<ClubsQueryResponse>({
+        const result = await lastValueFrom(
+          this.apollo.query<ClubsQueryResponse>({
             query: gql`
               query TournamentClubs($args: ClubArgs) {
                 clubs(args: $args) {
@@ -74,23 +74,24 @@ export class ClubsService {
               }
             `,
             variables: {
-              args: { 
+              args: {
                 where: this._buildWhereClause(params),
-                order: [{ name: 'ASC' }]
+                order: [{ name: 'ASC' }],
               },
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.clubs) {
           throw new Error('No clubs found');
         }
 
         // Add computed statistics
-        const clubsWithStats: ClubWithStats[] = result.data.clubs.map(club => ({
+        const clubsWithStats: ClubWithStats[] = result.data.clubs.map((club) => ({
           ...club,
           playersCount: club.clubPlayerMemberships?.length || 0,
-          teamsCount: club.teams?.length || 0
+          teamsCount: club.teams?.length || 0,
         }));
 
         return clubsWithStats;
@@ -108,7 +109,7 @@ export class ClubsService {
       totalClubs: clubs.length,
       totalPlayers: clubs.reduce((sum, club) => sum + (club.playersCount || 0), 0),
       totalTeams: clubs.reduce((sum, club) => sum + (club.teamsCount || 0), 0),
-      averagePlayersPerClub: clubs.length > 0 ? Math.round(clubs.reduce((sum, club) => sum + (club.playersCount || 0), 0) / clubs.length) : 0
+      averagePlayersPerClub: clubs.length > 0 ? Math.round(clubs.reduce((sum, club) => sum + (club.playersCount || 0), 0) / clubs.length) : 0,
     };
   });
   error = computed(() => this.clubsResource.error()?.message || null);
@@ -131,9 +132,9 @@ export class ClubsService {
       const searchTerms = this._parseSearchQuery(params.query);
       if (searchTerms.length > 0) {
         where.OR = [
-          ...searchTerms.map(term => ({ name: { ilike: `%${term}%` } })),
-          ...searchTerms.map(term => ({ fullName: { ilike: `%${term}%` } })),
-          ...searchTerms.map(term => ({ abbreviation: { ilike: `%${term}%` } })),
+          ...searchTerms.map((term) => ({ name: { ilike: `%${term}%` } })),
+          ...searchTerms.map((term) => ({ fullName: { ilike: `%${term}%` } })),
+          ...searchTerms.map((term) => ({ abbreviation: { ilike: `%${term}%` } })),
         ];
       }
     }
@@ -160,7 +161,7 @@ export class ClubsService {
       .toLowerCase()
       .replace(/[;\\/:*?"<>|&',]/g, ' ')
       .split(' ')
-      .map(part => part.trim())
-      .filter(part => part.length > 0);
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
   }
 }

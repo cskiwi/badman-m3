@@ -32,7 +32,7 @@
 //     const svgImage = `
 //       <svg width="${this.width}" height="${this.height}" xmlns="http://www.w3.org/2000/svg">
 //         <rect width="${this.width}" height="${this.height}" fill="${this.backgroundColor}" />
-      
+
 //         ${this.getGeneralInfo(club)}
 //         ${this.getStats(club.teams || [])}
 

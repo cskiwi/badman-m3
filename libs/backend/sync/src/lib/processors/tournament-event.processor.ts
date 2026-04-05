@@ -57,7 +57,7 @@ export class TournamentEventProcessor extends WorkerHost {
     const isResuming = job.attemptsStarted > 0;
     this.logger.log(
       `[${job.name}] Processing job type="${jobType}" id="${job.id}" parent="${job.parentKey || 'none'}" ` +
-      `attempt=${job.attemptsMade}/${job.opts?.attempts ?? 'n/a'} resuming=${isResuming}`,
+        `attempt=${job.attemptsMade}/${job.opts?.attempts ?? 'n/a'} resuming=${isResuming}`,
     );
     const updateProgress = async (progress: number) => {
       this.logger.debug(`Tournament ${jobType} sync progress: ${progress}%`);
@@ -66,63 +66,35 @@ export class TournamentEventProcessor extends WorkerHost {
 
     switch (jobType) {
       case 'sync-structure':
-        await this.tournamentSyncService.processStructureSync(
-          job as Job<TournamentSyncJobData>,
-          updateProgress,
-        );
+        await this.tournamentSyncService.processStructureSync(job as Job<TournamentSyncJobData>, updateProgress);
         break;
 
       case 'event':
-        await this.tournamentEventSyncService.processEventSync(
-          job as Job<TournamentEventSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.tournamentEventSyncService.processEventSync(job as Job<TournamentEventSyncData>, updateProgress, token);
         break;
 
       case 'subevent':
-        await this.tournamentSubEventSyncService.processSubEventSync(
-          job as Job<TournamentSubEventSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.tournamentSubEventSyncService.processSubEventSync(job as Job<TournamentSubEventSyncData>, updateProgress, token);
         break;
 
       case 'draw':
-        await this.tournamentDrawSyncService.processDrawSync(
-          job as Job<TournamentDrawSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.tournamentDrawSyncService.processDrawSync(job as Job<TournamentDrawSyncData>, updateProgress, token);
         break;
 
       case 'entry':
-        await this.tournamentEntrySyncService.processEntrySync(
-          job as Job<TournamentEntrySyncData>,
-          updateProgress,
-          token,
-        );
+        await this.tournamentEntrySyncService.processEntrySync(job as Job<TournamentEntrySyncData>, updateProgress, token);
         break;
 
       case 'standing':
-        await this.tournamentStandingSyncService.processStandingSync(
-          job.data as TournamentStandingSyncData,
-          updateProgress,
-        );
+        await this.tournamentStandingSyncService.processStandingSync(job.data as TournamentStandingSyncData, updateProgress);
         break;
 
       case 'game':
-        await this.tournamentGameSyncService.processGameSync(
-          job as Job<TournamentGameSyncOptions>,
-          updateProgress,
-        );
+        await this.tournamentGameSyncService.processGameSync(job as Job<TournamentGameSyncOptions>, updateProgress);
         break;
 
       case 'ranking-recalc':
-        await this.tournamentRankingRecalcService.processRankingRecalc(
-          job.data as TournamentRankingRecalcJobData,
-          updateProgress,
-        );
+        await this.tournamentRankingRecalcService.processRankingRecalc(job.data as TournamentRankingRecalcJobData, updateProgress);
         break;
 
       default:

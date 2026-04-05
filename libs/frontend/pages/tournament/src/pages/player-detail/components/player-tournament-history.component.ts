@@ -14,7 +14,7 @@ import { type PlayerTournamentHistory } from '../page-player-detail.service';
   selector: 'app-player-tournament-history',
   imports: [DatePipe, RouterModule, TranslateModule, TableModule, TagModule, ButtonModule, CardModule, AccordionModule, TooltipModule],
   templateUrl: './player-tournament-history.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerTournamentHistoryComponent {
   tournamentHistory = input.required<PlayerTournamentHistory[]>();

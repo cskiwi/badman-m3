@@ -27,9 +27,9 @@ export class DrawDetailService {
 
       try {
         const result = await lastValueFrom(
-          this.apollo.query<{ 
-            tournamentEvent: TournamentEvent; 
-            tournamentSubEvent: TournamentSubEvent & { drawTournaments: TournamentDraw[] }; 
+          this.apollo.query<{
+            tournamentEvent: TournamentEvent;
+            tournamentSubEvent: TournamentSubEvent & { drawTournaments: TournamentDraw[] };
             tournamentDraw: TournamentDraw & { entries: Entry[]; games: Game[] };
           }>({
             query: gql`
@@ -134,31 +134,34 @@ export class DrawDetailService {
         }
 
         // Flatten standings from entries
-        const standings = result.data.tournamentDraw.entries
-          ?.flatMap(entry => 
-            entry.standing ? [{
-              ...entry.standing,
-              player1Id: entry.player1Id,
-              player2Id: entry.player2Id,
-              teamId: entry.teamId,
-              player1: entry.player1,
-              player2: entry.player2,
-            }] : []
-          )
-          .sort((a, b) => a.position - b.position) || [];
+        const standings =
+          result.data.tournamentDraw.entries
+            ?.flatMap((entry) =>
+              entry.standing
+                ? [
+                    {
+                      ...entry.standing,
+                      player1Id: entry.player1Id,
+                      player2Id: entry.player2Id,
+                      teamId: entry.teamId,
+                      player1: entry.player1,
+                      player2: entry.player2,
+                    },
+                  ]
+                : [],
+            )
+            .sort((a, b) => a.position - b.position) || [];
 
         // Sort games chronologically by playedAt, then by order
-        const games = [...(result.data.tournamentDraw.games || [])]
-          .sort((a, b) => {
-            if (a.playedAt && b.playedAt) {
-              return new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime();
-            }
-            return 0;
-            // if (a.playedAt && !b.playedAt) return -1;
-            // if (!a.playedAt && b.playedAt) return 1;
-            // return (a.order || 0) - (b.order || 0);
-          });
-
+        const games = [...(result.data.tournamentDraw.games || [])].sort((a, b) => {
+          if (a.playedAt && b.playedAt) {
+            return new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime();
+          }
+          return 0;
+          // if (a.playedAt && !b.playedAt) return -1;
+          // if (!a.playedAt && b.playedAt) return 1;
+          // return (a.order || 0) - (b.order || 0);
+        });
 
         return {
           tournament: result.data.tournamentEvent,

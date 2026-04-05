@@ -1,15 +1,15 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class AddEnrollmentControlFields1734178000000 implements MigrationInterface {
-    name = 'AddEnrollmentControlFields1734178000000'
+  name = 'AddEnrollmentControlFields1734178000000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // ===================================================================
-        // PHASE 1: Add per-sub-event enrollment control to TournamentSubEvent
-        // ===================================================================
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // ===================================================================
+    // PHASE 1: Add per-sub-event enrollment control to TournamentSubEvent
+    // ===================================================================
 
-        // Add new columns for per-event enrollment management
-        await queryRunner.query(`
+    // Add new columns for per-event enrollment management
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             ADD COLUMN "maxEntries" integer,
             ADD COLUMN "enrollmentOpenDate" timestamptz,
@@ -24,22 +24,22 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             ADD COLUMN "enrollmentNotes" text
         `);
 
-        // Add check constraint for enrollment phase
-        await queryRunner.query(`
+    // Add check constraint for enrollment phase
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             ADD CONSTRAINT "CHK_enrollment_phase"
             CHECK ("enrollmentPhase" IN ('DRAFT', 'OPEN', 'CLOSED', 'WAITLIST_ONLY', 'FULL', 'LOCKED'))
         `);
 
-        // Add check constraint for max entries
-        await queryRunner.query(`
+    // Add check constraint for max entries
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             ADD CONSTRAINT "CHK_max_entries_positive"
             CHECK ("maxEntries" IS NULL OR "maxEntries" > 0)
         `);
 
-        // Add check constraint for enrollment count validation
-        await queryRunner.query(`
+    // Add check constraint for enrollment count validation
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             ADD CONSTRAINT "CHK_enrollment_count_valid"
             CHECK (
@@ -48,28 +48,28 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             )
         `);
 
-        // Add indexes for enrollment queries
-        await queryRunner.query(`
+    // Add indexes for enrollment queries
+    await queryRunner.query(`
             CREATE INDEX "IDX_subevent_enrollment_phase"
             ON event."SubEventTournaments"("enrollmentPhase", "eventId")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_subevent_enrollment_dates"
             ON event."SubEventTournaments"("enrollmentOpenDate", "enrollmentCloseDate")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_subevent_capacity"
             ON event."SubEventTournaments"("maxEntries", "currentEnrollmentCount")
             WHERE "maxEntries" IS NOT NULL
         `);
 
-        // ===================================================================
-        // PHASE 2: Create EnrollmentSessions table
-        // ===================================================================
+    // ===================================================================
+    // PHASE 2: Create EnrollmentSessions table
+    // ===================================================================
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE event."EnrollmentSessions" (
                 "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
                 "createdAt" timestamptz NOT NULL DEFAULT now(),
@@ -86,32 +86,32 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             )
         `);
 
-        // Add indexes for session queries
-        await queryRunner.query(`
+    // Add indexes for session queries
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_sessions_player"
             ON event."EnrollmentSessions"("playerId")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_sessions_status"
             ON event."EnrollmentSessions"("status")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_sessions_expires"
             ON event."EnrollmentSessions"("expiresAt")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_sessions_created"
             ON event."EnrollmentSessions"("createdAt")
         `);
 
-        // ===================================================================
-        // PHASE 3: Create EnrollmentSessionItems table
-        // ===================================================================
+    // ===================================================================
+    // PHASE 3: Create EnrollmentSessionItems table
+    // ===================================================================
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE event."EnrollmentSessionItems" (
                 "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
                 "createdAt" timestamptz NOT NULL DEFAULT now(),
@@ -130,27 +130,27 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             )
         `);
 
-        // Add indexes for session item queries
-        await queryRunner.query(`
+    // Add indexes for session item queries
+    await queryRunner.query(`
             CREATE INDEX "IDX_session_items_session"
             ON event."EnrollmentSessionItems"("sessionId")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_session_items_subevent"
             ON event."EnrollmentSessionItems"("tournamentSubEventId")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_session_items_validation"
             ON event."EnrollmentSessionItems"("validationStatus")
         `);
 
-        // ===================================================================
-        // PHASE 4: Create WaitingListLogs table
-        // ===================================================================
+    // ===================================================================
+    // PHASE 4: Create WaitingListLogs table
+    // ===================================================================
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TYPE "event"."TournamentEnrollments_status_enum" AS ENUM(
                 'PENDING',
                 'CONFIRMED',
@@ -159,7 +159,7 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
                 'WITHDRAWN'
             )
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE "event"."TournamentEnrollments" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -179,7 +179,7 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             )
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TABLE event."WaitingListLogs" (
                 "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
                 "createdAt" timestamptz NOT NULL DEFAULT now(),
@@ -193,56 +193,55 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             )
         `);
 
-        // Add indexes for waiting list log queries
-        await queryRunner.query(`
+    // Add indexes for waiting list log queries
+    await queryRunner.query(`
             CREATE INDEX "IDX_waitlist_log_enrollment"
             ON event."WaitingListLogs"("enrollmentId")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_waitlist_log_subevent"
             ON event."WaitingListLogs"("tournamentSubEventId")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_waitlist_log_created"
             ON event."WaitingListLogs"("createdAt")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_waitlist_log_action"
             ON event."WaitingListLogs"("action", "createdAt")
         `);
-        
-    }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        // Drop tables in reverse order
-        await queryRunner.query(`DROP TABLE IF EXISTS event."WaitingListLogs" CASCADE`);
-        await queryRunner.query(`DROP TABLE IF EXISTS event."EnrollmentSessionItems" CASCADE`);
-        await queryRunner.query(`DROP TABLE IF EXISTS event."EnrollmentSessions" CASCADE`);
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    // Drop tables in reverse order
+    await queryRunner.query(`DROP TABLE IF EXISTS event."WaitingListLogs" CASCADE`);
+    await queryRunner.query(`DROP TABLE IF EXISTS event."EnrollmentSessionItems" CASCADE`);
+    await queryRunner.query(`DROP TABLE IF EXISTS event."EnrollmentSessions" CASCADE`);
 
-        // Drop indexes from SubEventTournaments
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_subevent_capacity"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_subevent_enrollment_dates"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_subevent_enrollment_phase"`);
+    // Drop indexes from SubEventTournaments
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_subevent_capacity"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_subevent_enrollment_dates"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_subevent_enrollment_phase"`);
 
-        // Drop constraints
-        await queryRunner.query(`
+    // Drop constraints
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             DROP CONSTRAINT IF EXISTS "CHK_enrollment_count_valid"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             DROP CONSTRAINT IF EXISTS "CHK_max_entries_positive"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             DROP CONSTRAINT IF EXISTS "CHK_enrollment_phase"
         `);
 
-        // Drop columns
-        await queryRunner.query(`
+    // Drop columns
+    await queryRunner.query(`
             ALTER TABLE event."SubEventTournaments"
             DROP COLUMN IF EXISTS "maxEntries",
             DROP COLUMN IF EXISTS "enrollmentNotes",
@@ -257,13 +256,11 @@ export class AddEnrollmentControlFields1734178000000 implements MigrationInterfa
             DROP COLUMN IF EXISTS "enrollmentOpenDate"
         `);
 
-       await queryRunner.query(`
+    await queryRunner.query(`
             DROP TABLE "event"."TournamentEnrollments"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             DROP TYPE "event"."TournamentEnrollments_status_enum"
         `);
-
-
-    }
+  }
 }

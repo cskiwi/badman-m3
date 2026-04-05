@@ -36,8 +36,8 @@ export class OverviewService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ players: Player[], playersCount: { count: number } }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ players: Player[]; playersCount: { count: number } }>({
             query: gql`
               query PlayersOverview($args: PlayerArgs, $countArgs: PlayerArgs) {
                 players(args: $args) {
@@ -76,14 +76,15 @@ export class OverviewService {
               },
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.players) {
           throw new Error('No players found');
         }
         return {
           players: result.data.players,
-          total: result.data.playersCount?.count || 0
+          total: result.data.playersCount?.count || 0,
         };
       } catch (err) {
         throw new Error(this.handleError(err as HttpErrorResponse));
@@ -113,10 +114,19 @@ export class OverviewService {
   getSuggestions(query: string) {
     // Simple suggestion logic - could be enhanced with actual API call
     const suggestions = [
-      'John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson', 'David Brown',
-      'Club Brussels', 'Club Antwerp', 'Club Ghent', 'Youth', 'Adult', 'Veteran'
-    ].filter(s => s.toLowerCase().includes(query.toLowerCase()));
-    
+      'John Smith',
+      'Jane Doe',
+      'Mike Johnson',
+      'Sarah Wilson',
+      'David Brown',
+      'Club Brussels',
+      'Club Antwerp',
+      'Club Ghent',
+      'Youth',
+      'Adult',
+      'Veteran',
+    ].filter((s) => s.toLowerCase().includes(query.toLowerCase()));
+
     this.suggestions.set(suggestions);
   }
 
@@ -155,13 +165,13 @@ export class OverviewService {
 
     // Club filter
     if (params.club) {
-      conditions.push({ 
-        clubPlayerMemberships: { 
-          some: { 
+      conditions.push({
+        clubPlayerMemberships: {
+          some: {
             club: { name: { ilike: `%${params.club}%` } },
-            end: { isNull: true }
-          } 
-        } 
+            end: { isNull: true },
+          },
+        },
       });
     }
 
@@ -176,7 +186,7 @@ export class OverviewService {
   private _buildOrderCondition(params: any) {
     const orderBy = params.sortBy || 'fullName';
     const direction = params.sortOrder === 'desc' ? 'desc' : 'asc';
-    
+
     return { [orderBy]: direction };
   }
 
@@ -193,11 +203,7 @@ export class OverviewService {
     const queries: unknown[] = [];
     for (const part of parts) {
       if (part.trim()) {
-        queries.push(
-          { firstName: { ilike: `%${part}%` } },
-          { lastName: { ilike: `%${part}%` } },
-          { memberId: { ilike: `%${part}%` } },
-        );
+        queries.push({ firstName: { ilike: `%${part}%` } }, { lastName: { ilike: `%${part}%` } }, { memberId: { ilike: `%${part}%` } });
       }
     }
 

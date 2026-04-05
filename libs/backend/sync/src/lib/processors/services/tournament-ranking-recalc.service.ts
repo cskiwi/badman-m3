@@ -10,10 +10,7 @@ export class TournamentRankingRecalcService {
 
   constructor(private readonly pointService: PointService) {}
 
-  async processRankingRecalc(
-    data: TournamentRankingRecalcJobData,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processRankingRecalc(data: TournamentRankingRecalcJobData, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     const { tournamentId, action } = data;
 
     this.logger.log(`Starting ranking point ${action} for tournament ${tournamentId}`);
@@ -68,10 +65,7 @@ export class TournamentRankingRecalcService {
     }
   }
 
-  private async createRankingPoints(
-    games: Game[],
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  private async createRankingPoints(games: Game[], updateProgress: (progress: number) => Promise<void>): Promise<void> {
     let created = 0;
     for (let i = 0; i < games.length; i++) {
       const gameWithMemberships = await Game.findOne({

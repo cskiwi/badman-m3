@@ -4,7 +4,6 @@ import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/ro
 import { AUTH_KEY, AuthService } from '@app/frontend-modules-auth/service';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 
-
 @Injectable({
   providedIn: 'root',
 })

@@ -32,6 +32,6 @@ module.exports = [
     },
   },
   {
-    ignores: ['src/translation/*.ts'],
+    ignores: ['i18n/**'],
   },
 ];

@@ -21,7 +21,4 @@ export class CompetitionEventUpdateInput extends PartialType(
 ) {}
 
 @InputType('CompetitionEventNewInput')
-export class CompetitionEventNewInput extends PartialType(
-  OmitType(CompetitionEventUpdateInput, [] as const),
-  InputType,
-) {}
+export class CompetitionEventNewInput extends PartialType(OmitType(CompetitionEventUpdateInput, [] as const), InputType) {}

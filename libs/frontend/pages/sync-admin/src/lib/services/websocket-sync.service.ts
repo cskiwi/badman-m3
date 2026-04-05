@@ -28,7 +28,7 @@ export class WebSocketSyncService implements OnDestroy {
 
   private socket: Socket | null = null;
   private connectionStatus = signal<'disconnected' | 'connecting' | 'connected'>('disconnected');
-  
+
   // Job update handler delegate
   private jobUpdateHandler: ((job: SyncJob) => void) | null = null;
 
@@ -58,7 +58,7 @@ export class WebSocketSyncService implements OnDestroy {
   isConnected = computed(() => this.connectionStatus() === 'connected');
   isConnecting = computed(() => this.connectionStatus() === 'connecting');
   isDisconnected = computed(() => this.connectionStatus() === 'disconnected');
-  
+
   // Computed to determine if we should be connected
   shouldBeConnected = computed(() => {
     const loggedIn = this.auth.loggedIn();
@@ -264,7 +264,6 @@ export class WebSocketSyncService implements OnDestroy {
       this.jobUpdateHandler(job);
     }
   }
-
 
   /**
    * Set initial data (fallback for when WebSocket is not available)

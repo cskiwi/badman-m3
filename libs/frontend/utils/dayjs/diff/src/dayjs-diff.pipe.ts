@@ -5,16 +5,10 @@ import dayjs from 'dayjs';
 @Pipe({
   name: 'dayjsDiff',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsDiffPipe implements PipeTransform {
-
-  transform(
-    value: DayjsInput,
-    compareValue: DayjsInput,
-    unit?: DayjsQUnitType,
-    precise?: boolean
-  ): number | null {
+  transform(value: DayjsInput, compareValue: DayjsInput, unit?: DayjsQUnitType, precise?: boolean): number | null {
     if (!value || !compareValue) {
       return null;
     }

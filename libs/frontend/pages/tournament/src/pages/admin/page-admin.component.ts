@@ -100,22 +100,12 @@ export class PageAdminComponent {
 
   canAccessSchedule = computed(() => {
     const phase = this.tournament()?.phase;
-    return (
-      phase &&
-      [
-        TournamentPhase.DRAWS_MADE,
-        TournamentPhase.SCHEDULED,
-        TournamentPhase.IN_PROGRESS,
-        TournamentPhase.COMPLETED,
-      ].includes(phase)
-    );
+    return phase && [TournamentPhase.DRAWS_MADE, TournamentPhase.SCHEDULED, TournamentPhase.IN_PROGRESS, TournamentPhase.COMPLETED].includes(phase);
   });
 
   canAccessCheckin = computed(() => {
     const phase = this.tournament()?.phase;
-    return (
-      phase && [TournamentPhase.SCHEDULED, TournamentPhase.IN_PROGRESS, TournamentPhase.COMPLETED].includes(phase)
-    );
+    return phase && [TournamentPhase.SCHEDULED, TournamentPhase.IN_PROGRESS, TournamentPhase.COMPLETED].includes(phase);
   });
 
   // Permission check

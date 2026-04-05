@@ -1,11 +1,7 @@
 <p-toast />
 
 <!-- Ranking Systems Table -->
-<p-table
-  [value]="systems()"
-  [tableStyle]="{ 'min-width': '50rem' }"
-  styleClass="p-datatable-sm"
->
+<p-table [value]="systems()" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-sm">
   <ng-template pTemplate="header">
     <tr>
       <th>Name</th>
@@ -36,17 +32,11 @@
         <td class="font-medium">{{ system.name }}</td>
 
         <td>
-          <p-tag
-            [value]="system.rankingSystem"
-            [severity]="system.rankingSystem === 'VISUAL' ? 'info' : 'secondary'"
-          />
+          <p-tag [value]="system.rankingSystem" [severity]="system.rankingSystem === 'VISUAL' ? 'info' : 'secondary'" />
         </td>
 
         <td>
-          <p-tag
-            [value]="getStatusLabel(system)"
-            [severity]="getStatusSeverity(system)"
-          />
+          <p-tag [value]="getStatusLabel(system)" [severity]="getStatusSeverity(system)" />
         </td>
 
         <td>
@@ -124,8 +114,7 @@
 >
   <div class="flex flex-col gap-4 pt-2">
     <p class="text-surface-500 text-sm m-0">
-      Leave both dates empty to calculate only what's overdue based on the system's interval.
-      Set a date range to recalculate a specific period.
+      Leave both dates empty to calculate only what's overdue based on the system's interval. Set a date range to recalculate a specific period.
     </p>
 
     <div class="flex flex-col gap-1">
@@ -154,19 +143,8 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      [outlined]="true"
-      [disabled]="actionLoading()"
-      (onClick)="calcDialogOpen = false"
-    />
-    <p-button
-      icon="pi pi-play"
-      label="Queue calculation"
-      [loading]="actionLoading()"
-      (onClick)="triggerCalc()"
-    />
+    <p-button label="Cancel" severity="secondary" [outlined]="true" [disabled]="actionLoading()" (onClick)="calcDialogOpen = false" />
+    <p-button icon="pi pi-play" label="Queue calculation" [loading]="actionLoading()" (onClick)="triggerCalc()" />
   </ng-template>
 </p-dialog>
 
@@ -181,9 +159,7 @@
   header="BBF Rating Sync"
 >
   <div class="flex flex-col gap-4 pt-2">
-    <p class="text-surface-500 text-sm m-0">
-      Sync BBF rating data from the external API. Leave empty to sync from the last known publication.
-    </p>
+    <p class="text-surface-500 text-sm m-0">Sync BBF rating data from the external API. Leave empty to sync from the last known publication.</p>
 
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium">From date (optional)</label>
@@ -199,18 +175,7 @@
   </div>
 
   <ng-template pTemplate="footer">
-    <p-button
-      label="Cancel"
-      severity="secondary"
-      [outlined]="true"
-      [disabled]="actionLoading()"
-      (onClick)="rankingSyncDialogOpen = false"
-    />
-    <p-button
-      icon="pi pi-sync"
-      label="Start sync"
-      [loading]="actionLoading()"
-      (onClick)="triggerRankingSync()"
-    />
+    <p-button label="Cancel" severity="secondary" [outlined]="true" [disabled]="actionLoading()" (onClick)="rankingSyncDialogOpen = false" />
+    <p-button icon="pi pi-sync" label="Start sync" [loading]="actionLoading()" (onClick)="triggerRankingSync()" />
   </ng-template>
 </p-dialog>

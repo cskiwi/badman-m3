@@ -9,27 +9,22 @@ export const appRoutes: Route[] = [
 
   {
     path: 'players',
-    loadChildren: () =>
-      import('@app/frontend-pages-player').then((m) => m.routes),
+    loadChildren: () => import('@app/frontend-pages-player').then((m) => m.routes),
   },
   {
     path: 'clubs',
-    loadChildren: () =>
-      import('@app/frontend-pages-club').then((m) => m.routes),
+    loadChildren: () => import('@app/frontend-pages-club').then((m) => m.routes),
   },
   {
     path: 'competition',
-    loadChildren: () =>
-      import('@app/frontend-pages-competition').then((m) => m.routes),
+    loadChildren: () => import('@app/frontend-pages-competition').then((m) => m.routes),
   },
   {
     path: 'tournament',
-    loadChildren: () =>
-      import('@app/frontend-pages-tournament').then((m) => m.routes),
+    loadChildren: () => import('@app/frontend-pages-tournament').then((m) => m.routes),
   },
   {
     path: 'admin',
-    loadChildren: () =>
-      import('@app/frontend-pages-admin').then((m) => m.adminRoutes),
+    loadChildren: () => import('@app/frontend-pages-admin').then((m) => m.adminRoutes),
   },
 ];

@@ -150,7 +150,7 @@ import { EnrollmentService } from './services/tournament/enrollment.service';
     EnrollmentService,
     EnrollmentCartService,
     EnrollmentValidationService,
-    EnrollmentCapacityService, 
+    EnrollmentCapacityService,
     GroupSubeventMembershipResolver,
     LocationEventMembershipResolver,
     PlayerPermissionsResolver,

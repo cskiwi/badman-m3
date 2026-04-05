@@ -140,13 +140,7 @@ export class PageEnrollmentComponent {
 
     const { guestName, guestEmail, guestPhone, preferredPartner, notes } = this.guestForm.value;
 
-    const result = await this.dataService.enrollGuest(
-      guestName!,
-      guestEmail!,
-      guestPhone || undefined,
-      preferredPartner?.id,
-      notes || undefined,
-    );
+    const result = await this.dataService.enrollGuest(guestName!, guestEmail!, guestPhone || undefined, preferredPartner?.id, notes || undefined);
 
     if (result) {
       this.showGuestDialog.set(false);

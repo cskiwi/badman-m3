@@ -35,9 +35,7 @@ export class TeamCardService {
           this.apollo.query<{ competitionEncounters: EncounterWithGames[] }>({
             query: gql`
               query TeamGameStats($teamId: String!) {
-                competitionEncounters(
-                  args: { where: [{ OR: [{ homeTeamId: { eq: $teamId } }, { awayTeamId: { eq: $teamId } }] }] }
-                ) {
+                competitionEncounters(args: { where: [{ OR: [{ homeTeamId: { eq: $teamId } }, { awayTeamId: { eq: $teamId } }] }] }) {
                   id
                   homeTeam {
                     id
@@ -65,10 +63,10 @@ export class TeamCardService {
         let gamesWon = 0;
         let gamesLost = 0;
 
-        encounters.forEach(encounter => {
+        encounters.forEach((encounter) => {
           const isHomeTeam = encounter.homeTeam?.id === params.teamId;
 
-          encounter.games?.forEach(game => {
+          encounter.games?.forEach((game) => {
             // Only count games with valid winner: 1 = home team won, 2 = away team won
             // winner 0 = not determined, winner 3 = draw/special case
             if (game.winner === 1 || game.winner === 2) {

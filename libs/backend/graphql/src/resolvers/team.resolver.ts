@@ -99,33 +99,32 @@ export class TeamResolver {
     return Club.findOne(args);
   }
 
-
   @ResolveField(() => [Entry], { nullable: true })
-    async entries(
-      @Parent() { id }: Team,
-      @Args('args', {
-        type: () => EntryArgs,
-        nullable: true,
-      })
-      inputArgs?: InstanceType<typeof EntryArgs>,
-    ): Promise<Entry[]> {
-      const args = EntryArgs.toFindManyOptions(inputArgs);
-  
-      if (args.where?.length > 0) {
-        args.where = args.where.map((where) => ({
-          ...where,
+  async entries(
+    @Parent() { id }: Team,
+    @Args('args', {
+      type: () => EntryArgs,
+      nullable: true,
+    })
+    inputArgs?: InstanceType<typeof EntryArgs>,
+  ): Promise<Entry[]> {
+    const args = EntryArgs.toFindManyOptions(inputArgs);
+
+    if (args.where?.length > 0) {
+      args.where = args.where.map((where) => ({
+        ...where,
+        teamId: id,
+      }));
+    } else {
+      args.where = [
+        {
           teamId: id,
-        }));
-      } else {
-        args.where = [
-          {
-            teamId: id,
-          },
-        ];
-      }
-  
-      return Entry.find(args);
+        },
+      ];
     }
+
+    return Entry.find(args);
+  }
 
   @ResolveField(() => Player, { nullable: true })
   async captain(@Parent() { captainId }: Team) {
@@ -218,11 +217,7 @@ export class TeamResolver {
 
     // Check authorization
     const team = await Team.findOne({ where: { id: membership.teamId } });
-    const canEditTeam = user.hasAnyPermission([
-      'edit-any:team',
-      'edit-any:club',
-      ...(team?.clubId ? [`${team.clubId}_edit:club`] : []),
-    ]);
+    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club', ...(team?.clubId ? [`${team.clubId}_edit:club`] : [])]);
     if (!canEditTeam) {
       throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
@@ -258,11 +253,7 @@ export class TeamResolver {
     }
 
     // Check authorization
-    const canEditTeam = user.hasAnyPermission([
-      'edit-any:team',
-      'edit-any:club',
-      ...(team.clubId ? [`${team.clubId}_edit:club`] : []),
-    ]);
+    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club', ...(team.clubId ? [`${team.clubId}_edit:club`] : [])]);
     if (!canEditTeam) {
       throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
@@ -298,10 +289,7 @@ export class TeamResolver {
 
   @Mutation(() => Boolean)
   @UseGuards(PermGuard)
-  async removeTeamPlayerMembership(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<boolean> {
+  async removeTeamPlayerMembership(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<boolean> {
     const membership = await TeamPlayerMembership.findOne({
       where: { id },
     });
@@ -312,11 +300,7 @@ export class TeamResolver {
 
     // Check authorization
     const team = await Team.findOne({ where: { id: membership.teamId } });
-    const canEditTeam = user.hasAnyPermission([
-      'edit-any:team',
-      'edit-any:club',
-      ...(team?.clubId ? [`${team.clubId}_edit:club`] : []),
-    ]);
+    const canEditTeam = user.hasAnyPermission(['edit-any:team', 'edit-any:club', ...(team?.clubId ? [`${team.clubId}_edit:club`] : [])]);
     if (!canEditTeam) {
       throw new UnauthorizedException('You do not have permission to modify team memberships');
     }
@@ -428,7 +412,7 @@ export class TeamResolver {
       const newPlayer = new Player();
       newPlayer.firstName = firstName;
       newPlayer.lastName = lastName;
-      newPlayer.gender = (input.gender === 'M' || input.gender === 'F') ? input.gender : undefined;
+      newPlayer.gender = input.gender === 'M' || input.gender === 'F' ? input.gender : undefined;
       newPlayer.slug = this.generatePlayerSlug(firstName, lastName);
       newPlayer.competitionPlayer = true;
       await newPlayer.save();

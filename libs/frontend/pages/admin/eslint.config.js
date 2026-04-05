@@ -53,14 +53,7 @@ module.exports = [
       '@nx/dependency-checks': [
         'error',
         {
-          ignoredDependencies: [
-            '@angular/core',
-            '@angular/router',
-            '@angular/forms',
-            '@ngx-translate/core',
-            'ngxtension',
-            'primeng'
-          ],
+          ignoredDependencies: ['@angular/core', '@angular/router', '@angular/forms', '@ngx-translate/core', 'ngxtension', 'primeng'],
         },
       ],
     },

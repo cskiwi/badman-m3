@@ -1,13 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { LessThan, In } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  EnrollmentSession,
-  EnrollmentSessionItem,
-  EnrollmentSessionStatus,
-  ItemValidationStatus,
-  TournamentSubEvent,
-} from '@app/models';
+import { EnrollmentSession, EnrollmentSessionItem, EnrollmentSessionStatus, ItemValidationStatus, TournamentSubEvent } from '@app/models';
 
 export interface CartItemInput {
   subEventId: string;
@@ -25,11 +19,7 @@ export class EnrollmentCartService {
   /**
    * Find or create an active enrollment cart for a user
    */
-  async findOrCreateCart(
-    tournamentId: string,
-    playerId?: string,
-    sessionKey?: string,
-  ): Promise<EnrollmentSession> {
+  async findOrCreateCart(tournamentId: string, playerId?: string, sessionKey?: string): Promise<EnrollmentSession> {
     // Try to find existing active cart
     const whereClause: any = {
       tournamentEventId: tournamentId,
@@ -82,14 +72,10 @@ export class EnrollmentCartService {
       where: { sessionId: cart.id },
     });
 
-    const existingSubEventIds = new Set(
-      existingItems.map((item) => item.tournamentSubEventId),
-    );
+    const existingSubEventIds = new Set(existingItems.map((item) => item.tournamentSubEventId));
 
     // Filter out items already in cart
-    const newItems = items.filter(
-      (item) => !existingSubEventIds.has(item.subEventId),
-    );
+    const newItems = items.filter((item) => !existingSubEventIds.has(item.subEventId));
 
     if (newItems.length === 0) {
       return cart;
@@ -133,10 +119,7 @@ export class EnrollmentCartService {
   /**
    * Remove items from cart
    */
-  async removeFromCart(
-    cartId: string,
-    subEventIds: string[],
-  ): Promise<EnrollmentSession> {
+  async removeFromCart(cartId: string, subEventIds: string[]): Promise<EnrollmentSession> {
     const cart = await EnrollmentSession.findOne({
       where: { id: cartId },
     });
@@ -220,11 +203,7 @@ export class EnrollmentCartService {
   /**
    * Get cart by session key or player ID
    */
-  async getCartByIdentifier(
-    tournamentId: string,
-    playerId?: string,
-    sessionKey?: string,
-  ): Promise<EnrollmentSession | null> {
+  async getCartByIdentifier(tournamentId: string, playerId?: string, sessionKey?: string): Promise<EnrollmentSession | null> {
     const whereClause: any = {
       tournamentEventId: tournamentId,
       status: EnrollmentSessionStatus.PENDING,
@@ -281,11 +260,7 @@ export class EnrollmentCartService {
   /**
    * Update cart item validation status
    */
-  async updateItemValidation(
-    itemId: string,
-    validationStatus: ItemValidationStatus,
-    validationErrors?: any,
-  ): Promise<void> {
+  async updateItemValidation(itemId: string, validationStatus: ItemValidationStatus, validationErrors?: any): Promise<void> {
     await EnrollmentSessionItem.update(itemId, {
       validationStatus,
       validationErrors: validationErrors ? JSON.stringify(validationErrors) : undefined,

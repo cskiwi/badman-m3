@@ -90,7 +90,7 @@ export class CompetitionEntrySyncService {
           if (staleEntries.some((e) => e.meta)) {
             throw new Error(`Attempting to remove entries with meta data, aborting to prevent data loss`);
           }
-          
+
           await Entry.remove(staleEntries);
           this.logger.log(`Removed ${staleEntries.length} stale entries from draw ${drawCode}`);
         }
@@ -151,5 +151,4 @@ export class CompetitionEntrySyncService {
       this.logger.debug(`Created entry for team ${team.name} in draw ${draw.id}`);
     }
   }
-
 }

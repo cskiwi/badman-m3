@@ -1,7 +1,9 @@
 <div class="border-surface rounded-border border">
   <div class="flex items-center justify-between bg-highlight p-2">
     @if (clubId()) {
-      <a [routerLink]="['/clubs', clubId(), 'teams', team().id]" class="font-semibold text-primary my-2 no-underline hover:underline">{{ team().name }}</a>
+      <a [routerLink]="['/clubs', clubId(), 'teams', team().id]" class="font-semibold text-primary my-2 no-underline hover:underline">{{
+        team().name
+      }}</a>
     } @else {
       <span class="font-semibold text-primary my-2">{{ team().name }}</span>
     }
@@ -94,6 +96,5 @@
         </div>
       }
     }
-
   </div>
 </div>

@@ -33,10 +33,7 @@ export class RankingPlaceResolver {
 
   @Mutation(() => RankingPlace)
   @UseGuards(PermGuard)
-  async newRankingPlace(
-    @User() user: Player,
-    @Args('data') data: RankingPlaceNewInput,
-  ): Promise<RankingPlace> {
+  async newRankingPlace(@User() user: Player, @Args('data') data: RankingPlaceNewInput): Promise<RankingPlace> {
     if (!(await user.hasAnyPermission(['edit-any:ranking', `${data.playerId}_edit:ranking`]))) {
       throw new ForbiddenException('You do not have permission to create ranking places');
     }
@@ -50,10 +47,7 @@ export class RankingPlaceResolver {
 
   @Mutation(() => RankingPlace)
   @UseGuards(PermGuard)
-  async updateRankingPlace(
-    @User() user: Player,
-    @Args('data') data: RankingPlaceUpdateInput,
-  ): Promise<RankingPlace> {
+  async updateRankingPlace(@User() user: Player, @Args('data') data: RankingPlaceUpdateInput): Promise<RankingPlace> {
     const place = await RankingPlace.findOne({ where: { id: data.id } });
     if (!place) {
       throw new NotFoundException(`RankingPlace with id ${data.id} not found`);
@@ -69,10 +63,7 @@ export class RankingPlaceResolver {
 
   @Mutation(() => Boolean)
   @UseGuards(PermGuard)
-  async removeRankingPlace(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<boolean> {
+  async removeRankingPlace(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<boolean> {
     const place = await RankingPlace.findOne({ where: { id } });
     if (!place) {
       throw new NotFoundException(`RankingPlace with id ${id} not found`);

@@ -1,12 +1,7 @@
 import { PermGuard, User } from '@app/backend-authorization';
 import { TournamentDraw, TournamentSubEvent, Game, Entry, TournamentEnrollment, Player } from '@app/models';
 import { EnrollmentStatus, GameType } from '@app/models-enum';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-  UseGuards,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { TournamentDrawArgs, GameArgs, EntryArgs } from '../../../args';
 import {
@@ -53,10 +48,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => TournamentDraw, { description: 'Create a new tournament draw' })
   @UseGuards(PermGuard)
-  async createTournamentDraw(
-    @User() user: Player,
-    @Args('input') input: CreateTournamentDrawInput,
-  ): Promise<TournamentDraw> {
+  async createTournamentDraw(@User() user: Player, @Args('input') input: CreateTournamentDrawInput): Promise<TournamentDraw> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to create draws');
@@ -115,10 +107,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => Boolean, { description: 'Delete a tournament draw' })
   @UseGuards(PermGuard)
-  async deleteTournamentDraw(
-    @User() user: Player,
-    @Args('drawId', { type: () => ID }) drawId: string,
-  ): Promise<boolean> {
+  async deleteTournamentDraw(@User() user: Player, @Args('drawId', { type: () => ID }) drawId: string): Promise<boolean> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to delete draws');
@@ -153,10 +142,7 @@ export class TournamentDrawResolver {
     description: 'Generate entries from confirmed enrollments for a sub-event',
   })
   @UseGuards(PermGuard)
-  async generateEntriesFromEnrollments(
-    @User() user: Player,
-    @Args('input') input: GenerateEntriesFromEnrollmentsInput,
-  ): Promise<Entry[]> {
+  async generateEntriesFromEnrollments(@User() user: Player, @Args('input') input: GenerateEntriesFromEnrollmentsInput): Promise<Entry[]> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to generate entries');
@@ -177,9 +163,7 @@ export class TournamentDrawResolver {
     });
 
     if (existingEntries.length > 0 && !input.force) {
-      throw new BadRequestException(
-        'Entries already exist for this sub-event. Use force=true to regenerate.',
-      );
+      throw new BadRequestException('Entries already exist for this sub-event. Use force=true to regenerate.');
     }
 
     // If force, remove existing entries that were created from enrollments
@@ -252,10 +236,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => Entry, { description: 'Assign an entry to a draw' })
   @UseGuards(PermGuard)
-  async assignEntryToDraw(
-    @User() user: Player,
-    @Args('input') input: AssignEntryToDrawInput,
-  ): Promise<Entry> {
+  async assignEntryToDraw(@User() user: Player, @Args('input') input: AssignEntryToDrawInput): Promise<Entry> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to assign entries');
@@ -290,10 +271,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => [Entry], { description: 'Assign multiple entries to a draw' })
   @UseGuards(PermGuard)
-  async assignEntriesToDraw(
-    @User() user: Player,
-    @Args('input') input: AssignEntriesToDrawInput,
-  ): Promise<Entry[]> {
+  async assignEntriesToDraw(@User() user: Player, @Args('input') input: AssignEntriesToDrawInput): Promise<Entry[]> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to assign entries');
@@ -320,9 +298,7 @@ export class TournamentDrawResolver {
 
       // Verify entry belongs to same sub-event as draw
       if (entry.subEventId !== draw.subeventId) {
-        throw new BadRequestException(
-          `Entry ${entryId} and draw belong to different sub-events`,
-        );
+        throw new BadRequestException(`Entry ${entryId} and draw belong to different sub-events`);
       }
 
       entry.drawId = input.drawId;
@@ -335,10 +311,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => Entry, { description: 'Remove an entry from its draw' })
   @UseGuards(PermGuard)
-  async removeEntryFromDraw(
-    @User() user: Player,
-    @Args('input') input: RemoveEntryFromDrawInput,
-  ): Promise<Entry> {
+  async removeEntryFromDraw(@User() user: Player, @Args('input') input: RemoveEntryFromDrawInput): Promise<Entry> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to remove entries from draws');
@@ -361,10 +334,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => Entry, { description: 'Set the seed for an entry' })
   @UseGuards(PermGuard)
-  async setEntrySeed(
-    @User() user: Player,
-    @Args('input') input: SetEntrySeedInput,
-  ): Promise<Entry> {
+  async setEntrySeed(@User() user: Player, @Args('input') input: SetEntrySeedInput): Promise<Entry> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to set seeds');
@@ -406,10 +376,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => [Entry], { description: 'Auto-seed entries in a draw based on method' })
   @UseGuards(PermGuard)
-  async autoSeedDraw(
-    @User() user: Player,
-    @Args('input') input: AutoSeedDrawInput,
-  ): Promise<Entry[]> {
+  async autoSeedDraw(@User() user: Player, @Args('input') input: AutoSeedDrawInput): Promise<Entry[]> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to auto-seed');
@@ -471,10 +438,7 @@ export class TournamentDrawResolver {
 
   @Mutation(() => [Entry], { description: 'Clear all seeds from entries in a draw' })
   @UseGuards(PermGuard)
-  async clearDrawSeeds(
-    @User() user: Player,
-    @Args('drawId', { type: () => ID }) drawId: string,
-  ): Promise<Entry[]> {
+  async clearDrawSeeds(@User() user: Player, @Args('drawId', { type: () => ID }) drawId: string): Promise<Entry[]> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to clear seeds');
@@ -585,12 +549,8 @@ export class TournamentDrawResolver {
     // Load player data for all entries
     const entriesWithPlayers = await Promise.all(
       entries.map(async (entry) => {
-        const player1 = entry.player1Id
-          ? await Player.findOne({ where: { id: entry.player1Id } })
-          : null;
-        const player2 = entry.player2Id
-          ? await Player.findOne({ where: { id: entry.player2Id } })
-          : null;
+        const player1 = entry.player1Id ? await Player.findOne({ where: { id: entry.player1Id } }) : null;
+        const player2 = entry.player2Id ? await Player.findOne({ where: { id: entry.player2Id } }) : null;
 
         // For doubles, use combined/average ranking
         // For singles, use player1 ranking

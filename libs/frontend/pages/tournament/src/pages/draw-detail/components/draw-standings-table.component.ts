@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-draw-standings-table',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './draw-standings-table.component.html'
+  templateUrl: './draw-standings-table.component.html',
 })
 export class DrawStandingsTableComponent {
   standings = input.required<any[]>();

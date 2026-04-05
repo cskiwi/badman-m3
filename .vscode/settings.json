@@ -1,12 +1,6 @@
 {
-  "exportall.config.folderListener": [
-    "/libs/models/src/models",
-    "/libs/models/src/models/ranking",
-    "/libs/models/src/enums"
-  ],
-  "eslint.validate": [
-    "json"
-  ],
+  "exportall.config.folderListener": ["/libs/models/src/models", "/libs/models/src/models/ranking", "/libs/models/src/enums"],
+  "eslint.validate": ["json"],
   "nxConsole.generateAiAgentRules": true,
   "angular.enable-strict-mode-prompt": false,
   "angular.experimental-ivy": true,

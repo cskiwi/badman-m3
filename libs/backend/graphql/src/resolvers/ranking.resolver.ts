@@ -118,4 +118,3 @@ export class RankingSystemResolver {
     return RankingLastPlace.find(args);
   }
 }
-

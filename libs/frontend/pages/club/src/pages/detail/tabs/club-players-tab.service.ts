@@ -67,8 +67,8 @@ export class ClubPlayersTabService {
     const teams = this.teamsResource.value() || [];
     const playersMap = new Map<string, Player>();
 
-    teams.forEach(team => {
-      team.teamPlayerMemberships?.forEach(membership => {
+    teams.forEach((team) => {
+      team.teamPlayerMemberships?.forEach((membership) => {
         if (membership.player) {
           const playerId = membership.player.id;
           if (!playersMap.has(playerId)) {
@@ -80,9 +80,7 @@ export class ClubPlayersTabService {
       });
     });
 
-    return [...playersMap.values()].sort((a, b) =>
-      (a.fullName || '').localeCompare(b.fullName || ''),
-    );
+    return [...playersMap.values()].sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
   });
 
   // Available teams for the filter bar
@@ -106,4 +104,3 @@ export class ClubPlayersTabService {
     return err.statusText || 'An error occurred';
   }
 }
-

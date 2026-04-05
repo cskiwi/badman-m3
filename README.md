@@ -27,7 +27,7 @@ The directory structure of this Nx monorepo is organized as follows:
 
 ### Libsf
 
-- **libs/backend/_shared**: This directory contains the entry point for the backend services. It includes necessary configurations and files to initialize and run the backend application.
+- **libs/backend/\_shared**: This directory contains the entry point for the backend services. It includes necessary configurations and files to initialize and run the backend application.
 - **libs/frontend/root**: This directory contains the entry point for the frontend services. It includes necessary configurations and files to initialize and run the frontend application.
 
 ## Getting Started
@@ -100,10 +100,12 @@ nx e2e app-e2e
 ```
 
 ## For blogs and documentation sites
+
 You can enable SSG then because there is no login or dynamic content, you can build the site and serve it statically.
 To do this, follow the steps below:
 
 1. Add prerender to `apps/app/project.json`
+
 ```json
 "prerender": {
    "routesFile": "routes.txt"

@@ -1,6 +1,6 @@
 ---
 description: Implements Angular features following modern Angular 20+ patterns with PrimeNG and TypeScript best practices.
-name: "Angular Expert"
+name: 'Angular Expert'
 tools: [execute, read, edit, search, 'primeng/*']
 ---
 
@@ -30,11 +30,11 @@ You are an Angular implementer specialized in building features with Angular 20+
 
 3. **Consult Domain Knowledge**
    - **Reference the [angular-development](../skills/angular-development/SKILL.md) skill** for:
-      - PrimeNG component integration and discovery
-      - Angular patterns and best practices
-      - Form handling patterns
-      - State management with signals
-      - Service layer patterns
+     - PrimeNG component integration and discovery
+     - Angular patterns and best practices
+     - Form handling patterns
+     - State management with signals
+     - Service layer patterns
 
 4. **Implement**
    - Create standalone components with external templates (`templateUrl`)

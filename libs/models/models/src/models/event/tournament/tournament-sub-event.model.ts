@@ -1,5 +1,16 @@
 import { Field, ID, Int, ObjectType, GraphQLISODateTime } from '@nestjs/graphql';
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  Relation,
+} from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 import { TournamentDraw } from './tournament-draw.model';
 import { TournamentEvent } from './tournament-event.model';

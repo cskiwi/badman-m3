@@ -1,35 +1,10 @@
 import { PermGuard, User } from '@app/backend-authorization';
-import {
-  Game,
-  Court,
-  TournamentScheduleSlot,
-  Player,
-} from '@app/models';
+import { Game, Court, TournamentScheduleSlot, Player } from '@app/models';
 import { ScheduleSlotStatus } from '@app/models-enum';
 import { TournamentLiveGateway } from '@app/backend-sync';
-import {
-  BadRequestException,
-  ForbiddenException,
-  Inject,
-  NotFoundException,
-  Optional,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  Args,
-  ID,
-  Int,
-  Mutation,
-  ObjectType,
-  Field,
-  Query,
-  Resolver,
-} from '@nestjs/graphql';
-import {
-  StartGameInput,
-  GameUpdateInput,
-  AssignNextGameInput,
-} from '../../../inputs';
+import { BadRequestException, ForbiddenException, Inject, NotFoundException, Optional, UseGuards } from '@nestjs/common';
+import { Args, ID, Int, Mutation, ObjectType, Field, Query, Resolver } from '@nestjs/graphql';
+import { StartGameInput, GameUpdateInput, AssignNextGameInput } from '../../../inputs';
 import { In, IsNull, Not } from 'typeorm';
 
 // Result types
@@ -80,16 +55,12 @@ class RecentGameResult {
 
 @Resolver()
 export class TournamentCourtResolver {
-  constructor(
-    @Optional() @Inject(TournamentLiveGateway) private readonly liveGateway?: TournamentLiveGateway,
-  ) {}
+  constructor(@Optional() @Inject(TournamentLiveGateway) private readonly liveGateway?: TournamentLiveGateway) {}
 
   // ============ QUERIES ============
 
   @Query(() => TournamentCourtOverview, { description: 'Get overview of all courts for a tournament' })
-  async tournamentCourtOverview(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<TournamentCourtOverview> {
+  async tournamentCourtOverview(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<TournamentCourtOverview> {
     // Get all schedule slots for this tournament
     const slots = await TournamentScheduleSlot.find({
       where: { tournamentEventId },
@@ -255,9 +226,7 @@ export class TournamentCourtResolver {
   }
 
   @Query(() => [Game], { description: 'Get currently playing games' })
-  async nowPlayingGames(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<Game[]> {
+  async nowPlayingGames(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<Game[]> {
     const inProgressSlots = await TournamentScheduleSlot.find({
       where: {
         tournamentEventId,
@@ -283,10 +252,7 @@ export class TournamentCourtResolver {
 
   @Mutation(() => Game, { description: 'Start a game' })
   @UseGuards(PermGuard)
-  async startGame(
-    @User() user: Player,
-    @Args('input') input: StartGameInput,
-  ): Promise<Game> {
+  async startGame(@User() user: Player, @Args('input') input: StartGameInput): Promise<Game> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to start games');
@@ -359,11 +325,7 @@ export class TournamentCourtResolver {
 
   @Mutation(() => Game, { description: 'Update a game (scores, court, winner)' })
   @UseGuards(PermGuard)
-  async updateGame(
-    @User() user: Player,
-    @Args('gameId', { type: () => ID }) gameId: string,
-    @Args('input') input: GameUpdateInput,
-  ): Promise<Game> {
+  async updateGame(@User() user: Player, @Args('gameId', { type: () => ID }) gameId: string, @Args('input') input: GameUpdateInput): Promise<Game> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to update games');
@@ -489,10 +451,7 @@ export class TournamentCourtResolver {
 
   @Mutation(() => Game, { nullable: true, description: 'Assign the next scheduled game to a court' })
   @UseGuards(PermGuard)
-  async assignNextGame(
-    @User() user: Player,
-    @Args('input') input: AssignNextGameInput,
-  ): Promise<Game | null> {
+  async assignNextGame(@User() user: Player, @Args('input') input: AssignNextGameInput): Promise<Game | null> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to assign games');
@@ -568,10 +527,7 @@ export class TournamentCourtResolver {
 
   @Mutation(() => Game, { description: 'Cancel a game in progress (reset to scheduled)' })
   @UseGuards(PermGuard)
-  async cancelGameInProgress(
-    @User() user: Player,
-    @Args('gameId', { type: () => ID }) gameId: string,
-  ): Promise<Game> {
+  async cancelGameInProgress(@User() user: Player, @Args('gameId', { type: () => ID }) gameId: string): Promise<Game> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to cancel games');

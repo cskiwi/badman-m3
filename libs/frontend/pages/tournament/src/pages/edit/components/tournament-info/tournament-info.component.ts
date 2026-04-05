@@ -32,15 +32,7 @@ const UPDATE_TOURNAMENT_INFO = gql`
 @Component({
   selector: 'app-tournament-info',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    ButtonModule,
-    InputTextModule,
-    DatePickerModule,
-    MessageModule,
-    ProgressBarModule,
-    TranslateModule,
-  ],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, DatePickerModule, MessageModule, ProgressBarModule, TranslateModule],
   templateUrl: './tournament-info.component.html',
 })
 export class TournamentInfoComponent {
@@ -98,10 +90,7 @@ export class TournamentInfoComponent {
 
   canEditTournament(): boolean {
     const tournament = this.tournament();
-    return this.authService.hasAnyPermission([
-      'edit-any:tournament',
-      `${tournament?.id}_edit:tournament`,
-    ]);
+    return this.authService.hasAnyPermission(['edit-any:tournament', `${tournament?.id}_edit:tournament`]);
   }
 
   async saveInfo(): Promise<void> {

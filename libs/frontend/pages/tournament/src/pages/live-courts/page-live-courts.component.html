@@ -35,12 +35,14 @@
 
   <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
     @for (court of courts(); track court.courtId) {
-      <div class="border-l-4 rounded-border overflow-hidden"
-           [ngClass]="{
-             'border-green-500': court.status === 'in_progress',
-             'border-blue-500': court.status === 'available',
-             'border-orange-500': court.status === 'blocked'
-           }">
+      <div
+        class="border-l-4 rounded-border overflow-hidden"
+        [ngClass]="{
+          'border-green-500': court.status === 'in_progress',
+          'border-blue-500': court.status === 'available',
+          'border-orange-500': court.status === 'blocked',
+        }"
+      >
         <p-card>
           <ng-template #header>
             <div class="flex justify-between items-center p-3 bg-surface-100">
@@ -91,7 +93,7 @@
 
               @if (game.startTime) {
                 <div class="text-center text-muted-color text-sm">
-                  <span>{{ 'all.tournament.live.startedAt' | translate }}: {{ game.startTime | date:'HH:mm' }}</span>
+                  <span>{{ 'all.tournament.live.startedAt' | translate }}: {{ game.startTime | date: 'HH:mm' }}</span>
                 </div>
               }
             </div>

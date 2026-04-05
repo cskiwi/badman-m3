@@ -7,10 +7,7 @@ import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { ProgressBar } from 'primeng/progressbar';
-import {
-  TeamBuilderPlayer,
-  TeamBuilderTeam,
-} from '../../pages/detail/tabs/team-builder/types/team-builder.types';
+import { TeamBuilderPlayer, TeamBuilderTeam } from '../../pages/detail/tabs/team-builder/types/team-builder.types';
 import { getPlayerContribution } from '../../pages/detail/tabs/team-builder/utils/team-index-calculator';
 import { PlayerChipComponent } from './player-chip.component';
 

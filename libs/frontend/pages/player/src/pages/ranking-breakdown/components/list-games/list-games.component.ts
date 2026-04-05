@@ -552,7 +552,7 @@ export class ListGamesComponent {
       linkType: 'simulated',
       winner: won ? 1 : 2,
       gameType: enumGameType,
-      gamePlayerMemberships: [teamMember as GamePlayerMembership, ...opponentMembers as GamePlayerMembership[]],
+      gamePlayerMemberships: [teamMember as GamePlayerMembership, ...(opponentMembers as GamePlayerMembership[])],
       rankingPoints: [rankingPoint as RankingPoint],
       points,
       type,
@@ -574,8 +574,6 @@ export class ListGamesComponent {
   removeSimulatedGame(game: GameBreakdown) {
     this.simulatedGames.update((games) => games.filter((g) => g.id !== game.id));
   }
-
-
 
   private _determineUsedForRanking(games: GameBreakdown[], latestXOverrides: Map<string, boolean>) {
     const sys = this.system();

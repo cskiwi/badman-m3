@@ -19,7 +19,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { BadgeModule } from 'primeng/badge';
 import { DividerModule } from 'primeng/divider';
 
-
 @Component({
   selector: 'app-page-overview',
   imports: [
@@ -41,8 +40,8 @@ import { DividerModule } from 'primeng/divider';
     SkeletonModule,
     BadgeModule,
     DividerModule,
-    PageHeaderComponent
-],
+    PageHeaderComponent,
+  ],
   templateUrl: './page-overview.component.html',
   styleUrl: './page-overview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

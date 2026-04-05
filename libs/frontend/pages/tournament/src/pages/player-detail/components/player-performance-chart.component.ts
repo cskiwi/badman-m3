@@ -22,22 +22,16 @@ interface ChartTimeframe {
 
 @Component({
   selector: 'app-player-performance-chart',
-  imports: [
-    FormsModule,
-    TranslateModule,
-    CardModule,
-    ChartModule,
-    SelectModule,
-  ],
+  imports: [FormsModule, TranslateModule, CardModule, ChartModule, SelectModule],
   templateUrl: './player-performance-chart.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerPerformanceChartComponent implements OnInit {
   games = input.required<Game[]>();
   playerId = input.required<string>();
 
   selectedTimeframe: ChartTimeframe['value'] = 'last90';
-  
+
   timeframeOptions: ChartTimeframe[] = [
     { label: 'Last 30 Days', value: 'last30', days: 30 },
     { label: 'Last 90 Days', value: 'last90', days: 90 },
@@ -63,9 +57,9 @@ export class PlayerPerformanceChartComponent implements OnInit {
               return `${label}: ${value.toFixed(1)}%`;
             }
             return `${label}: ${value}`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     responsive: true,
     maintainAspectRatio: false,
@@ -74,11 +68,11 @@ export class PlayerPerformanceChartComponent implements OnInit {
         display: true,
         title: {
           display: true,
-          text: 'Date'
+          text: 'Date',
         },
         grid: {
-          display: false
-        }
+          display: false,
+        },
       },
       y: {
         type: 'linear' as const,
@@ -86,13 +80,13 @@ export class PlayerPerformanceChartComponent implements OnInit {
         position: 'left' as const,
         title: {
           display: true,
-          text: 'Win Rate (%)'
+          text: 'Win Rate (%)',
         },
         min: 0,
         max: 100,
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)'
-        }
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
       },
       y1: {
         type: 'linear' as const,
@@ -100,52 +94,48 @@ export class PlayerPerformanceChartComponent implements OnInit {
         position: 'right' as const,
         title: {
           display: true,
-          text: 'Games Played'
+          text: 'Games Played',
         },
         min: 0,
         grid: {
           drawOnChartArea: false,
         },
-      }
+      },
     },
     interaction: {
       mode: 'nearest' as const,
       axis: 'x' as const,
-      intersect: false
+      intersect: false,
     },
     elements: {
       point: {
         radius: 4,
-        hoverRadius: 6
+        hoverRadius: 6,
       },
       line: {
-        tension: 0.1
-      }
-    }
+        tension: 0.1,
+      },
+    },
   };
 
   // Computed data
   filteredGames = computed(() => {
-    const games = this.games().filter(game => 
-      game.status === 'NORMAL' && game.playedAt
-    );
-    
+    const games = this.games().filter((game) => game.status === 'NORMAL' && game.playedAt);
+
     const timeframe = this.selectedTimeframe;
     if (timeframe === 'all') {
       return games;
     }
-    
-    const selectedOption = this.timeframeOptions.find(opt => opt.value === timeframe);
+
+    const selectedOption = this.timeframeOptions.find((opt) => opt.value === timeframe);
     if (!selectedOption?.days) {
       return games;
     }
-    
+
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - selectedOption.days);
-    
-    return games.filter(game => 
-      new Date(game.playedAt!) >= cutoffDate
-    );
+
+    return games.filter((game) => new Date(game.playedAt!) >= cutoffDate);
   });
 
   performanceData = computed(() => {
@@ -156,35 +146,33 @@ export class PlayerPerformanceChartComponent implements OnInit {
 
     // Group games by week for better visualization
     const weeklyData = new Map<string, PerformanceDataPoint>();
-    
-    games.forEach(game => {
+
+    games.forEach((game) => {
       const gameDate = new Date(game.playedAt!);
       const weekStart = new Date(gameDate);
       weekStart.setDate(gameDate.getDate() - gameDate.getDay()); // Start of week
       const weekKey = weekStart.toISOString().split('T')[0];
-      
+
       if (!weeklyData.has(weekKey)) {
         weeklyData.set(weekKey, {
           date: weekKey,
           totalGames: 0,
           gamesWon: 0,
           gamesLost: 0,
-          winRate: 0
+          winRate: 0,
         });
       }
-      
+
       const weekData = weeklyData.get(weekKey)!;
       weekData.totalGames++;
-      
+
       if (this.isPlayerWinner(game)) {
         weekData.gamesWon++;
       } else {
         weekData.gamesLost++;
       }
-      
-      weekData.winRate = weekData.totalGames > 0 
-        ? (weekData.gamesWon / weekData.totalGames) * 100 
-        : 0;
+
+      weekData.winRate = weekData.totalGames > 0 ? (weekData.gamesWon / weekData.totalGames) * 100 : 0;
     });
 
     // Calculate cumulative win rate
@@ -193,12 +181,12 @@ export class PlayerPerformanceChartComponent implements OnInit {
 
     return Array.from(weeklyData.values())
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .map(week => {
+      .map((week) => {
         cumulativeGames += week.totalGames;
         cumulativeWins += week.gamesWon;
         return {
           ...week,
-          winRate: cumulativeGames > 0 ? (cumulativeWins / cumulativeGames) * 100 : 0
+          winRate: cumulativeGames > 0 ? (cumulativeWins / cumulativeGames) * 100 : 0,
         };
       });
   });
@@ -210,27 +198,27 @@ export class PlayerPerformanceChartComponent implements OnInit {
     }
 
     return {
-      labels: data.map(d => new Date(d.date).toLocaleDateString()),
+      labels: data.map((d) => new Date(d.date).toLocaleDateString()),
       datasets: [
         {
           label: 'Win Rate',
-          data: data.map(d => d.winRate),
+          data: data.map((d) => d.winRate),
           borderColor: 'rgb(34, 197, 94)',
           backgroundColor: 'rgba(34, 197, 94, 0.1)',
           yAxisID: 'y',
           fill: true,
-          tension: 0.1
+          tension: 0.1,
         },
         {
           label: 'Games per Week',
-          data: data.map(d => d.totalGames),
+          data: data.map((d) => d.totalGames),
           borderColor: 'rgb(59, 130, 246)',
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
           yAxisID: 'y1',
           type: 'bar' as const,
-          borderWidth: 1
-        }
-      ]
+          borderWidth: 1,
+        },
+      ],
     };
   });
 
@@ -238,7 +226,7 @@ export class PlayerPerformanceChartComponent implements OnInit {
   peakWinRate = computed(() => {
     const data = this.performanceData();
     if (data.length === 0) return 0;
-    return Math.max(...data.map(d => d.winRate)).toFixed(1);
+    return Math.max(...data.map((d) => d.winRate)).toFixed(1);
   });
 
   currentWinRate = computed(() => {
@@ -254,13 +242,13 @@ export class PlayerPerformanceChartComponent implements OnInit {
   trendDirection = computed(() => {
     const data = this.performanceData();
     if (data.length < 2) return 'stable';
-    
+
     const recent = data.slice(-3); // Last 3 data points
     if (recent.length < 2) return 'stable';
-    
+
     const firstRate = recent[0].winRate;
     const lastRate = recent[recent.length - 1].winRate;
-    
+
     if (lastRate > firstRate + 5) return 'up';
     if (lastRate < firstRate - 5) return 'down';
     return 'stable';
@@ -277,9 +265,7 @@ export class PlayerPerformanceChartComponent implements OnInit {
 
   private isPlayerWinner(game: Game): boolean {
     const playerId = this.playerId();
-    const membership = game.gamePlayerMemberships?.find(
-      gpm => gpm.gamePlayer.id === playerId
-    );
+    const membership = game.gamePlayerMemberships?.find((gpm) => gpm.gamePlayer.id === playerId);
     const playerTeam = membership ? membership.team : null;
     return playerTeam !== null && game.winner === playerTeam;
   }

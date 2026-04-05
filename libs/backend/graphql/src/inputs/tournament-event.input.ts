@@ -29,7 +29,4 @@ export class TournamentEventNewInput extends OmitType(
 }
 
 @InputType('TournamentEventUpdateInput')
-export class TournamentEventUpdateInput extends PartialType(
-  OmitType(TournamentEventNewInput, ['clubId'] as const, InputType),
-  InputType,
-) {}
+export class TournamentEventUpdateInput extends PartialType(OmitType(TournamentEventNewInput, ['clubId'] as const, InputType), InputType) {}

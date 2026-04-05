@@ -217,11 +217,7 @@ export class PageEditComponent {
     const datesComponent = this.datesComponent();
     const settingsComponent = this.settingsComponent();
 
-    return (
-      (infoComponent?.isDirty ?? false) ||
-      (datesComponent?.isDirty ?? false) ||
-      (settingsComponent?.isDirty ?? false)
-    );
+    return (infoComponent?.isDirty ?? false) || (datesComponent?.isDirty ?? false) || (settingsComponent?.isDirty ?? false);
   }
 
   onActiveIndexChange(event: any): void {

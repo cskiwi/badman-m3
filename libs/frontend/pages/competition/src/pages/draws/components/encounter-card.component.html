@@ -78,11 +78,7 @@
           <span class="font-bold tabular-nums">{{ encounter().homeScore }} - {{ encounter().awayScore }}</span>
         }
         @if (hasGames()) {
-          <i
-            class="pi text-muted-color transition-all duration-200"
-            [class.pi-chevron-down]="!expanded()"
-            [class.pi-chevron-up]="expanded()"
-          ></i>
+          <i class="pi text-muted-color transition-all duration-200" [class.pi-chevron-down]="!expanded()" [class.pi-chevron-up]="expanded()"></i>
         }
       </div>
     </div>
@@ -131,19 +127,22 @@
                     <span
                       [class.text-green-600]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
                       [class.font-bold]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
-                    >{{ game.set1Team1 }}</span>
+                      >{{ game.set1Team1 }}</span
+                    >
                   }
                   @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
                     <span
                       [class.text-green-600]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
                       [class.font-bold]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
-                    >{{ game.set2Team1 }}</span>
+                      >{{ game.set2Team1 }}</span
+                    >
                   }
                   @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
                     <span
                       [class.text-green-600]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
                       [class.font-bold]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
-                    >{{ game.set3Team1 }}</span>
+                      >{{ game.set3Team1 }}</span
+                    >
                   }
                 </div>
               </div>
@@ -170,19 +169,22 @@
                     <span
                       [class.text-green-600]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
                       [class.font-bold]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
-                    >{{ game.set1Team2 }}</span>
+                      >{{ game.set1Team2 }}</span
+                    >
                   }
                   @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
                     <span
                       [class.text-green-600]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
                       [class.font-bold]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
-                    >{{ game.set2Team2 }}</span>
+                      >{{ game.set2Team2 }}</span
+                    >
                   }
                   @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
                     <span
                       [class.text-green-600]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
                       [class.font-bold]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
-                    >{{ game.set3Team2 }}</span>
+                      >{{ game.set3Team2 }}</span
+                    >
                   }
                 </div>
               </div>

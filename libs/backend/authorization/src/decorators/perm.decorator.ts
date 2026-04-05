@@ -1,11 +1,5 @@
 import { Player } from '@app/models';
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -33,10 +27,7 @@ export class PermGuard implements CanActivate {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(
-      ALLOW_ANONYMOUS_META_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const isPublic = this.reflector.getAllAndOverride<boolean>(ALLOW_ANONYMOUS_META_KEY, [context.getHandler(), context.getClass()]);
     if (isPublic) {
       return true;
     }
@@ -67,7 +58,6 @@ export class PermGuard implements CanActivate {
     return type === 'Bearer' ? token : undefined;
   }
 
-
   async validateToken(token: string) {
     try {
       const decoded = this.jwtService.decode(token, { complete: true });
@@ -75,9 +65,7 @@ export class PermGuard implements CanActivate {
         throw new UnauthorizedException();
       }
 
-      const signingKey = await this.jwksClient.getSigningKey(
-        decoded.header.kid,
-      );
+      const signingKey = await this.jwksClient.getSigningKey(decoded.header.kid);
       const payload = this.jwtService.verify(token, {
         algorithms: ['RS256'],
         publicKey: signingKey.getPublicKey(),

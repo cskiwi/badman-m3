@@ -25,10 +25,7 @@
               <div class="flex items-center gap-2">
                 <i class="pi pi-user text-xs text-muted-color"></i>
                 <span class="font-medium">{{ 'all.team.captain-label' | translate }}:</span>
-                <a
-                  [routerLink]="['/players', team.captain.slug || team.captain.id]"
-                  class="no-underline hover:underline text-primary"
-                >
+                <a [routerLink]="['/players', team.captain.slug || team.captain.id]" class="no-underline hover:underline text-primary">
                   {{ team.captain.fullName }}
                 </a>
               </div>
@@ -69,9 +66,11 @@
                     <p-tag
                       [pTooltip]="'all.team.level-tooltip' | translate"
                       tooltipPosition="top"
-                      [value]="subEvent.level != null && subEvent.maxLevel != null
-                        ? subEvent.level + ' - ' + subEvent.maxLevel
-                        : '' + (subEvent.level ?? subEvent.maxLevel)"
+                      [value]="
+                        subEvent.level != null && subEvent.maxLevel != null
+                          ? subEvent.level + ' - ' + subEvent.maxLevel
+                          : '' + (subEvent.level ?? subEvent.maxLevel)
+                      "
                     />
                   }
                 </div>
@@ -82,23 +81,23 @@
       </section>
     </div>
 
-      <div class="px-4">
-    <!-- Players Section -->
-    @if (players().length > 0) {
-      <app-team-players-table
-        [players]="players()"
-        [playerStats]="playerStats()"
-        [onAddPlayerToTeam]="canEditClub() ? onAddPlayerToTeam : null"
-        [onRemovePlayerFromTeam]="canEditClub() ? onRemovePlayerFromTeam : null"
-      />
-    } @else {
+    <div class="px-4">
+      <!-- Players Section -->
+      @if (players().length > 0) {
+        <app-team-players-table
+          [players]="players()"
+          [playerStats]="playerStats()"
+          [onAddPlayerToTeam]="canEditClub() ? onAddPlayerToTeam : null"
+          [onRemovePlayerFromTeam]="canEditClub() ? onRemovePlayerFromTeam : null"
+        />
+      } @else {
         <div class="text-center py-12 text-surface-500">
           <i class="pi pi-users text-4xl mb-4 block"></i>
           <h3 class="text-lg font-medium mb-2">{{ 'all.team.no-players' | translate }}</h3>
           <p>{{ 'all.team.no-players-description' | translate }}</p>
         </div>
-    }
-      </div>
+      }
+    </div>
 
     <!-- Encounters Section -->
     <div class="px-4">

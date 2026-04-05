@@ -44,10 +44,7 @@ export class PointService {
     }
 
     // Ignore walkovers or games without scores
-    if (
-      game.status === GameStatus.WALKOVER ||
-      ((game.set1Team1 ?? null) === null && (game.set1Team2 ?? null) === null)
-    ) {
+    if (game.status === GameStatus.WALKOVER || ((game.set1Team1 ?? null) === null && (game.set1Team2 ?? null) === null)) {
       return [];
     }
 
@@ -64,13 +61,14 @@ export class PointService {
     const player1Team2 = players.find((p) => p.team === 2 && p.player === 1);
     const player2Team2 = players.find((p) => p.team === 2 && p.player === 2);
 
-    const {
-      player1Team1Points,
-      player2Team1Points,
-      player1Team2Points,
-      player2Team2Points,
-      differenceInLevel,
-    } = this.calculatePointsForGame(game, player1Team1, player1Team2, player2Team1, player2Team2, system);
+    const { player1Team1Points, player2Team1Points, player1Team2Points, player2Team2Points, differenceInLevel } = this.calculatePointsForGame(
+      game,
+      player1Team1,
+      player1Team2,
+      player2Team1,
+      player2Team2,
+      system,
+    );
 
     // Create ranking points for each player
     this.addRankingPoint(rankings, player1Team1, player1Team1Points, system, game, differenceInLevel);
@@ -88,11 +86,7 @@ export class PointService {
   /**
    * Saves ranking points, updating existing ones or creating new ones
    */
-  private async saveRankingPoints(
-    rankings: RankingPoint[],
-    game: Game,
-    system: RankingSystem
-  ): Promise<void> {
+  private async saveRankingPoints(rankings: RankingPoint[], game: Game, system: RankingSystem): Promise<void> {
     const existingPoints = await RankingPoint.find({
       where: {
         gameId: game.id,
@@ -103,10 +97,7 @@ export class PointService {
     for (const ranking of rankings) {
       const existing = existingPoints.find((p) => p.playerId === ranking.playerId);
       if (existing) {
-        if (
-          existing.points !== ranking.points ||
-          existing.differenceInLevel !== ranking.differenceInLevel
-        ) {
+        if (existing.points !== ranking.points || existing.differenceInLevel !== ranking.differenceInLevel) {
           existing.points = ranking.points;
           existing.differenceInLevel = ranking.differenceInLevel;
           await existing.save();
@@ -140,7 +131,7 @@ export class PointService {
     points: number | null,
     system: RankingSystem,
     game: Game,
-    differenceInLevel: number
+    differenceInLevel: number,
   ): void {
     if (player?.playerId && points != null) {
       const rankingPoint = new RankingPoint();
@@ -163,7 +154,7 @@ export class PointService {
     player1Team2: GamePlayerInfo | undefined,
     player2Team1: GamePlayerInfo | undefined,
     player2Team2: GamePlayerInfo | undefined,
-    system: RankingSystem
+    system: RankingSystem,
   ): PointCalculationResult {
     const points: PointCalculationResult = {
       player1Team1Points: null,
@@ -186,7 +177,7 @@ export class PointService {
         mix: player1Team1?.mix,
         double: player1Team1?.double,
       },
-      system
+      system,
     );
     const rankingPlayer2Team1 = getRankingProtected(
       {
@@ -194,7 +185,7 @@ export class PointService {
         mix: player2Team1?.mix,
         double: player2Team1?.double,
       },
-      system
+      system,
     );
     const rankingPlayer1Team2 = getRankingProtected(
       {
@@ -202,7 +193,7 @@ export class PointService {
         mix: player1Team2?.mix,
         double: player1Team2?.double,
       },
-      system
+      system,
     );
     const rankingPlayer2Team2 = getRankingProtected(
       {
@@ -210,7 +201,7 @@ export class PointService {
         mix: player2Team2?.mix,
         double: player2Team2?.double,
       },
-      system
+      system,
     );
 
     const pointsFrom = this.getPointsFromGameType(game.gameType);
@@ -259,13 +250,7 @@ export class PointService {
   /**
    * Calculates points for singles games
    */
-  private calculateSinglesPoints(
-    points: PointCalculationResult,
-    game: Game,
-    levelP1T1: number,
-    levelP1T2: number,
-    system: RankingSystem
-  ): void {
+  private calculateSinglesPoints(points: PointCalculationResult, game: Game, levelP1T1: number, levelP1T2: number, system: RankingSystem): void {
     if (game.winner === 1) {
       points.player1Team1Points = this.getWinningPoints(system, levelP1T2);
       points.player1Team2Points = 0;
@@ -287,21 +272,17 @@ export class PointService {
     levelP2T1: number,
     levelP1T2: number,
     levelP2T2: number,
-    system: RankingSystem
+    system: RankingSystem,
   ): void {
     if (game.winner === 1) {
-      const wonPoints = Math.round(
-        (this.getWinningPoints(system, levelP1T2) + this.getWinningPoints(system, levelP2T2)) / 2
-      );
+      const wonPoints = Math.round((this.getWinningPoints(system, levelP1T2) + this.getWinningPoints(system, levelP2T2)) / 2);
       points.player1Team1Points = wonPoints;
       points.player2Team1Points = wonPoints;
       points.player1Team2Points = 0;
       points.player2Team2Points = 0;
       points.differenceInLevel = (levelP1T1 + levelP2T1 - (levelP1T2 + levelP2T2)) / 2;
     } else {
-      const wonPoints = Math.round(
-        (this.getWinningPoints(system, levelP1T1) + this.getWinningPoints(system, levelP2T1)) / 2
-      );
+      const wonPoints = Math.round((this.getWinningPoints(system, levelP1T1) + this.getWinningPoints(system, levelP2T1)) / 2);
       points.player1Team2Points = wonPoints;
       points.player2Team2Points = wonPoints;
       points.player1Team1Points = 0;

@@ -329,9 +329,7 @@ export class TournamentGameSyncService {
           match?.Sets?.Set[0]?.Team1 == null &&
           match?.Sets?.Set[0]?.Team2 == null &&
           // But not both players filled
-          !(
-            match?.Team1?.Player1?.MemberID == null && match?.Team2?.Player1?.MemberID == null
-          ) &&
+          !(match?.Team1?.Player1?.MemberID == null && match?.Team2?.Player1?.MemberID == null) &&
           // And not both players null
           (match?.Team2?.Player1?.MemberID !== null || match?.Team2?.Player2?.MemberID !== null)
         ) {

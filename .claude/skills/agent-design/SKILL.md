@@ -29,18 +29,21 @@ Skill = Domain knowledge + Best practices
 ```
 
 **When to Create an Agent:**
+
 - Specific role-based workflow (e.g., security reviewer, planner, test writer)
 - Orchestrates tasks with tool execution
 - Needs specific tool access (edit, execute, web fetch)
 - Part of a handoff workflow chain
 
 **When to Create a Skill:**
+
 - Domain-specific knowledge (e.g., PrimeNG, .NET, Azure)
 - Best practices and patterns
 - Reference documentation
 - Reusable across multiple agents
 
 **Best Practice:**
+
 - Keep agents concise (< 100 lines)
 - Move domain knowledge to skills
 - Agents reference skills, not duplicate them
@@ -84,17 +87,20 @@ Before designing an agent, understand:
 ### Tool Categories
 
 #### Read-Only Tools (Research & Analysis Agents)
+
 ```yaml
 tools: ['read', 'search', 'web/fetch', 'github/repo']
 ```
 
 **Use for:**
+
 - Planning agents
 - Research agents
 - Review/analysis agents
 - Documentation discovery agents
 
 **Examples:**
+
 - `read_file` - Read workspace files
 - `semantic_search` - Find relevant code
 - `grep_search` - Text search in files
@@ -103,59 +109,71 @@ tools: ['read', 'search', 'web/fetch', 'github/repo']
 - `list_dir` - Browse directory structure
 
 #### Editing Tools (Implementation Agents)
+
 ```yaml
 tools: ['read', 'edit', 'search']
 ```
 
 **Use for:**
+
 - Code implementation agents
 - Refactoring agents
 - File modification agents
 
 **Examples:**
+
 - `replace_string_in_file` - Edit existing files
 - `multi_replace_string_in_file` - Batch edits
 - `create_file` - Create new files
 
 #### Execution Tools (Build & Test Agents)
+
 ```yaml
 tools: ['read', 'execute', 'search']
 ```
 
 **Use for:**
+
 - Testing agents
 - Build/deployment agents
 - Command execution agents
 
 **Examples:**
+
 - `run_in_terminal` - Execute commands
 - `get_terminal_output` - Check command results
 - `get_errors` - Check compilation/lint errors
 
 #### Web Tools (Documentation Agents)
+
 ```yaml
 tools: ['web', 'read', 'search']
 ```
 
 **Use for:**
+
 - Documentation lookup agents
 - API research agents
 - External resource integration
 
 **Examples:**
+
 - `web/fetch` - Fetch web content
 - External documentation access
 
 #### MCP Integration
+
 ```yaml
 tools: ['mcp_server_name/*', 'read', 'search']
 ```
 
 **Use for:**
+
 - Domain-specific tool access (e.g., PrimeNG, Azure, GitHub)
 - Specialized API integrations
 
 **Examples:**
+
 - `github/*` - GitHub operations
 - `mcp_primeng_*` - PrimeNG component tools
 - `mcp_azure_*` - Azure service tools
@@ -163,16 +181,19 @@ tools: ['mcp_server_name/*', 'read', 'search']
 #### Combined Tool Strategies
 
 **Full-Stack Agent:**
+
 ```yaml
 tools: ['vscode', 'read', 'edit', 'execute', 'search', 'web', 'github/*']
 ```
 
 **Focused Review Agent:**
+
 ```yaml
 tools: ['read', 'search', 'web/fetch']
 ```
 
 **Implementation Agent:**
+
 ```yaml
 tools: ['read', 'edit', 'search', 'execute']
 ```
@@ -182,33 +203,39 @@ tools: ['read', 'edit', 'search', 'execute']
 **Both short-form and long-form tool permissions are valid.** There is no strict rule - choose the format that best fits your agent's needs.
 
 #### Short-Form Permissions (Broader Access)
+
 ```yaml
 tools: ['read', 'edit', 'search', 'execute', 'web']
 ```
 
 **Characteristics:**
+
 - Grants broader access to tool categories
 - Simpler and more concise
 - Agent has access to all tools within the category
 - Easier to maintain
 
 **Examples:**
+
 - `execute` → Grants access to all execution tools (runCommands, runTasks, runTests, terminal operations)
 - `web` → Grants access to all web tools (web/fetch, openSimpleBrowser)
 - `search` → Grants access to all search tools (search/codebase, search/searchResults, semantic_search, grep_search)
 
 #### Long-Form Permissions (Granular Access)
+
 ```yaml
 tools: ['changes', 'search/codebase', 'edit/editFiles', 'runCommands', 'runTasks', 'web/fetch', 'openSimpleBrowser']
 ```
 
 **Characteristics:**
+
 - Grants specific, granular permissions
 - More explicit about capabilities
 - Limits agent to specific tools within a category
 - Provides finer control over capabilities
 
 **Examples:**
+
 - `runCommands`, `runTasks`, `runTests` → Specific execution capabilities
 - `web/fetch`, `openSimpleBrowser` → Specific web capabilities
 - `search/codebase`, `search/searchResults` → Specific search capabilities
@@ -216,18 +243,21 @@ tools: ['changes', 'search/codebase', 'edit/editFiles', 'runCommands', 'runTasks
 #### Choosing the Right Format
 
 **Use Short-Form When:**
+
 - Agent needs flexible access to a category of tools
 - Simplicity and maintainability are priorities
 - Agent's scope is well-defined and trustworthy
 - You want the agent to automatically benefit from new tools in the category
 
 **Use Long-Form When:**
+
 - Agent should be restricted to specific capabilities
 - Security or safety requires granular control
 - Agent's responsibilities are highly specialized
 - You want explicit documentation of exact capabilities
 
 **Mixed Format (Also Valid):**
+
 ```yaml
 tools: ['read', 'edit', 'search', 'runCommands', 'web/fetch', 'github/*']
 ```
@@ -251,9 +281,9 @@ You can mix short-form and long-form permissions as needed. There is no requirem
 description: Brief, clear description shown in chat input (required)
 name: Display name for the agent (optional, defaults to filename)
 argument-hint: Guidance text for users on how to interact (optional)
-tools: ['tool1', 'tool2', 'toolset/*']  # Available tools
-model: Claude Sonnet 4.5  # Optional: specific model selection
-handoffs:  # Optional: workflow transitions
+tools: ['tool1', 'tool2', 'toolset/*'] # Available tools
+model: Claude Sonnet 4.5 # Optional: specific model selection
+handoffs: # Optional: workflow transitions
   - label: Next Step
     agent: target-agent-name
     prompt: Pre-filled prompt text
@@ -267,26 +297,21 @@ handoffs:  # Optional: workflow transitions
   - 50-200 characters ideal
   - Describe what the agent does
   - Include trigger keywords
-  
 - **name** (optional): Display name
   - Defaults to filename without `.agent.md`
   - Use for clearer UI presentation
-  
 - **argument-hint** (optional): User guidance
   - Shows below agent name in UI
   - Example: "Describe the component to build"
-  
 - **tools** (required): Array of available tools
   - Use short-form (broad): `read`, `edit`, `execute`, `search`, `web`
   - Use long-form (granular): `runCommands`, `runTasks`, `web/fetch`, `search/codebase`
   - Mix formats as needed - both are valid
   - Use wildcards for MCP: `github/*`, `mcp_primeng_*`
   - See **Tool Permission Formats** section for detailed guidance
-  
 - **model** (optional): Specific model selection
   - Example: `Claude Sonnet 4.5`
   - Omit to use default model
-  
 - **handoffs** (optional): Workflow transitions
   - Define next steps in workflow
   - Include agent name, label, pre-filled prompt
@@ -296,6 +321,7 @@ handoffs:  # Optional: workflow transitions
 **Recommended Sections:**
 
 1. **Identity & Purpose** (1-3 lines)
+
    ```markdown
    You are a [Role] specialized in [Domain].
    Your purpose is to [Primary Goal].
@@ -312,6 +338,7 @@ handoffs:  # Optional: workflow transitions
    - Decision points
 
 4. **Reference Skills** (links to skills)
+
    ```markdown
    For [domain] best practices, consult [skill-name](../skills/skill-name/SKILL.md).
    ```
@@ -327,6 +354,7 @@ handoffs:  # Optional: workflow transitions
    - Deliverable examples
 
 **Keep it Concise:**
+
 - Target: < 100 lines for agent file
 - Move domain knowledge to skills
 - Focus on workflow, not detailed knowledge
@@ -336,12 +364,14 @@ handoffs:  # Optional: workflow transitions
 ### Clear Identity Statement
 
 ✅ **Good:**
+
 ```markdown
 You are a Security Reviewer specialized in identifying vulnerabilities in web applications.
 Your purpose is to analyze code for security issues and provide actionable remediation guidance.
 ```
 
 ❌ **Poor:**
+
 ```markdown
 You help with security stuff.
 ```
@@ -349,14 +379,17 @@ You help with security stuff.
 ### Imperative Language
 
 ✅ **Good:**
+
 ```markdown
 Before implementing changes:
+
 1. **Always** review existing patterns in the codebase
 2. **Never** modify files without understanding their purpose
 3. **Must** verify tests pass after changes
 ```
 
 ❌ **Poor:**
+
 ```markdown
 It's good to review patterns and maybe verify tests.
 ```
@@ -364,23 +397,27 @@ It's good to review patterns and maybe verify tests.
 ### Concrete Examples
 
 ✅ **Good:**
+
 ```markdown
 ## Output Format
 
 Provide a security report with:
 
 **Critical Issues:**
+
 - [FILE:LINE] SQL injection vulnerability in user input handling
   - Risk: High
   - Remediation: Use parameterized queries
 
 **Warnings:**
+
 - [FILE:LINE] Missing CSRF token validation
   - Risk: Medium
   - Remediation: Add CSRF middleware
 ```
 
 ❌ **Poor:**
+
 ```markdown
 Find security issues and report them.
 ```
@@ -390,8 +427,10 @@ Find security issues and report them.
 **Use specific, measurable behaviors:**
 
 ✅ **Good:**
+
 ```markdown
 When reviewing authentication code:
+
 1. Verify password hashing uses bcrypt with cost factor ≥ 12
 2. Check JWT tokens include expiration claims
 3. Ensure refresh tokens are single-use
@@ -399,6 +438,7 @@ When reviewing authentication code:
 ```
 
 ❌ **Poor:**
+
 ```markdown
 Check authentication is secure.
 ```
@@ -408,6 +448,7 @@ Check authentication is secure.
 ### Handoff Patterns
 
 **Sequential Workflow:**
+
 ```yaml
 handoffs:
   - label: Implement Plan
@@ -417,6 +458,7 @@ handoffs:
 ```
 
 **Conditional Handoff:**
+
 ```yaml
 handoffs:
   - label: Fix Issues
@@ -425,11 +467,12 @@ handoffs:
     send: false
   - label: Approve & Deploy
     agent: deploy-agent
-    prompt: "Deploy the reviewed code"
+    prompt: 'Deploy the reviewed code'
     send: false
 ```
 
 **Review Loop:**
+
 ```yaml
 handoffs:
   - label: Revise Based on Feedback
@@ -438,7 +481,7 @@ handoffs:
     send: false
   - label: Mark Complete
     agent: documentation-agent
-    prompt: "Document the implemented feature"
+    prompt: 'Document the implemented feature'
     send: false
 ```
 
@@ -449,18 +492,21 @@ handoffs:
    - ❌ "Next"
 
 2. **Context Preservation**: Pre-fill prompts with relevant context
+
    ```yaml
    prompt: "Implement:\n\n{{plan}}\n\nConstraints:\n{{constraints}}"
    ```
 
 3. **User Review Points**: Use `send: false` when user should review
+
    ```yaml
-   send: false  # User can edit prompt before sending
+   send: false # User can edit prompt before sending
    ```
 
 4. **Automated Flow**: Use `send: true` for automated transitions
+
    ```yaml
-   send: true  # Automatically proceeds to next agent
+   send: true # Automatically proceeds to next agent
    ```
 
 5. **Multiple Options**: Provide alternative paths
@@ -481,15 +527,18 @@ handoffs:
 **Purpose:** Research, analyze, create implementation plans
 
 **Tools:**
+
 ```yaml
 tools: ['read', 'search', 'web/fetch', 'github/repo']
 ```
 
 **Pattern:**
+
 ```markdown
 You are a Technical Planner specialized in breaking down features into actionable tasks.
 
 ## Workflow
+
 1. Understand requirements through questions
 2. Research existing codebase patterns
 3. Identify dependencies and constraints
@@ -497,6 +546,7 @@ You are a Technical Planner specialized in breaking down features into actionabl
 5. Hand off to implementation agent
 
 ## Output Format
+
 - **Overview**: Feature summary
 - **Tasks**: Numbered implementation steps
 - **Dependencies**: Required components/libraries
@@ -504,6 +554,7 @@ You are a Technical Planner specialized in breaking down features into actionabl
 ```
 
 **Handoff:**
+
 ```yaml
 handoffs:
   - label: Implement Plan
@@ -516,15 +567,18 @@ handoffs:
 **Purpose:** Write code, refactor, apply changes
 
 **Tools:**
+
 ```yaml
 tools: ['read', 'edit', 'search', 'execute']
 ```
 
 **Pattern:**
+
 ```markdown
 You are a Code Implementer specialized in writing clean, tested code.
 
 ## Workflow
+
 1. Review implementation plan or requirements
 2. Check existing patterns in codebase
 3. Implement changes following project conventions
@@ -532,12 +586,14 @@ You are a Code Implementer specialized in writing clean, tested code.
 5. Hand off to review agent
 
 ## Constraints
+
 - Follow existing code style and patterns
 - Write tests for new functionality
 - Never skip error handling
 ```
 
 **Handoff:**
+
 ```yaml
 handoffs:
   - label: Review Implementation
@@ -553,15 +609,18 @@ handoffs:
 **Purpose:** Analyze code quality, security, performance
 
 **Tools:**
+
 ```yaml
 tools: ['read', 'search', 'web/fetch']
 ```
 
 **Pattern:**
+
 ```markdown
 You are a Code Reviewer specialized in quality and security analysis.
 
 ## Workflow
+
 1. Read modified files
 2. Check for common issues (security, performance, style)
 3. Compare against project standards
@@ -569,6 +628,7 @@ You are a Code Reviewer specialized in quality and security analysis.
 5. Suggest improvements or approve
 
 ## Output Format
+
 **Critical Issues:** (must fix)
 **Warnings:** (should fix)
 **Suggestions:** (nice to have)
@@ -576,6 +636,7 @@ You are a Code Reviewer specialized in quality and security analysis.
 ```
 
 **Handoff:**
+
 ```yaml
 handoffs:
   - label: Fix Issues
@@ -592,15 +653,18 @@ handoffs:
 **Purpose:** Generate comprehensive tests
 
 **Tools:**
+
 ```yaml
 tools: ['read', 'edit', 'execute', 'search']
 ```
 
 **Pattern:**
+
 ```markdown
 You are a Test Writer specialized in comprehensive test coverage.
 
 ## Workflow
+
 1. Analyze code to be tested
 2. Identify test cases (happy path, edge cases, errors)
 3. Write tests using project test framework
@@ -608,6 +672,7 @@ You are a Test Writer specialized in comprehensive test coverage.
 5. Report coverage metrics
 
 ## Test Strategy
+
 - Unit tests for all public functions
 - Integration tests for API endpoints
 - Edge cases and error conditions
@@ -619,15 +684,18 @@ You are a Test Writer specialized in comprehensive test coverage.
 **Purpose:** Generate clear documentation
 
 **Tools:**
+
 ```yaml
 tools: ['read', 'edit', 'search', 'web/fetch']
 ```
 
 **Pattern:**
+
 ```markdown
 You are a Documentation Writer specialized in clear technical writing.
 
 ## Workflow
+
 1. Analyze code/feature to document
 2. Identify key concepts and usage patterns
 3. Write structured documentation
@@ -635,6 +703,7 @@ You are a Documentation Writer specialized in clear technical writing.
 5. Add cross-references to related docs
 
 ## Documentation Standards
+
 - Use Markdown format
 - Include code examples for all APIs
 - Add "When to Use" sections
@@ -680,11 +749,13 @@ Before finalizing an agent design, verify:
 ### Naming Conventions
 
 **Agents:**
+
 - Use kebab-case: `security-reviewer.agent.md`
 - Be specific: `api-planner.agent.md` not `planner.agent.md`
 - Role-based names: `test-writer.agent.md`
 
 **Skills:**
+
 - For skill naming conventions and creation, see [make-skill-template](../make-skill-template/SKILL.md)
 
 ## Reference Syntax
@@ -716,8 +787,9 @@ tools: ['github/*', 'mcp_primeng_*', 'read', 'search']
 ### Multi-Agent Workflows
 
 **Feature Development Pipeline:**
+
 ```
-User Request 
+User Request
   → Planner Agent (research & plan)
   → Implementation Agent (write code)
   → Test Writer Agent (create tests)
@@ -729,12 +801,14 @@ User Request
 ### Specialized Domain Agents
 
 **Create domain-specific agents that:**
+
 1. Reference domain skills (e.g., angular-development)
-2. Use domain-specific MCP tools (e.g., mcp_primeng_*)
+2. Use domain-specific MCP tools (e.g., mcp*primeng*\*)
 3. Follow domain conventions
 4. Integrate with domain workflows
 
 **Example:**
+
 ```yaml
 ---
 description: Angular feature implementer using PrimeNG and AWF components
@@ -755,15 +829,18 @@ For Angular patterns and PrimeNG integration, consult the [angular-development](
 ### Agent Composition Strategies
 
 **Horizontal Composition** (parallel specialized agents):
+
 - Security Reviewer
-- Performance Analyzer  
+- Performance Analyzer
 - Accessibility Checker
 - Code Style Reviewer
 
 **Vertical Composition** (sequential workflow):
+
 - Requirements → Design → Implementation → Testing → Deployment
 
 **Hybrid** (combined approach):
+
 - Plan (single agent)
 - Implement (multiple parallel feature agents)
 - Review (multiple parallel review agents)
@@ -774,41 +851,49 @@ For Angular patterns and PrimeNG integration, consult the [angular-development](
 ### ❌ Anti-Patterns
 
 1. **Too many tools**
+
    ```yaml
    # DON'T: Kitchen sink approach
-   tools: ['vscode', 'read', 'edit', 'execute', 'search', 'web', 'agent', 
-           'github/*', 'mcp_*', 'todo', 'notebook/*']
+   tools: ['vscode', 'read', 'edit', 'execute', 'search', 'web', 'agent', 'github/*', 'mcp_*', 'todo', 'notebook/*']
    ```
 
 2. **Vague instructions**
+
    ```markdown
    # DON'T: Unclear guidance
+
    You help with code. Do good work.
    ```
 
 3. **Embedding domain knowledge**
+
    ```markdown
    # DON'T: 500 lines of Angular patterns in agent
+
    # DO: Reference angular-development skill
    ```
 
 4. **Missing constraints**
+
    ```markdown
    # DON'T: No boundaries
+
    You can do anything.
-   
+
    # DO: Clear constraints
+
    - Never modify package.json without user approval
    - Only review code, don't implement changes
    ```
 
 5. **Unclear handoffs**
+
    ```yaml
    # DON'T: Generic labels
    handoffs:
      - label: Next
        agent: other-agent
-   
+
    # DO: Descriptive labels
    handoffs:
      - label: Implement Security Fixes
@@ -850,16 +935,19 @@ For Angular patterns and PrimeNG integration, consult the [angular-development](
 ## Additional Resources
 
 ### Related Skills
+
 - **[make-skill-template](../make-skill-template/SKILL.md)**: Creating Agent Skills format
 - **[angular-development](../angular-development/SKILL.md)**: Example domain skill
 - **[dotnet-clean-architecture](../dotnet-clean-architecture/SKILL.md)**: Example architecture skill
 
 ### VS Code Documentation
+
 - Custom agent format specification
 - Tool capabilities reference
 - MCP server integration guide
 
 ### Best Practices
+
 - Progressive disclosure: Keep agents concise
 - Skills over instructions: Move knowledge to skills
 - Workflow focus: Agents orchestrate, skills inform

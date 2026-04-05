@@ -43,11 +43,7 @@ export class CompetitionEventSyncService {
     // Calculate work plan if not provided
     let workPlan = job.data.workPlan;
     if (!workPlan && includeSubComponents) {
-      workPlan = await this.competitionPlanningService.calculateCompetitionWorkPlan(
-        tournamentCode,
-        undefined,
-        includeSubComponents,
-      );
+      workPlan = await this.competitionPlanningService.calculateCompetitionWorkPlan(tournamentCode, undefined, includeSubComponents);
       await job.updateData({ ...job.data, workPlan });
     }
 
@@ -172,5 +168,4 @@ export class CompetitionEventSyncService {
       throw error;
     }
   }
-
 }

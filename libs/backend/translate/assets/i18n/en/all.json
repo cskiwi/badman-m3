@@ -1017,6 +1017,11 @@
           "competition": "Competition",
           "tournament": "Tournament"
         }
+      },
+      "tabs": {
+        "cronJobs": "Cron Jobs",
+        "ranking": "Ranking Systems",
+        "syncPlans": "Sync Plans"
       }
     },
     "lastSync": "Last synced",

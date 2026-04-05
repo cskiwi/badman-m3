@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -11,8 +10,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { CardModule } from 'primeng/card';
 
 @Component({
-    selector: 'app-page-overview',
-    imports: [
+  selector: 'app-page-overview',
+  imports: [
     RouterLink,
     ReactiveFormsModule,
     FormsModule,
@@ -21,21 +20,20 @@ import { CardModule } from 'primeng/card';
     InputTextModule,
     FloatLabelModule,
     CardModule,
-    PageHeaderComponent
-],
-    templateUrl: './page-overview.component.html',
-    styleUrl: './page-overview.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    PageHeaderComponent,
+  ],
+  templateUrl: './page-overview.component.html',
+  styleUrl: './page-overview.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageOverviewComponent {
   private readonly dataService = new OverviewService();
 
   // selectors
   competitions = this.dataService.competitions;
-  
+
   error = this.dataService.error;
   loading = this.dataService.loading;
 
   query = this.dataService.filter.get('query') as FormControl;
-
 }

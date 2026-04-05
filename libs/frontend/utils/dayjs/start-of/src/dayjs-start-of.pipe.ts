@@ -5,10 +5,9 @@ import dayjs, { Dayjs } from 'dayjs';
 @Pipe({
   name: 'dayjsStartOf',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsStartOfPipe implements PipeTransform {
-
   transform(value: DayjsInput, unit: DayjsOpUnitType): Dayjs | null {
     if (!value) {
       return null;

@@ -1017,6 +1017,11 @@
           "competition": "Competitie",
           "tournament": "Toernooi"
         }
+      },
+      "tabs": {
+        "cronJobs": "Cron Jobs",
+        "ranking": "Ranking Systemen",
+        "syncPlans": "Sync Plannen"
       }
     },
     "lastSync": "Laatst gesynchroniseerd",

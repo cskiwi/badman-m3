@@ -21,7 +21,7 @@
     .p-card-body {
       padding: 1rem;
     }
-    
+
     .p-card-header {
       padding: 1rem 1rem 0;
     }
@@ -79,8 +79,12 @@
   }
 
   @keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 
   // Breadcrumb styling
@@ -94,7 +98,7 @@
         .p-breadcrumb-link {
           color: var(--text-color-secondary);
           text-decoration: none;
-          
+
           &:hover {
             color: var(--primary-color);
           }
@@ -142,7 +146,9 @@
 
 // Team card enhancements
 .team-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
@@ -188,7 +194,7 @@
 // Loading state enhancements
 .loading-overlay {
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;

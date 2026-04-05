@@ -5,14 +5,10 @@ import dayjs, { Dayjs } from 'dayjs';
 @Pipe({
   name: 'dayjsAdd',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsAddPipe implements PipeTransform {
-  transform(
-    value: DayjsInput,
-    amount: number,
-    unit: DayjsManipulateType
-  ): Dayjs | null {
+  transform(value: DayjsInput, amount: number, unit: DayjsManipulateType): Dayjs | null {
     if (!value || typeof amount !== 'number') {
       return null;
     }
