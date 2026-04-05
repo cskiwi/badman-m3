@@ -9,16 +9,16 @@ export type Theme = 'light' | 'dark';
 export class ThemeService {
   private readonly cookieService = inject(SsrCookieService);
   private readonly platformId = inject(PLATFORM_ID);
-  
+
   private readonly THEME_COOKIE_KEY = 'app-theme';
   private readonly DEFAULT_THEME: Theme = 'light';
-  
+
   // Create a signal for reactive theme management
   private readonly _currentTheme = signal<Theme>(this.getInitialTheme());
-  
+
   // Readonly signal for components to consume
   readonly currentTheme = this._currentTheme.asReadonly();
-  
+
   constructor() {
     // Effect to update document class and save to cookie when theme changes
     effect(() => {
@@ -27,7 +27,7 @@ export class ThemeService {
       this.saveThemeToCookie(theme);
     });
   }
-  
+
   /**
    * Toggle between light and dark themes
    */
@@ -35,14 +35,14 @@ export class ThemeService {
     const newTheme = this._currentTheme() === 'light' ? 'dark' : 'light';
     this.setTheme(newTheme);
   }
-  
+
   /**
    * Set a specific theme
    */
   setTheme(theme: Theme): void {
     this._currentTheme.set(theme);
   }
-  
+
   /**
    * Get the initial theme from cookie or system preference
    */
@@ -52,34 +52,34 @@ export class ThemeService {
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       return savedTheme;
     }
-    
+
     // Check system preference if available
     if (typeof window !== 'undefined' && window.matchMedia) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       return prefersDark ? 'dark' : 'light';
     }
-    
+
     return this.DEFAULT_THEME;
   }
-  
+
   /**
    * Update the document class for theme styling
    */
   private updateDocumentTheme(theme: Theme): void {
     if (typeof document !== 'undefined') {
       const html = document.documentElement;
-      
+
       // Remove existing theme classes
       html.classList.remove('light-theme', 'dark-theme');
-      
+
       // Add new theme class
       html.classList.add(`${theme}-theme`);
-      
+
       // Also update data attribute for CSS targeting
       html.setAttribute('data-theme', theme);
     }
   }
-  
+
   /**
    * Save theme preference to cookie
    */
@@ -87,7 +87,7 @@ export class ThemeService {
     this.cookieService.set(this.THEME_COOKIE_KEY, theme, {
       expires: 365, // 1 year
       path: '/',
-      sameSite: 'Lax'
+      sameSite: 'Lax',
     });
   }
 }

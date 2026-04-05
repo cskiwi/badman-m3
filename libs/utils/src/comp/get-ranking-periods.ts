@@ -26,21 +26,13 @@ export function GetRankingPeriods<
   args?: {
     includeUpdate?: boolean;
     includeCalculation?: boolean;
-  }
+  },
 ): { date: Dayjs; updatePossible: boolean }[] {
-  if (
-    ((args?.includeUpdate ?? true) && !system.updateIntervalAmount) ||
-    !system.updateIntervalUnit ||
-    !system.updateDayOfWeek
-  ) {
+  if (((args?.includeUpdate ?? true) && !system.updateIntervalAmount) || !system.updateIntervalUnit || !system.updateDayOfWeek) {
     throw new Error('No update interval defined');
   }
 
-  if (
-    ((args?.includeCalculation ?? true) && !system.calculationIntervalAmount) ||
-    !system.calculationIntervalUnit ||
-    !system.calculationDayOfWeek
-  ) {
+  if (((args?.includeCalculation ?? true) && !system.calculationIntervalAmount) || !system.calculationIntervalUnit || !system.calculationDayOfWeek) {
     throw new Error('No calculation interval defined');
   }
 

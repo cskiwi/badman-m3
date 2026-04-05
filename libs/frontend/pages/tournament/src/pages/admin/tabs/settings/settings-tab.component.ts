@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TournamentEvent } from '@app/models';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,12 +9,7 @@ import { SettingsTabService } from './settings-tab.service';
 @Component({
   selector: 'app-settings-tab',
   standalone: true,
-  imports: [
-    TranslateModule,
-    PhaseStepperComponent,
-    GeneralSettingsComponent,
-    SubEventsComponent
-],
+  imports: [TranslateModule, PhaseStepperComponent, GeneralSettingsComponent, SubEventsComponent],
   templateUrl: './settings-tab.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -9,7 +9,7 @@ import { type PlayerStatistics } from '../page-player-detail.service';
   selector: 'app-player-statistics-card',
   imports: [DecimalPipe, TranslateModule, CardModule, ProgressBarModule],
   templateUrl: './player-statistics-card.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerStatisticsCardComponent {
   statistics = input.required<PlayerStatistics>();

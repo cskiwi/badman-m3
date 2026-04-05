@@ -202,15 +202,7 @@ export class ScheduleTabComponent {
 
     const { courtIds, dates, startTime, endTime, slotDurationMinutes, breakMinutes } = this.generateSlotsForm.value;
 
-    await this.dataService.generateTimeSlots(
-      tournament.id,
-      courtIds!,
-      dates!,
-      startTime!,
-      endTime!,
-      slotDurationMinutes!,
-      breakMinutes ?? 0,
-    );
+    await this.dataService.generateTimeSlots(tournament.id, courtIds!, dates!, startTime!, endTime!, slotDurationMinutes!, breakMinutes ?? 0);
 
     this.showGenerateSlotsDialog.set(false);
   }

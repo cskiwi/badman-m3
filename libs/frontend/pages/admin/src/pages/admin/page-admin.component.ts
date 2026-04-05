@@ -86,7 +86,7 @@ export class PageAdminComponent implements OnInit {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { tab: currentTab },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     });
   }
@@ -98,7 +98,6 @@ export class PageAdminComponent implements OnInit {
       this.activeTabIndex.set(tabParam);
     }
   }
-
 
   // Available index types with labels
   indexTypes = [
@@ -157,15 +156,16 @@ export class PageAdminComponent implements OnInit {
     this.error.set(null);
 
     try {
-      const result = await lastValueFrom(this.apollo
-        .mutate({
+      const result = await lastValueFrom(
+        this.apollo.mutate({
           mutation: INDEX_ALL_MUTATION,
           variables: {
             input: {
               types: selectedTypes,
             },
           },
-        }));
+        }),
+      );
 
       const data = result?.data as { indexAll?: { message?: string } };
       if (data?.indexAll?.message) {

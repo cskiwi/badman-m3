@@ -53,7 +53,7 @@ export class CompetitionEventProcessor extends WorkerHost {
     const isResuming = job.attemptsStarted > 0;
     this.logger.log(
       `[${job.name}] Processing job type="${jobType}" id="${job.id}" parent="${job.parentKey || 'none'}" ` +
-      `attempt=${job.attemptsMade}/${job.opts?.attempts ?? 'n/a'} resuming=${isResuming}`,
+        `attempt=${job.attemptsMade}/${job.opts?.attempts ?? 'n/a'} resuming=${isResuming}`,
     );
     const updateProgress = async (progress: number) => {
       this.logger.debug(`Competition ${jobType} sync progress: ${progress}%`);
@@ -62,58 +62,31 @@ export class CompetitionEventProcessor extends WorkerHost {
 
     switch (jobType) {
       case 'sync-structure':
-        await this.competitionSyncService.processSync(
-          job as Job<StructureSyncJobData>,
-          updateProgress,
-        );
+        await this.competitionSyncService.processSync(job as Job<StructureSyncJobData>, updateProgress);
         break;
 
       case 'event':
-        await this.competitionEventSyncService.processEventSync(
-          job as Job<CompetitionEventSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.competitionEventSyncService.processEventSync(job as Job<CompetitionEventSyncData>, updateProgress, token);
         break;
 
       case 'subevent':
-        await this.competitionSubEventSyncService.processSubEventSync(
-          job as Job<CompetitionSubEventSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.competitionSubEventSyncService.processSubEventSync(job as Job<CompetitionSubEventSyncData>, updateProgress, token);
         break;
 
       case 'draw':
-        await this.competitionDrawSyncService.processDrawSync(
-          job as Job<CompetitionDrawSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.competitionDrawSyncService.processDrawSync(job as Job<CompetitionDrawSyncData>, updateProgress, token);
         break;
 
       case 'encounter':
-        await this.competitionEncounterSyncService.processEncounterSync(
-          job as Job<CompetitionEncounterSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.competitionEncounterSyncService.processEncounterSync(job as Job<CompetitionEncounterSyncData>, updateProgress, token);
         break;
 
       case 'standing':
-        await this.competitionStandingSyncService.processStandingSync(
-          job as Job<CompetitionStandingSyncData>,
-          updateProgress,
-          token,
-        );
+        await this.competitionStandingSyncService.processStandingSync(job as Job<CompetitionStandingSyncData>, updateProgress, token);
         break;
 
       case 'entry':
-        await this.competitionEntrySyncService.processEntrySync(
-          job as Job<CompetitionEntrySyncData>,
-          updateProgress,
-          token,
-        );
+        await this.competitionEntrySyncService.processEntrySync(job as Job<CompetitionEntrySyncData>, updateProgress, token);
         break;
 
       default:

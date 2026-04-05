@@ -41,9 +41,7 @@ export function calculateTeamIndex(players: TeamBuilderPlayer[], teamType: 'M' |
     return [...males, ...females].reduce((sum, c) => sum + c, 0);
   }
 
-  const contributions = regularPlayers
-    .map((p) => getPlayerContribution(p, teamType))
-    .sort((a, b) => a - b); // ascending: strongest (lowest numbers) first
+  const contributions = regularPlayers.map((p) => getPlayerContribution(p, teamType)).sort((a, b) => a - b); // ascending: strongest (lowest numbers) first
 
   // Take the 4 best (strongest) players
   const base = contributions.slice(0, 4);

@@ -65,20 +65,13 @@ export class AutoSeedDrawInput {
 }
 
 @InputType('CreateTournamentDrawInput')
-export class CreateTournamentDrawInput extends PickType(
-  TournamentDraw,
-  ['name', 'type', 'size'] as const,
-  InputType,
-) {
+export class CreateTournamentDrawInput extends PickType(TournamentDraw, ['name', 'type', 'size'] as const, InputType) {
   @Field(() => ID, { description: 'Sub-event ID this draw belongs to' })
   subEventId!: string;
 }
 
 @InputType('UpdateTournamentDrawInput')
-export class UpdateTournamentDrawInput extends PartialType(
-  PickType(TournamentDraw, ['name', 'type', 'size'] as const, InputType),
-  InputType,
-) {}
+export class UpdateTournamentDrawInput extends PartialType(PickType(TournamentDraw, ['name', 'type', 'size'] as const, InputType), InputType) {}
 
 @InputType('RemoveEntryFromDrawInput')
 export class RemoveEntryFromDrawInput {

@@ -1,19 +1,10 @@
 import { SortableField, SortableObject, WhereField, WhereObject } from '@app/utils';
 import { Field, ObjectType } from '@nestjs/graphql';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { Player } from '../player.model';
 import { Game } from './game.model';
 
-@Index(["playerId", "gameId"])
+@Index(['playerId', 'gameId'])
 @Index(['gameId'])
 @ObjectType('GamePlayerMembership')
 @Entity('GamePlayerMemberships', { schema: 'event' })
@@ -37,7 +28,7 @@ export class GamePlayerMembership extends BaseEntity {
   @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare player?: number;
-  
+
   @SortableField({ nullable: true })
   @Column({ nullable: true })
   declare single?: number;

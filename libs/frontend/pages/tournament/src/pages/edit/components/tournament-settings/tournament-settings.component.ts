@@ -28,14 +28,7 @@ const UPDATE_TOURNAMENT_SETTINGS = gql`
 @Component({
   selector: 'app-tournament-settings',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    ButtonModule,
-    CheckboxModule,
-    MessageModule,
-    ProgressBarModule,
-    TranslateModule,
-  ],
+  imports: [ReactiveFormsModule, ButtonModule, CheckboxModule, MessageModule, ProgressBarModule, TranslateModule],
   templateUrl: './tournament-settings.component.html',
 })
 export class TournamentSettingsComponent {
@@ -87,10 +80,7 @@ export class TournamentSettingsComponent {
 
   canEditTournament(): boolean {
     const tournament = this.tournament();
-    return this.authService.hasAnyPermission([
-      'edit-any:tournament',
-      `${tournament?.id}_edit:tournament`,
-    ]);
+    return this.authService.hasAnyPermission(['edit-any:tournament', `${tournament?.id}_edit:tournament`]);
   }
 
   async saveSettings(): Promise<void> {

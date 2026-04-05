@@ -25,10 +25,7 @@ export class TournamentScrapeService {
     private readonly syncService: SyncService,
   ) {}
 
-  async processScrapeYear(
-    job: Job<TournamentScrapeYearJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processScrapeYear(job: Job<TournamentScrapeYearJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     const { year, runAdding = true, runCleanup = true } = job.data;
 
     await updateProgress(0);
@@ -51,15 +48,12 @@ export class TournamentScrapeService {
         const eventUrl = eventLinks[i];
         const eventName = this.extractEventName(eventUrl);
 
-        await this.discoveryQueue.add(
-          JOB_TYPES.TOURNAMENT_SCRAPE_EVENT,
-          {
-            year,
-            eventUrl,
-            eventName,
-            metadata: { displayName: `Scrape event: ${eventName}`, eventName },
-          } satisfies TournamentScrapeEventJobData,
-        );
+        await this.discoveryQueue.add(JOB_TYPES.TOURNAMENT_SCRAPE_EVENT, {
+          year,
+          eventUrl,
+          eventName,
+          metadata: { displayName: `Scrape event: ${eventName}`, eventName },
+        } satisfies TournamentScrapeEventJobData);
 
         await updateProgress(10 + Math.round(((i + 1) / eventLinks.length) * 90));
       }
@@ -70,13 +64,10 @@ export class TournamentScrapeService {
     }
 
     if (runCleanup) {
-      await this.discoveryQueue.add(
-        JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP,
-        {
-          year,
-          metadata: { displayName: `Cleanup missing tournaments for ${year}` },
-        } satisfies TournamentScrapeYearCleanupJobData,
-      );
+      await this.discoveryQueue.add(JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP, {
+        year,
+        metadata: { displayName: `Cleanup missing tournaments for ${year}` },
+      } satisfies TournamentScrapeYearCleanupJobData);
     } else {
       this.logger.log(`Skipping cleanup for year ${year} (runCleanup=false)`);
     }
@@ -84,10 +75,7 @@ export class TournamentScrapeService {
     await updateProgress(100);
   }
 
-  async processScrapeEvent(
-    job: Job<TournamentScrapeEventJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processScrapeEvent(job: Job<TournamentScrapeEventJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     const { eventUrl, eventName, year } = job.data;
 
     await updateProgress(0);
@@ -154,10 +142,7 @@ export class TournamentScrapeService {
     await updateProgress(100);
   }
 
-  async processScrapeYearCleanup(
-    job: Job<TournamentScrapeYearCleanupJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processScrapeYearCleanup(job: Job<TournamentScrapeYearCleanupJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     const { year } = job.data;
 
     await updateProgress(0);
@@ -207,7 +192,6 @@ export class TournamentScrapeService {
 
     let markedCount = 0;
     for (const tournament of dbTournaments) {
-
       this.logger.log(`Cleanup: marking "${tournament.name}" (${tournament.visualCode ?? 'no code'}) for removal — not on ${year} calendar`);
       tournament.official = false;
       await tournament.save();
@@ -231,8 +215,7 @@ export class TournamentScrapeService {
     try {
       const response = await fetch(url, {
         headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         },
       });
@@ -274,10 +257,7 @@ export class TournamentScrapeService {
   }
 
   private extractFieldValue(html: string, fieldName: string): string | null {
-    const pattern = new RegExp(
-      `<strong>${fieldName}:?[^<]*<\\/strong><\\/td><td[^>]*>\\s*([^<]+?)\\s*(?:<|$)`,
-      'i',
-    );
+    const pattern = new RegExp(`<strong>${fieldName}:?[^<]*<\\/strong><\\/td><td[^>]*>\\s*([^<]+?)\\s*(?:<|$)`, 'i');
     const match = pattern.exec(html);
     return match ? match[1].trim() : null;
   }

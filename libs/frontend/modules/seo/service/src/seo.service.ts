@@ -79,9 +79,7 @@ export class SeoService {
     this.setDescription(data?.description);
 
     if (!data.image && data?.title && data?.description) {
-      const url = `${this.config.imageEndpoint}/?title=${encodeURIComponent(
-        data.title,
-      )}&description=${encodeURIComponent(data.description)}`;
+      const url = `${this.config.imageEndpoint}/?title=${encodeURIComponent(data.title)}&description=${encodeURIComponent(data.description)}`;
       this.setImage(url);
     }
   }
@@ -94,11 +92,7 @@ export class SeoService {
 
     this.setTitle(`Player ${data.player.fullName} (${data.player.memberId})`);
     this.setDescription(desc);
-    this.setImage(
-      `${this.config.imageEndpoint}/?id=${encodeURIComponent(
-        data.player.slug,
-      )}&type=player`,
-    );
+    this.setImage(`${this.config.imageEndpoint}/?id=${encodeURIComponent(data.player.slug)}&type=player`);
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
@@ -110,11 +104,7 @@ export class SeoService {
 
     this.setTitle(`Club ${data.club.fullName} (${data.club.clubId})`);
     this.setDescription(desc);
-    this.setImage(
-      `${this.config.imageEndpoint}/?id=${encodeURIComponent(
-        data.club.slug,
-      )}&type=club`,
-    );
+    this.setImage(`${this.config.imageEndpoint}/?id=${encodeURIComponent(data.club.slug)}&type=club`);
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
@@ -123,20 +113,11 @@ export class SeoService {
 
     this.setTitle(`Club ${data.competition.name} `);
     this.setDescription(desc);
-    this.setImage(
-      `${this.config.imageEndpoint}/?id=${encodeURIComponent(
-        data.competition.slug,
-      )}&type=club`,
-    );
+    this.setImage(`${this.config.imageEndpoint}/?id=${encodeURIComponent(data.competition.slug)}&type=club`);
     this.setMetaTag('name', 'twitter:card', 'summary_large_image');
   }
 
-  setMetaTag(
-    attr: 'name' | 'property' | 'itemprop',
-    attrValue: string,
-    content?: string | undefined,
-    selector?: string,
-  ) {
+  setMetaTag(attr: 'name' | 'property' | 'itemprop', attrValue: string, content?: string | undefined, selector?: string) {
     if (content) {
       this.metaService.updateTag({ [attr]: attrValue, content }, selector);
     } else {
@@ -148,12 +129,7 @@ export class SeoService {
     this.setMetaTag('name', 'description', description);
     this.setMetaTag('name', 'twitter:description', description);
     this.setMetaTag('property', 'og:description', description);
-    this.setMetaTag(
-      'itemprop',
-      'description',
-      description,
-      `itemprop='description'`,
-    );
+    this.setMetaTag('itemprop', 'description', description, `itemprop='description'`);
   }
 
   private setType(type?: 'article' | 'website'): void {
@@ -162,8 +138,7 @@ export class SeoService {
   }
 
   private setKeywords(keywords?: string | string[]) {
-    const wordsAsString =
-      keywords instanceof Array ? keywords?.join(',') : keywords;
+    const wordsAsString = keywords instanceof Array ? keywords?.join(',') : keywords;
     this.setMetaTag('name', 'keywords', wordsAsString);
   }
 

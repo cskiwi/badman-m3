@@ -118,7 +118,7 @@ export class ClubTeamBuilderTabComponent {
 
     // Sort by ranking contribution (single + double; MX players also include mix)
     return [...players].sort((a, b) => {
-      const teamType = (a.gender === 'M' || a.gender === 'F') ? a.gender : 'MX';
+      const teamType = a.gender === 'M' || a.gender === 'F' ? a.gender : 'MX';
       const contribA = getPlayerContribution(a, teamType as 'M' | 'F' | 'MX');
       const contribB = getPlayerContribution(b, teamType as 'M' | 'F' | 'MX');
       return contribA - contribB;
@@ -225,9 +225,7 @@ export class ClubTeamBuilderTabComponent {
   openSubEventDialog(team: TeamBuilderTeam) {
     const options = this.service.getSubEventOptions(team.type);
     const allSubEvents = this.service.getAllSubEvents(team.type);
-    const currentValue = team.subEventManuallyOverridden
-      ? (team.selectedSubEvent?.id ?? TEAM_BUILDER_AUTO_SUB_EVENT)
-      : TEAM_BUILDER_AUTO_SUB_EVENT;
+    const currentValue = team.subEventManuallyOverridden ? (team.selectedSubEvent?.id ?? TEAM_BUILDER_AUTO_SUB_EVENT) : TEAM_BUILDER_AUTO_SUB_EVENT;
 
     const ref = this.dialogService.open(SubEventDialogComponent, {
       header: `Sub-event — ${team.name}`,

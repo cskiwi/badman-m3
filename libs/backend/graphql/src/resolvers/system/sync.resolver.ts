@@ -202,10 +202,7 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async addTournamentByCode(
-    @User() user: Player,
-    @Args('visualCode', { type: () => String }) visualCode: string,
-  ): Promise<SyncTriggerResponse> {
+  async addTournamentByCode(@User() user: Player, @Args('visualCode', { type: () => String }) visualCode: string): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to add tournament by code');
     }
@@ -220,15 +217,12 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async addTournamentByCodes(
-    @User() user: Player,
-    @Args('visualCode', { type: () => [String] }) visualCode: string[],
-  ): Promise<SyncTriggerResponse> {
+  async addTournamentByCodes(@User() user: Player, @Args('visualCode', { type: () => [String] }) visualCode: string[]): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to add tournament by code');
     }
 
-    for (const code of visualCode){
+    for (const code of visualCode) {
       await this.syncService.queueTournamentAddByCode({ visualCode: code });
     }
 
@@ -464,10 +458,7 @@ export class SyncResolver {
 
   @Mutation(() => SyncTriggerResponse)
   @UseGuards(PermGuard)
-  async triggerRankingSync(
-    @User() user: Player,
-    @Args('startDate', { nullable: true }) startDate?: string,
-  ): Promise<SyncTriggerResponse> {
+  async triggerRankingSync(@User() user: Player, @Args('startDate', { nullable: true }) startDate?: string): Promise<SyncTriggerResponse> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to trigger ranking sync');
     }
@@ -475,9 +466,7 @@ export class SyncResolver {
     await this.syncService.queueRankingSync(startDate ? { startDate } : undefined);
 
     return {
-      message: startDate
-        ? `Ranking sync queued from ${startDate}`
-        : 'Ranking sync queued (incremental from last update)',
+      message: startDate ? `Ranking sync queued from ${startDate}` : 'Ranking sync queued (incremental from last update)',
       success: true,
     };
   }

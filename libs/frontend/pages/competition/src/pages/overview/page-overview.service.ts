@@ -25,8 +25,8 @@ export class OverviewService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ competitionEvents: CompetitionEvent[] }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ competitionEvents: CompetitionEvent[] }>({
             query: gql`
               query CompetitionsOverview($args: CompetitionEventArgs) {
                 competitionEvents(args: $args) {
@@ -40,7 +40,8 @@ export class OverviewService {
               args: { where: this._competitionSearchWhere(params.query) },
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.competitionEvents) {
           throw new Error('No competitions found');

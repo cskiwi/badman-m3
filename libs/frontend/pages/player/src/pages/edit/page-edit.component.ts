@@ -60,7 +60,7 @@ const GET_PLAYER_WITH_DETAILS = gql`
     PlayerProfileComponent,
     PlayerClaimsComponent,
     PlayerRankingComponent,
-],
+  ],
   providers: [MessageService],
   templateUrl: './page-edit.component.html',
   styleUrl: './page-edit.component.scss',
@@ -132,7 +132,8 @@ export class PageEditComponent {
           break;
         }
 
-        case '1': { // Claims tab
+        case '1': {
+          // Claims tab
           const claimsComponent = this.claimsComponent();
           if (claimsComponent?.isDirty) {
             await claimsComponent.saveClaims();

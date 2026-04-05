@@ -11,14 +11,7 @@ import { CartItem } from '../../page-general-enrollment.service';
 @Component({
   selector: 'app-enrollment-cart',
   standalone: true,
-  imports: [
-    CardModule,
-    ButtonModule,
-    DividerModule,
-    BadgeModule,
-    ProgressSpinnerModule,
-    TranslateModule
-],
+  imports: [CardModule, ButtonModule, DividerModule, BadgeModule, ProgressSpinnerModule, TranslateModule],
   templateUrl: './enrollment-cart.component.html',
 })
 export class EnrollmentCartComponent {

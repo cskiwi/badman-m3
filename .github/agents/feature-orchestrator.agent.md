@@ -1,16 +1,16 @@
 ---
-name: "feature-orchestrator"
-description: "Decomposes full-stack feature requests and delegates frontend/backend work to the Angular Expert and NestJS Expert agents."
+name: 'feature-orchestrator'
+description: 'Decomposes full-stack feature requests and delegates frontend/backend work to the Angular Expert and NestJS Expert agents.'
 argument-hint: "Describe the feature you want to build (e.g., 'add a club ranking page with filtering')"
 tools: ['read', 'search', 'vscode/askQuestions']
 handoffs:
-  - label: "Implement Backend"
-    agent: "NestJS Expert"
-    prompt: "Implement the backend feature as described above"
+  - label: 'Implement Backend'
+    agent: 'NestJS Expert'
+    prompt: 'Implement the backend feature as described above'
     send: true
-  - label: "Implement Frontend"
-    agent: "Angular Expert"
-    prompt: "Implement the frontend feature as described above"
+  - label: 'Implement Frontend'
+    agent: 'Angular Expert'
+    prompt: 'Implement the frontend feature as described above'
     send: true
 ---
 
@@ -48,6 +48,7 @@ Search for existing patterns related to the feature domain:
 Split the feature into two clearly scoped task descriptions:
 
 **Backend Task** (for `@nestjs-expert`): Covers:
+
 - New or modified TypeORM entities / migrations needed
 - GraphQL types (ObjectType, InputType)
 - Service methods (queries, mutations, business logic)
@@ -55,6 +56,7 @@ Split the feature into two clearly scoped task descriptions:
 - Guard / authorization changes
 
 **Frontend Task** (for `@angular-expert`): Covers:
+
 - Page or component to create / modify
 - GraphQL queries / mutations to call
 - PrimeNG components to use (table, dialog, form, etc.)
@@ -66,6 +68,7 @@ If the feature is **backend-only** or **frontend-only**, delegate to only that a
 ### 4. Write Task Briefs
 
 For each task, write a self-contained brief that includes:
+
 - Feature goal (1-2 sentences)
 - Relevant existing files to reference (paths from the codebase exploration)
 - Specific deliverables (files to create, methods to add, schema changes)
@@ -85,6 +88,7 @@ Always delegate backend **before** frontend when both are needed, since the fron
 ### 6. Validate Integration
 
 After both specialists report completion:
+
 - Confirm the GraphQL schema / types match between backend output and frontend queries.
 - Note any mismatches or follow-up tasks for the user.
 

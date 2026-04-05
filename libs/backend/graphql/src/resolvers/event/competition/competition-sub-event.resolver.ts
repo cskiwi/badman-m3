@@ -6,9 +6,7 @@ import { CompetitionSubEventArgs, CompetitionDrawArgs } from '../../../args';
 @Resolver(() => CompetitionSubEvent)
 export class CompetitionSubEventResolver {
   @Query(() => CompetitionSubEvent)
-  async competitionSubEvent(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<CompetitionSubEvent> {
+  async competitionSubEvent(@Args('id', { type: () => ID }) id: string): Promise<CompetitionSubEvent> {
     const comp = await CompetitionSubEvent.findOne({
       where: {
         id,
@@ -24,7 +22,7 @@ export class CompetitionSubEventResolver {
 
   @Query(() => [CompetitionSubEvent])
   async competitionSubEvents(
-    @Args('args',  { type: () => CompetitionSubEventArgs, nullable: true  })
+    @Args('args', { type: () => CompetitionSubEventArgs, nullable: true })
     inputArgs?: InstanceType<typeof CompetitionSubEventArgs>,
   ): Promise<CompetitionSubEvent[]> {
     const args = CompetitionSubEventArgs.toFindManyOptions(inputArgs);

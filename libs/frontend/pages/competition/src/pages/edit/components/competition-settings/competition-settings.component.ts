@@ -117,10 +117,7 @@ export class CompetitionSettingsComponent {
 
   canEditCompetition(): boolean {
     const competition = this.competition();
-    return this.authService.hasAnyPermission([
-      'edit-any:competition',
-      `${competition?.id}_edit:competition`,
-    ]);
+    return this.authService.hasAnyPermission(['edit-any:competition', `${competition?.id}_edit:competition`]);
   }
 
   async saveSettings(): Promise<void> {

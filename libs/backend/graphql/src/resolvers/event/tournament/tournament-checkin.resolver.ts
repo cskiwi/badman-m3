@@ -1,31 +1,8 @@
 import { PermGuard, User } from '@app/backend-authorization';
-import {
-  TournamentCheckIn,
-  TournamentEvent,
-  TournamentEnrollment,
-  Player,
-  TournamentSubEvent,
-} from '@app/models';
+import { TournamentCheckIn, TournamentEvent, TournamentEnrollment, Player, TournamentSubEvent } from '@app/models';
 import { CheckInStatus, EnrollmentStatus } from '@app/models-enum';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  Args,
-  ID,
-  Int,
-  Mutation,
-  ObjectType,
-  Field,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { BadRequestException, ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, ID, Int, Mutation, ObjectType, Field, Parent, Query, ResolveField, Resolver, registerEnumType } from '@nestjs/graphql';
 import { TournamentCheckInArgs } from '../../../args';
 import { CheckInPlayerInput, MarkNoShowInput, BulkCheckInInput } from '../../../inputs';
 import { In } from 'typeorm';
@@ -75,9 +52,7 @@ export class TournamentCheckInResolver {
   // ============ QUERIES ============
 
   @Query(() => TournamentCheckIn)
-  async tournamentCheckIn(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<TournamentCheckIn> {
+  async tournamentCheckIn(@Args('id', { type: () => ID }) id: string): Promise<TournamentCheckIn> {
     const checkIn = await TournamentCheckIn.findOne({
       where: { id },
     });
@@ -116,9 +91,7 @@ export class TournamentCheckInResolver {
   }
 
   @Query(() => [TournamentCheckIn], { description: 'Get pending check-ins for a tournament' })
-  async pendingCheckIns(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<TournamentCheckIn[]> {
+  async pendingCheckIns(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<TournamentCheckIn[]> {
     return TournamentCheckIn.find({
       where: {
         tournamentEventId,
@@ -129,9 +102,7 @@ export class TournamentCheckInResolver {
   }
 
   @Query(() => CheckInStats, { description: 'Get check-in statistics for a tournament' })
-  async checkInStats(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<CheckInStats> {
+  async checkInStats(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<CheckInStats> {
     const [total, checkedIn, pending, noShow] = await Promise.all([
       TournamentCheckIn.count({ where: { tournamentEventId } }),
       TournamentCheckIn.count({
@@ -286,10 +257,7 @@ export class TournamentCheckInResolver {
 
   @Mutation(() => TournamentCheckIn, { description: 'Check in a player' })
   @UseGuards(PermGuard)
-  async checkInPlayer(
-    @User() user: Player,
-    @Args('input') input: CheckInPlayerInput,
-  ): Promise<TournamentCheckIn> {
+  async checkInPlayer(@User() user: Player, @Args('input') input: CheckInPlayerInput): Promise<TournamentCheckIn> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to check in players');
@@ -338,10 +306,7 @@ export class TournamentCheckInResolver {
 
   @Mutation(() => TournamentCheckIn, { description: 'Mark a player as no-show' })
   @UseGuards(PermGuard)
-  async markNoShow(
-    @User() user: Player,
-    @Args('input') input: MarkNoShowInput,
-  ): Promise<TournamentCheckIn> {
+  async markNoShow(@User() user: Player, @Args('input') input: MarkNoShowInput): Promise<TournamentCheckIn> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to mark no-shows');
@@ -372,10 +337,7 @@ export class TournamentCheckInResolver {
 
   @Mutation(() => TournamentCheckIn, { description: 'Undo a check-in (set back to pending)' })
   @UseGuards(PermGuard)
-  async undoCheckIn(
-    @User() user: Player,
-    @Args('checkInId', { type: () => ID }) checkInId: string,
-  ): Promise<TournamentCheckIn> {
+  async undoCheckIn(@User() user: Player, @Args('checkInId', { type: () => ID }) checkInId: string): Promise<TournamentCheckIn> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to undo check-ins');
@@ -401,10 +363,7 @@ export class TournamentCheckInResolver {
 
   @Mutation(() => BulkCheckInResult, { description: 'Check in multiple players at once' })
   @UseGuards(PermGuard)
-  async bulkCheckIn(
-    @User() user: Player,
-    @Args('input') input: BulkCheckInInput,
-  ): Promise<BulkCheckInResult> {
+  async bulkCheckIn(@User() user: Player, @Args('input') input: BulkCheckInInput): Promise<BulkCheckInResult> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to check in players');
@@ -455,25 +414,19 @@ export class TournamentCheckInResolver {
   // ============ RESOLVE FIELDS ============
 
   @ResolveField(() => TournamentEvent, { nullable: true })
-  async tournamentEvent(
-    @Parent() { tournamentEventId }: TournamentCheckIn,
-  ): Promise<TournamentEvent | null> {
+  async tournamentEvent(@Parent() { tournamentEventId }: TournamentCheckIn): Promise<TournamentEvent | null> {
     if (!tournamentEventId) return null;
     return TournamentEvent.findOne({ where: { id: tournamentEventId } });
   }
 
   @ResolveField(() => TournamentEnrollment, { nullable: true })
-  async enrollment(
-    @Parent() { enrollmentId }: TournamentCheckIn,
-  ): Promise<TournamentEnrollment | null> {
+  async enrollment(@Parent() { enrollmentId }: TournamentCheckIn): Promise<TournamentEnrollment | null> {
     if (!enrollmentId) return null;
     return TournamentEnrollment.findOne({ where: { id: enrollmentId } });
   }
 
   @ResolveField(() => Player, { nullable: true })
-  async checkedInBy(
-    @Parent() { checkedInById }: TournamentCheckIn,
-  ): Promise<Player | null> {
+  async checkedInBy(@Parent() { checkedInById }: TournamentCheckIn): Promise<Player | null> {
     if (!checkedInById) return null;
     return Player.findOne({ where: { id: checkedInById } });
   }

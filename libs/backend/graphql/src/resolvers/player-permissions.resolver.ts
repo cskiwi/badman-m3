@@ -7,9 +7,7 @@ export class PlayerPermissionsResolver {
   async permissions(@Parent() player: Player): Promise<string[]> {
     try {
       // Fetch direct claims using the explicit join table
-      const claims = await Claim.createQueryBuilder('claim')
-        .innerJoin('claim.players', 'player', 'player.id = :id', { id: player.id })
-        .getMany();
+      const claims = await Claim.createQueryBuilder('claim').innerJoin('claim.players', 'player', 'player.id = :id', { id: player.id }).getMany();
 
       // Return claim names
       return claims.map((c) => c.name).filter((name): name is string => !!name);

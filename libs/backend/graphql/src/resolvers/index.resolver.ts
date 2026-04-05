@@ -13,9 +13,9 @@ registerEnumType(IndexType, {
 
 @InputType('IndexInput', { description: 'Input for indexing data' })
 export class IndexInput {
-  @Field(() => [IndexType], { 
+  @Field(() => [IndexType], {
     nullable: true,
-    description: 'Select one or more types to index'
+    description: 'Select one or more types to index',
   })
   @IsArray()
   @IsEnum(IndexType, { each: true })
@@ -37,22 +37,14 @@ export class IndexResolver {
 
   @Mutation(() => IndexResult)
   @UseGuards(PermGuard)
-  async indexAll(
-    @User() user: Player,
-    @Args('input', { type: () => IndexInput, nullable: true }) input?: IndexInput
-  ): Promise<IndexResult> {
+  async indexAll(@User() user: Player, @Args('input', { type: () => IndexInput, nullable: true }) input?: IndexInput): Promise<IndexResult> {
     this.logger.log(`Indexing all data for user ${user?.fullName}`);
 
     const types = Array.isArray(input?.types)
       ? input.types
       : input?.types
         ? [input.types]
-        : [
-            IndexType.PLAYERS,
-            IndexType.CLUBS,
-            IndexType.COMPETITION_EVENTS,
-            IndexType.TOURNAMENT_EVENTS,
-          ];
+        : [IndexType.PLAYERS, IndexType.CLUBS, IndexType.COMPETITION_EVENTS, IndexType.TOURNAMENT_EVENTS];
 
     const toIndex = types.map((type) => {
       switch (type) {

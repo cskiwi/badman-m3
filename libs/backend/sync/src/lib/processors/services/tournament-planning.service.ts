@@ -37,8 +37,8 @@ export class TournamentPlanningService {
     try {
       // Get tournament events
       const events = eventCode
-          ? await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode)
-          : await this.tournamentApiClient.getTournamentEvents(tournamentCode);
+        ? await this.tournamentApiClient.getTournamentEvents(tournamentCode, eventCode)
+        : await this.tournamentApiClient.getTournamentEvents(tournamentCode);
 
       const flatEvents = Array.isArray(events) ? events : [events];
 

@@ -27,6 +27,7 @@ The `vscode_askQuestions` tool is ONLY for requesting user input and decisions.
 8. NO Subagents should be used!
 
 ## Examples
+
 - ✓ Regular chat: "I found 3 inconsistencies in the plan..."  
   THEN → `vscode_askQuestions` tool: "Is there anything else you need help with?"
 - ✓ Regular chat: "I've completed the code review. Here are the findings..."  

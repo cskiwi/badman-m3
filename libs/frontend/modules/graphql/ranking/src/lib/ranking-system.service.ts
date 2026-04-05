@@ -55,7 +55,7 @@ export class RankingSystemService {
   private rankingSystemSignal = signal<RankingSystem | null>(null);
   private loadedSignal = signal<boolean>(false);
 
-  constructor(){
+  constructor() {
     // Load initial system from sessionStorage
     this.loadInitialSystem();
     // NOTE: Any effects or navigation logic should be handled in the component, not here.
@@ -70,10 +70,8 @@ export class RankingSystemService {
   loaded = computed(() => this.loadedSignal());
 
   private async loadInitialSystem() {
-    const savedId = this.isBrowser
-      ? sessionStorage?.getItem(WATCH_SYSTEM_ID_KEY) ?? null
-      : null;
-    
+    const savedId = this.isBrowser ? (sessionStorage?.getItem(WATCH_SYSTEM_ID_KEY) ?? null) : null;
+
     try {
       const system = await this._loadSystem(savedId);
       this.rankingSystemSignal.set(system);
@@ -85,9 +83,9 @@ export class RankingSystemService {
 
   async watchSystem(id: string) {
     if (!this.isBrowser) return;
-    
+
     sessionStorage.setItem(WATCH_SYSTEM_ID_KEY, id);
-    
+
     try {
       const system = await this._loadSystem(id);
       this.rankingSystemSignal.set(system);
@@ -99,9 +97,9 @@ export class RankingSystemService {
 
   async clearWatchSystem() {
     if (!this.isBrowser) return;
-    
+
     sessionStorage.removeItem(WATCH_SYSTEM_ID_KEY);
-    
+
     try {
       const system = await this._loadSystem(null);
       this.rankingSystemSignal.set(system);
@@ -124,16 +122,17 @@ export class RankingSystemService {
 
   private async _loadSystem(id?: string | null): Promise<RankingSystem | null> {
     try {
-      const result = await lastValueFrom(this.apollo
-        .query<{
+      const result = await lastValueFrom(
+        this.apollo.query<{
           rankingSystem: RankingSystem;
         }>({
           query: SYSTEM_QUERY,
           variables: {
             id: id ?? null,
           },
-        }));
-      
+        }),
+      );
+
       return result?.data?.rankingSystem || null;
     } catch (error) {
       return null;
@@ -141,15 +140,17 @@ export class RankingSystemService {
   }
 
   private async _deleteSystem(id?: string | null) {
-    return lastValueFrom(this.apollo.mutate({
-      mutation: gql`
-        mutation RemoveRankingSystem($id: ID!) {
-          removeRankingSystem(id: $id)
-        }
-      `,
-      variables: {
-        id: id,
-      },
-    }));
+    return lastValueFrom(
+      this.apollo.mutate({
+        mutation: gql`
+          mutation RemoveRankingSystem($id: ID!) {
+            removeRankingSystem(id: $id)
+          }
+        `,
+        variables: {
+          id: id,
+        },
+      }),
+    );
   }
 }

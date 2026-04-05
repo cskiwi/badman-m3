@@ -16,6 +16,7 @@ When a user wants to create a custom agent:
 ### 1. Discover Requirements
 
 Ask clarifying questions to understand:
+
 - **Role/Persona**: What specialized role? (security reviewer, planner, test writer, etc.)
 - **Primary Tasks**: What specific tasks will this agent handle?
 - **Tool Needs**: Read-only, editing, execution, web access, MCP integration?
@@ -26,12 +27,14 @@ Ask clarifying questions to understand:
 ### 2. Design Agent Structure
 
 Propose the agent design:
+
 - **Name & Description**: Clear, concise identity
 - **Tool Selection**: Minimal necessary toolset (consult agent-design skill)
 - **Instructions**: Core workflow and constraints
 - **Skill References**: Link to relevant domain skills
 
 **Modern Pattern - Skills over Instructions:**
+
 - Keep agent < 100 lines (workflow focus)
 - Move domain knowledge to skills
 - Reference existing skills, don't duplicate
@@ -59,6 +62,7 @@ Propose the agent design:
 ## Domain Knowledge
 
 For comprehensive agent design guidance, **consult the [agent-design](../skills/agent-design/SKILL.md) skill** for:
+
 - Tool selection strategies by agent type
 - Instruction writing best practices
 - Common agent archetypes
@@ -82,6 +86,7 @@ For creating skills instead of agents, **consult the [make-skill-template](../sk
 ## Output Requirements
 
 When creating an agent file:
+
 1. **Complete file content** in `.github/agents/` directory
 2. **Explanation** of design decisions and tool choices
 3. **Usage examples** showing how to invoke the agent

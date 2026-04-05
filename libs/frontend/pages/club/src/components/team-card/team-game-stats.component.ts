@@ -9,7 +9,7 @@ import { TeamCardService } from './team-card.service';
   imports: [TranslateModule, SkeletonModule],
   providers: [TeamCardService],
   templateUrl: './team-game-stats.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeamGameStatsComponent {
   readonly service = inject(TeamCardService);
@@ -23,5 +23,4 @@ export class TeamGameStatsComponent {
       }
     });
   }
-
 }

@@ -15,6 +15,7 @@ This document contains complete data structure examples from the Tournament Soft
 ## Competition Structure (TypeID: 1) - PBO Competitie 2025-2026
 
 ### Tournament Details
+
 ```xml
 <Result Version="1.0">
   <Tournament>
@@ -45,6 +46,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Competition Events Structure
+
 ```xml
 <Result Version="1.0">
   <TournamentEvent>
@@ -66,6 +68,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Competition Teams Structure
+
 ```xml
 <Result Version="1.0">
   <Team>
@@ -83,6 +86,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Competition Draw Structure (Round Robin/Poule)
+
 ```xml
 <Result Version="1.0">
   <TournamentDraw>
@@ -125,6 +129,7 @@ This document contains complete data structure examples from the Tournament Soft
 ## Tournament Structure (TypeID: 0) - Lokerse Volvo International 2025
 
 ### Tournament Details
+
 ```xml
 <Result Version="1.0">
   <Tournament>
@@ -164,6 +169,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Tournament Events Structure
+
 ```xml
 <Result Version="1.0">
   <TournamentEvent>
@@ -195,6 +201,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Tournament Entry Structure
+
 ```xml
 <Result Version="1.0">
   <Entry>
@@ -218,6 +225,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Tournament Draw Structure (Knockout)
+
 ```xml
 <Result Version="1.0">
   <TournamentDraw>
@@ -258,6 +266,7 @@ This document contains complete data structure examples from the Tournament Soft
 ```
 
 ### Detailed Match Information
+
 ```xml
 <Result Version="1.0">
   <Match>
@@ -304,6 +313,7 @@ This document contains complete data structure examples from the Tournament Soft
 ## Data Model Mapping for Sync Implementation
 
 ### Key Identifiers
+
 - **Tournament Code**: GUID used as primary identifier in Tournament Software
 - **Visual Code**: Same as Tournament Code, used in our database
 - **Event Code**: Numeric identifier for events within a tournament
@@ -314,6 +324,7 @@ This document contains complete data structure examples from the Tournament Soft
 ### Tournament Types and Their Characteristics
 
 #### TypeID: 1 (Team Competitions)
+
 - **Structure**: Round-robin poules with team-based matches
 - **Team Names**: Include suffix indicating gender and strength (e.g., "Beveren 1H (41)")
 - **Scheduling**: Season-long (September - April)
@@ -321,6 +332,7 @@ This document contains complete data structure examples from the Tournament Soft
 - **Match Structure**: Team encounters with multiple individual games
 
 #### TypeID: 0 (Individual Tournaments)
+
 - **Structure**: Knockout/elimination draws with individual players
 - **Player Names**: Individual entries with Member IDs
 - **Scheduling**: Weekend tournaments (1-2 days)
@@ -328,16 +340,20 @@ This document contains complete data structure examples from the Tournament Soft
 - **Match Structure**: Direct individual matches
 
 ### Gender and Game Type Codes
+
 - **GenderID**: 1=Men, 2=Women, 3=Mixed
 - **GameTypeID**: 1=Singles, 2=Doubles
 - **ParaClassID**: 0=Standard (non-para classification)
 
 ### Match Status Codes
+
 - **Winner**: 0=Not played, 1=Team1/Player1 wins, 2=Team2/Player2 wins
 - **ScoreStatus**: 0=Normal completion, other values for special statuses
 
 ### Team Naming Convention for Competitions
+
 Format: `[Club Name] [Team Number][Gender] ([Strength])`
+
 - **Club Name**: Official club name
 - **Team Number**: 1, 2, 3, etc.
 - **Gender**: H=Heren (Men), D=Dames (Women), G=Gemengd (Mixed)

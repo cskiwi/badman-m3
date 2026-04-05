@@ -9,10 +9,7 @@ import { RuleArgs } from '../../args';
 export class RuleResolver {
   @Query(() => Rule)
   @UseGuards(PermGuard)
-  async rule(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<Rule> {
+  async rule(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<Rule> {
     if (!(await user.hasAnyPermission(['change:rules']))) {
       throw new ForbiddenException('Insufficient permissions to access rules');
     }

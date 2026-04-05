@@ -20,38 +20,20 @@ describe('PlayerMatcherService', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        PlayerMatcherService,
-        { provide: Apollo, useValue: apollo },
-        { provide: HttpClient, useValue: http },
-      ],
+      providers: [PlayerMatcherService, { provide: Apollo, useValue: apollo }, { provide: HttpClient, useValue: http }],
     });
 
     service = TestBed.inject(PlayerMatcherService);
   });
 
   it('prefers the exact internal club name over a fuzzy initials match', async () => {
-    const clubPlayers = [
-      createPlayer('1', 'Franky R. Mercy'),
-      createPlayer('2', 'Mirko Laurens'),
-      createPlayer('3', 'Karam Kaspar'),
-    ];
+    const clubPlayers = [createPlayer('1', 'Franky R. Mercy'), createPlayer('2', 'Mirko Laurens'), createPlayer('3', 'Karam Kaspar')];
 
     apollo.query.mockReturnValue(of({ data: { players: clubPlayers } }));
 
-    const results = await service.matchPlayers(
-      [
-        createSurvey('Mirko Laurens'),
-        createSurvey('Karam Kaspar'),
-      ],
-      'system-id',
-      clubPlayers,
-    );
+    const results = await service.matchPlayers([createSurvey('Mirko Laurens'), createSurvey('Karam Kaspar')], 'system-id', clubPlayers);
 
-    expect(results.map((result) => result.player?.fullName)).toEqual([
-      'Mirko Laurens',
-      'Karam Kaspar',
-    ]);
+    expect(results.map((result) => result.player?.fullName)).toEqual(['Mirko Laurens', 'Karam Kaspar']);
     expect(http.get).not.toHaveBeenCalled();
   });
 
@@ -60,11 +42,7 @@ describe('PlayerMatcherService', () => {
 
     apollo.query.mockReturnValue(of({ data: { players: clubPlayers } }));
 
-    const results = await service.matchPlayers(
-      [createSurvey('Franky Mercy')],
-      'system-id',
-      clubPlayers,
-    );
+    const results = await service.matchPlayers([createSurvey('Franky Mercy')], 'system-id', clubPlayers);
 
     expect(results[0].player?.fullName).toBe('Franky R. Mercy');
     expect(http.get).not.toHaveBeenCalled();

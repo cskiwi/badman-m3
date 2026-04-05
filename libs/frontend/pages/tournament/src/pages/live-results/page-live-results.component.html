@@ -21,13 +21,12 @@
               <p-tag severity="info" value="{{ 'all.tournament.live.justFinished' | translate }}" />
             }
             @if (game.endTime) {
-              <span class="text-muted-color text-sm">{{ game.endTime | date:'HH:mm' }}</span>
+              <span class="text-muted-color text-sm">{{ game.endTime | date: 'HH:mm' }}</span>
             }
           </div>
 
           <div class="flex items-center justify-between">
-            <div class="flex-1 flex items-center gap-2 p-3 rounded-border"
-                 [class.bg-green-100]="game.winner === 1">
+            <div class="flex-1 flex items-center gap-2 p-3 rounded-border" [class.bg-green-100]="game.winner === 1">
               <span class="text-lg" [class.font-bold]="game.winner === 1">Team 1</span>
               @if (game.winner === 1) {
                 <i class="pi pi-trophy text-yellow-500 text-xl"></i>
@@ -46,8 +45,7 @@
                 }
               </div>
             </div>
-            <div class="flex-1 flex items-center justify-end gap-2 p-3 rounded-border"
-                 [class.bg-green-100]="game.winner === 2">
+            <div class="flex-1 flex items-center justify-end gap-2 p-3 rounded-border" [class.bg-green-100]="game.winner === 2">
               @if (game.winner === 2) {
                 <i class="pi pi-trophy text-yellow-500 text-xl"></i>
               }

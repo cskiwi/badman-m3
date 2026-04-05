@@ -91,12 +91,23 @@ export const ALL_SYNC_QUEUES = [
 
 // Queue to job type mapping for easy reference
 export const QUEUE_JOB_TYPE_MAP = {
-  [TOURNAMENT_DISCOVERY_QUEUE]: [JOB_TYPES.TOURNAMENT_DISCOVERY, JOB_TYPES.TOURNAMENT_ADD_BY_CODE, JOB_TYPES.TOURNAMENT_SCRAPE_YEAR, JOB_TYPES.TOURNAMENT_SCRAPE_EVENT, JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP],
+  [TOURNAMENT_DISCOVERY_QUEUE]: [
+    JOB_TYPES.TOURNAMENT_DISCOVERY,
+    JOB_TYPES.TOURNAMENT_ADD_BY_CODE,
+    JOB_TYPES.TOURNAMENT_SCRAPE_YEAR,
+    JOB_TYPES.TOURNAMENT_SCRAPE_EVENT,
+    JOB_TYPES.TOURNAMENT_SCRAPE_YEAR_CLEANUP,
+  ],
   [COMPETITION_EVENT_QUEUE]: [JOB_TYPES.COMPETITION_STRUCTURE_SYNC, JOB_TYPES.COMPETITION_GAME_SYNC],
   [TOURNAMENT_EVENT_QUEUE]: [JOB_TYPES.TOURNAMENT_STRUCTURE_SYNC, JOB_TYPES.TOURNAMENT_GAME_SYNC, JOB_TYPES.TOURNAMENT_RANKING_RECALC],
   [TEAM_MATCHING_QUEUE]: [JOB_TYPES.TEAM_MATCHING],
   [RANKING_SYNC_QUEUE]: [JOB_TYPES.RANKING_SYNC_INIT, JOB_TYPES.RANKING_SYNC_PUBLICATION],
-  [RANKING_CALC_QUEUE]: [JOB_TYPES.RANKING_CALC_INIT, JOB_TYPES.RANKING_CALC_PERIOD, JOB_TYPES.RANKING_CALC_PLAYER_BATCH, JOB_TYPES.RANKING_CALC_FINALIZE],
+  [RANKING_CALC_QUEUE]: [
+    JOB_TYPES.RANKING_CALC_INIT,
+    JOB_TYPES.RANKING_CALC_PERIOD,
+    JOB_TYPES.RANKING_CALC_PLAYER_BATCH,
+    JOB_TYPES.RANKING_CALC_FINALIZE,
+  ],
   [SYNC_QUEUE]: [], // Legacy queue
 } as const;
 
@@ -187,16 +198,16 @@ export interface RankingSyncPublicationJobData {
 
 export interface RankingCalcInitJobData {
   systemId: string;
-  calcDate: string;      // ISO — the snapshot date
+  calcDate: string; // ISO — the snapshot date
   isUpdateDate: boolean; // true when level changes are allowed
   metadata?: JobDisplayMetadata;
 }
 
 export interface RankingCalcPeriodJobData {
   systemId: string;
-  periodDate: string;  // ISO — becomes RankingPlace.rankingDate
+  periodDate: string; // ISO — becomes RankingPlace.rankingDate
   windowStart: string; // ISO — periodDate - periodAmount/periodUnit
-  windowEnd: string;   // ISO — same as periodDate (exclusive upper bound)
+  windowEnd: string; // ISO — same as periodDate (exclusive upper bound)
   isUpdateDate: boolean;
   metadata?: JobDisplayMetadata;
 }
@@ -208,7 +219,7 @@ export interface RankingCalcPlayerBatchJobData {
   windowEnd: string;
   playerIds: string[]; // IDs of players in this batch (~100 per batch)
   isUpdateDate: boolean;
-  batchKey: string;    // Redis key: ranking-calc:{systemId}:{periodDate}:remaining
+  batchKey: string; // Redis key: ranking-calc:{systemId}:{periodDate}:remaining
   metadata?: JobDisplayMetadata;
 }
 

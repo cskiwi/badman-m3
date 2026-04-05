@@ -81,9 +81,7 @@ export class TeamDetailService {
                     }
                   }
                 }
-                competitionEncounters(
-                  args: { where: [{ OR: [{ homeTeamId: { eq: $teamIdStr } }, { awayTeamId: { eq: $teamIdStr } }] }] }
-                ) {
+                competitionEncounters(args: { where: [{ OR: [{ homeTeamId: { eq: $teamIdStr } }, { awayTeamId: { eq: $teamIdStr } }] }] }) {
                   id
                   drawId
                   date
@@ -260,9 +258,7 @@ export class TeamDetailService {
   // Fallback drawId from encounters when entries have no draw info
   private fallbackDrawId = computed(() => {
     const entries = this.dataResource.value()?.entries ?? [];
-    const hasEntryWithDraw = entries.some(
-      (e) => e.competitionDraw?.competitionSubEvent?.eventId,
-    );
+    const hasEntryWithDraw = entries.some((e) => e.competitionDraw?.competitionSubEvent?.eventId);
     if (hasEntryWithDraw) return null;
 
     return this._encounters().find((e) => e.drawId)?.drawId ?? null;
@@ -303,9 +299,7 @@ export class TeamDetailService {
     const entries = this.dataResource.value()?.entries ?? [];
 
     // Prefer entry with full draw info from entries query
-    const entryWithDraw = entries.find(
-      (e) => e.competitionDraw?.competitionSubEvent?.eventId,
-    );
+    const entryWithDraw = entries.find((e) => e.competitionDraw?.competitionSubEvent?.eventId);
     if (entryWithDraw) {
       return entryWithDraw;
     }

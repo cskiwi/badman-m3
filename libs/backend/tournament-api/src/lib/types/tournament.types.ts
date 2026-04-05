@@ -147,7 +147,7 @@ export enum ScoreStatus {
   Walkover = 1,
   Retirement = 2,
   Disqualified = 3,
-  "No Match" = 4,
+  'No Match' = 4,
 }
 
 /**

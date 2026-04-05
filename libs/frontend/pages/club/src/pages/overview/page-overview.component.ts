@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -31,11 +30,11 @@ import { DividerModule } from 'primeng/divider';
     ButtonModule,
     TagModule,
     DividerModule,
-    PageHeaderComponent
+    PageHeaderComponent,
   ],
   templateUrl: './page-overview.component.html',
   styleUrl: './page-overview.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageOverviewComponent {
   private readonly dataService = new OverviewService();
@@ -43,7 +42,7 @@ export class PageOverviewComponent {
   // selectors
   clubs = this.dataService.clubs;
   clubStats = this.dataService.clubStats;
-  
+
   error = this.dataService.error;
   loading = this.dataService.loading;
 
@@ -69,7 +68,7 @@ export class PageOverviewComponent {
     { label: 'Luxembourg', value: 'Luxembourg' },
     { label: 'Namur', value: 'Namur' },
     { label: 'Walloon Brabant', value: 'Walloon Brabant' },
-    { label: 'West Flanders', value: 'West Flanders' }
+    { label: 'West Flanders', value: 'West Flanders' },
   ];
 
   countryOptions = [
@@ -77,7 +76,7 @@ export class PageOverviewComponent {
     { label: 'Belgium', value: 'Belgium' },
     { label: 'Netherlands', value: 'Netherlands' },
     { label: 'France', value: 'France' },
-    { label: 'Germany', value: 'Germany' }
+    { label: 'Germany', value: 'Germany' },
   ];
 
   clearFilters(): void {

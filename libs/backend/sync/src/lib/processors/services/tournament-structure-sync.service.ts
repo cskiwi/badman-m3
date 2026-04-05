@@ -18,10 +18,7 @@ export class TournamentSyncService {
    * Uses closeDate as a proxy for tournament end date (set to EndDate when
    * OnlineEntryEndDate is unavailable during discovery).
    */
-  async processStructureSync(
-    job: Job<TournamentSyncJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processStructureSync(job: Job<TournamentSyncJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
 
     const now = new Date();

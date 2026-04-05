@@ -3,12 +3,7 @@ import { ClubPlayerMembership, Club, Team, Player, TournamentEvent } from '@app/
 import { IsUUID } from '@app/utils';
 import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
 import { Args, ID, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import {
-  ClubArgs,
-  ClubPlayerMembershipArgs,
-  TeamArgs,
-  TournamentEventArgs,
-} from '../args';
+import { ClubArgs, ClubPlayerMembershipArgs, TeamArgs, TournamentEventArgs } from '../args';
 
 @Resolver(() => Club)
 export class ClubResolver {
@@ -104,7 +99,7 @@ export class ClubResolver {
       .orderBy('team.season', 'DESC')
       .getRawMany();
 
-    return result.map(row => row.season);
+    return result.map((row) => row.season);
   }
 
   @ResolveField(() => [TournamentEvent], { nullable: true })

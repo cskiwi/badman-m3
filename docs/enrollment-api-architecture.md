@@ -34,6 +34,7 @@ This document defines the backend GraphQL API architecture for general multi-dis
 **Location:** `C:\Users\glenn\Documents\Code\cskiwi\badman-m3\libs\backend\graphql\src\resolvers\event\tournament\tournament-enrollment.resolver.ts`
 
 **Current Mutations:**
+
 - `enrollInTournament(input: EnrollPlayerInput)` - Single sub-event enrollment for authenticated player
 - `enrollGuest(input: EnrollGuestInput)` - Single sub-event enrollment for guest
 - `updateEnrollment(enrollmentId, input: UpdateEnrollmentInput)` - Update partner preference/notes
@@ -41,6 +42,7 @@ This document defines the backend GraphQL API architecture for general multi-dis
 - `promoteFromWaitingList(enrollmentId)` - Admin promotion from waiting list
 
 **Current Queries:**
+
 - `tournamentEnrollment(id)` - Single enrollment by ID
 - `tournamentEnrollments(args)` - List enrollments with filtering
 - `myTournamentEnrollments(tournamentEventId)` - Current user's enrollments
@@ -49,6 +51,7 @@ This document defines the backend GraphQL API architecture for general multi-dis
 - `lookingForPartner(subEventId)` - Players seeking partners
 
 **Current Validation Logic:**
+
 1. Tournament phase check (`tournament.phase === TournamentPhase.ENROLLMENT_OPEN`)
 2. Enrollment date window validation (global `enrollmentOpenDate`/`enrollmentCloseDate`)
 3. Duplicate enrollment prevention
@@ -57,6 +60,7 @@ This document defines the backend GraphQL API architecture for general multi-dis
 6. Guest enrollment permissions
 
 **Current Limitations:**
+
 - Enrollment window is tournament-wide, not per sub-event
 - No bulk/multi-event enrollment support
 - No pre-enrollment validation/cart preview
@@ -78,6 +82,7 @@ query {
 ```
 
 **Response Type:**
+
 ```graphql
 type SubEventAvailability {
   subEvent: TournamentSubEvent!
@@ -95,6 +100,7 @@ type SubEventAvailability {
 ```
 
 **Business Logic:**
+
 - Check per-event enrollment windows (if implemented)
 - Calculate available slots (accounting for singles/doubles)
 - Verify user eligibility (level requirements, etc.)
@@ -114,6 +120,7 @@ mutation {
 ```
 
 **Input Type:**
+
 ```graphql
 input BulkEnrollmentInput {
   tournamentId: ID!
@@ -135,6 +142,7 @@ input PartnerPreferenceInput {
 ```
 
 **Response Type:**
+
 ```graphql
 type BulkEnrollmentResult {
   success: Boolean!
@@ -161,6 +169,7 @@ type EnrollmentWarning {
 ```
 
 **Transaction Behavior:**
+
 - All-or-nothing: If any enrollment fails validation, rollback all
 - Optional: Partial success mode (enroll successful ones, report failures)
 - Automatic partner matching across all events
@@ -179,6 +188,7 @@ query {
 ```
 
 **Response Type:**
+
 ```graphql
 type EnrollmentCartPreview {
   valid: Boolean!
@@ -209,6 +219,7 @@ type WaitingListEstimate {
 ```
 
 **Business Logic:**
+
 - Dry-run validation (no database writes)
 - Calculate costs per sub-event
 - Check partner availability and mutual preferences
@@ -232,6 +243,7 @@ query {
 ```
 
 **Response Type:**
+
 ```graphql
 type EnrollmentValidationResult {
   valid: Boolean!
@@ -259,6 +271,7 @@ type EnrollmentConflict {
 ```
 
 **Business Logic:**
+
 - Level requirement validation
 - Capacity checks
 - Enrollment window validation
@@ -272,6 +285,7 @@ type EnrollmentConflict {
 ### 1. Enhanced `enrollInTournament`
 
 **Current Implementation:**
+
 ```graphql
 mutation {
   enrollInTournament(input: EnrollPlayerInput!): TournamentEnrollment!
@@ -281,6 +295,7 @@ mutation {
 **Required Changes:**
 
 1. **Per-Event Enrollment Window Validation**
+
    ```typescript
    // OLD: Check tournament-level phase
    if (tournamentEvent.phase !== TournamentPhase.ENROLLMENT_OPEN) {
@@ -290,29 +305,22 @@ mutation {
    // NEW: Check sub-event specific enrollment window
    const now = new Date();
    if (subEvent.enrollmentOpenDate && now < subEvent.enrollmentOpenDate) {
-     throw new BadRequestException(
-       `Enrollment for ${subEvent.name} has not started yet. Opens on ${subEvent.enrollmentOpenDate.toISOString()}`
-     );
+     throw new BadRequestException(`Enrollment for ${subEvent.name} has not started yet. Opens on ${subEvent.enrollmentOpenDate.toISOString()}`);
    }
    if (subEvent.enrollmentCloseDate && now > subEvent.enrollmentCloseDate) {
-     throw new BadRequestException(
-       `Enrollment for ${subEvent.name} has closed. Closed on ${subEvent.enrollmentCloseDate.toISOString()}`
-     );
+     throw new BadRequestException(`Enrollment for ${subEvent.name} has closed. Closed on ${subEvent.enrollmentCloseDate.toISOString()}`);
    }
    ```
 
 2. **Eligibility Checks**
+
    ```typescript
    // Check player level against sub-event restrictions
    if (subEvent.minLevel && user.level < subEvent.minLevel) {
-     throw new BadRequestException(
-       `Your level (${user.level}) is below the minimum required (${subEvent.minLevel})`
-     );
+     throw new BadRequestException(`Your level (${user.level}) is below the minimum required (${subEvent.minLevel})`);
    }
    if (subEvent.maxLevel && user.level > subEvent.maxLevel) {
-     throw new BadRequestException(
-       `Your level (${user.level}) exceeds the maximum allowed (${subEvent.maxLevel})`
-     );
+     throw new BadRequestException(`Your level (${user.level}) exceeds the maximum allowed (${subEvent.maxLevel})`);
    }
    ```
 
@@ -322,13 +330,14 @@ mutation {
    throw new EnrollmentException(
      EnrollmentErrorCode.LEVEL_TOO_LOW,
      `Your level (${user.level}) is below the minimum required (${subEvent.minLevel})`,
-     { requiredLevel: subEvent.minLevel, playerLevel: user.level }
+     { requiredLevel: subEvent.minLevel, playerLevel: user.level },
    );
    ```
 
 ### 2. Enhanced `enrollGuest`
 
 **Required Changes:**
+
 - Same per-event validation as `enrollInTournament`
 - Add guest eligibility fields to `EnrollGuestInput` (e.g., estimated level)
 - Validation based on estimated level vs. sub-event restrictions
@@ -420,38 +429,58 @@ enum EnrollmentPreviewStatus {
 
 ```graphql
 input BulkEnrollmentInput {
-  """Tournament ID to enroll in"""
+  """
+  Tournament ID to enroll in
+  """
   tournamentId: ID!
 
-  """List of sub-events to enroll in"""
+  """
+  List of sub-events to enroll in
+  """
   enrollments: [SubEventEnrollmentInput!]!
 
-  """Optional partner preferences across events"""
+  """
+  Optional partner preferences across events
+  """
   partnerPreferences: [PartnerPreferenceInput!]
 
-  """Optional notes for all enrollments"""
+  """
+  Optional notes for all enrollments
+  """
   notes: String
 
-  """If true, continue with successful enrollments even if some fail"""
+  """
+  If true, continue with successful enrollments even if some fail
+  """
   allowPartialSuccess: Boolean = false
 }
 
 input SubEventEnrollmentInput {
-  """Sub-event ID to enroll in"""
+  """
+  Sub-event ID to enroll in
+  """
   subEventId: ID!
 
-  """Preferred partner for this specific event"""
+  """
+  Preferred partner for this specific event
+  """
   preferredPartnerId: ID
 
-  """Optional notes for this specific enrollment"""
+  """
+  Optional notes for this specific enrollment
+  """
   notes: String
 }
 
 input PartnerPreferenceInput {
-  """Sub-event ID"""
+  """
+  Sub-event ID
+  """
   subEventId: ID!
 
-  """Preferred partner player ID"""
+  """
+  Preferred partner player ID
+  """
   preferredPartnerId: ID!
 }
 ```
@@ -460,55 +489,87 @@ input PartnerPreferenceInput {
 
 ```graphql
 type SubEventAvailability {
-  """The sub-event details"""
+  """
+  The sub-event details
+  """
   subEvent: TournamentSubEvent!
 
-  """Current enrollment status"""
+  """
+  Current enrollment status
+  """
   enrollmentStatus: SubEventEnrollmentStatus!
 
-  """Number of available slots (null if unlimited)"""
+  """
+  Number of available slots (null if unlimited)
+  """
   availableSlots: Int
 
-  """Total capacity (null if unlimited)"""
+  """
+  Total capacity (null if unlimited)
+  """
   totalSlots: Int
 
-  """Current waiting list length"""
+  """
+  Current waiting list length
+  """
   waitingListLength: Int!
 
-  """Whether the current user is already enrolled"""
+  """
+  Whether the current user is already enrolled
+  """
   isUserEnrolled: Boolean!
 
-  """User's enrollment if exists"""
+  """
+  User's enrollment if exists
+  """
   userEnrollment: TournamentEnrollment
 
-  """Whether the current user can enroll"""
+  """
+  Whether the current user can enroll
+  """
   canEnroll: Boolean!
 
-  """List of restrictions preventing enrollment"""
+  """
+  List of restrictions preventing enrollment
+  """
   enrollmentRestrictions: [EnrollmentRestriction!]!
 
-  """Whether a partner is required for this event"""
+  """
+  Whether a partner is required for this event
+  """
   partnerRequired: Boolean!
 
-  """Number of players looking for partners"""
+  """
+  Number of players looking for partners
+  """
   lookingForPartnerCount: Int!
 
-  """Enrollment window dates"""
+  """
+  Enrollment window dates
+  """
   enrollmentOpenDate: DateTime
   enrollmentCloseDate: DateTime
 
-  """Whether enrollment window is currently open"""
+  """
+  Whether enrollment window is currently open
+  """
   enrollmentWindowOpen: Boolean!
 }
 
 type EnrollmentRestriction {
-  """Restriction type"""
+  """
+  Restriction type
+  """
   type: EnrollmentRestrictionType!
 
-  """Human-readable message"""
+  """
+  Human-readable message
+  """
   message: String!
 
-  """Whether this is a blocking restriction"""
+  """
+  Whether this is a blocking restriction
+  """
   blocking: Boolean!
 }
 
@@ -524,170 +585,270 @@ enum EnrollmentRestrictionType {
 }
 
 type BulkEnrollmentResult {
-  """Overall success status"""
+  """
+  Overall success status
+  """
   success: Boolean!
 
-  """List of created enrollments"""
+  """
+  List of created enrollments
+  """
   enrollments: [TournamentEnrollment!]!
 
-  """List of errors encountered"""
+  """
+  List of errors encountered
+  """
   errors: [EnrollmentError!]!
 
-  """List of warnings"""
+  """
+  List of warnings
+  """
   warnings: [EnrollmentWarning!]!
 
-  """Number of partner matches found"""
+  """
+  Number of partner matches found
+  """
   partnerMatchesFound: Int!
 
-  """Number of waiting list placements"""
+  """
+  Number of waiting list placements
+  """
   waitingListPlacements: Int!
 
-  """Transaction ID for tracking"""
+  """
+  Transaction ID for tracking
+  """
   transactionId: String!
 }
 
 type EnrollmentError {
-  """Sub-event ID where error occurred"""
+  """
+  Sub-event ID where error occurred
+  """
   subEventId: ID!
 
-  """Sub-event name"""
+  """
+  Sub-event name
+  """
   subEventName: String!
 
-  """Error code"""
+  """
+  Error code
+  """
   code: EnrollmentErrorCode!
 
-  """Error message"""
+  """
+  Error message
+  """
   message: String!
 
-  """Field that caused the error"""
+  """
+  Field that caused the error
+  """
   field: String
 
-  """Additional context"""
+  """
+  Additional context
+  """
   metadata: JSON
 }
 
 type EnrollmentWarning {
-  """Sub-event ID"""
+  """
+  Sub-event ID
+  """
   subEventId: ID!
 
-  """Warning message"""
+  """
+  Warning message
+  """
   message: String!
 
-  """Warning severity"""
+  """
+  Warning severity
+  """
   severity: WarningSeverity!
 }
 
 type EnrollmentCartPreview {
-  """Whether the cart is valid"""
+  """
+  Whether the cart is valid
+  """
   valid: Boolean!
 
-  """Cart items"""
+  """
+  Cart items
+  """
   items: [EnrollmentCartItem!]!
 
-  """Total cost (if applicable)"""
+  """
+  Total cost (if applicable)
+  """
   totalCost: Float
 
-  """Currency code"""
+  """
+  Currency code
+  """
   currency: String
 
-  """Validation errors"""
+  """
+  Validation errors
+  """
   errors: [EnrollmentError!]!
 
-  """Warnings"""
+  """
+  Warnings
+  """
   warnings: [EnrollmentWarning!]!
 
-  """Whether any enrollment requires partner confirmation"""
+  """
+  Whether any enrollment requires partner confirmation
+  """
   requiresPartnerConfirmation: Boolean!
 
-  """Estimated waiting list positions"""
+  """
+  Estimated waiting list positions
+  """
   estimatedWaitingListPositions: [WaitingListEstimate!]!
 }
 
 type EnrollmentCartItem {
-  """Sub-event details"""
+  """
+  Sub-event details
+  """
   subEvent: TournamentSubEvent!
 
-  """Expected enrollment status"""
+  """
+  Expected enrollment status
+  """
   status: EnrollmentPreviewStatus!
 
-  """Cost for this event"""
+  """
+  Cost for this event
+  """
   cost: Float
 
-  """Preferred partner (if specified)"""
+  """
+  Preferred partner (if specified)
+  """
   preferredPartner: Player
 
-  """Partner match status"""
+  """
+  Partner match status
+  """
   partnerMatchStatus: PartnerMatchStatus!
 
-  """Eligibility status"""
+  """
+  Eligibility status
+  """
   eligibilityStatus: EligibilityStatus!
 
-  """Validation messages"""
+  """
+  Validation messages
+  """
   messages: [String!]!
 }
 
 type WaitingListEstimate {
-  """Sub-event ID"""
+  """
+  Sub-event ID
+  """
   subEventId: ID!
 
-  """Sub-event name"""
+  """
+  Sub-event name
+  """
   subEventName: String!
 
-  """Estimated position on waiting list"""
+  """
+  Estimated position on waiting list
+  """
   estimatedPosition: Int!
 
-  """Likelihood of promotion"""
+  """
+  Likelihood of promotion
+  """
   likelihood: WaitingListLikelihood!
 }
 
 type EnrollmentValidationResult {
-  """Overall validation status"""
+  """
+  Overall validation status
+  """
   valid: Boolean!
 
-  """Per-event eligibility checks"""
+  """
+  Per-event eligibility checks
+  """
   eligibilityChecks: [SubEventEligibilityCheck!]!
 
-  """Detected conflicts"""
+  """
+  Detected conflicts
+  """
   conflicts: [EnrollmentConflict!]!
 
-  """Recommendations for the user"""
+  """
+  Recommendations for the user
+  """
   recommendations: [String!]!
 }
 
 type SubEventEligibilityCheck {
-  """Sub-event ID"""
+  """
+  Sub-event ID
+  """
   subEventId: ID!
 
-  """Sub-event name"""
+  """
+  Sub-event name
+  """
   subEventName: String!
 
-  """Overall eligibility"""
+  """
+  Overall eligibility
+  """
   eligible: Boolean!
 
-  """Reasons for ineligibility"""
+  """
+  Reasons for ineligibility
+  """
   reasons: [String!]!
 
-  """Level requirements met"""
+  """
+  Level requirements met
+  """
   levelRequirementsMet: Boolean!
 
-  """Capacity available"""
+  """
+  Capacity available
+  """
   capacityAvailable: Boolean!
 
-  """Enrollment window open"""
+  """
+  Enrollment window open
+  """
   enrollmentWindowOpen: Boolean!
 }
 
 type EnrollmentConflict {
-  """Conflict type"""
+  """
+  Conflict type
+  """
   type: ConflictType!
 
-  """Conflict message"""
+  """
+  Conflict message
+  """
   message: String!
 
-  """Affected sub-events"""
+  """
+  Affected sub-events
+  """
   affectedSubEvents: [ID!]!
 
-  """Conflict severity"""
+  """
+  Conflict severity
+  """
   severity: ConflictSeverity!
 }
 ```
@@ -808,11 +969,7 @@ export class EnrollmentService {
   /**
    * Enroll a player in a single sub-event
    */
-  async enrollInSubEvent(
-    player: Player,
-    subEventId: string,
-    options: EnrollmentOptions,
-  ): Promise<TournamentEnrollment> {
+  async enrollInSubEvent(player: Player, subEventId: string, options: EnrollmentOptions): Promise<TournamentEnrollment> {
     // Validation
     await this.validationService.validateEnrollment(player, subEventId, options);
 
@@ -833,10 +990,7 @@ export class EnrollmentService {
   /**
    * Bulk enroll in multiple sub-events (atomic transaction)
    */
-  async bulkEnroll(
-    player: Player,
-    input: BulkEnrollmentInput,
-  ): Promise<BulkEnrollmentResult> {
+  async bulkEnroll(player: Player, input: BulkEnrollmentInput): Promise<BulkEnrollmentResult> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -849,11 +1003,7 @@ export class EnrollmentService {
       // Validate all enrollments first
       for (const subEventInput of input.enrollments) {
         try {
-          await this.validationService.validateEnrollment(
-            player,
-            subEventInput.subEventId,
-            subEventInput,
-          );
+          await this.validationService.validateEnrollment(player, subEventInput.subEventId, subEventInput);
         } catch (error) {
           if (!input.allowPartialSuccess) {
             throw error; // Rollback all
@@ -864,19 +1014,12 @@ export class EnrollmentService {
 
       // Create enrollments
       for (const subEventInput of input.enrollments) {
-        const enrollment = await this.createEnrollmentInTransaction(
-          queryRunner,
-          player,
-          subEventInput,
-        );
+        const enrollment = await this.createEnrollmentInTransaction(queryRunner, player, subEventInput);
         enrollments.push(enrollment);
       }
 
       // Partner matching across all events
-      const matchesFound = await this.partnerMatchService.matchAcrossEvents(
-        enrollments,
-        input.partnerPreferences,
-      );
+      const matchesFound = await this.partnerMatchService.matchAcrossEvents(enrollments, input.partnerPreferences);
 
       // Commit transaction
       await queryRunner.commitTransaction();
@@ -890,7 +1033,7 @@ export class EnrollmentService {
         errors,
         warnings,
         partnerMatchesFound: matchesFound,
-        waitingListPlacements: enrollments.filter(e => e.status === EnrollmentStatus.WAITING_LIST).length,
+        waitingListPlacements: enrollments.filter((e) => e.status === EnrollmentStatus.WAITING_LIST).length,
         transactionId: generateTransactionId(),
       };
     } catch (error) {
@@ -904,19 +1047,14 @@ export class EnrollmentService {
   /**
    * Cancel an enrollment
    */
-  async cancelEnrollment(
-    enrollmentId: string,
-    userId: string,
-  ): Promise<TournamentEnrollment> {
+  async cancelEnrollment(enrollmentId: string, userId: string): Promise<TournamentEnrollment> {
     const enrollment = await this.findEnrollmentOrFail(enrollmentId);
 
     // Authorization check
     this.checkCancelPermission(enrollment, userId);
 
     // Update status
-    enrollment.status = enrollment.playerId === userId
-      ? EnrollmentStatus.WITHDRAWN
-      : EnrollmentStatus.CANCELLED;
+    enrollment.status = enrollment.playerId === userId ? EnrollmentStatus.WITHDRAWN : EnrollmentStatus.CANCELLED;
 
     // Break partner link if exists
     if (enrollment.confirmedPartnerId) {
@@ -945,11 +1083,7 @@ export class ValidationService {
   /**
    * Comprehensive enrollment validation
    */
-  async validateEnrollment(
-    player: Player,
-    subEventId: string,
-    options: EnrollmentOptions,
-  ): Promise<void> {
+  async validateEnrollment(player: Player, subEventId: string, options: EnrollmentOptions): Promise<void> {
     const subEvent = await this.getSubEventOrFail(subEventId);
     const tournament = await this.getTournamentOrFail(subEvent.eventId);
 
@@ -979,10 +1113,7 @@ export class ValidationService {
   /**
    * Validate enrollment window (per sub-event)
    */
-  private validateEnrollmentWindow(
-    subEvent: TournamentSubEvent,
-    tournament: TournamentEvent,
-  ): void {
+  private validateEnrollmentWindow(subEvent: TournamentSubEvent, tournament: TournamentEvent): void {
     const now = new Date();
 
     // Check sub-event specific dates (if set)
@@ -995,10 +1126,7 @@ export class ValidationService {
       }
     } else if (tournament.enrollmentOpenDate && now < tournament.enrollmentOpenDate) {
       // Fallback to tournament dates
-      throw new EnrollmentException(
-        EnrollmentErrorCode.ENROLLMENT_NOT_STARTED,
-        `Enrollment opens on ${tournament.enrollmentOpenDate.toISOString()}`,
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.ENROLLMENT_NOT_STARTED, `Enrollment opens on ${tournament.enrollmentOpenDate.toISOString()}`);
     }
 
     if (subEvent.enrollmentCloseDate) {
@@ -1009,28 +1137,19 @@ export class ValidationService {
         );
       }
     } else if (tournament.enrollmentCloseDate && now > tournament.enrollmentCloseDate) {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.ENROLLMENT_CLOSED,
-        `Enrollment closed on ${tournament.enrollmentCloseDate.toISOString()}`,
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.ENROLLMENT_CLOSED, `Enrollment closed on ${tournament.enrollmentCloseDate.toISOString()}`);
     }
 
     // Check tournament phase as additional guard
     if (tournament.phase !== TournamentPhase.ENROLLMENT_OPEN) {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.TOURNAMENT_PHASE_INVALID,
-        `Tournament is in ${tournament.phase} phase`,
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.TOURNAMENT_PHASE_INVALID, `Tournament is in ${tournament.phase} phase`);
     }
   }
 
   /**
    * Validate player level eligibility
    */
-  private validateLevelEligibility(
-    player: Player,
-    subEvent: TournamentSubEvent,
-  ): void {
+  private validateLevelEligibility(player: Player, subEvent: TournamentSubEvent): void {
     if (subEvent.minLevel && player.level < subEvent.minLevel) {
       throw new EnrollmentException(
         EnrollmentErrorCode.LEVEL_TOO_LOW,
@@ -1051,26 +1170,16 @@ export class ValidationService {
   /**
    * Validate partner selection
    */
-  private async validatePartner(
-    partnerId: string,
-    playerId: string,
-    subEvent: TournamentSubEvent,
-  ): Promise<void> {
+  private async validatePartner(partnerId: string, playerId: string, subEvent: TournamentSubEvent): Promise<void> {
     // Prevent self-partnering
     if (partnerId === playerId) {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.SELF_PARTNERING,
-        'You cannot select yourself as a partner',
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.SELF_PARTNERING, 'You cannot select yourself as a partner');
     }
 
     // Verify partner exists
     const partner = await Player.findOne({ where: { id: partnerId } });
     if (!partner) {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.INVALID_PARTNER,
-        `Partner with ID ${partnerId} not found`,
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.INVALID_PARTNER, `Partner with ID ${partnerId} not found`);
     }
 
     // Check if partner meets level requirements
@@ -1100,10 +1209,7 @@ export class ValidationService {
   /**
    * Check for duplicate enrollment
    */
-  private async checkDuplicateEnrollment(
-    playerId: string,
-    subEventId: string,
-  ): Promise<void> {
+  private async checkDuplicateEnrollment(playerId: string, subEventId: string): Promise<void> {
     const existing = await TournamentEnrollment.findOne({
       where: {
         playerId,
@@ -1112,34 +1218,23 @@ export class ValidationService {
     });
 
     if (existing) {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.DUPLICATE_ENROLLMENT,
-        'You are already enrolled in this event',
-        { existingEnrollmentId: existing.id },
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.DUPLICATE_ENROLLMENT, 'You are already enrolled in this event', {
+        existingEnrollmentId: existing.id,
+      });
     }
   }
 
   /**
    * Validate gender restrictions
    */
-  private validateGenderRestrictions(
-    player: Player,
-    subEvent: TournamentSubEvent,
-  ): void {
+  private validateGenderRestrictions(player: Player, subEvent: TournamentSubEvent): void {
     // If event type is M (Men) or F (Women), check player gender
     if (subEvent.eventType === SubEventTypeEnum.M && player.gender !== 'M') {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.VALIDATION_FAILED,
-        'This event is for male players only',
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.VALIDATION_FAILED, 'This event is for male players only');
     }
 
     if (subEvent.eventType === SubEventTypeEnum.F && player.gender !== 'F') {
-      throw new EnrollmentException(
-        EnrollmentErrorCode.VALIDATION_FAILED,
-        'This event is for female players only',
-      );
+      throw new EnrollmentException(EnrollmentErrorCode.VALIDATION_FAILED, 'This event is for female players only');
     }
   }
 }
@@ -1192,10 +1287,7 @@ export class PartnerMatchService {
   /**
    * Match partners across multiple events
    */
-  async matchAcrossEvents(
-    enrollments: TournamentEnrollment[],
-    partnerPreferences?: PartnerPreferenceInput[],
-  ): Promise<number> {
+  async matchAcrossEvents(enrollments: TournamentEnrollment[], partnerPreferences?: PartnerPreferenceInput[]): Promise<number> {
     let matchCount = 0;
 
     for (const enrollment of enrollments) {
@@ -1266,9 +1358,7 @@ export class WaitingListService {
   /**
    * Add enrollment to waiting list
    */
-  async addToWaitingList(
-    enrollment: TournamentEnrollment,
-  ): Promise<number> {
+  async addToWaitingList(enrollment: TournamentEnrollment): Promise<number> {
     // Get next position
     const lastWaiting = await TournamentEnrollment.findOne({
       where: {
@@ -1372,10 +1462,7 @@ export class AvailabilityService {
   /**
    * Get available sub-events for a tournament
    */
-  async getAvailableSubEvents(
-    tournamentId: string,
-    userId?: string,
-  ): Promise<SubEventAvailability[]> {
+  async getAvailableSubEvents(tournamentId: string, userId?: string): Promise<SubEventAvailability[]> {
     const subEvents = await TournamentSubEvent.find({
       where: { eventId: tournamentId },
       relations: ['tournamentEvent'],
@@ -1394,10 +1481,7 @@ export class AvailabilityService {
   /**
    * Calculate availability for a sub-event
    */
-  async calculateAvailability(
-    subEvent: TournamentSubEvent,
-    userId?: string,
-  ): Promise<SubEventAvailability> {
+  async calculateAvailability(subEvent: TournamentSubEvent, userId?: string): Promise<SubEventAvailability> {
     const confirmedCount = await TournamentEnrollment.count({
       where: {
         tournamentSubEventId: subEvent.id,
@@ -1472,7 +1556,7 @@ export class AvailabilityService {
       waitingListLength,
       isUserEnrolled,
       userEnrollment,
-      canEnroll: restrictions.filter(r => r.blocking).length === 0,
+      canEnroll: restrictions.filter((r) => r.blocking).length === 0,
       enrollmentRestrictions: restrictions,
       partnerRequired: isDoubles,
       lookingForPartnerCount,
@@ -1498,10 +1582,7 @@ export class AvailabilityService {
   /**
    * Get enrollment restrictions for a user
    */
-  private async getEnrollmentRestrictions(
-    subEvent: TournamentSubEvent,
-    userId?: string,
-  ): Promise<EnrollmentRestriction[]> {
+  private async getEnrollmentRestrictions(subEvent: TournamentSubEvent, userId?: string): Promise<EnrollmentRestriction[]> {
     const restrictions: EnrollmentRestriction[] = [];
 
     if (!userId) {
@@ -1630,6 +1711,7 @@ export class AvailabilityService {
 **Requirement:** Each sub-event can have its own enrollment window, independent of the tournament-level window.
 
 **Database Schema Addition:**
+
 ```sql
 ALTER TABLE event."SubEventTournaments"
 ADD COLUMN "enrollmentOpenDate" TIMESTAMPTZ,
@@ -1637,6 +1719,7 @@ ADD COLUMN "enrollmentCloseDate" TIMESTAMPTZ;
 ```
 
 **Validation Logic:**
+
 ```typescript
 // Priority order:
 // 1. Sub-event specific dates (if set)
@@ -1648,24 +1731,15 @@ const openDate = subEvent.enrollmentOpenDate ?? tournament.enrollmentOpenDate;
 const closeDate = subEvent.enrollmentCloseDate ?? tournament.enrollmentCloseDate;
 
 if (openDate && now < openDate) {
-  throw new EnrollmentException(
-    EnrollmentErrorCode.ENROLLMENT_NOT_STARTED,
-    `Enrollment opens on ${openDate.toISOString()}`
-  );
+  throw new EnrollmentException(EnrollmentErrorCode.ENROLLMENT_NOT_STARTED, `Enrollment opens on ${openDate.toISOString()}`);
 }
 
 if (closeDate && now > closeDate) {
-  throw new EnrollmentException(
-    EnrollmentErrorCode.ENROLLMENT_CLOSED,
-    `Enrollment closed on ${closeDate.toISOString()}`
-  );
+  throw new EnrollmentException(EnrollmentErrorCode.ENROLLMENT_CLOSED, `Enrollment closed on ${closeDate.toISOString()}`);
 }
 
 if (tournament.phase !== TournamentPhase.ENROLLMENT_OPEN) {
-  throw new EnrollmentException(
-    EnrollmentErrorCode.TOURNAMENT_PHASE_INVALID,
-    `Tournament is in ${tournament.phase} phase`
-  );
+  throw new EnrollmentException(EnrollmentErrorCode.TOURNAMENT_PHASE_INVALID, `Tournament is in ${tournament.phase} phase`);
 }
 ```
 
@@ -1676,6 +1750,7 @@ if (tournament.phase !== TournamentPhase.ENROLLMENT_OPEN) {
 **Requirement:** When enrolling in multiple events, ensure capacity checks are accurate and atomic.
 
 **Implementation:**
+
 ```typescript
 async validateBulkEnrollmentCapacity(
   subEventIds: string[],
@@ -1716,6 +1791,7 @@ async validateBulkEnrollmentCapacity(
 **Requirement:** All enrollments in a bulk operation must succeed or fail together (unless `allowPartialSuccess` is enabled).
 
 **Transaction Strategy:**
+
 ```typescript
 async bulkEnroll(
   player: Player,
@@ -1810,6 +1886,7 @@ async bulkEnroll(
 **Requirement:** When a player cancels, automatically promote the next player from the waiting list.
 
 **Implementation:**
+
 ```typescript
 async promoteNext(subEventId: string): Promise<TournamentEnrollment | null> {
   // Check capacity
@@ -1864,6 +1941,7 @@ async promoteNext(subEventId: string): Promise<TournamentEnrollment | null> {
 ```
 
 **Trigger Points:**
+
 1. Player cancels enrollment
 2. Player is manually removed by admin
 3. Capacity is increased by admin
@@ -1876,6 +1954,7 @@ async promoteNext(subEventId: string): Promise<TournamentEnrollment | null> {
 **Requirement:** When enrolling in multiple events, match partners across all events simultaneously.
 
 **Implementation:**
+
 ```typescript
 async matchAcrossEvents(
   enrollments: TournamentEnrollment[],
@@ -1910,6 +1989,7 @@ async matchAcrossEvents(
 ```
 
 **Mutual Preference Logic:**
+
 ```typescript
 async tryMatchPartners(enrollment: TournamentEnrollment): Promise<boolean> {
   if (!enrollment.preferredPartnerId || !enrollment.playerId) {
@@ -1981,6 +2061,7 @@ enum EnrollmentPermission {
 ### Permission Checks
 
 **1. Enroll in Tournament**
+
 - Authenticated players: Can enroll themselves
 - Guests: Can enroll if `tournament.allowGuestEnrollments === true`
 - Admins: Can enroll on behalf of others (with `enroll-any:tournament`)
@@ -1998,6 +2079,7 @@ async enrollInTournament(
 ```
 
 **2. Bulk Enroll**
+
 - Requires authentication
 - Cannot enroll on behalf of others (unless admin)
 
@@ -2013,6 +2095,7 @@ async bulkEnrollInTournament(
 ```
 
 **3. Cancel Enrollment**
+
 - Player can cancel their own enrollments
 - Admins can cancel any enrollment
 - Club organizers can cancel enrollments for their tournament
@@ -2049,6 +2132,7 @@ async cancelEnrollment(
 ```
 
 **4. Promote from Waiting List**
+
 - Admin only
 - Club organizers for their tournaments
 
@@ -2082,6 +2166,7 @@ async promoteFromWaitingList(
 ```
 
 **5. Get Available Sub-Events**
+
 - Public query (no authentication required)
 - Returns personalized data if user is authenticated
 
@@ -2097,6 +2182,7 @@ async getAvailableSubEvents(
 ```
 
 **6. Get Enrollment Cart**
+
 - Requires authentication (needs user context for validation)
 
 ```typescript
@@ -2197,6 +2283,7 @@ export class EnrollmentException extends Error {
 ### Error Response Format
 
 **Single Mutation Error:**
+
 ```json
 {
   "errors": [
@@ -2217,6 +2304,7 @@ export class EnrollmentException extends Error {
 ```
 
 **Bulk Mutation Partial Success:**
+
 ```json
 {
   "data": {
@@ -2513,6 +2601,7 @@ private isRetryableError(error: any): boolean {
 ### 1. Database Indexes
 
 **Required Indexes:**
+
 ```sql
 -- Enrollment lookups
 CREATE INDEX idx_enrollment_subevent_player
@@ -2545,6 +2634,7 @@ ON event."SubEventTournaments" ("enrollmentOpenDate", "enrollmentCloseDate");
 ### 2. Query Optimization
 
 **Batch Loading with DataLoader:**
+
 ```typescript
 @Injectable()
 export class EnrollmentDataLoader {
@@ -2554,13 +2644,12 @@ export class EnrollmentDataLoader {
   constructor() {
     this.subEventLoader = new DataLoader(async (ids: string[]) => {
       const subEvents = await TournamentSubEvent.findByIds(ids);
-      const map = new Map(subEvents.map(se => [se.id, se]));
-      return ids.map(id => map.get(id) || null);
+      const map = new Map(subEvents.map((se) => [se.id, se]));
+      return ids.map((id) => map.get(id) || null);
     });
 
     this.enrollmentCountLoader = new DataLoader(async (subEventIds: string[]) => {
-      const counts = await TournamentEnrollment
-        .createQueryBuilder('enrollment')
+      const counts = await TournamentEnrollment.createQueryBuilder('enrollment')
         .select('enrollment.tournamentSubEventId', 'subEventId')
         .addSelect('COUNT(*)', 'count')
         .where('enrollment.tournamentSubEventId IN (:...ids)', { ids: subEventIds })
@@ -2568,8 +2657,8 @@ export class EnrollmentDataLoader {
         .groupBy('enrollment.tournamentSubEventId')
         .getRawMany();
 
-      const map = new Map(counts.map(c => [c.subEventId, parseInt(c.count)]));
-      return subEventIds.map(id => map.get(id) || 0);
+      const map = new Map(counts.map((c) => [c.subEventId, parseInt(c.count)]));
+      return subEventIds.map((id) => map.get(id) || 0);
     });
   }
 
@@ -2586,17 +2675,13 @@ export class EnrollmentDataLoader {
 ### 3. Caching Strategy
 
 **Cache availability data (short TTL):**
+
 ```typescript
 @Injectable()
 export class AvailabilityService {
-  constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async getAvailableSubEvents(
-    tournamentId: string,
-    userId?: string,
-  ): Promise<SubEventAvailability[]> {
+  async getAvailableSubEvents(tournamentId: string, userId?: string): Promise<SubEventAvailability[]> {
     // Cache key includes userId for personalized data
     const cacheKey = `availability:${tournamentId}:${userId || 'anonymous'}`;
 
@@ -2618,7 +2703,7 @@ export class AvailabilityService {
   async invalidateCache(tournamentId: string): Promise<void> {
     // Invalidate all cached availability for this tournament
     const keys = await this.cacheManager.store.keys(`availability:${tournamentId}:*`);
-    await Promise.all(keys.map(key => this.cacheManager.del(key)));
+    await Promise.all(keys.map((key) => this.cacheManager.del(key)));
   }
 }
 ```
@@ -2626,6 +2711,7 @@ export class AvailabilityService {
 ### 4. Pagination
 
 **For large enrollment lists:**
+
 ```typescript
 @Query(() => PaginatedEnrollments)
 async tournamentEnrollments(
@@ -2655,17 +2741,13 @@ async tournamentEnrollments(
 ### 5. Background Jobs
 
 **For time-consuming operations:**
+
 ```typescript
 @Injectable()
 export class EnrollmentQueueService {
-  constructor(
-    @InjectQueue('enrollment') private enrollmentQueue: Queue,
-  ) {}
+  constructor(@InjectQueue('enrollment') private enrollmentQueue: Queue) {}
 
-  async queueBulkEnrollment(
-    player: Player,
-    input: BulkEnrollmentInput,
-  ): Promise<string> {
+  async queueBulkEnrollment(player: Player, input: BulkEnrollmentInput): Promise<string> {
     const job = await this.enrollmentQueue.add('bulk-enroll', {
       playerId: player.id,
       input,
@@ -2702,39 +2784,50 @@ export class EnrollmentProcessor {
 # ========================================
 
 type Query {
-  """Get a single enrollment by ID"""
+  """
+  Get a single enrollment by ID
+  """
   tournamentEnrollment(id: ID!): TournamentEnrollment
 
-  """Get all enrollments with optional filtering"""
+  """
+  Get all enrollments with optional filtering
+  """
   tournamentEnrollments(args: TournamentEnrollmentArgs): [TournamentEnrollment!]!
 
-  """Get current user's enrollments for a tournament"""
+  """
+  Get current user's enrollments for a tournament
+  """
   myTournamentEnrollments(tournamentEventId: ID!): [TournamentEnrollment!]!
 
-  """Get enrollments for a specific sub-event"""
-  subEventEnrollments(
-    subEventId: ID!
-    status: EnrollmentStatus
-  ): [TournamentEnrollment!]!
+  """
+  Get enrollments for a specific sub-event
+  """
+  subEventEnrollments(subEventId: ID!, status: EnrollmentStatus): [TournamentEnrollment!]!
 
-  """Get waiting list for a sub-event"""
+  """
+  Get waiting list for a sub-event
+  """
   waitingList(subEventId: ID!): [TournamentEnrollment!]!
 
-  """Get players looking for a partner in a sub-event"""
+  """
+  Get players looking for a partner in a sub-event
+  """
   lookingForPartner(subEventId: ID!): [TournamentEnrollment!]!
 
-  """Get available sub-events for enrollment"""
+  """
+  Get available sub-events for enrollment
+  """
   getAvailableSubEvents(tournamentId: ID!): [SubEventAvailability!]!
 
-  """Preview enrollment before confirmation"""
+  """
+  Preview enrollment before confirmation
+  """
   getEnrollmentCart(input: BulkEnrollmentInput!): EnrollmentCartPreview!
 
-  """Validate enrollment eligibility"""
-  validateEnrollment(
-    tournamentId: ID!
-    subEventIds: [ID!]!
-    partnerPreferences: [PartnerPreferenceInput!]
-  ): EnrollmentValidationResult!
+  """
+  Validate enrollment eligibility
+  """
+  validateEnrollment(tournamentId: ID!, subEventIds: [ID!]!, partnerPreferences: [PartnerPreferenceInput!]): EnrollmentValidationResult!
 }
 
 # ========================================
@@ -2742,25 +2835,34 @@ type Query {
 # ========================================
 
 type Mutation {
-  """Enroll the current player in a tournament sub-event"""
+  """
+  Enroll the current player in a tournament sub-event
+  """
   enrollInTournament(input: EnrollPlayerInput!): TournamentEnrollment!
 
-  """Enroll a guest in a tournament sub-event"""
+  """
+  Enroll a guest in a tournament sub-event
+  """
   enrollGuest(input: EnrollGuestInput!): TournamentEnrollment!
 
-  """Enroll in multiple sub-events at once"""
+  """
+  Enroll in multiple sub-events at once
+  """
   bulkEnrollInTournament(input: BulkEnrollmentInput!): BulkEnrollmentResult!
 
-  """Update an enrollment"""
-  updateEnrollment(
-    enrollmentId: ID!
-    input: UpdateEnrollmentInput!
-  ): TournamentEnrollment!
+  """
+  Update an enrollment
+  """
+  updateEnrollment(enrollmentId: ID!, input: UpdateEnrollmentInput!): TournamentEnrollment!
 
-  """Cancel/withdraw from an enrollment"""
+  """
+  Cancel/withdraw from an enrollment
+  """
   cancelEnrollment(enrollmentId: ID!): TournamentEnrollment!
 
-  """Promote a player from the waiting list (admin only)"""
+  """
+  Promote a player from the waiting list (admin only)
+  """
   promoteFromWaitingList(enrollmentId: ID!): TournamentEnrollment!
 }
 
@@ -3040,6 +3142,7 @@ enum EnrollmentPreviewStatus {
 ### Example Queries
 
 **1. Get Available Sub-Events**
+
 ```graphql
 query GetAvailableSubEvents($tournamentId: ID!) {
   getAvailableSubEvents(tournamentId: $tournamentId) {
@@ -3072,6 +3175,7 @@ query GetAvailableSubEvents($tournamentId: ID!) {
 ```
 
 **2. Preview Enrollment Cart**
+
 ```graphql
 query PreviewEnrollment($input: BulkEnrollmentInput!) {
   getEnrollmentCart(input: $input) {
@@ -3111,6 +3215,7 @@ query PreviewEnrollment($input: BulkEnrollmentInput!) {
 ```
 
 **3. Bulk Enroll**
+
 ```graphql
 mutation BulkEnroll($input: BulkEnrollmentInput!) {
   bulkEnrollInTournament(input: $input) {
@@ -3161,6 +3266,7 @@ mutation BulkEnroll($input: BulkEnrollmentInput!) {
 ```
 
 **4. Get My Enrollments**
+
 ```graphql
 query MyEnrollments($tournamentId: ID!) {
   myTournamentEnrollments(tournamentEventId: $tournamentId) {
@@ -3242,6 +3348,7 @@ query MyEnrollments($tournamentId: ID!) {
 This architecture provides a comprehensive, scalable solution for multi-discipline tournament enrollment with the following key features:
 
 **Core Capabilities:**
+
 - Per-event enrollment windows
 - Bulk multi-event enrollment with atomic transactions
 - Real-time availability checking
@@ -3250,6 +3357,7 @@ This architecture provides a comprehensive, scalable solution for multi-discipli
 - Pre-enrollment validation and cart preview
 
 **Technical Strengths:**
+
 - Clean service-oriented architecture
 - ACID transaction guarantees
 - Comprehensive error handling
@@ -3258,6 +3366,7 @@ This architecture provides a comprehensive, scalable solution for multi-discipli
 - Detailed API documentation
 
 **Extensibility:**
+
 - Modular service design allows easy addition of features
 - Flexible permission model
 - Support for future payment integration

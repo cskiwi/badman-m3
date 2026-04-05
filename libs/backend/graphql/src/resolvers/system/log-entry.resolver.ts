@@ -9,10 +9,7 @@ import { LogEntryArgs } from '../../args';
 export class LogEntryResolver {
   @Query(() => LogEntry)
   @UseGuards(PermGuard)
-  async logEntry(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<LogEntry> {
+  async logEntry(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<LogEntry> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to access log entries');
     }

@@ -33,7 +33,6 @@ export class ChangeClaims1769264180784 implements MigrationInterface {
       ON CONFLICT DO NOTHING
     `);
 
-
     // Rename status:competition to change-competition:player
     await queryRunner.query(`
       UPDATE "security"."Claims"

@@ -1,10 +1,5 @@
 import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
-import {
-  EnrollmentSession,
-  EnrollmentSessionItem,
-  Player,
-  TournamentEvent,
-} from '@app/models';
+import { EnrollmentSession, EnrollmentSessionItem, Player, TournamentEvent } from '@app/models';
 import { AllowAnonymous } from '@app/backend-authorization';
 
 /**

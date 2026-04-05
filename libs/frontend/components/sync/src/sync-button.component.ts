@@ -107,7 +107,7 @@ export interface SyncButtonConfig {
     ConfirmDialogModule,
   ],
   providers: [MessageService, ConfirmationService],
-  templateUrl: './sync-button.component.html'
+  templateUrl: './sync-button.component.html',
 })
 export class SyncButtonComponent {
   private readonly apollo = inject(Apollo);

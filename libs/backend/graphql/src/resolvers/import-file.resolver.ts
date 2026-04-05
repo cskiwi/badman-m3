@@ -8,10 +8,7 @@ import { ImportFileArgs } from '../args';
 export class ImportFileResolver {
   @Query(() => ImportFile)
   @UseGuards(PermGuard)
-  async importFile(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<ImportFile> {
+  async importFile(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<ImportFile> {
     if (!(await user.hasAnyPermission(['import:competition']))) {
       throw new ForbiddenException('Insufficient permissions to access import files');
     }

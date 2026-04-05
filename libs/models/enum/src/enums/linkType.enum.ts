@@ -5,4 +5,3 @@ export enum LinkType {
   COMPETITION = 'competition',
   TOURNAMENT = 'tournament',
 }
- 

@@ -74,17 +74,13 @@ export class PlayerMatcherService {
     }
 
     // Second pass: for unmatched responses, try the global search API
-    const unmatchedIndices = results
-      .map((r, i) => (r.player === null ? i : -1))
-      .filter((i) => i >= 0);
+    const unmatchedIndices = results.map((r, i) => (r.player === null ? i : -1)).filter((i) => i >= 0);
 
     if (unmatchedIndices.length > 0) {
       const batchSize = 5;
       for (let i = 0; i < unmatchedIndices.length; i += batchSize) {
         const batchIndices = unmatchedIndices.slice(i, i + batchSize);
-        const batchResults = await Promise.all(
-          batchIndices.map((idx) => this.searchForPlayer(results[idx].survey)),
-        );
+        const batchResults = await Promise.all(batchIndices.map((idx) => this.searchForPlayer(results[idx].survey)));
         for (let j = 0; j < batchIndices.length; j++) {
           if (batchResults[j].player) {
             results[batchIndices[j]] = batchResults[j];
@@ -94,12 +90,8 @@ export class PlayerMatcherService {
     }
 
     // Fetch full player data with rankings for all matched players
-    const matchedPlayers = results.flatMap((result) =>
-      result.player ? [result.player] : [],
-    );
-    const matchedIds = Array.from(
-      new Set(matchedPlayers.map((player) => player.id)),
-    );
+    const matchedPlayers = results.flatMap((result) => (result.player ? [result.player] : []));
+    const matchedIds = Array.from(new Set(matchedPlayers.map((player) => player.id)));
 
     if (matchedIds.length > 0) {
       const players = await this.fetchPlayersWithRankings(matchedIds, systemId);
@@ -135,30 +127,33 @@ export class PlayerMatcherService {
     const normalizedQuery = query.toLowerCase();
 
     // First: filter club players locally
-    const clubMatches = clubPlayers.filter((p) =>
-      p.fullName.toLowerCase().includes(normalizedQuery) ||
-      p.firstName?.toLowerCase().includes(normalizedQuery) ||
-      p.lastName?.toLowerCase().includes(normalizedQuery),
+    const clubMatches = clubPlayers.filter(
+      (p) =>
+        p.fullName.toLowerCase().includes(normalizedQuery) ||
+        p.firstName?.toLowerCase().includes(normalizedQuery) ||
+        p.lastName?.toLowerCase().includes(normalizedQuery),
     );
 
     // Then: search the global API
     try {
       const searchResults = await lastValueFrom(
-        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string; fullName?: string } }>>(
-          `/api/v1/search`,
-          { params: { query, types: 'players' } },
-        ),
+        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string; fullName?: string } }>>(`/api/v1/search`, {
+          params: { query, types: 'players' },
+        }),
       );
 
       const clubIds = new Set(clubMatches.map((p) => p.id));
       const globalMatches = searchResults
         .filter((r) => !clubIds.has(r.hit.objectID))
-        .map((r) => ({
-          id: r.hit.objectID,
-          fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
-          firstName: r.hit.firstName ?? '',
-          lastName: r.hit.lastName ?? '',
-        } as Player));
+        .map(
+          (r) =>
+            ({
+              id: r.hit.objectID,
+              fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
+              firstName: r.hit.firstName ?? '',
+              lastName: r.hit.lastName ?? '',
+            }) as Player,
+        );
 
       return [...clubMatches, ...globalMatches];
     } catch {
@@ -207,24 +202,16 @@ export class PlayerMatcherService {
     return { survey, player: null, confidence: 'none' };
   }
 
-  private findExactNameMatch(
-    surveyName: string,
-    clubPlayers: Player[],
-  ): Player | null {
+  private findExactNameMatch(surveyName: string, clubPlayers: Player[]): Player | null {
     const normalizedSurveyName = this.normalizeText(surveyName, true);
     if (!normalizedSurveyName) {
       return null;
     }
 
-    return clubPlayers.find(
-      (player) => this.normalizeText(player.fullName, true) === normalizedSurveyName,
-    ) ?? null;
+    return clubPlayers.find((player) => this.normalizeText(player.fullName, true) === normalizedSurveyName) ?? null;
   }
 
-  private matchByMemberId(
-    survey: SurveyResponse,
-    clubPlayers: Player[],
-  ): Player | null {
+  private matchByMemberId(survey: SurveyResponse, clubPlayers: Player[]): Player | null {
     const surveyIdentifiers = this.getSurveyIdentifiers(survey);
     if (surveyIdentifiers.length === 0) {
       return null;
@@ -232,10 +219,7 @@ export class PlayerMatcherService {
 
     for (const player of clubPlayers) {
       const normalizedMemberId = this.normalizeIdentifier(player.memberId);
-      if (
-        normalizedMemberId
-        && surveyIdentifiers.includes(normalizedMemberId)
-      ) {
+      if (normalizedMemberId && surveyIdentifiers.includes(normalizedMemberId)) {
         return player;
       }
     }
@@ -250,10 +234,9 @@ export class PlayerMatcherService {
 
     try {
       const searchResults = await lastValueFrom(
-        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string; fullName?: string } }>>(
-          `/api/v1/search`,
-          { params: { query: survey.fullName, types: 'players' } },
-        ),
+        this.http.get<Array<{ hit: { objectID: string; firstName?: string; lastName?: string; fullName?: string } }>>(`/api/v1/search`, {
+          params: { query: survey.fullName, types: 'players' },
+        }),
       );
 
       if (searchResults.length === 0) {
@@ -288,9 +271,7 @@ export class PlayerMatcherService {
       return 'low';
     }
 
-    const allPartsMatch = partsA.every((part) =>
-      partsB.some((candidate) => this.isComparableNamePartMatch(part, candidate)),
-    );
+    const allPartsMatch = partsA.every((part) => partsB.some((candidate) => this.isComparableNamePartMatch(part, candidate)));
 
     if (allPartsMatch && partsA.length >= 2) return 'high';
     if (allPartsMatch) return 'medium';
@@ -319,9 +300,7 @@ export class PlayerMatcherService {
   }
 
   private getSurveyIdentifiers(survey: SurveyResponse): string[] {
-    const identifiers = [survey.externalId, ...survey.linkedContactIds]
-      .map((value) => this.normalizeIdentifier(value))
-      .filter(Boolean);
+    const identifiers = [survey.externalId, ...survey.linkedContactIds].map((value) => this.normalizeIdentifier(value)).filter(Boolean);
 
     return Array.from(new Set(identifiers));
   }

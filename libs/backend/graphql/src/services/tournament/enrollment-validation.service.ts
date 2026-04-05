@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { In, Not } from 'typeorm';
-import {
-  TournamentSubEvent,
-  TournamentEnrollment,
-  Player,
-} from '@app/models';
+import { TournamentSubEvent, TournamentEnrollment, Player } from '@app/models';
 import { EnrollmentStatus } from '@app/models-enum';
 
 export interface EnrollmentEligibility {
@@ -35,10 +31,7 @@ export class EnrollmentValidationService {
   /**
    * Check if a player is eligible to enroll in a specific sub-event
    */
-  async checkEligibility(
-    subEventId: string,
-    playerId: string,
-  ): Promise<EnrollmentEligibility> {
+  async checkEligibility(subEventId: string, playerId: string): Promise<EnrollmentEligibility> {
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: subEventId },
       relations: ['tournamentEvent'],
@@ -79,9 +72,7 @@ export class EnrollmentValidationService {
     if (subEvent.enrollmentOpenDate && now < subEvent.enrollmentOpenDate) {
       result.eligible = false;
       result.isWithinEnrollmentWindow = false;
-      reasons.push(
-        `Enrollment opens on ${subEvent.enrollmentOpenDate.toLocaleDateString()}`,
-      );
+      reasons.push(`Enrollment opens on ${subEvent.enrollmentOpenDate.toLocaleDateString()}`);
     }
     if (subEvent.enrollmentCloseDate && now > subEvent.enrollmentCloseDate) {
       result.eligible = false;
@@ -109,8 +100,7 @@ export class EnrollmentValidationService {
     if (subEvent.minLevel || subEvent.maxLevel) {
       const player = await Player.findOne({ where: { id: playerId } });
       if (player) {
-        const playerLevel =
-          subEvent.gameType === 'S' ? (player as any).levelSingle : (player as any).levelDouble;
+        const playerLevel = subEvent.gameType === 'S' ? (player as any).levelSingle : (player as any).levelDouble;
 
         if (subEvent.minLevel && playerLevel < subEvent.minLevel) {
           result.eligible = false;
@@ -191,9 +181,7 @@ export class EnrollmentValidationService {
     }
 
     // Check eligibility for all sub-events in parallel
-    const eligibilityChecks = await Promise.all(
-      subEvents.map((se) => this.checkEligibility(se.id, playerId)),
-    );
+    const eligibilityChecks = await Promise.all(subEvents.map((se) => this.checkEligibility(se.id, playerId)));
 
     subEvents.forEach((subEvent, index) => {
       const eligibility = eligibilityChecks[index];
@@ -223,9 +211,7 @@ export class EnrollmentValidationService {
 
         // Check if partner exists (async validation would happen in mutation)
         if (subEvent.gameType !== 'D' && subEvent.gameType !== 'MX') {
-          warnings.push(
-            `Partner preference for ${subEvent.name} will be ignored (not a doubles event)`,
-          );
+          warnings.push(`Partner preference for ${subEvent.name} will be ignored (not a doubles event)`);
         }
       }
     });
@@ -281,18 +267,14 @@ export class EnrollmentValidationService {
     // Warn if enrolling in multiple singles events
     if (singlesEvents.length > 1) {
       const eventNames = singlesEvents.map((se) => se.name).join(', ');
-      warnings.push(
-        `You are enrolling in multiple singles events: ${eventNames}. ` +
-        `Make sure you can participate in all of them.`,
-      );
+      warnings.push(`You are enrolling in multiple singles events: ${eventNames}. ` + `Make sure you can participate in all of them.`);
     }
 
     // Warn if enrolling in multiple doubles events
     if (doublesEvents.length > 1) {
       const eventNames = doublesEvents.map((se) => se.name).join(', ');
       warnings.push(
-        `You are enrolling in multiple doubles events: ${eventNames}. ` +
-        `Make sure you have different partners or can participate in all.`,
+        `You are enrolling in multiple doubles events: ${eventNames}. ` + `Make sure you have different partners or can participate in all.`,
       );
     }
 
@@ -302,10 +284,7 @@ export class EnrollmentValidationService {
   /**
    * Validate partner exists and is eligible
    */
-  async validatePartner(
-    partnerId: string,
-    subEventId: string,
-  ): Promise<{ valid: boolean; error?: string }> {
+  async validatePartner(partnerId: string, subEventId: string): Promise<{ valid: boolean; error?: string }> {
     const partner = await Player.findOne({ where: { id: partnerId } });
 
     if (!partner) {

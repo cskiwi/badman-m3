@@ -86,7 +86,7 @@ export class SearchService {
           if (!title) {
             title = 'Unknown Player';
           }
-          
+
           // Add club information as subtitle for players
           if ('club' in hit && hit.club?.name) {
             subtitle = hit.club.name;
@@ -94,7 +94,6 @@ export class SearchService {
         } else {
           title = hit.name || 'Unknown';
         }
-
 
         // Skip hits with empty titles
         if (!title || title.trim().length === 0) {

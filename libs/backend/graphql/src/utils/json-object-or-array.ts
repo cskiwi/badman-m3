@@ -3,7 +3,7 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 
 /**
  * JSON object and an array of JSON objects
- * 
+ *
  * Developer note: this works in development but not when running the build
  */
 export const JSONObjectOrArray = new GraphQLScalarType({

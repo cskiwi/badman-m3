@@ -174,9 +174,7 @@ export class ScheduleTabService {
     }
 
     // Sort by time
-    const sortedEntries = Array.from(grouped.entries()).sort(
-      ([a], [b]) => new Date(a).getTime() - new Date(b).getTime(),
-    );
+    const sortedEntries = Array.from(grouped.entries()).sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime());
 
     return sortedEntries.map(([time, slots]) => ({
       time: new Date(time),

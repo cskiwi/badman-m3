@@ -5,12 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 import { DayjsLocaleService } from './dayjs-locale.service';
-import {
-  DayjsCalendarReference,
-  DayjsFormat,
-  DayjsInput,
-  DayjsLocale,
-} from './types';
+import { DayjsCalendarReference, DayjsFormat, DayjsInput, DayjsLocale } from './types';
 
 // Load essential plugins
 dayjs.extend(calendar);
@@ -37,11 +32,7 @@ export class DayjsService {
   }
 
   // Formatting
-  format(
-    date: Dayjs,
-    format: DayjsFormat = 'MMM D, YYYY',
-    locale?: DayjsLocale,
-  ): string {
+  format(date: Dayjs, format: DayjsFormat = 'MMM D, YYYY', locale?: DayjsLocale): string {
     if (!date.isValid()) {
       return '';
     }

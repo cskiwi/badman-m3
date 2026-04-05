@@ -1017,6 +1017,11 @@
           "competition": "Compétition",
           "tournament": "Tournoi"
         }
+      },
+      "tabs": {
+        "cronJobs": "Tâches Cron",
+        "ranking": "Systèmes de Classement",
+        "syncPlans": "Plans de Sync"
       }
     },
     "lastSync": "Dernière synchronisation",

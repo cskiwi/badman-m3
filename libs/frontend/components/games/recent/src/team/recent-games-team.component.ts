@@ -9,7 +9,7 @@ import {
   OnDestroy,
   afterRenderEffect,
   signal,
-  viewChild
+  viewChild,
 } from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';

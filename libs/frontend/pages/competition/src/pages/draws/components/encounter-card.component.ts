@@ -41,10 +41,12 @@ export class EncounterCardComponent {
   gamesLoading = computed(() => this._gamesLoading());
 
   hasSetScores(game: any): boolean {
-    return (game.set1Team1 !== null && game.set1Team2 !== null) ||
-           (game.set2Team1 !== null && game.set2Team2 !== null) ||
-           (game.set3Team1 !== null && game.set3Team2 !== null) ||
-           game.winner !== null;
+    return (
+      (game.set1Team1 !== null && game.set1Team2 !== null) ||
+      (game.set2Team1 !== null && game.set2Team2 !== null) ||
+      (game.set3Team1 !== null && game.set3Team2 !== null) ||
+      game.winner !== null
+    );
   }
 
   isWinnerTeam(game: any, team: number): boolean {

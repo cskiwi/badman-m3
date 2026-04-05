@@ -1,9 +1,4 @@
-import { 
-  EnvironmentProviders, 
-  makeEnvironmentProviders, 
-  Provider,
-  InjectionToken
-} from '@angular/core';
+import { EnvironmentProviders, makeEnvironmentProviders, Provider, InjectionToken } from '@angular/core';
 import { DayjsService } from './dayjs.service';
 import { DayjsLocaleService } from './dayjs-locale.service';
 import { NgxDayjsConfig } from './types';
@@ -16,12 +11,12 @@ export interface DayjsProviderOptions {
 
 /**
  * Provides modern standalone Angular providers for Dayjs integration.
- * 
+ *
  * @example
  * ```typescript
  * // app.config.ts
  * import { provideDayjs } from '@app/frontend-utils/services';
- * 
+ *
  * export const appConfig: ApplicationConfig = {
  *   providers: [
  *     provideDayjs({
@@ -40,8 +35,8 @@ export function provideDayjs(options?: DayjsProviderOptions): EnvironmentProvide
     DayjsLocaleService,
     {
       provide: NGX_DAYJS_CONFIG,
-      useValue: options?.config || {}
-    }
+      useValue: options?.config || {},
+    },
   ];
 
   return makeEnvironmentProviders(providers);

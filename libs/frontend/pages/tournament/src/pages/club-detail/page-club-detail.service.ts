@@ -84,11 +84,7 @@ export class ClubDetailService {
               query ClubTeamsDetail($clubId: ID!, $season: Float) {
                 club(id: $clubId) {
                   id
-                  teams(args: { 
-                    where: [{ season: { eq: $season } }], 
-                    take: 100, 
-                    order: { name: ASC } 
-                  }) {
+                  teams(args: { where: [{ season: { eq: $season } }], take: 100, order: { name: ASC } }) {
                     id
                     name
                     season
@@ -298,21 +294,23 @@ export class ClubDetailService {
     const teams = this.teams();
     const playerMap = new Map();
 
-    teams.forEach(team => {
-      team.teamPlayerMemberships?.forEach(membership => {
+    teams.forEach((team) => {
+      team.teamPlayerMemberships?.forEach((membership) => {
         if (membership.player) {
           const playerId = membership.player.id;
           if (!playerMap.has(playerId)) {
             playerMap.set(playerId, {
               ...membership.player,
-              teams: [{
-                id: team.id,
-                name: team.name,
-                season: team.season,
-                membershipType: membership.membershipType,
-                startDate: membership.start,
-                endDate: membership.end,
-              }],
+              teams: [
+                {
+                  id: team.id,
+                  name: team.name,
+                  season: team.season,
+                  membershipType: membership.membershipType,
+                  startDate: membership.start,
+                  endDate: membership.end,
+                },
+              ],
             });
           } else {
             playerMap.get(playerId).teams.push({
@@ -328,9 +326,7 @@ export class ClubDetailService {
       });
     });
 
-    return Array.from(playerMap.values()).sort((a, b) => 
-      a.fullName.localeCompare(b.fullName)
-    );
+    return Array.from(playerMap.values()).sort((a, b) => a.fullName.localeCompare(b.fullName));
   });
 
   // Tournament entries with results
@@ -338,8 +334,8 @@ export class ClubDetailService {
     const history = this.tournamentHistory();
     const entries: any[] = [];
 
-    history.forEach(team => {
-      team.entries?.forEach(entry => {
+    history.forEach((team) => {
+      team.entries?.forEach((entry) => {
         if (entry.tournamentSubEvent) {
           entries.push({
             team,
@@ -359,34 +355,34 @@ export class ClubDetailService {
     });
   });
 
-  error = computed(() => 
-    this.clubResource.error()?.message || 
-    this.teamsResource.error()?.message || 
-    this.tournamentHistoryResource.error()?.message ||
-    this.statisticsResource.error()?.message || 
-    null
+  error = computed(
+    () =>
+      this.clubResource.error()?.message ||
+      this.teamsResource.error()?.message ||
+      this.tournamentHistoryResource.error()?.message ||
+      this.statisticsResource.error()?.message ||
+      null,
   );
-  
-  loading = computed(() => 
-    this.clubResource.isLoading() ||
-    this.teamsResource.isLoading() ||
-    this.tournamentHistoryResource.isLoading() ||
-    this.statisticsResource.isLoading()
+
+  loading = computed(
+    () =>
+      this.clubResource.isLoading() ||
+      this.teamsResource.isLoading() ||
+      this.tournamentHistoryResource.isLoading() ||
+      this.statisticsResource.isLoading(),
   );
 
   // Season management
   currentSeason = computed(() => this.filter.get('season')?.value || getSeason());
   availableSeasons = computed(() => {
     const club = this.club();
-    const dbSeasons = [...club?.distinctSeasons || []];
+    const dbSeasons = [...(club?.distinctSeasons || [])];
     const currentSeason = getSeason();
-    
+
     if (dbSeasons.length > 0) {
-      return [...dbSeasons]
-        .sort((a, b) => b - a)
-        .map(season => ({ label: `${season}`, value: season }));
+      return [...dbSeasons].sort((a, b) => b - a).map((season) => ({ label: `${season}`, value: season }));
     }
-    
+
     return [
       { label: `${currentSeason - 2}`, value: currentSeason - 2 },
       { label: `${currentSeason - 1}`, value: currentSeason - 1 },
@@ -412,7 +408,7 @@ export class ClubDetailService {
     const uniquePlayers = new Set();
     const currentSeason = getSeason();
 
-    teams.forEach(team => {
+    teams.forEach((team) => {
       // Count unique players
       team.teamPlayerMemberships?.forEach((membership: any) => {
         if (membership.player) {
@@ -426,7 +422,7 @@ export class ClubDetailService {
       // Count games and performance
       team.games?.forEach((game: any) => {
         stats.totalGames++;
-        
+
         if (game.status === 'completed' && game.sets?.length > 0) {
           const isWinner = game.winner === team.id;
           if (isWinner) {
@@ -439,7 +435,7 @@ export class ClubDetailService {
           game.sets.forEach((set: any) => {
             const team1Score = (set.set1Team1 || 0) + (set.set2Team1 || 0) + (set.set3Team1 || 0);
             const team2Score = (set.set1Team2 || 0) + (set.set2Team2 || 0) + (set.set3Team2 || 0);
-            
+
             if (team1Score > team2Score) {
               stats.setsWon++;
             } else {
@@ -451,8 +447,7 @@ export class ClubDetailService {
     });
 
     stats.totalPlayers = uniquePlayers.size;
-    stats.winPercentage = stats.totalGames > 0 ? 
-      Math.round((stats.gamesWon / stats.totalGames) * 100) : 0;
+    stats.winPercentage = stats.totalGames > 0 ? Math.round((stats.gamesWon / stats.totalGames) * 100) : 0;
 
     return stats;
   }

@@ -13,20 +13,12 @@
   </div>
 
   <div class="flex items-center gap-1">
-    <p-button
-      icon="pi pi-calendar"
-      [text]="true"
-      severity="secondary"
-      (onClick)="calendarMenu.toggle($event)"
-    />
+    <p-button icon="pi pi-calendar" [text]="true" severity="secondary" (onClick)="calendarMenu.toggle($event)" />
 
     <p-menu #calendarMenu [popup]="true" appendTo="body">
       <ng-template pTemplate="start">
         <div class="p-2" (click)="$event.stopPropagation()">
-          <p-datepicker
-            [inline]="true"
-            (onSelect)="onDateSelect($event)"
-          />
+          <p-datepicker [inline]="true" (onSelect)="onDateSelect($event)" />
           <div class="flex gap-4 p-2 border-t border-surface mt-2">
             <div class="flex items-center gap-2 text-xs">
               <span class="w-3 h-3 rounded-full bg-blue-500"></span>
@@ -41,19 +33,19 @@
       </ng-template>
     </p-menu>
 
-    <p-button
-      icon="pi pi-ellipsis-v"
-      [text]="true"
-      severity="secondary"
-      (onClick)="quickMenu.toggle($event)"
-    />
+    <p-button icon="pi pi-ellipsis-v" [text]="true" severity="secondary" (onClick)="quickMenu.toggle($event)" />
 
-    <p-menu #quickMenu [popup]="true" [model]="[
-      { label: 'all.ranking.breakdown.period.last-point-update' | translate, command: lastPointUpdate.bind(this) },
-      { label: 'all.ranking.breakdown.period.last-ranking-update' | translate, command: lastRankingUpdate.bind(this) },
-      { separator: true },
-      { label: 'all.ranking.breakdown.period.next-point-update' | translate, command: nextPointUpdate.bind(this) },
-      { label: 'all.ranking.breakdown.period.next-ranking-update' | translate, command: nextRankingUpdate.bind(this) }
-    ]" appendTo="body" />
+    <p-menu
+      #quickMenu
+      [popup]="true"
+      [model]="[
+        { label: 'all.ranking.breakdown.period.last-point-update' | translate, command: lastPointUpdate.bind(this) },
+        { label: 'all.ranking.breakdown.period.last-ranking-update' | translate, command: lastRankingUpdate.bind(this) },
+        { separator: true },
+        { label: 'all.ranking.breakdown.period.next-point-update' | translate, command: nextPointUpdate.bind(this) },
+        { label: 'all.ranking.breakdown.period.next-ranking-update' | translate, command: nextRankingUpdate.bind(this) },
+      ]"
+      appendTo="body"
+    />
   </div>
 </div>

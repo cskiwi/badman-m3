@@ -1,33 +1,8 @@
 import { PermGuard, User } from '@app/backend-authorization';
-import {
-  TournamentScheduleSlot,
-  TournamentEvent,
-  Court,
-  Game,
-  Player,
-  TournamentDraw,
-  GamePlayerMembership,
-} from '@app/models';
+import { TournamentScheduleSlot, TournamentEvent, Court, Game, Player, TournamentDraw, GamePlayerMembership } from '@app/models';
 import { ScheduleSlotStatus, ScheduleStrategy, TournamentPhase } from '@app/models-enum';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  Args,
-  ID,
-  Int,
-  Mutation,
-  ObjectType,
-  Field,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-  registerEnumType,
-} from '@nestjs/graphql';
+import { BadRequestException, ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
+import { Args, ID, Int, Mutation, ObjectType, Field, Parent, Query, ResolveField, Resolver, registerEnumType } from '@nestjs/graphql';
 import { TournamentScheduleSlotArgs } from '../../../args';
 import {
   GenerateTimeSlotsInput,
@@ -81,9 +56,7 @@ export class TournamentScheduleResolver {
   // ============ QUERIES ============
 
   @Query(() => TournamentScheduleSlot)
-  async tournamentScheduleSlot(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<TournamentScheduleSlot> {
+  async tournamentScheduleSlot(@Args('id', { type: () => ID }) id: string): Promise<TournamentScheduleSlot> {
     const slot = await TournamentScheduleSlot.findOne({
       where: { id },
     });
@@ -135,9 +108,7 @@ export class TournamentScheduleResolver {
   }
 
   @Query(() => [TournamentScheduleSlot], { description: 'Get available slots for scheduling' })
-  async availableScheduleSlots(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<TournamentScheduleSlot[]> {
+  async availableScheduleSlots(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<TournamentScheduleSlot[]> {
     return TournamentScheduleSlot.find({
       where: {
         tournamentEventId,
@@ -148,9 +119,7 @@ export class TournamentScheduleResolver {
   }
 
   @Query(() => [Game], { description: 'Get unscheduled games for a tournament' })
-  async unscheduledGames(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<Game[]> {
+  async unscheduledGames(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<Game[]> {
     // Get all draws for this tournament
     const tournament = await TournamentEvent.findOne({
       where: { id: tournamentEventId },
@@ -184,9 +153,7 @@ export class TournamentScheduleResolver {
   }
 
   @Query(() => [ScheduleConflict], { description: 'Detect scheduling conflicts' })
-  async detectScheduleConflicts(
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<ScheduleConflict[]> {
+  async detectScheduleConflicts(@Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<ScheduleConflict[]> {
     // Get all scheduled slots with games
     const slots = await TournamentScheduleSlot.find({
       where: {
@@ -253,10 +220,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => [TournamentScheduleSlot], { description: 'Generate time slots for scheduling' })
   @UseGuards(PermGuard)
-  async generateTimeSlots(
-    @User() user: Player,
-    @Args('input') input: GenerateTimeSlotsInput,
-  ): Promise<TournamentScheduleSlot[]> {
+  async generateTimeSlots(@User() user: Player, @Args('input') input: GenerateTimeSlotsInput): Promise<TournamentScheduleSlot[]> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to generate time slots');
@@ -325,9 +289,7 @@ export class TournamentScheduleResolver {
           }
 
           // Move to next slot (duration + break)
-          currentDate.setTime(
-            currentDate.getTime() + (input.slotDurationMinutes + input.breakMinutes) * 60 * 1000,
-          );
+          currentDate.setTime(currentDate.getTime() + (input.slotDurationMinutes + input.breakMinutes) * 60 * 1000);
         }
       }
     }
@@ -337,10 +299,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => TournamentScheduleSlot, { description: 'Create a single schedule slot' })
   @UseGuards(PermGuard)
-  async createScheduleSlot(
-    @User() user: Player,
-    @Args('input') input: CreateScheduleSlotInput,
-  ): Promise<TournamentScheduleSlot> {
+  async createScheduleSlot(@User() user: Player, @Args('input') input: CreateScheduleSlotInput): Promise<TournamentScheduleSlot> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to create schedule slots');
@@ -381,10 +340,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => TournamentScheduleSlot, { description: 'Assign a game to a schedule slot' })
   @UseGuards(PermGuard)
-  async assignGameToSlot(
-    @User() user: Player,
-    @Args('input') input: AssignGameToSlotInput,
-  ): Promise<TournamentScheduleSlot> {
+  async assignGameToSlot(@User() user: Player, @Args('input') input: AssignGameToSlotInput): Promise<TournamentScheduleSlot> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to assign games to slots');
@@ -430,10 +386,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => TournamentScheduleSlot, { description: 'Remove a game from a schedule slot' })
   @UseGuards(PermGuard)
-  async removeGameFromSlot(
-    @User() user: Player,
-    @Args('slotId', { type: () => ID }) slotId: string,
-  ): Promise<TournamentScheduleSlot> {
+  async removeGameFromSlot(@User() user: Player, @Args('slotId', { type: () => ID }) slotId: string): Promise<TournamentScheduleSlot> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to remove games from slots');
@@ -473,10 +426,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => TournamentScheduleSlot, { description: 'Block a schedule slot' })
   @UseGuards(PermGuard)
-  async blockScheduleSlot(
-    @User() user: Player,
-    @Args('input') input: BlockSlotInput,
-  ): Promise<TournamentScheduleSlot> {
+  async blockScheduleSlot(@User() user: Player, @Args('input') input: BlockSlotInput): Promise<TournamentScheduleSlot> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to block slots');
@@ -502,10 +452,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => TournamentScheduleSlot, { description: 'Unblock a schedule slot' })
   @UseGuards(PermGuard)
-  async unblockScheduleSlot(
-    @User() user: Player,
-    @Args('slotId', { type: () => ID }) slotId: string,
-  ): Promise<TournamentScheduleSlot> {
+  async unblockScheduleSlot(@User() user: Player, @Args('slotId', { type: () => ID }) slotId: string): Promise<TournamentScheduleSlot> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to unblock slots');
@@ -531,10 +478,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => Boolean, { description: 'Delete a schedule slot' })
   @UseGuards(PermGuard)
-  async deleteScheduleSlot(
-    @User() user: Player,
-    @Args('slotId', { type: () => ID }) slotId: string,
-  ): Promise<boolean> {
+  async deleteScheduleSlot(@User() user: Player, @Args('slotId', { type: () => ID }) slotId: string): Promise<boolean> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to delete slots');
@@ -559,10 +503,7 @@ export class TournamentScheduleResolver {
 
   @Mutation(() => ScheduleResult, { description: 'Auto-schedule games using specified strategy' })
   @UseGuards(PermGuard)
-  async scheduleGames(
-    @User() user: Player,
-    @Args('input') input: ScheduleGamesInput,
-  ): Promise<ScheduleResult> {
+  async scheduleGames(@User() user: Player, @Args('input') input: ScheduleGamesInput): Promise<ScheduleResult> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to schedule games');
@@ -629,22 +570,14 @@ export class TournamentScheduleResolver {
     }
 
     // Schedule based on strategy
-    const result = await this.scheduleWithStrategy(
-      gamesToSchedule,
-      availableSlots,
-      input.strategy,
-      input.minRestMinutes ?? 15,
-    );
+    const result = await this.scheduleWithStrategy(gamesToSchedule, availableSlots, input.strategy, input.minRestMinutes ?? 15);
 
     return result;
   }
 
   @Mutation(() => Boolean, { description: 'Publish the tournament schedule' })
   @UseGuards(PermGuard)
-  async publishSchedule(
-    @User() user: Player,
-    @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string,
-  ): Promise<boolean> {
+  async publishSchedule(@User() user: Player, @Args('tournamentEventId', { type: () => ID }) tournamentEventId: string): Promise<boolean> {
     // Check permission
     if (!user.hasAnyPermission(['edit-any:tournament'])) {
       throw new ForbiddenException('You do not have permission to publish schedule');
@@ -668,9 +601,7 @@ export class TournamentScheduleResolver {
   // ============ RESOLVE FIELDS ============
 
   @ResolveField(() => TournamentEvent, { nullable: true })
-  async tournamentEvent(
-    @Parent() { tournamentEventId }: TournamentScheduleSlot,
-  ): Promise<TournamentEvent | null> {
+  async tournamentEvent(@Parent() { tournamentEventId }: TournamentScheduleSlot): Promise<TournamentEvent | null> {
     if (!tournamentEventId) return null;
     return TournamentEvent.findOne({ where: { id: tournamentEventId } });
   }

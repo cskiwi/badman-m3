@@ -187,9 +187,7 @@ export class RankingSystemsOverviewComponent implements OnInit {
 
   triggerRankingSync(): void {
     this.actionLoading.set(true);
-    const startDate = this.rankingSyncStartDateSignal()
-      ? dayjs(this.rankingSyncStartDateSignal()!).format('YYYY-MM-DD')
-      : undefined;
+    const startDate = this.rankingSyncStartDateSignal() ? dayjs(this.rankingSyncStartDateSignal()!).format('YYYY-MM-DD') : undefined;
 
     this.syncApiService
       .triggerRankingSync(startDate)
@@ -218,10 +216,14 @@ export class RankingSystemsOverviewComponent implements OnInit {
   private intervalToMs(amount?: number, unit?: string): number {
     const a = amount ?? 1;
     switch (unit) {
-      case 'days':   return a * 86400000;
-      case 'weeks':  return a * 7 * 86400000;
-      case 'months': return a * 30 * 86400000;
-      default:       return a * 86400000;
+      case 'days':
+        return a * 86400000;
+      case 'weeks':
+        return a * 7 * 86400000;
+      case 'months':
+        return a * 30 * 86400000;
+      default:
+        return a * 86400000;
     }
   }
 }

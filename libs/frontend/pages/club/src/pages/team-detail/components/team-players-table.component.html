@@ -4,12 +4,7 @@
     Players
   </h3>
 
-  <p-table
-    [value]="players()"
-    sortMode="multiple"
-    [multiSortMeta]="defaultSort"
-    [tableStyle]="{ 'min-width': '40rem' }"
-  >
+  <p-table [value]="players()" sortMode="multiple" [multiSortMeta]="defaultSort" [tableStyle]="{ 'min-width': '40rem' }">
     <ng-template #header>
       <tr>
         <th pSortableColumn="player.lastName">
@@ -69,10 +64,7 @@
       <tr>
         <td>
           @if (membership.player?.slug) {
-            <a
-              [routerLink]="['/players', membership.player.slug]"
-              class="font-medium text-primary no-underline hover:underline"
-            >
+            <a [routerLink]="['/players', membership.player.slug]" class="font-medium text-primary no-underline hover:underline">
               {{ membership.player.fullName }}
             </a>
           } @else {

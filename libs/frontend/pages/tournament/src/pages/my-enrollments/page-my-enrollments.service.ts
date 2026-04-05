@@ -121,15 +121,9 @@ export class MyEnrollmentsService {
   isEnrollmentOpen = computed(() => this.tournament()?.phase === 'ENROLLMENT_OPEN');
 
   // Group enrollments by status
-  confirmedEnrollments = computed(() =>
-    this.enrollments().filter((e) => e.status === 'CONFIRMED'),
-  );
-  pendingEnrollments = computed(() =>
-    this.enrollments().filter((e) => e.status === 'PENDING'),
-  );
-  waitingListEnrollments = computed(() =>
-    this.enrollments().filter((e) => e.status === 'WAITING_LIST'),
-  );
+  confirmedEnrollments = computed(() => this.enrollments().filter((e) => e.status === 'CONFIRMED'));
+  pendingEnrollments = computed(() => this.enrollments().filter((e) => e.status === 'PENDING'));
+  waitingListEnrollments = computed(() => this.enrollments().filter((e) => e.status === 'WAITING_LIST'));
 
   // Get sub-events the user is NOT enrolled in
   availableSubEvents = computed(() => {

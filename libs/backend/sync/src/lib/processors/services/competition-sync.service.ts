@@ -16,10 +16,7 @@ export class CompetitionSyncService {
    * (pending results) and those with scores (may need updates) - then
    * queue an encounter sync for each, deduplicating by encounter ID.
    */
-  async processSync(
-    job: Job<StructureSyncJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processSync(job: Job<StructureSyncJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
 
     const dayAfterTomorrow = new Date();
@@ -45,13 +42,10 @@ export class CompetitionSyncService {
     });
 
     // Combine and deduplicate
-    const uniqueIds = [
-      ...new Set([...recentEncounters.map((e) => e.id), ...pendingOlderEncounters.map((e) => e.id)]),
-    ];
+    const uniqueIds = [...new Set([...recentEncounters.map((e) => e.id), ...pendingOlderEncounters.map((e) => e.id)])];
 
     this.logger.log(
-      `Found ${uniqueIds.length} encounters to sync ` +
-        `(${recentEncounters.length} recent 2w, ${pendingOlderEncounters.length} pending older)`,
+      `Found ${uniqueIds.length} encounters to sync ` + `(${recentEncounters.length} recent 2w, ${pendingOlderEncounters.length} pending older)`,
     );
 
     if (uniqueIds.length === 0) {

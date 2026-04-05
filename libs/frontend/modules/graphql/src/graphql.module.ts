@@ -18,18 +18,14 @@ import { HttpLink } from 'apollo-angular/http';
 
 const STATE_KEY = makeStateKey<NormalizedCacheObject>('apollo.state');
 export const APOLLO_CACHE = new InjectionToken<InMemoryCache>('apollo-cache');
-export const GRAPHQL_CONFIG_TOKEN = new InjectionToken<GraphqlConfiguration>(
-  'graphql.config',
-);
+export const GRAPHQL_CONFIG_TOKEN = new InjectionToken<GraphqlConfiguration>('graphql.config');
 
 export type GraphqlConfiguration = Readonly<{
   suffix?: string;
   devToolsEnabled?: boolean;
 }>;
 
-export function provideGraphQL(
-  config?: GraphqlConfiguration,
-): EnvironmentProviders {
+export function provideGraphQL(config?: GraphqlConfiguration): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: APOLLO_CACHE,
@@ -47,14 +43,7 @@ export function provideGraphQL(
       const baseUrl = inject(BASE_URL);
       const graphqlConfig = inject(GRAPHQL_CONFIG_TOKEN, { optional: true });
 
-      return createApollo(
-        httpLink,
-        cache,
-        platformId as string,
-        transferState,
-        baseUrl,
-        graphqlConfig ?? undefined,
-      );
+      return createApollo(httpLink, cache, platformId as string, transferState, baseUrl, graphqlConfig ?? undefined);
     }),
     // Eagerly initialize Apollo on the browser so connectToDevTools() fires at
     // bootstrap time — before the Apollo DevTools extension checks for clients.
@@ -112,12 +101,8 @@ export function createApollo(
   providers: [],
 })
 export class GraphQLModule {
-  static forRoot(
-    config?: GraphqlConfiguration,
-  ): ModuleWithProviders<GraphQLModule> {
-    console.warn(
-      'GraphQLModule.forRoot() is deprecated. Use provideGraphQL() in app.config.ts instead.'
-    );
+  static forRoot(config?: GraphqlConfiguration): ModuleWithProviders<GraphQLModule> {
+    console.warn('GraphQLModule.forRoot() is deprecated. Use provideGraphQL() in app.config.ts instead.');
     return {
       ngModule: GraphQLModule,
       providers: [

@@ -24,8 +24,8 @@ export class HomeService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ rankingSystem: RankingSystem }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ rankingSystem: RankingSystem }>({
             query: gql`
               query RankingSystem($rankingSystemId: ID) {
                 rankingSystem(id: $rankingSystemId) {
@@ -43,7 +43,8 @@ export class HomeService {
               id: params.rankingSystemId,
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.rankingSystem) {
           throw new Error('No rankingSystem found');
@@ -69,22 +70,14 @@ export class HomeService {
 
     let level = rankingSystem.amountOfLevels ?? 0;
     return (
-      rankingSystem.pointsWhenWinningAgainst?.map(
-        (winning: number, index: number) => {
-          return {
-            level: level--,
-            pointsToGoUp:
-              level !== 0
-                ? Math.round(rankingSystem.pointsToGoUp?.[index] ?? 0)
-                : null,
-            pointsToGoDown:
-              index === 0
-                ? null
-                : Math.round(rankingSystem.pointsToGoDown?.[index - 1] ?? 0),
-            pointsWhenWinningAgainst: Math.round(winning),
-          };
-        },
-      ) ?? []
+      rankingSystem.pointsWhenWinningAgainst?.map((winning: number, index: number) => {
+        return {
+          level: level--,
+          pointsToGoUp: level !== 0 ? Math.round(rankingSystem.pointsToGoUp?.[index] ?? 0) : null,
+          pointsToGoDown: index === 0 ? null : Math.round(rankingSystem.pointsToGoDown?.[index - 1] ?? 0),
+          pointsWhenWinningAgainst: Math.round(winning),
+        };
+      }) ?? []
     );
   });
 

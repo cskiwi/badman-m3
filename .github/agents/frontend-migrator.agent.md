@@ -60,6 +60,7 @@ Before starting, **determine the migration path** by inspecting the project:
 Use when the project is **already on Angular 14+** and **already uses PrimeNG** (no Angular Material).
 
 **Consult the [npm-package-migration](../skills/npm-package-migration/SKILL.md) skill** for:
+
 - Angular version upgrades via `ng update`
 - PrimeNG major version upgrades and breaking changes
 - @ambe-web-framework version upgrades
@@ -71,6 +72,7 @@ Use when the project is **already on Angular 14+** and **already uses PrimeNG** 
 Use when the project is on **Angular < 14**, uses **Angular Material**, or uses the **old framework** (not @ambe-web-framework).
 
 **Consult the [legacy-angular-migration](../skills/legacy-angular-migration/SKILL.md) skill** for:
+
 - Full project scaffolding with @ambe-web-framework/generator
 - Angular Material → PrimeNG component replacement
 - Code modernization (signals, inject, control flow, standalone)

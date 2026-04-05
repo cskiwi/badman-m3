@@ -10,9 +10,7 @@ import { CompetitionEventUpdateInput } from '../../../inputs';
 export class CompetitionEventResolver {
   @Query(() => CompetitionEvent)
   @AllowAnonymous()
-  async competitionEvent(
-    @Args('id', { type: () => ID }) id: string,
-  ): Promise<CompetitionEvent> {
+  async competitionEvent(@Args('id', { type: () => ID }) id: string): Promise<CompetitionEvent> {
     const comp = IsUUID(id)
       ? await CompetitionEvent.findOne({
           where: {
@@ -35,7 +33,7 @@ export class CompetitionEventResolver {
   @Query(() => [CompetitionEvent])
   @AllowAnonymous()
   async competitionEvents(
-    @Args('args',  { type: () => CompetitionEventArgs, nullable: true  })
+    @Args('args', { type: () => CompetitionEventArgs, nullable: true })
     inputArgs?: InstanceType<typeof CompetitionEventArgs>,
   ): Promise<CompetitionEvent[]> {
     const args = CompetitionEventArgs.toFindManyOptions(inputArgs);
@@ -86,10 +84,7 @@ export class CompetitionEventResolver {
     }
 
     // Check permissions
-    const canEdit = await user.hasAnyPermission([
-      'edit-any:competition',
-      `${competition.id}_edit:competition`,
-    ]);
+    const canEdit = await user.hasAnyPermission(['edit-any:competition', `${competition.id}_edit:competition`]);
 
     if (!canEdit) {
       throw new UnauthorizedException('You do not have permission to edit this competition');
@@ -103,16 +98,10 @@ export class CompetitionEventResolver {
       const originalValue = competition[key as keyof CompetitionEvent];
 
       // Handle date comparison specially
-      if (
-        key.includes('Date') ||
-        key === 'openDate' ||
-        key === 'closeDate'
-      ) {
+      if (key.includes('Date') || key === 'openDate' || key === 'closeDate') {
         const newDate = value ? new Date(value as string | Date).getTime() : null;
         const originalDate =
-          originalValue && (typeof originalValue === 'string' || originalValue instanceof Date)
-            ? new Date(originalValue).getTime()
-            : null;
+          originalValue && (typeof originalValue === 'string' || originalValue instanceof Date) ? new Date(originalValue).getTime() : null;
         return newDate !== originalDate;
       }
 

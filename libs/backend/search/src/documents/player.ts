@@ -13,7 +13,7 @@ export const PlayerDocument: CollectionCreateSchema<Record<string, unknown>> = {
     { name: 'club', type: 'object', optional: true },
     { name: 'type', type: 'string' },
     { name: 'order', type: 'int32' },
-  ], 
+  ],
   enable_nested_fields: true,
   default_sorting_field: 'order',
 };

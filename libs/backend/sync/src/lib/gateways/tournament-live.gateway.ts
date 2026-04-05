@@ -95,10 +95,7 @@ export class TournamentLiveGateway implements OnGatewayInit, OnGatewayConnection
   // ============ CLIENT SUBSCRIPTIONS ============
 
   @SubscribeMessage('subscribe-tournament')
-  handleSubscribeTournament(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { tournamentEventId: string },
-  ) {
+  handleSubscribeTournament(@ConnectedSocket() client: Socket, @MessageBody() data: { tournamentEventId: string }) {
     const roomName = `tournament:${data.tournamentEventId}:live`;
     client.join(roomName);
 
@@ -113,10 +110,7 @@ export class TournamentLiveGateway implements OnGatewayInit, OnGatewayConnection
   }
 
   @SubscribeMessage('unsubscribe-tournament')
-  handleUnsubscribeTournament(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { tournamentEventId: string },
-  ) {
+  handleUnsubscribeTournament(@ConnectedSocket() client: Socket, @MessageBody() data: { tournamentEventId: string }) {
     const roomName = `tournament:${data.tournamentEventId}:live`;
     client.leave(roomName);
 
@@ -131,10 +125,7 @@ export class TournamentLiveGateway implements OnGatewayInit, OnGatewayConnection
   }
 
   @SubscribeMessage('subscribe-court')
-  handleSubscribeCourt(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { tournamentEventId: string; courtId: string },
-  ) {
+  handleSubscribeCourt(@ConnectedSocket() client: Socket, @MessageBody() data: { tournamentEventId: string; courtId: string }) {
     const roomName = `tournament:${data.tournamentEventId}:court:${data.courtId}`;
     client.join(roomName);
     this.logger.log(`Client ${client.id} subscribed to court ${data.courtId}`);
@@ -142,10 +133,7 @@ export class TournamentLiveGateway implements OnGatewayInit, OnGatewayConnection
   }
 
   @SubscribeMessage('unsubscribe-court')
-  handleUnsubscribeCourt(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { tournamentEventId: string; courtId: string },
-  ) {
+  handleUnsubscribeCourt(@ConnectedSocket() client: Socket, @MessageBody() data: { tournamentEventId: string; courtId: string }) {
     const roomName = `tournament:${data.tournamentEventId}:court:${data.courtId}`;
     client.leave(roomName);
     this.logger.log(`Client ${client.id} unsubscribed from court ${data.courtId}`);
@@ -260,11 +248,14 @@ export class TournamentLiveGateway implements OnGatewayInit, OnGatewayConnection
   /**
    * Emit check-in update
    */
-  emitCheckInUpdate(tournamentEventId: string, data: {
-    enrollmentId: string;
-    status: 'checked_in' | 'no_show' | 'pending';
-    playerName?: string;
-  }) {
+  emitCheckInUpdate(
+    tournamentEventId: string,
+    data: {
+      enrollmentId: string;
+      status: 'checked_in' | 'no_show' | 'pending';
+      playerName?: string;
+    },
+  ) {
     const roomName = `tournament:${tournamentEventId}:live`;
     this.server?.to(roomName).emit('checkin-updated', {
       tournamentEventId,

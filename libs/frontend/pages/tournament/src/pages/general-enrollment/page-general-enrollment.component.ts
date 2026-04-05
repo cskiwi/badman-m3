@@ -31,8 +31,8 @@ import { Subject, takeUntil } from 'rxjs';
     PageHeaderComponent,
     SubEventSelectionGridComponent,
     EnrollmentCartComponent,
-    EnrollmentFiltersComponent
-],
+    EnrollmentFiltersComponent,
+  ],
   providers: [MessageService, DialogService],
   templateUrl: './page-general-enrollment.component.html',
 })
@@ -59,7 +59,7 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
   readonly userGender = this.service.userGender;
 
   // Computed selected IDs for grid
-  readonly selectedIds = computed(() => this.cartItems().map(item => item.subEventId));
+  readonly selectedIds = computed(() => this.cartItems().map((item) => item.subEventId));
 
   // Local state
   readonly tournamentId = signal<string | null>(null);
@@ -116,11 +116,7 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
     if (this.dialogRef) {
       this.dialogRef.onClose.subscribe((result: { partnerId?: string; notes?: string } | null) => {
         if (result) {
-          this.service.addToCart(
-            subEvent,
-            result.partnerId,
-            result.notes,
-          );
+          this.service.addToCart(subEvent, result.partnerId, result.notes);
           this.showMessage(this.translate.instant('all.enrollment.messages.addedWithPartner'));
         }
       });
@@ -130,7 +126,14 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
   /**
    * Handle filter changes
    */
-  onFiltersChange(filters: { eventType: string[]; gameType: string[]; level: number[]; enrollmentStatus: 'OPEN' | 'AVAILABLE' | 'ALL'; searchText: string; showOnlyMyLevel: boolean }): void {
+  onFiltersChange(filters: {
+    eventType: string[];
+    gameType: string[];
+    level: number[];
+    enrollmentStatus: 'OPEN' | 'AVAILABLE' | 'ALL';
+    searchText: string;
+    showOnlyMyLevel: boolean;
+  }): void {
     this.service.updateFilters(filters);
   }
 
@@ -165,10 +168,7 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
           this.isSubmitting.set(false);
 
           if (enrollments && enrollments.length > 0) {
-            this.showMessage(
-              this.translate.instant('all.enrollment.messages.enrollmentSuccess', { count: enrollments.length }),
-              'success',
-            );
+            this.showMessage(this.translate.instant('all.enrollment.messages.enrollmentSuccess', { count: enrollments.length }), 'success');
           } else {
             this.showMessage(this.translate.instant('all.enrollment.messages.enrollmentFailed'), 'error');
           }
@@ -184,10 +184,7 @@ export class PageGeneralEnrollmentComponent implements OnInit, OnDestroy {
   /**
    * Show toast message
    */
-  private showMessage(
-    message: string,
-    type: 'success' | 'error' | 'warn' = 'success',
-  ): void {
+  private showMessage(message: string, type: 'success' | 'error' | 'warn' = 'success'): void {
     this.messageService.add({
       severity: type,
       summary: type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Warning',

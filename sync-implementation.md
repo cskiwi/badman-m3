@@ -83,6 +83,7 @@ libs/frontend/pages/
 ### Phase 1: Core Infrastructure
 
 #### 1.1 Generate Backend Libraries and Worker Service
+
 ```bash
 # Shared libraries
 nx g @nx/nest:library libs/backend/tournament-api --buildable
@@ -96,12 +97,14 @@ nx g @nx/angular:library libs/frontend/pages/sync-admin --routing
 ```
 
 #### 1.2 Tournament API Client
+
 - HTTP client for Tournament Software API
 - Type definitions for API responses
 - Authentication middleware
 - Rate limiting and error handling
 
 #### 1.3 Queue Infrastructure
+
 - Configure Bull/BullMQ queues
 - Define job types and payloads
 - Set up Redis connection
@@ -109,23 +112,26 @@ nx g @nx/angular:library libs/frontend/pages/sync-admin --routing
 ### Phase 2: Sync Processors
 
 #### 2.1 Tournament Discovery Processor
+
 - **Job**: `tournament-discovery`
 - **Schedule**: Daily check
 - **Endpoint**: `GET /1.0/Tournament?list=1&refdate=2014-01-01`
 - **Logic**: Add only new tournaments, don't update existing
 
 #### 2.2 Competition Event Processor (TypeID = 1)
+
 - **Target**: Team Tournaments (Belgian Interclub competitions)
-- **Jobs**: 
+- **Jobs**:
   - `competition-structure-sync` (events, draws, team matches)
   - `competition-game-sync`
-- **Schedule**: 
+- **Schedule**:
   - Structure: May 1 - August 31 only (2x daily at 8AM and 8PM)
   - Games: Every 4 hours after played, then daily for 1 week, then weekly for 1 month
 - **Endpoints**: Use team-specific endpoints for matches and results
 
 #### 2.3 Tournament Event Processor (TypeID = 0)
-- **Target**: Individual Tournaments 
+
+- **Target**: Individual Tournaments
 - **Jobs**:
   - `tournament-structure-sync` (events, draws, entries)
   - `tournament-game-sync`
@@ -135,8 +141,9 @@ nx g @nx/angular:library libs/frontend/pages/sync-admin --routing
 - **Endpoints**: Use individual match endpoints for games and results
 
 #### 2.4 Team Matching Processor
+
 - **Job**: `team-matching`
-- **Logic**: 
+- **Logic**:
   - Fuzzy matching algorithm for team names
   - Multiple criteria matching (name variations, club associations)
   - Queue unmatched teams for admin review
@@ -144,21 +151,22 @@ nx g @nx/angular:library libs/frontend/pages/sync-admin --routing
 ### Phase 3: Data Models & Sync Logic
 
 #### 3.1 Sync Entities
+
 ```typescript
 // Tournament Software mapping tables
-- TournamentSoftwareEvent
-- TournamentSoftwareSubEvent  
-- TournamentSoftwareDraw
-- TournamentSoftwareGame
-- TournamentSoftwareTeam
-
-// Sync tracking
-- SyncJob
-- SyncLog
-- TeamMatchingQueue
+-TournamentSoftwareEvent -
+  TournamentSoftwareSubEvent -
+  TournamentSoftwareDraw -
+  TournamentSoftwareGame -
+  TournamentSoftwareTeam -
+  // Sync tracking
+  SyncJob -
+  SyncLog -
+  TeamMatchingQueue;
 ```
 
 #### 3.2 Merge Strategy
+
 - **Partial Updates Only**: Preserve local data, only update fields from API
 - **Conflict Resolution**: Local data takes precedence
 - **Change Detection**: Compare timestamps and checksums
@@ -166,27 +174,32 @@ nx g @nx/angular:library libs/frontend/pages/sync-admin --routing
 ### Phase 4: Admin Interface
 
 #### 4.1 Generate Frontend Pages
+
 ```bash
 nx g @nx/angular:library frontend/pages/sync --routing
 ```
 
 #### 4.2 Competition Management Pages
+
 - Competition list with sync status
 - Competition detail with recursive sync options
 - Game management and manual sync triggers
 
 #### 4.3 Tournament Management Pages
-- Tournament list with sync status  
+
+- Tournament list with sync status
 - Tournament detail with structure visualization
 - Real-time sync monitoring
 
 #### 4.4 Team Matching Interface
+
 - Unmatched teams queue
 - Manual team association tools
 - Fuzzy matching suggestions
 - Event-level team management
 
 #### 4.5 Sync Dashboard
+
 - Overall sync health monitoring
 - Job queue status
 - Error logs and retry mechanisms
@@ -195,6 +208,7 @@ nx g @nx/angular:library frontend/pages/sync --routing
 ### Phase 5: Sync Scheduling
 
 #### 5.1 Cron Job Configuration
+
 ```typescript
 // Daily discovery
 @Cron('0 6 * * *') // 6 AM daily
@@ -213,6 +227,7 @@ async syncTournamentStructure()
 ```
 
 #### 5.2 Dynamic Job Scheduling
+
 - Calculate sync intervals based on event dates
 - Adjust frequency based on event type and status
 - Automatic cleanup of completed sync jobs
@@ -220,21 +235,25 @@ async syncTournamentStructure()
 ## Technical Considerations
 
 ### Queue Configuration
+
 - **Concurrency**: Limit concurrent jobs to prevent API rate limiting
 - **Retry Logic**: Exponential backoff for failed jobs
 - **Job Priorities**: Tournament games > Competition games > Structure updates
 
 ### Data Integrity
+
 - **Transaction Management**: Ensure atomic updates
 - **Rollback Capability**: Ability to revert problematic syncs
 - **Audit Trail**: Complete logging of all sync operations
 
 ### Performance Optimization
+
 - **Incremental Sync**: Only process changed data
 - **Batch Processing**: Group related updates
 - **Caching**: Cache API responses to reduce external calls
 
 ### Error Handling
+
 - **Dead Letter Queue**: Handle persistently failing jobs
 - **Notification System**: Alert admins of critical sync failures
 - **Manual Intervention**: Admin tools to resolve sync conflicts
@@ -244,11 +263,13 @@ async syncTournamentStructure()
 ### Available Endpoints (Based on Tournament Software API Documentation)
 
 #### Core Tournament Endpoints
+
 1. **Tournament Discovery**: `GET /1.0/Tournament?list=1&refdate=YYYY-MM-DD&pagesize=100`
 2. **Tournament Search**: `GET /1.0/Tournament?q={searchterm}&pagesize=100`
 3. **Tournament Details**: `GET /1.0/Tournament/{tournamentCode}`
 
 #### Tournament Structure Endpoints
+
 4. **Event List**: `GET /1.0/Tournament/{tournamentCode}/Event/{eventCode}`
 5. **Stage List**: `GET /1.0/Tournament/{tournamentCode}/Stages`
 6. **Event Entries**: `GET /1.0/Tournament/{tournamentCode}/Event/{eventCode}/Entry`
@@ -256,12 +277,14 @@ async syncTournamentStructure()
 8. **Draw List**: `GET /1.0/Tournament/{tournamentCode}/Draw/{drawCode}`
 
 #### Team & Club Endpoints
+
 9. **Team List**: `GET /1.0/Tournament/{tournamentCode}/Team/{teamCode}`
 10. **Club List**: `GET /1.0/Tournament/{tournamentCode}/Club/{clubCode}`
 11. **Club Teams**: `GET /1.0/Tournament/{tournamentCode}/Club/{clubCode}/Team`
 12. **Event Teams**: `GET /1.0/Tournament/{tournamentCode}/Event/{eventCode}/Team/{teamCode}`
 
 #### Match/Game Endpoints
+
 13. **Matches by Date**: `GET /1.0/Tournament/{tournamentCode}/Match/{date}`
 14. **Matches by Draw**: `GET /1.0/Tournament/{tournamentCode}/Draw/{drawCode}/Match`
 15. **Team Matches**: `GET /1.0/Tournament/{tournamentCode}/TeamMatch/{matchCode}`
@@ -269,19 +292,23 @@ async syncTournamentStructure()
 17. **Match Date**: `GET /1.0/Tournament/{tournamentCode}/Match/{matchID}/Date`
 
 #### League Endpoints (For Competition Support)
+
 18. **Leagues**: `GET /1.0/Leagues/{organizationCode}`
 19. **League Results**: `GET /1.0/LeagueResults/{leagueCode}`
 
 #### Player Endpoints
+
 20. **Player List**: `GET /1.0/Tournament/{tournamentCode}/Player/{memberID}`
 
 ### Tournament Types & Competition Logic
+
 - **TypeID 0**: Individual Tournament (tournaments)
 - **TypeID 1**: Team Tournament (competitions/interclub)
 - **TypeID 2**: Team Sport Tournament
 - **TypeID 3**: Online League
 
 ### Authentication & Rate Limiting
+
 - **Authentication**: Basic Auth with provided credentials
 - **Response Format**: XML only
 - **Rate Limiting**: TBD (mentioned in docs but not specified)
@@ -290,6 +317,7 @@ async syncTournamentStructure()
 ### Key Data Structures (XML Response Format)
 
 #### Tournament List Response
+
 ```xml
 <Result Version="1.0">
   <Tournament>
@@ -306,6 +334,7 @@ async syncTournamentStructure()
 ```
 
 #### Tournament Details Response
+
 ```xml
 <Result Version="1.0">
   <Tournament>
@@ -349,6 +378,7 @@ async syncTournamentStructure()
 ```
 
 #### Tournament Status Codes
+
 - **0**: Unknown
 - **101**: Tournament Finished
 - **199**: Tournament Cancelled
@@ -359,12 +389,14 @@ async syncTournamentStructure()
 - **204**: League Finished
 
 ## Security Considerations
+
 - Store API credentials in environment variables
 - Encrypt sensitive sync data
 - Implement audit logging for all sync operations
 - Role-based access for sync administration
 
 ## Testing Strategy
+
 - Unit tests for each processor
 - Integration tests with mock API responses
 - End-to-end testing of sync workflows
@@ -373,7 +405,9 @@ async syncTournamentStructure()
 ## Deployment Considerations
 
 ### Environment Configuration
+
 Create `.env` file with required variables:
+
 ```bash
 # Tournament Software API
 TOURNAMENT_API_USERNAME=your_username
@@ -392,22 +426,26 @@ TOURNAMENT_SYNC_WORKER_PORT=3000
 ### Quick Start
 
 1. **Set up environment variables** (copy `.env.example` to `.env`):
+
    ```bash
    cp .env.example .env
    ```
 
 2. **Configure your Tournament Software API credentials** in `.env`:
+
    ```bash
    TOURNAMENT_API_USERNAME=your_username
    TOURNAMENT_API_PASSWORD=your_password
    ```
 
 3. **Start required services** (Redis for queues):
+
    ```bash
    docker-compose up -d redis
    ```
 
 4. **Start the worker service**:
+
    ```bash
    # Development mode (with hot reload)
    nx serve sync-worker
@@ -422,6 +460,7 @@ TOURNAMENT_SYNC_WORKER_PORT=3000
    - Service status: `GET http://localhost:3000/api/status`
 
 ### Development Tools
+
 ```bash
 # Start Redis Commander for queue monitoring (optional)
 docker-compose --profile development up -d redis-commander
@@ -431,12 +470,14 @@ docker-compose --profile development up -d redis-commander
 ### Production Deployment
 
 #### Required Services
+
 ```bash
 # Start Redis for queue management
 docker-compose up -d redis
 ```
 
 #### Application Deployment
+
 ```bash
 # Build the worker application
 nx build sync-worker
@@ -446,6 +487,7 @@ node dist/sync-worker/main.js
 ```
 
 #### Production Considerations
+
 - **Redis**: Required for Bull queue management and persistence
 - **Environment Variables**: Configure API credentials and Redis connection
 - **Health Checks**: Use `/api/health` endpoint for container orchestration
@@ -454,6 +496,7 @@ node dist/sync-worker/main.js
 - **Database**: Sync operations require database access for tournament data
 
 ## Future Enhancements
+
 - Real-time sync via webhooks (if API supports)
 - Machine learning for team matching
 - Predictive sync scheduling

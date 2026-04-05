@@ -186,11 +186,11 @@ export class PlayerRecentGamesService {
         }
 
         const games = result.data.player.gamePlayerMemberships.map((gpm) => gpm.game);
-        
+
         // Reset pagination state when loading initial games
         this.resetPagination();
         this.hasMoreData.set(games.length === params.take);
-        
+
         return games;
       } catch (err) {
         throw new Error(this.handleError(err as HttpErrorResponse));
@@ -223,21 +223,21 @@ export class PlayerRecentGamesService {
     }
 
     this.isLoadingMore.set(true);
-    
+
     try {
       const currentGames = this.games();
       const skip = currentGames.length;
       const take = this.pageSize();
-      
+
       const newGames = await this.fetchGames(playerId, skip, take);
-      
+
       // Filter out duplicates and append new games
-      const existingIds = new Set(currentGames.map(game => game.id));
-      const uniqueNewGames = newGames.filter(game => !existingIds.has(game.id));
-      
+      const existingIds = new Set(currentGames.map((game) => game.id));
+      const uniqueNewGames = newGames.filter((game) => !existingIds.has(game.id));
+
       this.allGames.set([...currentGames, ...uniqueNewGames]);
       this.hasMoreData.set(newGames.length === take);
-      this.currentPage.update(page => page + 1);
+      this.currentPage.update((page) => page + 1);
     } catch (err) {
       console.error('Failed to load more games:', err);
     } finally {
@@ -297,7 +297,7 @@ export class PlayerRecentGamesService {
         query: PLAYER_RECENT_GAMES_QUERY,
         variables,
         fetchPolicy: 'network-only', // Always fetch fresh data for pagination
-      })
+      }),
     );
 
     if (!result?.data?.player?.gamePlayerMemberships) {

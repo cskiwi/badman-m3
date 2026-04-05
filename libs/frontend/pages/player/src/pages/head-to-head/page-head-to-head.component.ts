@@ -39,90 +39,96 @@ import { IftaLabelModule } from 'primeng/iftalabel';
 })
 export class PageHeadToHeadComponent {
   private readonly dataService = new DetailService();
-    private readonly playerId = injectParams('playerId');
-    private readonly translateService = inject(TranslateService);
-  
-    // Expose service properties
-    filter = this.dataService.filter;
-    memberships = this.dataService.memberships;
-    error = this.dataService.error;
-    loading = this.dataService.loading;
-    data = this.dataService.data;
-    player = this.dataService.player;
-  
-    auth = inject(AuthService);
-  
-    // Options for PrimeNG selects
-    linkTypeOptions = [
-      { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
-      { value: 'competition', label: this.translateService.instant('all.head-to-head.filters.competition') },
-      { value: 'tournament', label: this.translateService.instant('all.head-to-head.filters.tournament') },
-    ];
-  
-    gameTypeOptions = [
-      { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
-      { value: 'MX', label: this.translateService.instant('all.head-to-head.filters.mix') },
-      { value: 'D', label: this.translateService.instant('all.head-to-head.filters.double') },
-      { value: 'S', label: this.translateService.instant('all.head-to-head.filters.single') },
-    ];
-  
-    viewModeOptions = [
-      { value: 'partners', label: this.translateService.instant('all.head-to-head.filters.partners') },
-      { value: 'opponents', label: this.translateService.instant('all.head-to-head.filters.opponents') },
-    ];
-  
-    // Partner club options from service with "All" option
-    partnerClubOptions = computed(() => [{ value: null, label: this.translateService.instant('all.head-to-head.filters.all') }, ...this.dataService.partnerClubOptions()]);
-  
-    // Opponent club options from service with "All" option
-    opponentClubOptions = computed(() => [{ value: null, label: this.translateService.instant('all.head-to-head.filters.all') }, ...this.dataService.opponentClubOptions()]);
-  
-    // Partner options from service with "All" option (for opponent filtering)
-    partnerOptions = computed(() => [
-      { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
-      ...this.dataService.partnerOptions(),
-    ]);
-  
-    // Convert form values to signals for reactivity
-    private viewModeSignal = toSignal(this.filter.get('viewMode')!.valueChanges, { initialValue: 'partners' });
-  
-    // Check if we're in opponent mode
-    isOpponentMode = computed(() => this.viewModeSignal() === 'opponents');
-  
-    // UI state management
-    filtersExpanded = signal(true);
-    showExplanation = signal(this.shouldShowExplanation());
-  
-    private shouldShowExplanation(): boolean {
-      if (typeof localStorage === 'undefined') return true;
-      return localStorage.getItem('partners-explanation-dismissed') !== 'true';
+  private readonly playerId = injectParams('playerId');
+  private readonly translateService = inject(TranslateService);
+
+  // Expose service properties
+  filter = this.dataService.filter;
+  memberships = this.dataService.memberships;
+  error = this.dataService.error;
+  loading = this.dataService.loading;
+  data = this.dataService.data;
+  player = this.dataService.player;
+
+  auth = inject(AuthService);
+
+  // Options for PrimeNG selects
+  linkTypeOptions = [
+    { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
+    { value: 'competition', label: this.translateService.instant('all.head-to-head.filters.competition') },
+    { value: 'tournament', label: this.translateService.instant('all.head-to-head.filters.tournament') },
+  ];
+
+  gameTypeOptions = [
+    { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
+    { value: 'MX', label: this.translateService.instant('all.head-to-head.filters.mix') },
+    { value: 'D', label: this.translateService.instant('all.head-to-head.filters.double') },
+    { value: 'S', label: this.translateService.instant('all.head-to-head.filters.single') },
+  ];
+
+  viewModeOptions = [
+    { value: 'partners', label: this.translateService.instant('all.head-to-head.filters.partners') },
+    { value: 'opponents', label: this.translateService.instant('all.head-to-head.filters.opponents') },
+  ];
+
+  // Partner club options from service with "All" option
+  partnerClubOptions = computed(() => [
+    { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
+    ...this.dataService.partnerClubOptions(),
+  ]);
+
+  // Opponent club options from service with "All" option
+  opponentClubOptions = computed(() => [
+    { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
+    ...this.dataService.opponentClubOptions(),
+  ]);
+
+  // Partner options from service with "All" option (for opponent filtering)
+  partnerOptions = computed(() => [
+    { value: null, label: this.translateService.instant('all.head-to-head.filters.all') },
+    ...this.dataService.partnerOptions(),
+  ]);
+
+  // Convert form values to signals for reactivity
+  private viewModeSignal = toSignal(this.filter.get('viewMode')!.valueChanges, { initialValue: 'partners' });
+
+  // Check if we're in opponent mode
+  isOpponentMode = computed(() => this.viewModeSignal() === 'opponents');
+
+  // UI state management
+  filtersExpanded = signal(true);
+  showExplanation = signal(this.shouldShowExplanation());
+
+  private shouldShowExplanation(): boolean {
+    if (typeof localStorage === 'undefined') return true;
+    return localStorage.getItem('partners-explanation-dismissed') !== 'true';
+  }
+
+  toggleFilters(): void {
+    this.filtersExpanded.update((expanded) => !expanded);
+  }
+
+  dismissExplanation(): void {
+    this.showExplanation.set(false);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('partners-explanation-dismissed', 'true');
     }
-  
-    toggleFilters(): void {
-      this.filtersExpanded.update((expanded) => !expanded);
-    }
-  
-    dismissExplanation(): void {
-      this.showExplanation.set(false);
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('partners-explanation-dismissed', 'true');
+  }
+
+  constructor() {
+    effect(() => {
+      this.filter.get('playerId')?.setValue(this.playerId());
+    });
+
+    // Clear mode-specific filters when switching modes
+    effect(() => {
+      const viewMode = this.filter.get('viewMode')?.value;
+      if (viewMode === 'partners') {
+        this.filter.get('partnerFilter')?.setValue(null);
+        this.filter.get('opponentClub')?.setValue(null);
+      } else {
+        this.filter.get('partnerClub')?.setValue(null);
       }
-    }
-  
-    constructor() {
-      effect(() => {
-        this.filter.get('playerId')?.setValue(this.playerId());
-      });
-  
-      // Clear mode-specific filters when switching modes
-      effect(() => {
-        const viewMode = this.filter.get('viewMode')?.value;
-        if (viewMode === 'partners') {
-          this.filter.get('partnerFilter')?.setValue(null);
-          this.filter.get('opponentClub')?.setValue(null);
-        } else {
-          this.filter.get('partnerClub')?.setValue(null);
-        }
-      });
-    }
+    });
+  }
 }

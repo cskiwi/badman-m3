@@ -21,7 +21,7 @@
               <div class="flex items-start justify-between mb-4">
                 <h3 class="font-semibold text-lg text-primary">{{ subEvent.name }}</h3>
               </div>
-              
+
               <div class="space-y-3 text-sm text-muted-color-emphasis mb-4">
                 @if (subEvent.eventType) {
                   <div class="flex items-center gap-2">
@@ -30,19 +30,20 @@
                     <span>{{ subEvent.eventType }}</span>
                   </div>
                 }
-                
+
                 @if (subEvent.level) {
                   <div class="flex items-center gap-2">
                     <i class="pi pi-chart-line text-xs"></i>
                     <span class="font-medium">{{ 'all.competition.level' | translate }}:</span>
-                    <span>{{ subEvent.level }}
+                    <span
+                      >{{ subEvent.level }}
                       @if (subEvent.maxLevel && subEvent.maxLevel !== subEvent.level) {
                         - {{ subEvent.maxLevel }}
                       }
                     </span>
                   </div>
                 }
-                
+
                 @if (subEvent.minBaseIndex || subEvent.maxBaseIndex) {
                   <div class="flex items-center gap-2">
                     <i class="pi pi-calculator text-xs"></i>
@@ -52,7 +53,7 @@
                         {{ subEvent.minBaseIndex }}
                       }
                       @if (subEvent.minBaseIndex && subEvent.maxBaseIndex) {
-                        - 
+                        -
                       }
                       @if (subEvent.maxBaseIndex) {
                         {{ subEvent.maxBaseIndex }}
@@ -69,12 +70,14 @@
                     <i class="pi pi-sitemap text-primary-500"></i>
                     {{ 'all.competition.draws' | translate }} ({{ subEvent.competitionDraws.length }})
                   </h4>
-                  
+
                   <div class="space-y-2">
                     @for (draw of subEvent.competitionDraws; track draw.id) {
-                      <a [routerLink]="['/', 'competition', competition.slug, 'sub-events', subEvent.id, 'draws']"
-                         class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline">
-                        <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice:0:8) }}</div>
+                      <a
+                        [routerLink]="['/', 'competition', competition.slug, 'sub-events', subEvent.id, 'draws']"
+                        class="block rounded bg-highlight-emphasis p-2 text-sm hover:bg-highlight transition-colors cursor-pointer no-underline"
+                      >
+                        <div class="font-medium">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</div>
                         <div class="text-muted-color-emphasis text-xs flex gap-4">
                           @if (draw.type) {
                             <span>{{ draw.type }}</span>
@@ -121,10 +124,10 @@
       <p-skeleton width="20rem" height="2rem" />
       <p-skeleton width="15rem" height="1rem" />
     </div>
-    
+
     <!-- Sub events skeletons -->
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      @for (i of [1,2,3,4,5,6]; track i) {
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
         <div class="rounded-border bg-highlight p-6 space-y-4">
           <p-skeleton width="12rem" height="1.5rem" />
           <div class="space-y-2">

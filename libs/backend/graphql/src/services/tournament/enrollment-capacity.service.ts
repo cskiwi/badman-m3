@@ -34,9 +34,7 @@ export class EnrollmentCapacityService {
       },
     });
 
-    const availableSpots = subEvent.maxEntries
-      ? Math.max(0, subEvent.maxEntries - subEvent.currentEnrollmentCount)
-      : Infinity;
+    const availableSpots = subEvent.maxEntries ? Math.max(0, subEvent.maxEntries - subEvent.currentEnrollmentCount) : Infinity;
 
     return {
       maxEntries: subEvent.maxEntries || null,
@@ -44,9 +42,7 @@ export class EnrollmentCapacityService {
       confirmedEnrollmentCount: subEvent.confirmedEnrollmentCount,
       availableSpots: availableSpots === Infinity ? -1 : availableSpots,
       waitingListCount,
-      isFull: subEvent.maxEntries
-        ? subEvent.currentEnrollmentCount >= subEvent.maxEntries
-        : false,
+      isFull: subEvent.maxEntries ? subEvent.currentEnrollmentCount >= subEvent.maxEntries : false,
       hasWaitingList: subEvent.waitingListEnabled,
     };
   }
@@ -54,9 +50,7 @@ export class EnrollmentCapacityService {
   /**
    * Get capacity information for multiple sub-events (batched)
    */
-  async getCapacitiesForSubEvents(
-    subEventIds: string[],
-  ): Promise<Map<string, CapacityInfo>> {
+  async getCapacitiesForSubEvents(subEventIds: string[]): Promise<Map<string, CapacityInfo>> {
     // Return empty map if no IDs provided
     if (!subEventIds || subEventIds.length === 0) {
       return new Map();
@@ -66,8 +60,7 @@ export class EnrollmentCapacityService {
       where: { id: In(subEventIds) },
     });
 
-    const waitingListCounts = await TournamentEnrollment
-      .createQueryBuilder('e')
+    const waitingListCounts = await TournamentEnrollment.createQueryBuilder('e')
       .select('e.tournamentSubEventId', 'subEventId')
       .addSelect('COUNT(*)', 'count')
       .where('e.tournamentSubEventId IN (:...ids)', { ids: subEventIds })
@@ -75,17 +68,13 @@ export class EnrollmentCapacityService {
       .groupBy('e.tournamentSubEventId')
       .getRawMany<{ subEventId: string; count: string }>();
 
-    const waitingListMap = new Map<string, number>(
-      waitingListCounts.map((r) => [r.subEventId, parseInt(r.count, 10)]),
-    );
+    const waitingListMap = new Map<string, number>(waitingListCounts.map((r) => [r.subEventId, parseInt(r.count, 10)]));
 
     const capacityMap = new Map<string, CapacityInfo>();
 
     subEvents.forEach((subEvent) => {
       const waitingListCount = waitingListMap.get(subEvent.id) || 0;
-      const availableSpots = subEvent.maxEntries
-        ? Math.max(0, subEvent.maxEntries - subEvent.currentEnrollmentCount)
-        : Infinity;
+      const availableSpots = subEvent.maxEntries ? Math.max(0, subEvent.maxEntries - subEvent.currentEnrollmentCount) : Infinity;
 
       capacityMap.set(subEvent.id, {
         maxEntries: subEvent.maxEntries || null,
@@ -93,9 +82,7 @@ export class EnrollmentCapacityService {
         confirmedEnrollmentCount: subEvent.confirmedEnrollmentCount,
         availableSpots: availableSpots === Infinity ? -1 : availableSpots,
         waitingListCount,
-        isFull: subEvent.maxEntries
-          ? subEvent.currentEnrollmentCount >= subEvent.maxEntries
-          : false,
+        isFull: subEvent.maxEntries ? subEvent.currentEnrollmentCount >= subEvent.maxEntries : false,
         hasWaitingList: subEvent.waitingListEnabled,
       });
     });
@@ -115,8 +102,7 @@ export class EnrollmentCapacityService {
    * Get next waiting list position
    */
   async getNextWaitingListPosition(subEventId: string): Promise<number> {
-    const result = await TournamentEnrollment
-      .createQueryBuilder('e')
+    const result = await TournamentEnrollment.createQueryBuilder('e')
       .select('MAX(e.waitingListPosition)', 'max')
       .where('e.tournamentSubEventId = :subEventId', { subEventId })
       .andWhere('e.status = :status', { status: EnrollmentStatus.WAITING_LIST })
@@ -128,9 +114,7 @@ export class EnrollmentCapacityService {
   /**
    * Get enrollments on waiting list for a sub-event
    */
-  async getWaitingList(
-    subEventId: string,
-  ): Promise<TournamentEnrollment[]> {
+  async getWaitingList(subEventId: string): Promise<TournamentEnrollment[]> {
     return TournamentEnrollment.find({
       where: {
         tournamentSubEventId: subEventId,
@@ -145,9 +129,7 @@ export class EnrollmentCapacityService {
    * Auto-promote from waiting list
    * This is called when a spot opens up (enrollment cancelled)
    */
-  async promoteFromWaitingList(
-    subEventId: string,
-  ): Promise<TournamentEnrollment | null> {
+  async promoteFromWaitingList(subEventId: string): Promise<TournamentEnrollment | null> {
     const subEvent = await TournamentSubEvent.findOne({
       where: { id: subEventId },
     });

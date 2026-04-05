@@ -16,10 +16,10 @@ import {
 
 // Maps category names from the API to our internal discipline types
 const CATEGORY_DISCIPLINE_MAP: Record<string, { type: 'single' | 'double' | 'mix'; gender: 'M' | 'F' }> = {
-  'HE/SM':    { type: 'single', gender: 'M' },
-  'DE/SD':    { type: 'single', gender: 'F' },
-  'HD/DM':    { type: 'double', gender: 'M' },
-  'DD':       { type: 'double', gender: 'F' },
+  'HE/SM': { type: 'single', gender: 'M' },
+  'DE/SD': { type: 'single', gender: 'F' },
+  'HD/DM': { type: 'double', gender: 'M' },
+  DD: { type: 'double', gender: 'F' },
   'GD H/DX M': { type: 'mix', gender: 'M' },
   'GD D/DX D': { type: 'mix', gender: 'F' },
 };
@@ -40,10 +40,7 @@ export class RankingSyncService {
     @InjectQueue(RANKING_SYNC_QUEUE) private readonly rankingSyncQueue: Queue,
   ) {}
 
-  async processInit(
-    job: Job<RankingSyncInitJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processInit(job: Job<RankingSyncInitJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
 
     // 1. Fetch available ranking systems from the API
@@ -80,9 +77,7 @@ export class RankingSyncService {
         where: { updateLastUpdate: Not(IsNull()) },
         order: { updateLastUpdate: 'DESC' },
       });
-      checkpointDate = latestSystem?.updateLastUpdate
-        ? dayjs(latestSystem.updateLastUpdate)
-        : dayjs().subtract(1, 'week');
+      checkpointDate = latestSystem?.updateLastUpdate ? dayjs(latestSystem.updateLastUpdate) : dayjs().subtract(1, 'week');
     }
 
     const visiblePublications = allPublications
@@ -160,10 +155,7 @@ export class RankingSyncService {
     this.logger.log(`Enqueued ${publicationsWithSystem.length} publication sync jobs`);
   }
 
-  async processPublication(
-    job: Job<RankingSyncPublicationJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processPublication(job: Job<RankingSyncPublicationJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     const { rankingCode, systemId, publicationCode, publicationDate, usedForUpdate, categories, isLastPublication } = job.data;
 
     this.logger.log(`Syncing publication ${publicationCode} (${dayjs(publicationDate).format('YYYY-MM-DD')})`);
@@ -362,7 +354,6 @@ export class RankingSyncService {
 
     // Allow up to 2-day margin after the first Monday
     const margin = firstMonday.add(2, 'day');
-    return (d.isSame(firstMonday) || (d.isAfter(firstMonday) && d.isBefore(margin))) ;
+    return d.isSame(firstMonday) || (d.isAfter(firstMonday) && d.isBefore(margin));
   }
-
 }

@@ -47,6 +47,7 @@ All Markdown content must follow these foundational rules:
 - If H5 headings appear necessary, strongly recommend reorganization
 
 **Example:**
+
 ```markdown
 ## Main Section
 
@@ -62,6 +63,7 @@ More content...
 ### Lists
 
 **Bullet lists:**
+
 - Use `-` for bullet points
 - Indent nested lists with two spaces
 
@@ -74,6 +76,7 @@ More content...
 ```
 
 **Numbered lists:**
+
 - Use `1.` for numbered items
 - Indent nested lists with two spaces
 
@@ -95,7 +98,7 @@ Console.WriteLine("Hello, World!");
 ```
 
 ```typescript
-const greeting: string = "Hello, World!";
+const greeting: string = 'Hello, World!';
 console.log(greeting);
 ```
 
@@ -110,11 +113,13 @@ console.log(greeting);
 ### Links
 
 **Inline links:**
+
 ```markdown
 [Documentation](https://example.com/docs)
 ```
 
 **Reference-style links** (recommended for repeated URLs):
+
 ```markdown
 Check out the [docs][documentation] and [API reference][documentation].
 
@@ -139,17 +144,18 @@ Use pipes (`|`) to create tables with proper alignment:
 
 ```markdown
 | Column 1 | Column 2 | Column 3 |
-|----------|----------|----------|
+| -------- | -------- | -------- |
 | Value 1  | Value 2  | Value 3  |
 | Value 4  | Value 5  | Value 6  |
 ```
 
 **Alignment options:**
+
 ```markdown
 | Left | Center | Right |
-|:-----|:------:|------:|
-| L1   | C1     | R1    |
-| L2   | C2     | R2    |
+| :--- | :----: | ----: |
+| L1   |   C1   |    R1 |
+| L2   |   C2   |    R2 |
 ```
 
 ### Line Length
@@ -159,6 +165,7 @@ Use pipes (`|`) to create tables with proper alignment:
 - Break at natural points (after punctuation, between phrases)
 
 **Example:**
+
 ```markdown
 This is a long paragraph that exceeds the recommended line length, so it should be
 broken into multiple lines at natural points to improve readability and make the
@@ -176,7 +183,8 @@ content easier to edit and review.
 - Avoid excessive whitespace (more than one blank line)
 
 **Example:**
-```markdown
+
+````markdown
 ## Section Title
 
 This is the first paragraph with content.
@@ -186,10 +194,12 @@ This is the second paragraph after a blank line.
 ```code
 Code block with blank lines before and after
 ```
+````
 
 - List item 1
 - List item 2
-```
+
+````
 
 ## Front Matter
 
@@ -202,9 +212,10 @@ applyTo: ['**/*.md', '**/*.mdx']
 ---
 
 ## Document Content Starts Here
-```
+````
 
 **Common front matter fields:**
+
 - `description`: Brief description of the page content
 - `title`: Document title (generates H1)
 - `applyTo`: File patterns where rules apply
@@ -278,7 +289,7 @@ Common issues and solutions.
 
 ### API Documentation
 
-```markdown
+````markdown
 ---
 description: 'REST API endpoint reference'
 ---
@@ -290,14 +301,17 @@ description: 'REST API endpoint reference'
 Authenticates a user and returns a JWT token.
 
 **Request:**
+
 ```json
 {
   "username": "user@example.com",
   "password": "secure_password"
 }
 ```
+````
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGc...",
@@ -306,10 +320,12 @@ Authenticates a user and returns a JWT token.
 ```
 
 **Status Codes:**
+
 - `200 OK`: Authentication successful
 - `401 Unauthorized`: Invalid credentials
 - `400 Bad Request`: Missing required fields
-```
+
+````
 
 ## Best Practices
 
@@ -341,15 +357,18 @@ Authenticates a user and returns a JWT token.
 ```markdown
 ## H2 Heading
 ### H3 Heading
-```
+````
 
 **Lists:**
+
 ```markdown
 - Bullet item
+
 1. Numbered item
 ```
 
 **Code:**
+
 ````markdown
 ```language
 code here
@@ -357,6 +376,7 @@ code here
 ````
 
 **Links:**
+
 ```markdown
 [text](url)
 [text][ref]
@@ -365,14 +385,16 @@ code here
 ```
 
 **Images:**
+
 ```markdown
 ![alt text](url)
 ```
 
 **Tables:**
+
 ```markdown
 | Header | Header |
-|--------|--------|
+| ------ | ------ |
 | Cell   | Cell   |
 ```
 

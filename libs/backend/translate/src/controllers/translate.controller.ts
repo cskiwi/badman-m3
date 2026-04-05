@@ -1,5 +1,5 @@
 import { AllowAnonymous } from '@app/backend-authorization';
-import { I18nTranslations } from '@app/utils';
+import { I18nTranslations } from '@app/utils-i18n';
 import { Controller, Get, Param, Res } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { Response } from 'express';
@@ -12,10 +12,7 @@ export class TranslateController {
 
   @AllowAnonymous()
   @Get('i18n/:lang')
-  async translations(
-    @Param() param: { lang: languages },
-    @Res() res: Response,
-  ) {
+  async translations(@Param() param: { lang: languages }, @Res() res: Response) {
     const translated = this.i18nService.getTranslations();
 
     res.send(translated[param.lang]);

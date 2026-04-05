@@ -4,22 +4,18 @@ import { DayjsService, DayjsInput, DayjsFormat, DayjsLocale } from '@app/fronten
 @Pipe({
   name: 'dayjsFormat',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsFormatPipe implements PipeTransform {
   private readonly dayjsService = inject(DayjsService);
 
-  transform(
-    value: DayjsInput,
-    format: DayjsFormat,
-    locale?: DayjsLocale
-  ): string {
+  transform(value: DayjsInput, format: DayjsFormat, locale?: DayjsLocale): string {
     if (!value) {
       return '';
     }
 
     const date = this.dayjsService.parse(value);
-    
+
     if (!date.isValid()) {
       return '';
     }

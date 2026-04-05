@@ -19,6 +19,7 @@ Provides project-specific guidance for Angular development in the badman-m3 code
 ## Technology Stack
 
 ### Angular Framework
+
 - **Angular 20+** with standalone components
 - **TypeScript 5.9+** with strict mode
 - **RxJS** for reactive programming
@@ -27,6 +28,7 @@ Provides project-specific guidance for Angular development in the badman-m3 code
 ### UI Component Libraries
 
 #### PrimeNG (Primary UI Library)
+
 - **Version**: Latest stable version compatible with Angular 20+
 - **Documentation**: https://primeng.org/
 - **AI-Optimized Reference**: https://primeng.org/llms/llms.txt
@@ -34,6 +36,7 @@ Provides project-specific guidance for Angular development in the badman-m3 code
 - **Theming**: Project-specific theme configuration
 
 ### Styling
+
 - **SCSS**: Component-scoped styles
 - **CSS Variables**: Design tokens for theming
 - **Responsive**: Mobile-first approach
@@ -50,9 +53,11 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-example',
   standalone: true,
-  imports: [/* dependencies */],
+  imports: [
+    /* dependencies */
+  ],
   templateUrl: './example.component.html',
-  styleUrl: './example.component.scss'  // singular 'styleUrl'
+  styleUrl: './example.component.scss', // singular 'styleUrl'
 })
 export class ExampleComponent {
   // Component logic
@@ -60,6 +65,7 @@ export class ExampleComponent {
 ```
 
 **Key principles:**
+
 - **Never use NgModules** - use standalone components only
 - **Always use external templates** - `templateUrl`, never inline templates
 - **Use `styleUrl`** (singular) for single stylesheet, `styleUrls` (plural) for multiple
@@ -77,7 +83,7 @@ import { UserService } from './user.service';
 export class UserComponent {
   // Preferred: inject() function
   private readonly userService = inject(UserService);
-  
+
   // Avoid: constructor injection
   // constructor(private userService: UserService) {}
 }
@@ -92,17 +98,17 @@ import { Component, signal, computed, effect } from '@angular/core';
 export class CounterComponent {
   // Writable signal
   count = signal(0);
-  
+
   // Computed signal (derived state)
   doubleCount = computed(() => this.count() * 2);
-  
+
   // Effect (side effects)
   constructor() {
     effect(() => {
       console.log('Count changed to:', this.count());
     });
   }
-  
+
   increment(): void {
     this.count.update(value => value + 1);
   }
@@ -114,30 +120,26 @@ export class CounterComponent {
 ```html
 <!-- Use @if, NOT *ngIf -->
 @if (user()) {
-  <p>Welcome, {{ user()!.name }}</p>
+<p>Welcome, {{ user()!.name }}</p>
 } @else {
-  <p>Please log in</p>
+<p>Please log in</p>
 }
 
 <!-- Use @for, NOT *ngFor -->
 @for (item of items(); track item.id) {
-  <li>{{ item.name }}</li>
+<li>{{ item.name }}</li>
 } @empty {
-  <li>No items found</li>
+<li>No items found</li>
 }
 
 <!-- Use @switch, NOT *ngSwitch -->
-@switch (status()) {
-  @case ('loading') {
-    <p-progressSpinner />
-  }
-  @case ('error') {
-    <p class="error">Error occurred</p>
-  }
-  @case ('success') {
-    <div>{{ data() }}</div>
-  }
-}
+@switch (status()) { @case ('loading') {
+<p-progressSpinner />
+} @case ('error') {
+<p class="error">Error occurred</p>
+} @case ('success') {
+<div>{{ data() }}</div>
+} }
 ```
 
 **Input/Output Decorators:**
@@ -150,13 +152,13 @@ export class ModernComponent {
   // Preferred: input() function
   userId = input.required<string>();
   title = input<string>('Default Title');
-  
+
   // Preferred: output() function
   itemSelected = output<string>();
-  
+
   // Preferred: viewChild() function
   childComponent = viewChild<ChildComponent>('child');
-  
+
   // Avoid old decorators:
   // @Input() userId!: string;
   // @Output() itemSelected = new EventEmitter<string>();
@@ -183,26 +185,27 @@ import { map, catchError } from 'rxjs/operators';
         <p>{{ user.name }}</p>
       }
     }
-  `
+  `,
 })
 export class UsersComponent implements OnInit {
   private readonly userService = inject(UserService);
-  
+
   users$!: Observable<User[]>;
-  
+
   ngOnInit(): void {
     this.users$ = this.userService.getUsers().pipe(
-      map(users => users.filter(u => u.active)),
-      catchError(error => {
+      map((users) => users.filter((u) => u.active)),
+      catchError((error) => {
         console.error('Error loading users:', error);
         return [];
-      })
+      }),
     );
   }
 }
 ```
 
 **Key RxJS rules:**
+
 - **Use async pipe** in templates to auto-unsubscribe
 - **Avoid manual subscriptions** unless necessary (use signals or async pipe)
 - **Always handle errors** with `catchError`
@@ -219,17 +222,17 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 @Component({
   standalone: true,
   imports: [ReactiveFormsModule],
-  template: `...`
+  template: `...`,
 })
 export class UserFormComponent {
   private readonly fb = inject(FormBuilder);
-  
+
   readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    age: [null, [Validators.min(18), Validators.max(100)]]
+    age: [null, [Validators.min(18), Validators.max(100)]],
   });
-  
+
   onSubmit(): void {
     if (this.form.valid) {
       const value = this.form.getRawValue();
@@ -245,14 +248,9 @@ export class UserFormComponent {
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <input formControlName="name" />
   @if (form.get('name')?.invalid && form.get('name')?.touched) {
-    <small class="error">
-      @if (form.get('name')?.hasError('required')) {
-        Name is required
-      }
-      @if (form.get('name')?.hasError('minlength')) {
-        Minimum 3 characters
-      }
-    </small>
+  <small class="error">
+    @if (form.get('name')?.hasError('required')) { Name is required } @if (form.get('name')?.hasError('minlength')) { Minimum 3 characters }
+  </small>
   }
   <button type="submit" [disabled]="form.invalid">Submit</button>
 </form>
@@ -269,7 +267,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-optimized',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `...`
+  template: `...`,
 })
 export class OptimizedComponent {
   // Use signals for reactive updates
@@ -281,12 +279,12 @@ export class OptimizedComponent {
 ```html
 <!-- Always provide track function -->
 @for (item of items(); track item.id) {
-  <app-item [data]="item" />
+<app-item [data]="item" />
 }
 
 <!-- For primitives, use $index -->
 @for (name of names(); track $index) {
-  <p>{{ name }}</p>
+<p>{{ name }}</p>
 }
 ```
 
@@ -297,12 +295,12 @@ export class OptimizedComponent {
 export const routes: Routes = [
   {
     path: 'admin',
-    loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent)
+    loadComponent: () => import('./admin/admin.component').then((m) => m.AdminComponent),
   },
   {
     path: 'users',
-    loadChildren: () => import('./users/users.routes').then(m => m.USERS_ROUTES)
-  }
+    loadChildren: () => import('./users/users.routes').then((m) => m.USERS_ROUTES),
+  },
 ];
 ```
 
@@ -320,7 +318,7 @@ describe('UserComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserComponent]  // import standalone component
+      imports: [UserComponent], // import standalone component
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserComponent);
@@ -335,7 +333,7 @@ describe('UserComponent', () => {
   it('should display user name', () => {
     component.user.set({ name: 'John', id: '1' });
     fixture.detectChanges();
-    
+
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('John');
   });
@@ -356,7 +354,7 @@ describe('UserService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [UserService]
+      providers: [UserService],
     });
     service = TestBed.inject(UserService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -368,8 +366,8 @@ describe('UserService', () => {
 
   it('should fetch users', () => {
     const mockUsers = [{ id: '1', name: 'John' }];
-    
-    service.getUsers().subscribe(users => {
+
+    service.getUsers().subscribe((users) => {
       expect(users.length).toBe(1);
       expect(users[0].name).toBe('John');
     });
@@ -394,10 +392,7 @@ describe('UserService', () => {
 **Example:**
 
 ```html
-<button 
-  type="button"
-  aria-label="Close dialog"
-  (click)="closeDialog()">
+<button type="button" aria-label="Close dialog" (click)="closeDialog()">
   <i class="pi pi-times"></i>
 </button>
 
@@ -426,6 +421,7 @@ describe('UserService', () => {
 ```
 
 **Type safety best practices:**
+
 - Always define types for function parameters and return values
 - Use interfaces for object shapes
 - Avoid `any` - use `unknown` if type is truly unknown
@@ -438,6 +434,7 @@ describe('UserService', () => {
 **Before implementing a feature, discover the right PrimeNG component:**
 
 1. **Search for components by feature** using MCP tools:
+
    ```
    Use mcp_primeng_search_components to find components by keywords
    Use mcp_primeng_suggest_component to get recommendations for specific use cases
@@ -445,6 +442,7 @@ describe('UserService', () => {
    ```
 
 2. **Get detailed component documentation**:
+
    ```
    Use mcp_primeng_get_component for full component details
    Use mcp_primeng_get_component_props for input properties
@@ -471,7 +469,7 @@ import { InputTextModule } from 'primeng/inputtext';
   standalone: true,
   imports: [TableModule, ButtonModule, InputTextModule],
   templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss'
+  styleUrl: './user-list.component.scss',
 })
 export class UserListComponent {
   // Component logic
@@ -479,6 +477,7 @@ export class UserListComponent {
 ```
 
 **Key Rules:**
+
 - Import only the modules you need (tree-shaking optimization)
 - Import from `primeng/{component-name}` (e.g., `primeng/table`, `primeng/dialog`)
 - Use PrimeNG's standalone module pattern for better code splitting
@@ -486,12 +485,14 @@ export class UserListComponent {
 ### Common PrimeNG Components
 
 #### Data Display
+
 - **p-table**: Data tables with sorting, filtering, pagination
 - **p-dataView**: Alternative data display with list/grid views
 - **p-card**: Content containers
 - **p-panel**: Collapsible content sections
 
 #### Form Components
+
 - **p-inputText**: Text input fields
 - **p-dropdown**: Dropdown selection
 - **p-calendar**: Date picker
@@ -501,12 +502,14 @@ export class UserListComponent {
 - **p-multiSelect**: Multi-selection dropdown
 
 #### Buttons and Actions
+
 - **p-button**: Primary button component
 - **pButton** directive: Style native buttons
 - **p-splitButton**: Button with dropdown menu
 - **p-menu**: Context menus and dropdowns
 
 #### Feedback and Overlays
+
 - **p-toast**: Notification messages
 - **p-dialog**: Modal dialogs
 - **p-confirmDialog**: Confirmation prompts
@@ -528,31 +531,25 @@ import { CalendarModule } from 'primeng/calendar';
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    InputTextModule,
-    DropdownModule,
-    ButtonModule,
-    CalendarModule
-  ],
-  templateUrl: './user-form.component.html'
+  imports: [ReactiveFormsModule, InputTextModule, DropdownModule, ButtonModule, CalendarModule],
+  templateUrl: './user-form.component.html',
 })
 export class UserFormComponent {
   private readonly fb = inject(FormBuilder);
-  
+
   readonly form: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     role: [null, Validators.required],
-    birthDate: [null]
+    birthDate: [null],
   });
-  
+
   readonly roles = signal([
     { label: 'Admin', value: 'admin' },
     { label: 'User', value: 'user' },
-    { label: 'Guest', value: 'guest' }
+    { label: 'Guest', value: 'guest' },
   ]);
-  
+
   onSubmit(): void {
     if (this.form.valid) {
       console.log(this.form.value);
@@ -570,35 +567,29 @@ export class UserFormComponent {
       <label for="name">Name</label>
       <input pInputText id="name" formControlName="name" />
       @if (form.get('name')?.invalid && form.get('name')?.touched) {
-        <small class="p-error">Name is required (min 3 characters)</small>
+      <small class="p-error">Name is required (min 3 characters)</small>
       }
     </div>
-    
+
     <div class="field">
       <label for="email">Email</label>
       <input pInputText id="email" formControlName="email" type="email" />
       @if (form.get('email')?.invalid && form.get('email')?.touched) {
-        <small class="p-error">Valid email is required</small>
+      <small class="p-error">Valid email is required</small>
       }
     </div>
-    
+
     <div class="field">
       <label for="role">Role</label>
-      <p-dropdown
-        id="role"
-        formControlName="role"
-        [options]="roles()"
-        placeholder="Select a role"
-        optionLabel="label"
-        optionValue="value">
+      <p-dropdown id="role" formControlName="role" [options]="roles()" placeholder="Select a role" optionLabel="label" optionValue="value">
       </p-dropdown>
     </div>
-    
+
     <div class="field">
       <label for="birthDate">Birth Date</label>
       <p-calendar id="birthDate" formControlName="birthDate" [showIcon]="true"></p-calendar>
     </div>
-    
+
     <p-button label="Submit" type="submit" [disabled]="form.invalid"></p-button>
   </div>
 </form>
@@ -613,6 +604,7 @@ export class UserFormComponent {
 3. **Dark Mode Support**: Implement theme switching if required
 
 **Check project files for:**
+
 - `src/styles.scss` - Global theme configuration
 - `src/theme/` - Custom theme files
 - Angular.json - Theme imports in styles array
@@ -631,24 +623,24 @@ import { ToastModule } from 'primeng/toast';
   standalone: true,
   imports: [ToastModule],
   providers: [MessageService],
-  template: `<p-toast></p-toast>`
+  template: `<p-toast></p-toast>`,
 })
 export class MyComponent {
   private readonly messageService = inject(MessageService);
-  
+
   showSuccess(message: string): void {
     this.messageService.add({
       severity: 'success',
       summary: 'Success',
-      detail: message
+      detail: message,
     });
   }
-  
+
   showError(message: string): void {
     this.messageService.add({
       severity: 'error',
       summary: 'Error',
-      detail: message
+      detail: message,
     });
   }
 }
@@ -661,6 +653,7 @@ export class MyComponent {
 ### Overview
 
 The **AWF (Advanced Web Framework)** is Siveka's custom component library providing:
+
 - Business-specific components
 - Pre-configured PrimeNG component wrappers
 - Reusable patterns and layouts
@@ -671,12 +664,14 @@ The **AWF (Advanced Web Framework)** is Siveka's custom component library provid
 ### When to Use AWF Components
 
 **Use AWF components when:**
+
 - The component encapsulates business logic specific to Siveka applications
 - A pre-configured PrimeNG wrapper exists that matches your use case
 - The component provides domain-specific functionality (e.g., patient selectors, medical forms)
 - Project standards require AWF components for consistency
 
 **Use PrimeNG directly when:**
+
 - Building generic UI elements (buttons, inputs, tables)
 - AWF doesn't provide the specific component you need
 - Maximum flexibility is required
@@ -684,12 +679,14 @@ The **AWF (Advanced Web Framework)** is Siveka's custom component library provid
 ### AWF Component Discovery
 
 **Refer to AWF documentation for:**
+
 1. **Component catalog** - Browse available AWF components
 2. **Usage examples** - See component integration patterns
 3. **API reference** - Input/output properties for each component
 4. **Theming** - AWF-specific styling guidelines
 
 **Before implementing a feature:**
+
 1. Check if AWF provides a pre-built component
 2. Review AWF documentation for usage patterns
 3. Fall back to PrimeNG if AWF doesn't cover the use case
@@ -707,7 +704,7 @@ import { AwfPatientSelectorComponent } from '@awf/components/patient-selector';
   selector: 'app-patient-list',
   standalone: true,
   imports: [AwfDataTableComponent, AwfPatientSelectorComponent],
-  templateUrl: './patient-list.component.html'
+  templateUrl: './patient-list.component.html',
 })
 export class PatientListComponent {
   // Component logic
@@ -732,13 +729,8 @@ import { AwfValidationComponent } from '@awf/components/validation';
 @Component({
   selector: 'app-hybrid-component',
   standalone: true,
-  imports: [
-    ButtonModule,
-    DialogModule,
-    AwfFormComponent,
-    AwfValidationComponent
-  ],
-  templateUrl: './hybrid-component.component.html'
+  imports: [ButtonModule, DialogModule, AwfFormComponent, AwfValidationComponent],
+  templateUrl: './hybrid-component.component.html',
 })
 export class HybridComponent {
   // Use AWF for business logic, PrimeNG for UI primitives
@@ -793,32 +785,32 @@ export class UserService {
   private readonly http = inject(HttpClient);
   private readonly messageService = inject(MessageService);
   private readonly baseUrl = '/api/users';
-  
+
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.baseUrl).pipe(
-      catchError(error => {
+      catchError((error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to load users'
+          detail: 'Failed to load users',
         });
         throw error;
-      })
+      }),
     );
   }
-  
+
   getUserById(id: number): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/${id}`);
   }
-  
+
   createUser(user: Partial<User>): Observable<User> {
     return this.http.post<User>(this.baseUrl, user);
   }
-  
+
   updateUser(id: number, user: Partial<User>): Observable<User> {
     return this.http.put<User>(`${this.baseUrl}/${id}`, user);
   }
-  
+
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
@@ -836,34 +828,33 @@ import { UserService, User } from './user.service';
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  template: `...`
+  template: `...`,
 })
 export class UserListComponent {
   private readonly userService = inject(UserService);
-  
+
   // State
   readonly users = signal<User[]>([]);
   readonly loading = signal<boolean>(false);
   readonly selectedUser = signal<User | null>(null);
-  
+
   // Computed values
-  readonly activeUsers = computed(() => 
-    this.users().filter(u => u.active)
-  );
-  
+  readonly activeUsers = computed(() => this.users().filter((u) => u.active));
+
   readonly userCount = computed(() => this.users().length);
-  
+
   constructor() {
     this.loadUsers();
   }
-  
+
   loadUsers(): void {
     this.loading.set(true);
-    this.userService.getUsers()
+    this.userService
+      .getUsers()
       .pipe(finalize(() => this.loading.set(false)))
-      .subscribe(users => this.users.set(users));
+      .subscribe((users) => this.users.set(users));
   }
-  
+
   selectUser(user: User): void {
     this.selectedUser.set(user);
   }
@@ -909,6 +900,7 @@ import { TranslateService } from '@ngx-translate/core';
 ### Step 2: Discover Components
 
 **Use MCP tools for PrimeNG:**
+
 ```
 1. mcp_primeng_suggest_component - Get component recommendations
 2. mcp_primeng_get_component - Retrieve full component details
@@ -916,6 +908,7 @@ import { TranslateService } from '@ngx-translate/core';
 ```
 
 **Check AWF documentation:**
+
 - Visit: http://wfawfqa.sidmar.be/Showcase.Client/documentation/components/awf-components
 - Review component catalog and examples
 
@@ -978,18 +971,18 @@ import { UserService, User } from './user.service';
         </tr>
       </ng-template>
     </p-table>
-  `
+  `,
 })
 export class UserTableComponent {
   private readonly userService = inject(UserService);
-  
+
   readonly users = signal<User[]>([]);
   readonly loading = signal<boolean>(false);
-  
+
   editUser(user: User): void {
     // Implementation
   }
-  
+
   deleteUser(user: User): void {
     // Implementation
   }
@@ -1008,12 +1001,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   standalone: true,
   imports: [ConfirmDialogModule],
   providers: [ConfirmationService, MessageService],
-  template: `<p-confirmDialog></p-confirmDialog>`
+  template: `<p-confirmDialog></p-confirmDialog>`,
 })
 export class DeleteUserComponent {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly messageService = inject(MessageService);
-  
+
   confirmDelete(userId: number): void {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete this user?',
@@ -1024,9 +1017,9 @@ export class DeleteUserComponent {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'User deleted successfully'
+          detail: 'User deleted successfully',
         });
-      }
+      },
     });
   }
 }
@@ -1037,6 +1030,7 @@ export class DeleteUserComponent {
 ### PrimeNG Components Not Displaying
 
 **Check:**
+
 1. Module imported correctly in component `imports` array
 2. PrimeNG CSS included in `angular.json` or `styles.scss`
 3. PrimeIcons CSS loaded for icon display
@@ -1045,6 +1039,7 @@ export class DeleteUserComponent {
 ### AWF Components Not Found
 
 **Check:**
+
 1. AWF package installed in `package.json`
 2. Correct import path (consult AWF documentation)
 3. AWF version compatible with Angular version
@@ -1053,6 +1048,7 @@ export class DeleteUserComponent {
 ### Form Validation Not Working
 
 **Check:**
+
 1. `ReactiveFormsModule` imported
 2. Form controls properly bound with `formControlName`
 3. Validators applied in FormGroup definition
@@ -1061,6 +1057,7 @@ export class DeleteUserComponent {
 ### Styling Issues
 
 **Check:**
+
 1. Component SCSS properly scoped
 2. PrimeNG theme CSS loaded globally
 3. CSS variables defined in theme files
@@ -1086,21 +1083,25 @@ export class DeleteUserComponent {
 ## Additional Resources
 
 ### PrimeNG
+
 - **Documentation**: https://primeng.org/
 - **AI Reference**: https://primeng.org/llms/llms.txt
 - **MCP Tools**: Use `mcp_primeng_*` commands for component discovery
 - **Community**: PrimeNG GitHub and forums
 
 ### AWF Framework
+
 - **Documentation**: http://wfawfqa.sidmar.be/Showcase.Client/documentation/components/awf-components
 - **Component Showcase**: Browse available components and examples
 - **Internal Support**: Contact Siveka development team for AWF-specific questions
 
 ### Angular
+
 - **Official Docs**: https://angular.dev/
 - **Style Guide**: https://angular.dev/style-guide
 - **TypeScript**: https://www.typescriptlang.org/
 
 ### Reference
+
 - **AngularExpert Agent**: General Angular patterns and best practices
 - **Project Conventions**: Follow existing codebase patterns for consistency

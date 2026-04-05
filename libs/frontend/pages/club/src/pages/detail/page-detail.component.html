@@ -1,97 +1,108 @@
 @if (!loading()) {
-@if (this.club(); as club) {
-<!-- Club Header -->
-<app-page-header>
-  <i avatar class="pi pi-building text-2xl"></i>
-  <span title>{{ club.fullName || club.name }}</span>
-  <ng-container subTitle>
-    @if (club.clubId) {
-    <span>{{ club.clubId }}</span>
-    }
-    @if (club.state || club.country) {
-    <span>•</span>
-    <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
-    }
-  </ng-container>
-  <ng-container actions>
-    <p-select id="season-select" [formControl]="seasonControl" [options]="availableSeasons()" optionLabel="label" optionValue="value" [style]="{ 'min-width': '140px' }" placeholder="{{ 'all.common.selectSeason' | translate }}" />
-  </ng-container>
-</app-page-header>
-
-<!-- Main Content Tabs -->
-<p-tabs value="0">
-  <p-tablist>
-    <p-tab value="0">
-      <i class="pi pi-users mr-2"></i>
-      {{ 'all.team.overview.title' | translate }}
-    </p-tab>
-    <p-tab value="1">
-      <i class="pi pi-user mr-2"></i>
-      {{ 'all.club.playerRoster' | translate }}
-    </p-tab>
-    <p-tab value="2">
-      <i class="pi pi-calendar mr-2"></i>
-      {{ 'all.club.schedule' | translate }}
-    </p-tab>
-    <p-tab value="3">
-      <i class="pi pi-trophy mr-2"></i>
-      {{ 'all.club.tournaments.tab' | translate }}
-    </p-tab>
-    @if (canAccessTeamBuilder()) {
-      <p-tab value="4">
-        <i class="pi pi-wrench mr-2"></i>
-        {{ 'all.club.teamBuilder.tab' | translate }}
-      </p-tab>
-    }
-  </p-tablist>
-
-  <p-tabpanels>
-    <!-- Teams Tab -->
-    <p-tabpanel value="0">
-      <app-club-teams-tab [clubId]="club.slug" [season]="currentSeason()" [canEditTeamFn]="canEditTeam.bind(this)" (editTeamClicked)="editTeam($event)" />
-    </p-tabpanel>
-
-    <!-- Player Roster Tab -->
-    <p-tabpanel value="1">
-      @defer (on idle) {
-      <app-club-players-tab [clubId]="club.slug" [season]="currentSeason()" />
-      }
-    </p-tabpanel>
-
-
-    <!-- Match Schedule & Results Tab -->
-    <p-tabpanel value="2">
-      @defer (on idle) {
-      <app-club-schedule-tab [clubId]="club.slug" [season]="currentSeason()" />
-      }
-    </p-tabpanel>
-
-    <!-- Tournaments Tab -->
-    <p-tabpanel value="3">
-      @defer (on idle) {
-      <app-club-tournaments-tab [clubId]="club.slug" [canCreate]="canCreateTournament()" (createTournament)="createTournament()" />
-      }
-
-    </p-tabpanel>
-
-    <!-- Team Builder Tab -->
-    @if (canAccessTeamBuilder()) {
-      <p-tabpanel value="4">
-        @defer (on idle) {
-        <app-club-team-builder-tab [clubId]="club.slug" [season]="currentSeason()" />
+  @if (this.club(); as club) {
+    <!-- Club Header -->
+    <app-page-header>
+      <i avatar class="pi pi-building text-2xl"></i>
+      <span title>{{ club.fullName || club.name }}</span>
+      <ng-container subTitle>
+        @if (club.clubId) {
+          <span>{{ club.clubId }}</span>
         }
-      </p-tabpanel>
-    }
-  </p-tabpanels>
-</p-tabs>
-}
+        @if (club.state || club.country) {
+          <span>•</span>
+          <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
+        }
+      </ng-container>
+      <ng-container actions>
+        <p-select
+          id="season-select"
+          [formControl]="seasonControl"
+          [options]="availableSeasons()"
+          optionLabel="label"
+          optionValue="value"
+          [style]="{ 'min-width': '140px' }"
+          placeholder="{{ 'all.common.selectSeason' | translate }}"
+        />
+      </ng-container>
+    </app-page-header>
+
+    <!-- Main Content Tabs -->
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">
+          <i class="pi pi-users mr-2"></i>
+          {{ 'all.team.overview.title' | translate }}
+        </p-tab>
+        <p-tab value="1">
+          <i class="pi pi-user mr-2"></i>
+          {{ 'all.club.playerRoster' | translate }}
+        </p-tab>
+        <p-tab value="2">
+          <i class="pi pi-calendar mr-2"></i>
+          {{ 'all.club.schedule' | translate }}
+        </p-tab>
+        <p-tab value="3">
+          <i class="pi pi-trophy mr-2"></i>
+          {{ 'all.club.tournaments.tab' | translate }}
+        </p-tab>
+        @if (canAccessTeamBuilder()) {
+          <p-tab value="4">
+            <i class="pi pi-wrench mr-2"></i>
+            {{ 'all.club.teamBuilder.tab' | translate }}
+          </p-tab>
+        }
+      </p-tablist>
+
+      <p-tabpanels>
+        <!-- Teams Tab -->
+        <p-tabpanel value="0">
+          <app-club-teams-tab
+            [clubId]="club.slug"
+            [season]="currentSeason()"
+            [canEditTeamFn]="canEditTeam.bind(this)"
+            (editTeamClicked)="editTeam($event)"
+          />
+        </p-tabpanel>
+
+        <!-- Player Roster Tab -->
+        <p-tabpanel value="1">
+          @defer (on idle) {
+            <app-club-players-tab [clubId]="club.slug" [season]="currentSeason()" />
+          }
+        </p-tabpanel>
+
+        <!-- Match Schedule & Results Tab -->
+        <p-tabpanel value="2">
+          @defer (on idle) {
+            <app-club-schedule-tab [clubId]="club.slug" [season]="currentSeason()" />
+          }
+        </p-tabpanel>
+
+        <!-- Tournaments Tab -->
+        <p-tabpanel value="3">
+          @defer (on idle) {
+            <app-club-tournaments-tab [clubId]="club.slug" [canCreate]="canCreateTournament()" (createTournament)="createTournament()" />
+          }
+        </p-tabpanel>
+
+        <!-- Team Builder Tab -->
+        @if (canAccessTeamBuilder()) {
+          <p-tabpanel value="4">
+            @defer (on idle) {
+              <app-club-team-builder-tab [clubId]="club.slug" [season]="currentSeason()" />
+            }
+          </p-tabpanel>
+        }
+      </p-tabpanels>
+    </p-tabs>
+  }
 } @else {
-<p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+  <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
 }
 
 @if (error()) {
-<div class="error flex items-center gap-2 p-4 text-red-600">
-  <i class="pi pi-exclamation-triangle"></i>
-  {{ error() }}
-</div>
+  <div class="error flex items-center gap-2 p-4 text-red-600">
+    <i class="pi pi-exclamation-triangle"></i>
+    {{ error() }}
+  </div>
 }

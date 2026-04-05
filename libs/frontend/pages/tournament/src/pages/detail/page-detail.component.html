@@ -206,12 +206,16 @@
               <span>{{ 'all.enrollment.enrollNow' | translate }}</span>
             </a>
           } @else if (tournament.phase === 'DRAFT') {
-            <div class="flex items-center gap-2 px-6 py-3 rounded bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-medium">
+            <div
+              class="flex items-center gap-2 px-6 py-3 rounded bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-medium"
+            >
               <i class="pi pi-clock"></i>
               <span>{{ 'all.enrollment.notYetOpen' | translate }}</span>
             </div>
           } @else {
-            <div class="flex items-center gap-2 px-6 py-3 rounded bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-medium">
+            <div
+              class="flex items-center gap-2 px-6 py-3 rounded bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 font-medium"
+            >
               <i class="pi pi-lock"></i>
               <span>{{ 'all.enrollment.closed' | translate }}</span>
             </div>

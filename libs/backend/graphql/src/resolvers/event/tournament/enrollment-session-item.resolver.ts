@@ -1,10 +1,5 @@
 import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
-import {
-  EnrollmentSessionItem,
-  EnrollmentSession,
-  TournamentSubEvent,
-  Player,
-} from '@app/models';
+import { EnrollmentSessionItem, EnrollmentSession, TournamentSubEvent, Player } from '@app/models';
 import { AllowAnonymous } from '@app/backend-authorization';
 
 /**
@@ -23,7 +18,7 @@ export class EnrollmentSessionItemResolver {
   @AllowAnonymous()
   async tournamentSubEvent(@Parent() item: EnrollmentSessionItem): Promise<TournamentSubEvent> {
     return TournamentSubEvent.findOne({
-      where: { id: item.tournamentSubEventId }
+      where: { id: item.tournamentSubEventId },
     }) as Promise<TournamentSubEvent>;
   }
 

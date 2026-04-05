@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'phoneNumber',
-  standalone: true
+  standalone: true,
 })
 export class PhoneNumberPipe implements PipeTransform {
   transform(value: string | null): string {
@@ -13,7 +13,7 @@ export class PhoneNumberPipe implements PipeTransform {
 
     // Extract the digits we need
     let digits = cleaned;
-    
+
     // Handle different formats
     if (cleaned.startsWith('+32')) {
       digits = cleaned.substring(3); // Remove +32
@@ -26,10 +26,10 @@ export class PhoneNumberPipe implements PipeTransform {
     // If we have 9 digits (Belgian format), format it properly
     if (digits.length === 9) {
       const groups = [
-        digits.substr(0, 3),  // First 3 digits
-        digits.substr(3, 2),  // Next 2
-        digits.substr(5, 2),  // Next 2
-        digits.substr(7, 2)   // Last 2
+        digits.substr(0, 3), // First 3 digits
+        digits.substr(3, 2), // Next 2
+        digits.substr(5, 2), // Next 2
+        digits.substr(7, 2), // Last 2
       ];
       return `+32 ${groups.join(' ')}`;
     }

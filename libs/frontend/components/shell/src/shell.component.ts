@@ -176,7 +176,6 @@ export class ShellComponent {
     this.router.navigate(['/admin']);
   }
 
-
   refreshApp() {
     if (isPlatformBrowser(this.platformId)) {
       window.location.reload();

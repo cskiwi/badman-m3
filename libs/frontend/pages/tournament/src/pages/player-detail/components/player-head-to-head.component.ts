@@ -50,7 +50,7 @@ interface HeadToHeadRecord {
     DatePipe,
   ],
   templateUrl: './player-head-to-head.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerHeadToHeadComponent {
   games = input.required<Game[]>();

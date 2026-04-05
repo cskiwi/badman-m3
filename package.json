@@ -65,6 +65,7 @@
     "chart.js": "^4.5.1",
     "class-validator": "^0.14.3",
     "cookie-parser": "^1.4.7",
+    "cronstrue": "^3.14.0",
     "cross-env": "^10.1.0",
     "crypto-hash": "^4.0.1",
     "cssfilter": "^0.0.11",

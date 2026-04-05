@@ -58,13 +58,7 @@
           <label for="usedRankingAmount" class="font-medium">
             {{ 'all.competition.edit.settings.usedRankingAmount' | translate }}
           </label>
-          <p-inputNumber
-            id="usedRankingAmount"
-            formControlName="usedRankingAmount"
-            [min]="1"
-            [max]="24"
-            [showButtons]="true"
-          />
+          <p-inputNumber id="usedRankingAmount" formControlName="usedRankingAmount" [min]="1" [max]="24" [showButtons]="true" />
           <small class="text-surface-500">
             {{ 'all.competition.edit.settings.usedRankingAmount.hint' | translate }}
           </small>
@@ -95,11 +89,7 @@
       <div class="flex flex-col gap-4">
         <!-- Check Encounter For Filled In -->
         <div class="flex items-center gap-3">
-          <p-checkbox
-            id="checkEncounterForFilledIn"
-            formControlName="checkEncounterForFilledIn"
-            [binary]="true"
-          />
+          <p-checkbox id="checkEncounterForFilledIn" formControlName="checkEncounterForFilledIn" [binary]="true" />
           <label for="checkEncounterForFilledIn" class="font-medium cursor-pointer">
             {{ 'all.competition.edit.settings.checkEncounterForFilledIn' | translate }}
           </label>

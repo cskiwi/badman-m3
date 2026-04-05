@@ -11,13 +11,7 @@ import type { SubEventWithCalculations } from '../../page-general-enrollment.ser
 @Component({
   selector: 'app-sub-event-selection-grid',
   standalone: true,
-  imports: [
-    CardModule,
-    ButtonModule,
-    ChipModule,
-    TagModule,
-    TranslateModule
-],
+  imports: [CardModule, ButtonModule, ChipModule, TagModule, TranslateModule],
   templateUrl: './sub-event-selection-grid.component.html',
 })
 export class SubEventSelectionGridComponent {
@@ -77,9 +71,7 @@ export class SubEventSelectionGridComponent {
       return this.translate.instant('all.tournament.unlimited');
     }
     if (isFull) {
-      return subEvent.waitingListEnabled
-        ? this.translate.instant('all.tournament.fullWaitingList')
-        : this.translate.instant('all.tournament.full');
+      return subEvent.waitingListEnabled ? this.translate.instant('all.tournament.fullWaitingList') : this.translate.instant('all.tournament.full');
     }
     return this.translate.instant('all.tournament.spotsLeft', { count: availableSpots });
   }

@@ -84,10 +84,14 @@ export class ImportSurveyDialogComponent {
 
   getConfidenceSeverity(confidence: string): 'success' | 'warn' | 'danger' | 'info' {
     switch (confidence) {
-      case 'high': return 'success';
-      case 'medium': return 'warn';
-      case 'low': return 'danger';
-      default: return 'info';
+      case 'high':
+        return 'success';
+      case 'medium':
+        return 'warn';
+      case 'low':
+        return 'danger';
+      default:
+        return 'info';
     }
   }
 

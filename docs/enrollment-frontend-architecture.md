@@ -27,10 +27,12 @@ This document outlines the comprehensive Angular frontend architecture for a new
 ### Existing Pages
 
 #### 1. `page-enrollment` (Single Event Enrollment)
+
 **Location**: `/libs/frontend/pages/tournament/src/pages/enrollment/`
 **Route**: `/tournament/:tournamentId/sub-events/:subEventId/enroll`
 
 **Current Features**:
+
 - Enrollment for **single sub-event only**
 - Player search and partner selection (for doubles)
 - Guest enrollment support
@@ -39,30 +41,36 @@ This document outlines the comprehensive Angular frontend architecture for a new
 - Cancel enrollment functionality
 
 **Key Components**:
+
 - Smart container: `PageEnrollmentComponent`
 - Service: `EnrollmentService` (Angular resource API)
 - State: Angular signals + reactive forms
 - GraphQL operations: `enrollInTournament`, `enrollGuest`, `cancelEnrollment`
 
 #### 2. `page-my-enrollments` (User Dashboard)
+
 **Location**: `/libs/frontend/pages/tournament/src/pages/my-enrollments/`
 **Route**: `/tournament/:tournamentId/my-enrollments`
 
 **Current Features**:
+
 - View all enrollments for a tournament
 - Group by status (confirmed, pending, waiting list)
 - Cancel enrollments
 - Quick links to enroll in available sub-events (one at a time)
 
 **Key Components**:
+
 - Smart container: `PageMyEnrollmentsComponent`
 - Service: `MyEnrollmentsService`
 - Query: `myTournamentEnrollments`
 
 #### 3. `page-detail` (Tournament Detail)
+
 **Location**: `/libs/frontend/pages/tournament/src/pages/detail/`
 
 **Current Features**:
+
 - Tournament information display
 - Sub-events grouped by type (Men/Women/Mixed) and game type (Singles/Doubles)
 - Individual "Enroll Now" buttons per sub-event (links to single enrollment page)
@@ -120,7 +128,7 @@ enum EnrollmentStatus {
   PENDING = 'PENDING',
   WAITING_LIST = 'WAITING_LIST',
   CANCELLED = 'CANCELLED',
-  WITHDRAWN = 'WITHDRAWN'
+  WITHDRAWN = 'WITHDRAWN',
 }
 ```
 
@@ -256,8 +264,7 @@ export class PageGeneralEnrollmentComponent {
         </div>
       </ng-content>
       <ng-content actions>
-        <a [routerLink]="['/', 'tournament', tournament()?.id, 'my-enrollments']"
-           class="flex items-center gap-1 px-3 py-1.5 rounded bg-primary-100">
+        <a [routerLink]="['/', 'tournament', tournament()?.id, 'my-enrollments']" class="flex items-center gap-1 px-3 py-1.5 rounded bg-primary-100">
           <i class="pi pi-list"></i>
           <span>{{ 'enrollment.myEnrollments' | translate }}</span>
         </a>
@@ -330,11 +337,13 @@ export interface EnrollmentFilters {
         <!-- Search Input -->
         <div class="field">
           <label>{{ 'enrollment.filters.search' | translate }}</label>
-          <input pInputText
-                 [(ngModel)]="filters().searchTerm"
-                 (ngModelChange)="onFiltersChange()"
-                 placeholder="{{ 'enrollment.filters.searchPlaceholder' | translate }}"
-                 class="w-full" />
+          <input
+            pInputText
+            [(ngModel)]="filters().searchTerm"
+            (ngModelChange)="onFiltersChange()"
+            placeholder="{{ 'enrollment.filters.searchPlaceholder' | translate }}"
+            class="w-full"
+          />
         </div>
 
         <!-- Event Type Multi-Select -->
@@ -347,7 +356,8 @@ export interface EnrollmentFilters {
             optionLabel="label"
             optionValue="value"
             placeholder="{{ 'enrollment.filters.allTypes' | translate }}"
-            class="w-full" />
+            class="w-full"
+          />
         </div>
 
         <!-- Game Type Multi-Select -->
@@ -360,27 +370,25 @@ export interface EnrollmentFilters {
             optionLabel="label"
             optionValue="value"
             placeholder="{{ 'enrollment.filters.allGameTypes' | translate }}"
-            class="w-full" />
+            class="w-full"
+          />
         </div>
 
         <!-- Availability Filter -->
         <div class="field">
           <label>{{ 'enrollment.filters.availability' | translate }}</label>
-          <p-select
-            [(ngModel)]="filters().availability"
-            [options]="availabilityOptions"
-            (ngModelChange)="onFiltersChange()"
-            class="w-full" />
+          <p-select [(ngModel)]="filters().availability" [options]="availabilityOptions" (ngModelChange)="onFiltersChange()" class="w-full" />
         </div>
       </div>
 
       <!-- Advanced Filters Toggle -->
       <div class="mt-4">
         <p-button
-          label="{{ showAdvanced() ? 'enrollment.filters.hideAdvanced' : 'enrollment.filters.showAdvanced' | translate }}"
+          label="{{ showAdvanced() ? 'enrollment.filters.hideAdvanced' : ('enrollment.filters.showAdvanced' | translate) }}"
           [outlined]="true"
           size="small"
-          (onClick)="toggleAdvanced()" />
+          (onClick)="toggleAdvanced()"
+        />
       </div>
 
       @if (showAdvanced()) {
@@ -388,38 +396,21 @@ export interface EnrollmentFilters {
           <!-- Level Range -->
           <div class="field">
             <label>{{ 'enrollment.filters.levelRange' | translate }}</label>
-            <p-inputNumber
-              [(ngModel)]="filters().levelMin"
-              (ngModelChange)="onFiltersChange()"
-              [min]="1"
-              [max]="12"
-              placeholder="Min" />
+            <p-inputNumber [(ngModel)]="filters().levelMin" (ngModelChange)="onFiltersChange()" [min]="1" [max]="12" placeholder="Min" />
             <span class="mx-2">-</span>
-            <p-inputNumber
-              [(ngModel)]="filters().levelMax"
-              (ngModelChange)="onFiltersChange()"
-              [min]="1"
-              [max]="12"
-              placeholder="Max" />
+            <p-inputNumber [(ngModel)]="filters().levelMax" (ngModelChange)="onFiltersChange()" [min]="1" [max]="12" placeholder="Max" />
           </div>
 
           <!-- Sort By -->
           <div class="field">
             <label>{{ 'enrollment.filters.sortBy' | translate }}</label>
-            <p-select
-              [(ngModel)]="filters().sortBy"
-              [options]="sortOptions"
-              (ngModelChange)="onFiltersChange()"
-              class="w-full" />
+            <p-select [(ngModel)]="filters().sortBy" [options]="sortOptions" (ngModelChange)="onFiltersChange()" class="w-full" />
           </div>
 
           <!-- Sort Order -->
           <div class="field">
             <label>{{ 'enrollment.filters.sortOrder' | translate }}</label>
-            <p-selectButton
-              [(ngModel)]="filters().sortOrder"
-              [options]="sortOrderOptions"
-              (ngModelChange)="onFiltersChange()" />
+            <p-selectButton [(ngModel)]="filters().sortOrder" [options]="sortOrderOptions" (ngModelChange)="onFiltersChange()" />
           </div>
         </div>
       }
@@ -427,15 +418,14 @@ export interface EnrollmentFilters {
       <!-- Active Filters Summary & Clear -->
       @if (hasActiveFilters()) {
         <div class="flex items-center justify-between mt-4 pt-4 border-t">
-          <span class="text-sm text-muted-color">
-            {{ activeFilterCount() }} {{ 'enrollment.filters.active' | translate }}
-          </span>
+          <span class="text-sm text-muted-color"> {{ activeFilterCount() }} {{ 'enrollment.filters.active' | translate }} </span>
           <p-button
             label="{{ 'enrollment.filters.clearAll' | translate }}"
             severity="secondary"
             [text]="true"
             size="small"
-            (onClick)="clearFilters()" />
+            (onClick)="clearFilters()"
+          />
         </div>
       }
     </p-card>
@@ -491,7 +481,7 @@ export class EnrollmentFiltersComponent {
   template: `
     @if (loading()) {
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        @for (i of [1,2,3,4,5,6]; track i) {
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
           <p-skeleton height="12rem" />
         }
       </div>
@@ -501,10 +491,7 @@ export class EnrollmentFiltersComponent {
           <i class="pi pi-inbox text-4xl text-muted-color mb-4"></i>
           <p class="text-muted-color">{{ 'enrollment.noEventsFound' | translate }}</p>
           @if (hasActiveFilters()) {
-            <p-button
-              label="{{ 'enrollment.filters.clearAll' | translate }}"
-              [outlined]="true"
-              (onClick)="clearFilters.emit()" />
+            <p-button label="{{ 'enrollment.filters.clearAll' | translate }}" [outlined]="true" (onClick)="clearFilters.emit()" />
           }
         </div>
       </p-card>
@@ -519,7 +506,8 @@ export class EnrollmentFiltersComponent {
             [selectedPartner]="getSelectedPartner(subEvent.id)"
             (select)="onSelect.emit(subEvent)"
             (deselect)="onDeselect.emit(subEvent.id)"
-            (selectPartner)="onSelectPartner.emit({ subEventId: subEvent.id })" />
+            (selectPartner)="onSelectPartner.emit({ subEventId: subEvent.id })"
+          />
         }
       </div>
     }
@@ -538,7 +526,7 @@ export class SubEventSelectionGridComponent {
   @Output() clearFilters = output<void>();
 
   isInCart = (subEventId: string) => {
-    return this.cartItems().some(item => item.subEventId === subEventId);
+    return this.cartItems().some((item) => item.subEventId === subEventId);
   };
 
   isEnrolled = (subEventId: string) => {
@@ -550,7 +538,7 @@ export class SubEventSelectionGridComponent {
   };
 
   getSelectedPartner = (subEventId: string) => {
-    return this.cartItems().find(item => item.subEventId === subEventId)?.preferredPartner;
+    return this.cartItems().find((item) => item.subEventId === subEventId)?.preferredPartner;
   };
 }
 ```
@@ -564,10 +552,13 @@ export class SubEventSelectionGridComponent {
   selector: 'app-sub-event-card',
   standalone: true,
   template: `
-    <p-card class="h-full" [ngClass]="{
-      'border-2 border-primary': isSelected(),
-      'opacity-50': isEnrolled()
-    }">
+    <p-card
+      class="h-full"
+      [ngClass]="{
+        'border-2 border-primary': isSelected(),
+        'opacity-50': isEnrolled(),
+      }"
+    >
       <!-- Card Header -->
       <div class="flex items-start justify-between mb-4">
         <div class="flex-1">
@@ -592,7 +583,8 @@ export class SubEventSelectionGridComponent {
           (ngModelChange)="onToggle($event)"
           [binary]="true"
           [disabled]="isEnrolled()"
-          [attr.aria-label]="'Select ' + subEvent().name" />
+          [attr.aria-label]="'Select ' + subEvent().name"
+        />
       </div>
 
       <!-- Capacity Indicator -->
@@ -602,22 +594,20 @@ export class SubEventSelectionGridComponent {
           [max]="subEvent().maxEntries"
           [pending]="subEvent().pendingEnrollmentCount || 0"
           [waitingList]="subEvent().waitingListCount || 0"
-          [waitingListEnabled]="subEvent().waitingListEnabled" />
+          [waitingListEnabled]="subEvent().waitingListEnabled"
+        />
       </div>
 
       <!-- Status Badges -->
       <div class="flex flex-wrap gap-2 mb-4">
         @if (isEnrolled()) {
-          <p-tag severity="success" value="{{ 'enrollment.alreadyEnrolled' | translate }}"
-                 icon="pi pi-check" />
+          <p-tag severity="success" value="{{ 'enrollment.alreadyEnrolled' | translate }}" icon="pi pi-check" />
         }
         @if (isFull() && !subEvent().waitingListEnabled) {
-          <p-tag severity="danger" value="{{ 'enrollment.full' | translate }}"
-                 icon="pi pi-times" />
+          <p-tag severity="danger" value="{{ 'enrollment.full' | translate }}" icon="pi pi-times" />
         }
         @if (isFull() && subEvent().waitingListEnabled) {
-          <p-tag severity="warn" value="{{ 'enrollment.waitingListOnly' | translate }}"
-                 icon="pi pi-clock" />
+          <p-tag severity="warn" value="{{ 'enrollment.waitingListOnly' | translate }}" icon="pi pi-clock" />
         }
       </div>
 
@@ -635,7 +625,8 @@ export class SubEventSelectionGridComponent {
                 [text]="true"
                 size="small"
                 (onClick)="selectPartner.emit()"
-                pTooltip="{{ 'enrollment.changePartner' | translate }}" />
+                pTooltip="{{ 'enrollment.changePartner' | translate }}"
+              />
             </div>
           } @else {
             <p-button
@@ -644,7 +635,8 @@ export class SubEventSelectionGridComponent {
               [outlined]="true"
               size="small"
               class="w-full"
-              (onClick)="selectPartner.emit()" />
+              (onClick)="selectPartner.emit()"
+            />
             <small class="text-xs text-muted-color mt-1 block">
               {{ 'enrollment.partnerOptional' | translate }}
             </small>
@@ -715,7 +707,8 @@ export interface CartItem {
                 severity="secondary"
                 [text]="true"
                 size="small"
-                (onClick)="clearCart.emit()" />
+                (onClick)="clearCart.emit()"
+              />
             }
           </div>
         </ng-template>
@@ -735,7 +728,8 @@ export interface CartItem {
                 [item]="item"
                 (update)="updateItem.emit($event)"
                 (remove)="removeItem.emit($event.subEventId)"
-                (selectPartner)="selectPartner.emit($event)" />
+                (selectPartner)="selectPartner.emit($event)"
+              />
             }
           </div>
 
@@ -782,7 +776,8 @@ export interface CartItem {
                 [loading]="submitting()"
                 [disabled]="!canSubmit() || validationErrors().length > 0"
                 (onClick)="submit.emit()"
-                [attr.aria-label]="'Submit ' + cartItems().length + ' enrollments'" />
+                [attr.aria-label]="'Submit ' + cartItems().length + ' enrollments'"
+              />
 
               @if (submitError()) {
                 <p-message severity="error" [text]="submitError()!" class="w-full text-xs" />
@@ -807,23 +802,17 @@ export class EnrollmentCartComponent {
   @Output() clearCart = output<void>();
   @Output() submit = output<void>();
 
-  hasDoublesEvents = computed(() =>
-    this.cartItems().some(item =>
-      item.subEvent.gameType === 'D' || item.subEvent.gameType === 'MX'
-    )
-  );
+  hasDoublesEvents = computed(() => this.cartItems().some((item) => item.subEvent.gameType === 'D' || item.subEvent.gameType === 'MX'));
 
-  countWithPartners = computed(() =>
-    this.cartItems().filter(item => item.preferredPartnerId).length
-  );
+  countWithPartners = computed(() => this.cartItems().filter((item) => item.preferredPartnerId).length);
 
   hasWaitingList = computed(() =>
-    this.cartItems().some(item => {
+    this.cartItems().some((item) => {
       const se = item.subEvent;
       if (!se.maxEntries) return false;
       const confirmed = se.confirmedEnrollmentCount || 0;
       return confirmed >= se.maxEntries && se.waitingListEnabled;
-    })
+    }),
   );
 }
 ```
@@ -842,8 +831,8 @@ export class EnrollmentCartComponent {
       [(visible)]="visible"
       [modal]="true"
       [style]="{ width: '450px' }"
-      (onHide)="close.emit()">
-
+      (onHide)="close.emit()"
+    >
       <div class="space-y-4">
         <!-- Sub-Event Info -->
         @if (subEvent(); as se) {
@@ -867,7 +856,8 @@ export class EnrollmentCartComponent {
             placeholder="{{ 'enrollment.partner.searchPlaceholder' | translate }}"
             class="w-full"
             [showClear]="true"
-            [attr.aria-label]="'Search for partner'" />
+            [attr.aria-label]="'Search for partner'"
+          />
           <small class="text-muted-color mt-1 block">
             {{ 'enrollment.partner.hint' | translate }}
           </small>
@@ -881,16 +871,12 @@ export class EnrollmentCartComponent {
             </label>
             <div class="space-y-2 max-h-48 overflow-y-auto">
               @for (player of lookingForPartner(); track player.id) {
-                <div class="flex items-center justify-between p-2 rounded hover:bg-highlight cursor-pointer"
-                     (click)="selectPlayer(player)">
+                <div class="flex items-center justify-between p-2 rounded hover:bg-highlight cursor-pointer" (click)="selectPlayer(player)">
                   <div>
                     <div class="font-medium">{{ player.fullName }}</div>
                     <div class="text-xs text-muted-color">{{ player.memberId }}</div>
                   </div>
-                  <p-button
-                    icon="pi pi-check"
-                    [text]="true"
-                    size="small" />
+                  <p-button icon="pi pi-check" [text]="true" size="small" />
                 </div>
               }
             </div>
@@ -908,15 +894,12 @@ export class EnrollmentCartComponent {
 
       <ng-template pTemplate="footer">
         <div class="flex justify-end gap-2">
+          <p-button label="{{ 'common.cancel' | translate }}" severity="secondary" [outlined]="true" (onClick)="close.emit()" />
           <p-button
-            label="{{ 'common.cancel' | translate }}"
-            severity="secondary"
-            [outlined]="true"
-            (onClick)="close.emit()" />
-          <p-button
-            label="{{ selectedPartner ? 'enrollment.partner.confirm' : 'enrollment.partner.noPartner' | translate }}"
+            label="{{ selectedPartner ? 'enrollment.partner.confirm' : ('enrollment.partner.noPartner' | translate) }}"
             (onClick)="confirm()"
-            [loading]="searching()" />
+            [loading]="searching()"
+          />
         </div>
       </ng-template>
     </p-dialog>
@@ -1014,7 +997,7 @@ export class GeneralEnrollmentService {
           },
           context: { signal: abortSignal },
           fetchPolicy: 'network-only',
-        })
+        }),
       );
 
       return {
@@ -1034,13 +1017,9 @@ export class GeneralEnrollmentService {
   error = computed(() => this.dataResource.error()?.message || null);
 
   // Derived state
-  isEnrollmentOpen = computed(() =>
-    this.tournament()?.phase === 'ENROLLMENT_OPEN'
-  );
+  isEnrollmentOpen = computed(() => this.tournament()?.phase === 'ENROLLMENT_OPEN');
 
-  enrolledSubEventIds = computed(() =>
-    new Set(this.myEnrollments().map(e => e.tournamentSubEventId))
-  );
+  enrolledSubEventIds = computed(() => new Set(this.myEnrollments().map((e) => e.tournamentSubEventId)));
 
   // Filtered sub-events based on filter form
   filteredSubEvents = computed(() => {
@@ -1052,46 +1031,40 @@ export class GeneralEnrollmentService {
     // Search term
     if (filters.searchTerm) {
       const term = filters.searchTerm.toLowerCase();
-      filtered = filtered.filter(se =>
-        se.name?.toLowerCase().includes(term)
-      );
+      filtered = filtered.filter((se) => se.name?.toLowerCase().includes(term));
     }
 
     // Event types
     if (filters.eventTypes && filters.eventTypes.length > 0) {
-      filtered = filtered.filter(se =>
-        filters.eventTypes!.includes(se.eventType!)
-      );
+      filtered = filtered.filter((se) => filters.eventTypes!.includes(se.eventType!));
     }
 
     // Game types
     if (filters.gameTypes && filters.gameTypes.length > 0) {
-      filtered = filtered.filter(se =>
-        filters.gameTypes!.includes(se.gameType!)
-      );
+      filtered = filtered.filter((se) => filters.gameTypes!.includes(se.gameType!));
     }
 
     // Level range
     if (filters.levelMin) {
-      filtered = filtered.filter(se =>
-        (se.maxLevel || 999) >= filters.levelMin!
-      );
+      filtered = filtered.filter((se) => (se.maxLevel || 999) >= filters.levelMin!);
     }
     if (filters.levelMax) {
-      filtered = filtered.filter(se =>
-        (se.minLevel || 0) <= filters.levelMax!
-      );
+      filtered = filtered.filter((se) => (se.minLevel || 0) <= filters.levelMax!);
     }
 
     // Availability
     if (filters.availability !== 'all') {
-      filtered = filtered.filter(se => {
+      filtered = filtered.filter((se) => {
         const isFull = this.isSubEventFull(se);
         switch (filters.availability) {
-          case 'open': return !isFull;
-          case 'full': return isFull && !se.waitingListEnabled;
-          case 'waitlist': return isFull && se.waitingListEnabled;
-          default: return true;
+          case 'open':
+            return !isFull;
+          case 'full':
+            return isFull && !se.waitingListEnabled;
+          case 'waitlist':
+            return isFull && se.waitingListEnabled;
+          default:
+            return true;
         }
       });
     }
@@ -1126,7 +1099,7 @@ export class GeneralEnrollmentService {
     const errors: ValidationError[] = [];
     const cart = this.cart();
 
-    cart.forEach(item => {
+    cart.forEach((item) => {
       const isDoubles = item.subEvent.gameType === 'D' || item.subEvent.gameType === 'MX';
       // Add validation rules as needed
       // Example: Required partner for certain doubles events
@@ -1135,11 +1108,7 @@ export class GeneralEnrollmentService {
     return errors;
   });
 
-  canSubmit = computed(() =>
-    this.cart().length > 0 &&
-    this.validationErrors().length === 0 &&
-    !this.submitting()
-  );
+  canSubmit = computed(() => this.cart().length > 0 && this.validationErrors().length === 0 && !this.submitting());
 
   // Submission state
   submitting = signal(false);
@@ -1148,10 +1117,10 @@ export class GeneralEnrollmentService {
 
   // Methods
   addToCart(subEvent: TournamentSubEvent): void {
-    const existing = this.cart().find(item => item.subEventId === subEvent.id);
+    const existing = this.cart().find((item) => item.subEventId === subEvent.id);
     if (existing) return;
 
-    this.cartState.update(items => [
+    this.cartState.update((items) => [
       ...items,
       {
         subEventId: subEvent.id,
@@ -1161,17 +1130,11 @@ export class GeneralEnrollmentService {
   }
 
   removeFromCart(subEventId: string): void {
-    this.cartState.update(items =>
-      items.filter(item => item.subEventId !== subEventId)
-    );
+    this.cartState.update((items) => items.filter((item) => item.subEventId !== subEventId));
   }
 
   updateCartItem(updated: CartItem): void {
-    this.cartState.update(items =>
-      items.map(item =>
-        item.subEventId === updated.subEventId ? updated : item
-      )
-    );
+    this.cartState.update((items) => items.map((item) => (item.subEventId === updated.subEventId ? updated : item)));
   }
 
   clearCart(): void {
@@ -1187,16 +1150,12 @@ export class GeneralEnrollmentService {
       const items = this.cart();
 
       // Submit all enrollments in parallel
-      const results = await Promise.allSettled(
-        items.map(item => this.enrollInSubEvent(item))
-      );
+      const results = await Promise.allSettled(items.map((item) => this.enrollInSubEvent(item)));
 
       // Check for errors
-      const errors = results.filter(r => r.status === 'rejected');
+      const errors = results.filter((r) => r.status === 'rejected');
       if (errors.length > 0) {
-        this.submitError.set(
-          `${errors.length} enrollment(s) failed. Please check and try again.`
-        );
+        this.submitError.set(`${errors.length} enrollment(s) failed. Please check and try again.`);
         return false;
       }
 
@@ -1225,7 +1184,7 @@ export class GeneralEnrollmentService {
             notes: item.notes,
           },
         },
-      })
+      }),
     );
 
     if (!result.data?.enrollInTournament) {
@@ -1257,12 +1216,12 @@ export class GeneralEnrollmentService {
               take: 10,
             },
           },
-        })
+        }),
       );
 
       // Filter out current user
       const userId = this.auth.user()?.id;
-      return result.data.players.filter(p => p.id !== userId);
+      return result.data.players.filter((p) => p.id !== userId);
     } catch {
       return [];
     }
@@ -1392,13 +1351,15 @@ Update tournament detail page to link to general enrollment:
 ```html
 <!-- Replace individual "Enroll Now" buttons with general enrollment link -->
 @if (tournament.phase === 'ENROLLMENT_OPEN') {
-  <div class="mt-6 text-center">
-    <a [routerLink]="['/', 'tournament', tournament.id, 'enroll']"
-       class="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-contrast hover:bg-primary-emphasis transition-colors no-underline font-medium text-lg">
-      <i class="pi pi-shopping-cart"></i>
-      <span>{{ 'enrollment.general.browseAndEnroll' | translate }}</span>
-    </a>
-  </div>
+<div class="mt-6 text-center">
+  <a
+    [routerLink]="['/', 'tournament', tournament.id, 'enroll']"
+    class="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-contrast hover:bg-primary-emphasis transition-colors no-underline font-medium text-lg"
+  >
+    <i class="pi pi-shopping-cart"></i>
+    <span>{{ 'enrollment.general.browseAndEnroll' | translate }}</span>
+  </a>
+</div>
 }
 ```
 
@@ -1542,22 +1503,21 @@ constructor() {
     <div class="space-y-1">
       <div class="flex items-center justify-between text-xs">
         <span class="text-muted-color">Capacity</span>
-        <span class="font-medium">
-          {{ current }} / {{ max || '∞' }}
-        </span>
+        <span class="font-medium"> {{ current }} / {{ max || '∞' }} </span>
       </div>
 
       <!-- Progress Bar -->
       @if (max) {
         <div class="h-2 bg-surface-200 rounded-full overflow-hidden">
-          <div class="h-full transition-all"
-               [style.width.%]="percentage"
-               [ngClass]="{
-                 'bg-green-500': percentage < 70,
-                 'bg-orange-500': percentage >= 70 && percentage < 100,
-                 'bg-red-500': percentage >= 100
-               }">
-          </div>
+          <div
+            class="h-full transition-all"
+            [style.width.%]="percentage"
+            [ngClass]="{
+              'bg-green-500': percentage < 70,
+              'bg-orange-500': percentage >= 70 && percentage < 100,
+              'bg-red-500': percentage >= 100,
+            }"
+          ></div>
         </div>
       }
 
@@ -1738,19 +1698,12 @@ openPartnerDialog(subEventId: string) {
 
 ```html
 <!-- Sub-event card -->
-<div role="article"
-     aria-labelledby="event-{{ subEvent.id }}-name"
-     aria-describedby="event-{{ subEvent.id }}-capacity">
+<div role="article" aria-labelledby="event-{{ subEvent.id }}-name" aria-describedby="event-{{ subEvent.id }}-capacity">
   <h4 id="event-{{ subEvent.id }}-name">{{ subEvent.name }}</h4>
 
-  <p-checkbox
-    [attr.aria-label]="'Select ' + subEvent.name + ' for enrollment'"
-    [attr.aria-checked]="isSelected()"
-    role="checkbox" />
+  <p-checkbox [attr.aria-label]="'Select ' + subEvent.name + ' for enrollment'" [attr.aria-checked]="isSelected()" role="checkbox" />
 
-  <div id="event-{{ subEvent.id }}-capacity" aria-live="polite">
-    {{ current }} of {{ max }} spots filled
-  </div>
+  <div id="event-{{ subEvent.id }}-capacity" aria-live="polite">{{ current }} of {{ max }} spots filled</div>
 </div>
 
 <!-- Cart -->
@@ -1759,22 +1712,23 @@ openPartnerDialog(subEventId: string) {
 
   <ul role="list" aria-labelledby="cart-title">
     @for (item of cartItems(); track item.subEventId) {
-      <li role="listitem">
-        <span>{{ item.subEvent.name }}</span>
-        <button [attr.aria-label]="'Remove ' + item.subEvent.name + ' from cart'"
-                (click)="removeItem(item)">
-          <i class="pi pi-times" aria-hidden="true"></i>
-        </button>
-      </li>
+    <li role="listitem">
+      <span>{{ item.subEvent.name }}</span>
+      <button [attr.aria-label]="'Remove ' + item.subEvent.name + ' from cart'" (click)="removeItem(item)">
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
+    </li>
     }
   </ul>
 </div>
 
 <!-- Submit button -->
-<button type="button"
-        [attr.aria-label]="'Submit ' + cartItems().length + ' enrollment' + (cartItems().length === 1 ? '' : 's')"
-        [disabled]="!canSubmit()"
-        [attr.aria-disabled]="!canSubmit()">
+<button
+  type="button"
+  [attr.aria-label]="'Submit ' + cartItems().length + ' enrollment' + (cartItems().length === 1 ? '' : 's')"
+  [disabled]="!canSubmit()"
+  [attr.aria-disabled]="!canSubmit()"
+>
   Submit Enrollments
 </button>
 ```
@@ -1840,18 +1794,16 @@ removeFromCart(subEventId: string) {
 ```html
 <!-- All inputs must have associated labels -->
 <div class="field">
-  <label for="search-events" class="block font-medium mb-2">
-    {{ 'enrollment.filters.search' | translate }}
-  </label>
-  <input id="search-events"
-         pInputText
-         type="search"
-         [(ngModel)]="searchTerm"
-         [attr.aria-describedby]="'search-hint'"
-         placeholder="{{ 'enrollment.filters.searchPlaceholder' | translate }}" />
-  <small id="search-hint" class="text-muted-color">
-    {{ 'enrollment.filters.searchHint' | translate }}
-  </small>
+  <label for="search-events" class="block font-medium mb-2"> {{ 'enrollment.filters.search' | translate }} </label>
+  <input
+    id="search-events"
+    pInputText
+    type="search"
+    [(ngModel)]="searchTerm"
+    [attr.aria-describedby]="'search-hint'"
+    placeholder="{{ 'enrollment.filters.searchPlaceholder' | translate }}"
+  />
+  <small id="search-hint" class="text-muted-color"> {{ 'enrollment.filters.searchHint' | translate }} </small>
 </div>
 ```
 
@@ -1868,12 +1820,11 @@ removeFromCart(subEventId: string) {
   <p-autoComplete
     inputId="partner-input"
     [attr.aria-invalid]="hasError('preferredPartner')"
-    [attr.aria-describedby]="hasError('preferredPartner') ? 'partner-error' : null" />
+    [attr.aria-describedby]="hasError('preferredPartner') ? 'partner-error' : null"
+  />
 
   @if (hasError('preferredPartner')) {
-    <small id="partner-error" class="p-error" role="alert">
-      {{ getError('preferredPartner') }}
-    </small>
+  <small id="partner-error" class="p-error" role="alert"> {{ getError('preferredPartner') }} </small>
   }
 </div>
 ```
@@ -1882,7 +1833,10 @@ removeFromCart(subEventId: string) {
 
 ```html
 <!-- Allow keyboard users to skip to main content -->
-<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-primary focus:text-primary-contrast">
+<a
+  href="#main-content"
+  class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-primary focus:text-primary-contrast"
+>
   Skip to enrollment content
 </a>
 
@@ -1927,6 +1881,7 @@ removeFromCart(subEventId: string) {
 ### Phase 1: Foundation (Week 1-2)
 
 **Tasks**:
+
 1. Create component structure and files
 2. Set up routing configuration
 3. Implement `GeneralEnrollmentService` with GraphQL queries
@@ -1934,6 +1889,7 @@ removeFromCart(subEventId: string) {
 5. Unit tests for service logic
 
 **Deliverables**:
+
 - Empty page accessible at `/tournament/:id/enroll`
 - Service with data fetching working
 - Basic routing and navigation
@@ -1941,6 +1897,7 @@ removeFromCart(subEventId: string) {
 ### Phase 2: Core Features (Week 3-4)
 
 **Tasks**:
+
 1. Implement filter component with all filter options
 2. Build sub-event selection grid with card components
 3. Implement cart functionality (add/remove/update)
@@ -1948,6 +1905,7 @@ removeFromCart(subEventId: string) {
 5. Form validation logic
 
 **Deliverables**:
+
 - Fully functional filtering system
 - Sub-event selection and cart management
 - Partner selection for doubles
@@ -1956,6 +1914,7 @@ removeFromCart(subEventId: string) {
 ### Phase 3: Submission & Integration (Week 5)
 
 **Tasks**:
+
 1. Implement bulk enrollment submission
 2. Error handling and retry logic
 3. Optimistic UI updates
@@ -1963,6 +1922,7 @@ removeFromCart(subEventId: string) {
 5. Integration with existing enrollment pages
 
 **Deliverables**:
+
 - Working enrollment submission
 - Error handling and user feedback
 - Navigation between pages
@@ -1970,6 +1930,7 @@ removeFromCart(subEventId: string) {
 ### Phase 4: Polish & Accessibility (Week 6)
 
 **Tasks**:
+
 1. Responsive design refinement
 2. Accessibility audit and fixes
 3. Loading states and skeleton loaders
@@ -1977,6 +1938,7 @@ removeFromCart(subEventId: string) {
 5. Cross-browser testing
 
 **Deliverables**:
+
 - Mobile-responsive design
 - WCAG 2.1 AA compliance
 - Polished user experience
@@ -1984,6 +1946,7 @@ removeFromCart(subEventId: string) {
 ### Phase 5: Testing & Documentation (Week 7)
 
 **Tasks**:
+
 1. End-to-end testing with Cypress/Playwright
 2. Unit test coverage > 80%
 3. User acceptance testing
@@ -1991,6 +1954,7 @@ removeFromCart(subEventId: string) {
 5. Performance optimization
 
 **Deliverables**:
+
 - Comprehensive test suite
 - User documentation
 - Performance benchmarks
@@ -1998,6 +1962,7 @@ removeFromCart(subEventId: string) {
 ### Phase 6: Deployment (Week 8)
 
 **Tasks**:
+
 1. Feature flag implementation
 2. Gradual rollout to users
 3. Monitor analytics and error tracking
@@ -2005,6 +1970,7 @@ removeFromCart(subEventId: string) {
 5. Iterate based on feedback
 
 **Deliverables**:
+
 - Production deployment
 - Monitoring dashboards
 - User feedback collection
@@ -2016,6 +1982,7 @@ removeFromCart(subEventId: string) {
 ### Performance Optimization
 
 1. **Virtual Scrolling**: For tournaments with 100+ sub-events
+
    ```typescript
    <cdk-virtual-scroll-viewport itemSize="200" class="h-[600px]">
      <div *cdkVirtualFor="let subEvent of filteredSubEvents()">
@@ -2165,6 +2132,7 @@ libs/frontend/pages/tournament/src/pages/general-enrollment/
 This architecture provides a comprehensive, scalable, and accessible solution for multi-discipline tournament enrollment. The design leverages Angular's modern features (signals, standalone components, resource API) while maintaining consistency with the existing codebase patterns.
 
 **Key Benefits**:
+
 1. **User Experience**: Streamlined enrollment process with cart-based workflow
 2. **Performance**: Efficient state management and optimistic UI updates
 3. **Accessibility**: WCAG 2.1 AA compliant with comprehensive keyboard and screen reader support
@@ -2172,6 +2140,7 @@ This architecture provides a comprehensive, scalable, and accessible solution fo
 5. **Scalability**: Handles tournaments with hundreds of sub-events efficiently
 
 **Next Steps**:
+
 1. Review and approval of architecture
 2. Backend API adjustments (if needed)
 3. Begin Phase 1 implementation

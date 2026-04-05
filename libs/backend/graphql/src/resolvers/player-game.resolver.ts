@@ -1,4 +1,3 @@
-
 import { Game, GamePlayerMembership, Player } from '@app/models';
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { GameArgs, PlayerArgs } from '../args';
@@ -59,4 +58,3 @@ export class GamePlayerMembershipResolver {
     return Player.findOne(args);
   }
 }
-

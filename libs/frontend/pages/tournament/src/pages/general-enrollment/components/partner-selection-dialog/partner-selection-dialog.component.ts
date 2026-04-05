@@ -33,14 +33,7 @@ const SEARCH_PARTNERS = gql`
 @Component({
   selector: 'app-partner-selection-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    InputTextModule,
-    TextareaModule,
-    ButtonModule,
-    AutoCompleteModule,
-    TranslateModule
-],
+  imports: [ReactiveFormsModule, InputTextModule, TextareaModule, ButtonModule, AutoCompleteModule, TranslateModule],
   templateUrl: './partner-selection-dialog.component.html',
 })
 export class PartnerSelectionDialogComponent implements OnInit {

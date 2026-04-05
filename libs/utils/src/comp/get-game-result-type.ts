@@ -13,7 +13,7 @@ export const GetGameResultType = (
       differenceForDowngradeDouble?: number;
       differenceForDowngradeMix?: number;
     };
-  }>
+  }>,
 ): GameBreakdownType => {
   if (won) {
     return GameBreakdownType.WON;
@@ -26,16 +26,10 @@ export const GetGameResultType = (
           : 'differenceForDowngradeMix';
 
     const propUpgrade =
-      gameType === GameType.S
-        ? 'differenceForUpgradeSingle'
-        : gameType === GameType.D
-          ? 'differenceForUpgradeDouble'
-          : 'differenceForUpgradeMix';
+      gameType === GameType.S ? 'differenceForUpgradeSingle' : gameType === GameType.D ? 'differenceForUpgradeDouble' : 'differenceForUpgradeMix';
 
-    const upgrade =
-      (rankingPoint?.differenceInLevel ?? 0) >= (rankingPoint?.system?.[propUpgrade] ?? 0) * -1;
-    const downgrade =
-      (rankingPoint?.differenceInLevel ?? 0) >= (rankingPoint?.system?.[propDowngrade] ?? 0) * -1;
+    const upgrade = (rankingPoint?.differenceInLevel ?? 0) >= (rankingPoint?.system?.[propUpgrade] ?? 0) * -1;
+    const downgrade = (rankingPoint?.differenceInLevel ?? 0) >= (rankingPoint?.system?.[propDowngrade] ?? 0) * -1;
 
     if (downgrade) {
       return GameBreakdownType.LOST_DOWNGRADE;

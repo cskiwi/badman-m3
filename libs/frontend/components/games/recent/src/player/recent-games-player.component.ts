@@ -9,7 +9,7 @@ import {
   OnDestroy,
   afterRenderEffect,
   signal,
-  viewChild
+  viewChild,
 } from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';
@@ -155,7 +155,6 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     return 0;
   }
 
-
   /**
    * Checks if a player is the current player being viewed
    * @param playerId The player ID to check
@@ -295,17 +294,15 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   getPlayerLevel(game: Game, playerId: string): number | null {
     if (!game?.gamePlayerMemberships || !game?.gameType) return null;
 
-    const membership = game.gamePlayerMemberships.find(
-      (m) => m.gamePlayer?.id === playerId
-    );
+    const membership = game.gamePlayerMemberships.find((m) => m.gamePlayer?.id === playerId);
 
     if (!membership) return null;
 
     // Map gameType to the appropriate level field
     switch (game.gameType) {
-      case 'S':  // Singles
+      case 'S': // Singles
         return membership.single ?? null;
-      case 'D':  // Doubles
+      case 'D': // Doubles
         return membership.double ?? null;
       case 'MX': // Mixed Doubles
         return membership.mix ?? null;
@@ -367,9 +364,7 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     if (!game?.gamePlayerMemberships) return null;
 
     const currentPlayerId = Array.isArray(this.for()) ? this.for()[0] : this.for();
-    const membership = game.gamePlayerMemberships.find(
-      (m) => m.gamePlayer?.id === currentPlayerId
-    );
+    const membership = game.gamePlayerMemberships.find((m) => m.gamePlayer?.id === currentPlayerId);
 
     return membership?.team ?? null;
   }

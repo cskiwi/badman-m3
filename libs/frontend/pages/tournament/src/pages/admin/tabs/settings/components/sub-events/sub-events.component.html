@@ -11,12 +11,7 @@
           <p class="text-sm text-muted-color m-0">{{ 'all.tournament.admin.settings.subEventsDescription' | translate }}</p>
         </div>
       </div>
-      <p-button
-        [label]="'all.tournament.admin.settings.addSubEvent' | translate"
-        icon="pi pi-plus"
-        size="small"
-        (click)="openAddSubEvent()"
-      />
+      <p-button [label]="'all.tournament.admin.settings.addSubEvent' | translate" icon="pi pi-plus" size="small" (click)="openAddSubEvent()" />
     </div>
   </div>
 
@@ -119,7 +114,10 @@
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                       <p-select
                         [ngModel]="value"
-                        [options]="[{label: 'Yes', value: true}, {label: 'No', value: false}]"
+                        [options]="[
+                          { label: 'Yes', value: true },
+                          { label: 'No', value: false },
+                        ]"
                         (ngModelChange)="filter($event)"
                         placeholder="Any"
                         optionLabel="label"
@@ -139,25 +137,19 @@
               </td>
               <td>
                 @if (subEvent.eventType) {
-                  <p-tag
-                    [value]="getEventTypeLabel(subEvent.eventType) | translate"
-                    severity="contrast"
-                    [rounded]="true"
-                  />
+                  <p-tag [value]="getEventTypeLabel(subEvent.eventType) | translate" severity="contrast" [rounded]="true" />
                 } @else {
                   <span class="text-muted-color">—</span>
                 }
               </td>
               <td>
-                <p-tag
-                  [value]="getGameTypeLabel(subEvent.gameType) | translate"
-                  severity="contrast"
-                  [rounded]="true"
-                />
+                <p-tag [value]="getGameTypeLabel(subEvent.gameType) | translate" severity="contrast" [rounded]="true" />
               </td>
               <td class="text-center">
                 @if (subEvent.minLevel) {
-                  <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-700 text-sm font-semibold text-color">
+                  <span
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-700 text-sm font-semibold text-color"
+                  >
                     {{ subEvent.minLevel }}
                   </span>
                 } @else {
@@ -166,7 +158,9 @@
               </td>
               <td class="text-center">
                 @if (subEvent.maxLevel) {
-                  <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-700 text-sm font-semibold text-color">
+                  <span
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-100 dark:bg-surface-700 text-sm font-semibold text-color"
+                  >
                     {{ subEvent.maxLevel }}
                   </span>
                 } @else {
@@ -252,12 +246,7 @@
         {{ 'all.tournament.admin.settings.subEventName' | translate }}
         <span class="text-red-500">*</span>
       </label>
-      <input
-        pInputText
-        id="subEventName"
-        formControlName="name"
-        class="w-full"
-      />
+      <input pInputText id="subEventName" formControlName="name" class="w-full" />
     </div>
 
     <div class="flex flex-col gap-2">
@@ -265,14 +254,7 @@
         {{ 'all.tournament.admin.settings.eventType' | translate }}
         <span class="text-red-500">*</span>
       </label>
-      <p-select
-        id="eventType"
-        formControlName="eventType"
-        [options]="eventTypeOptions"
-        optionLabel="label"
-        optionValue="value"
-        class="w-full"
-      >
+      <p-select id="eventType" formControlName="eventType" [options]="eventTypeOptions" optionLabel="label" optionValue="value" class="w-full">
         <ng-template let-option pTemplate="item">
           {{ option.label | translate }}
         </ng-template>
@@ -287,14 +269,7 @@
         {{ 'all.tournament.admin.settings.gameType' | translate }}
         <span class="text-red-500">*</span>
       </label>
-      <p-select
-        id="gameType"
-        formControlName="gameType"
-        [options]="gameTypeOptions"
-        optionLabel="label"
-        optionValue="value"
-        class="w-full"
-      >
+      <p-select id="gameType" formControlName="gameType" [options]="gameTypeOptions" optionLabel="label" optionValue="value" class="w-full">
         <ng-template let-option pTemplate="item">
           {{ option.label | translate }}
         </ng-template>
@@ -309,28 +284,14 @@
         <label for="minLevel" class="text-sm font-medium text-color">
           {{ 'all.tournament.admin.settings.minLevel' | translate }}
         </label>
-        <p-inputNumber
-          id="minLevel"
-          formControlName="minLevel"
-          [min]="1"
-          [max]="12"
-          [showButtons]="true"
-          styleClass="w-full"
-        />
+        <p-inputNumber id="minLevel" formControlName="minLevel" [min]="1" [max]="12" [showButtons]="true" styleClass="w-full" />
       </div>
 
       <div class="flex flex-col gap-2">
         <label for="maxLevel" class="text-sm font-medium text-color">
           {{ 'all.tournament.admin.settings.maxLevel' | translate }}
         </label>
-        <p-inputNumber
-          id="maxLevel"
-          formControlName="maxLevel"
-          [min]="1"
-          [max]="12"
-          [showButtons]="true"
-          styleClass="w-full"
-        />
+        <p-inputNumber id="maxLevel" formControlName="maxLevel" [min]="1" [max]="12" [showButtons]="true" styleClass="w-full" />
       </div>
     </div>
     <small class="text-muted-color text-xs -mt-2">{{ 'all.tournament.admin.settings.levelHelp' | translate }}</small>
@@ -339,13 +300,7 @@
       <label for="maxEntries" class="text-sm font-medium text-color">
         {{ 'all.tournament.admin.settings.maxEntries' | translate }}
       </label>
-      <p-inputNumber
-        id="maxEntries"
-        formControlName="maxEntries"
-        [min]="2"
-        [showButtons]="true"
-        styleClass="w-full"
-      />
+      <p-inputNumber id="maxEntries" formControlName="maxEntries" [min]="2" [showButtons]="true" styleClass="w-full" />
       <small class="text-muted-color text-xs">{{ 'all.tournament.admin.settings.maxEntriesHelp' | translate }}</small>
     </div>
 
@@ -359,12 +314,7 @@
 
   <ng-template pTemplate="footer">
     <div class="flex gap-3 justify-end">
-      <p-button
-        [label]="'all.button.cancel' | translate"
-        severity="secondary"
-        [outlined]="true"
-        (click)="closeDialog()"
-      />
+      <p-button [label]="'all.button.cancel' | translate" severity="secondary" [outlined]="true" (click)="closeDialog()" />
       <p-button
         [label]="'all.button.save' | translate"
         icon="pi pi-check"

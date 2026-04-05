@@ -21,6 +21,7 @@ Provides comprehensive guidance for building NestJS backend features following m
 ## Technology Stack
 
 ### NestJS Framework
+
 - **NestJS 11+** with modular architecture
 - **TypeScript** with strict mode
 - **GraphQL** (code-first with Apollo Server)
@@ -29,25 +30,31 @@ Provides comprehensive guidance for building NestJS backend features following m
 - **class-transformer** for serialization
 
 ### Authentication & Authorization
+
 - **Auth0** for identity management
 - **JWT** validation via JWKS (`jwks-rsa`)
 - **PermGuard** custom guard for route protection
 - **@User()** custom decorator for injecting authenticated user
 
 ### Job Queues & Background Processing
+
 - **BullMQ** with `@nestjs/bullmq` for async job processing
 - **Redis** as queue backend
 
 ### Search
+
 - **Typesense** for full-text search
 
 ### Communication
+
 - **Socket.IO** via `@nestjs/websockets` for real-time features
 
 ### API Documentation
+
 - **Swagger/OpenAPI** via `@nestjs/swagger`
 
 ### Testing
+
 - **Jest** for unit and integration testing
 
 ## TypeScript General Guidelines

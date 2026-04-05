@@ -1025,6 +1025,11 @@ export type I18nTranslations = {
                         "tournament": string;
                     };
                 };
+                "tabs": {
+                    "cronJobs": string;
+                    "ranking": string;
+                    "syncPlans": string;
+                };
             };
             "lastSync": string;
             "status": {

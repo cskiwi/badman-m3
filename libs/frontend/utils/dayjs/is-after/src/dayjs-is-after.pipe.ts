@@ -5,15 +5,10 @@ import dayjs from 'dayjs';
 @Pipe({
   name: 'dayjsIsAfter',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsIsAfterPipe implements PipeTransform {
-
-  transform(
-    value: DayjsInput,
-    compareValue: DayjsInput,
-    unit?: DayjsOpUnitType
-  ): boolean {
+  transform(value: DayjsInput, compareValue: DayjsInput, unit?: DayjsOpUnitType): boolean {
     if (!value || !compareValue) {
       return false;
     }
