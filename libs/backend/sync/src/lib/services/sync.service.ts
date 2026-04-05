@@ -135,9 +135,9 @@ export class SyncService {
   }
 
   /**
-   * Competition structure sync - runs every 12 hours during May-August
+   * Competition structure sync - runs every 12 hours during August-April (competition season)
    */
-  @Cron('0 */12 * 5-8 *')
+  @Cron('0 */12 * 1-4,8-12 *')
   async scheduleCompetitionSync(): Promise<void> {
     await this.queueCompetitionSync();
   }
