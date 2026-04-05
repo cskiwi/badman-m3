@@ -1,17 +1,22 @@
-<app-page-header title="all.competition.team-assembly.title" />
+<app-page-header>
+  <span title>{{ 'all.competition.team-assembly.title' | translate }}</span>
+</app-page-header>
 
-<section class="flex flex-col md:flex-row gap-4 pb-4 items-start px-4">
+<section class="flex flex-col md:flex-row gap-4 pb-4 items-start">
   <div class="flex flex-wrap gap-4 flex-1">
-    <p-floatLabel class="min-w-[180px] flex-1">
-      <p-select
-        [options]="seasons()"
-        [ngModel]="selectedSeason()"
-        (ngModelChange)="onSeasonChange($event)"
-        class="w-full"
-        inputId="season-select"
-      />
-      <label for="season-select">{{ 'all.competition.team-assembly.season' | translate }}</label>
-    </p-floatLabel>
+    <div class="w-40 shrink-0">
+      <p-floatLabel>
+        <p-select
+          [options]="seasonOptions()"
+          [ngModel]="selectedSeason()"
+          (ngModelChange)="onSeasonChange($event)"
+          optionLabel="label"
+          optionValue="value"
+          inputId="season-select"
+        />
+        <label for="season-select">{{ 'all.competition.team-assembly.season' | translate }}</label>
+      </p-floatLabel>
+    </div>
 
     <p-floatLabel class="min-w-[180px] flex-1">
       <p-autoComplete

@@ -232,8 +232,10 @@ export function appendWhereObjects<T>(classRef: Type<T>, name: string) {
   }
 
   // Each of the objects should have a WhereInputType in the whereInputs array
-  for (const { propertyKey, typeFunc } of objects) {
-    const objectType = typeFunc();
+  for (const { propertyKey, typeFunc, options } of objects) {
+    const rawType = typeFunc();
+    // Support both single type and array type: () => Type or () => [Type]
+    const objectType = Array.isArray(rawType) ? rawType[0] : rawType;
     // Look up by class reference to survive production minification (class names get mangled)
     const WhereInputProperty = whereCacheByClass.get(objectType);
 
@@ -250,7 +252,7 @@ export function appendWhereObjects<T>(classRef: Type<T>, name: string) {
       enumerable: true,
     });
 
-    Field(() => WhereInputProperty, { nullable: true })(WhereInput.prototype, propertyKey);
+    Field(() => WhereInputProperty, { nullable: options?.nullable ?? true })(WhereInput.prototype, propertyKey);
   }
 
   // Override the whereInputs cache with the new WhereInput

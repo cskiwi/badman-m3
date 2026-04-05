@@ -33,8 +33,9 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MessageModule } from 'primeng/message';
 import { AssemblyPlayerComponent } from '../assembly-player/assembly-player.component';
 import { AssemblyMessageComponent } from '../assembly-message/assembly-message.component';
+import { PartnerCombinationsComponent } from '../partner-combinations/partner-combinations.component';
 import { AssemblyService, PlayerWithRanking } from '../../page-assembly.service';
-import { AssemblyGeneratorService, GenerateStrategy, TimeRange } from '../../assembly-generator.service';
+import { AssemblyGeneratorService, GenerateStrategy, PlayerStat, SlotPairStat, SlotStat, TimeRange } from '../../assembly-generator.service';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { Player } from '@app/models';
 import { TeamMembershipType } from '@app/models-enum';
@@ -65,6 +66,7 @@ import { InputTextModule } from 'primeng/inputtext';
     InputTextModule,
     AssemblyPlayerComponent,
     AssemblyMessageComponent,
+    PartnerCombinationsComponent,
   ],
   templateUrl: './assembly.component.html',
   styleUrl: './assembly.component.scss',
@@ -72,7 +74,7 @@ import { InputTextModule } from 'primeng/inputtext';
 })
 export class AssemblyComponent {
   private readonly authService = inject(AuthService);
-  private readonly generatorService = inject(AssemblyGeneratorService);
+  readonly generatorService = inject(AssemblyGeneratorService);
 
   formGroup = input.required<FormGroup>();
   readonly dataService = inject(AssemblyService);
@@ -85,10 +87,11 @@ export class AssemblyComponent {
 
   // Auto-generate state
   generating = signal(false);
-  selectedTimeRange = signal<TimeRange>('season');
+  selectedTimeRange = signal<TimeRange>('both-seasons');
   selectedWeeks = signal(52);
 
   timeRangeOptions = [
+    { label: 'all.competition.team-assembly.auto-generate.both-seasons', value: 'both-seasons' as TimeRange },
     { label: 'all.competition.team-assembly.auto-generate.this-season', value: 'season' as TimeRange },
     { label: 'all.competition.team-assembly.auto-generate.last-season', value: 'last-season' as TimeRange },
     { label: 'all.competition.team-assembly.auto-generate.last-x-weeks', value: 'last-weeks' as TimeRange },
@@ -152,6 +155,42 @@ export class AssemblyComponent {
         }
       });
     });
+
+    // Load stats when data is loaded
+    effect(() => {
+      if (this.dataService.loaded()) {
+        this.refreshStats();
+      }
+    });
+  }
+
+  async refreshStats(forceRefresh = false) {
+    await this.generatorService.loadStats(this.selectedTimeRange(), this.selectedWeeks(), forceRefresh);
+  }
+
+  getPlayerStat(playerId: string): PlayerStat | null {
+    const stats = this.generatorService.playerStats();
+    return stats.get(playerId) ?? null;
+  }
+
+  getPlayerWinPct(playerId: string): number | null {
+    const stat = this.getPlayerStat(playerId);
+    return stat ? stat.winPct : null;
+  }
+
+  getSlotWinPct(slotId: string): SlotStat | null {
+    const stats = this.generatorService.slotStats();
+    return stats.get(slotId) ?? null;
+  }
+
+  getSlotPairStat(slotId: string, player1Id: string, player2Id: string): SlotPairStat | null {
+    const key = [player1Id, player2Id].sort().join(':');
+    return this.generatorService.slotPairStats().get(slotId)?.get(key) ?? null;
+  }
+
+  getTotalPairStat(player1Id: string, player2Id: string): SlotPairStat | null {
+    const key = [player1Id, player2Id].sort().join(':');
+    return this.generatorService.totalPairStats().get(key) ?? null;
   }
 
   searchCaptain(event: { query: string }) {

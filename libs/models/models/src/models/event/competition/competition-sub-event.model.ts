@@ -1,5 +1,5 @@
 import { SubEventTypeEnum } from '@app/models-enum';
-import { SortableField, WhereField } from '@app/utils';
+import { SortableField, WhereField, WhereObject } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import {
   BaseEntity,
@@ -95,12 +95,12 @@ export class CompetitionSubEvent extends BaseEntity {
   @Column({ type: 'integer', nullable: true })
   declare paraClassId?: number; // 0=Standard
 
-  @Field(() => CompetitionEvent, { nullable: true })
+  @WhereObject(() => CompetitionEvent, { nullable: true })
   @ManyToOne(() => CompetitionEvent, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'eventId' })
   declare competitionEvent?: Relation<CompetitionEvent>;
 
-  @Field(() => [CompetitionDraw], { nullable: true })
+  @WhereObject(() => [CompetitionDraw], { nullable: true })
   @OneToMany(() => CompetitionDraw, (draw) => draw.competitionSubEvent)
   declare competitionDraws?: Relation<CompetitionDraw[]>;
 }

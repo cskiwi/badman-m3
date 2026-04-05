@@ -4,11 +4,10 @@
   <section class="flex flex-col gap-4">
     <!-- Information Panels -->
     <div class="flex flex-wrap gap-4 max-md:flex-col">
-      
 
-      <p-fieldset [legend]="'all.competition.team-assembly.players.team' | translate" class="flex-1 min-w-[250px]">
-        <div class="font-bold mb-2">Index: {{ dataService.titulars().index }}</div>
-        @for (player of dataService.titulars().players; track player.id) {
+      <p-fieldset [legend]="'all.competition.team-assembly.players.base' | translate" class="flex-1 min-w-[250px]">
+        <div class="font-bold mb-2">Index: {{ dataService.base().index }}</div>
+        @for (player of dataService.base().players; track player.id) {
           <div class="flex justify-between items-center py-1">
             <span>{{ player.firstName }} {{ player.lastName }}</span>
             @if (dataService.isException(player.id)) {
@@ -27,9 +26,9 @@
         }
       </p-fieldset>
 
-      <p-fieldset [legend]="'all.competition.team-assembly.players.base' | translate" class="flex-1 min-w-[250px]">
-        <div class="font-bold mb-2">Index: {{ dataService.base().index }}</div>
-        @for (player of dataService.base().players; track player.id) {
+      <p-fieldset [legend]="'all.competition.team-assembly.players.team' | translate" class="flex-1 min-w-[250px]">
+        <div class="font-bold mb-2">Index: {{ dataService.titulars().index }}</div>
+        @for (player of dataService.titulars().players; track player.id) {
           <div class="flex justify-between items-center py-1">
             <span>{{ player.firstName }} {{ player.lastName }}</span>
             @if (dataService.isException(player.id)) {
@@ -354,20 +353,60 @@
               [cdkDropListSortingDisabled]="true"
               (cdkDropListDropped)="drop($event)"
             >
-              <label class="font-bold text-xs uppercase text-muted-color">
-                {{ dataService.getSlotLabel(slotId).prefix | translate }}
-                {{ dataService.getSlotLabel(slotId).label | translate }}
-              </label>
+              <div class="flex justify-between items-center">
+                <label class="font-bold text-xs uppercase text-muted-color">
+                  {{ dataService.getSlotLabel(slotId).prefix | translate }}
+                  {{ dataService.getSlotLabel(slotId).label | translate }}
+                </label>
+                @if (getSlotWinPct(slotId); as stat) {
+                  <span class="text-xs font-mono"
+                    [class]="stat.winPct >= 50 ? 'text-green-500' : 'text-red-500'"
+                    [pTooltip]="'all.competition.team-assembly.stats.tooltip-text' | translate:{ wins: stat.wins, total: stat.total, pct: stat.winPct }">
+                    {{ stat.wins }}/{{ stat.total }}
+                  </span>
+                }
+              </div>
               @for (item of getSlotPlayers(slotId); track item.id) {
-                <app-assembly-player
-                  class="cursor-grab active:cursor-grabbing"
-                  [player]="item"
-                  [levelException]="dataService.isException(item.id)"
-                  [eventType]="dataService.type()!"
-                  [showType]="slotId"
-                  [cdkDragData]="item"
-                  cdkDrag
-                />
+                <div class="flex justify-between items-center">
+                  <app-assembly-player
+                    class="cursor-grab active:cursor-grabbing flex-1"
+                    [player]="item"
+                    [levelException]="dataService.isException(item.id)"
+                    [eventType]="dataService.type()!"
+                    [showType]="slotId"
+                    [cdkDragData]="item"
+                    cdkDrag
+                  />
+                  @if (getPlayerStat(item.id); as stat) {
+                    <span class="text-xs font-mono ml-1"
+                      [class]="stat.winPct >= 50 ? 'text-green-500' : 'text-red-500'"
+                      [pTooltip]="'all.competition.team-assembly.stats.tooltip-text' | translate:{ wins: stat.wins, total: stat.total, pct: stat.winPct }">
+                      {{ stat.winPct }}%
+                    </span>
+                  }
+                </div>
+              }
+              @if (getSlotPlayers(slotId).length === 2) {
+                @if (getSlotPairStat(slotId, getSlotPlayers(slotId)[0].id, getSlotPlayers(slotId)[1].id); as slotPair) {
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs text-muted-color">{{ 'all.competition.team-assembly.stats.pair-on-slot' | translate }}</span>
+                    <span class="text-xs font-mono"
+                      [class]="slotPair.winPct >= 50 ? 'text-green-500' : 'text-red-500'"
+                      [pTooltip]="'all.competition.team-assembly.stats.tooltip-text' | translate:{ wins: slotPair.wins, total: slotPair.total, pct: slotPair.winPct }">
+                      {{ slotPair.wins }}/{{ slotPair.total }} ({{ slotPair.winPct }}%)
+                    </span>
+                  </div>
+                }
+                @if (getTotalPairStat(getSlotPlayers(slotId)[0].id, getSlotPlayers(slotId)[1].id); as totalPair) {
+                  <div class="flex justify-between items-center">
+                    <span class="text-xs text-muted-color">{{ 'all.competition.team-assembly.stats.pair-total' | translate }}</span>
+                    <span class="text-xs font-mono"
+                      [class]="totalPair.winPct >= 50 ? 'text-green-500' : 'text-red-500'"
+                      [pTooltip]="'all.competition.team-assembly.stats.tooltip-text' | translate:{ wins: totalPair.wins, total: totalPair.total, pct: totalPair.winPct }">
+                      {{ totalPair.wins }}/{{ totalPair.total }} ({{ totalPair.winPct }}%)
+                    </span>
+                  </div>
+                }
               }
             </div>
           }
@@ -384,20 +423,38 @@
               [cdkDropListSortingDisabled]="true"
               (cdkDropListDropped)="drop($event)"
             >
-              <label class="font-bold text-xs uppercase text-muted-color">
-                {{ dataService.getSlotLabel(slotId).prefix | translate }}
-                {{ dataService.getSlotLabel(slotId).label | translate }}
-              </label>
+              <div class="flex justify-between items-center">
+                <label class="font-bold text-xs uppercase text-muted-color">
+                  {{ dataService.getSlotLabel(slotId).prefix | translate }}
+                  {{ dataService.getSlotLabel(slotId).label | translate }}
+                </label>
+                @if (getSlotWinPct(slotId); as stat) {
+                  <span class="text-xs font-mono"
+                    [class]="stat.winPct >= 50 ? 'text-green-500' : 'text-red-500'"
+                    [pTooltip]="'all.competition.team-assembly.stats.tooltip-text' | translate:{ wins: stat.wins, total: stat.total, pct: stat.winPct }">
+                    {{ stat.wins }}/{{ stat.total }}
+                  </span>
+                }
+              </div>
               @for (item of getSlotPlayers(slotId); track item.id) {
-                <app-assembly-player
-                  class="cursor-grab active:cursor-grabbing"
-                  [player]="item"
-                  [levelException]="dataService.isException(item.id)"
-                  [eventType]="dataService.type()!"
-                  [showType]="slotId"
-                  [cdkDragData]="item"
-                  cdkDrag
-                />
+                <div class="flex justify-between items-center">
+                  <app-assembly-player
+                    class="cursor-grab active:cursor-grabbing flex-1"
+                    [player]="item"
+                    [levelException]="dataService.isException(item.id)"
+                    [eventType]="dataService.type()!"
+                    [showType]="slotId"
+                    [cdkDragData]="item"
+                    cdkDrag
+                  />
+                  @if (getPlayerStat(item.id); as stat) {
+                    <span class="text-xs font-mono ml-1"
+                      [class]="stat.winPct >= 50 ? 'text-green-500' : 'text-red-500'"
+                      [pTooltip]="'all.competition.team-assembly.stats.tooltip-text' | translate:{ wins: stat.wins, total: stat.total, pct: stat.winPct }">
+                      {{ stat.winPct }}%
+                    </span>
+                  }
+                </div>
               }
             </div>
           }
@@ -428,6 +485,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Partners Combination Table -->
+      <app-partner-combinations />
     }
   </section>
 }

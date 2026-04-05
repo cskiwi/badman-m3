@@ -13,6 +13,7 @@ export interface SlotAssignment {
 
 export interface GameRecord {
   gameType: string;
+  gameOrder: number;
   player1Id: string;
   player2Id?: string;
   won: boolean;

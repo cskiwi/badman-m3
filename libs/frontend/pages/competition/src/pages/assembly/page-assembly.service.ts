@@ -38,6 +38,7 @@ const TEAM_QUERY = gql`
       type
       name
       season
+      link
       teamPlayerMemberships {
         id
         membershipType

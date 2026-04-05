@@ -369,14 +369,19 @@ export type I18nTranslations = {
             "team-assembly": {
                 "auto-generate": {
                     "best-results": string;
+                    "best-results-tooltip": string;
+                    "both-seasons": string;
                     "clear": string;
                     "last-season": string;
                     "last-x-weeks": string;
+                    "player-joining": string;
                     "random": string;
+                    "random-tooltip": string;
                     "this-season": string;
                     "time-range": string;
                     "title": string;
                     "variations": string;
+                    "variations-tooltip": string;
                     "weeks": string;
                 };
                 "captain": string;
@@ -431,6 +436,21 @@ export type I18nTranslations = {
                 "single2": string;
                 "single3": string;
                 "single4": string;
+                "stats": {
+                    "games-played": string;
+                    "no-data": string;
+                    "pair-on-slot": string;
+                    "pair-total": string;
+                    "partners-title": string;
+                    "player1": string;
+                    "player2": string;
+                    "refresh": string;
+                    "search": string;
+                    "slot-record": string;
+                    "tooltip-text": string;
+                    "win-pct": string;
+                    "wins": string;
+                };
                 "substitude": string;
                 "team": string;
                 "team-index": string;

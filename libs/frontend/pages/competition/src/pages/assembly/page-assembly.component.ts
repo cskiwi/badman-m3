@@ -58,6 +58,7 @@ export class PageAssemblyComponent implements OnInit {
 
   // Filter state
   seasons = signal<number[]>([getSeason()]);
+  seasonOptions = computed(() => this.seasons().map((s) => ({ label: `${s} - ${s + 1}`, value: s })));
   selectedSeason = signal<number>(getSeason());
   clubSuggestions = signal<Club[]>([]);
   selectedClub = signal<Club | null>(null);

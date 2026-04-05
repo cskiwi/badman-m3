@@ -12,7 +12,7 @@ import {
   UpdateDateColumn,
   Relation,
 } from 'typeorm';
-import { SortableField, WhereField } from '@app/utils';
+import { SortableField, WhereField, WhereObject } from '@app/utils';
 import { Game } from '../game.model';
 import { CompetitionDraw } from './competition-draw.model';
 import { Team } from '../../team.model';
@@ -24,6 +24,8 @@ import { CompetitionAssembly } from './competition-assembly.model';
 @Index(['awayTeamId'])
 @Index(['drawId'])
 @Index(['date'])
+@Index(['homeTeamId', 'date'])
+@Index(['awayTeamId', 'date'])
 export class CompetitionEncounter extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -174,24 +176,25 @@ export class CompetitionEncounter extends BaseEntity {
   @Column({ nullable: true, type: 'uuid' })
   declare tempAwayCaptainId?: string;
 
-  @Field(() => CompetitionDraw, { nullable: true })
+  @WhereObject(() => CompetitionDraw, { nullable: true })
   @ManyToOne(() => CompetitionDraw, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'drawId' })
   declare drawCompetition?: Relation<CompetitionDraw>;
 
-  @Field(() => [Game], { nullable: true })
+  @WhereObject(() => Game, { nullable: true })
+
   @OneToMany(() => Game, (game) => game.competitionEncounter)
   declare games?: Relation<Game[]>;
 
   @OneToMany(() => CompetitionAssembly, (assembly) => assembly.encounterCompetition)
   declare assemblies?: Relation<CompetitionAssembly[]>;
 
-  @Field(() => Team, { nullable: true })
+  @WhereObject(() => Team, { nullable: true })
   @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'homeTeamId' })
   declare homeTeam?: Relation<Team>;
 
-  @Field(() => Team, { nullable: true })
+  @WhereObject(() => Team, { nullable: true })
   @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'awayTeamId' })
   declare awayTeam?: Relation<Team>;
