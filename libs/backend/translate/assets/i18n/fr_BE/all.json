@@ -55,6 +55,48 @@
     "schedule": "Calendrier",
     "seasonalPerformance": "Performance Saisonnière",
     "stats": "Statistiques du Club",
+    "teamBuilder": {
+      "addPlayer": "Ajouter un joueur...",
+      "addTeam": "Ajouter une Équipe",
+      "dropToRemove": "Déposez ici pour supprimer",
+      "import": {
+        "cancel": "Annuler",
+        "chooseFile": "Choisir un Fichier",
+        "confidence": "Confiance",
+        "confirm": "Confirmer",
+        "createNew": "Créer Nouveau",
+        "description": "Téléchargez le fichier Excel avec les réponses des joueurs",
+        "matched": "joueurs trouvés",
+        "matchedPlayer": "Joueur Trouvé",
+        "matching": "Recherche des joueurs...",
+        "searchPlayer": "Rechercher un joueur...",
+        "surveyName": "Nom de l'Enquête",
+        "title": "Importer l'Enquête",
+        "toCreate": "à créer",
+        "total": "total",
+        "willCreate": "Sera créé"
+      },
+      "noStoppingPlayers": "Aucun joueur qui arrête",
+      "playerPool": "Joueurs Non Assignés",
+      "playersStopping": "Joueurs qui arrêtent",
+      "removedPlayers": "Joueurs Supprimés",
+      "removePlayer": "Supprimer le Joueur",
+      "save": "Enregistrer les Équipes",
+      "settings": {
+        "maxPlayersPerTeam": "Max joueurs par équipe",
+        "maxPlayersPerTeamHelp": "Nombre maximum total de joueurs (régulier + remplaçant) par équipe",
+        "minFemalesPerMxTeam": "Min femmes en équipe MX",
+        "minMalesPerMxTeam": "Min hommes en équipe MX",
+        "minPlayersPerTeam": "Min joueurs réguliers par équipe",
+        "minPlayersPerTeamHelp": "Nombre minimum de joueurs réguliers pour les équipes H/D",
+        "performanceThreshold": "Seuil de performance",
+        "performanceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de victoire",
+        "presenceThreshold": "Seuil de présence",
+        "presenceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de présence",
+        "title": "Paramètres"
+      },
+      "tab": "Composition d'Équipe"
+    },
     "teamComparison": "Comparaison des Équipes",
     "totalGames": "Matchs",
     "totalPlayers": "Joueurs",
@@ -69,48 +111,6 @@
       "phase": "Phase",
       "tab": "Tournois",
       "title": "Tournois du Club"
-    },
-    "teamBuilder": {
-      "tab": "Composition d'Équipe",
-      "import": {
-        "title": "Importer l'Enquête",
-        "description": "Téléchargez le fichier Excel avec les réponses des joueurs",
-        "chooseFile": "Choisir un Fichier",
-        "matching": "Recherche des joueurs...",
-        "matched": "joueurs trouvés",
-        "total": "total",
-        "toCreate": "à créer",
-        "createNew": "Créer Nouveau",
-        "willCreate": "Sera créé",
-        "surveyName": "Nom de l'Enquête",
-        "matchedPlayer": "Joueur Trouvé",
-        "confidence": "Confiance",
-        "searchPlayer": "Rechercher un joueur...",
-        "confirm": "Confirmer",
-        "cancel": "Annuler"
-      },
-      "addTeam": "Ajouter une Équipe",
-      "save": "Enregistrer les Équipes",
-      "playerPool": "Joueurs Non Assignés",
-      "playersStopping": "Joueurs qui arrêtent",
-      "noStoppingPlayers": "Aucun joueur qui arrête",
-      "addPlayer": "Ajouter un joueur...",
-      "removePlayer": "Supprimer le Joueur",
-      "dropToRemove": "Déposez ici pour supprimer",
-      "removedPlayers": "Joueurs Supprimés",
-      "settings": {
-        "title": "Paramètres",
-        "presenceThreshold": "Seuil de présence",
-        "presenceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de présence",
-        "performanceThreshold": "Seuil de performance",
-        "performanceThresholdHelp": "Signaler les joueurs en dessous de ce pourcentage de victoire",
-        "minPlayersPerTeam": "Min joueurs réguliers par équipe",
-        "minPlayersPerTeamHelp": "Nombre minimum de joueurs réguliers pour les équipes H/D",
-        "minMalesPerMxTeam": "Min hommes en équipe MX",
-        "minFemalesPerMxTeam": "Min femmes en équipe MX",
-        "maxPlayersPerTeam": "Max joueurs par équipe",
-        "maxPlayersPerTeamHelp": "Nombre maximum total de joueurs (régulier + remplaçant) par équipe"
-      }
     },
     "winRate": "% Vict.",
     "winRateTrend": "Tendance % Vict."
@@ -182,6 +182,7 @@
     "level": "Niveau",
     "name": "Nom",
     "no": "Non",
+    "required": "Ce champ est obligatoire",
     "save": "Enregistrer",
     "search": "Rechercher",
     "season": "Saison",
@@ -190,8 +191,7 @@
     "unknown": "Inconnu",
     "viewAll": "Voir Tout",
     "viewDetails": "Voir Détails",
-    "yes": "Oui",
-    "required": "Ce champ est obligatoire"
+    "yes": "Oui"
   },
   "competition": {
     "bracket_view": "Vue en tableau",
@@ -820,12 +820,12 @@
         "clearCompletedError": "Échec de la suppression des jobs terminés",
         "clearCompletedSuccess": "Jobs terminés supprimés avec succès",
         "clearCompletedTooltip": "Supprimer les jobs terminés, garder les jobs échoués pour le débogage",
-        "confirmClearCompleted": "Effacer tous les jobs terminés? Les jobs avec des enfants échoués seront conservés pour le débogage.",
         "competitionSync": "Synchronisation de la concurrence",
         "competitionSyncError": "Échec de la programmation de la synchronisation des compétitions",
         "competitionSyncQueued": "Synchronisation de la compétition programmée avec succès",
         "competitionSyncTooltip": "Synchroniser toutes les rencontres du mois passé",
         "confirmClearAll": "Êtes-vous sûr de vouloir supprimer tous les jobs de toutes les files d'attente ? Cette action est irréversible.",
+        "confirmClearCompleted": "Effacer tous les jobs terminés? Les jobs avec des enfants échoués seront conservés pour le débogage.",
         "confirmCompetitionSync": "Les plans de synchronisation de la compétition pour toutes les rencontres du mois dernier ?",
         "confirmDiscovery": "Mettre en file une sync de découverte pour trouver de nouveaux tournois ?",
         "confirmTournamentSync": "Synchroniser les plans de tous les tournois en cours et à venir ?",
@@ -872,12 +872,12 @@
         "expand": "Développer",
         "jobId": "ID de tâche",
         "noJobsFound": "Aucune tâche récente trouvée",
-        "search": "Rechercher par ID, nom ou statut…",
         "progress": "Progression",
         "retry": "Réessayer la tâche",
         "retryError": "Échec de la reprise de la tâche {{id}}",
         "retryHeader": "Réessayer la tâche",
         "retrySuccess": "Tâche {{id}} mise en file d'attente pour reprise",
+        "search": "Rechercher par ID, nom ou statut…",
         "status": "Statut",
         "title": "Tâches de synchronisation récentes",
         "type": "Type",
@@ -901,6 +901,19 @@
           "waiting": "En attente"
         },
         "title": "Statistiques de la file"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Actions",
+          "created": "Créé",
+          "duration": "Durée",
+          "jobId": "ID de tâche",
+          "progress": "Progression",
+          "status": "Statut",
+          "type": "Type"
+        },
+        "noJobs": "Aucune tâche récente trouvée",
+        "title": "Tâches de synchronisation récentes"
       },
       "scheduling": {
         "competition": "Compétition",
@@ -933,18 +946,10 @@
         "tournament": "Tournoi",
         "withSubComponents": "Avec sous-composants"
       },
-      "recentJobs": {
-        "headers": {
-          "actions": "Actions",
-          "created": "Créé",
-          "duration": "Durée",
-          "jobId": "ID de tâche",
-          "progress": "Progression",
-          "status": "Statut",
-          "type": "Type"
-        },
-        "noJobs": "Aucune tâche récente trouvée",
-        "title": "Tâches de synchronisation récentes"
+      "tabs": {
+        "cronJobs": "Tâches Cron",
+        "ranking": "Systèmes de Classement",
+        "syncPlans": "Plans de Sync"
       },
       "title": "Synchronisation d'événements",
       "tournaments": {
@@ -1017,11 +1022,6 @@
           "competition": "Compétition",
           "tournament": "Tournoi"
         }
-      },
-      "tabs": {
-        "cronJobs": "Tâches Cron",
-        "ranking": "Systèmes de Classement",
-        "syncPlans": "Plans de Sync"
       }
     },
     "lastSync": "Dernière synchronisation",

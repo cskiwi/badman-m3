@@ -55,6 +55,48 @@
     "schedule": "Programma",
     "seasonalPerformance": "Seizoensprestaties",
     "stats": "Club Statistieken",
+    "teamBuilder": {
+      "addPlayer": "Speler toevoegen...",
+      "addTeam": "Team Toevoegen",
+      "dropToRemove": "Sleep hier om te verwijderen",
+      "import": {
+        "cancel": "Annuleren",
+        "chooseFile": "Bestand Kiezen",
+        "confidence": "Betrouwbaarheid",
+        "confirm": "Bevestigen",
+        "createNew": "Nieuw Aanmaken",
+        "description": "Upload het Excel-bestand met de spelersenquête",
+        "matched": "spelers gematcht",
+        "matchedPlayer": "Gematchte Speler",
+        "matching": "Spelers matchen...",
+        "searchPlayer": "Zoek speler...",
+        "surveyName": "Naam Enquête",
+        "title": "Enquête Importeren",
+        "toCreate": "aan te maken",
+        "total": "totaal",
+        "willCreate": "Wordt aangemaakt"
+      },
+      "noStoppingPlayers": "Geen spelers die stoppen",
+      "playerPool": "Niet-toegewezen Spelers",
+      "playersStopping": "Spelers die stoppen",
+      "removedPlayers": "Verwijderde Spelers",
+      "removePlayer": "Speler Verwijderen",
+      "save": "Teams Opslaan",
+      "settings": {
+        "maxPlayersPerTeam": "Max spelers per team",
+        "maxPlayersPerTeamHelp": "Maximum totaal spelers (regulier + reserve) per team",
+        "minFemalesPerMxTeam": "Min vrouwen in MX team",
+        "minMalesPerMxTeam": "Min mannen in MX team",
+        "minPlayersPerTeam": "Min reguliere spelers per team",
+        "minPlayersPerTeamHelp": "Minimum aantal reguliere spelers voor M/V teams",
+        "performanceThreshold": "Prestatiedrempel",
+        "performanceThresholdHelp": "Markeer spelers onder dit winstpercentage",
+        "presenceThreshold": "Aanwezigheidsdrempel",
+        "presenceThresholdHelp": "Markeer spelers onder dit aanwezigheidspercentage",
+        "title": "Instellingen"
+      },
+      "tab": "Ploegopstelling"
+    },
     "teamComparison": "Team Vergelijking",
     "totalGames": "Wedstrijden",
     "totalPlayers": "Spelers",
@@ -69,48 +111,6 @@
       "phase": "Fase",
       "tab": "Toernooien",
       "title": "Club Toernooien"
-    },
-    "teamBuilder": {
-      "tab": "Ploegopstelling",
-      "import": {
-        "title": "Enquête Importeren",
-        "description": "Upload het Excel-bestand met de spelersenquête",
-        "chooseFile": "Bestand Kiezen",
-        "matching": "Spelers matchen...",
-        "matched": "spelers gematcht",
-        "total": "totaal",
-        "toCreate": "aan te maken",
-        "createNew": "Nieuw Aanmaken",
-        "willCreate": "Wordt aangemaakt",
-        "surveyName": "Naam Enquête",
-        "matchedPlayer": "Gematchte Speler",
-        "confidence": "Betrouwbaarheid",
-        "searchPlayer": "Zoek speler...",
-        "confirm": "Bevestigen",
-        "cancel": "Annuleren"
-      },
-      "addTeam": "Team Toevoegen",
-      "save": "Teams Opslaan",
-      "playerPool": "Niet-toegewezen Spelers",
-      "playersStopping": "Spelers die stoppen",
-      "noStoppingPlayers": "Geen spelers die stoppen",
-      "addPlayer": "Speler toevoegen...",
-      "removePlayer": "Speler Verwijderen",
-      "dropToRemove": "Sleep hier om te verwijderen",
-      "removedPlayers": "Verwijderde Spelers",
-      "settings": {
-        "title": "Instellingen",
-        "presenceThreshold": "Aanwezigheidsdrempel",
-        "presenceThresholdHelp": "Markeer spelers onder dit aanwezigheidspercentage",
-        "performanceThreshold": "Prestatiedrempel",
-        "performanceThresholdHelp": "Markeer spelers onder dit winstpercentage",
-        "minPlayersPerTeam": "Min reguliere spelers per team",
-        "minPlayersPerTeamHelp": "Minimum aantal reguliere spelers voor M/V teams",
-        "minMalesPerMxTeam": "Min mannen in MX team",
-        "minFemalesPerMxTeam": "Min vrouwen in MX team",
-        "maxPlayersPerTeam": "Max spelers per team",
-        "maxPlayersPerTeamHelp": "Maximum totaal spelers (regulier + reserve) per team"
-      }
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
@@ -182,6 +182,7 @@
     "level": "Niveau",
     "name": "Naam",
     "no": "Nee",
+    "required": "Dit veld is verplicht",
     "save": "Opslaan",
     "search": "Zoeken",
     "season": "Seizoen",
@@ -190,8 +191,7 @@
     "unknown": "Onbekend",
     "viewAll": "Bekijk Alle",
     "viewDetails": "Details bekijken",
-    "yes": "Ja",
-    "required": "Dit veld is verplicht"
+    "yes": "Ja"
   },
   "competition": {
     "bracket_view": "Schema Weergave",
@@ -820,12 +820,12 @@
         "clearCompletedError": "Fout bij het verwijderen van voltooide jobs",
         "clearCompletedSuccess": "Voltooide jobs succesvol verwijderd",
         "clearCompletedTooltip": "Verwijder voltooide jobs, bewaar gefaalde jobs voor debugging",
-        "confirmClearCompleted": "Alle voltooide jobs wissen? Jobs met gefaalde kinderen worden bewaard voor debugging.",
         "competitionSync": "Competitie sync",
         "competitionSyncError": "Mislukt om competitie sync te plannen",
         "competitionSyncQueued": "Competitie sync succesvol gepland",
         "competitionSyncTooltip": "Synchroniseer alle ontmoetingen van de afgelopen maand",
         "confirmClearAll": "Weet je zeker dat je alle jobs uit alle wachtrijen wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+        "confirmClearCompleted": "Alle voltooide jobs wissen? Jobs met gefaalde kinderen worden bewaard voor debugging.",
         "confirmCompetitionSync": "Competitie sync plannen voor alle ontmoetingen van de afgelopen maand?",
         "confirmDiscovery": "Toernooi discovery sync plannen om nieuwe toernooien te vinden?",
         "confirmTournamentSync": "Sync plannen voor alle huidige en aankomende toernooien?",
@@ -872,12 +872,12 @@
         "expand": "Uitklappen",
         "jobId": "Job ID",
         "noJobsFound": "Geen recente jobs gevonden",
-        "search": "Zoek op ID, naam of status…",
         "progress": "Voortgang",
         "retry": "Job opnieuw proberen",
         "retryError": "Fout bij opnieuw proberen van job {{id}}",
         "retryHeader": "Job Opnieuw Proberen",
         "retrySuccess": "Job {{id}} in wachtrij geplaatst voor heruitvoering",
+        "search": "Zoek op ID, naam of status…",
         "status": "Status",
         "title": "Recente Sync Jobs",
         "type": "Type",
@@ -901,6 +901,19 @@
           "waiting": "Wachtend"
         },
         "title": "Wachtrij Statistieken"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Acties",
+          "created": "Aangemaakt",
+          "duration": "Duur",
+          "jobId": "Job ID",
+          "progress": "Voortgang",
+          "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "Geen recente jobs gevonden",
+        "title": "Recente Sync Jobs"
       },
       "scheduling": {
         "competition": "Competitie",
@@ -933,18 +946,10 @@
         "tournament": "Tornooi",
         "withSubComponents": "Met subcomponenten"
       },
-      "recentJobs": {
-        "headers": {
-          "actions": "Acties",
-          "created": "Aangemaakt",
-          "duration": "Duur",
-          "jobId": "Job ID",
-          "progress": "Voortgang",
-          "status": "Status",
-          "type": "Type"
-        },
-        "noJobs": "Geen recente jobs gevonden",
-        "title": "Recente Sync Jobs"
+      "tabs": {
+        "cronJobs": "Cron Jobs",
+        "ranking": "Ranking Systemen",
+        "syncPlans": "Sync Plannen"
       },
       "title": "Synchronisatie Evenementen",
       "tournaments": {
@@ -1017,11 +1022,6 @@
           "competition": "Competitie",
           "tournament": "Toernooi"
         }
-      },
-      "tabs": {
-        "cronJobs": "Cron Jobs",
-        "ranking": "Ranking Systemen",
-        "syncPlans": "Sync Plannen"
       }
     },
     "lastSync": "Laatst gesynchroniseerd",

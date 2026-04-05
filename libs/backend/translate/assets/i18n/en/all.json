@@ -55,6 +55,48 @@
     "schedule": "Schedule",
     "seasonalPerformance": "Seasonal Performance",
     "stats": "Club Statistics",
+    "teamBuilder": {
+      "addPlayer": "Add player...",
+      "addTeam": "Add Team",
+      "dropToRemove": "Drop here to remove",
+      "import": {
+        "cancel": "Cancel",
+        "chooseFile": "Choose File",
+        "confidence": "Confidence",
+        "confirm": "Confirm",
+        "createNew": "Create New",
+        "description": "Upload the Excel file with player survey responses",
+        "matched": "players matched",
+        "matchedPlayer": "Matched Player",
+        "matching": "Matching players...",
+        "searchPlayer": "Search player...",
+        "surveyName": "Survey Name",
+        "title": "Import Survey",
+        "toCreate": "to create",
+        "total": "total",
+        "willCreate": "Will create"
+      },
+      "noStoppingPlayers": "No players stopping",
+      "playerPool": "Unassigned Players",
+      "playersStopping": "Players Stopping",
+      "removedPlayers": "Removed Players",
+      "removePlayer": "Remove Player",
+      "save": "Save Teams",
+      "settings": {
+        "maxPlayersPerTeam": "Max players per team",
+        "maxPlayersPerTeamHelp": "Maximum total players (regular + backup) per team",
+        "minFemalesPerMxTeam": "Min females in MX team",
+        "minMalesPerMxTeam": "Min males in MX team",
+        "minPlayersPerTeam": "Min regular players per team",
+        "minPlayersPerTeamHelp": "Minimum number of regular players for M/F teams",
+        "performanceThreshold": "Performance threshold",
+        "performanceThresholdHelp": "Flag players below this win rate percentage",
+        "presenceThreshold": "Presence threshold",
+        "presenceThresholdHelp": "Flag players below this attendance percentage",
+        "title": "Settings"
+      },
+      "tab": "Team Builder"
+    },
     "teamComparison": "Team Comparison",
     "totalGames": "Games",
     "totalPlayers": "Players",
@@ -69,48 +111,6 @@
       "phase": "Phase",
       "tab": "Tournaments",
       "title": "Club Tournaments"
-    },
-    "teamBuilder": {
-      "tab": "Team Builder",
-      "import": {
-        "title": "Import Survey",
-        "description": "Upload the Excel file with player survey responses",
-        "chooseFile": "Choose File",
-        "matching": "Matching players...",
-        "matched": "players matched",
-        "total": "total",
-        "toCreate": "to create",
-        "createNew": "Create New",
-        "willCreate": "Will create",
-        "surveyName": "Survey Name",
-        "matchedPlayer": "Matched Player",
-        "confidence": "Confidence",
-        "searchPlayer": "Search player...",
-        "confirm": "Confirm",
-        "cancel": "Cancel"
-      },
-      "addTeam": "Add Team",
-      "save": "Save Teams",
-      "playerPool": "Unassigned Players",
-      "playersStopping": "Players Stopping",
-      "noStoppingPlayers": "No players stopping",
-      "addPlayer": "Add player...",
-      "removePlayer": "Remove Player",
-      "dropToRemove": "Drop here to remove",
-      "removedPlayers": "Removed Players",
-      "settings": {
-        "title": "Settings",
-        "presenceThreshold": "Presence threshold",
-        "presenceThresholdHelp": "Flag players below this attendance percentage",
-        "performanceThreshold": "Performance threshold",
-        "performanceThresholdHelp": "Flag players below this win rate percentage",
-        "minPlayersPerTeam": "Min regular players per team",
-        "minPlayersPerTeamHelp": "Minimum number of regular players for M/F teams",
-        "minMalesPerMxTeam": "Min males in MX team",
-        "minFemalesPerMxTeam": "Min females in MX team",
-        "maxPlayersPerTeam": "Max players per team",
-        "maxPlayersPerTeamHelp": "Maximum total players (regular + backup) per team"
-      }
     },
     "winRate": "Win %",
     "winRateTrend": "Win % Trend"
@@ -182,6 +182,7 @@
     "level": "Level",
     "name": "Name",
     "no": "No",
+    "required": "This field is required",
     "save": "Save",
     "search": "Search",
     "season": "Season",
@@ -190,8 +191,7 @@
     "unknown": "Unknown",
     "viewAll": "View All",
     "viewDetails": "View Details",
-    "yes": "Yes",
-    "required": "This field is required"
+    "yes": "Yes"
   },
   "competition": {
     "bracket_view": "Bracket View",
@@ -820,12 +820,12 @@
         "clearCompletedError": "Failed to clear completed jobs",
         "clearCompletedSuccess": "Completed jobs cleared successfully",
         "clearCompletedTooltip": "Remove completed jobs, keeping failed job trees for debugging",
-        "confirmClearCompleted": "Clear all completed jobs? Jobs with failed children will be kept for debugging.",
         "competitionSync": "Competition sync",
         "competitionSyncError": "Failed to schedule competition sync",
         "competitionSyncQueued": "Competition sync successfully scheduled",
         "competitionSyncTooltip": "Sync all encounters from the past month",
         "confirmClearAll": "Are you sure you want to clear all jobs from all queues? This action cannot be undone.",
+        "confirmClearCompleted": "Clear all completed jobs? Jobs with failed children will be kept for debugging.",
         "confirmCompetitionSync": "Queue a competition sync for all encounters from the past month?",
         "confirmDiscovery": "Queue a tournament discovery sync to find new tournaments?",
         "confirmTournamentSync": "Sync plans for all current and upcoming tournaments?",
@@ -872,12 +872,12 @@
         "expand": "Expand",
         "jobId": "Job ID",
         "noJobsFound": "No recent jobs found",
-        "search": "Search by ID, name or status…",
         "progress": "Progress",
         "retry": "Retry Job",
         "retryError": "Failed to retry job {{id}}",
         "retryHeader": "Retry Job",
         "retrySuccess": "Job {{id}} queued for retry",
+        "search": "Search by ID, name or status…",
         "status": "Status",
         "title": "Recent Sync Jobs",
         "type": "Type",
@@ -901,6 +901,19 @@
           "waiting": "Waiting"
         },
         "title": "Queue Statistics"
+      },
+      "recentJobs": {
+        "headers": {
+          "actions": "Actions",
+          "created": "Created",
+          "duration": "Duration",
+          "jobId": "Job ID",
+          "progress": "Progress",
+          "status": "Status",
+          "type": "Type"
+        },
+        "noJobs": "No recent jobs found",
+        "title": "Recent Sync Jobs"
       },
       "scheduling": {
         "competition": "Competition",
@@ -933,18 +946,10 @@
         "tournament": "Tournament",
         "withSubComponents": "With sub-components"
       },
-      "recentJobs": {
-        "headers": {
-          "actions": "Actions",
-          "created": "Created",
-          "duration": "Duration",
-          "jobId": "Job ID",
-          "progress": "Progress",
-          "status": "Status",
-          "type": "Type"
-        },
-        "noJobs": "No recent jobs found",
-        "title": "Recent Sync Jobs"
+      "tabs": {
+        "cronJobs": "Cron Jobs",
+        "ranking": "Ranking Systems",
+        "syncPlans": "Sync Plans"
       },
       "title": "Sync Events",
       "tournaments": {
@@ -1017,11 +1022,6 @@
           "competition": "Competition",
           "tournament": "Tournament"
         }
-      },
-      "tabs": {
-        "cronJobs": "Cron Jobs",
-        "ranking": "Ranking Systems",
-        "syncPlans": "Sync Plans"
       }
     },
     "lastSync": "Last synced",
