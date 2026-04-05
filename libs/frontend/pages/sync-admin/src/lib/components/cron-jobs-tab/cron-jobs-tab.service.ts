@@ -2,19 +2,23 @@ import { inject, Injectable, signal, computed } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { map, Observable } from 'rxjs';
 
+export interface CronJobMetaModel {
+  jobName?: string;
+  queueName?: string;
+  arguments?: string;
+}
+
 export interface CronJobModel {
   id: string;
   name: string;
-  description?: string;
-  cronExpression: string;
-  jobFunction: string;
-  isActive: boolean;
+  type: 'ranking' | 'sync';
+  cronTime: string;
+  meta?: CronJobMetaModel;
   lastRun?: string;
   nextRun?: string;
-  lastStatus?: string;
-  lastError?: string;
-  runCount?: number;
-  failureCount?: number;
+  running: boolean;
+  active: boolean;
+  amount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,16 +28,18 @@ const GET_CRON_JOBS = gql`
     cronJobs {
       id
       name
-      description
-      cronExpression
-      jobFunction
-      isActive
+      type
+      cronTime
+      meta {
+        jobName
+        queueName
+        arguments
+      }
       lastRun
       nextRun
-      lastStatus
-      lastError
-      runCount
-      failureCount
+      running
+      active
+      amount
       createdAt
       updatedAt
     }
@@ -47,10 +53,8 @@ const TRIGGER_CRON_JOB = gql`
       name
       lastRun
       nextRun
-      lastStatus
-      lastError
-      runCount
-      failureCount
+      running
+      amount
     }
   }
 `;
@@ -60,9 +64,8 @@ const UPDATE_CRON_JOB = gql`
     updateCronJob(id: $id, input: $input) {
       id
       name
-      description
-      cronExpression
-      isActive
+      cronTime
+      active
       nextRun
     }
   }
@@ -111,7 +114,7 @@ export class CronJobsTabService {
       .pipe(map((result) => result.data!.triggerCronJob));
   }
 
-  updateCronJob(id: string, input: { cronExpression?: string; isActive?: boolean; description?: string }): Observable<CronJobModel> {
+  updateCronJob(id: string, input: { cronTime?: string; active?: boolean }): Observable<CronJobModel> {
     return this.apollo
       .mutate<{ updateCronJob: CronJobModel }>({
         mutation: UPDATE_CRON_JOB,

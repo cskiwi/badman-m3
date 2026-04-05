@@ -1,26 +1,38 @@
 import { PermGuard, User } from '@app/backend-authorization';
 import { SyncService } from '@app/backend-sync';
-import { CronJob, Player } from '@app/models';
-import { IsUUID } from '@app/utils';
+import { CronJob, CronJobMeta, CronJobMetaType, CronJobUpdateInput, Player } from '@app/models';
 import { ForbiddenException, NotFoundException, UseGuards } from '@nestjs/common';
-import { Args, Field, ID, InputType, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Field, ID, InputType, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { CronJob as CronJobCron } from 'cron';
 import { CronJobArgs } from '../../args';
 
 @InputType()
 class UpdateCronJobInput {
   @Field({ nullable: true })
-  cronExpression?: string;
+  cronTime?: string;
 
   @Field({ nullable: true })
-  isActive?: boolean;
-
-  @Field({ nullable: true })
-  description?: string;
+  active?: boolean;
 }
 
 @Resolver(() => CronJob)
 export class CronJobResolver {
   constructor(private readonly syncService: SyncService) {}
+
+  @ResolveField(() => String, { nullable: true })
+  nextRun(@Parent() job: CronJob): string | null {
+    try {
+      const cronTime = CronJobCron.from({ cronTime: job.cronTime, start: false, onTick: () => {} });
+      return cronTime.nextDate().toISO();
+    } catch {
+      return null;
+    }
+  }
+
+  @ResolveField(() => Boolean)
+  running(@Parent() job: CronJob): boolean {
+    return (job.amount ?? 0) > 0;
+  }
 
   @Query(() => CronJob)
   @UseGuards(PermGuard)
@@ -76,5 +88,13 @@ export class CronJobResolver {
       throw new ForbiddenException('Insufficient permissions to update cron jobs');
     }
     return this.syncService.updateCronJob(id, input);
+  }
+}
+
+@Resolver(() => CronJobMetaType)
+export class CronJobMetaResolver {
+  @ResolveField(() => String, { nullable: true })
+  arguments(@Parent() meta: CronJobMeta): string | null {
+    return meta.arguments ? JSON.stringify(meta.arguments) : null;
   }
 }

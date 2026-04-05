@@ -95,8 +95,8 @@ export class SyncService implements OnModuleInit {
   /**
    * Register all active CronJob records as dynamic cron jobs
    */
-  private async registerAllCronJobs(): Promise<void> {
-    const cronJobs = await CronJob.find({ where: { isActive: true } });
+  async registerAllCronJobs(): Promise<void> {
+    const cronJobs = await CronJob.find({ where: { active: true } });
     for (const cronJob of cronJobs) {
       this.registerCronJob(cronJob);
     }
@@ -106,9 +106,14 @@ export class SyncService implements OnModuleInit {
    * Register a single CronJob as a dynamic cron with NestJS SchedulerRegistry
    */
   private registerCronJob(cronJob: CronJob): void {
-    const handler = this.cronHandlers[cronJob.jobFunction];
+    const jobName = cronJob.meta?.jobName;
+    if (!jobName) {
+      this.logger.warn(`No jobName in meta for cron job: ${cronJob.name}`);
+      return;
+    }
+    const handler = this.cronHandlers[jobName];
     if (!handler) {
-      this.logger.warn(`No handler found for cron job function: ${cronJob.jobFunction}`);
+      this.logger.warn(`No handler found for cron job function: ${jobName}`);
       return;
     }
 
@@ -119,13 +124,13 @@ export class SyncService implements OnModuleInit {
       // Not registered yet — ignore
     }
 
-    const job = new NestCronJob(cronJob.cronExpression, async () => {
+    const job = new NestCronJob(cronJob.cronTime, async () => {
       await this.executeCronJob(cronJob.name, handler);
     });
 
     this.schedulerRegistry.addCronJob(cronJob.name, job);
     job.start();
-    this.logger.log(`Registered cron job: ${cronJob.name} (${cronJob.cronExpression})`);
+    this.logger.log(`Registered cron job: ${cronJob.name} (${cronJob.cronTime})`);
   }
 
   /**
@@ -133,35 +138,19 @@ export class SyncService implements OnModuleInit {
    */
   private async executeCronJob(name: string, handler: () => Promise<void>): Promise<void> {
     const cronJob = await CronJob.findOne({ where: { name } });
-    if (!cronJob || !cronJob.isActive) return;
+    if (!cronJob || !cronJob.active) return;
 
+    cronJob.amount = (cronJob.amount ?? 0) + 1;
     cronJob.lastRun = new Date();
-    cronJob.runCount = (cronJob.runCount ?? 0) + 1;
+    await cronJob.save();
 
     try {
       await handler();
-      cronJob.lastStatus = 'success';
-      cronJob.lastError = undefined;
     } catch (error) {
-      cronJob.lastStatus = 'failed';
-      cronJob.lastError = error instanceof Error ? error.message : String(error);
-      cronJob.failureCount = (cronJob.failureCount ?? 0) + 1;
-      this.logger.error(`Cron job ${name} failed: ${cronJob.lastError}`);
-    }
-
-    cronJob.nextRun = this.calculateNextRun(cronJob.cronExpression);
-    await cronJob.save();
-  }
-
-  /**
-   * Calculate the next run date from a cron expression
-   */
-  calculateNextRun(expression: string): Date {
-    try {
-      const job = NestCronJob.from({ cronTime: expression, start: false, onTick: () => {} });
-      return job.nextDate().toJSDate();
-    } catch {
-      return new Date(Date.now() + 86400000); // fallback: 1 day from now
+      this.logger.error(`Cron job ${name} failed: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      cronJob.amount = Math.max((cronJob.amount ?? 1) - 1, 0);
+      await cronJob.save();
     }
   }
 
@@ -174,9 +163,13 @@ export class SyncService implements OnModuleInit {
       throw new NotFoundException(`Cron job '${name}' not found`);
     }
 
-    const handler = this.cronHandlers[cronJob.jobFunction];
+    const jobName = cronJob.meta?.jobName;
+    if (!jobName) {
+      throw new NotFoundException(`No jobName in meta for cron job: ${name}`);
+    }
+    const handler = this.cronHandlers[jobName];
     if (!handler) {
-      throw new NotFoundException(`No handler for cron job function: ${cronJob.jobFunction}`);
+      throw new NotFoundException(`No handler for cron job function: ${jobName}`);
     }
 
     await this.executeCronJob(name, handler);
@@ -185,27 +178,23 @@ export class SyncService implements OnModuleInit {
   /**
    * Update a cron job's settings and re-register it
    */
-  async updateCronJob(id: string, updates: { cronExpression?: string; isActive?: boolean; description?: string }): Promise<CronJob> {
+  async updateCronJob(id: string, updates: { cronTime?: string; active?: boolean }): Promise<CronJob> {
     const cronJob = await CronJob.findOne({ where: { id } });
     if (!cronJob) {
       throw new NotFoundException(`Cron job with id ${id} not found`);
     }
 
-    if (updates.cronExpression !== undefined) {
-      cronJob.cronExpression = updates.cronExpression;
-      cronJob.nextRun = this.calculateNextRun(updates.cronExpression);
+    if (updates.cronTime !== undefined) {
+      cronJob.cronTime = updates.cronTime;
     }
-    if (updates.isActive !== undefined) {
-      cronJob.isActive = updates.isActive;
-    }
-    if (updates.description !== undefined) {
-      cronJob.description = updates.description;
+    if (updates.active !== undefined) {
+      cronJob.active = updates.active;
     }
 
     await cronJob.save();
 
     // Re-register or unregister based on active state
-    if (cronJob.isActive) {
+    if (cronJob.active) {
       this.registerCronJob(cronJob);
     } else {
       try {

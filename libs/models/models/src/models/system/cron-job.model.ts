@@ -1,9 +1,30 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, InputType, Int, ObjectType, OmitType, PartialType } from '@nestjs/graphql';
 import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { SortableField, WhereField } from '@app/utils';
 
-@ObjectType('CronJob', { description: 'Scheduled job configuration' })
-@Entity('CronJobs')
+@ObjectType('CronJobMeta', { description: 'Cron job meta data' })
+export class CronJobMetaType {
+  @Field(() => String, { nullable: true })
+  jobName?: string;
+
+  @Field(() => String, { nullable: true })
+  queueName?: string;
+
+  @Field(() => String, { nullable: true })
+  arguments?: string;
+}
+
+@InputType()
+export class CronJobMetaInputType extends PartialType(OmitType(CronJobMetaType, [] as const), InputType) {}
+
+export interface CronJobMeta {
+  jobName: string;
+  queueName: string;
+  arguments?: Record<string, unknown>;
+}
+
+@ObjectType('CronJob', { description: 'Cron job' })
+@Entity('CronJobs', { schema: 'system' })
 export class CronJob extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
@@ -25,59 +46,39 @@ export class CronJob extends BaseEntity {
   @Index({ unique: true })
   declare name: string;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'character varying', length: 255 })
-  declare description?: string;
+  @SortableField()
+  @WhereField()
+  @Column({ type: 'character varying', length: 50 })
+  declare type: 'ranking' | 'sync';
 
   @SortableField()
   @WhereField()
   @Column({ type: 'character varying', length: 255 })
-  declare cronExpression: string;
+  declare cronTime: string;
 
-  @SortableField()
-  @WhereField()
-  @Column({ type: 'character varying', length: 255 })
-  declare jobFunction: string;
-
-  @Field({ nullable: true })
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
+  @Field(() => CronJobMetaType, { nullable: true })
   @Column({ type: 'json', nullable: true })
-  declare parameters?: string;
-
-  @SortableField()
-  @WhereField()
-  @Column({ default: true })
-  declare isActive: boolean;
+  declare meta?: CronJobMeta;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ nullable: true, type: 'timestamptz' })
   declare lastRun?: Date;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'timestamptz' })
-  declare nextRun?: Date;
+  @SortableField()
+  @WhereField()
+  @Column({ default: false })
+  declare active: boolean;
 
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'character varying', length: 255 })
-  declare lastStatus?: string;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'text', nullable: true })
-  declare lastError?: string;
-
+  @Field(() => Int, { nullable: true })
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
   @Column({ type: 'int', default: 0 })
-  declare runCount?: number;
-
-  @SortableField({ nullable: true })
-  @WhereField({ nullable: true })
-  @Column({ type: 'int', default: 0 })
-  declare failureCount?: number;
+  declare amount: number;
 }
+
+@InputType()
+export class CronJobUpdateInput extends PartialType(OmitType(CronJob, ['createdAt', 'updatedAt', 'meta'] as const), InputType) {}
+
+@InputType()
+export class CronJobNewInput extends PartialType(OmitType(CronJobUpdateInput, ['id'] as const), InputType) {}

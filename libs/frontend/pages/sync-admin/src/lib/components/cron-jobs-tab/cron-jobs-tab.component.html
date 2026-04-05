@@ -7,14 +7,13 @@
     <ng-template pTemplate="header">
       <tr>
         <th>Name</th>
+        <th>Type</th>
         <th>Schedule</th>
         <th>Description</th>
         <th>Status</th>
         <th>Active</th>
         <th>Last Run</th>
         <th>Next Run</th>
-        <th>Runs</th>
-        <th>Failures</th>
         <th class="text-right">Actions</th>
       </tr>
     </ng-template>
@@ -23,7 +22,7 @@
       <ng-template pTemplate="body">
         @for (i of [1, 2, 3, 4, 5]; track i) {
           <tr>
-            @for (col of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track col) {
+            @for (col of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track col) {
               <td><p-skeleton height="1.5rem" /></td>
             }
           </tr>
@@ -35,32 +34,31 @@
       @if (!loading()) {
         <tr>
           <td>
-            <div>
-              <span class="font-medium text-color">{{ job.name }}</span>
-              @if (job.description) {
-                <div class="text-xs text-muted-color mt-1">{{ job.description }}</div>
-              }
-            </div>
+            <span class="font-medium text-color">{{ job.name }}</span>
           </td>
 
           <td>
-            <code class="text-sm text-primary bg-highlight rounded-border px-2 py-1">{{ job.cronExpression }}</code>
+            <p-tag [value]="job.type" [severity]="job.type === 'ranking' ? 'info' : 'warn'" />
           </td>
 
           <td>
-            <span class="text-sm text-color">{{ getCronDescription(job.cronExpression) }}</span>
+            <code class="text-sm text-primary bg-highlight rounded-border px-2 py-1">{{ job.cronTime }}</code>
           </td>
 
           <td>
-            @if (job.lastStatus) {
-              <p-tag [value]="job.lastStatus" [severity]="getStatusSeverity(job.lastStatus)" />
+            <span class="text-sm text-color">{{ getCronDescription(job.cronTime) }}</span>
+          </td>
+
+          <td>
+            @if (job.running) {
+              <p-tag value="Running" severity="warn" />
             } @else {
-              <span class="text-muted-color">—</span>
+              <span class="text-muted-color">Idle</span>
             }
           </td>
 
           <td>
-            <p-tag [value]="job.isActive ? 'Active' : 'Disabled'" [severity]="job.isActive ? 'success' : 'danger'" />
+            <p-tag [value]="job.active ? 'Active' : 'Disabled'" [severity]="job.active ? 'success' : 'danger'" />
           </td>
 
           <td>
@@ -77,16 +75,6 @@
             } @else {
               <span class="text-muted-color">—</span>
             }
-          </td>
-
-          <td>
-            <span class="text-sm text-color">{{ job.runCount ?? 0 }}</span>
-          </td>
-
-          <td>
-            <span class="text-sm" [class]="(job.failureCount ?? 0) > 0 ? 'text-color-emphasis font-medium' : 'text-muted-color'">
-              {{ job.failureCount ?? 0 }}
-            </span>
           </td>
 
           <td class="text-right">
@@ -109,12 +97,12 @@
                 pTooltip="Edit schedule"
               />
               <p-button
-                [icon]="job.isActive ? 'pi pi-pause' : 'pi pi-play'"
+                [icon]="job.active ? 'pi pi-pause' : 'pi pi-play'"
                 size="small"
-                [severity]="job.isActive ? 'warn' : 'success'"
+                [severity]="job.active ? 'warn' : 'success'"
                 [outlined]="true"
                 (onClick)="toggleActive(job)"
-                [pTooltip]="job.isActive ? 'Disable' : 'Enable'"
+                [pTooltip]="job.active ? 'Disable' : 'Enable'"
               />
             </div>
           </td>
@@ -125,23 +113,11 @@
     <ng-template pTemplate="emptymessage">
       @if (!loading() && cronJobs().length === 0) {
         <tr>
-          <td colspan="10" class="text-center text-muted-color py-4">No cron jobs found</td>
+          <td colspan="9" class="text-center text-muted-color py-4">No cron jobs found</td>
         </tr>
       }
     </ng-template>
   </p-table>
-
-  @for (job of cronJobs(); track job.id) {
-    @if (job.lastError) {
-      <div class="rounded-border border border-surface p-3">
-        <div class="flex items-center gap-2 mb-1">
-          <i class="pi pi-exclamation-triangle text-primary-emphasis"></i>
-          <span class="font-medium text-color">{{ job.name }}</span>
-        </div>
-        <p class="text-sm text-muted-color m-0">{{ job.lastError }}</p>
-      </div>
-    }
-  }
 
   <!-- Edit dialog -->
   <p-dialog

@@ -61,7 +61,7 @@ export class CronJobsTabComponent {
   // Edit dialog
   editDialogVisible = signal(false);
   editingJob = signal<CronJobModel | null>(null);
-  editCronExpression = signal('');
+  editCronTime = signal('');
 
   get editDialogOpen(): boolean {
     return this.editDialogVisible();
@@ -71,27 +71,16 @@ export class CronJobsTabComponent {
     this.editDialogVisible.set(value);
     if (!value) {
       this.editingJob.set(null);
-      this.editCronExpression.set('');
+      this.editCronTime.set('');
     }
   }
 
   get editCronValue(): string {
-    return this.editCronExpression();
+    return this.editCronTime();
   }
 
   set editCronValue(value: string) {
-    this.editCronExpression.set(value);
-  }
-
-  getStatusSeverity(status?: string): 'success' | 'danger' | 'info' | 'warn' {
-    switch (status) {
-      case 'success':
-        return 'success';
-      case 'failed':
-        return 'danger';
-      default:
-        return 'info';
-    }
+    this.editCronTime.set(value);
   }
 
   triggerJob(job: CronJobModel): void {
@@ -117,12 +106,12 @@ export class CronJobsTabComponent {
   }
 
   toggleActive(job: CronJobModel): void {
-    this.cronJobsService.updateCronJob(job.id, { isActive: !job.isActive }).subscribe({
+    this.cronJobsService.updateCronJob(job.id, { active: !job.active }).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
           summary: this.translateService.instant('all.common.success'),
-          detail: `${job.name} ${job.isActive ? 'disabled' : 'enabled'}`,
+          detail: `${job.name} ${job.active ? 'disabled' : 'enabled'}`,
         });
         this.cronJobsService.loadCronJobs();
       },
@@ -138,7 +127,7 @@ export class CronJobsTabComponent {
 
   openEditDialog(job: CronJobModel): void {
     this.editingJob.set(job);
-    this.editCronExpression.set(job.cronExpression);
+    this.editCronTime.set(job.cronTime);
     this.editDialogVisible.set(true);
   }
 
@@ -147,7 +136,7 @@ export class CronJobsTabComponent {
     if (!job) return;
 
     this.actionLoading.set(true);
-    this.cronJobsService.updateCronJob(job.id, { cronExpression: this.editCronExpression() }).subscribe({
+    this.cronJobsService.updateCronJob(job.id, { cronTime: this.editCronTime() }).subscribe({
       next: () => {
         this.messageService.add({
           severity: 'success',
