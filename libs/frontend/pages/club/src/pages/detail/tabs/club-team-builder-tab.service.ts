@@ -561,8 +561,26 @@ export class ClubTeamBuilderTabService {
 
   updateConfig(config: Partial<TeamBuilderConfig>) {
     this.config.update((c) => ({ ...c, ...config }));
-    // Re-validate all teams with new config
-    this.teams.set(this.teams().map((t) => this.recalculateManagedTeam(t)));
+
+    // Re-evaluate performance flags if thresholds changed
+    if (config.performanceThreshold !== undefined || config.presenceThreshold !== undefined) {
+      const cfg = this.config();
+      const updatedTeams = this.teams().map((team) => {
+        const updatedPlayers = team.players.map((player) => {
+          if (player.membershipType === 'BACKUP') return player;
+          return {
+            ...player,
+            lowPerformance: player.performancePercent > 0 && player.performancePercent < cfg.performanceThreshold,
+            lowPresence: player.presencePercent < cfg.presenceThreshold,
+          };
+        });
+        return { ...team, players: updatedPlayers };
+      });
+      this.teams.set(updatedTeams.map((t) => this.recalculateManagedTeam(t)));
+    } else {
+      // Re-validate all teams with new config
+      this.teams.set(this.teams().map((t) => this.recalculateManagedTeam(t)));
+    }
   }
 
   /**

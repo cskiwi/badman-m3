@@ -24,9 +24,6 @@ export interface PerformanceResult {
   presencePercent: number;
 }
 
-const LOW_PERFORMANCE_THRESHOLD = 35;
-const LOW_PRESENCE_THRESHOLD = 40;
-
 /**
  * Determine if a player has low performance or low presence in their current team.
  *
@@ -35,8 +32,8 @@ const LOW_PRESENCE_THRESHOLD = 40;
  */
 export function evaluatePerformance(
   stats: EncounterStats | undefined,
-  performanceThreshold = LOW_PERFORMANCE_THRESHOLD,
-  presenceThreshold = LOW_PRESENCE_THRESHOLD,
+  performanceThreshold: number,
+  presenceThreshold: number,
 ): PerformanceResult {
   if (!stats || stats.totalEncounters === 0) {
     return { lowPerformance: false, lowPresence: false, performancePercent: 0, presencePercent: 0 };
