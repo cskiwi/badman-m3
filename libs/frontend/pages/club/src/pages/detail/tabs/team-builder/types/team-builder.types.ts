@@ -22,7 +22,7 @@ export interface TeamBuilderConfig {
 
 export const DEFAULT_TEAM_BUILDER_CONFIG: TeamBuilderConfig = {
   presenceThreshold: 40,
-  performanceThreshold: 35,
+  performanceThreshold: 25,
   minPlayersPerTeam: 6,
   minMalesPerMxTeam: 3,
   minFemalesPerMxTeam: 3,
