@@ -130,12 +130,11 @@ export class BuilderTeamCardComponent {
 
   get levelRangeLabel(): string {
     const t = this.team();
-    const minLevel = t.selectedSubEvent?.level;
     const maxLevel = t.selectedSubEvent?.maxLevel;
-    if (minLevel == null && maxLevel == null) {
+    if (maxLevel == null) {
       return '—';
     }
-    return `${minLevel ?? '?'} - ${maxLevel ?? '?'}`;
+    return `${maxLevel ?? '?'}`;
   }
 
   get regularCount(): number {
