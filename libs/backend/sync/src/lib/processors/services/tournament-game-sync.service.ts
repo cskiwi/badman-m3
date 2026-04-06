@@ -340,6 +340,23 @@ export class TournamentGameSyncService {
     }
   }
 
+   private mapGenderType(genderId: number | string): 'F' | 'M'  {
+    if (typeof genderId === 'string') {
+      genderId = parseInt(genderId, 10);
+    }
+
+    switch (genderId) {
+      case 1:
+      case 4:
+        return 'M';
+      case 2:
+      case 5:
+        return 'F';
+      default:
+        return 'M';
+    }
+  }
+
   private async createOrUpdatePlayer(player: TournamentPlayer): Promise<void> {
     this.logger.debug(`Creating/updating player: ${player.Firstname} ${player.Lastname} (${player.MemberID})`);
 
@@ -348,10 +365,13 @@ export class TournamentGameSyncService {
       where: { memberId: player.MemberID },
     });
 
+    const gender = this.mapGenderType(player.GenderID);
+    
+
     if (existingPlayer) {
       existingPlayer.firstName = player.Firstname;
       existingPlayer.lastName = player.Lastname;
-      existingPlayer.gender = this.mapGenderType(player.GenderID) === 'M' ? 'M' : this.mapGenderType(player.GenderID) === 'F' ? 'F' : 'M';
+      existingPlayer.gender = gender;
       existingPlayer.competitionPlayer = true;
       await existingPlayer.save();
     } else {
@@ -359,29 +379,13 @@ export class TournamentGameSyncService {
       newPlayer.memberId = player.MemberID;
       newPlayer.firstName = player.Firstname;
       newPlayer.lastName = player.Lastname;
-      newPlayer.gender = this.mapGenderType(player.GenderID) === 'M' ? 'M' : this.mapGenderType(player.GenderID) === 'F' ? 'F' : 'M';
+      newPlayer.gender = gender;
       newPlayer.competitionPlayer = true;
       await newPlayer.save();
     }
   }
 
-  private mapGenderType(genderId: number | string): string {
-    if (typeof genderId === 'string') {
-      genderId = parseInt(genderId, 10);
-    }
-
-    switch (genderId) {
-      case 1:
-        return 'M';
-      case 2:
-        return 'F';
-      case 3:
-        return 'MX';
-      default:
-        return 'M';
-    }
-  }
-
+  
   private async createGamePlayerMemberships(game: Game, match: Match): Promise<void> {
     this.logger.debug(`Creating game player memberships for game: ${game.visualCode}`);
 

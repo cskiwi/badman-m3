@@ -33,7 +33,7 @@ services:
     image: typesense/typesense:27.1
     restart: unless-stopped
     ports:
-      - '8108:8108'
+      - '8208:8108'
     networks:
       - api
     volumes:
