@@ -127,7 +127,7 @@
     "@nx/webpack": "22.5.4",
     "@nx/workspace": "22.5.4",
     "@playwright/test": "^1.57.0",
-    "@schematics/angular": "21.0.6",
+    "@schematics/angular": "21.2.6",
     "@swc-node/register": "1.11.1",
     "@swc/cli": "0.8.0",
     "@swc/core": "1.15.18",
