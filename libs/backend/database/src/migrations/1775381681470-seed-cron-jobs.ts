@@ -4,23 +4,8 @@ export class SeedCronJobs1775381681470 implements MigrationInterface {
   name = 'SeedCronJobs1775381681470';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create CronJobs table in system schema if it doesn't exist
-    await queryRunner.query(`
-      CREATE TABLE IF NOT EXISTS "system"."CronJobs" (
-        "id" uuid NOT NULL DEFAULT gen_random_uuid(),
-        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-        "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-        "name" character varying(255) NOT NULL,
-        "type" character varying(50) NOT NULL DEFAULT 'sync',
-        "cronTime" character varying(255) NOT NULL,
-        "meta" json,
-        "lastRun" TIMESTAMP WITH TIME ZONE,
-        "active" boolean NOT NULL DEFAULT false,
-        "amount" integer NOT NULL DEFAULT 0,
-        CONSTRAINT "PK_system_CronJobs" PRIMARY KEY ("id"),
-        CONSTRAINT "UQ_system_CronJobs_name" UNIQUE ("name")
-      )
-    `);
+    // Drop the incorrectly placed public."CronJobs" table if it exists
+    await queryRunner.query(`DROP TABLE IF EXISTS "public"."CronJobs" CASCADE`);
 
     // Seed cron jobs (only insert if they don't already exist)
     const cronJobs = [
