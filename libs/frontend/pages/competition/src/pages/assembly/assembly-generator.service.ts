@@ -385,6 +385,9 @@ export class AssemblyGeneratorService {
       since.setDate(since.getDate() - options.weeks * 7);
       query = TEAM_HISTORY_SINCE_QUERY;
       variables = { linkId, since: since.toISOString() };
+    } else if (options.timeRange === 'season' && season) {
+      query = TEAM_HISTORY_SEASON_QUERY;
+      variables = { linkId, season };
     } else if (options.timeRange === 'last-season' && season) {
       query = TEAM_HISTORY_SEASON_QUERY;
       variables = { linkId, season: season - 1 };
