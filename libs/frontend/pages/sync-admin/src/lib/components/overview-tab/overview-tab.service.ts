@@ -70,9 +70,6 @@ export class OverviewTabService {
         this.webSocketService.setRecentJobsLoading(false);
       },
     });
-
-    this.webSocketService.subscribeToQueueStats();
-    this.webSocketService.subscribeToJobUpdates();
   }
 
   private handleJobUpdate(job: SyncJob): void {
