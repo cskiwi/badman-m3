@@ -41,7 +41,7 @@ Slots are split by gender:
 
 ### Game Distribution Rules
 
-Team size is always between 4 and 6 players. **Every slot must be filled!** and **Each the players must have this exact amount of games provided by this table**
+Team size is always between 4 and 6 players. **Every slot must be filled!** and **Each player must have the exact number of games specified in the table**
 
 So the order for the generator is:
 - First decide who is going to play how many games (based on the available players and the table below and historically who played the most, if equal then random)
