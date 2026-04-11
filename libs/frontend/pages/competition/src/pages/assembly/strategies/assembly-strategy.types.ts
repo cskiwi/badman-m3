@@ -41,5 +41,7 @@ export interface OccupiedSlots {
   double4: boolean;
   /** Player IDs already assigned in occupied single slots */
   preAssignedSingleIds: Set<string>;
-  [key: string]: boolean | Set<string>;
+  /** Slot → player for partial doubles (1 of 2 players placed) */
+  partialDoubles: Map<string, PlayerWithRanking>;
+  [key: string]: boolean | Set<string> | Map<string, PlayerWithRanking>;
 }

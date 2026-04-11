@@ -101,9 +101,11 @@ export function getLeastUsedPair(
   group2: PlayerWithRanking[],
   counts: Map<string, number>,
   excludePairs?: Set<string>,
+  gameCountFn?: (id: string) => number,
 ): [PlayerWithRanking, PlayerWithRanking] | null {
   let bestPair: [PlayerWithRanking, PlayerWithRanking] | null = null;
   let bestCount = Infinity;
+  let bestGameSum = Infinity;
 
   for (const p1 of group1) {
     for (const p2 of group2) {
@@ -111,8 +113,10 @@ export function getLeastUsedPair(
       const key = pairKey(p1.id, p2.id);
       if (excludePairs?.has(key)) continue;
       const count = counts.get(key) ?? 0;
-      if (count < bestCount) {
+      const gameSum = gameCountFn ? gameCountFn(p1.id) + gameCountFn(p2.id) : 0;
+      if (count < bestCount || (count === bestCount && gameSum < bestGameSum)) {
         bestCount = count;
+        bestGameSum = gameSum;
         bestPair = [p1, p2];
       }
     }
@@ -145,9 +149,11 @@ export function getBestScoredPair(
   group2: PlayerWithRanking[],
   scores: Map<string, { wins: number; total: number }>,
   excludePairs?: Set<string>,
+  gameCountFn?: (id: string) => number,
 ): [PlayerWithRanking, PlayerWithRanking] | null {
   let bestPair: [PlayerWithRanking, PlayerWithRanking] | null = null;
   let bestScore = -1;
+  let bestGameSum = Infinity;
 
   for (const p1 of group1) {
     for (const p2 of group2) {
@@ -156,8 +162,10 @@ export function getBestScoredPair(
       if (excludePairs?.has(key)) continue;
       const stat = scores.get(key);
       const score = stat ? stat.wins / stat.total : 0;
-      if (score > bestScore) {
+      const gameSum = gameCountFn ? gameCountFn(p1.id) + gameCountFn(p2.id) : 0;
+      if (score > bestScore || (score === bestScore && gameSum < bestGameSum)) {
         bestScore = score;
+        bestGameSum = gameSum;
         bestPair = [p1, p2];
       }
     }
@@ -286,13 +294,13 @@ export function countPlayerGames(assignment: SlotAssignment, playerId: string, p
 }
 
 /**
- * Calculate the target max games per player based on pool size
- * 4 players: 3 games each, 5 players: 2-3 games, 6 players: 2 games
+ * Calculate the target max games per player based on pool size and total available slots.
+ * For same-gender encounters: totalSlots=12 (4 doubles × 2 + 4 singles)
+ * For MX encounters per gender: totalSlots=6 (gender-specific slots only)
  */
-export function getTargetMaxGames(poolSize: number): number {
-  if (poolSize <= 4) return 3;
-  if (poolSize <= 5) return 3; // some play 3, some play 2
-  return 2;
+export function getTargetMaxGames(poolSize: number, totalSlots = 12): number {
+  if (poolSize <= 0) return 0;
+  return Math.ceil(totalSlots / poolSize);
 }
 
 /**
@@ -322,6 +330,20 @@ function countDoublesForPlayer(assignment: SlotAssignment, playerId: string, exi
 }
 
 /**
+ * Count how many mixed doubles (double3/double4) a player is in
+ */
+export function countMixedDoublesForPlayer(
+  assignment: SlotAssignment,
+  playerId: string,
+): number {
+  let count = 0;
+  for (const slot of ['double3', 'double4'] as const) {
+    if (assignment[slot]?.some((p) => p.id === playerId)) count++;
+  }
+  return count;
+}
+
+/**
  * Get pair keys for all doubles currently in the assignment
  */
 export function getExistingPairKeys(assignment: SlotAssignment): Set<string> {
@@ -332,6 +354,28 @@ export function getExistingPairKeys(assignment: SlotAssignment): Set<string> {
     }
   }
   return keys;
+}
+
+/**
+ * Find a partner for a pre-assigned player in a partial double slot.
+ * Returns the best available partner from the candidate pool.
+ */
+export function findPartnerFor(
+  player: PlayerWithRanking,
+  candidates: PlayerWithRanking[],
+  assignment: SlotAssignment,
+  existingDoubles: PlayerWithRanking[][],
+  maxGames: number,
+  preAssignedCounts?: Map<string, number>,
+): PlayerWithRanking | null {
+  return candidates
+    .filter((p) => p.id !== player.id)
+    .filter((p) => countDoublesForPlayer(assignment, p.id, existingDoubles) < 2)
+    .filter((p) => countPlayerGames(assignment, p.id, preAssignedCounts) < maxGames)
+    .sort((a, b) =>
+      countPlayerGames(assignment, a.id, preAssignedCounts) -
+      countPlayerGames(assignment, b.id, preAssignedCounts),
+    )[0] ?? null;
 }
 
 /**
@@ -403,6 +447,16 @@ export function fillAllSlots(
   for (const slot of doubleSlots) {
     if (occupied[slot] || assignment[slot]) continue;
 
+    // Handle partial double: find a partner for the pre-assigned player
+    const partial = occupied.partialDoubles.get(slot) as PlayerWithRanking | undefined;
+    if (partial) {
+      const candidates = players
+        .filter((p) => countPlayerGames(assignment, p.id, preAssignedCounts) < maxGames);
+      const partner = findPartnerFor(partial, candidates, assignment, existingDoubles, maxGames, preAssignedCounts);
+      if (partner) assignment[slot] = orderDoublePair(partial, partner, 'double');
+      continue;
+    }
+
     const existingPairs = getExistingPairKeys(assignment);
     const candidates = players
       .filter((p) => countDoublesForPlayer(assignment, p.id, existingDoubles) < 2)
@@ -444,66 +498,102 @@ export function fillAllSlotsMX(
   existingDoubles: PlayerWithRanking[][],
   preAssignedCounts?: Map<string, number>,
 ) {
-  const maxGamesM = getTargetMaxGames(males.length);
-  const maxGamesF = getTargetMaxGames(females.length);
+  const maxGamesM = getTargetMaxGames(males.length, 6);
+  const maxGamesF = getTargetMaxGames(females.length, 6);
 
   // MD (double1) - male pair
   if (!occupied.double1 && !assignment.double1) {
-    const existingPairs = getExistingPairKeys(assignment);
-    const candidates = males
-      .filter((m) => countDoublesForPlayer(assignment, m.id, existingDoubles) < 2)
-      .filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM)
-      .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
-    const pair = findUnusedPair(candidates, existingPairs);
-    if (pair) {
-      assignment.double1 = orderDoublePair(pair[0], pair[1], 'double');
+    const partial = occupied.partialDoubles.get('double1') as PlayerWithRanking | undefined;
+    if (partial) {
+      const candidates = males.filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM);
+      const partner = findPartnerFor(partial, candidates, assignment, existingDoubles, maxGamesM, preAssignedCounts);
+      if (partner) assignment.double1 = orderDoublePair(partial, partner, 'double');
+    } else {
+      const existingPairs = getExistingPairKeys(assignment);
+      const candidates = males
+        .filter((m) => countDoublesForPlayer(assignment, m.id, existingDoubles) < 2)
+        .filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM)
+        .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
+      const pair = findUnusedPair(candidates, existingPairs);
+      if (pair) {
+        assignment.double1 = orderDoublePair(pair[0], pair[1], 'double');
+      }
     }
   }
 
   // FD (double2) - female pair
   if (!occupied.double2 && !assignment.double2) {
-    const existingPairs = getExistingPairKeys(assignment);
-    const candidates = females
-      .filter((f) => countDoublesForPlayer(assignment, f.id, existingDoubles) < 2)
-      .filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF)
-      .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
-    const pair = findUnusedPair(candidates, existingPairs);
-    if (pair) {
-      assignment.double2 = orderDoublePair(pair[0], pair[1], 'double');
+    const partial = occupied.partialDoubles.get('double2') as PlayerWithRanking | undefined;
+    if (partial) {
+      const candidates = females.filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF);
+      const partner = findPartnerFor(partial, candidates, assignment, existingDoubles, maxGamesF, preAssignedCounts);
+      if (partner) assignment.double2 = orderDoublePair(partial, partner, 'double');
+    } else {
+      const existingPairs = getExistingPairKeys(assignment);
+      const candidates = females
+        .filter((f) => countDoublesForPlayer(assignment, f.id, existingDoubles) < 2)
+        .filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF)
+        .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
+      const pair = findUnusedPair(candidates, existingPairs);
+      if (pair) {
+        assignment.double2 = orderDoublePair(pair[0], pair[1], 'double');
+      }
     }
   }
 
   // MXD1 (double3) - mixed pair
   if (!occupied.double3 && !assignment.double3) {
-    const existingPairs = getExistingPairKeys(assignment);
-    const mCandidates = males
-      .filter((m) => countDoublesForPlayer(assignment, m.id, existingDoubles) < 2)
-      .filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM)
-      .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
-    const fCandidates = females
-      .filter((f) => countDoublesForPlayer(assignment, f.id, existingDoubles) < 2)
-      .filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF)
-      .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
-    const pair = findUnusedMixedPair(mCandidates, fCandidates, existingPairs);
-    if (pair) {
-      assignment.double3 = [pair[0], pair[1]];
+    const partial = occupied.partialDoubles.get('double3') as PlayerWithRanking | undefined;
+    if (partial) {
+      const pool = partial.gender === 'M' ? females : males;
+      const maxG = partial.gender === 'M' ? maxGamesF : maxGamesM;
+      const avail = pool.filter((p) => countMixedDoublesForPlayer(assignment, p.id) < 1);
+      const partner = findPartnerFor(partial, avail, assignment, existingDoubles, maxG, preAssignedCounts);
+      if (partner) assignment.double3 = [partial, partner];
+    } else {
+      const existingPairs = getExistingPairKeys(assignment);
+      const mCandidates = males
+        .filter((m) => countDoublesForPlayer(assignment, m.id, existingDoubles) < 2)
+        .filter((m) => countMixedDoublesForPlayer(assignment, m.id) < 1)
+        .filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM)
+        .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
+      const fCandidates = females
+        .filter((f) => countDoublesForPlayer(assignment, f.id, existingDoubles) < 2)
+        .filter((f) => countMixedDoublesForPlayer(assignment, f.id) < 1)
+        .filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF)
+        .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
+      const pair = findUnusedMixedPair(mCandidates, fCandidates, existingPairs);
+      if (pair) {
+        assignment.double3 = [pair[0], pair[1]];
+      }
     }
   }
 
   // MXD2 (double4) - mixed pair
   if (!occupied.double4 && !assignment.double4) {
-    const existingPairs = getExistingPairKeys(assignment);
-    const mCandidates = males
-      .filter((m) => countDoublesForPlayer(assignment, m.id, existingDoubles) < 2)
-      .filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM)
-      .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
-    const fCandidates = females
-      .filter((f) => countDoublesForPlayer(assignment, f.id, existingDoubles) < 2)
-      .filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF)
-      .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
-    const pair = findUnusedMixedPair(mCandidates, fCandidates, existingPairs);
-    if (pair) {
-      assignment.double4 = [pair[0], pair[1]];
+    const partial = occupied.partialDoubles.get('double4') as PlayerWithRanking | undefined;
+    if (partial) {
+      const pool = partial.gender === 'M' ? females : males;
+      const maxG = partial.gender === 'M' ? maxGamesF : maxGamesM;
+      const avail = pool.filter((p) => countMixedDoublesForPlayer(assignment, p.id) < 1);
+      const partner = findPartnerFor(partial, avail, assignment, existingDoubles, maxG, preAssignedCounts);
+      if (partner) assignment.double4 = [partial, partner];
+    } else {
+      const existingPairs = getExistingPairKeys(assignment);
+      const mCandidates = males
+        .filter((m) => countDoublesForPlayer(assignment, m.id, existingDoubles) < 2)
+        .filter((m) => countMixedDoublesForPlayer(assignment, m.id) < 1)
+        .filter((m) => countPlayerGames(assignment, m.id, preAssignedCounts) < maxGamesM)
+        .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
+      const fCandidates = females
+        .filter((f) => countDoublesForPlayer(assignment, f.id, existingDoubles) < 2)
+        .filter((f) => countMixedDoublesForPlayer(assignment, f.id) < 1)
+        .filter((f) => countPlayerGames(assignment, f.id, preAssignedCounts) < maxGamesF)
+        .sort((a, b) => countPlayerGames(assignment, a.id, preAssignedCounts) - countPlayerGames(assignment, b.id, preAssignedCounts));
+      const pair = findUnusedMixedPair(mCandidates, fCandidates, existingPairs);
+      if (pair) {
+        assignment.double4 = [pair[0], pair[1]];
+      }
     }
   }
 

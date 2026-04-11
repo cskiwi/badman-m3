@@ -300,11 +300,13 @@ export class AssemblyGeneratorService {
     if (availablePlayers.length === 0 || !type) return;
 
     const occupied = this.getOccupiedSlots();
+    // Only include complete doubles (2 players) as existing
+    // Partial doubles are handled via occupied.partialDoubles
     const existingDoubles = [
-      this.assemblyService.double1(),
-      this.assemblyService.double2(),
-      this.assemblyService.double3(),
-      this.assemblyService.double4(),
+      this.assemblyService.double1().length >= 2 ? this.assemblyService.double1() : [],
+      this.assemblyService.double2().length >= 2 ? this.assemblyService.double2() : [],
+      this.assemblyService.double3().length >= 2 ? this.assemblyService.double3() : [],
+      this.assemblyService.double4().length >= 2 ? this.assemblyService.double4() : [],
     ];
     const preAssignedCounts = this.getPreAssignedGameCounts();
 
@@ -335,21 +337,39 @@ export class AssemblyGeneratorService {
     for (const data of [ds.single1(), ds.single2(), ds.single3(), ds.single4()]) {
       for (const p of data) preAssignedSingleIds.add(p.id);
     }
+
+    // Track partial doubles (1 player placed, needs a partner)
+    const partialDoubles = new Map<string, PlayerWithRanking>();
+    const doubleSlots = [
+      { key: 'double1', data: ds.double1() },
+      { key: 'double2', data: ds.double2() },
+      { key: 'double3', data: ds.double3() },
+      { key: 'double4', data: ds.double4() },
+    ];
+    for (const { key, data } of doubleSlots) {
+      if (data.length === 1) {
+        partialDoubles.set(key, data[0]);
+      }
+    }
+
     return {
       single1: ds.single1().length > 0,
       single2: ds.single2().length > 0,
       single3: ds.single3().length > 0,
       single4: ds.single4().length > 0,
-      double1: ds.double1().length > 0,
-      double2: ds.double2().length > 0,
-      double3: ds.double3().length > 0,
-      double4: ds.double4().length > 0,
+      // Only fully occupied (2 players) blocks the slot
+      double1: ds.double1().length >= 2,
+      double2: ds.double2().length >= 2,
+      double3: ds.double3().length >= 2,
+      double4: ds.double4().length >= 2,
       preAssignedSingleIds,
+      partialDoubles,
     };
   }
 
   /**
    * Count how many games each player already has from pre-assigned slots.
+   * Only counts complete doubles (2 players), not partial assignments.
    */
   private getPreAssignedGameCounts(): Map<string, number> {
     const counts = new Map<string, number>();
@@ -361,9 +381,11 @@ export class AssemblyGeneratorService {
     for (const data of [ds.single1(), ds.single2(), ds.single3(), ds.single4()]) {
       for (const p of data) addPlayer(p.id);
     }
-    // Doubles
+    // Doubles — only count complete pairs (partial will be filled by strategy)
     for (const data of [ds.double1(), ds.double2(), ds.double3(), ds.double4()]) {
-      for (const p of data) addPlayer(p.id);
+      if (data.length >= 2) {
+        for (const p of data) addPlayer(p.id);
+      }
     }
 
     return counts;
@@ -458,10 +480,11 @@ export class AssemblyGeneratorService {
     if (assignment.single2 && ds.single2().length === 0) ds.single2.set([assignment.single2]);
     if (assignment.single3 && ds.single3().length === 0) ds.single3.set([assignment.single3]);
     if (assignment.single4 && ds.single4().length === 0) ds.single4.set([assignment.single4]);
-    if (assignment.double1 && ds.double1().length === 0) ds.double1.set([...assignment.double1]);
-    if (assignment.double2 && ds.double2().length === 0) ds.double2.set([...assignment.double2]);
-    if (assignment.double3 && ds.double3().length === 0) ds.double3.set([...assignment.double3]);
-    if (assignment.double4 && ds.double4().length === 0) ds.double4.set([...assignment.double4]);
+    // Apply doubles: also overwrite partial assignments (1 player)
+    if (assignment.double1 && ds.double1().length < 2) ds.double1.set([...assignment.double1]);
+    if (assignment.double2 && ds.double2().length < 2) ds.double2.set([...assignment.double2]);
+    if (assignment.double3 && ds.double3().length < 2) ds.double3.set([...assignment.double3]);
+    if (assignment.double4 && ds.double4().length < 2) ds.double4.set([...assignment.double4]);
 
     ds.syncFormFromSlots();
     ds.validate();
