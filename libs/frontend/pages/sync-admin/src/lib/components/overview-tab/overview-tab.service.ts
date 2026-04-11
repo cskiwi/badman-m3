@@ -1,10 +1,12 @@
-import { computed, inject, signal } from '@angular/core';
+import { computed, effect, inject, signal } from '@angular/core';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { SyncJob } from '../../models/sync.models';
+import { SyncApiService } from '../../services';
 import { WebSocketSyncService } from '../../services/websocket-sync.service';
 
 export class OverviewTabService {
   private readonly auth = inject(AuthService);
+  private readonly syncApiService = inject(SyncApiService);
   readonly webSocketService = inject(WebSocketSyncService);
 
   private _flatJobsList = signal<SyncJob[]>([]);
@@ -25,6 +27,14 @@ export class OverviewTabService {
   constructor() {
     this.loadInitialData();
     this.webSocketService.setJobUpdateHandler((job: SyncJob) => this.handleJobUpdate(job));
+
+    // Re-subscribe to WebSocket events when connection is established
+    effect(() => {
+      if (this.webSocketService.isConnected()) {
+        this.webSocketService.subscribeToQueueStats();
+        this.webSocketService.subscribeToJobUpdates();
+      }
+    });
   }
 
   refresh(): void {
@@ -50,6 +60,17 @@ export class OverviewTabService {
   }
 
   private loadInitialData(): void {
+    this.webSocketService.setRecentJobsLoading(true);
+    this.syncApiService.getRecentJobs().subscribe({
+      next: (jobs) => {
+        this._flatJobsList.set(jobs);
+        this.webSocketService.setRecentJobsLoading(false);
+      },
+      error: () => {
+        this.webSocketService.setRecentJobsLoading(false);
+      },
+    });
+
     this.webSocketService.subscribeToQueueStats();
     this.webSocketService.subscribeToJobUpdates();
   }
