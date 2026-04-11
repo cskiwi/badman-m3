@@ -16071,7 +16071,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
-import { class } from 'primeng/class';
+import { StyleClass } from 'primeng/styleclass';
 import { Drawer } from 'primeng/drawer';
 
 @Component({
@@ -39624,14 +39624,14 @@ Classes to apply during enter and leave animations are specified using the enter
 
 ```typescript
 import { Component } from '@angular/core';
-import { classModule } from 'primeng/class';
+import { StyleClassModule } from 'primeng/styleclass';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: './style-class-animation-demo',
     templateUrl: './style-class-animation-demo.html',
     standalone: true,
-    imports: [classModule, ButtonModule],
+    imports: [StyleClassModule, ButtonModule],
     styles: [
         \`:host ::ng-deep {
                 @keyframes my-fadein {
@@ -39728,7 +39728,7 @@ When hideOnResize is enabled, the leave animation is triggered automatically whe
 
 ```typescript
 import { Component } from '@angular/core';
-import { class } from 'primeng/class';
+import { StyleClass } from 'primeng/styleclass';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
@@ -39748,7 +39748,7 @@ export class HideOnResizeDemo {}
 <summary>TypeScript Example</summary>
 
 ```typescript
-import { classModule } from 'primeng/class';
+import { StyleClassModule } from 'primeng/styleclass';
 ```
 
 </details>
@@ -39768,7 +39768,7 @@ class has two modes, toggleClass to simply add-remove a class and enter/leave an
 
 ```typescript
 import { Component } from '@angular/core';
-import { class } from 'primeng/class';
+import { StyleClass } from 'primeng/styleclass';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 
