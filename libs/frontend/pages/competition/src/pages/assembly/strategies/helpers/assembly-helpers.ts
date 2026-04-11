@@ -1,6 +1,7 @@
 import { SubEventTypeEnum } from '@app/models-enum';
-import { PlayerWithRanking } from '../page-assembly.service';
-import { OccupiedSlots, SlotAssignment } from './assembly-strategy.types';
+import { PlayerWithRanking } from '../../page-assembly.service';
+import { OccupiedSlots, SlotAssignment } from '../assembly-strategy.types';
+import { getTargetMaxGames } from './game-distribution.helpers';
 
 export function rankingSum(player: PlayerWithRanking, type: string): number {
   const r = player.rankingLastPlaces?.[0];
@@ -291,16 +292,6 @@ export function countPlayerGames(assignment: SlotAssignment, playerId: string, p
     if (assignment[slot]?.some((p) => p.id === playerId)) count++;
   }
   return count;
-}
-
-/**
- * Calculate the target max games per player based on pool size and total available slots.
- * For same-gender encounters: totalSlots=12 (4 doubles × 2 + 4 singles)
- * For MX encounters per gender: totalSlots=6 (gender-specific slots only)
- */
-export function getTargetMaxGames(poolSize: number, totalSlots = 12): number {
-  if (poolSize <= 0) return 0;
-  return Math.ceil(totalSlots / poolSize);
 }
 
 /**

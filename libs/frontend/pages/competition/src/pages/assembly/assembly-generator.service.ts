@@ -6,7 +6,7 @@ import { GameRecord, HistoryData, OccupiedSlots, SlotAssignment } from './strate
 import { generateVariations } from './strategies/variations.strategy';
 import { generateBestResults } from './strategies/best-results.strategy';
 import { generateRandom } from './strategies/random.strategy';
-import { pairKey } from './strategies/assembly-helpers';
+import { pairKey } from './strategies/helpers';
 
 export type GenerateStrategy = 'variations' | 'best-results' | 'random';
 export type TimeRange = 'both-seasons' | 'season' | 'last-season' | 'last-weeks';
