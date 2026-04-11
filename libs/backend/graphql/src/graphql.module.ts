@@ -141,6 +141,7 @@ import { AssemblyValidationService } from './services/assembly/assembly-validati
     CompetitionEncounterResolver,
     CompetitionAssemblyResolver,
     AssemblyOutputResolver,
+    AssemblyValidationService,
     CompetitionGroupSubEventMembershipResolver,
     TournamentEventResolver,
     TournamentSubEventResolver,

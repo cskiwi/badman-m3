@@ -34,6 +34,7 @@ export type I18nTranslations = {
         };
         "button": {
             "add": string;
+            "agree": string;
             "apply": string;
             "back": string;
             "cancel": string;
@@ -41,6 +42,7 @@ export type I18nTranslations = {
             "confirm": string;
             "create": string;
             "delete": string;
+            "download": string;
             "edit": string;
             "generate": string;
             "refresh": string;
@@ -364,6 +366,97 @@ export type I18nTranslations = {
             "subEvent": string;
             "subEvents": string;
             "team": string;
+            "team-assembly": {
+                "auto-generate": {
+                    "best-results": string;
+                    "best-results-tooltip": string;
+                    "both-seasons": string;
+                    "clear": string;
+                    "last-season": string;
+                    "last-x-weeks": string;
+                    "player-joining": string;
+                    "random": string;
+                    "random-tooltip": string;
+                    "this-season": string;
+                    "time-range": string;
+                    "title": string;
+                    "variations": string;
+                    "variations-tooltip": string;
+                    "weeks": string;
+                };
+                "captain": string;
+                "change-team": string;
+                "club": string;
+                "disclaimer": string;
+                "double1": string;
+                "double2": string;
+                "double3": string;
+                "double4": string;
+                "download": string;
+                "encounter": string;
+                "errors": {
+                    "already": string;
+                    "club-base-other-team": string;
+                    "comp-status": string;
+                    "comp-status-html": string;
+                    "none": string;
+                    "not-enough-players": string;
+                    "player-above-lower": string;
+                    "player-gender": string;
+                    "player-genders": string;
+                    "player-max-double-games": string;
+                    "player-max-mix-games": string;
+                    "player-max-mixed-games": string;
+                    "player-max-single-games": string;
+                    "player-min-level": string;
+                    "player-order-doubles": string;
+                    "player-order-highest": string;
+                    "player-order-single": string;
+                    "players-above-lower": string;
+                    "team-index": string;
+                    "team-to-strong": string;
+                    "title": string;
+                    "to-much": string;
+                };
+                "info": string;
+                "level-exemption": string;
+                "mix1": string;
+                "mix2": string;
+                "mix3": string;
+                "mix4": string;
+                "players": {
+                    "backup": string;
+                    "base": string;
+                    "team": string;
+                    "title": string;
+                };
+                "season": string;
+                "select-all": string;
+                "single1": string;
+                "single2": string;
+                "single3": string;
+                "single4": string;
+                "stats": {
+                    "games-played": string;
+                    "no-data": string;
+                    "pair-on-slot": string;
+                    "pair-total": string;
+                    "partners-title": string;
+                    "player1": string;
+                    "player2": string;
+                    "refresh": string;
+                    "search": string;
+                    "slot-record": string;
+                    "tooltip-text": string;
+                    "win-pct": string;
+                    "wins": string;
+                };
+                "substitude": string;
+                "team": string;
+                "team-index": string;
+                "team-index-ignored": string;
+                "title": string;
+            };
             "teams": string;
             "title": string;
             "tooltip": {
@@ -505,6 +598,10 @@ export type I18nTranslations = {
             "tournament": string;
             "winRate": string;
             "wins": string;
+        };
+        "gender": {
+            "females": string;
+            "males": string;
         };
         "head-to-head": {
             "amount-of-games": string;
@@ -1689,6 +1786,136 @@ export type I18nTranslations = {
             "unlimited": string;
             "visualCode": string;
             "women": string;
+        };
+        "v1": {
+            "teamFormation": {
+                "buttons": {
+                    "cancel": string;
+                    "print": string;
+                    "save": string;
+                };
+                "errors": {
+                    "already": string;
+                    "club-base-other-team": string;
+                    "comp-status": string;
+                    "comp-status-html": string;
+                    "none": string;
+                    "not-enough-players": string;
+                    "player-above-lower": string;
+                    "player-gender": string;
+                    "player-genders": string;
+                    "player-max-double-games": string;
+                    "player-max-mix-games": string;
+                    "player-max-mixed-games": string;
+                    "player-max-single-games": string;
+                    "player-min-level": string;
+                    "player-order-doubles": string;
+                    "player-order-highest": string;
+                    "player-order-single": string;
+                    "players-above-lower": string;
+                    "team-index": string;
+                    "team-to-strong": string;
+                    "title": string;
+                    "to-much": string;
+                };
+                "info": {
+                    "basePlayers": string;
+                    "errors": string;
+                    "params": {
+                        "double1": string;
+                        "double2": string;
+                        "double3": string;
+                        "double4": string;
+                        "gender": {
+                            "female": string;
+                            "females": string;
+                            "long": {
+                                "F": string;
+                                "M": string;
+                                "MX": string;
+                            };
+                            "longs": {
+                                "F": string;
+                                "M": string;
+                            };
+                            "male": string;
+                            "males": string;
+                            "mix": string;
+                            "national": string;
+                            "select": string;
+                            "short": {
+                                "female": string;
+                                "male": string;
+                                "mix": string;
+                            };
+                            "title": string;
+                        };
+                        "mix1": string;
+                        "mix2": string;
+                        "mix3": string;
+                        "mix4": string;
+                        "ranking": {
+                            "double": string;
+                            "mix": string;
+                            "single": string;
+                        };
+                        "single1": string;
+                        "single2": string;
+                        "single3": string;
+                        "single4": string;
+                    };
+                    "title": string;
+                    "titulars": string;
+                };
+                "messages": {
+                    "downloaded": string;
+                    "saved": string;
+                };
+                "notFound": string;
+                "teamFormation": {
+                    "categories": {
+                        "captainId": string;
+                        "doubleMen": string;
+                        "doubleWomen": string;
+                        "mixDouble": string;
+                        "singleMan": string;
+                        "singleWoman": string;
+                        "subtitudes": string;
+                    };
+                    "disabledTitle": string;
+                    "labels": {
+                        "captainId": string;
+                        "doubleMen": string;
+                        "doubleMen1": string;
+                        "doubleMen2": string;
+                        "doubleMen3": string;
+                        "doubleMen4": string;
+                        "doubleWomen": string;
+                        "doubleWomen1": string;
+                        "doubleWomen2": string;
+                        "doubleWomen3": string;
+                        "doubleWomen4": string;
+                        "mixDouble1": string;
+                        "mixDouble2": string;
+                        "singleMan1": string;
+                        "singleMan2": string;
+                        "singleMan3": string;
+                        "singleMan4": string;
+                        "singleWoman1": string;
+                        "singleWoman2": string;
+                        "singleWoman3": string;
+                        "singleWoman4": string;
+                        "subtitudes": string;
+                    };
+                    "noClub": string;
+                    "selectPlayer": string;
+                    "title": string;
+                };
+                "title": string;
+                "warnings": {
+                    "subtitute-team-index": string;
+                };
+            };
         };
     };
 };
