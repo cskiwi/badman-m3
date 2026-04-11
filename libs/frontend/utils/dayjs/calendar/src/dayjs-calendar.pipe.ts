@@ -1,9 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
-import {
-  DayjsService,
-  DayjsInput,
-  DayjsCalendarReference,
-} from '@app/frontend-utils';
+import { DayjsService, DayjsInput, DayjsCalendarReference } from '@app/frontend-utils';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 

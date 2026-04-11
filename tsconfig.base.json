@@ -78,7 +78,8 @@
       "@app/utils/comp": ["libs/utils/src/comp/index.ts"],
       "@app/utils/sorts": ["libs/utils/src/sorts/index.ts"],
       "@apps/shared": ["libs/shared/src/index.ts"],
-      "@app/frontend-components/country-state": ["libs/frontend/components/country-state/src/index.ts"]
+      "@app/frontend-components/country-state": ["libs/frontend/components/country-state/src/index.ts"],
+      "@app/utils-i18n": ["libs/i18n/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

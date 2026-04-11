@@ -33,15 +33,7 @@ const UPDATE_COMPETITION_DATES = gql`
 @Component({
   selector: 'app-competition-dates',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CardModule,
-    ButtonModule,
-    DatePickerModule,
-    MessageModule,
-    ProgressBarModule,
-    TranslateModule,
-  ],
+  imports: [ReactiveFormsModule, CardModule, ButtonModule, DatePickerModule, MessageModule, ProgressBarModule, TranslateModule],
   templateUrl: './competition-dates.component.html',
 })
 export class CompetitionDatesComponent {
@@ -98,18 +90,10 @@ export class CompetitionDatesComponent {
       openDate: competition.openDate ? new Date(competition.openDate) : null,
       closeDate: competition.closeDate ? new Date(competition.closeDate) : null,
       changeOpenDate: competition.changeOpenDate ? new Date(competition.changeOpenDate) : null,
-      changeCloseDatePeriod1: competition.changeCloseDatePeriod1
-        ? new Date(competition.changeCloseDatePeriod1)
-        : null,
-      changeCloseRequestDatePeriod1: competition.changeCloseRequestDatePeriod1
-        ? new Date(competition.changeCloseRequestDatePeriod1)
-        : null,
-      changeCloseDatePeriod2: competition.changeCloseDatePeriod2
-        ? new Date(competition.changeCloseDatePeriod2)
-        : null,
-      changeCloseRequestDatePeriod2: competition.changeCloseRequestDatePeriod2
-        ? new Date(competition.changeCloseRequestDatePeriod2)
-        : null,
+      changeCloseDatePeriod1: competition.changeCloseDatePeriod1 ? new Date(competition.changeCloseDatePeriod1) : null,
+      changeCloseRequestDatePeriod1: competition.changeCloseRequestDatePeriod1 ? new Date(competition.changeCloseRequestDatePeriod1) : null,
+      changeCloseDatePeriod2: competition.changeCloseDatePeriod2 ? new Date(competition.changeCloseDatePeriod2) : null,
+      changeCloseRequestDatePeriod2: competition.changeCloseRequestDatePeriod2 ? new Date(competition.changeCloseRequestDatePeriod2) : null,
     });
 
     // Mark form as pristine after loading data
@@ -118,10 +102,7 @@ export class CompetitionDatesComponent {
 
   canEditCompetition(): boolean {
     const competition = this.competition();
-    return this.authService.hasAnyPermission([
-      'edit-any:competition',
-      `${competition?.id}_edit:competition`,
-    ]);
+    return this.authService.hasAnyPermission(['edit-any:competition', `${competition?.id}_edit:competition`]);
   }
 
   async saveDates(): Promise<void> {

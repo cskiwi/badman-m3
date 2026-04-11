@@ -56,11 +56,7 @@
       </span>
     </div>
     @if (team().selectedSubEvent?.maxBaseIndex != null) {
-      <p-progressbar
-        [value]="indexPercent"
-        [showValue]="false"
-        [style]="{ height: '0.5rem', '--p-progressbar-value-background': indexBarColor }"
-      />
+      <p-progressbar [value]="indexPercent" [showValue]="false" [style]="{ height: '0.5rem', '--p-progressbar-value-background': indexBarColor }" />
       @if (indexSeverity === 'danger') {
         <div class="text-xs mt-1" [class.text-red-500]="true">
           <i class="pi pi-exclamation-triangle text-xs"></i>
@@ -112,7 +108,7 @@
         <span>{{ indexRangeLabel }}</span>
       </div>
       <div class="flex items-center justify-between gap-2">
-        <span>Level range</span>
+        <span>Max level</span>
         <span>{{ levelRangeLabel }}</span>
       </div>
       @if (team().standingPosition != null) {

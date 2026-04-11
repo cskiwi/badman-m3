@@ -10,11 +10,7 @@ import {
 } from '../queues/sync.queue';
 import { RankingCalcService } from './services/ranking-calc.service';
 
-type RankingCalcJobData =
-  | RankingCalcInitJobData
-  | RankingCalcPeriodJobData
-  | RankingCalcPlayerBatchJobData
-  | RankingCalcFinalizeJobData;
+type RankingCalcJobData = RankingCalcInitJobData | RankingCalcPeriodJobData | RankingCalcPlayerBatchJobData | RankingCalcFinalizeJobData;
 
 @Injectable()
 @Processor(RANKING_CALC_QUEUE, {

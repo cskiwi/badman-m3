@@ -406,12 +406,7 @@
 
     <ng-template pTemplate="footer">
       <div class="flex gap-3 justify-end">
-        <p-button
-          [label]="'all.button.cancel' | translate"
-          severity="secondary"
-          [outlined]="true"
-          (click)="showManualEnrollmentDialog.set(false)"
-        />
+        <p-button [label]="'all.button.cancel' | translate" severity="secondary" [outlined]="true" (click)="showManualEnrollmentDialog.set(false)" />
         <p-button
           [label]="'all.tournament.admin.enrollments.addEnrollment' | translate"
           icon="pi pi-user-plus"

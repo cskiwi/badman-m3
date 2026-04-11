@@ -329,9 +329,7 @@ export class TournamentGameSyncService {
           match?.Sets?.Set[0]?.Team1 == null &&
           match?.Sets?.Set[0]?.Team2 == null &&
           // But not both players filled
-          !(
-            match?.Team1?.Player1?.MemberID == null && match?.Team2?.Player1?.MemberID == null
-          ) &&
+          !(match?.Team1?.Player1?.MemberID == null && match?.Team2?.Player1?.MemberID == null) &&
           // And not both players null
           (match?.Team2?.Player1?.MemberID !== null || match?.Team2?.Player2?.MemberID !== null)
         ) {
@@ -339,6 +337,23 @@ export class TournamentGameSyncService {
         } else {
           return GameStatus.NORMAL;
         }
+    }
+  }
+
+   private mapGenderType(genderId: number | string): 'F' | 'M'  {
+    if (typeof genderId === 'string') {
+      genderId = parseInt(genderId, 10);
+    }
+
+    switch (genderId) {
+      case 1:
+      case 4:
+        return 'M';
+      case 2:
+      case 5:
+        return 'F';
+      default:
+        return 'M';
     }
   }
 
@@ -350,10 +365,13 @@ export class TournamentGameSyncService {
       where: { memberId: player.MemberID },
     });
 
+    const gender = this.mapGenderType(player.GenderID);
+    
+
     if (existingPlayer) {
       existingPlayer.firstName = player.Firstname;
       existingPlayer.lastName = player.Lastname;
-      existingPlayer.gender = this.mapGenderType(player.GenderID) === 'M' ? 'M' : this.mapGenderType(player.GenderID) === 'F' ? 'F' : 'M';
+      existingPlayer.gender = gender;
       existingPlayer.competitionPlayer = true;
       await existingPlayer.save();
     } else {
@@ -361,29 +379,13 @@ export class TournamentGameSyncService {
       newPlayer.memberId = player.MemberID;
       newPlayer.firstName = player.Firstname;
       newPlayer.lastName = player.Lastname;
-      newPlayer.gender = this.mapGenderType(player.GenderID) === 'M' ? 'M' : this.mapGenderType(player.GenderID) === 'F' ? 'F' : 'M';
+      newPlayer.gender = gender;
       newPlayer.competitionPlayer = true;
       await newPlayer.save();
     }
   }
 
-  private mapGenderType(genderId: number | string): string {
-    if (typeof genderId === 'string') {
-      genderId = parseInt(genderId, 10);
-    }
-
-    switch (genderId) {
-      case 1:
-        return 'M';
-      case 2:
-        return 'F';
-      case 3:
-        return 'MX';
-      default:
-        return 'M';
-    }
-  }
-
+  
   private async createGamePlayerMemberships(game: Game, match: Match): Promise<void> {
     this.logger.debug(`Creating game player memberships for game: ${game.visualCode}`);
 

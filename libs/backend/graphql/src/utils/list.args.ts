@@ -58,7 +58,7 @@ export function args<T>(name?: string) {
       }
 
       const where = GraphQLWhereConverter.convert(args);
-      return Array.isArray(where) ? where as FindOptionsWhere<T>[] : [where as FindOptionsWhere<T>];
+      return Array.isArray(where) ? (where as FindOptionsWhere<T>[]) : [where as FindOptionsWhere<T>];
     }
 
     static getRelations(order?: { [key: string]: unknown }) {

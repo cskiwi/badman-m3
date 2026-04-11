@@ -11,7 +11,7 @@ import { TeamCardComponent } from '../../../components/team-card';
   imports: [TranslateModule, SkeletonModule, TeamCardComponent],
   providers: [ClubTeamsTabService],
   templateUrl: './club-teams-tab.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClubTeamsTabComponent {
   readonly service = inject(ClubTeamsTabService);

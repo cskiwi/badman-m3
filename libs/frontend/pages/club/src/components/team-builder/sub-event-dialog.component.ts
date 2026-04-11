@@ -35,9 +35,7 @@ export class SubEventDialogComponent {
       // Parse the label format: "[LIGA] 3e Liga (100-200)"
       const match = option.label.match(/^\[([^\]]+)\]\s*/);
       const levelType = match?.[1] ?? 'Other';
-      const subEvent = this.config.data?.allSubEvents?.find(
-        (s: CompetitionSubEvent) => s.id === option.value,
-      );
+      const subEvent = this.config.data?.allSubEvents?.find((s: CompetitionSubEvent) => s.id === option.value);
 
       if (!subEvent) continue;
 

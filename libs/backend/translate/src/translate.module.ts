@@ -14,10 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 
       useFactory: () => {
         const apiDistFolderPath = join(process.cwd(), 'dist/apps/api');
-        const dir = join(
-          apiDistFolderPath,
-          '../../../libs/utils/src/translation/',
-        );
+        const dir = join(apiDistFolderPath, '../../../libs/utils/i18n/src/lib/');
         const file = join(dir, 'i18n.generated.ts');
 
         if (!existsSync(file)) {

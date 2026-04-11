@@ -23,7 +23,8 @@
     <div class="flex flex-col gap-2">
       <label for="notes" class="font-medium text-color">
         <i class="pi pi-pencil text-primary-500 mr-2"></i>
-        {{ 'all.enrollment.additionalNotes' | translate }} <span class="text-muted-color font-normal">{{ 'all.enrollment.optional' | translate }}</span>
+        {{ 'all.enrollment.additionalNotes' | translate }}
+        <span class="text-muted-color font-normal">{{ 'all.enrollment.optional' | translate }}</span>
       </label>
       <textarea
         pInputTextarea
@@ -33,9 +34,7 @@
         [placeholder]="'all.enrollment.partnerSelection.notes' | translate"
         class="w-full"
       ></textarea>
-      <small class="text-muted-color">
-        {{ form.get('notes')?.value?.length || 0 }} / 500 {{ 'all.enrollment.characters' | translate }}
-      </small>
+      <small class="text-muted-color"> {{ form.get('notes')?.value?.length || 0 }} / 500 {{ 'all.enrollment.characters' | translate }} </small>
     </div>
 
     <!-- Actions -->

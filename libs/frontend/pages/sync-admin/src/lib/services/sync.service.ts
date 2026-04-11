@@ -2,10 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Apollo, gql } from 'apollo-angular';
-import {
-  CompetitionEvent,
-  TournamentEvent,
-} from '@app/models';
+import { CompetitionEvent, TournamentEvent } from '@app/models';
 import { RankingSystemSyncInfo, SyncJob, SyncStatus, SyncTriggerResponse } from '../models/sync.models';
 
 // ===== Queries =====
@@ -350,10 +347,7 @@ export class SyncApiService {
       .pipe(map((result) => result.data?.syncJobs ?? []));
   }
 
-  getCompetitionEvents(
-    args: Record<string, unknown>,
-    syncLevel: 'event' | 'subEvent' | 'draw' | 'encounter',
-  ): Observable<CompetitionEvent[]> {
+  getCompetitionEvents(args: Record<string, unknown>, syncLevel: 'event' | 'subEvent' | 'draw' | 'encounter'): Observable<CompetitionEvent[]> {
     return this.apollo
       .query<{ competitionEvents: CompetitionEvent[] }>({
         query: COMPETITION_QUERIES[syncLevel],
@@ -363,10 +357,7 @@ export class SyncApiService {
       .pipe(map((result) => result.data?.competitionEvents ?? []));
   }
 
-  getTournamentEvents(
-    args: Record<string, unknown>,
-    syncLevel: 'event' | 'subEvent' | 'draw',
-  ): Observable<TournamentEvent[]> {
+  getTournamentEvents(args: Record<string, unknown>, syncLevel: 'event' | 'subEvent' | 'draw'): Observable<TournamentEvent[]> {
     return this.apollo
       .query<{ tournamentEvents: TournamentEvent[] }>({
         query: TOURNAMENT_QUERIES[syncLevel],

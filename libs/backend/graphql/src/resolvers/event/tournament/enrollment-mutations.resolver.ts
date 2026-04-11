@@ -1,16 +1,9 @@
 import { Resolver, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards, BadRequestException } from '@nestjs/common';
-import {
-  TournamentEnrollment,
-  EnrollmentSession,
-  Player,
-} from '@app/models';
+import { TournamentEnrollment, EnrollmentSession, Player } from '@app/models';
 import { EnrollmentStatus } from '@app/models-enum';
 import { User, PermGuard, AllowAnonymous } from '@app/backend-authorization';
-import {
-  CartItemInput,
-  AddToCartInput,
-} from '../../../inputs/enrollment.input';
+import { CartItemInput, AddToCartInput } from '../../../inputs/enrollment.input';
 import { EnrollmentService } from '../../../services/tournament/enrollment.service';
 import { EnrollmentCartService } from '../../../services/tournament/enrollment-cart.service';
 
@@ -27,16 +20,8 @@ export class EnrollmentMutationsResolver {
   @Mutation(() => EnrollmentSession, { name: 'addToEnrollmentCart' })
   @UseGuards(PermGuard)
   @AllowAnonymous()
-  async addToEnrollmentCart(
-    @Args('input', { type: () => AddToCartInput }) input: AddToCartInput,
-    @User() user?: Player,
-  ): Promise<EnrollmentSession> {
-    return this.cartService.addToCart(
-      input.tournamentId,
-      user?.id,
-      input.sessionId,
-      input.items,
-    );
+  async addToEnrollmentCart(@Args('input', { type: () => AddToCartInput }) input: AddToCartInput, @User() user?: Player): Promise<EnrollmentSession> {
+    return this.cartService.addToCart(input.tournamentId, user?.id, input.sessionId, input.items);
   }
 
   /**
@@ -54,9 +39,7 @@ export class EnrollmentMutationsResolver {
    * Clear entire cart
    */
   @Mutation(() => Boolean, { name: 'clearEnrollmentCart' })
-  async clearEnrollmentCart(
-    @Args('cartId', { type: () => ID }) cartId: string,
-  ): Promise<boolean> {
+  async clearEnrollmentCart(@Args('cartId', { type: () => ID }) cartId: string): Promise<boolean> {
     return this.cartService.clearCart(cartId);
   }
 
@@ -92,10 +75,7 @@ export class EnrollmentMutationsResolver {
    */
   @Mutation(() => [TournamentEnrollment], { name: 'submitEnrollmentCart' })
   @UseGuards(PermGuard)
-  async submitEnrollmentCart(
-    @Args('cartId', { type: () => ID }) cartId: string,
-    @User() user: Player,
-  ): Promise<TournamentEnrollment[]> {
+  async submitEnrollmentCart(@Args('cartId', { type: () => ID }) cartId: string, @User() user: Player): Promise<TournamentEnrollment[]> {
     if (!user?.id) {
       throw new BadRequestException('Player profile required');
     }

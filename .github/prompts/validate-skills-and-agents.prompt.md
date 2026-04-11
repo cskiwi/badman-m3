@@ -15,6 +15,7 @@ Perform a comprehensive validation of all skills and agents in this workspace to
 For each skill in `.github/skills/`:
 
 #### Structure Validation
+
 - [ ] Each skill directory contains a `SKILL.md` file
 - [ ] SKILL.md files have valid YAML frontmatter with opening `---` and closing `---`
 - [ ] Frontmatter contains required `name` field (1-64 chars, lowercase letters/numbers/hyphens only)
@@ -23,6 +24,7 @@ For each skill in `.github/skills/`:
 - [ ] Description includes both WHAT the skill does AND WHEN to use it
 
 #### Content Validation
+
 - [ ] SKILL.md has clear "When to Use This Skill" or equivalent section
 - [ ] Content is well-structured with proper headings
 - [ ] No broken internal links
@@ -30,6 +32,7 @@ For each skill in `.github/skills/`:
 - [ ] No placeholder text like `[TODO]` or `[Fill this in]`
 
 #### Documentation Consistency
+
 - [ ] Skill is listed in `agents.md` with matching name and description
 - [ ] Skill is listed in `claude.md` with matching name and description
 - [ ] File path in documentation matches actual location
@@ -39,6 +42,7 @@ For each skill in `.github/skills/`:
 For each agent in `.github/agents/`:
 
 #### Structure Validation
+
 - [ ] Agent file has valid YAML frontmatter
 - [ ] Frontmatter contains `name` field
 - [ ] Frontmatter contains `description` field
@@ -46,6 +50,7 @@ For each agent in `.github/agents/`:
 - [ ] File naming follows convention (lowercase with hyphens, `.agent.md` extension)
 
 #### Content Validation
+
 - [ ] Agent has clear role definition
 - [ ] Instructions are specific and actionable
 - [ ] No contradictory instructions
@@ -54,6 +59,7 @@ For each agent in `.github/agents/`:
 - [ ] No placeholder text
 
 #### Documentation Consistency
+
 - [ ] Agent is listed in `agents.md` Available Agents section
 - [ ] Agent is listed in `claude.md` Available Custom Agents section
 - [ ] Name matches across all references
@@ -63,6 +69,7 @@ For each agent in `.github/agents/`:
 ### 3. Cross-Reference Validation
 
 #### agents.md Validation
+
 - [ ] All skills listed in "Available Skills" section exist in `.github/skills/`
 - [ ] All agents listed in "Available Agents" section exist in `.github/agents/`
 - [ ] No duplicate entries
@@ -71,6 +78,7 @@ For each agent in `.github/agents/`:
 - [ ] File paths are correct and workspace-relative
 
 #### claude.md Validation
+
 - [ ] All skills in the skills table exist in `.github/skills/`
 - [ ] All agents in the agents table exist in `.github/agents/`
 - [ ] Skills table matches `agents.md` content
@@ -79,6 +87,7 @@ For each agent in `.github/agents/`:
 - [ ] No duplicate entries
 
 #### Synchronization Check
+
 - [ ] agents.md and claude.md have the same list of skills
 - [ ] agents.md and claude.md have the same list of agents
 - [ ] Descriptions are consistent between both files
@@ -95,12 +104,14 @@ For each agent in `.github/agents/`:
 ### 5. Quality Checks
 
 #### Skills Quality
+
 - [ ] Each skill addresses a clear, focused domain
 - [ ] No overlap or duplication between skills
 - [ ] Skills are appropriately scoped (not too broad, not too narrow)
 - [ ] Skills provide actionable guidance, not just theory
 
 #### Agents Quality
+
 - [ ] Each agent has a distinct, non-overlapping role
 - [ ] Agent tools are appropriate for their purpose
 - [ ] Agent instructions are clear and unambiguous

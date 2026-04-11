@@ -12,15 +12,7 @@ import type { RankingLastPlace } from '@app/models';
 @Component({
   selector: 'app-enrollment-filters',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MultiSelectModule,
-    SelectModule,
-    ButtonModule,
-    CheckboxModule,
-    SliderModule,
-    TranslateModule
-],
+  imports: [ReactiveFormsModule, MultiSelectModule, SelectModule, ButtonModule, CheckboxModule, SliderModule, TranslateModule],
   templateUrl: './enrollment-filters.component.html',
 })
 export class EnrollmentFiltersComponent implements OnInit {
@@ -33,7 +25,7 @@ export class EnrollmentFiltersComponent implements OnInit {
     enrollmentStatus: 'OPEN' | 'AVAILABLE' | 'ALL';
     searchText: string;
     showOnlyMyLevel: boolean;
-}>();
+  }>();
   readonly userRanking = input<RankingLastPlace | null>();
   readonly userGender = input<'M' | 'F' | null>();
   readonly filtersChange = output<{
@@ -43,7 +35,7 @@ export class EnrollmentFiltersComponent implements OnInit {
     enrollmentStatus: 'OPEN' | 'AVAILABLE' | 'ALL';
     searchText: string;
     showOnlyMyLevel: boolean;
-}>();
+  }>();
 
   // Form controls
   eventTypeControl = new FormControl<string[]>([]);
@@ -226,8 +218,7 @@ export class EnrollmentFiltersComponent implements OnInit {
     }
     const currentEventTypes = this.eventTypeControl.value || [];
     const hasEventTypeFilter =
-      currentEventTypes.length !== defaultEventTypes.length ||
-      !currentEventTypes.every(t => defaultEventTypes.includes(t));
+      currentEventTypes.length !== defaultEventTypes.length || !currentEventTypes.every((t) => defaultEventTypes.includes(t));
 
     return (
       hasEventTypeFilter ||

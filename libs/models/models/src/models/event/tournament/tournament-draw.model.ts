@@ -1,6 +1,17 @@
 import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, Relation } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  Relation,
+} from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
 import { Game } from '../game.model';
 import { Entry } from '../entry.model';
@@ -52,7 +63,6 @@ export class TournamentDraw extends BaseEntity {
   // @Field(() => [EventEntry], { nullable: true })
   // @OneToMany(() => EventEntry, eventEntry => eventEntry.drawTournament, { cascade: true, onDelete: 'CASCADE' })
   // eventEntries?: EventEntry[];
-
 
   @SortableField(() => Int)
   @WhereField(() => Int)

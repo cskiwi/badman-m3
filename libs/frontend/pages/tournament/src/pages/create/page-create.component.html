@@ -21,13 +21,7 @@
         <!-- Tournament Name -->
         <div class="flex flex-col gap-2">
           <label for="name">{{ 'all.tournament.create.name' | translate }} *</label>
-          <input
-            pInputText
-            id="name"
-            formControlName="name"
-            class="max-w-md"
-            [placeholder]="'all.tournament.create.namePlaceholder' | translate"
-          />
+          <input pInputText id="name" formControlName="name" class="max-w-md" [placeholder]="'all.tournament.create.namePlaceholder' | translate" />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
             <small class="text-red-500">{{ 'all.tournament.create.nameRequired' | translate }}</small>
           }
@@ -92,11 +86,7 @@
 
         <!-- Actions -->
         <div class="flex justify-end gap-2 mt-4">
-          <p-button
-            [label]="'all.common.cancel' | translate"
-            severity="secondary"
-            (onClick)="cancel()"
-          />
+          <p-button [label]="'all.common.cancel' | translate" severity="secondary" (onClick)="cancel()" />
           <p-button
             type="submit"
             [label]="'all.tournament.create.submit' | translate"

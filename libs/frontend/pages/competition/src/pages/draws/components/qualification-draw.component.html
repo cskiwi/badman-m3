@@ -13,7 +13,7 @@
           <i class="pi pi-chart-bar text-primary-500"></i>
           {{ 'all.competition.qualification_results' | translate }}
         </h4>
-        
+
         <div class="overflow-x-auto">
           <table class="w-full border-collapse rounded-lg bg-surface-0 overflow-hidden">
             <thead class="bg-primary-500 text-white">
@@ -29,19 +29,31 @@
             </thead>
             <tbody>
               @for (standing of qualifiedStandings(); track standing.id) {
-                <tr class="border-b border-surface-200 hover:bg-surface-50 transition-colors relative"
-                    [class]="standing.qualified ? 'bg-green-25 border-l-4 border-l-green-500' : standing.eliminated ? 'bg-red-25 border-l-4 border-l-red-500 opacity-80' : ''">
+                <tr
+                  class="border-b border-surface-200 hover:bg-surface-50 transition-colors relative"
+                  [class]="
+                    standing.qualified
+                      ? 'bg-green-25 border-l-4 border-l-green-500'
+                      : standing.eliminated
+                        ? 'bg-red-25 border-l-4 border-l-red-500 opacity-80'
+                        : ''
+                  "
+                >
                   <!-- Visual indicator for riser/faller -->
                   @if (standing.riser) {
-                    <td class="absolute left-0 top-0 bottom-0 w-1 bg-green-500" 
-                        pTooltip="This player/team will rise in the ranking" 
-                        tooltipPosition="right"></td>
+                    <td
+                      class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"
+                      pTooltip="This player/team will rise in the ranking"
+                      tooltipPosition="right"
+                    ></td>
                   } @else if (standing.faller) {
-                    <td class="absolute left-0 top-0 bottom-0 w-1 bg-red-500" 
-                        pTooltip="This player/team will fall in the ranking" 
-                        tooltipPosition="right"></td>
+                    <td
+                      class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"
+                      pTooltip="This player/team will fall in the ranking"
+                      tooltipPosition="right"
+                    ></td>
                   }
-                  
+
                   <td class="p-3 font-semibold pl-4">{{ standing.position }}</td>
                   <td class="p-3">
                     <div class="flex items-center gap-2">
@@ -87,14 +99,18 @@
           <i class="pi pi-calendar text-primary-500"></i>
           {{ 'all.competition.qualification_matches' | translate }}
         </h4>
-        
+
         <div class="grid gap-4 md:grid-cols-2 grid-cols-1">
           @for (match of encounters(); track match.id) {
             <div class="rounded-lg bg-surface-0 border border-surface-200 p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
               <div class="flex items-center justify-between mb-2 md:flex-row flex-col md:gap-0 gap-2">
                 <div class="flex items-center gap-3 md:flex-row flex-col md:text-left text-center">
                   <!-- Home Participant -->
-                  <div [class]="match.homeScore !== null && match.awayScore !== null && match.homeScore > match.awayScore ? 'font-semibold text-green-600' : ''">
+                  <div
+                    [class]="
+                      match.homeScore !== null && match.awayScore !== null && match.homeScore > match.awayScore ? 'font-semibold text-green-600' : ''
+                    "
+                  >
                     @if (match.homeTeam?.club?.slug) {
                       <a [routerLink]="['/clubs', match.homeTeam.club.slug]" class="font-medium text-color hover:text-primary no-underline">
                         {{ getMatchParticipantName(match.homeTeam, match.homePlayer) }}
@@ -105,7 +121,7 @@
                       </span>
                     }
                   </div>
-                  
+
                   <!-- Score or VS -->
                   @if (match.homeScore !== null && match.awayScore !== null) {
                     <div class="flex items-center justify-center gap-2 px-3 py-1 bg-surface-100 rounded font-semibold min-w-[60px]">
@@ -116,9 +132,13 @@
                   } @else {
                     <span class="text-surface-600 text-sm md:self-center self-center">vs</span>
                   }
-                  
+
                   <!-- Away Participant -->
-                  <div [class]="match.homeScore !== null && match.awayScore !== null && match.awayScore > match.homeScore ? 'font-semibold text-green-600' : ''">
+                  <div
+                    [class]="
+                      match.homeScore !== null && match.awayScore !== null && match.awayScore > match.homeScore ? 'font-semibold text-green-600' : ''
+                    "
+                  >
                     @if (match.awayTeam?.club?.slug) {
                       <a [routerLink]="['/clubs', match.awayTeam.club.slug]" class="font-medium text-color hover:text-primary no-underline">
                         {{ getMatchParticipantName(match.awayTeam, match.awayPlayer) }}
@@ -131,13 +151,13 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- Match Details -->
               <div class="mt-2 text-sm text-surface-600">
                 @if (match.date) {
                   <div class="flex items-center gap-1 mr-4 inline-flex">
                     <i class="pi pi-clock text-xs"></i>
-                    <span>{{ match.date | date:'short' }}</span>
+                    <span>{{ match.date | date: 'short' }}</span>
                   </div>
                 }
                 @if (match.round) {

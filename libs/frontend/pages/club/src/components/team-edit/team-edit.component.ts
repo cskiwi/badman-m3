@@ -126,35 +126,35 @@ export class TeamEditComponent {
     label: this.translateService.instant(`all.team.type.${value.toLowerCase()}`),
   }));
 
-  membershipTypeOptions = computed(() => 
+  membershipTypeOptions = computed(() =>
     Object.values(TeamMembershipType).map((value) => ({
       value,
       label: this.translateService.instant(`all.team.edit.membershipType.${value.toLowerCase()}`),
-    }))
+    })),
   );
 
   captainSuggestions = signal<Player[]>([]);
   selectedCaptain = signal<Player | null>(null);
   teamPlayerMemberships = signal<TeamPlayerMembership[]>([]);
-  sortedTeamPlayerMemberships = computed(() => 
+  sortedTeamPlayerMemberships = computed(() =>
     [...this.teamPlayerMemberships()].sort((a, b) => {
       // Sort by membership type: REGULAR first, then BACKUP
       const typeOrder = { REGULAR: 0, BACKUP: 1 };
       const aOrder = typeOrder[a.membershipType] ?? 2;
       const bOrder = typeOrder[b.membershipType] ?? 2;
-      
+
       if (aOrder !== bOrder) {
         return aOrder - bOrder;
       }
-      
+
       // If same type, sort by player name
       const aName = a.player?.fullName || '';
       const bName = b.player?.fullName || '';
       return aName.localeCompare(bName);
-    })
+    }),
   );
   changedMemberships = new Set<string>();
-  
+
   // Add member dialog state
   showAddPlayerDialog = signal<boolean>(false);
   playerSuggestions = signal<Player[]>([]);
@@ -204,16 +204,16 @@ export class TeamEditComponent {
         next: (result) => {
           // Extract player data from hit objects
           let players = result.map((item) => item.hit);
-          
+
           // Apply gender filter for gender-specific team types
           const teamType = this.teamForm.value.type;
           if (teamType === 'M' || teamType === 'F') {
             const requiredGender = teamType === 'M' ? 'M' : 'F';
-            players = players.filter(player => player.gender === requiredGender);
+            players = players.filter((player) => player.gender === requiredGender);
           }
 
           console.log('Captain search results:', players);
-          
+
           this.captainSuggestions.set(players);
         },
         error: (err) => {
@@ -289,18 +289,16 @@ export class TeamEditComponent {
       .subscribe({
         next: (result) => {
           // Extract player data from hit objects and exclude already added players
-          const existingPlayerIds = this.teamPlayerMemberships().map(m => m.playerId);
-          let players = result
-            .map((item) => item.hit)
-            .filter(player => !existingPlayerIds.includes(player.id));
-          
+          const existingPlayerIds = this.teamPlayerMemberships().map((m) => m.playerId);
+          let players = result.map((item) => item.hit).filter((player) => !existingPlayerIds.includes(player.id));
+
           // Apply gender filter for gender-specific team types
           const teamType = this.teamForm.value.type;
           if (teamType === 'M' || teamType === 'F') {
             const requiredGender = teamType === 'M' ? 'M' : 'F';
-            players = players.filter(player => player.gender === requiredGender);
+            players = players.filter((player) => player.gender === requiredGender);
           }
-          
+
           this.playerSuggestions.set(players);
         },
         error: (err) => {
@@ -319,31 +317,30 @@ export class TeamEditComponent {
       return;
     }
 
-    this.apollo.mutate<{ addTeamPlayerMembership: TeamPlayerMembership }>({
-      mutation: ADD_TEAM_MEMBERSHIP,
-      variables: {
-        teamId,
-        playerId: player.id,
-        membershipType,
-      },
-    }).subscribe({
-      next: (result) => {
-        if (result.data && result.data.addTeamPlayerMembership) {
-          const membership = result.data.addTeamPlayerMembership;
-          // Add the new membership to the list
-          this.teamPlayerMemberships.update(members => [
-            ...members,
-            membership
-          ]);
-          this.teamForm.markAsDirty();
-          this.showAddPlayerDialog.set(false);
-        }
-      },
-      error: (err) => {
-        console.error('Error adding team member:', err);
-        // TODO: Show error message to user
-      },
-    });
+    this.apollo
+      .mutate<{ addTeamPlayerMembership: TeamPlayerMembership }>({
+        mutation: ADD_TEAM_MEMBERSHIP,
+        variables: {
+          teamId,
+          playerId: player.id,
+          membershipType,
+        },
+      })
+      .subscribe({
+        next: (result) => {
+          if (result.data && result.data.addTeamPlayerMembership) {
+            const membership = result.data.addTeamPlayerMembership;
+            // Add the new membership to the list
+            this.teamPlayerMemberships.update((members) => [...members, membership]);
+            this.teamForm.markAsDirty();
+            this.showAddPlayerDialog.set(false);
+          }
+        },
+        error: (err) => {
+          console.error('Error adding team member:', err);
+          // TODO: Show error message to user
+        },
+      });
   }
 
   cancelAddMember(): void {
@@ -357,12 +354,14 @@ export class TeamEditComponent {
   }
 
   updateMembershipType(membership: TeamPlayerMembership, newType: TeamMembershipType): void {
-    this.teamPlayerMemberships.update((members) => members.map((m) => {
-      if (m.id === membership.id) {
-        m.membershipType = newType;
-      }
-      return m;
-    }));
+    this.teamPlayerMemberships.update((members) =>
+      members.map((m) => {
+        if (m.id === membership.id) {
+          m.membershipType = newType;
+        }
+        return m;
+      }),
+    );
     this.changedMemberships.add(membership.id);
     this.teamForm.markAsDirty();
   }

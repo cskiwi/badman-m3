@@ -1,9 +1,10 @@
-<p-button 
+<p-button
   [label]="'all.settings.languages.' + this.current | translate"
   icon="pi pi-globe"
   [text]="true"
   (click)="menuRef.toggle($event)"
-  #menuButton>
+  #menuButton
+>
 </p-button>
 
 <p-menu #menuRef [model]="menuItems" [popup]="true"></p-menu>

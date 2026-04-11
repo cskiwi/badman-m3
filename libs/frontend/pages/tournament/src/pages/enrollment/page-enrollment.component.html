@@ -141,11 +141,7 @@
           <p-card class="mb-4">
             <div class="text-center space-y-2">
               <p class="text-sm text-muted-color">{{ 'all.enrollment.guestInfo' | translate }}</p>
-              <p-button
-                label="{{ 'all.enrollment.enrollAsGuest' | translate }}"
-                [outlined]="true"
-                (onClick)="openGuestDialog()"
-              />
+              <p-button label="{{ 'all.enrollment.enrollAsGuest' | translate }}" [outlined]="true" (onClick)="openGuestDialog()" />
             </div>
           </p-card>
         }
@@ -319,24 +315,15 @@
 }
 
 <!-- Guest Enrollment Dialog -->
-<p-dialog
-  header="{{ 'all.enrollment.enrollAsGuest' | translate }}"
-  [(visible)]="showGuestDialog"
-  [modal]="true"
-  [style]="{ width: '450px' }"
->
+<p-dialog header="{{ 'all.enrollment.enrollAsGuest' | translate }}" [(visible)]="showGuestDialog" [modal]="true" [style]="{ width: '450px' }">
   <form [formGroup]="guestForm" (ngSubmit)="enrollGuest()" class="space-y-4">
     <div class="field">
-      <label for="guestName" class="block font-medium mb-2">
-        {{ 'all.enrollment.guestName' | translate }} *
-      </label>
+      <label for="guestName" class="block font-medium mb-2"> {{ 'all.enrollment.guestName' | translate }} * </label>
       <input pInputText formControlName="guestName" id="guestName" class="w-full" />
     </div>
 
     <div class="field">
-      <label for="guestEmail" class="block font-medium mb-2">
-        {{ 'all.enrollment.guestEmail' | translate }} *
-      </label>
+      <label for="guestEmail" class="block font-medium mb-2"> {{ 'all.enrollment.guestEmail' | translate }} * </label>
       <input pInputText formControlName="guestEmail" id="guestEmail" type="email" class="w-full" />
     </div>
 
@@ -383,12 +370,7 @@
         [outlined]="true"
         (onClick)="showGuestDialog.set(false)"
       />
-      <p-button
-        type="submit"
-        label="{{ 'all.enrollment.enroll' | translate }}"
-        [loading]="enrolling()"
-        [disabled]="guestForm.invalid"
-      />
+      <p-button type="submit" label="{{ 'all.enrollment.enroll' | translate }}" [loading]="enrolling()" [disabled]="guestForm.invalid" />
     </div>
   </form>
 </p-dialog>

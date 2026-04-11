@@ -4,11 +4,9 @@ import { type Player } from '@app/models';
 
 @Component({
   selector: 'app-player-avatar',
-  imports: [
-    AvatarModule,
-  ],
+  imports: [AvatarModule],
   templateUrl: './player-avatar.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerAvatarComponent {
   player = input.required<Player | null | undefined>();
@@ -18,27 +16,27 @@ export class PlayerAvatarComponent {
   initials = computed(() => {
     const player = this.player();
     if (!player) return '?';
-    
+
     const firstName = player.firstName || '';
     const lastName = player.lastName || '';
-    
+
     const firstInitial = firstName.charAt(0).toUpperCase();
     const lastInitial = lastName.charAt(0).toUpperCase();
-    
+
     return firstInitial + lastInitial || '?';
   });
 
   altText = computed(() => {
     const player = this.player();
     if (!player) return 'Player avatar';
-    
+
     return `${player.fullName || 'Player'} avatar`;
   });
 
   avatarClasses = computed(() => {
     const size = this.size();
     const baseClasses = 'rounded-full object-cover border-2 border-surface-200 dark:border-surface-700';
-    
+
     switch (size) {
       case 'xlarge':
         return `${baseClasses} w-24 h-24`;
@@ -60,7 +58,7 @@ export class PlayerAvatarComponent {
     if (!player?.gender) {
       return 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400';
     }
-    
+
     switch (player.gender) {
       case 'M':
         return 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400';

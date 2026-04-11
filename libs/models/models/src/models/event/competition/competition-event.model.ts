@@ -139,14 +139,14 @@ export class CompetitionEvent extends BaseEntity {
   @Column({
     type: 'simple-enum',
     enum: LevelType,
-    nullable: true
+    nullable: true,
   })
   declare type: LevelType;
 
   @SortableField(() => Boolean, { nullable: false })
   @Column({
     default: false,
-    nullable: false
+    nullable: false,
   })
   declare checkEncounterForFilledIn: boolean;
 

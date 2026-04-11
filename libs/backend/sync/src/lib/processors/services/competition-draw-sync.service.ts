@@ -316,11 +316,7 @@ export class CompetitionDrawSyncService {
    * Load draw context from parent job data
    * The draw might not exist yet - we have the codes to fetch from API and create it
    */
-  private async resolveFromParentContext(
-    tournamentCode: string,
-    subEventId: string,
-    drawCode: string,
-  ): Promise<DrawContext> {
+  private async resolveFromParentContext(tournamentCode: string, subEventId: string, drawCode: string): Promise<DrawContext> {
     // Load the parent sub-event
     const subEvent = await CompetitionSubEvent.findOne({
       where: { id: subEventId },

@@ -47,8 +47,8 @@ const UPDATE_PLAYER_PROFILE = gql`
     CheckboxModule,
     MessageModule,
     ProgressBarModule,
-    TranslateModule
-],
+    TranslateModule,
+  ],
   templateUrl: './player-profile.component.html',
 })
 export class PlayerProfileComponent {

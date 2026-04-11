@@ -3,6 +3,7 @@
 ## Executive Summary
 
 This document outlines the database schema design and migration strategy for implementing a general enrollment page that supports:
+
 - Per-sub-event enrollment control (independent of tournament phase)
 - Multi-discipline selection in a single transaction
 - Flexible scheduling with per-event enrollment windows
@@ -14,6 +15,7 @@ This document outlines the database schema design and migration strategy for imp
 ### Existing Tables
 
 #### `TournamentEvent` (event.EventTournaments)
+
 ```typescript
 - id: uuid (PK)
 - phase: TournamentPhase (ENUM) ← Current enrollment control
@@ -26,6 +28,7 @@ This document outlines the database schema design and migration strategy for imp
 **Issue**: Single tournament-level `phase` controls all sub-events, preventing independent enrollment windows.
 
 #### `TournamentSubEvent` (event.SubEventTournaments)
+
 ```typescript
 - id: uuid (PK)
 - eventId: uuid (FK → TournamentEvent)
@@ -40,6 +43,7 @@ This document outlines the database schema design and migration strategy for imp
 **Limitation**: No per-event enrollment dates or phase control.
 
 #### `TournamentEnrollment` (event.TournamentEnrollments)
+
 ```typescript
 - id: uuid (PK)
 - tournamentSubEventId: uuid (FK → TournamentSubEvent)
@@ -84,14 +88,15 @@ ALTER TABLE event."SubEventTournaments" ADD COLUMN
 ```
 
 **New Enum: `SubEventEnrollmentPhase`**
+
 ```typescript
 export enum SubEventEnrollmentPhase {
-  DRAFT = 'DRAFT',                    // Not yet open
-  OPEN = 'OPEN',                      // Accepting enrollments
-  CLOSED = 'CLOSED',                  // No new enrollments
-  WAITLIST_ONLY = 'WAITLIST_ONLY',    // Only accepting waiting list
-  FULL = 'FULL',                      // Max capacity reached
-  LOCKED = 'LOCKED'                   // Draws made, no changes
+  DRAFT = 'DRAFT', // Not yet open
+  OPEN = 'OPEN', // Accepting enrollments
+  CLOSED = 'CLOSED', // No new enrollments
+  WAITLIST_ONLY = 'WAITLIST_ONLY', // Only accepting waiting list
+  FULL = 'FULL', // Max capacity reached
+  LOCKED = 'LOCKED', // Draws made, no changes
 }
 ```
 
@@ -128,12 +133,13 @@ CREATE INDEX "IDX_enrollment_sessions_expires" ON event."EnrollmentSessions"("ex
 ```
 
 **Session Status Enum:**
+
 ```typescript
 export enum EnrollmentSessionStatus {
-  PENDING = 'PENDING',        // In progress
-  COMPLETED = 'COMPLETED',    // Successfully submitted
-  EXPIRED = 'EXPIRED',        // Timed out
-  CANCELLED = 'CANCELLED'     // User cancelled
+  PENDING = 'PENDING', // In progress
+  COMPLETED = 'COMPLETED', // Successfully submitted
+  EXPIRED = 'EXPIRED', // Timed out
+  CANCELLED = 'CANCELLED', // User cancelled
 }
 ```
 
@@ -175,14 +181,15 @@ CREATE INDEX "IDX_session_items_subevent" ON event."EnrollmentSessionItems"("tou
 ```
 
 **Validation Status Enum:**
+
 ```typescript
 export enum ItemValidationStatus {
-  PENDING = 'PENDING',            // Not yet validated
-  VALID = 'VALID',                // Passed validation
-  INVALID_CAPACITY = 'INVALID_CAPACITY',  // Event full
-  INVALID_LEVEL = 'INVALID_LEVEL',        // Level restrictions
-  INVALID_PARTNER = 'INVALID_PARTNER',    // Partner issues
-  INVALID_SCHEDULE = 'INVALID_SCHEDULE'   // Timing conflicts
+  PENDING = 'PENDING', // Not yet validated
+  VALID = 'VALID', // Passed validation
+  INVALID_CAPACITY = 'INVALID_CAPACITY', // Event full
+  INVALID_LEVEL = 'INVALID_LEVEL', // Level restrictions
+  INVALID_PARTNER = 'INVALID_PARTNER', // Partner issues
+  INVALID_SCHEDULE = 'INVALID_SCHEDULE', // Timing conflicts
 }
 ```
 
@@ -214,12 +221,13 @@ ALTER TABLE event."TournamentEnrollments" ADD COLUMN
 ```
 
 **Enrollment Source Enum:**
+
 ```typescript
 export enum EnrollmentSource {
-  MANUAL = 'MANUAL',              // Created by admin
-  PUBLIC_FORM = 'PUBLIC_FORM',    // General enrollment page
-  IMPORT = 'IMPORT',              // Bulk import
-  AUTO_PROMOTED = 'AUTO_PROMOTED' // From waiting list
+  MANUAL = 'MANUAL', // Created by admin
+  PUBLIC_FORM = 'PUBLIC_FORM', // General enrollment page
+  IMPORT = 'IMPORT', // Bulk import
+  AUTO_PROMOTED = 'AUTO_PROMOTED', // From waiting list
 }
 ```
 
@@ -252,12 +260,13 @@ CREATE INDEX "IDX_waitlist_log_created" ON event."WaitingListLogs"("createdAt");
 ```
 
 **Waiting List Action Enum:**
+
 ```typescript
 export enum WaitingListAction {
-  ADDED = 'ADDED',                // Joined waiting list
-  PROMOTED = 'PROMOTED',          // Moved to confirmed
-  POSITION_CHANGED = 'POSITION_CHANGED',  // Position updated
-  REMOVED = 'REMOVED'             // Left waiting list
+  ADDED = 'ADDED', // Joined waiting list
+  PROMOTED = 'PROMOTED', // Moved to confirmed
+  POSITION_CHANGED = 'POSITION_CHANGED', // Position updated
+  REMOVED = 'REMOVED', // Left waiting list
 }
 ```
 
@@ -382,6 +391,7 @@ ALTER TABLE event."EnrollmentSessions"
 ### 5.1 Query Pattern Analysis
 
 **Common Queries:**
+
 1. Get all sub-events with open enrollment for a tournament
 2. Get all enrollments for a player across tournaments
 3. Get waiting list for a sub-event (ordered by position)
@@ -647,6 +657,7 @@ public async down(queryRunner: QueryRunner): Promise<void> {
 ### 7.1 Database-Level Validation
 
 Already covered in constraints above:
+
 - Enrollment phase validity
 - Positive capacity values
 - Count <= max entries
@@ -948,6 +959,7 @@ EXECUTE FUNCTION log_waitlist_changes();
 ### 10.3 Dual-Mode Operation
 
 During transition period:
+
 - Tournament-level phase controls legacy flows
 - Per-sub-event phase enables new enrollment page
 - System respects whichever is more restrictive
@@ -1022,6 +1034,7 @@ function canEnrollInSubEvent(tournament, subEvent): boolean {
 ### 13.2 Schema Evolution
 
 Fields marked for future use:
+
 - `validationErrors` (jsonb) - flexible error structure
 - `enrollmentNotes` (text) - admin notes
 - Session `userAgent` - device tracking for analytics
@@ -1031,6 +1044,7 @@ Fields marked for future use:
 This schema design provides:
 
 **Key Features:**
+
 - Per-sub-event enrollment control with independent phases
 - Multi-discipline cart-based enrollment
 - Automatic waiting list management
@@ -1039,12 +1053,14 @@ This schema design provides:
 - Optimized query performance
 
 **Migration Approach:**
+
 - 3-phase incremental deployment
 - Zero downtime
 - Full rollback support
 - Data integrity guaranteed
 
 **Scalability:**
+
 - Indexed for common queries
 - Denormalized counts for performance
 - Automated triggers reduce application logic

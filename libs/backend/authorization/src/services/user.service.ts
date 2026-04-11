@@ -15,7 +15,7 @@ export class UserService {
           where: { sub: payload.sub },
           relations: ['claims'],
         });
-        
+
         if (user) {
           return user;
         }

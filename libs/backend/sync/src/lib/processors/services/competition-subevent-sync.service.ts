@@ -242,11 +242,7 @@ export class CompetitionSubEventSyncService {
    * Load sub-event context from parent job data
    * The sub-event might not exist yet - we have the codes to fetch from API and create it
    */
-  private async resolveFromParentContext(
-    tournamentCode: string,
-    eventId: string,
-    eventCode: string,
-  ): Promise<SubEventContext> {
+  private async resolveFromParentContext(tournamentCode: string, eventId: string, eventCode: string): Promise<SubEventContext> {
     // Load the parent event
     const competitionEvent = await CompetitionEvent.findOne({
       where: { id: eventId },

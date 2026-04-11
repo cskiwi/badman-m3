@@ -1,5 +1,19 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { AfterLoad, BaseEntity, Column, CreateDateColumn, Entity, IsNull, LessThanOrEqual, MoreThanOrEqual, OneToMany, Or, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
+import {
+  AfterLoad,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  IsNull,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  OneToMany,
+  Or,
+  PrimaryGeneratedColumn,
+  Relation,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Period, RankingSystems, StartingType } from '@app/models-enum';
 import { RankingSystemRankingGroupMembership } from './ranking-group-ranking-system-membership.model';
 import { RankingPoint } from './ranking-point.model';

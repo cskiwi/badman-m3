@@ -1043,6 +1043,11 @@
         "tournament": "Tournament",
         "withSubComponents": "With sub-components"
       },
+      "tabs": {
+        "cronJobs": "Cron Jobs",
+        "ranking": "Ranking Systems",
+        "syncPlans": "Sync Plans"
+      },
       "title": "Sync Events",
       "tournaments": {
         "filters": {

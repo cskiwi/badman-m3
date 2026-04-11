@@ -1,9 +1,4 @@
-import {
-  TournamentDraw as TournamentDrawModel,
-  Entry as EntryModel,
-  Game,
-  Standing,
-} from '@app/models';
+import { TournamentDraw as TournamentDrawModel, Entry as EntryModel, Game, Standing } from '@app/models';
 import { GameStatus } from '@app/models-enum';
 import { Injectable, Logger } from '@nestjs/common';
 import { In } from 'typeorm';
@@ -83,7 +78,7 @@ export class TournamentStandingSyncService {
         status: GameStatus.NORMAL, // Only count completed games
       },
       relations: ['gamePlayerMemberships'],
-    }).then(games => games.filter(game => game.winner === 1 || game.winner === 2));
+    }).then((games) => games.filter((game) => game.winner === 1 || game.winner === 2));
 
     this.logger.debug(`Found ${games.length} completed games with winner for draw ${draw.id}`);
     if (games.length === 0) {
@@ -244,9 +239,7 @@ export class TournamentStandingSyncService {
       });
 
       if (fallbackMatch) {
-        this.logger.debug(
-          `Used player1Id fallback match for entry ${fallbackMatch.id} with game players [${playerIds.join(', ')}]`,
-        );
+        this.logger.debug(`Used player1Id fallback match for entry ${fallbackMatch.id} with game players [${playerIds.join(', ')}]`);
         return fallbackMatch;
       }
     }

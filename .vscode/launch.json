@@ -23,6 +23,6 @@
       "localRoot": "${workspaceFolder}/apps/sync-worker",
       "remoteRoot": "/usr/src",
       "restart": true
-    },
+    }
   ]
 }

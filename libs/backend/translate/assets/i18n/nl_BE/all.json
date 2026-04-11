@@ -1043,6 +1043,11 @@
         "tournament": "Tornooi",
         "withSubComponents": "Met subcomponenten"
       },
+      "tabs": {
+        "cronJobs": "Cron Jobs",
+        "ranking": "Ranking Systemen",
+        "syncPlans": "Sync Plannen"
+      },
       "title": "Synchronisatie Evenementen",
       "tournaments": {
         "filters": {

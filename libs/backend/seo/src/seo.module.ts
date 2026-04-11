@@ -4,6 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [ConfigModule],
-  controllers: []
+  controllers: [],
 })
 export class SeoModule {}

@@ -12,11 +12,11 @@ export class TeamSyncService {
 
   async processTeamSync(tournamentCode: string, teams: TournamentTeam[]): Promise<void> {
     this.logger.log(`Processing team sync for ${teams.length} teams`);
-    
+
     for (const team of teams) {
       await this.createOrUpdateTeam(tournamentCode, team);
     }
-    
+
     this.logger.log(`Completed team sync for ${teams.length} teams`);
   }
 

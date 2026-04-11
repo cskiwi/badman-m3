@@ -20,11 +20,7 @@ import { calculateTeamIndex, recalculateTeam } from './team-builder/utils/team-i
 import { evaluatePerformance, EncounterStats } from './team-builder/utils/performance-flags';
 
 const TEAM_BUILDER_DATA_QUERY = gql`
-  query TeamBuilderData(
-    $clubId: ID!
-    $season: Float!
-    $rankingLastPlacesArgs: RankingLastPlaceArgs
-  ) {
+  query TeamBuilderData($clubId: ID!, $season: Float!, $rankingLastPlacesArgs: RankingLastPlaceArgs) {
     club(id: $clubId) {
       id
       name
@@ -303,9 +299,7 @@ export class ClubTeamBuilderTabService {
             variables: {
               clubId: params.clubId,
               season: params.season,
-              rankingLastPlacesArgs: params.systemId
-                ? { where: [{ systemId: { eq: params.systemId } }] }
-                : undefined,
+              rankingLastPlacesArgs: params.systemId ? { where: [{ systemId: { eq: params.systemId } }] } : undefined,
             },
             context: { signal: abortSignal },
             fetchPolicy: 'network-only',
@@ -567,8 +561,26 @@ export class ClubTeamBuilderTabService {
 
   updateConfig(config: Partial<TeamBuilderConfig>) {
     this.config.update((c) => ({ ...c, ...config }));
-    // Re-validate all teams with new config
-    this.teams.set(this.teams().map((t) => this.recalculateManagedTeam(t)));
+
+    // Re-evaluate performance flags if thresholds changed
+    if (config.performanceThreshold !== undefined || config.presenceThreshold !== undefined) {
+      const cfg = this.config();
+      const updatedTeams = this.teams().map((team) => {
+        const updatedPlayers = team.players.map((player) => {
+          if (player.membershipType === 'BACKUP') return player;
+          return {
+            ...player,
+            lowPerformance: player.performancePercent > 0 && player.performancePercent < cfg.performanceThreshold,
+            lowPresence: player.presencePercent < cfg.presenceThreshold,
+          };
+        });
+        return { ...team, players: updatedPlayers };
+      });
+      this.teams.set(updatedTeams.map((t) => this.recalculateManagedTeam(t)));
+    } else {
+      // Re-validate all teams with new config
+      this.teams.set(this.teams().map((t) => this.recalculateManagedTeam(t)));
+    }
   }
 
   /**
@@ -722,7 +734,7 @@ export class ClubTeamBuilderTabService {
         }
       }
 
-      console.log('Team performance stats map', statsMap.get("44a91c31-e7c8-45bc-8d19-f3e8fd885b95:ba76bb3b-b081-48ca-8f39-a1edeb72e0d7"));
+      console.log('Team performance stats map', statsMap.get('44a91c31-e7c8-45bc-8d19-f3e8fd885b95:ba76bb3b-b081-48ca-8f39-a1edeb72e0d7'));
 
       // Set total encounter counts for each player-team combo
       for (const [key, stats] of statsMap) {
@@ -733,9 +745,7 @@ export class ClubTeamBuilderTabService {
       const teamIdMap = new Map<string, string>();
       for (const currentTeam of currentTeams) {
         // Map current-season team IDs to builder team IDs
-        const builderTeam = this.teams().find(
-          (t) => t.id === currentTeam.id || (t as any).link === currentTeam.id,
-        );
+        const builderTeam = this.teams().find((t) => t.id === currentTeam.id || (t as any).link === currentTeam.id);
         if (builderTeam) {
           teamIdMap.set(currentTeam.id, builderTeam.id);
         }
@@ -855,9 +865,7 @@ export class ClubTeamBuilderTabService {
   getSubEventOptions(type: 'M' | 'F' | 'MX') {
     // Include sub-events from all event types (Liga, Prov, National) for the given gender
     // Prov sub-events are filtered by the club's province
-    const options: { label: string; value: string }[] = [
-      { label: 'Auto', value: TEAM_BUILDER_AUTO_SUB_EVENT },
-    ];
+    const options: { label: string; value: string }[] = [{ label: 'Auto', value: TEAM_BUILDER_AUTO_SUB_EVENT }];
     const clubState = this.clubState();
     const context = this.subEventContext();
 
@@ -1131,10 +1139,13 @@ export class ClubTeamBuilderTabService {
   }
 
   private applySelectedSubEvent(team: TeamBuilderTeam, subEvent?: CompetitionSubEvent): TeamBuilderTeam {
-    return recalculateTeam({
-      ...team,
-      selectedSubEvent: subEvent,
-    }, this.config());
+    return recalculateTeam(
+      {
+        ...team,
+        selectedSubEvent: subEvent,
+      },
+      this.config(),
+    );
   }
 
   private recalculateManagedTeam(team: TeamBuilderTeam): TeamBuilderTeam {
@@ -1155,12 +1166,9 @@ export class ClubTeamBuilderTabService {
     // If the standing says PROMOTED/DEMOTED but the resolved sub-event is still the original
     // (e.g. already at the lowest level), override the flags to UNCHANGED
     const effectivelyUnchanged =
-      (team.standingOutcome === 'PROMOTED' || team.standingOutcome === 'DEMOTED') &&
-      resolvedSubEvent?.id === team.originalSubEvent?.id;
+      (team.standingOutcome === 'PROMOTED' || team.standingOutcome === 'DEMOTED') && resolvedSubEvent?.id === team.originalSubEvent?.id;
 
-    const updatedTeam = effectivelyUnchanged
-      ? { ...team, isPromoted: false, isDemoted: false, standingOutcome: 'UNCHANGED' as const }
-      : team;
+    const updatedTeam = effectivelyUnchanged ? { ...team, isPromoted: false, isDemoted: false, standingOutcome: 'UNCHANGED' as const } : team;
 
     return this.applySelectedSubEvent(updatedTeam, resolvedSubEvent);
   }
@@ -1232,11 +1240,7 @@ export class ClubTeamBuilderTabService {
     this.teams.set(builderTeams);
   }
 
-  private buildPlayers(
-    team: Team,
-    surveyMap: Map<string, SurveyResponse>,
-    currentPlayerIds: Set<string>,
-  ): TeamBuilderPlayer[] {
+  private buildPlayers(team: Team, surveyMap: Map<string, SurveyResponse>, currentPlayerIds: Set<string>): TeamBuilderPlayer[] {
     return (team.teamPlayerMemberships ?? []).map((m: any) => {
       const player = m.player;
       const survey = surveyMap.get(player?.id);
@@ -1357,14 +1361,10 @@ export class ClubTeamBuilderTabService {
       }
     }
 
-    this.matchedImportPlayers.set(
-      this.collectMatchedImportPlayers(results),
-    );
+    this.matchedImportPlayers.set(this.collectMatchedImportPlayers(results));
 
     // Collect surveys from all matched + newly created results
-    const surveys = results
-      .filter((r) => r.player)
-      .map((r) => r.survey);
+    const surveys = results.filter((r) => r.player).map((r) => r.survey);
 
     this.applySurveyData(surveys);
   }
@@ -1452,8 +1452,7 @@ export class ClubTeamBuilderTabService {
     const isStopping = survey.stoppingCompetition;
 
     // Helper to update player survey in an array
-    const updateInArray = (arr: TeamBuilderPlayer[]) =>
-      arr.map((p) => (p.id === playerId ? { ...p, survey, isStopping } : p));
+    const updateInArray = (arr: TeamBuilderPlayer[]) => arr.map((p) => (p.id === playerId ? { ...p, survey, isStopping } : p));
 
     // Update in teams
     const updatedTeams = this.teams().map((team) => {
@@ -1602,10 +1601,13 @@ export class ClubTeamBuilderTabService {
 
     // Ensure player is in the display list (add once)
     if (!this.removedPlayers().some((p) => p.id === playerId)) {
-      const player = this.getAllPlayersFromData().find((p) => p.id === playerId)
-        ?? this.teams().flatMap((t) => t.players).find((p) => p.id === playerId)
-        ?? this.stoppingPlayers().find((p) => p.id === playerId)
-        ?? this.manuallyAddedPlayers().find((p) => p.id === playerId);
+      const player =
+        this.getAllPlayersFromData().find((p) => p.id === playerId) ??
+        this.teams()
+          .flatMap((t) => t.players)
+          .find((p) => p.id === playerId) ??
+        this.stoppingPlayers().find((p) => p.id === playerId) ??
+        this.manuallyAddedPlayers().find((p) => p.id === playerId);
       if (player) {
         this.removedPlayers.update((rp) => [...rp, player]);
       }
@@ -1645,9 +1647,7 @@ export class ClubTeamBuilderTabService {
 
     // Club players first
     const clubPlayers = this.getClubPlayers();
-    const clubMatches = clubPlayers.filter((p) =>
-      p.fullName.toLowerCase().includes(normalizedQuery),
-    );
+    const clubMatches = clubPlayers.filter((p) => p.fullName.toLowerCase().includes(normalizedQuery));
 
     // Global search
     try {
@@ -1661,13 +1661,16 @@ export class ClubTeamBuilderTabService {
       const clubIds = new Set(clubMatches.map((p) => p.id));
       const globalMatches = searchResults
         .filter((r) => !clubIds.has(r.hit.objectID))
-        .map((r) => ({
-          id: r.hit.objectID,
-          fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
-          firstName: r.hit.firstName ?? '',
-          lastName: r.hit.lastName ?? '',
-          gender: r.hit.gender as 'M' | 'F' | undefined,
-        } as Player));
+        .map(
+          (r) =>
+            ({
+              id: r.hit.objectID,
+              fullName: r.hit.fullName ?? `${r.hit.firstName ?? ''} ${r.hit.lastName ?? ''}`.trim(),
+              firstName: r.hit.firstName ?? '',
+              lastName: r.hit.lastName ?? '',
+              gender: r.hit.gender as 'M' | 'F' | undefined,
+            }) as Player,
+        );
 
       return [...clubMatches, ...globalMatches];
     } catch {
@@ -1679,10 +1682,7 @@ export class ClubTeamBuilderTabService {
    * Add an external player (from search) to the pool with rankings.
    */
   async addExternalPlayer(playerBasic: Player): Promise<boolean> {
-    const knownIds = new Set([
-      ...this.getAllPlayersFromData().map((p) => p.id),
-      ...this.manuallyAddedPlayers().map((p) => p.id),
-    ]);
+    const knownIds = new Set([...this.getAllPlayersFromData().map((p) => p.id), ...this.manuallyAddedPlayers().map((p) => p.id)]);
 
     if (knownIds.has(playerBasic.id)) {
       // Player already known — add one extra slot (covers backup + additional team needs,
@@ -1781,18 +1781,20 @@ export class ClubTeamBuilderTabService {
     const season = this.nextSeason();
     if (!clubId) return false;
 
-    const teamsInput = this.teams().filter((t) => !t.isMarkedForRemoval).map((t) => ({
-      teamId: t.isNew ? undefined : t.id,
-      name: t.name,
-      type: t.type,
-      teamNumber: t.teamNumber,
-      preferredDay: t.preferredDay,
-      captainId: t.captainId,
-      players: t.players.map((p) => ({
-        playerId: p.id,
-        membershipType: p.membershipType,
-      })),
-    }));
+    const teamsInput = this.teams()
+      .filter((t) => !t.isMarkedForRemoval)
+      .map((t) => ({
+        teamId: t.isNew ? undefined : t.id,
+        name: t.name,
+        type: t.type,
+        teamNumber: t.teamNumber,
+        preferredDay: t.preferredDay,
+        captainId: t.captainId,
+        players: t.players.map((p) => ({
+          playerId: p.id,
+          membershipType: p.membershipType,
+        })),
+      }));
 
     try {
       await lastValueFrom(
@@ -1814,9 +1816,7 @@ export class ClubTeamBuilderTabService {
 
     const playerMap = new Map<string, TeamBuilderPlayer>();
     const currentPlayerIds = this.getCurrentSeasonPlayerIds();
-    const importedPlayerMap = new Map(
-      this.matchedImportPlayers().map((player) => [player.id, player]),
-    );
+    const importedPlayerMap = new Map(this.matchedImportPlayers().map((player) => [player.id, player]));
 
     for (const team of data.club.teams) {
       for (const m of (team as any).teamPlayerMemberships ?? []) {

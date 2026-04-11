@@ -41,8 +41,8 @@ export class PlayersService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ players: Player[] }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ players: Player[] }>({
             query: gql`
               query TournamentPlayers($args: PlayerArgs) {
                 players(args: $args) {
@@ -81,14 +81,15 @@ export class PlayersService {
               }
             `,
             variables: {
-              args: { 
+              args: {
                 where: this._buildPlayerSearchWhere(params),
                 take: 50,
-                orderBy: [{ firstName: 'ASC' }, { lastName: 'ASC' }]
+                orderBy: [{ firstName: 'ASC' }, { lastName: 'ASC' }],
               },
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.players) {
           throw new Error('No players found');
@@ -125,7 +126,7 @@ export class PlayersService {
 
   private _buildPlayerSearchWhere(filters?: PlayerSearchFilters) {
     const where: any = {};
-    
+
     // Text search in name
     if (filters?.query && filters.query.trim()) {
       const searchTerms = filters.query
@@ -136,10 +137,10 @@ export class PlayersService {
         .filter((term) => term.length > 0);
 
       if (searchTerms.length > 0) {
-        where.OR = searchTerms.flatMap(term => [
+        where.OR = searchTerms.flatMap((term) => [
           { firstName: { ilike: `%${term}%` } },
           { lastName: { ilike: `%${term}%` } },
-          { fullName: { ilike: `%${term}%` } }
+          { fullName: { ilike: `%${term}%` } },
         ]);
       }
     }
@@ -148,8 +149,8 @@ export class PlayersService {
     if (filters?.clubId) {
       where.clubPlayerMemberships = {
         some: {
-          clubId: filters.clubId
-        }
+          clubId: filters.clubId,
+        },
       };
     }
 
@@ -166,11 +167,11 @@ export class PlayersService {
     // Rating filters (based on ranking places)
     if (filters?.minRating || filters?.maxRating) {
       const ratingWhere: any = {};
-      
+
       if (filters.minRating) {
         ratingWhere.single = { gte: filters.minRating };
       }
-      
+
       if (filters.maxRating) {
         if (ratingWhere.single) {
           ratingWhere.single = { ...ratingWhere.single, lte: filters.maxRating };
@@ -181,7 +182,7 @@ export class PlayersService {
 
       if (Object.keys(ratingWhere).length > 0) {
         where.rankingPlaces = {
-          some: ratingWhere
+          some: ratingWhere,
         };
       }
     }
@@ -197,7 +198,7 @@ export class PlayersService {
 
     // Get the most recent ranking
     const sortedRankings = player.rankingPlaces
-      .filter(place => place[system] !== null && place[system] !== undefined)
+      .filter((place) => place[system] !== null && place[system] !== undefined)
       .sort((a, b) => new Date(b.rankingDate).getTime() - new Date(a.rankingDate).getTime());
 
     return sortedRankings.length > 0 ? (sortedRankings[0][system] ?? null) : null;
@@ -210,10 +211,10 @@ export class PlayersService {
     }
 
     const now = new Date();
-    const activeMemberships = player.clubPlayerMemberships.filter(membership => {
+    const activeMemberships = player.clubPlayerMemberships.filter((membership) => {
       const start = new Date(membership.start);
       const end = membership.end ? new Date(membership.end) : null;
-      
+
       return start <= now && (!end || end >= now);
     });
 

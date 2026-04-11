@@ -28,7 +28,8 @@
                   class="rounded-full w-12 h-12 inline-flex items-center justify-center transition-all duration-300 shadow-sm"
                   [ngClass]="{
                     'bg-primary text-primary-contrast shadow-md': value <= currentPhaseIndex() + 1,
-                    'bg-surface-100 dark:bg-surface-700 text-muted-color border-2 border-surface-300 dark:border-surface-600': value > currentPhaseIndex() + 1
+                    'bg-surface-100 dark:bg-surface-700 text-muted-color border-2 border-surface-300 dark:border-surface-600':
+                      value > currentPhaseIndex() + 1,
                   }"
                 >
                   <i [class]="step.icon" class="text-lg"></i>
@@ -37,7 +38,7 @@
                   class="text-xs font-semibold text-center max-w-24 leading-tight"
                   [ngClass]="{
                     'text-primary': value <= currentPhaseIndex() + 1,
-                    'text-muted-color': value > currentPhaseIndex() + 1
+                    'text-muted-color': value > currentPhaseIndex() + 1,
                   }"
                 >
                   {{ step.label | translate }}

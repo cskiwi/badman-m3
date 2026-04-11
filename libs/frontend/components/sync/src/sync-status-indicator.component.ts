@@ -20,7 +20,7 @@ export interface SyncStatusConfig {
   standalone: true,
   host: { class: 'inline-block' },
   imports: [CommonModule, TranslateModule, BadgeModule, ChipModule, TooltipModule],
-  templateUrl: './sync-status-indicator.component.html'
+  templateUrl: './sync-status-indicator.component.html',
 })
 export class SyncStatusIndicatorComponent {
   // Inputs

@@ -41,7 +41,6 @@ export class CartItemInput {
   guestInfo?: GuestInfoInput;
 }
 
-
 @InputType('AddToCartInput')
 export class AddToCartInput {
   @Field(() => ID)

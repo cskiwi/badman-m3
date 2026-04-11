@@ -7,19 +7,21 @@ This reference provides complete examples of well-structured skills across diffe
 Perfect for straightforward tasks that don't need additional resources.
 
 **Directory structure:**
+
 ```
 text-formatter/
 └── SKILL.md
 ```
 
 **text-formatter/SKILL.md:**
+
 ```markdown
 ---
 name: text-formatter
 description: Formats and transforms text using common patterns like title case, snake case, camel case, or removing whitespace. Use when the user asks to format, transform, or clean text.
 metadata:
   author: text-tools
-  version: "1.0"
+  version: '1.0'
 ---
 
 # Text Formatter
@@ -93,6 +95,7 @@ Transforms text using common formatting patterns.
 Good balance of main instructions with detailed reference material.
 
 **Directory structure:**
+
 ```
 api-documenter/
 ├── SKILL.md
@@ -102,13 +105,14 @@ api-documenter/
 ```
 
 **api-documenter/SKILL.md:**
+
 ```markdown
 ---
 name: api-documenter
 description: Generates API documentation from code, OpenAPI specs, or existing APIs with examples and usage guides. Use when documenting REST APIs, GraphQL APIs, or creating OpenAPI specifications.
 metadata:
   author: api-tools
-  version: "2.0"
+  version: '2.0'
 ---
 
 # API Documenter
@@ -134,6 +138,7 @@ Generates comprehensive API documentation from various sources.
 ### Step 1: Identify Source
 
 Determine documentation source:
+
 - Existing API code (analyze endpoints)
 - OpenAPI/Swagger specification file
 - Live API endpoint
@@ -142,6 +147,7 @@ Determine documentation source:
 ### Step 2: Extract Information
 
 Gather:
+
 - Endpoints (paths, methods)
 - Parameters (query, path, body)
 - Request/response formats
@@ -151,6 +157,7 @@ Gather:
 ### Step 3: Generate Documentation
 
 Create documentation with:
+
 - Endpoint descriptions
 - Request examples
 - Response examples
@@ -160,6 +167,7 @@ Create documentation with:
 ### Step 4: Format Output
 
 Provide documentation in requested format:
+
 - Markdown for readability
 - OpenAPI YAML/JSON for specification
 - HTML for hosted documentation
@@ -168,11 +176,13 @@ Provide documentation in requested format:
 
 **Input:** API endpoint information
 ```
+
 POST /api/users
 Creates a new user
 Body: { "name": string, "email": string }
 Returns: { "id": number, "name": string, "email": string }
-```
+
+````
 
 **Output:** Markdown documentation
 ```markdown
@@ -192,7 +202,7 @@ Creates a new user account.
   "name": "string",
   "email": "string"
 }
-```
+````
 
 ### Response
 
@@ -200,6 +210,7 @@ Creates a new user account.
 **Content-Type:** application/json
 
 **Body:**
+
 ```json
 {
   "id": 1,
@@ -212,6 +223,7 @@ Creates a new user account.
 
 - `400 Bad Request` - Invalid input data
 - `409 Conflict` - Email already exists
+
 ```
 
 ## Advanced Features
@@ -235,6 +247,7 @@ For more complete examples, see [references/EXAMPLES.md](references/EXAMPLES.md)
 For sophisticated tasks requiring scripts, detailed references, and templates.
 
 **Directory structure:**
+
 ```
 database-migrator/
 ├── SKILL.md
@@ -252,13 +265,14 @@ database-migrator/
 ```
 
 **database-migrator/SKILL.md:**
-```markdown
+
+````markdown
 ---
 name: database-migrator
 description: Creates and manages database migrations with version control, rollback support, and validation. Use when creating database schema changes, migrations, or managing database versions.
 metadata:
   author: data-platform
-  version: "3.1"
+  version: '3.1'
 compatibility: Requires Python 3.9+, and database libraries (psycopg2, pymysql, or pymssql)
 ---
 
@@ -297,6 +311,7 @@ See [references/DATABASE-SUPPORT.md](references/DATABASE-SUPPORT.md) for version
 **User request:** "Add an email column to the users table"
 
 **Generated migration (`001_add_email_to_users.sql`):**
+
 ```sql
 -- Migration: Add email column to users table
 -- Version: 001
@@ -315,8 +330,10 @@ VALUES ('001', 'add_email_to_users', CURRENT_TIMESTAMP);
 
 COMMIT;
 ```
+````
 
 **Generated rollback (`001_add_email_to_users_rollback.sql`):**
+
 ```sql
 -- Rollback: Add email column to users table
 -- Version: 001
@@ -339,6 +356,7 @@ COMMIT;
 ### Step 1: Analyze Change Request
 
 Determine:
+
 - Type of change (ADD, MODIFY, DROP, RENAME)
 - Affected tables/columns
 - Data type requirements
@@ -367,6 +385,7 @@ python scripts/validate_migration.py 001_add_email_to_users.sql
 ```
 
 Checks:
+
 - SQL syntax
 - Transaction boundaries
 - Version tracking
@@ -385,6 +404,7 @@ python scripts/generate_migration.py \
 ### Step 5: Document Migration
 
 Include in migration file:
+
 - Purpose/description
 - Dependencies (previous migrations)
 - Breaking changes (if any)
@@ -414,6 +434,7 @@ See [references/ROLLBACK-STRATEGIES.md](references/ROLLBACK-STRATEGIES.md) for:
 ### Breaking Changes
 
 If migration contains breaking changes:
+
 1. Document in migration file header
 2. Consider multi-phase migration
 3. Plan application code updates
@@ -422,6 +443,7 @@ If migration contains breaking changes:
 ### Large Data Migrations
 
 For tables with millions of rows:
+
 1. Use batched updates
 2. Monitor performance
 3. Consider maintenance window
@@ -430,6 +452,7 @@ For tables with millions of rows:
 ### Multiple Database Support
 
 When targeting multiple database backends:
+
 1. Use generic SQL when possible
 2. Create database-specific variants if needed
 3. Test on all target databases
@@ -451,10 +474,12 @@ Before applying migration:
 ## Examples
 
 See [references/MIGRATION-PATTERNS.md](references/MIGRATION-PATTERNS.md) for:
+
 - Adding NOT NULL constraint safely
 - Renaming with zero downtime
 - Complex data transformations
 - Multi-step migrations
+
 ```
 
 ---
@@ -508,3 +533,4 @@ Across all examples, notice:
 5. **Progressive disclosure** - main SKILL.md stays focused
 
 Use these patterns when create your own skills.
+```

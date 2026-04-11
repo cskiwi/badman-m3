@@ -5,10 +5,9 @@ import dayjs from 'dayjs';
 @Pipe({
   name: 'dayjsIsValid',
   pure: true,
-  standalone: true
+  standalone: true,
 })
 export class DayjsIsValidPipe implements PipeTransform {
-
   transform(value: DayjsInput): boolean {
     if (!value) {
       return false;

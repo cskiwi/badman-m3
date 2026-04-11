@@ -170,5 +170,4 @@ export class TournamentEventSyncService {
       throw error;
     }
   }
-
 }

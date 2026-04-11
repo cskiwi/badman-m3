@@ -1,0 +1,146 @@
+<div class="space-y-4">
+  <div class="flex justify-end">
+    <p-button icon="pi pi-refresh" label="Refresh" severity="secondary" [outlined]="true" (onClick)="cronJobsService.loadCronJobs()" />
+  </div>
+
+  <p-table [value]="cronJobs()" [loading]="loading()" [tableStyle]="{ 'min-width': '60rem' }" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Schedule</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Active</th>
+        <th>Last Run</th>
+        <th>Next Run</th>
+        <th class="text-right">Actions</th>
+      </tr>
+    </ng-template>
+
+    @if (loading()) {
+      <ng-template pTemplate="body">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <tr>
+            @for (col of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track col) {
+              <td><p-skeleton height="1.5rem" /></td>
+            }
+          </tr>
+        }
+      </ng-template>
+    }
+
+    <ng-template pTemplate="body" let-job>
+      @if (!loading()) {
+        <tr>
+          <td>
+            <span class="font-medium text-color">{{ job.name }}</span>
+          </td>
+
+          <td>
+            <p-tag [value]="job.type" [severity]="job.type === 'ranking' ? 'info' : 'warn'" />
+          </td>
+
+          <td>
+            <code class="text-sm text-primary bg-highlight rounded-border px-2 py-1">{{ job.cronTime }}</code>
+          </td>
+
+          <td>
+            <span class="text-sm text-color">{{ getCronDescription(job.cronTime) }}</span>
+          </td>
+
+          <td>
+            @if (job.running) {
+              <p-tag value="Running" severity="warn" />
+            } @else {
+              <span class="text-muted-color">Idle</span>
+            }
+          </td>
+
+          <td>
+            <p-tag [value]="job.active ? 'Active' : 'Disabled'" [severity]="job.active ? 'success' : 'danger'" />
+          </td>
+
+          <td>
+            @if (job.lastRun) {
+              <span class="text-sm text-color">{{ job.lastRun | date: 'dd/MM/yyyy HH:mm' }}</span>
+            } @else {
+              <span class="text-muted-color">—</span>
+            }
+          </td>
+
+          <td>
+            @if (job.nextRun) {
+              <span class="text-sm text-color">{{ job.nextRun | date: 'dd/MM/yyyy HH:mm' }}</span>
+            } @else {
+              <span class="text-muted-color">—</span>
+            }
+          </td>
+
+          <td class="text-right">
+            <div class="flex justify-end gap-1">
+              <p-button
+                icon="pi pi-play"
+                size="small"
+                severity="primary"
+                [outlined]="true"
+                [loading]="actionLoading()"
+                (onClick)="triggerJob(job)"
+                pTooltip="Trigger now"
+              />
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                (onClick)="openEditDialog(job)"
+                pTooltip="Edit schedule"
+              />
+              <p-button
+                [icon]="job.active ? 'pi pi-pause' : 'pi pi-play'"
+                size="small"
+                [severity]="job.active ? 'warn' : 'success'"
+                [outlined]="true"
+                (onClick)="toggleActive(job)"
+                [pTooltip]="job.active ? 'Disable' : 'Enable'"
+              />
+            </div>
+          </td>
+        </tr>
+      }
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      @if (!loading() && cronJobs().length === 0) {
+        <tr>
+          <td colspan="9" class="text-center text-muted-color py-4">No cron jobs found</td>
+        </tr>
+      }
+    </ng-template>
+  </p-table>
+
+  <!-- Edit dialog -->
+  <p-dialog
+    [(visible)]="editDialogOpen"
+    [modal]="true"
+    [closable]="!actionLoading()"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '28rem' }"
+    [header]="'Edit Schedule: ' + (editingJob()?.name ?? '')"
+  >
+    <div class="flex flex-col gap-4 pt-2">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-muted-color">Cron Expression</label>
+        <input pInputText type="text" [(ngModel)]="editCronValue" class="w-full font-mono" />
+      </div>
+      <p class="text-xs text-muted-color m-0">Format: minute hour day-of-month month day-of-week</p>
+      <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" [outlined]="true" [disabled]="actionLoading()" (onClick)="editDialogOpen = false" />
+        <p-button icon="pi pi-check" label="Save" [loading]="actionLoading()" (onClick)="saveEdit()" />
+      </div>
+    </div>
+  </p-dialog>
+
+  <p-toast />
+</div>

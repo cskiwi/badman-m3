@@ -5,6 +5,7 @@ Welcome to the badman-m3 project workspace. This file provides guidance for Clau
 ## 📖 Primary Documentation
 
 **Read [AGENTS.md](AGENTS.md) for complete documentation** including:
+
 - Skill-based system architecture
 - Available custom agents and skills
 - Technology-specific guidelines
@@ -21,6 +22,7 @@ Skill = Domain knowledge + Best practices
 ```
 
 **Before implementing any feature:**
+
 1. Read [AGENTS.md](AGENTS.md) for context
 2. Consult the relevant skill in `.github/skills/`
 3. Follow established patterns and conventions
@@ -38,26 +40,26 @@ Skill = Domain knowledge + Best practices
 
 Consult these for domain-specific guidance:
 
-| Skill | Purpose | Location |
-|-------|---------|----------|
-| **agent-design** | Creating custom agents | [.github/skills/agent-design/SKILL.md](.github/skills/agent-design/SKILL.md) |
-| **angular-development** | Angular + PrimeNG patterns | [.github/skills/angular-development/SKILL.md](.github/skills/angular-development/SKILL.md) |
-| **nestjs-development** | NestJS backend patterns | [.github/skills/nestjs-development/SKILL.md](.github/skills/nestjs-development/SKILL.md) |
-| **make-skill-template** | Creating new skills | [.github/skills/make-skill-template/SKILL.md](.github/skills/make-skill-template/SKILL.md) |
-| **markdown-content** | Markdown documentation | [.github/skills/markdown-content/SKILL.md](.github/skills/markdown-content/SKILL.md) |
-| **technical-documentation** | Product documentation | [.github/skills/technical-documentation/SKILL.md](.github/skills/technical-documentation/SKILL.md) |
-| **write-coding-standards-from-file** | Generate coding standards | [.github/skills/write-coding-standards-from-file/SKILL.md](.github/skills/write-coding-standards-from-file/SKILL.md) |
+| Skill                                | Purpose                    | Location                                                                                                             |
+| ------------------------------------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **agent-design**                     | Creating custom agents     | [.github/skills/agent-design/SKILL.md](.github/skills/agent-design/SKILL.md)                                         |
+| **angular-development**              | Angular + PrimeNG patterns | [.github/skills/angular-development/SKILL.md](.github/skills/angular-development/SKILL.md)                           |
+| **nestjs-development**               | NestJS backend patterns    | [.github/skills/nestjs-development/SKILL.md](.github/skills/nestjs-development/SKILL.md)                             |
+| **make-skill-template**              | Creating new skills        | [.github/skills/make-skill-template/SKILL.md](.github/skills/make-skill-template/SKILL.md)                           |
+| **markdown-content**                 | Markdown documentation     | [.github/skills/markdown-content/SKILL.md](.github/skills/markdown-content/SKILL.md)                                 |
+| **technical-documentation**          | Product documentation      | [.github/skills/technical-documentation/SKILL.md](.github/skills/technical-documentation/SKILL.md)                   |
+| **write-coding-standards-from-file** | Generate coding standards  | [.github/skills/write-coding-standards-from-file/SKILL.md](.github/skills/write-coding-standards-from-file/SKILL.md) |
 
 ## Available Custom Agents
 
 This workspace includes specialized agents:
 
-| Agent | Purpose | Location |
-|-------|---------|----------|
-| **@angular-expert** | Angular features with PrimeNG | [.github/agents/angular-expert.agent.md](.github/agents/angular-expert.agent.md) |
-| **@nestjs-expert** | NestJS backend features | [.github/agents/nestjs-expert.agent.md](.github/agents/nestjs-expert.agent.md) |
-| **@custom-agent-foundry** | Create new custom agents | [.github/agents/custom-agent-foundry.agent.md](.github/agents/custom-agent-foundry.agent.md) |
-| **@specification** | Generate specification documents | [.github/agents/specification.agent.md](.github/agents/specification.agent.md) |
+| Agent                     | Purpose                          | Location                                                                                     |
+| ------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------- |
+| **@angular-expert**       | Angular features with PrimeNG    | [.github/agents/angular-expert.agent.md](.github/agents/angular-expert.agent.md)             |
+| **@nestjs-expert**        | NestJS backend features          | [.github/agents/nestjs-expert.agent.md](.github/agents/nestjs-expert.agent.md)               |
+| **@custom-agent-foundry** | Create new custom agents         | [.github/agents/custom-agent-foundry.agent.md](.github/agents/custom-agent-foundry.agent.md) |
+| **@specification**        | Generate specification documents | [.github/agents/specification.agent.md](.github/agents/specification.agent.md)               |
 
 ## Quick Reference by File Type
 
@@ -66,6 +68,7 @@ This workspace includes specialized agents:
 **Skill:** [angular-development](.github/skills/angular-development/SKILL.md)
 
 **Standards:**
+
 - Use standalone components (no NgModules)
 - Use `inject()` for dependency injection
 - Use signals for state management (`signal()`, `computed()`, `effect()`)
@@ -74,6 +77,7 @@ This workspace includes specialized agents:
 - TypeScript strict mode enabled
 
 **Before commit:**
+
 ```bash
 npx nx run-many --target=lint
 ```
@@ -83,6 +87,7 @@ npx nx run-many --target=lint
 **Skill:** [nestjs-development](.github/skills/nestjs-development/SKILL.md)
 
 **Standards:**
+
 - Modular architecture (one module per domain)
 - Use dependency injection throughout
 - DTOs validated with class-validator for inputs
@@ -91,6 +96,7 @@ npx nx run-many --target=lint
 - One export per file
 
 **Before commit:**
+
 ```bash
 npx nx run-many --target=lint
 npx nx run-many --target=test
@@ -101,6 +107,7 @@ npx nx run-many --target=test
 **Skill:** [markdown-content](.github/skills/markdown-content/SKILL.md)
 
 **Standards:**
+
 - Include YAML frontmatter
 - Start content with H2 (not H1)
 - Code blocks with language specification
@@ -112,6 +119,7 @@ npx nx run-many --target=test
 **Skill:** [technical-documentation](.github/skills/technical-documentation/SKILL.md)
 
 **Standards:**
+
 - Must be in `/documentation` folder
 - Structured chapters with frontmatter
 - Fact-based, AS-IS oriented
@@ -133,6 +141,7 @@ chore(deps): update Angular to v20
 ```
 
 **Rules:**
+
 - Limit lines to 100 characters
 - Use lowercase for type and scope
 - Write in imperative mood ("add" not "added")
@@ -166,6 +175,7 @@ If the user's request falls into these categories, **recommend the appropriate a
 ## Architecture Principles
 
 ### Code Quality
+
 - Extract complex logic into helper functions
 - Use guard clauses and early returns
 - Follow SOLID principles
@@ -173,12 +183,14 @@ If the user's request falls into these categories, **recommend the appropriate a
 - Write clear, concise comments
 
 ### Performance
+
 - Throttle frequent operations in hot paths
 - Use lazy loading where appropriate
 - Optimize queries and data fetching
 - Profile before optimizing
 
 ### Maintainability
+
 - Keep components/classes focused (single responsibility)
 - Use dependency injection
 - Separate concerns by layer
@@ -211,6 +223,7 @@ badman-m3/
 ## Important Reminders
 
 ✅ **Always:**
+
 - Use LF line endings (never CRLF)
 - Consult skills before implementing
 - Follow existing patterns in codebase
@@ -219,6 +232,7 @@ badman-m3/
 - Use Nx to run tasks (`npx nx run`, `npx nx run-many`)
 
 ❌ **Never:**
+
 - Use CRLF line endings
 - Create NgModules in Angular (use standalone)
 - Commit without linting/formatting

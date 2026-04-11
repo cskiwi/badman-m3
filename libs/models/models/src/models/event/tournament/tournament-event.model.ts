@@ -1,6 +1,18 @@
 import { SortableField, WhereField } from '@app/utils';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { Entity, BaseEntity, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, Column, OneToMany, Relation, ManyToOne, JoinColumn, Index } from 'typeorm';
+import {
+  Entity,
+  BaseEntity,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  Column,
+  OneToMany,
+  Relation,
+  ManyToOne,
+  JoinColumn,
+  Index,
+} from 'typeorm';
 import { TournamentSubEvent } from './tournament-sub-event.model';
 import { TournamentPhase } from '@app/models-enum';
 import { Club } from '../../club.model';

@@ -1,6 +1,7 @@
 import { InjectQueue, InjectFlowProducer } from '@nestjs/bullmq';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { CronJob as NestCronJob } from 'cron';
 import { Queue, FlowProducer } from 'bullmq';
 import {
   TournamentEvent,
@@ -10,6 +11,7 @@ import {
   TournamentDraw,
   CompetitionDraw,
   CompetitionEncounter,
+  CronJob,
 } from '@app/models';
 import { extractParentId, generateJobId } from '../utils/job.utils';
 import {
@@ -38,8 +40,12 @@ import { RankingSystem } from '@app/models';
 import { RankingSystems } from '@app/models-enum';
 
 @Injectable()
-export class SyncService {
+export class SyncService implements OnModuleInit {
   private readonly logger = new Logger(SyncService.name);
+
+  /** Maps jobFunction name → bound handler */
+  private readonly cronHandlers: Record<string, () => Promise<void>>;
+
   constructor(
     @InjectQueue(SYNC_QUEUE)
     private readonly syncQueue: Queue,
@@ -67,15 +73,154 @@ export class SyncService {
 
     @InjectFlowProducer(TOURNAMENT_EVENT_QUEUE)
     private readonly tournamentSyncFlow: FlowProducer,
-  ) {}
+
+    private readonly schedulerRegistry: SchedulerRegistry,
+  ) {
+    this.cronHandlers = {
+      scheduleTournamentDiscovery: () => this.queueTournamentDiscovery(),
+      scheduleCompetitionSync: () => this.queueCompetitionSync(),
+      scheduleTournamentSync: () => this.queueTournamentSync(),
+      scheduleRankingSync: () => this.queueRankingSync(),
+      scheduleRankingCalc: () => this.queueRankingCalc(),
+    };
+  }
+
+  /**
+   * On module init: register dynamic cron jobs from database
+   */
+  async onModuleInit(): Promise<void> {
+    await this.registerAllCronJobs();
+  }
+
+  /**
+   * Register all active CronJob records as dynamic cron jobs
+   */
+  async registerAllCronJobs(): Promise<void> {
+    const cronJobs = await CronJob.find({ where: { active: true } });
+    for (const cronJob of cronJobs) {
+      this.registerCronJob(cronJob);
+    }
+  }
+
+  /**
+   * Register a single CronJob as a dynamic cron with NestJS SchedulerRegistry
+   */
+  private registerCronJob(cronJob: CronJob): void {
+    const jobName = cronJob.meta?.jobName;
+    if (!jobName) {
+      this.logger.warn(`No jobName in meta for cron job: ${cronJob.name}`);
+      return;
+    }
+    const handler = this.cronHandlers[jobName];
+    if (!handler) {
+      this.logger.warn(`No handler found for cron job function: ${jobName}`);
+      return;
+    }
+
+    // Remove existing cron if already registered (for re-registration after update)
+    try {
+      this.schedulerRegistry.deleteCronJob(cronJob.name);
+    } catch {
+      // Not registered yet — ignore
+    }
+
+    const job = new NestCronJob(cronJob.cronTime, async () => {
+      await this.executeCronJob(cronJob.name, handler);
+    });
+
+    this.schedulerRegistry.addCronJob(cronJob.name, job);
+    job.start();
+    this.logger.log(`Registered cron job: ${cronJob.name} (${cronJob.cronTime})`);
+  }
+
+  /**
+   * Execute a cron job, updating tracking fields in the database
+   */
+  private async executeCronJob(name: string, handler: () => Promise<void>): Promise<void> {
+    const cronJob = await CronJob.findOne({ where: { name } });
+    if (!cronJob || !cronJob.active) return;
+
+    cronJob.amount = (cronJob.amount ?? 0) + 1;
+    cronJob.lastRun = new Date();
+    await cronJob.save();
+
+    try {
+      await handler();
+    } catch (error) {
+      this.logger.error(`Cron job ${name} failed: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      cronJob.amount = Math.max((cronJob.amount ?? 1) - 1, 0);
+      await cronJob.save();
+    }
+  }
+
+  /**
+   * Trigger a specific cron job by name (manual trigger)
+   */
+  async triggerCronJob(name: string): Promise<void> {
+    const cronJob = await CronJob.findOne({ where: { name } });
+    if (!cronJob) {
+      throw new NotFoundException(`Cron job '${name}' not found`);
+    }
+
+    const jobName = cronJob.meta?.jobName;
+    if (!jobName) {
+      throw new NotFoundException(`No jobName in meta for cron job: ${name}`);
+    }
+    const handler = this.cronHandlers[jobName];
+    if (!handler) {
+      throw new NotFoundException(`No handler for cron job function: ${jobName}`);
+    }
+
+    await this.executeCronJob(name, handler);
+  }
+
+  /**
+   * Update a cron job's settings and re-register it
+   */
+  async updateCronJob(id: string, updates: { cronTime?: string; active?: boolean }): Promise<CronJob> {
+    const cronJob = await CronJob.findOne({ where: { id } });
+    if (!cronJob) {
+      throw new NotFoundException(`Cron job with id ${id} not found`);
+    }
+
+    if (updates.cronTime !== undefined) {
+      cronJob.cronTime = updates.cronTime;
+    }
+    if (updates.active !== undefined) {
+      cronJob.active = updates.active;
+    }
+
+    await cronJob.save();
+
+    // Re-register or unregister based on active state
+    if (cronJob.active) {
+      this.registerCronJob(cronJob);
+    } else {
+      try {
+        this.schedulerRegistry.deleteCronJob(cronJob.name);
+      } catch {
+        // Not registered — ignore
+      }
+    }
+
+    return cronJob;
+  }
 
   /**
    * Get all queue instances as an array for easy iteration
    */
   private getAllQueues(): Queue[] {
-    return [this.syncQueue, this.tournamentDiscoveryQueue, this.competitionEventQueue, this.tournamentEventQueue, this.teamMatchingQueue, this.rankingSyncQueue, this.rankingCalcQueue];
+    return [
+      this.syncQueue,
+      this.tournamentDiscoveryQueue,
+      this.competitionEventQueue,
+      this.tournamentEventQueue,
+      this.teamMatchingQueue,
+      this.rankingSyncQueue,
+      this.rankingCalcQueue,
+    ];
   }
-
 
   /**
    * Get queue names mapped to their instances
@@ -127,46 +272,6 @@ export class SyncService {
   }
 
   /**
-   * Daily tournament discovery - runs at 6 AM
-   */
-  @Cron('0 6 * * *')
-  async scheduleTournamentDiscovery(): Promise<void> {
-    await this.queueTournamentDiscovery();
-  }
-
-  /**
-   * Competition structure sync - runs every 12 hours during May-August
-   */
-  @Cron('0 */12 * 5-8 *')
-  async scheduleCompetitionSync(): Promise<void> {
-    await this.queueCompetitionSync();
-  }
-
-  /**
-   * Tournament structure sync - runs every 12 hours
-   */
-  @Cron('0 */12 * * *')
-  async scheduleTournamentSync(): Promise<void> {
-    await this.queueTournamentSync();
-  }
-
-  /**
-   * BBF Rating ranking sync - runs every Monday at 4 AM
-   */
-  @Cron('0 4 * * 1')
-  async scheduleRankingSync(): Promise<void> {
-    await this.queueRankingSync();
-  }
-
-  /**
-   * Self-calculated ranking — runs daily at 3 AM, checks all non-VISUAL systems
-   */
-  @Cron('0 3 * * *')
-  async scheduleRankingCalc(): Promise<void> {
-    await this.queueRankingCalc();
-  }
-
-  /**
    * Enqueue calculation jobs for all non-VISUAL ranking systems that are due
    */
   async queueRankingCalc(options?: { startDate?: Date; stopDate?: Date }): Promise<void> {
@@ -203,9 +308,7 @@ export class SyncService {
 
     // Start from provided startDate, or last calculation, or 1 interval ago
     const fromDate =
-      options?.startDate ??
-      system.calculationLastUpdate ??
-      new Date(Date.now() - calculationIntervalAmount * this.unitToMs(calculationIntervalUnit));
+      options?.startDate ?? system.calculationLastUpdate ?? new Date(Date.now() - calculationIntervalAmount * this.unitToMs(calculationIntervalUnit));
 
     let cursor = new Date(fromDate);
     // Advance past the last-calculated date by one interval
@@ -236,9 +339,7 @@ export class SyncService {
     const { updateIntervalAmount, updateIntervalUnit, updateDayOfWeek, updateLastUpdate } = system;
     if (!updateIntervalAmount || !updateIntervalUnit) return false;
 
-    const nextDue = updateLastUpdate
-      ? new Date(updateLastUpdate.getTime() + updateIntervalAmount * this.unitToMs(updateIntervalUnit))
-      : new Date(0);
+    const nextDue = updateLastUpdate ? new Date(updateLastUpdate.getTime() + updateIntervalAmount * this.unitToMs(updateIntervalUnit)) : new Date(0);
 
     if (date < nextDue) return false;
 
@@ -259,10 +360,14 @@ export class SyncService {
 
   private unitToMs(unit: string): number {
     switch (unit) {
-      case 'days':   return 86400000;
-      case 'weeks':  return 7 * 86400000;
-      case 'months': return 30 * 86400000; // approximate
-      default:       return 86400000;
+      case 'days':
+        return 86400000;
+      case 'weeks':
+        return 7 * 86400000;
+      case 'months':
+        return 30 * 86400000; // approximate
+      default:
+        return 86400000;
     }
   }
 
@@ -444,9 +549,7 @@ export class SyncService {
     const tournamentSubEvent = await TournamentSubEvent.findOne({
       where: { id: subEventId },
     });
-    const competitionSubEvent = !tournamentSubEvent
-      ? await CompetitionSubEvent.findOne({ where: { id: subEventId } })
-      : null;
+    const competitionSubEvent = !tournamentSubEvent ? await CompetitionSubEvent.findOne({ where: { id: subEventId } }) : null;
 
     if (tournamentSubEvent) {
       // Only pass internal ID - the service will load visual codes from the model
@@ -477,9 +580,7 @@ export class SyncService {
     const tournamentDraw = await TournamentDraw.findOne({
       where: { id: drawId },
     });
-    const competitionDraw = !tournamentDraw
-      ? await CompetitionDraw.findOne({ where: { id: drawId } })
-      : null;
+    const competitionDraw = !tournamentDraw ? await CompetitionDraw.findOne({ where: { id: drawId } }) : null;
 
     if (tournamentDraw) {
       // Only pass internal ID - the service will load visual codes from the model
@@ -510,9 +611,7 @@ export class SyncService {
     const tournamentDraw = await TournamentDraw.findOne({
       where: { id: drawId },
     });
-    const competitionDraw = !tournamentDraw
-      ? await CompetitionDraw.findOne({ where: { id: drawId } })
-      : null;
+    const competitionDraw = !tournamentDraw ? await CompetitionDraw.findOne({ where: { id: drawId } }) : null;
 
     if (tournamentDraw) {
       // Only pass internal ID - the service will load visual codes from the model
@@ -560,7 +659,6 @@ export class SyncService {
     const jobId = generateJobId('competition', 'encounter', encounterId);
     await this.competitionEventQueue.add(jobId, data, { jobId, priority: 7 });
   }
-
 
   /**
    * Get queue statistics
@@ -764,10 +862,7 @@ export class SyncService {
       return false;
     }
 
-    const childJobs = [
-      ...(dependencies?.processed ? Object.values(dependencies.processed) : []),
-      ...(dependencies?.unprocessed ?? []),
-    ];
+    const childJobs = [...(dependencies?.processed ? Object.values(dependencies.processed) : []), ...(dependencies?.unprocessed ?? [])];
 
     // getDependencies returns processed as Record<string, resultValue> and unprocessed as jobKeys
     // We need to fetch actual child jobs to check their status

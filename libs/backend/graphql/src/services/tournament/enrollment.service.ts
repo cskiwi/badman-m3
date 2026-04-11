@@ -1,15 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import {
-  TournamentEnrollment,
-} from '@app/models';
+import { TournamentEnrollment } from '@app/models';
 import { EnrollmentStatus } from '@app/models-enum';
 import { EnrollmentCartService } from './enrollment-cart.service';
 
 @Injectable()
 export class EnrollmentService {
-  constructor(
-    private cartService: EnrollmentCartService,
-  ) {}
+  constructor(private cartService: EnrollmentCartService) {}
 
   /**
    * Submit enrollment cart - converts cart to actual enrollments
@@ -56,5 +52,4 @@ export class EnrollmentService {
 
     return enrollments;
   }
-
 }

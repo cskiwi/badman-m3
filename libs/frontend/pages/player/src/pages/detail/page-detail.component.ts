@@ -1,11 +1,4 @@
-
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
@@ -23,8 +16,8 @@ import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
-    selector: 'app-page-detail',
-    imports: [
+  selector: 'app-page-detail',
+  imports: [
     ProgressBarModule,
     ButtonModule,
     CardModule,
@@ -35,11 +28,11 @@ import { TooltipModule } from 'primeng/tooltip';
     PageHeaderComponent,
     ShowLevelComponent,
     RecentGamesComponent,
-    UpcomingGamesComponent
-],
-    templateUrl: './page-detail.component.html',
-    styleUrl: './page-detail.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    UpcomingGamesComponent,
+  ],
+  templateUrl: './page-detail.component.html',
+  styleUrl: './page-detail.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageDetailComponent {
   private readonly dataService = new DetailService();
@@ -56,18 +49,14 @@ export class PageDetailComponent {
 
   user = this.auth.user;
 
-  clubs = computed(() =>
-    (this.user()?.clubPlayerMemberships ?? []).filter(
-      (membership) => membership?.active,
-    ),
-  );
+  clubs = computed(() => (this.user()?.clubPlayerMemberships ?? []).filter((membership) => membership?.active));
 
   editMenuItems = [
     {
       label: 'Edit',
       icon: 'pi pi-user-edit',
-      routerLink: ['edit']
-    }
+      routerLink: ['edit'],
+    },
     // Additional edit options can be added here in the future
   ];
 

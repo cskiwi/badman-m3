@@ -8,10 +8,7 @@ import { NotificationArgs } from '../args';
 export class NotificationResolver {
   @Query(() => Notification)
   @UseGuards(PermGuard)
-  async notification(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<Notification> {
+  async notification(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<Notification> {
     const notification = await Notification.findOne({
       where: {
         id,

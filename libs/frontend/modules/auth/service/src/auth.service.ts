@@ -50,8 +50,8 @@ export class AuthService {
   // Public methods for actions
   async fetchUser(): Promise<void> {
     try {
-      const result = await lastValueFrom(this.apollo
-        .query<{ me: Player }>({
+      const result = await lastValueFrom(
+        this.apollo.query<{ me: Player }>({
           query: gql`
             query Profile {
               me {
@@ -74,7 +74,8 @@ export class AuthService {
               }
             }
           `,
-        }));
+        }),
+      );
 
       let user = result?.data?.me || null;
 

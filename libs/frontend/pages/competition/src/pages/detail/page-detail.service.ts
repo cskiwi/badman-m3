@@ -24,8 +24,8 @@ export class DetailService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ competitionEvent: CompetitionEvent }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ competitionEvent: CompetitionEvent }>({
             query: gql`
               query Competition($id: ID!) {
                 competitionEvent(id: $id) {
@@ -75,7 +75,8 @@ export class DetailService {
               id: params.competitionId,
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.competitionEvent) {
           throw new Error('No competition found');

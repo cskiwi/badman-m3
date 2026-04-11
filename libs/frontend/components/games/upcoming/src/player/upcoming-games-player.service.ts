@@ -98,12 +98,13 @@ export class PlayerUpcommingGamesService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ player: { id: string; teamPlayerMemberships: { id: string; team: { id: string } }[] } }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ player: { id: string; teamPlayerMemberships: { id: string; team: { id: string } }[] } }>({
             query: PLAYER_TEAMS_QUERY,
             variables: { playerId },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.player?.teamPlayerMemberships) {
           return [];
@@ -141,24 +142,25 @@ export class PlayerUpcommingGamesService {
           AND: [{ date: { gte: today.toISOString() } }, { OR: [{ homeTeamId: { in: teamIds } }, { awayTeamId: { in: teamIds } }] }],
         };
 
-        const result = await lastValueFrom(this.apollo
-          .query<{ competitionEncounters: CompetitionEncounter[] }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ competitionEncounters: CompetitionEncounter[] }>({
             query: UPCOMING_GAMES_QUERY,
             variables: {
               args: {
                 where,
-                take: 10, 
+                take: 10,
                 order: { date: 'ASC' },
               },
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.competitionEncounters) {
           return { games: [], endReached: true };
         }
 
-        const encounters = result.data.competitionEncounters;//.sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
+        const encounters = result.data.competitionEncounters; //.sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
 
         // Apply pagination
         const currentPage = page || 1;

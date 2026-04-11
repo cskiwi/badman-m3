@@ -40,13 +40,13 @@ export class LogEntry extends BaseEntity {
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'uuid'})
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare playerId?: string;
 
   @SortableField({ nullable: true })
   @WhereField({ nullable: true })
-  @Column({ nullable: true, type: 'uuid'})
+  @Column({ nullable: true, type: 'uuid' })
   @Index()
   declare requestId?: string;
 

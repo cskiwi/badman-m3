@@ -2,9 +2,7 @@
   <!-- Stats Cards -->
   <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
     <!-- Total -->
-    <div
-      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-blue-500 p-4 shadow-sm hover:shadow-md transition-shadow"
-    >
+    <div class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-blue-500 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
           <i class="pi pi-users text-blue-600 dark:text-blue-400 text-lg"></i>
@@ -22,9 +20,7 @@
     </div>
 
     <!-- Checked In -->
-    <div
-      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-green-500 p-4 shadow-sm hover:shadow-md transition-shadow"
-    >
+    <div class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-green-500 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
           <i class="pi pi-check-circle text-green-600 dark:text-green-400 text-lg"></i>
@@ -42,9 +38,7 @@
     </div>
 
     <!-- Pending -->
-    <div
-      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-orange-500 p-4 shadow-sm hover:shadow-md transition-shadow"
-    >
+    <div class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-orange-500 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center">
           <i class="pi pi-clock text-orange-600 dark:text-orange-400 text-lg"></i>
@@ -62,9 +56,7 @@
     </div>
 
     <!-- No Show -->
-    <div
-      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-red-500 p-4 shadow-sm hover:shadow-md transition-shadow"
-    >
+    <div class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-red-500 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center">
           <i class="pi pi-user-minus text-red-600 dark:text-red-400 text-lg"></i>
@@ -82,17 +74,13 @@
     </div>
 
     <!-- Check-in Rate -->
-    <div
-      class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-purple-500 p-4 shadow-sm hover:shadow-md transition-shadow"
-    >
+    <div class="bg-white dark:bg-surface-900 rounded-xl border-l-4 border-purple-500 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
           <i class="pi pi-percentage text-purple-600 dark:text-purple-400 text-lg"></i>
         </div>
         <div>
-          <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            {{ stats().checkInRate | number: '1.0-1' }}%
-          </div>
+          <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ stats().checkInRate | number: '1.0-1' }}%</div>
           <div class="text-xs uppercase tracking-wide text-surface-500 dark:text-surface-400">
             {{ 'all.tournament.admin.checkin.rate' | translate }}
           </div>
@@ -112,14 +100,7 @@
         <label for="status" class="text-sm font-medium text-color">
           {{ 'all.tournament.admin.checkin.status' | translate }}
         </label>
-        <p-select
-          id="status"
-          [formControl]="statusFilter"
-          [options]="statusOptions"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="w-44"
-        />
+        <p-select id="status" [formControl]="statusFilter" [options]="statusOptions" optionLabel="label" optionValue="value" styleClass="w-44" />
       </div>
 
       <!-- Search -->
@@ -154,14 +135,7 @@
           pTooltip="Create check-in records for all confirmed enrollments"
         />
 
-        <p-button
-          icon="pi pi-refresh"
-          severity="secondary"
-          [outlined]="true"
-          (click)="refetch()"
-          [loading]="loading()"
-          pTooltip="Refresh data"
-        />
+        <p-button icon="pi pi-refresh" severity="secondary" [outlined]="true" (click)="refetch()" [loading]="loading()" pTooltip="Refresh data" />
       </div>
     </div>
   </div>
@@ -196,13 +170,7 @@
 
       <!-- Selection Actions -->
       <div class="flex items-center gap-2">
-        <p-button
-          size="small"
-          [text]="true"
-          icon="pi pi-check-square"
-          pTooltip="Select all pending"
-          (click)="selectAllPending()"
-        />
+        <p-button size="small" [text]="true" icon="pi pi-check-square" pTooltip="Select all pending" (click)="selectAllPending()" />
         <p-button
           size="small"
           [text]="true"
@@ -275,9 +243,7 @@
             <!-- Player Info -->
             <td>
               <div class="flex items-center gap-3">
-                <div
-                  class="w-9 h-9 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0"
-                >
+                <div class="w-9 h-9 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0">
                   <i class="pi pi-user text-muted-color"></i>
                 </div>
                 <div class="flex flex-col">
@@ -300,12 +266,7 @@
 
             <!-- Status -->
             <td>
-              <p-tag
-                [value]="checkIn.status"
-                [severity]="getStatusSeverity(checkIn.status)"
-                [rounded]="true"
-                styleClass="text-xs"
-              />
+              <p-tag [value]="checkIn.status" [severity]="getStatusSeverity(checkIn.status)" [rounded]="true" styleClass="text-xs" />
             </td>
 
             <!-- Checked In Time -->

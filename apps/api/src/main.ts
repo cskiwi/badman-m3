@@ -1,10 +1,9 @@
-
 import { createWinstonLogger, getServer } from '@apps/shared';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await getServer();
-  
+
   // Configure Winston logger
   const logger = createWinstonLogger({ name: 'api', logDir: 'logs' });
   app.useLogger(logger);

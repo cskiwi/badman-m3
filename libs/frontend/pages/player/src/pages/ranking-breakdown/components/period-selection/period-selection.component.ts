@@ -17,15 +17,7 @@ import { GetRankingPeriods } from '@app/utils/comp';
   selector: 'app-period-selection',
   templateUrl: './period-selection.component.html',
   styleUrl: './period-selection.component.scss',
-  imports: [
-    ReactiveFormsModule,
-    TranslateModule,
-    ButtonModule,
-    DatePickerModule,
-    MenuModule,
-    TooltipModule,
-    DayjsFormatPipe,
-  ],
+  imports: [ReactiveFormsModule, TranslateModule, ButtonModule, DatePickerModule, MenuModule, TooltipModule, DayjsFormatPipe],
 })
 export class PeriodSelectionComponent {
   private readonly breakdownService = inject(RankingBreakdownService);
@@ -47,11 +39,7 @@ export class PeriodSelectionComponent {
     }
 
     try {
-      return GetRankingPeriods(
-        sys,
-        viewing.startOf('month').subtract(1, 'day'),
-        viewing.endOf('month').add(1, 'day'),
-      );
+      return GetRankingPeriods(sys, viewing.startOf('month').subtract(1, 'day'), viewing.endOf('month').add(1, 'day'));
     } catch {
       return [];
     }
@@ -91,19 +79,12 @@ export class PeriodSelectionComponent {
 
   nextPointUpdate() {
     const sys = this.system();
-    this.customPeriod(
-      dayjs(sys.calculationLastUpdate).add(
-        sys.calculationIntervalAmount ?? 1,
-        sys.calculationIntervalUnit as dayjs.ManipulateType,
-      ),
-    );
+    this.customPeriod(dayjs(sys.calculationLastUpdate).add(sys.calculationIntervalAmount ?? 1, sys.calculationIntervalUnit as dayjs.ManipulateType));
   }
 
   nextRankingUpdate() {
     const sys = this.system();
-    this.customPeriod(
-      dayjs(sys.updateLastUpdate).add(sys.updateIntervalAmount ?? 1, sys.updateIntervalUnit as dayjs.ManipulateType),
-    );
+    this.customPeriod(dayjs(sys.updateLastUpdate).add(sys.updateIntervalAmount ?? 1, sys.updateIntervalUnit as dayjs.ManipulateType));
   }
 
   onDateSelect(date: Date) {
@@ -111,7 +92,11 @@ export class PeriodSelectionComponent {
   }
 
   onMonthChange(event: { month: number; year: number }) {
-    this.viewingDate.set(dayjs().month(event.month - 1).year(event.year));
+    this.viewingDate.set(
+      dayjs()
+        .month(event.month - 1)
+        .year(event.year),
+    );
   }
 
   customPeriod(targetDate: Dayjs | null) {
@@ -122,14 +107,8 @@ export class PeriodSelectionComponent {
     const sys = this.system();
     const endPeriod = targetDate;
     const startPeriod = endPeriod.subtract(sys.periodAmount ?? 1, sys.periodUnit as dayjs.ManipulateType);
-    const gamePeriod = startPeriod.subtract(
-      sys.updateIntervalAmount ?? 1,
-      sys.updateIntervalUnit as dayjs.ManipulateType,
-    );
-    const nextPeriod = startPeriod.add(
-      sys.calculationIntervalAmount ?? 1,
-      sys.calculationIntervalUnit as dayjs.ManipulateType,
-    );
+    const gamePeriod = startPeriod.subtract(sys.updateIntervalAmount ?? 1, sys.updateIntervalUnit as dayjs.ManipulateType);
+    const nextPeriod = startPeriod.add(sys.calculationIntervalAmount ?? 1, sys.calculationIntervalUnit as dayjs.ManipulateType);
 
     this.filter.patchValue({
       start: startPeriod,

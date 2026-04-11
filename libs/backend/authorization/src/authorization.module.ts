@@ -8,7 +8,7 @@ import { UserService } from './services';
     JwtModule.register({
       signOptions: { expiresIn: '30d' },
     }),
-    ConfigModule
+    ConfigModule,
   ],
   providers: [UserService],
   exports: [JwtModule, UserService],

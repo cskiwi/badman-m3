@@ -49,11 +49,9 @@ export class ClubPlayersTabComponent {
     const selected = this.selectedTeamIds();
     const query = this.searchQuery().toLowerCase().trim();
 
-    return players.filter(player => {
-      const matchesTeam =
-        selected.length === 0 || player.teamPlayerMemberships?.some(m => selected.includes(m.team?.id ?? ''));
-      const matchesSearch =
-        !query || (player.fullName || '').toLowerCase().includes(query);
+    return players.filter((player) => {
+      const matchesTeam = selected.length === 0 || player.teamPlayerMemberships?.some((m) => selected.includes(m.team?.id ?? ''));
+      const matchesSearch = !query || (player.fullName || '').toLowerCase().includes(query);
       return matchesTeam && matchesSearch;
     });
   });

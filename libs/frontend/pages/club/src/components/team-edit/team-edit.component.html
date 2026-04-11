@@ -26,13 +26,14 @@
           <!-- Season -->
           <div class="flex flex-col gap-1">
             <label for="season" class="font-medium">{{ 'all.team.edit.season.label' | translate }}</label>
-            <p-select id="season"
+            <p-select
+              id="season"
               formControlName="season"
               [options]="seasonOptions"
               optionLabel="label"
               optionValue="value"
               [placeholder]="'all.team.edit.season.placeholder.text' | translate"
-             />
+            />
           </div>
 
           <!-- Team Number -->
@@ -50,13 +51,14 @@
           <!-- Type -->
           <div class="flex flex-col gap-1">
             <label for="type" class="font-medium">{{ 'all.team.edit.type.label' | translate }}</label>
-            <p-select id="type"
+            <p-select
+              id="type"
               formControlName="type"
               [options]="typeOptions"
               optionLabel="label"
               optionValue="value"
               [placeholder]="'all.team.edit.type.placeholder.text' | translate"
-             />
+            />
           </div>
         </div>
       </div>
@@ -88,7 +90,8 @@
         <div class="flex flex-col gap-1">
           <label for="preferredTime" class="font-medium">{{ 'all.team.edit.preferredTime.label' | translate }}</label>
           @defer {
-            <p-datepicker id="preferredTime"
+            <p-datepicker
+              id="preferredTime"
               formControlName="preferredTime"
               [timeOnly]="true"
               showIcon
@@ -101,13 +104,14 @@
         <!-- Preferred Day -->
         <div class="flex flex-col gap-1">
           <label for="preferredDay" class="font-medium">{{ 'all.team.edit.preferredDay.label' | translate }}</label>
-          <p-select id="preferredDay"
+          <p-select
+            id="preferredDay"
             formControlName="preferredDay"
             [options]="dayOptions"
             optionLabel="label"
             optionValue="value"
             [placeholder]="'all.team.edit.preferredDay.placeholder.text' | translate"
-           />
+          />
         </div>
       </div>
     </div>
@@ -169,14 +173,15 @@
             <tr>
               <td>{{ membership.player?.fullName }}</td>
               <td>
-                <p-select [ngModel]="membership.membershipType"
+                <p-select
+                  [ngModel]="membership.membershipType"
                   (ngModelChange)="updateMembershipType(membership, $event)"
                   [ngModelOptions]="{ standalone: true }"
                   [options]="membershipTypeOptions()"
                   optionLabel="label"
                   optionValue="value"
                   styleClass="w-full"
-                 />
+                />
               </td>
               <td>
                 <p-button icon="pi pi-trash" severity="danger" [text]="true" (click)="removeMembership(membership)" />
@@ -194,11 +199,7 @@
 
   <div class="flex justify-end gap-2 mt-4">
     <p-button [label]="'all.common.cancel' | translate" styleClass="p-button-text" (click)="onHide()" />
-    <p-button [label]="'all.common.save' | translate"
-      [loading]="saving()"
-      [disabled]="!teamForm.valid || !teamForm.dirty"
-      (click)="onSave()"
-     />
+    <p-button [label]="'all.common.save' | translate" [loading]="saving()" [disabled]="!teamForm.valid || !teamForm.dirty" (click)="onSave()" />
   </div>
 </div>
 
@@ -245,12 +246,13 @@
     <!-- Membership Type Selection -->
     <div>
       <label class="block text-sm font-medium mb-2">{{ 'all.team.edit.members.type' | translate }}</label>
-      <p-select [(ngModel)]="selectedMembershipType"
+      <p-select
+        [(ngModel)]="selectedMembershipType"
         [options]="membershipTypeOptions()"
         optionLabel="label"
         optionValue="value"
         styleClass="w-full"
-       />
+      />
     </div>
   </div>
 

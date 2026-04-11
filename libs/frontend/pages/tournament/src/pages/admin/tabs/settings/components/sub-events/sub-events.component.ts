@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent, TournamentSubEvent } from '@app/models';
@@ -30,8 +29,8 @@ import { SortMeta } from 'primeng/api';
     InputTextModule,
     InputNumberModule,
     CheckboxModule,
-    TooltipModule
-],
+    TooltipModule,
+  ],
   templateUrl: './sub-events.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -78,7 +77,7 @@ export class SubEventsComponent {
   multiSortMeta: SortMeta[] = [
     { field: 'eventType', order: 1 },
     { field: 'gameType', order: 1 },
-    { field: 'minLevel', order: 1 }
+    { field: 'minLevel', order: 1 },
   ];
 
   // Game type options
@@ -92,7 +91,7 @@ export class SubEventsComponent {
   readonly eventTypeOptions = [
     { label: 'all.tournament.eventTypes.men', value: SubEventTypeEnum.M },
     { label: 'all.tournament.eventTypes.women', value: SubEventTypeEnum.F },
-    { label: 'all.tournament.eventTypes.mixed', value: SubEventTypeEnum.MX }
+    { label: 'all.tournament.eventTypes.mixed', value: SubEventTypeEnum.MX },
   ];
 
   // Sub-event form

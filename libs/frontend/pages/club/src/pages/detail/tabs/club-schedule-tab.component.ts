@@ -10,14 +10,9 @@ import { ClubScheduleTabService } from './club-schedule-tab.service';
   selector: 'app-club-schedule-tab',
   standalone: true,
   providers: [ClubTeamsTabService, ClubScheduleTabService],
-  imports: [
-    TranslateModule,
-    CardModule,
-    SkeletonModule,
-    EncounterCardComponent,
-  ],
+  imports: [TranslateModule, CardModule, SkeletonModule, EncounterCardComponent],
   templateUrl: './club-schedule-tab.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClubScheduleTabComponent {
   private readonly teamsService = inject(ClubTeamsTabService);
@@ -26,7 +21,7 @@ export class ClubScheduleTabComponent {
   clubId = input.required<string>();
   season = input.required<number>();
 
-  teamIds = computed(() => this.teamsService.teams().map(team => team.id));
+  teamIds = computed(() => this.teamsService.teams().map((team) => team.id));
   loading = computed(() => this.teamsService.loading() || this.scheduleService.loading());
   playedEncounters = computed(() => this.scheduleService.playedEncounters());
   upcomingEncounters = computed(() => this.scheduleService.upcomingEncounters());

@@ -9,10 +9,7 @@ import { ServiceArgs } from '../../args';
 export class ServiceResolver {
   @Query(() => Service)
   @UseGuards(PermGuard)
-  async service(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<Service> {
+  async service(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<Service> {
     if (!(await user.hasAnyPermission(['change:job']))) {
       throw new ForbiddenException('Insufficient permissions to access services');
     }

@@ -143,11 +143,7 @@ export class TeamMatchingService {
   /**
    * Fuzzy match team by name with optional state filtering and required season filtering
    */
-  private async fuzzyMatch(
-    apiName: string,
-    state: string | undefined,
-    season: number,
-  ): Promise<TeamMatchResult> {
+  private async fuzzyMatch(apiName: string, state: string | undefined, season: number): Promise<TeamMatchResult> {
     const parsed = this.parseTeamName(apiName);
 
     this.logger.debug(`Fuzzy matching: "${apiName}" -> parsed: ${JSON.stringify(parsed)}, season: ${season}`);
@@ -250,7 +246,9 @@ export class TeamMatchingService {
       }
 
       const score = this.calculateMatchScore(apiName, parsed, team, team.club || undefined);
-      this.logger.debug(`Score for ${team.name}: ${score.toFixed(3)} (teamNumber: ${team.teamNumber}, type: ${team.type}, club: ${team.club?.name || 'none'})`);
+      this.logger.debug(
+        `Score for ${team.name}: ${score.toFixed(3)} (teamNumber: ${team.teamNumber}, type: ${team.type}, club: ${team.club?.name || 'none'})`,
+      );
       if (score > bestScore) {
         bestScore = score;
         bestMatch = team;
@@ -259,7 +257,9 @@ export class TeamMatchingService {
 
     if (bestMatch) {
       const confidence = bestScore >= 0.8 ? 'high' : bestScore >= 0.6 ? 'medium' : 'low';
-      this.logger.debug(`Fuzzy matched: "${apiName}" -> "${bestMatch.name}" (score: ${bestScore.toFixed(3)}, confidence: ${confidence}, season: ${season})`);
+      this.logger.debug(
+        `Fuzzy matched: "${apiName}" -> "${bestMatch.name}" (score: ${bestScore.toFixed(3)}, confidence: ${confidence}, season: ${season})`,
+      );
       return { team: bestMatch, confidence, score: bestScore };
     }
 

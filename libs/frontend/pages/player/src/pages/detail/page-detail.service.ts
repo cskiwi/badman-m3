@@ -24,8 +24,8 @@ export class DetailService {
       }
 
       try {
-        const result = await lastValueFrom(this.apollo
-          .query<{ player: Player }>({
+        const result = await lastValueFrom(
+          this.apollo.query<{ player: Player }>({
             query: gql`
               query PlayerDetail($id: ID!) {
                 player(id: $id) {
@@ -50,7 +50,8 @@ export class DetailService {
               id: params.playerId,
             },
             context: { signal: abortSignal },
-          }));
+          }),
+        );
 
         if (!result?.data?.player) {
           throw new Error('No player found');
@@ -64,11 +65,7 @@ export class DetailService {
 
   // Public selectors
   player = computed(() => this.playerResource.value());
-  club = computed(
-    () =>
-      this.player()?.clubPlayerMemberships?.find((cpm) => cpm.active)
-        ?.club,
-  );
+  club = computed(() => this.player()?.clubPlayerMemberships?.find((cpm) => cpm.active)?.club);
   error = computed(() => this.playerResource.error()?.message || null);
   loading = computed(() => this.playerResource.isLoading());
 

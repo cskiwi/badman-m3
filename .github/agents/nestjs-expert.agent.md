@@ -1,6 +1,6 @@
 ---
 description: Implements NestJS backend features following modular architecture, GraphQL, TypeORM, and TypeScript best practices.
-name: "NestJS Expert"
+name: 'NestJS Expert'
 tools: [execute, read, edit, search, 'postgres-badman-mcp/*', 'vscode/askQuestions']
 ---
 

@@ -41,9 +41,7 @@ export function calculateTeamIndex(players: TeamBuilderPlayer[], teamType: 'M' |
     return [...males, ...females].reduce((sum, c) => sum + c, 0);
   }
 
-  const contributions = regularPlayers
-    .map((p) => getPlayerContribution(p, teamType))
-    .sort((a, b) => a - b); // ascending: strongest (lowest numbers) first
+  const contributions = regularPlayers.map((p) => getPlayerContribution(p, teamType)).sort((a, b) => a - b); // ascending: strongest (lowest numbers) first
 
   // Take the 4 best (strongest) players
   const base = contributions.slice(0, 4);
@@ -114,17 +112,18 @@ export function validateTeam(team: TeamBuilderTeam, config: TeamBuilderConfig = 
     }
   }
 
-  // Min level check: warn if player is too strong for the subevent
-  // (lower number = stronger, minLevel is the ceiling for how strong a player can be)
-  const minLevel = team.selectedSubEvent?.level;
-  if (minLevel != null) {
+  // Max level check: warn if any player's ranking is too strong (lower = better) for the subevent
+  const maxLevel = team.selectedSubEvent?.maxLevel;
+  if (maxLevel != null) {
     const playersTooStrong = regularPlayers.filter((p) => {
-      const { single } = getPlayerRanking(p);
-      return single < minLevel && single > 0;
+      const { single, double, mix } = getPlayerRanking(p);
+      const rankings = team.type === 'MX' ? [single, double, mix] : [single, double];
+      const bestRanking = Math.min(...rankings.filter((r) => r > 0));
+      return bestRanking > 0 && bestRanking < maxLevel;
     });
     if (playersTooStrong.length > 0) {
       errors.push(
-        `${playersTooStrong.length} player(s) may be too strong for level ${minLevel}: ${playersTooStrong.map((p) => p.fullName).join(', ')}`,
+        `${playersTooStrong.length} player(s) may be too strong for this subevent (max level: ${maxLevel}): ${playersTooStrong.map((p) => p.fullName).join(', ')}`,
       );
     }
   }
@@ -138,15 +137,19 @@ export function validateTeam(team: TeamBuilderTeam, config: TeamBuilderConfig = 
 export function recalculateTeam(team: TeamBuilderTeam, config: TeamBuilderConfig = DEFAULT_TEAM_BUILDER_CONFIG): TeamBuilderTeam {
   team.teamIndex = calculateTeamIndex(team.players, team.type);
 
-  // Set per-player level warnings
-  const levelThreshold = team.selectedSubEvent?.level;
+  // Set per-player level warnings based on maxLevel
+  const maxLevelThreshold = team.selectedSubEvent?.maxLevel;
   for (const player of team.players) {
     player.levelWarning = undefined;
     if (player.membershipType !== 'REGULAR') continue;
 
-    const { single, double } = getPlayerRanking(player);
-    if (levelThreshold != null && (single < levelThreshold || double < levelThreshold)) {
-      player.levelWarning = `Level too high for this subevent (max: ${levelThreshold})`;
+    if (maxLevelThreshold != null) {
+      const { single, double, mix } = getPlayerRanking(player);
+      const rankings = team.type === 'MX' ? [single, double, mix] : [single, double];
+      const bestRanking = Math.min(...rankings.filter((r) => r > 0));
+      if (bestRanking > 0 && bestRanking < maxLevelThreshold) {
+        player.levelWarning = `Player is too strong for this subevent (max level: ${maxLevelThreshold})`;
+      }
     }
   }
 

@@ -8,10 +8,7 @@ import { CommentArgs } from '../args';
 export class CommentResolver {
   @Query(() => Comment)
   @UseGuards(PermGuard)
-  async comment(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<Comment> {
+  async comment(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<Comment> {
     if (!(await user.hasAnyPermission(['edit:faq']))) {
       throw new ForbiddenException('Insufficient permissions to access comments');
     }

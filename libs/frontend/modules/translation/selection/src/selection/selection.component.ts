@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { setLanguage } from '@app/frontend-modules-translation';
@@ -9,14 +8,10 @@ import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 
 @Component({
-    selector: 'app-language-selection',
-    templateUrl: './selection.component.html',
-    styleUrls: ['./selection.component.scss'],
-    imports: [
-    TranslateModule,
-    MenuModule,
-    ButtonModule
-]
+  selector: 'app-language-selection',
+  templateUrl: './selection.component.html',
+  styleUrls: ['./selection.component.scss'],
+  imports: [TranslateModule, MenuModule, ButtonModule],
 })
 export class LanguageSelectionComponent implements OnInit {
   public translate = inject(TranslateService);
@@ -28,11 +23,11 @@ export class LanguageSelectionComponent implements OnInit {
   ngOnInit(): void {
     this.langs = Object.values(AvaliableLanguages);
     this.current = this.translate.currentLang;
-    
+
     // Build menu items for PrimeNG menu
-    this.menuItems = this.langs.map(lang => ({
+    this.menuItems = this.langs.map((lang) => ({
       label: this.translate.instant('all.settings.languages.' + lang),
-      command: () => this.setLang(lang)
+      command: () => this.setLang(lang),
     }));
   }
 

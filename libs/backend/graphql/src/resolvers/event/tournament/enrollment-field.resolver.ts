@@ -18,9 +18,7 @@ export class TournamentSubEventFieldResolver {
    * Requires database count query
    */
   @ResolveField(() => Number, { name: 'waitingListCount', nullable: true })
-  async waitingListCount(
-    @Parent() subEvent: TournamentSubEvent,
-  ): Promise<number> {
+  async waitingListCount(@Parent() subEvent: TournamentSubEvent): Promise<number> {
     // Count enrollments with status 'WAITING_LIST'
     const count = await TournamentEnrollment.count({
       where: {

@@ -25,18 +25,13 @@ export const isFirstHigher = (subEvent1?: SubEventSortInput, subEvent2?: SubEven
     return 'same';
   }
 
-  if (
-    subEvent1.eventCompetition.type === subEvent2.eventCompetition.type &&
-    subEvent1.level === subEvent2.level
-  ) {
+  if (subEvent1.eventCompetition.type === subEvent2.eventCompetition.type && subEvent1.level === subEvent2.level) {
     return 'same';
   }
 
   if (typeOrder[subEvent1.eventCompetition.type] < typeOrder[subEvent2.eventCompetition.type]) {
     return 'better';
-  } else if (
-    typeOrder[subEvent1.eventCompetition.type] === typeOrder[subEvent2.eventCompetition.type]
-  ) {
+  } else if (typeOrder[subEvent1.eventCompetition.type] === typeOrder[subEvent2.eventCompetition.type]) {
     if (subEvent1?.level < subEvent2?.level) {
       return 'better';
     }

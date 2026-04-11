@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, effect, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TournamentEvent } from '@app/models';
@@ -12,15 +11,7 @@ import { MessageModule } from 'primeng/message';
 @Component({
   selector: 'app-general-settings',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    TranslateModule,
-    ButtonModule,
-    InputTextModule,
-    DatePickerModule,
-    CheckboxModule,
-    MessageModule
-],
+  imports: [ReactiveFormsModule, TranslateModule, ButtonModule, InputTextModule, DatePickerModule, CheckboxModule, MessageModule],
   templateUrl: './general-settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -57,17 +48,11 @@ export class GeneralSettingsComponent {
       if (t) {
         // Tournament dates (firstDay to last day)
         const tournamentDates =
-          t.firstDay && t.closeDate
-            ? [new Date(t.firstDay), new Date(t.closeDate)]
-            : t.firstDay
-              ? [new Date(t.firstDay)]
-              : null;
+          t.firstDay && t.closeDate ? [new Date(t.firstDay), new Date(t.closeDate)] : t.firstDay ? [new Date(t.firstDay)] : null;
 
         // Enrollment open/close dates
         const enrollmentDates =
-          t.enrollmentOpenDate && t.enrollmentCloseDate
-            ? [new Date(t.enrollmentOpenDate), new Date(t.enrollmentCloseDate)]
-            : null;
+          t.enrollmentOpenDate && t.enrollmentCloseDate ? [new Date(t.enrollmentOpenDate), new Date(t.enrollmentCloseDate)] : null;
 
         this.settingsForm.patchValue({
           name: t.name,

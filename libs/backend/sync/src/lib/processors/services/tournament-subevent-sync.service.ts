@@ -173,7 +173,6 @@ export class TournamentSubEventSyncService {
     }
   }
 
-  
   private getEventType(xmlEvent: TournamentEvent): SubEventTypeEnum | undefined {
     switch (parseInt(`${xmlEvent.GenderID}`, 10)) {
       case GenderType.Male:
@@ -208,7 +207,6 @@ export class TournamentSubEventSyncService {
         return;
     }
   }
-
 
   /**
    * Resolve sub-event context from either:

@@ -7,6 +7,7 @@ This reference provides detailed guidance for each type of documentation section
 **Purpose:** Ensure good structure and coherence across all files
 
 **Requirements:**
+
 - Technical overview and object model diagrams must be clear at a glance
 - Start with architecture or object model overview
 - Maintain coherence between different views
@@ -23,17 +24,21 @@ This reference provides detailed guidance for each type of documentation section
 **Must Include:**
 
 ### Overview
+
 - Brief summary of system purpose
 - Scope definition
 - Key capabilities
 
 ### Use Cases and Scenarios
+
 - Step-by-step user interaction flows
 - User goals and motivations
 - Expected outcomes
 
 ### User Interfaces
+
 Document for each UI:
+
 - **Objectives:** What the UI helps users accomplish
 - **Data elements:** Input fields, displays, controls
 - **Navigation flow:** How users move through the interface
@@ -42,13 +47,16 @@ Document for each UI:
 - **Back-end integration:** APIs or services called
 
 ### Business Processes
+
 For each process:
+
 - **Steps:** Sequential workflow
 - **Inputs:** What data enters the process
 - **Triggers:** What initiates the process
 - **Data flow:** How information moves through the system
 
 ### Out-of-Scope
+
 - Clearly state what is NOT included
 - Provide rationale for exclusions
 
@@ -61,13 +69,16 @@ For each process:
 **Must Include:**
 
 ### Layers
+
 Document each layer:
+
 - User Interface Layer
 - Business Logic Layer
 - Data Access Layer
 - Communication/Integration Layer
 
 For each layer, specify:
+
 - Responsibilities
 - Technologies used
 - Interaction patterns
@@ -75,6 +86,7 @@ For each layer, specify:
 ### Core Components
 
 For each component:
+
 - **Scope and responsibilities:** What it does
 - **Public interfaces:** APIs, contracts
 - **Dependencies:** What it relies on
@@ -83,6 +95,7 @@ For each component:
 ### Relationships
 
 Document:
+
 - **Interrelationships:** How components connect
 - **Dependencies:** What depends on what
 - **Data exchange patterns:** Synchronous vs asynchronous
@@ -91,6 +104,7 @@ Document:
 ### Design Patterns
 
 For each pattern used:
+
 - **Pattern name:** Repository, Factory, Observer, etc.
 - **Purpose:** Why this pattern is used
 - **Justification:** Benefits it provides
@@ -101,6 +115,7 @@ For each pattern used:
 ### Component Decomposition
 
 Where applicable:
+
 - Break down complex components
 - Show internal structure
 - Explain subcomponent responsibilities
@@ -108,6 +123,7 @@ Where applicable:
 ### Design Decisions
 
 Document key architectural choices:
+
 - **Decision:** What was decided
 - **Rationale:** Why this approach was chosen
 - **Considerations:** What factors influenced the decision
@@ -185,18 +201,22 @@ Document key architectural choices:
 **Must Include:**
 
 ### High-Level Description
+
 - Overview of domain model
 - Main concepts and entities
 - How they relate to business processes
 
 ### Entity Relationships
+
 - **Entities:** Main data objects
 - **Relationships:** How entities connect
 - **Cardinality:** One-to-one, one-to-many, many-to-many
 - **Relationship types:** Composition, aggregation, association
 
 ### Diagrams
+
 Use entity-relationship diagrams (ERD) or class diagrams:
+
 ```mermaid
 erDiagram
     CUSTOMER ||--o{ ORDER : places
@@ -207,6 +227,7 @@ erDiagram
 ### Technical Decisions
 
 Document database design choices:
+
 - **Indexes:**
   - Which fields are indexed
   - Why (performance considerations)
@@ -229,43 +250,52 @@ Document database design choices:
 **Must Include:**
 
 ### Prerequisites and Setup
+
 - Required software and versions
 - Development environment setup
 - Dependencies and how to install them
 - Configuration requirements
 
 ### Coding Standards
+
 - Naming conventions
 - Code formatting rules
 - Comment guidelines
 - File organization
 
 ### Design Patterns
+
 - Patterns used in the project
 - When to use each pattern
 - Examples from the codebase
 
 ### How-To Guides
+
 Practical guides for common tasks:
+
 - Adding a new feature
 - Creating a new API endpoint
 - Implementing authentication
 - Writing tests
 
 ### Tips & Tricks
+
 Developer productivity tips:
+
 - Debugging techniques
 - IDE configuration
 - Useful shortcuts
 - Common gotchas and how to avoid them
 
 ### Deployment Specifications
+
 - Build process
 - Deployment steps
 - Environment variables
 - Configuration management
 
 ### Links and Resources
+
 - External documentation
 - Framework guides
 - Blog posts
@@ -276,6 +306,7 @@ Developer productivity tips:
 ### Technology Deviations
 
 When documenting new or unusual technology choices:
+
 - **Why chosen:** Justification for the technology
 - **How to use:** Getting started guide
 - **Common pitfalls:** What to watch out for
@@ -289,16 +320,19 @@ When documenting new or unusual technology choices:
 **For Each Component Document:**
 
 ### Objective/Goal
+
 - What problem does this component solve?
 - What business capability does it enable?
 - Why does it exist?
 
 ### Business Object Model
+
 - Domain entities the component manages
 - Business rules it enforces
 - Workflows it implements
 
 ### Data Schema
+
 - Database tables/collections used
 - Schema definitions
 - Links to detailed schema documentation
@@ -307,22 +341,26 @@ When documenting new or unusual technology choices:
 ### Technical Flows
 
 #### Internal Communication
+
 - How subcomponents interact
 - Internal messaging patterns
 - State management
 
 #### External Integrations
+
 - Third-party systems integrated with
 - Integration patterns (REST, gRPC, message queue)
 - Error handling and retry logic
 - Circuit breakers and fallbacks
 
 ### User Interfaces
+
 - UI components provided by this component
 - Screens and their purposes
 - User workflows supported
 
 ### APIs
+
 - Public interfaces and contracts
 - Request/response formats
 - Authentication and authorization
@@ -331,6 +369,7 @@ When documenting new or unusual technology choices:
 - Example requests and responses
 
 ### Messaging
+
 - Events published by the component
 - Events subscribed to
 - Message formats
@@ -347,6 +386,7 @@ When documenting new or unusual technology choices:
 For each test level, document:
 
 #### Unit Tests
+
 - **Scope:** Individual functions/methods
 - **Coverage goals:** Target percentage
 - **Automation:** Framework used (xUnit, NUnit, MSTest)
@@ -355,6 +395,7 @@ For each test level, document:
 - **Ownership:** Developers
 
 #### Component Tests
+
 - **Scope:** Component interactions
 - **Coverage:** Integration points
 - **Automation:** Testing framework
@@ -363,6 +404,7 @@ For each test level, document:
 - **Ownership:** Development team
 
 #### Functional Tests
+
 - **Scope:** End-to-end user scenarios
 - **Coverage:** Critical user paths
 - **Automation:** Degree of automation
@@ -371,13 +413,16 @@ For each test level, document:
 - **Ownership:** QA team
 
 #### Non-Functional Tests
+
 Types:
+
 - **Performance tests:** Load, stress, endurance
 - **Security tests:** Vulnerability scanning, penetration testing
 - **Accessibility tests:** WCAG compliance
 - **Compatibility tests:** Browser, device, OS
 
 For each:
+
 - **Scope:** What is tested
 - **Tools:** Testing tools used
 - **Metrics:** Success criteria
@@ -385,6 +430,7 @@ For each:
 - **Timing:** When tests are executed
 
 #### Business/Acceptance Tests
+
 - **Scope:** Business requirements validation
 - **Coverage:** Acceptance criteria
 - **Automation:** BDD frameworks (SpecFlow, Cucumber)
@@ -395,32 +441,38 @@ For each:
 For each manual test case:
 
 **Test Case Header:**
+
 - Test ID
 - Test name
 - Priority (Critical, High, Medium, Low)
 - Related requirement/user story
 
 **Preconditions:**
+
 - Required setup
 - Test data needed
 - System state
 
 **Test Steps:**
+
 1. Step 1 - Action to perform
 2. Step 2 - Next action
 3. Step 3 - Verification step
 
 **Expected Results:**
+
 - What should happen after each step
 - Final expected state
 - Success criteria
 
 **Test Data:**
+
 - Input values to use
 - Test accounts
 - Sample files
 
 **Example:**
+
 ```
 Test ID: TC-001
 Name: User Login with Valid Credentials
@@ -461,30 +513,35 @@ Test Data:
 For each environment:
 
 #### Development
+
 - Purpose
 - Access (who can access)
 - Configuration
 - Refresh/reset policy
 
 #### QA/Testing
+
 - Purpose
 - Test data management
 - Deployment frequency
 - Smoke test procedures
 
 #### Training
+
 - Purpose
 - Data refresh schedule
 - Access controls
 - Version alignment
 
 #### Acceptance/Staging
+
 - Purpose
 - Production parity level
 - Deployment process
 - Validation procedures
 
 #### Production
+
 - Purpose
 - Change management process
 - Deployment windows
@@ -494,6 +551,7 @@ For each environment:
 ### Deployment Process
 
 #### Steps
+
 1. Pre-deployment checklist
 2. Build process
 3. Package creation
@@ -502,6 +560,7 @@ For each environment:
 6. Smoke tests
 
 #### Automation
+
 - CI/CD pipeline description
 - Build triggers
 - Automated tests
@@ -509,6 +568,7 @@ For each environment:
 - Approval workflows
 
 #### Rollback Procedures
+
 - When to rollback
 - How to rollback
 - Validation after rollback
@@ -517,6 +577,7 @@ For each environment:
 ### Architecture Mapping
 
 **Logical to Physical Mapping:**
+
 - How logical components map to infrastructure
 - Server/container allocation
 - Load balancing setup
@@ -524,6 +585,7 @@ For each environment:
 - Cache locations
 
 **Diagram Example:**
+
 ```mermaid
 graph TB
     subgraph "Production Infrastructure"
@@ -535,7 +597,7 @@ graph TB
         DB[(Database Cluster)]
         CACHE[Redis Cache]
     end
-    
+
     LB --> WS1
     LB --> WS2
     WS1 --> APP1
@@ -549,18 +611,21 @@ graph TB
 ### Communication
 
 #### Protocols
+
 - HTTP/HTTPS configuration
 - WebSocket connections
 - gRPC endpoints
 - Message queue protocols
 
 #### External Communications
+
 - Third-party API integrations
 - External service endpoints
 - Authentication for external services
 - Network security (firewalls, IP whitelisting)
 
 #### Network Topology
+
 - Network zones (DMZ, internal, database)
 - Firewall rules
 - VPN requirements
@@ -569,12 +634,14 @@ graph TB
 ### Configuration
 
 #### Devices and Hardware
+
 - Server specifications
 - Storage requirements
 - Network equipment
 - Security appliances
 
 #### Configuration Data Management
+
 - Configuration files location
 - Environment-specific settings
 - Secrets management (keys, certificates)
@@ -583,6 +650,7 @@ graph TB
 ### Platform-Specific Details
 
 #### .NET Deployment
+
 - **Branching strategy:** GitFlow, trunk-based
 - **Versioning:** Semantic versioning
 - **Release pipelines:**
@@ -595,6 +663,7 @@ graph TB
   - Merge policies
 
 #### Angular Deployment
+
 - **Build process:**
   - Development build
   - Production build optimization
@@ -616,13 +685,15 @@ graph TB
 Common problems and solutions:
 
 **Problem:** Build fails with dependency error
-**Solution:** 
+**Solution:**
+
 1. Clear package cache
 2. Restore packages
 3. Rebuild solution
 
 **Problem:** Database connection fails in development
 **Solution:**
+
 - Check connection string
 - Verify database container is running
 - Check firewall settings
@@ -630,11 +701,13 @@ Common problems and solutions:
 ### Environment Setup
 
 #### Configuration Gotchas
+
 - Common misconfigurations
 - Environment-specific settings that trip people up
 - Order of operations that matters
 
 #### Setup Shortcuts
+
 - Scripts to automate setup
 - Recommended IDE extensions
 - Useful development tools
@@ -645,7 +718,8 @@ Common problems and solutions:
 A: Run the script `scripts/reset-db.ps1`
 
 **Q: What ports need to be open for development?**
-A: 
+A:
+
 - 5000: API
 - 4200: Angular dev server
 - 6379: Redis
@@ -665,15 +739,17 @@ A: Enable async debugging in Visual Studio: Tools > Options > Debugging > Genera
 
 Use a clear, scannable format:
 
-```markdown
+````markdown
 ## Issue: Cannot Connect to API in Development
 
 **Symptoms:**
+
 - HTTP 500 errors
 - Connection refused messages
 - API not responding
 
 **Diagnosis:**
+
 1. Check if API is running: `ps aux | grep api`
 2. Verify port: `netstat -an | grep 5000`
 3. Check logs: `tail -f logs/api.log`
@@ -681,21 +757,27 @@ Use a clear, scannable format:
 **Solutions:**
 
 ### Solution 1: Restart API
+
 ```bash
 npm run api:restart
 ```
+````
 
 ### Solution 2: Clear Configuration Cache
+
 ```bash
 rm -rf .config/cache
 npm run api:start
 ```
 
 **Related:**
+
 - [API Configuration](../technical/api-configuration.technical.md)
 - [Troubleshooting Guide](troubleshooting.technical.md)
+
 ```
 
 ---
 
 Use these guidelines when creating documentation for each section type. Remember to adapt to your specific project context while maintaining consistency and clarity.
+```

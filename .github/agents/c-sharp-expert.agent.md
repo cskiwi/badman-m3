@@ -1,6 +1,6 @@
 ---
 description: Implements .NET features following clean architecture, modern C# patterns, and best practices for Web API, Console, WinForms, and WPF applications.
-name: "C# Expert"
+name: 'C# Expert'
 tools: [vscode, execute, read, edit, search, web, browser, 'vscode/askQuestions']
 ---
 

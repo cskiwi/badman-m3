@@ -56,10 +56,10 @@ export class PageDrawDetailComponent {
   // Draw switching
   drawOptions = computed(() => {
     const draws = this.draws();
-    return draws.map(draw => ({
-      label: draw.name || 'Draw ' + (draw.id.slice(0, 8)),
+    return draws.map((draw) => ({
+      label: draw.name || 'Draw ' + draw.id.slice(0, 8),
       value: draw.id,
-      draw: draw
+      draw: draw,
     }));
   });
 
@@ -68,17 +68,9 @@ export class PageDrawDetailComponent {
   onDrawChange(selectedDrawId: string) {
     const tournament = this.tournament();
     const subEvent = this.subEvent();
-    
+
     if (tournament && subEvent) {
-      this.router.navigate([
-        '/', 
-        'tournament', 
-        tournament.slug, 
-        'sub-events', 
-        subEvent.id, 
-        'draws', 
-        selectedDrawId
-      ]);
+      this.router.navigate(['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', selectedDrawId]);
     }
   }
 

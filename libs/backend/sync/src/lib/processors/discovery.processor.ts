@@ -32,7 +32,15 @@ export class DiscoveryProcessor extends WorkerHost {
   }
 
   async process(
-    job: Job<TournamentDiscoveryJobData | TournamentAddByCodeJobData | TournamentScrapeYearJobData | TournamentScrapeEventJobData | TournamentScrapeYearCleanupJobData, void, string>,
+    job: Job<
+      | TournamentDiscoveryJobData
+      | TournamentAddByCodeJobData
+      | TournamentScrapeYearJobData
+      | TournamentScrapeEventJobData
+      | TournamentScrapeYearCleanupJobData,
+      void,
+      string
+    >,
   ): Promise<void> {
     this.logger.log(`Processing job: ${job.name} (${job.id})`);
 
@@ -141,7 +149,7 @@ export class DiscoveryProcessor extends WorkerHost {
 
       if (existingTournament) {
         this.logger.debug(`Tournament ${tournament.Name} (${tournament.Code}) already exists, skipping`);
-        return; 
+        return;
       }
 
       // Create new tournament record

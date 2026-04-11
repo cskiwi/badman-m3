@@ -27,6 +27,7 @@
 This project uses a **skill-based system** to provide domain-specific guidance for development tasks. When working on specific technologies or patterns, consult the appropriate skill for detailed instructions.
 
 > **Note:**
+>
 > - For **GitHub Copilot** users, this documentation is automatically loaded
 > - For **Claude AI** users (Cline, Cursor, etc.), see [CLAUDE.md](CLAUDE.md) for quick reference
 

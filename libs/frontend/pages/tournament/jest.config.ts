@@ -1,4 +1,3 @@
- 
 export default {
   displayName: 'tournament',
   preset: '../../../../jest.preset.js',

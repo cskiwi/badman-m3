@@ -356,10 +356,11 @@ Club administrators need a tool to build teams for next season based on player s
    - Navigate to club detail page
    - Verify Team Builder tab appears (only for users with edit permission)
    - Click "Import Survey" -> upload Excel -> verify parsed rows and player matching
-  - Verify a club member without a current-team assignment is matched locally and shows the latest ranking in the pool
-   - Verify unassigned players appear in pool with ranking levels
-   - Drag players between teams -> verify teamIndex recalculates in real-time
-   - Verify validation errors appear when index exceeds max
-   - Verify tooltip shows survey comments and preferences
-   - Verify low-performance players have warning icon
-   - Click "Save" -> confirm -> reload page -> verify teams persisted for next season
+
+- Verify a club member without a current-team assignment is matched locally and shows the latest ranking in the pool
+- Verify unassigned players appear in pool with ranking levels
+- Drag players between teams -> verify teamIndex recalculates in real-time
+- Verify validation errors appear when index exceeds max
+- Verify tooltip shows survey comments and preferences
+- Verify low-performance players have warning icon
+- Click "Save" -> confirm -> reload page -> verify teams persisted for next season

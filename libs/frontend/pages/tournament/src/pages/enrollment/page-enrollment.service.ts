@@ -135,16 +135,10 @@ export class EnrollmentService {
   });
 
   // Get enrollments looking for partner (for doubles)
-  lookingForPartner = computed(() =>
-    this.enrollments().filter(
-      (e) => e.status === 'PENDING' && !e.confirmedPartnerId && !e.isGuest,
-    ),
-  );
+  lookingForPartner = computed(() => this.enrollments().filter((e) => e.status === 'PENDING' && !e.confirmedPartnerId && !e.isGuest));
 
   // Get confirmed pairs
-  confirmedEnrollments = computed(() =>
-    this.enrollments().filter((e) => e.status === 'CONFIRMED'),
-  );
+  confirmedEnrollments = computed(() => this.enrollments().filter((e) => e.status === 'CONFIRMED'));
 
   // Get waiting list
   waitingListEnrollments = computed(() =>

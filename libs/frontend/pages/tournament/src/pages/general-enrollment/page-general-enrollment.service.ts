@@ -306,14 +306,17 @@ export class PageGeneralEnrollmentService {
     const filtered = this.getFilteredSubEvents();
 
     // Add client-side calculated properties to each sub-event
-    return filtered.map(subEvent => ({
-      ...subEvent,
-      // Client-side calculations
-      _availableSpots: this.getAvailableSpots(subEvent),
-      _isEnrollmentOpen: this.isEnrollmentOpen(subEvent),
-      _isAlreadyEnrolled: this.isAlreadyEnrolled(subEvent.id!),
-      _isEligible: this.isEligible(subEvent),
-    } as SubEventWithCalculations));
+    return filtered.map(
+      (subEvent) =>
+        ({
+          ...subEvent,
+          // Client-side calculations
+          _availableSpots: this.getAvailableSpots(subEvent),
+          _isEnrollmentOpen: this.isEnrollmentOpen(subEvent),
+          _isAlreadyEnrolled: this.isAlreadyEnrolled(subEvent.id!),
+          _isEligible: this.isEligible(subEvent),
+        }) as SubEventWithCalculations,
+    );
   });
 
   // Helper method for filtering logic
@@ -323,18 +326,12 @@ export class PageGeneralEnrollmentService {
 
     const filtered = events.filter((subEvent) => {
       // Event type filter
-      if (
-        filters.eventType.length > 0 &&
-        !filters.eventType.includes(subEvent.eventType || '')
-      ) {
+      if (filters.eventType.length > 0 && !filters.eventType.includes(subEvent.eventType || '')) {
         return false;
       }
 
       // Game type filter
-      if (
-        filters.gameType.length > 0 &&
-        !filters.gameType.includes(subEvent.gameType || '')
-      ) {
+      if (filters.gameType.length > 0 && !filters.gameType.includes(subEvent.gameType || '')) {
         return false;
       }
 
@@ -342,9 +339,7 @@ export class PageGeneralEnrollmentService {
       if (filters.level.length > 0) {
         const subEventMinLevel = subEvent.minLevel || 0;
         const subEventMaxLevel = subEvent.maxLevel || 12;
-        const hasOverlap = filters.level.some(
-          level => level >= subEventMinLevel && level <= subEventMaxLevel
-        );
+        const hasOverlap = filters.level.some((level) => level >= subEventMinLevel && level <= subEventMaxLevel);
         if (!hasOverlap) {
           return false;
         }
@@ -366,10 +361,7 @@ export class PageGeneralEnrollmentService {
       }
 
       // Search text filter
-      if (
-        filters.searchText &&
-        !subEvent.name?.toLowerCase().includes(filters.searchText.toLowerCase())
-      ) {
+      if (filters.searchText && !subEvent.name?.toLowerCase().includes(filters.searchText.toLowerCase())) {
         return false;
       }
 
@@ -462,7 +454,7 @@ export class PageGeneralEnrollmentService {
     if (!tournamentId || subEvents.length === 0) return;
 
     // Extract sub-event IDs from loaded sub-events
-    const subEventIds = subEvents.map(se => se.id).filter((id): id is string => id !== undefined);
+    const subEventIds = subEvents.map((se) => se.id).filter((id): id is string => id !== undefined);
 
     if (subEventIds.length === 0) return;
 
@@ -471,19 +463,19 @@ export class PageGeneralEnrollmentService {
         query: GET_USER_ENROLLMENTS,
         variables: {
           args: {
-            where: [{
-              tournamentSubEventId: {
-                in: subEventIds,
+            where: [
+              {
+                tournamentSubEventId: {
+                  in: subEventIds,
+                },
               },
-            }],
+            ],
           },
         },
       })
       .subscribe({
         next: (result) => {
-          const enrolledSubEventIds = new Set(
-            result.data?.tournamentEnrollments?.map(e => e.tournamentSubEventId) || []
-          );
+          const enrolledSubEventIds = new Set(result.data?.tournamentEnrollments?.map((e) => e.tournamentSubEventId) || []);
           this._userEnrollments.set(enrolledSubEventIds);
         },
         error: (error) => {
@@ -507,11 +499,13 @@ export class PageGeneralEnrollmentService {
         query: GET_AVAILABLE_SUB_EVENTS,
         variables: {
           args: {
-            where: [{
-              eventId: {
-                eq: tournamentId,
+            where: [
+              {
+                eventId: {
+                  eq: tournamentId,
+                },
               },
-            }],
+            ],
           },
         },
       })
@@ -540,19 +534,27 @@ export class PageGeneralEnrollmentService {
     const sessionKey = this._sessionKey();
 
     this.apollo
-      .query<{ enrollmentSession: { id?: string; sessionKey?: string; items?: Array<{ tournamentSubEvent: TournamentSubEvent; preferredPartnerId?: string; notes?: string }> } | null }>({
+      .query<{
+        enrollmentSession: {
+          id?: string;
+          sessionKey?: string;
+          items?: Array<{ tournamentSubEvent: TournamentSubEvent; preferredPartnerId?: string; notes?: string }>;
+        } | null;
+      }>({
         query: GET_ENROLLMENT_CART,
         variables: {
           args: {
-            where: [{
-              tournamentEventId: {
-                eq: tournamentId,
+            where: [
+              {
+                tournamentEventId: {
+                  eq: tournamentId,
+                },
+                sessionKey: sessionKey ? { eq: sessionKey } : undefined,
+                status: {
+                  eq: 'PENDING',
+                },
               },
-              sessionKey: sessionKey ? { eq: sessionKey } : undefined,
-              status: {
-                eq: 'PENDING',
-              },
-            }],
+            ],
           },
         },
       })
@@ -568,7 +570,7 @@ export class PageGeneralEnrollmentService {
             // Store session key
             if (cart.sessionKey) {
               this._sessionKey.set(cart.sessionKey);
-              this.cookieService.set('enrollment_session_key',cart.sessionKey);
+              this.cookieService.set('enrollment_session_key', cart.sessionKey);
             }
 
             // Load cart items
@@ -622,15 +624,17 @@ export class PageGeneralEnrollmentService {
             query: GET_ENROLLMENT_CART,
             variables: {
               args: {
-                where: [{
-                  tournamentEventId: {
-                    eq: tournamentId,
+                where: [
+                  {
+                    tournamentEventId: {
+                      eq: tournamentId,
+                    },
+                    sessionKey: sessionKey ? { eq: sessionKey } : undefined,
+                    status: {
+                      eq: 'PENDING',
+                    },
                   },
-                  sessionKey: sessionKey ? { eq: sessionKey } : undefined,
-                  status: {
-                    eq: 'PENDING',
-                  },
-                }],
+                ],
               },
             },
           },
@@ -648,7 +652,7 @@ export class PageGeneralEnrollmentService {
             // Store session key
             if (cart.sessionKey) {
               this._sessionKey.set(cart.sessionKey);
-              this.cookieService.set('enrollment_session_key',cart.sessionKey);
+              this.cookieService.set('enrollment_session_key', cart.sessionKey);
             }
           }
 
@@ -689,15 +693,17 @@ export class PageGeneralEnrollmentService {
             query: GET_ENROLLMENT_CART,
             variables: {
               args: {
-                where: [{
-                  tournamentEventId: {
-                    eq: tournamentId,
+                where: [
+                  {
+                    tournamentEventId: {
+                      eq: tournamentId,
+                    },
+                    sessionKey: sessionKey ? { eq: sessionKey } : undefined,
+                    status: {
+                      eq: 'PENDING',
+                    },
                   },
-                  sessionKey: sessionKey ? { eq: sessionKey } : undefined,
-                  status: {
-                    eq: 'PENDING',
-                  },
-                }],
+                ],
               },
             },
           },
@@ -732,15 +738,17 @@ export class PageGeneralEnrollmentService {
             query: GET_ENROLLMENT_CART,
             variables: {
               args: {
-                where: [{
-                  tournamentEventId: {
-                    eq: tournamentId,
+                where: [
+                  {
+                    tournamentEventId: {
+                      eq: tournamentId,
+                    },
+                    sessionKey: sessionKey ? { eq: sessionKey } : undefined,
+                    status: {
+                      eq: 'PENDING',
+                    },
                   },
-                  sessionKey: sessionKey ? { eq: sessionKey } : undefined,
-                  status: {
-                    eq: 'PENDING',
-                  },
-                }],
+                ],
               },
             },
           },
@@ -782,7 +790,14 @@ export class PageGeneralEnrollmentService {
   /**
    * Update filters
    */
-  updateFilters(filters: { eventType: string[]; gameType: string[]; level: number[]; enrollmentStatus: 'OPEN' | 'AVAILABLE' | 'ALL'; searchText: string; showOnlyMyLevel: boolean }): void {
+  updateFilters(filters: {
+    eventType: string[];
+    gameType: string[];
+    level: number[];
+    enrollmentStatus: 'OPEN' | 'AVAILABLE' | 'ALL';
+    searchText: string;
+    showOnlyMyLevel: boolean;
+  }): void {
     this._filters.set(filters);
     // Filters are applied client-side in filteredSubEvents computed signal
   }
@@ -797,12 +812,7 @@ export class PageGeneralEnrollmentService {
   /**
    * Toggle sub-event in cart
    */
-  toggleInCart(
-    subEvent: TournamentSubEvent,
-    cartId?: string,
-    preferredPartnerId?: string,
-    notes?: string,
-  ): void {
+  toggleInCart(subEvent: TournamentSubEvent, cartId?: string, preferredPartnerId?: string, notes?: string): void {
     if (this.isInCart(subEvent.id!)) {
       if (cartId) {
         this.removeFromCart(subEvent.id!, cartId);

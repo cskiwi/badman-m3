@@ -4,13 +4,7 @@ import { Job, Queue } from 'bullmq';
 import { SyncGateway } from '../gateways/sync.gateway';
 import { SyncService } from '../services/sync.service';
 import { extractParentId } from '../utils/job.utils';
-import {
-  SYNC_QUEUE,
-  TOURNAMENT_DISCOVERY_QUEUE,
-  COMPETITION_EVENT_QUEUE,
-  TOURNAMENT_EVENT_QUEUE,
-  TEAM_MATCHING_QUEUE
-} from '../queues/sync.queue';
+import { SYNC_QUEUE, TOURNAMENT_DISCOVERY_QUEUE, COMPETITION_EVENT_QUEUE, TOURNAMENT_EVENT_QUEUE, TEAM_MATCHING_QUEUE } from '../queues/sync.queue';
 
 // Base listener class with shared functionality
 abstract class BaseQueueEventsListener extends QueueEventsHost {
@@ -123,7 +117,6 @@ abstract class BaseQueueEventsListener extends QueueEventsHost {
     if (job.processedOn) return 'active';
     return 'waiting';
   }
-
 }
 
 // Individual listeners for each queue

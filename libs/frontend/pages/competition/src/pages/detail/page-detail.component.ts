@@ -41,10 +41,7 @@ export class PageDetailComponent {
   canEdit = computed(() => {
     const competition = this.competition();
     if (!competition) return false;
-    return this.authService.hasAnyPermission([
-      'edit-any:competition',
-      `${competition.id}_edit:competition`,
-    ]);
+    return this.authService.hasAnyPermission(['edit-any:competition', `${competition.id}_edit:competition`]);
   });
 
   // Grouped sub-events by type for visual separation

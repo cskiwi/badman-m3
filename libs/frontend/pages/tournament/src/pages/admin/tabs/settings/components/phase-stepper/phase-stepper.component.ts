@@ -17,13 +17,7 @@ interface PhaseStep {
 @Component({
   selector: 'app-phase-stepper',
   standalone: true,
-  imports: [
-    CommonModule,
-    TranslateModule,
-    ButtonModule,
-    StepperModule,
-    TooltipModule,
-  ],
+  imports: [CommonModule, TranslateModule, ButtonModule, StepperModule, TooltipModule],
   templateUrl: './phase-stepper.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

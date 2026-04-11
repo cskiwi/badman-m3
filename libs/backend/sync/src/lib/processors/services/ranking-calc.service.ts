@@ -21,18 +21,13 @@ const BATCH_SIZE = 100;
 export class RankingCalcService {
   private readonly logger = new Logger(RankingCalcService.name);
 
-  constructor(
-    @InjectQueue(RANKING_CALC_QUEUE) private readonly rankingCalcQueue: Queue,
-  ) {}
+  constructor(@InjectQueue(RANKING_CALC_QUEUE) private readonly rankingCalcQueue: Queue) {}
 
   // ---------------------------------------------------------------------------
   // INIT — determines the lookback window and enqueues one PERIOD job
   // ---------------------------------------------------------------------------
 
-  async processInit(
-    job: Job<RankingCalcInitJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processInit(job: Job<RankingCalcInitJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
     const { systemId, calcDate, isUpdateDate } = job.data;
 
@@ -47,9 +42,7 @@ export class RankingCalcService {
     await updateProgress(20);
 
     const calcDay = dayjs(calcDate);
-    const windowStart = calcDay
-      .subtract(system.periodAmount, system.periodUnit as dayjs.ManipulateType)
-      .toISOString();
+    const windowStart = calcDay.subtract(system.periodAmount, system.periodUnit as dayjs.ManipulateType).toISOString();
 
     const periodData: RankingCalcPeriodJobData = {
       systemId,
@@ -71,10 +64,7 @@ export class RankingCalcService {
   // PERIOD — lightweight orchestrator: finds eligible players, splits into batches
   // ---------------------------------------------------------------------------
 
-  async processPeriod(
-    job: Job<RankingCalcPeriodJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processPeriod(job: Job<RankingCalcPeriodJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
     const { systemId, periodDate, windowStart, windowEnd, isUpdateDate } = job.data;
 
@@ -141,10 +131,7 @@ export class RankingCalcService {
   // PLAYER BATCH — aggregates points and upserts RankingPlace per player
   // ---------------------------------------------------------------------------
 
-  async processPlayerBatch(
-    job: Job<RankingCalcPlayerBatchJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processPlayerBatch(job: Job<RankingCalcPlayerBatchJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
     const { systemId, periodDate, windowStart, windowEnd, playerIds, isUpdateDate, batchKey } = job.data;
 
@@ -169,9 +156,7 @@ export class RankingCalcService {
       .getRawMany<{ playerId: string; gameType: GameType; points: string }>();
 
     type DisciplinePoints = { single: number; double: number; mix: number };
-    const aggregated = new Map<string, DisciplinePoints>(
-      playerIds.map((id) => [id, { single: 0, double: 0, mix: 0 }]),
-    );
+    const aggregated = new Map<string, DisciplinePoints>(playerIds.map((id) => [id, { single: 0, double: 0, mix: 0 }]));
 
     const maxGames = system.latestXGamesToUse ?? 10;
     // Group by playerId+gameType, take top maxGames, sum
@@ -198,7 +183,9 @@ export class RankingCalcService {
     // --- 2. Inactivity check ---
     const inactivityStart =
       system.inactivityAmount && system.inactivityUnit
-        ? dayjs(periodDate).subtract(system.inactivityAmount, system.inactivityUnit as dayjs.ManipulateType).toISOString()
+        ? dayjs(periodDate)
+            .subtract(system.inactivityAmount, system.inactivityUnit as dayjs.ManipulateType)
+            .toISOString()
         : windowStart;
 
     const inactivityRows = await RankingPoint.createQueryBuilder('rp')
@@ -216,9 +203,7 @@ export class RankingCalcService {
 
     const inactivityThreshold = system.gamesForInactivty ?? 0;
     type InactivityFlags = { single: boolean; double: boolean; mix: boolean };
-    const inactivity = new Map<string, InactivityFlags>(
-      playerIds.map((id) => [id, { single: true, double: true, mix: true }]),
-    );
+    const inactivity = new Map<string, InactivityFlags>(playerIds.map((id) => [id, { single: true, double: true, mix: true }]));
     for (const row of inactivityRows) {
       const flags = inactivity.get(row.playerId)!;
       const count = Number(row.games);
@@ -313,9 +298,7 @@ export class RankingCalcService {
       });
       const existingById = new Map(existing.map((e) => [e.playerId, e.id]));
 
-      const toSave = chunk.map((p) =>
-        RankingPlace.create({ ...p, ...(existingById.has(p.playerId!) ? { id: existingById.get(p.playerId!) } : {}) }),
-      );
+      const toSave = chunk.map((p) => RankingPlace.create({ ...p, ...(existingById.has(p.playerId!) ? { id: existingById.get(p.playerId!) } : {}) }));
 
       await RankingPlace.save(toSave);
     }
@@ -348,10 +331,7 @@ export class RankingCalcService {
   // FINALIZE — assigns global ranks, updates system timestamps
   // ---------------------------------------------------------------------------
 
-  async processFinalize(
-    job: Job<RankingCalcFinalizeJobData>,
-    updateProgress: (progress: number) => Promise<void>,
-  ): Promise<void> {
+  async processFinalize(job: Job<RankingCalcFinalizeJobData>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     await updateProgress(0);
     const { systemId, calcDate, isUpdateDate } = job.data;
 
@@ -394,12 +374,7 @@ export class RankingCalcService {
   // Helpers
   // ---------------------------------------------------------------------------
 
-  private calcNewLevel(
-    points: number,
-    currentLevel: number,
-    isInactive: boolean,
-    system: RankingSystem,
-  ): number {
+  private calcNewLevel(points: number, currentLevel: number, isInactive: boolean, system: RankingSystem): number {
     const maxLevel = system.amountOfLevels ?? 12;
     const maxUp = system.maxLevelUpPerChange ?? 1;
     const maxDown = system.maxLevelDownPerChange ?? 1;

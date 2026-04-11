@@ -8,10 +8,7 @@ import { RequestLinkArgs } from '../args';
 export class RequestLinkResolver {
   @Query(() => RequestLink)
   @UseGuards(PermGuard)
-  async requestLink(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<RequestLink> {
+  async requestLink(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<RequestLink> {
     if (!(await user.hasAnyPermission(['link:player']))) {
       throw new ForbiddenException('Insufficient permissions to access request links');
     }

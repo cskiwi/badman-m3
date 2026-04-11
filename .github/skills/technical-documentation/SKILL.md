@@ -34,11 +34,13 @@ Documentation must ensure clarity, accuracy, and consistency for all audiences, 
 Files must follow this pattern: `{chaptername}.technical.md`
 
 **Rules:**
+
 - Lowercase with words separated by hyphens
 - Spaces → hyphens
 - Special characters removed or replaced
 
 **Examples:**
+
 ```
 documentation/scope.technical.md
 documentation/technical-overview.technical.md
@@ -60,6 +62,7 @@ documentation/support-problem-solving.technical.md
 ### Step 1: Folder Check
 
 Before generating any documentation:
+
 1. Check for `/documentation/` folder existence
 2. If absent → stop and show error: `"Folder 'documentation' missing — no files generated."`
 
@@ -107,6 +110,7 @@ Before generating any documentation:
 For detailed guidance on each documentation section type, see [references/SECTIONS.md](references/SECTIONS.md).
 
 Main section types include:
+
 - **General Documentation** - Structure and coherence
 - **Functional Description** - User-focused (WHAT not HOW)
 - **Technical Overview** - Architecture and design patterns
@@ -147,7 +151,7 @@ Before finalizing documentation, verify:
 
 ## Example File Structure
 
-```markdown
+````markdown
 # Technical Overview
 
 ## Introduction
@@ -166,11 +170,12 @@ graph TB
     BL[Business Logic Layer]
     DA[Data Access Layer]
     DB[(Database)]
-    
+
     UI --> BL
     BL --> DA
     DA --> DB
 ```
+````
 
 ### Components
 
@@ -179,10 +184,12 @@ graph TB
 **Responsibility:** Manages user authentication and session handling
 
 **Public Interfaces:**
+
 - `IAuthenticationService`
 - `ISessionManager`
 
 **Dependencies:**
+
 - Identity Provider (OAuth 2.0)
 - Session Store (Redis)
 
@@ -200,17 +207,20 @@ graph TB
 
 ### Choice of Microservices Architecture
 
-**Rationale:** 
+**Rationale:**
+
 - Scalability requirements for high-traffic modules
 - Independent deployment of different functional areas
 - Technology diversity (some services require different tech stacks)
 
 **Trade-offs:**
+
 - Increased operational complexity
 - Network latency between services
 - Eventual consistency challenges
 
 For deployment details, see [Infrastructure & Deployment](infrastructure-deployment.technical.md).
+
 ```
 
 ## Summary
@@ -224,3 +234,4 @@ When generating technical documentation:
 6. **Document facts**, not speculation
 7. **Include examples** for complex concepts
 8. **Maintain consistency** across all documentation files
+```

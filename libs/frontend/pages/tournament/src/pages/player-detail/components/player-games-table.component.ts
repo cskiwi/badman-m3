@@ -11,18 +11,9 @@ import { type Game } from '@app/models';
 
 @Component({
   selector: 'app-player-games-table',
-  imports: [
-    DatePipe,
-    RouterModule,
-    TranslateModule,
-    TableModule,
-    TagModule,
-    ButtonModule,
-    PaginatorModule,
-    TooltipModule,
-  ],
+  imports: [DatePipe, RouterModule, TranslateModule, TableModule, TagModule, ButtonModule, PaginatorModule, TooltipModule],
   templateUrl: './player-games-table.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerGamesTableComponent {
   games = input.required<Game[]>();
@@ -33,18 +24,16 @@ export class PlayerGamesTableComponent {
   getOpponentNames(game: Game): string {
     const playerId = this.playerId();
     const opponents = game.gamePlayerMemberships
-      ?.filter(gpm => gpm.gamePlayer.id !== playerId)
-      .map(gpm => gpm.gamePlayer.fullName)
+      ?.filter((gpm) => gpm.gamePlayer.id !== playerId)
+      .map((gpm) => gpm.gamePlayer.fullName)
       .join(' & ');
-    
+
     return opponents || 'Unknown';
   }
 
   getPlayerTeam(game: Game): number | null {
     const playerId = this.playerId();
-    const membership = game.gamePlayerMemberships?.find(
-      gpm => gpm.gamePlayer.id === playerId
-    );
+    const membership = game.gamePlayerMemberships?.find((gpm) => gpm.gamePlayer.id === playerId);
     return membership?.team ?? null;
   }
 
@@ -82,14 +71,14 @@ export class PlayerGamesTableComponent {
 
   getGameLink(game: Game): string[] | null {
     if (!game.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.slug) return null;
-    
+
     return [
       '/tournament',
       game.tournamentDraw.tournamentSubEvent.tournamentEvent.slug,
       'sub-events',
       game.tournamentDraw.tournamentSubEvent.id,
       'draws',
-      game.tournamentDraw.id
+      game.tournamentDraw.id,
     ];
   }
 }

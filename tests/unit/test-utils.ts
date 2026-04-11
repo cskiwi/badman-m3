@@ -22,7 +22,7 @@ export class MockDataGenerator {
       phone: '+1234567890',
       email: 'john.doe@example.com',
       slug: 'john-doe',
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -43,7 +43,7 @@ export class MockDataGenerator {
       email: 'info@testclub.com',
       phone: '+9876543210',
       website: 'https://testclub.com',
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -58,7 +58,7 @@ export class MockDataGenerator {
       bestPosition: 1,
       currentStreak: 3,
       lastGameDate: new Date().toISOString(),
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -73,7 +73,7 @@ export class MockDataGenerator {
       gamesLost: 320,
       winRate: 58.44,
       averagePosition: 3.8,
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -88,13 +88,13 @@ export class MockDataGenerator {
       },
       team: {
         name: 'Test Team',
-        type: 'Men Doubles'
+        type: 'Men Doubles',
       },
       standing: {
         position: Math.floor(Math.random() * 10) + 1,
-        points: Math.floor(Math.random() * 100) + 50
+        points: Math.floor(Math.random() * 100) + 50,
       },
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -106,31 +106,17 @@ export class MockDataGenerator {
       total: items.length,
       page,
       pageSize,
-      totalPages: Math.ceil(items.length / pageSize)
+      totalPages: Math.ceil(items.length / pageSize),
     };
   }
 }
 
 // Component test setup utility
 export class ComponentTestSetup {
-  static async setupComponent<T>(
-    componentClass: any,
-    additionalImports: any[] = [],
-    providers: any[] = []
-  ): Promise<ComponentFixture<T>> {
+  static async setupComponent<T>(componentClass: any, additionalImports: any[] = [], providers: any[] = []): Promise<ComponentFixture<T>> {
     await TestBed.configureTestingModule({
-      imports: [
-        componentClass,
-        NoopAnimationsModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        TranslateModule.forRoot(),
-        ...additionalImports
-      ],
-      providers: [
-        TranslateService,
-        ...providers
-      ]
+      imports: [componentClass, NoopAnimationsModule, RouterTestingModule, HttpClientTestingModule, TranslateModule.forRoot(), ...additionalImports],
+      providers: [TranslateService, ...providers],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(componentClass);
@@ -156,13 +142,13 @@ export class MockClubSearchService {
   filter = {
     get: jasmine.createSpy('get').and.returnValue({
       setValue: jasmine.createSpy('setValue'),
-      value: null
+      value: null,
     }),
-    value: {}
+    value: {},
   };
 
   autocompleteQuery = {
-    setValue: jasmine.createSpy('setValue')
+    setValue: jasmine.createSpy('setValue'),
   };
 
   onPageChange = jasmine.createSpy('onPageChange');
@@ -196,8 +182,8 @@ export class MockPlayerDetailService {
 
   filter = {
     get: jasmine.createSpy('get').and.returnValue({
-      setValue: jasmine.createSpy('setValue')
-    })
+      setValue: jasmine.createSpy('setValue'),
+    }),
   };
 }
 
@@ -214,8 +200,8 @@ export class MockClubDetailService {
 
   filter = {
     get: jasmine.createSpy('get').and.returnValue({
-      setValue: jasmine.createSpy('setValue')
-    })
+      setValue: jasmine.createSpy('setValue'),
+    }),
   };
 }
 
@@ -255,26 +241,19 @@ export class PerformanceTestUtils {
 // Accessibility testing utilities
 export class AccessibilityTestUtils {
   static checkKeyboardNavigation(element: HTMLElement): boolean {
-    const focusableElements = element.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    const focusableElements = element.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+
+    return (
+      focusableElements.length > 0 &&
+      Array.from(focusableElements).every((el) => !el.hasAttribute('tabindex') || parseInt(el.getAttribute('tabindex') || '0') >= 0)
     );
-    
-    return focusableElements.length > 0 && 
-           Array.from(focusableElements).every(el => 
-             !el.hasAttribute('tabindex') || 
-             parseInt(el.getAttribute('tabindex') || '0') >= 0
-           );
   }
 
   static checkAriaLabels(element: HTMLElement): boolean {
-    const interactiveElements = element.querySelectorAll(
-      'button, [role="button"], input, select, textarea'
-    );
-    
-    return Array.from(interactiveElements).every(el => 
-      el.hasAttribute('aria-label') || 
-      el.hasAttribute('aria-labelledby') ||
-      el.textContent?.trim().length > 0
+    const interactiveElements = element.querySelectorAll('button, [role="button"], input, select, textarea');
+
+    return Array.from(interactiveElements).every(
+      (el) => el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.textContent?.trim().length > 0,
     );
   }
 
@@ -297,7 +276,7 @@ export class AccessibilityTestUtils {
 // Network simulation utilities
 export class NetworkSimulation {
   static simulateNetworkDelay(ms: number = 1000): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   static simulateNetworkError(): Promise<never> {
@@ -305,7 +284,7 @@ export class NetworkSimulation {
   }
 
   static simulateSlowNetwork<T>(data: T, delayMs: number = 3000): Promise<T> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(data), delayMs);
     });
   }
@@ -322,7 +301,7 @@ export class ResponsiveTestUtils {
   static readonly BREAKPOINTS = {
     mobile: { width: 375, height: 667 },
     tablet: { width: 768, height: 1024 },
-    desktop: { width: 1200, height: 800 }
+    desktop: { width: 1200, height: 800 },
   };
 
   static isMobileViewport(): boolean {

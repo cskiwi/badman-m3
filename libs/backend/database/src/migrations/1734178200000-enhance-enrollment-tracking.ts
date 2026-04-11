@@ -1,16 +1,16 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterface {
-    name = 'EnhanceEnrollmentTracking1734178200000'
+  name = 'EnhanceEnrollmentTracking1734178200000';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // ===================================================================
-        // PHASE 1: Add tracking fields to TournamentEnrollments
-        // ===================================================================
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    // ===================================================================
+    // PHASE 1: Add tracking fields to TournamentEnrollments
+    // ===================================================================
 
-        console.log('Adding enrollment tracking fields...');
+    console.log('Adding enrollment tracking fields...');
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             ADD COLUMN "sessionId" uuid,
             ADD COLUMN "enrollmentSource" varchar(50) DEFAULT 'MANUAL',
@@ -26,8 +26,8 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             ADD COLUMN "withdrawnAt" timestamptz
         `);
 
-        // Add foreign key constraints
-        await queryRunner.query(`
+    // Add foreign key constraints
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             ADD CONSTRAINT "FK_enrollment_session"
             FOREIGN KEY ("sessionId")
@@ -35,7 +35,7 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             ON DELETE SET NULL
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             ADD CONSTRAINT "FK_enrollment_approved_by"
             FOREIGN KEY ("approvedBy")
@@ -43,111 +43,111 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             ON DELETE SET NULL
         `);
 
-        // ===================================================================
-        // PHASE 2: Backfill timestamp fields from existing data
-        // ===================================================================
+    // ===================================================================
+    // PHASE 2: Backfill timestamp fields from existing data
+    // ===================================================================
 
-        console.log('Backfilling timestamp data...');
+    console.log('Backfilling timestamp data...');
 
-        // Set confirmedAt for confirmed enrollments
-        await queryRunner.query(`
+    // Set confirmedAt for confirmed enrollments
+    await queryRunner.query(`
             UPDATE event."TournamentEnrollments"
             SET "confirmedAt" = "updatedAt"
             WHERE "status" = 'CONFIRMED'
               AND "confirmedAt" IS NULL
         `);
 
-        // Set cancelledAt for cancelled enrollments
-        await queryRunner.query(`
+    // Set cancelledAt for cancelled enrollments
+    await queryRunner.query(`
             UPDATE event."TournamentEnrollments"
             SET "cancelledAt" = "updatedAt"
             WHERE "status" = 'CANCELLED'
               AND "cancelledAt" IS NULL
         `);
 
-        // Set withdrawnAt for withdrawn enrollments
-        await queryRunner.query(`
+    // Set withdrawnAt for withdrawn enrollments
+    await queryRunner.query(`
             UPDATE event."TournamentEnrollments"
             SET "withdrawnAt" = "updatedAt"
             WHERE "status" = 'WITHDRAWN'
               AND "withdrawnAt" IS NULL
         `);
 
-        // ===================================================================
-        // PHASE 3: Add check constraints
-        // ===================================================================
+    // ===================================================================
+    // PHASE 3: Add check constraints
+    // ===================================================================
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             ADD CONSTRAINT "CHK_waitlist_position_positive"
             CHECK ("waitingListPosition" IS NULL OR "waitingListPosition" > 0)
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             ADD CONSTRAINT "CHK_enrollment_source_valid"
             CHECK ("enrollmentSource" IN ('MANUAL', 'PUBLIC_FORM', 'IMPORT', 'AUTO_PROMOTED'))
         `);
 
-        // ===================================================================
-        // PHASE 4: Create indexes for performance
-        // ===================================================================
+    // ===================================================================
+    // PHASE 4: Create indexes for performance
+    // ===================================================================
 
-        console.log('Creating performance indexes...');
+    console.log('Creating performance indexes...');
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_player_status"
             ON event."TournamentEnrollments"("playerId", "status")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_subevent_status"
             ON event."TournamentEnrollments"("tournamentSubEventId", "status")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_waitlist"
             ON event."TournamentEnrollments"("tournamentSubEventId", "waitingListPosition")
             WHERE "status" = 'WAITING_LIST' AND "waitingListPosition" IS NOT NULL
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_source"
             ON event."TournamentEnrollments"("enrollmentSource", "createdAt")
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_session"
             ON event."TournamentEnrollments"("sessionId")
             WHERE "sessionId" IS NOT NULL
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_confirmed_at"
             ON event."TournamentEnrollments"("confirmedAt")
             WHERE "confirmedAt" IS NOT NULL
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_promoted"
             ON event."TournamentEnrollments"("promotedFromWaitingList", "promotedAt")
             WHERE "promotedFromWaitingList" = true
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE INDEX "IDX_enrollment_requires_approval"
             ON event."TournamentEnrollments"("requiresApproval", "approvedAt")
             WHERE "requiresApproval" = true
         `);
 
-        // ===================================================================
-        // PHASE 5: Create database triggers for automation
-        // ===================================================================
+    // ===================================================================
+    // PHASE 5: Create database triggers for automation
+    // ===================================================================
 
-        console.log('Creating database triggers...');
+    console.log('Creating database triggers...');
 
-        // Trigger to auto-update enrollment counts
-        await queryRunner.query(`
+    // Trigger to auto-update enrollment counts
+    await queryRunner.query(`
             CREATE OR REPLACE FUNCTION update_subevent_enrollment_count()
             RETURNS TRIGGER AS $$
             BEGIN
@@ -204,15 +204,15 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             $$ LANGUAGE plpgsql;
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TRIGGER enrollment_count_trigger
             AFTER INSERT OR UPDATE OR DELETE ON event."TournamentEnrollments"
             FOR EACH ROW
             EXECUTE FUNCTION update_subevent_enrollment_count()
         `);
 
-        // Trigger to auto-update enrollment phase based on capacity
-        await queryRunner.query(`
+    // Trigger to auto-update enrollment phase based on capacity
+    await queryRunner.query(`
             CREATE OR REPLACE FUNCTION update_enrollment_phase()
             RETURNS TRIGGER AS $$
             BEGIN
@@ -235,7 +235,7 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             $$ LANGUAGE plpgsql;
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TRIGGER enrollment_phase_trigger
             BEFORE UPDATE ON event."SubEventTournaments"
             FOR EACH ROW
@@ -243,8 +243,8 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             EXECUTE FUNCTION update_enrollment_phase()
         `);
 
-        // Trigger to log waiting list changes
-        await queryRunner.query(`
+    // Trigger to log waiting list changes
+    await queryRunner.query(`
             CREATE OR REPLACE FUNCTION log_waitlist_changes()
             RETURNS TRIGGER AS $$
             BEGIN
@@ -291,15 +291,15 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             $$ LANGUAGE plpgsql;
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TRIGGER waitlist_log_trigger
             AFTER INSERT OR UPDATE ON event."TournamentEnrollments"
             FOR EACH ROW
             EXECUTE FUNCTION log_waitlist_changes()
         `);
 
-        // Trigger to auto-set timestamp fields
-        await queryRunner.query(`
+    // Trigger to auto-set timestamp fields
+    await queryRunner.query(`
             CREATE OR REPLACE FUNCTION set_enrollment_timestamps()
             RETURNS TRIGGER AS $$
             BEGIN
@@ -323,7 +323,7 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             $$ LANGUAGE plpgsql;
         `);
 
-        await queryRunner.query(`
+    await queryRunner.query(`
             CREATE TRIGGER enrollment_timestamps_trigger
             BEFORE UPDATE ON event."TournamentEnrollments"
             FOR EACH ROW
@@ -331,54 +331,54 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             EXECUTE FUNCTION set_enrollment_timestamps()
         `);
 
-        console.log('Enhancement migration completed successfully.');
-    }
+    console.log('Enhancement migration completed successfully.');
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        console.log('Rolling back enrollment tracking enhancements...');
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    console.log('Rolling back enrollment tracking enhancements...');
 
-        // Drop triggers
-        await queryRunner.query(`DROP TRIGGER IF EXISTS enrollment_timestamps_trigger ON event."TournamentEnrollments"`);
-        await queryRunner.query(`DROP TRIGGER IF EXISTS waitlist_log_trigger ON event."TournamentEnrollments"`);
-        await queryRunner.query(`DROP TRIGGER IF EXISTS enrollment_phase_trigger ON event."SubEventTournaments"`);
-        await queryRunner.query(`DROP TRIGGER IF EXISTS enrollment_count_trigger ON event."TournamentEnrollments"`);
+    // Drop triggers
+    await queryRunner.query(`DROP TRIGGER IF EXISTS enrollment_timestamps_trigger ON event."TournamentEnrollments"`);
+    await queryRunner.query(`DROP TRIGGER IF EXISTS waitlist_log_trigger ON event."TournamentEnrollments"`);
+    await queryRunner.query(`DROP TRIGGER IF EXISTS enrollment_phase_trigger ON event."SubEventTournaments"`);
+    await queryRunner.query(`DROP TRIGGER IF EXISTS enrollment_count_trigger ON event."TournamentEnrollments"`);
 
-        // Drop functions
-        await queryRunner.query(`DROP FUNCTION IF EXISTS set_enrollment_timestamps()`);
-        await queryRunner.query(`DROP FUNCTION IF EXISTS log_waitlist_changes()`);
-        await queryRunner.query(`DROP FUNCTION IF EXISTS update_enrollment_phase()`);
-        await queryRunner.query(`DROP FUNCTION IF EXISTS update_subevent_enrollment_count()`);
+    // Drop functions
+    await queryRunner.query(`DROP FUNCTION IF EXISTS set_enrollment_timestamps()`);
+    await queryRunner.query(`DROP FUNCTION IF EXISTS log_waitlist_changes()`);
+    await queryRunner.query(`DROP FUNCTION IF EXISTS update_enrollment_phase()`);
+    await queryRunner.query(`DROP FUNCTION IF EXISTS update_subevent_enrollment_count()`);
 
-        // Drop indexes
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_requires_approval"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_promoted"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_confirmed_at"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_session"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_source"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_waitlist"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_subevent_status"`);
-        await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_player_status"`);
+    // Drop indexes
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_requires_approval"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_promoted"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_confirmed_at"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_session"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_source"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_waitlist"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_subevent_status"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS event."IDX_enrollment_player_status"`);
 
-        // Drop constraints
-        await queryRunner.query(`
+    // Drop constraints
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             DROP CONSTRAINT IF EXISTS "CHK_enrollment_source_valid"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             DROP CONSTRAINT IF EXISTS "CHK_waitlist_position_positive"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             DROP CONSTRAINT IF EXISTS "FK_enrollment_approved_by"
         `);
-        await queryRunner.query(`
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             DROP CONSTRAINT IF EXISTS "FK_enrollment_session"
         `);
 
-        // Drop columns
-        await queryRunner.query(`
+    // Drop columns
+    await queryRunner.query(`
             ALTER TABLE event."TournamentEnrollments"
             DROP COLUMN IF EXISTS "withdrawnAt",
             DROP COLUMN IF EXISTS "cancelledAt",
@@ -394,6 +394,6 @@ export class EnhanceEnrollmentTracking1734178200000 implements MigrationInterfac
             DROP COLUMN IF EXISTS "sessionId"
         `);
 
-        console.log('Rollback completed.');
-    }
+    console.log('Rollback completed.');
+  }
 }

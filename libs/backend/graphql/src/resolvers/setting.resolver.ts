@@ -8,10 +8,7 @@ import { SettingArgs } from '../args';
 export class SettingResolver {
   @Query(() => Setting)
   @UseGuards(PermGuard)
-  async setting(
-    @User() user: Player,
-    @Args('id', { type: () => ID }) id: string
-  ): Promise<Setting> {
+  async setting(@User() user: Player, @Args('id', { type: () => ID }) id: string): Promise<Setting> {
     if (!(await user.hasAnyPermission(['edit:state']))) {
       throw new ForbiddenException('Insufficient permissions to access settings');
     }

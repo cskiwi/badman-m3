@@ -24,11 +24,7 @@
         </div>
       </div>
       <div class="flex items-center gap-2 px-3 py-2 bg-surface-0 dark:bg-surface-800 rounded-lg">
-        <p-checkbox
-          [formControl]="showOnlyMyLevelControl"
-          [binary]="true"
-          inputId="showOnlyMyLevel"
-        />
+        <p-checkbox [formControl]="showOnlyMyLevelControl" [binary]="true" inputId="showOnlyMyLevel" />
         <label for="showOnlyMyLevel" class="cursor-pointer text-sm font-medium text-color select-none">
           {{ 'all.enrollment.filters.showOnlyMyLevel' | translate }}
         </label>
@@ -47,7 +43,7 @@
         optionValue="value"
         [placeholder]="'all.enrollment.filters.eventType' | translate"
         display="chip"
-        [style]="{'width': '100%'}"
+        [style]="{ width: '100%' }"
       />
     </div>
 
@@ -60,7 +56,7 @@
         optionValue="value"
         [placeholder]="'all.enrollment.filters.category' | translate"
         display="chip"
-        [style]="{'width': '100%'}"
+        [style]="{ width: '100%' }"
       />
     </div>
 
@@ -90,7 +86,7 @@
         optionLabel="label"
         optionValue="value"
         [placeholder]="'all.enrollment.filters.status' | translate"
-        [style]="{'width': '100%'}"
+        [style]="{ width: '100%' }"
       />
     </div>
 

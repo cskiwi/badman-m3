@@ -47,18 +47,13 @@
                     @for (membership of getTeamMemberships(game, teamNumber); track membership.id; let playerIndex = $index) {
                       <div
                         class="flex items-center gap-2 min-w-0"
-                        [class]="
-                          getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'
-                        "
+                        [class]="getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'"
                       >
                         @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
                           <i class="pi pi-crown text-yellow-500 text-xs"></i>
                         }
                         @if (membership.gamePlayer.id) {
-                          <a 
-                            [routerLink]="['/players', membership.gamePlayer.id]"
-                            class="truncate text-sm no-underline text-current"
-                          >
+                          <a [routerLink]="['/players', membership.gamePlayer.id]" class="truncate text-sm no-underline text-current">
                             {{ membership.gamePlayer.fullName || 'Unknown' }}
                           </a>
                         } @else {
@@ -89,9 +84,7 @@
                 <div class="flex items-center h-8">
                   <div class="flex gap-1">
                     @for (setScore of setScores.team1Sets; track $index) {
-                      <span
-                        class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold"
-                      >
+                      <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
                         {{ setScore }}
                       </span>
                     }
@@ -100,9 +93,7 @@
                 <div class="flex items-center h-8">
                   <div class="flex gap-1">
                     @for (setScore of setScores.team2Sets; track $index) {
-                      <span
-                        class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold"
-                      >
+                      <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
                         {{ setScore }}
                       </span>
                     }

@@ -2,7 +2,9 @@
   <!-- Stats Cards -->
   <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
     <!-- Total Slots -->
-    <div class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600">
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-surface-200 dark:border-surface-700 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600"
+    >
       <div class="w-10 h-10 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-2">
         <i class="pi pi-table text-lg text-surface-700 dark:text-surface-300"></i>
       </div>
@@ -13,7 +15,9 @@
     </div>
 
     <!-- Available -->
-    <div class="bg-white dark:bg-surface-900 rounded-border border border-green-200 dark:border-green-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-green-300 dark:hover:border-green-800">
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-green-200 dark:border-green-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-green-300 dark:hover:border-green-800"
+    >
       <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-2">
         <i class="pi pi-check-circle text-lg text-green-600 dark:text-green-400"></i>
       </div>
@@ -24,7 +28,9 @@
     </div>
 
     <!-- Scheduled -->
-    <div class="bg-white dark:bg-surface-900 rounded-border border border-blue-200 dark:border-blue-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-800">
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-blue-200 dark:border-blue-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-blue-300 dark:hover:border-blue-800"
+    >
       <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
         <i class="pi pi-calendar-plus text-lg text-blue-600 dark:text-blue-400"></i>
       </div>
@@ -35,7 +41,9 @@
     </div>
 
     <!-- In Progress -->
-    <div class="bg-white dark:bg-surface-900 rounded-border border border-orange-200 dark:border-orange-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800">
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-orange-200 dark:border-orange-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-orange-300 dark:hover:border-orange-800"
+    >
       <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-2">
         <i class="pi pi-play text-lg text-orange-600 dark:text-orange-400"></i>
       </div>
@@ -46,7 +54,9 @@
     </div>
 
     <!-- Blocked -->
-    <div class="bg-white dark:bg-surface-900 rounded-border border border-red-200 dark:border-red-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-red-300 dark:hover:border-red-800">
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-red-200 dark:border-red-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-red-300 dark:hover:border-red-800"
+    >
       <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-2">
         <i class="pi pi-ban text-lg text-red-600 dark:text-red-400"></i>
       </div>
@@ -57,7 +67,9 @@
     </div>
 
     <!-- Unscheduled -->
-    <div class="bg-white dark:bg-surface-900 rounded-border border border-purple-200 dark:border-purple-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-purple-300 dark:hover:border-purple-800">
+    <div
+      class="bg-white dark:bg-surface-900 rounded-border border border-purple-200 dark:border-purple-900/50 p-4 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-purple-300 dark:hover:border-purple-800"
+    >
       <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-2">
         <i class="pi pi-clock text-lg text-purple-600 dark:text-purple-400"></i>
       </div>
@@ -85,10 +97,10 @@
           styleClass="w-48"
         >
           <ng-template let-date pTemplate="item">
-            {{ date | date : 'EEE, MMM d' }}
+            {{ date | date: 'EEE, MMM d' }}
           </ng-template>
           <ng-template let-date pTemplate="selectedItem">
-            {{ date | date : 'EEE, MMM d' }}
+            {{ date | date: 'EEE, MMM d' }}
           </ng-template>
         </p-select>
       </div>
@@ -163,7 +175,9 @@
               {{ 'all.tournament.admin.schedule.time' | translate }}
             </div>
             @for (court of gridCourts(); track trackByCourt($index, court)) {
-              <div class="flex-1 min-w-36 px-3 py-3 font-semibold text-sm text-color text-center border-r border-surface-200 dark:border-surface-700 last:border-r-0">
+              <div
+                class="flex-1 min-w-36 px-3 py-3 font-semibold text-sm text-color text-center border-r border-surface-200 dark:border-surface-700 last:border-r-0"
+              >
                 {{ court.name ?? 'Court' }}
               </div>
             }
@@ -172,7 +186,9 @@
           <!-- Time Rows -->
           @for (timeGroup of slotsGroupedByTime(); track trackByTime($index, timeGroup)) {
             <div class="flex border-b border-surface-100 dark:border-surface-800 last:border-b-0 hover:bg-surface-50/50 dark:hover:bg-surface-800/50">
-              <div class="w-20 flex-shrink-0 px-3 py-2 font-medium text-sm text-color border-r border-surface-100 dark:border-surface-800 flex items-center">
+              <div
+                class="w-20 flex-shrink-0 px-3 py-2 font-medium text-sm text-color border-r border-surface-100 dark:border-surface-800 flex items-center"
+              >
                 {{ formatTime(timeGroup.time) }}
               </div>
               @for (court of gridCourts(); track trackByCourt($index, court)) {
@@ -185,7 +201,9 @@
                   >
                     <!-- Available Slot -->
                     @if (slot.status === 'AVAILABLE') {
-                      <div class="h-full min-h-16 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800 flex items-center justify-center gap-2 transition-all hover:border-primary hover:bg-primary/5">
+                      <div
+                        class="h-full min-h-16 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800 flex items-center justify-center gap-2 transition-all hover:border-primary hover:bg-primary/5"
+                      >
                         <span class="text-xs text-muted-color">Drop here</span>
                         <p-button
                           size="small"
@@ -201,7 +219,9 @@
                     }
                     <!-- Scheduled Slot -->
                     @else if (slot.status === 'SCHEDULED' && slot.game) {
-                      <div class="h-full min-h-16 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2 flex flex-col justify-between">
+                      <div
+                        class="h-full min-h-16 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-2 flex flex-col justify-between"
+                      >
                         <div>
                           <div class="text-xs font-semibold text-blue-700 dark:text-blue-300 leading-tight">
                             {{ getGameDisplayName(slot.game) }}
@@ -228,7 +248,9 @@
                     }
                     <!-- In Progress Slot -->
                     @else if (slot.status === 'IN_PROGRESS' && slot.game) {
-                      <div class="h-full min-h-16 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-2 flex flex-col justify-between">
+                      <div
+                        class="h-full min-h-16 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-2 flex flex-col justify-between"
+                      >
                         <div class="flex items-center gap-1 mb-1">
                           <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
                           <span class="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase">Live</span>
@@ -240,7 +262,9 @@
                     }
                     <!-- Completed Slot -->
                     @else if (slot.status === 'COMPLETED' && slot.game) {
-                      <div class="h-full min-h-16 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-2 opacity-70">
+                      <div
+                        class="h-full min-h-16 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-2 opacity-70"
+                      >
                         <div class="flex items-center gap-1 mb-1">
                           <i class="pi pi-check text-green-600 dark:text-green-400 text-xs"></i>
                           <span class="text-xs font-bold text-green-600 dark:text-green-400 uppercase">Done</span>
@@ -252,7 +276,9 @@
                     }
                     <!-- Blocked Slot -->
                     @else if (slot.status === 'BLOCKED') {
-                      <div class="h-full min-h-16 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-2 flex items-center justify-center gap-2">
+                      <div
+                        class="h-full min-h-16 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-2 flex items-center justify-center gap-2"
+                      >
                         <i class="pi pi-ban text-red-500 dark:text-red-400"></i>
                         <span class="text-xs font-medium text-red-600 dark:text-red-400">Blocked</span>
                         <p-button
@@ -403,26 +429,14 @@
             {{ 'all.tournament.admin.schedule.startTime' | translate }}
             <span class="text-red-500">*</span>
           </label>
-          <input
-            pInputText
-            id="startTime"
-            [formControl]="generateSlotsForm.controls.startTime"
-            placeholder="09:00"
-            class="w-full"
-          />
+          <input pInputText id="startTime" [formControl]="generateSlotsForm.controls.startTime" placeholder="09:00" class="w-full" />
         </div>
         <div class="flex flex-col gap-2">
           <label for="endTime" class="text-sm font-medium text-color">
             {{ 'all.tournament.admin.schedule.endTime' | translate }}
             <span class="text-red-500">*</span>
           </label>
-          <input
-            pInputText
-            id="endTime"
-            [formControl]="generateSlotsForm.controls.endTime"
-            placeholder="18:00"
-            class="w-full"
-          />
+          <input pInputText id="endTime" [formControl]="generateSlotsForm.controls.endTime" placeholder="18:00" class="w-full" />
         </div>
       </div>
 
@@ -452,12 +466,7 @@
 
     <ng-template pTemplate="footer">
       <div class="flex gap-3 justify-end">
-        <p-button
-          [label]="'all.button.cancel' | translate"
-          severity="secondary"
-          [outlined]="true"
-          (click)="showGenerateSlotsDialog.set(false)"
-        />
+        <p-button [label]="'all.button.cancel' | translate" severity="secondary" [outlined]="true" (click)="showGenerateSlotsDialog.set(false)" />
         <p-button
           [label]="'all.button.generate' | translate"
           icon="pi pi-cog"
@@ -515,13 +524,17 @@
               <span class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                 <i class="pi pi-check text-green-600 dark:text-green-400 text-xs"></i>
               </span>
-              <span class="text-sm text-color">Scheduled: <strong>{{ lastScheduleResult()!.scheduledCount }}</strong> games</span>
+              <span class="text-sm text-color"
+                >Scheduled: <strong>{{ lastScheduleResult()!.scheduledCount }}</strong> games</span
+              >
             </div>
             <div class="flex items-center gap-2">
               <span class="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
                 <i class="pi pi-minus text-orange-600 dark:text-orange-400 text-xs"></i>
               </span>
-              <span class="text-sm text-color">Skipped: <strong>{{ lastScheduleResult()!.skippedCount }}</strong> games</span>
+              <span class="text-sm text-color"
+                >Skipped: <strong>{{ lastScheduleResult()!.skippedCount }}</strong> games</span
+              >
             </div>
             @if (lastScheduleResult()!.conflicts.length > 0) {
               <div class="mt-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
@@ -541,12 +554,7 @@
 
     <ng-template pTemplate="footer">
       <div class="flex gap-3 justify-end">
-        <p-button
-          [label]="'all.button.close' | translate"
-          severity="secondary"
-          [outlined]="true"
-          (click)="showAutoScheduleDialog.set(false)"
-        />
+        <p-button [label]="'all.button.close' | translate" severity="secondary" [outlined]="true" (click)="showAutoScheduleDialog.set(false)" />
         <p-button
           [label]="'all.tournament.admin.schedule.runScheduler' | translate"
           icon="pi pi-bolt"

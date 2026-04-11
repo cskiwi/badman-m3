@@ -23,7 +23,7 @@ import { RankingGroup } from './ranking-group.model';
 import { RankingLastPlace } from './ranking-last-place.model';
 import { RankingSystem } from './ranking-system.model';
 
-@Index(["playerId", "systemId", "rankingDate"], { unique: true })
+@Index(['playerId', 'systemId', 'rankingDate'], { unique: true })
 @ObjectType('RankingPlace', { description: 'A RankingPlace' })
 @Entity('RankingPlaces', { schema: 'ranking' })
 export class RankingPlace extends BaseEntity {
@@ -188,7 +188,6 @@ export class RankingPlace extends BaseEntity {
   @JoinColumn({ name: 'groupId' })
   declare group?: Relation<RankingGroup>;
 
-
   @AfterInsert()
   async afterInsertHook(): Promise<void> {
     if (!this.playerId || !this.systemId || !this.rankingDate) return;
@@ -198,10 +197,7 @@ export class RankingPlace extends BaseEntity {
   @AfterUpdate()
   async afterUpdateHook(): Promise<void> {
     if (!this.playerId || !this.systemId || !this.rankingDate) return;
-    await Promise.all([
-      RankingPlace.updateLatestRankings([this], 'update'),
-      RankingPlace.updateGameRanking([this]),
-    ]);
+    await Promise.all([RankingPlace.updateLatestRankings([this], 'update'), RankingPlace.updateGameRanking([this])]);
   }
 
   @AfterRemove()
@@ -216,19 +212,14 @@ export class RankingPlace extends BaseEntity {
     }
   }
 
-  private static async updateLatestRankings(
-    instances: RankingPlace[],
-    type: 'create' | 'update' | 'destroy',
-  ): Promise<void> {
+  private static async updateLatestRankings(instances: RankingPlace[], type: 'create' | 'update' | 'destroy'): Promise<void> {
     let instancesToProcess = instances;
 
     if (type !== 'create') {
       const existing = await RankingLastPlace.find({
         where: instances.map((i) => ({ playerId: i.playerId, systemId: i.systemId })),
       });
-      instancesToProcess = instances.filter((i) =>
-        existing.some((e) => e.playerId === i.playerId && e.systemId === i.systemId),
-      );
+      instancesToProcess = instances.filter((i) => existing.some((e) => e.playerId === i.playerId && e.systemId === i.systemId));
     }
 
     for (const instance of instancesToProcess) {
@@ -240,14 +231,8 @@ export class RankingPlace extends BaseEntity {
 
       if (!lastPlace) {
         await RankingLastPlace.save(RankingLastPlace.create(data));
-      } else if (
-        !lastPlace.rankingDate ||
-        !instance.rankingDate ||
-        new Date(instance.rankingDate) >= new Date(lastPlace.rankingDate)
-      ) {
-        const updateData = Object.fromEntries(
-          Object.entries(data).filter(([, value]) => value !== undefined && value !== null),
-        );
+      } else if (!lastPlace.rankingDate || !instance.rankingDate || new Date(instance.rankingDate) >= new Date(lastPlace.rankingDate)) {
+        const updateData = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined && value !== null));
         await RankingLastPlace.update({ id: lastPlace.id }, updateData);
       }
     }

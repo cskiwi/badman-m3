@@ -30,11 +30,11 @@ import { DividerModule } from 'primeng/divider';
     ButtonModule,
     TagModule,
     DividerModule,
-    PageHeaderComponent
+    PageHeaderComponent,
   ],
   templateUrl: './page-clubs.component.html',
   styleUrl: './page-clubs.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageClubsComponent {
   private readonly dataService = new ClubsService();
@@ -42,7 +42,7 @@ export class PageClubsComponent {
   // selectors
   clubs = this.dataService.clubs;
   clubStats = this.dataService.clubStats;
-  
+
   error = this.dataService.error;
   loading = this.dataService.loading;
 
@@ -68,7 +68,7 @@ export class PageClubsComponent {
     { label: 'Luxembourg', value: 'Luxembourg' },
     { label: 'Namur', value: 'Namur' },
     { label: 'Walloon Brabant', value: 'Walloon Brabant' },
-    { label: 'West Flanders', value: 'West Flanders' }
+    { label: 'West Flanders', value: 'West Flanders' },
   ];
 
   countryOptions = [
@@ -76,7 +76,7 @@ export class PageClubsComponent {
     { label: 'Belgium', value: 'Belgium' },
     { label: 'Netherlands', value: 'Netherlands' },
     { label: 'France', value: 'France' },
-    { label: 'Germany', value: 'Germany' }
+    { label: 'Germany', value: 'Germany' },
   ];
 
   clearFilters(): void {
