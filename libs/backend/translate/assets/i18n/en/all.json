@@ -27,6 +27,7 @@
   },
   "button": {
     "add": "Add",
+    "agree": "Agree",
     "apply": "Apply",
     "back": "Back",
     "cancel": "Cancel",
@@ -34,6 +35,7 @@
     "confirm": "Confirm",
     "create": "Create",
     "delete": "Delete",
+    "download": "Download",
     "edit": "Edit",
     "generate": "Generate",
     "refresh": "Refresh",
@@ -357,6 +359,97 @@
     "subEvent": "Section",
     "subEvents": "Series",
     "team": "Team",
+    "team-assembly": {
+      "auto-generate": {
+        "best-results": "Best results",
+        "best-results-tooltip": "The strongest combinations possible based on results",
+        "both-seasons": "This + last season",
+        "clear": "Clear assembly",
+        "last-season": "Last season",
+        "last-x-weeks": "Last X weeks",
+        "player-joining": "Player is joining this encounter",
+        "random": "Random",
+        "random-tooltip": "Just plain old random",
+        "this-season": "This season",
+        "time-range": "Time range",
+        "title": "Auto-generate assembly",
+        "variations": "Variations",
+        "variations-tooltip": "Everyone plays with everyone throughout the season",
+        "weeks": "Weeks"
+      },
+      "captain": "Team captain",
+      "change-team": "By editing the team you can change the default players shown, and who are the backups.",
+      "club": "Club",
+      "disclaimer": "Disclaimer: This formation tool is currently in beta and can exceptionally contain errors. Always critically check your formation against the C320 rules.",
+      "double1": "Double 1",
+      "double2": "Double 2",
+      "double3": "Double 3",
+      "double4": "Double 4",
+      "download": "Download",
+      "encounter": "Encounter",
+      "errors": {
+        "already": "Player already present as titular.",
+        "club-base-other-team": "<strong>{player.fullName}</strong> is base player of other team",
+        "comp-status": "{player.fullName} is not marked as a competition player",
+        "comp-status-html": "<strong>{player.fullName}</strong> is not marked as a competition player",
+        "none": "No errors found",
+        "not-enough-players": "Too few titulars are currently lined up for the meeting.",
+        "player-above-lower": "Player with higher formation index is lined up in front of this player",
+        "player-gender": "<strong>{player.fullName}</strong> is a {player.gender} but expected {gender}",
+        "player-genders": "<strong>{player1.fullName}</strong> ({player1.gender}) and <strong>{player2.fullName}</strong> ({player2.gender}) are not the correct gender for <strong>{game}</strong>",
+        "player-max-double-games": "<strong>{player.fullName}</strong> can only play a maximum of {max} doubles",
+        "player-max-mix-games": "<strong>{player.fullName}</strong> may play a maximum of {max} mixed doubles",
+        "player-max-mixed-games": "<strong>{player.fullName}</strong> can only play a maximum of {max} mixed doubles",
+        "player-max-single-games": "<strong>{player.fullName}</strong> can only play a maximum of {max} singles",
+        "player-min-level": "<strong>{player.fullName}</strong> has an index of <strong>{player.ranking}</strong> in {rankingType} and may minimally be <strong>{minLevel}</strong>.",
+        "player-order-doubles": "<strong>{team2player1.fullName}</strong> and <strong>{team2player2.fullName}</strong> in <strong>{game2}</strong> have a higher combined index than <strong>{team1player1.fullName}</strong> and <strong>{team1player2.fullName}</strong> in <strong>{game1}</strong>.",
+        "player-order-highest": "<strong>{team2player1.fullName}</strong> or <strong>{team2player2.fullName}</strong> in <strong>{game2}</strong> has a better individual ranking than <strong>{team1player1.fullName}</strong> or <strong>{team1player2.fullName}</strong> in <strong>{game1}</strong>",
+        "player-order-single": "<strong>{player2.fullName}</strong> in <strong>{game2}</strong> has a higher index than <strong>{player1.fullName}</strong> in <strong>{game1}</strong>.",
+        "players-above-lower": "Pair with higher lineup index is lined up in front of this pair.",
+        "team-index": "Team index titulars equals <strong>{teamIndex}</strong> and is allowed to minimally be <strong>{baseIndex}</strong>",
+        "team-to-strong": "Team index titulars equals <strong>{teamIndex}</strong> cannot be lower than allowed in the division <strong>{minIndex}</strong>",
+        "title": "Errors",
+        "to-much": "Player may play a maximum of 2 (mixed) doubles and 1 single."
+      },
+      "info": "Remarks concerning the team assembly",
+      "level-exemption": "Player is exempt from ranking restrictions",
+      "mix1": "Men doubles",
+      "mix2": "Women doubles",
+      "mix3": "Mixed 1",
+      "mix4": "Mixed 2",
+      "players": {
+        "backup": "Backup players",
+        "base": "Base players",
+        "team": "Titulars",
+        "title": "Possible titulars"
+      },
+      "season": "Season",
+      "select-all": "Select/deselect all players",
+      "single1": "Single 1",
+      "single2": "Single 2",
+      "single3": "Single 3",
+      "single4": "Single 4",
+      "stats": {
+        "games-played": "Games",
+        "no-data": "No historical data available",
+        "pair-on-slot": "Pair on slot",
+        "pair-total": "Pair total",
+        "partners-title": "Partners Combinations",
+        "player1": "Player 1",
+        "player2": "Player 2",
+        "refresh": "Refresh stats",
+        "search": "Search player...",
+        "slot-record": "Record",
+        "tooltip-text": "Won {{wins}} out of {{total}} games ({{pct}}%)",
+        "win-pct": "Win %",
+        "wins": "Wins"
+      },
+      "substitude": "Substitutes",
+      "team": "Team",
+      "team-index": "Team index titulars equals <strong>{current}</strong> and is allowed to minimally be <strong>{team}</strong>",
+      "team-index-ignored": "Team index base players can be ignored for 1st team.",
+      "title": "Team assembly"
+    },
     "teams": "Teams",
     "title": "Tournaments & Competitions",
     "tooltip": {
@@ -498,6 +591,10 @@
     "tournament": "Tournament",
     "winRate": "Win Rate",
     "wins": "Wins"
+  },
+  "gender": {
+    "females": "Women",
+    "males": "Men"
   },
   "head-to-head": {
     "amount-of-games": "Number of contests",
@@ -1682,5 +1779,135 @@
     "unlimited": "Unlimited",
     "visualCode": "Visual Code",
     "women": "Women"
+  },
+  "v1": {
+    "teamFormation": {
+      "buttons": {
+        "cancel": "Cancel",
+        "print": "Print",
+        "save": "Save"
+      },
+      "errors": {
+        "already": "Player already present as titular.",
+        "club-base-other-team": "{playerFullName} is base player of other team",
+        "comp-status": "{playerFullName} is not marked as a competition player",
+        "comp-status-html": "{playerFullName} is not marked as a competition player",
+        "none": "No errors found",
+        "not-enough-players": "Too few titulars are currently lined up for the meeting.",
+        "player-above-lower": "Player with higher formation index is lined up in front of this player",
+        "player-gender": "{playerFullName} is a {playerGender} but expected {gender}",
+        "player-genders": "{player1FullName} ({player1Gender}) and {player2FullName} ({player2Gender}) ar't of the correct gender for {game}",
+        "player-max-double-games": "{playerFullName} can only play a maximum of {max} doubles",
+        "player-max-mix-games": "{playerFullName} may play a maximum of {max} mixed doubles",
+        "player-max-mixed-games": "{playerFullName} can only play a maximum of {max} mixed doubles",
+        "player-max-single-games": "{playerFullName} can only play a maximum of {max} singles",
+        "player-min-level": "{playerFullName} has an index of {playerRanking} in {rankingType} and may minimally be {minLevel}.",
+        "player-order-doubles": "{team2player1FullName} and {team2player2FullName} in {game2} have a higher combined index than {team1player1FullName} and {team1player2FullName} in {game1}.",
+        "player-order-highest": "{team2player1FullName} or {team2player2FullName} in {game2} has a better individual ranking then {team1player1FullName} or {team1player2FullName} on {game1}",
+        "player-order-single": "{player2FullName} in {game2} has a higher index than {player1FullName} in {game1}.",
+        "players-above-lower": "Pair with higher lineup index is lined up in front of this pair.",
+        "team-index": "Team index titulars equals {teamIndex} and is allowed to minimally be {baseIndex}",
+        "team-to-strong": "Team index titulars equals {teamIndex} cannot be lower then allowed in the division {minIndex}",
+        "title": "Errors",
+        "to-much": "Player may play a maximum of 2 (mixed) doubles and 1 single."
+      },
+      "info": {
+        "basePlayers": "Base players",
+        "errors": "Errors",
+        "params": {
+          "double1": "Double 1",
+          "double2": "Double 2",
+          "double3": "Double 3",
+          "double4": "Double 4",
+          "gender": {
+            "female": "Female",
+            "females": "Women",
+            "long": {
+              "F": "Female",
+              "M": "Male",
+              "MX": "Mixed"
+            },
+            "longs": {
+              "F": "Woman",
+              "M": "Man"
+            },
+            "male": "Male",
+            "males": "Men",
+            "mix": "Mixed",
+            "national": "National",
+            "select": "Select",
+            "short": {
+              "female": "F",
+              "male": "M",
+              "mix": "MX"
+            },
+            "title": "Gender"
+          },
+          "mix1": "Men doubles",
+          "mix2": "Women doubles",
+          "mix3": "Mixed 1",
+          "mix4": "Mixed 2",
+          "ranking": {
+            "double": "Double",
+            "mix": "Mix",
+            "single": "Single"
+          },
+          "single1": "Single 1",
+          "single2": "Single 2",
+          "single3": "Single 3",
+          "single4": "Single 4"
+        },
+        "title": "Info",
+        "titulars": "Titulars"
+      },
+      "messages": {
+        "downloaded": "Team formation downloaded",
+        "saved": "Team formation saved"
+      },
+      "notFound": "No team formation found",
+      "teamFormation": {
+        "categories": {
+          "captainId": "Captain",
+          "doubleMen": "Double Men",
+          "doubleWomen": "Double Women",
+          "mixDouble": "Mix Double",
+          "singleMan": "Single Man",
+          "singleWoman": "Single Woman",
+          "subtitudes": "Substitutes"
+        },
+        "disabledTitle": "Players",
+        "labels": {
+          "captainId": "Captain",
+          "doubleMen": "Double Men",
+          "doubleMen1": "Double Men 1",
+          "doubleMen2": "Double Men 2",
+          "doubleMen3": "Double Men 3",
+          "doubleMen4": "Double Men 4",
+          "doubleWomen": "Double Women",
+          "doubleWomen1": "Double Women 1",
+          "doubleWomen2": "Double Women 2",
+          "doubleWomen3": "Double Women 3",
+          "doubleWomen4": "Double Women 4",
+          "mixDouble1": "Mixed 1",
+          "mixDouble2": "Mixed 2",
+          "singleMan1": "Single Man 1",
+          "singleMan2": "Single Man 2",
+          "singleMan3": "Single Man 3",
+          "singleMan4": "Single Man 4",
+          "singleWoman1": "Single Woman 1",
+          "singleWoman2": "Single Woman 2",
+          "singleWoman3": "Single Woman 3",
+          "singleWoman4": "Single Woman 4",
+          "subtitudes": "Substitutes"
+        },
+        "noClub": "Team has no club",
+        "selectPlayer": "Select player",
+        "title": "Select players"
+      },
+      "title": "Team formation",
+      "warnings": {
+        "subtitute-team-index": "s"
+      }
+    }
   }
 }

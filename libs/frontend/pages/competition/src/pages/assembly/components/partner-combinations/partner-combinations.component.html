@@ -1,0 +1,79 @@
+@if (generatorService.pairStats().length > 0) {
+  <p-fieldset [legend]="'all.competition.team-assembly.stats.partners-title' | translate" [toggleable]="true" [collapsed]="false">
+    <div class="flex gap-2 mb-3 items-center">
+      <p-select
+        [options]="timeRangeOptions"
+        [(ngModel)]="selectedTimeRange"
+        optionValue="value"
+        class="w-64"
+      >
+        <ng-template let-option pTemplate="selectedItem">
+          {{ option.label | translate }}
+        </ng-template>
+        <ng-template let-option pTemplate="item">
+          {{ option.label | translate }}
+        </ng-template>
+      </p-select>
+      @if (selectedTimeRange() === 'last-weeks') {
+        <input
+          pInputText
+          type="number"
+          [(ngModel)]="selectedWeeks"
+          class="w-24"
+          min="1"
+          max="52"
+        />
+      }
+      <p-button
+        icon="pi pi-refresh"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="refreshStats(true)"
+        [loading]="generatorService.loadingStats()"
+        [pTooltip]="'all.competition.team-assembly.stats.refresh' | translate"
+      />
+      <input
+        pInputText
+        type="text"
+        (input)="pairTable.filterGlobal($any($event.target).value, 'contains')"
+        [placeholder]="'all.competition.team-assembly.stats.search' | translate"
+        class="ml-auto w-64"
+      />
+    </div>
+
+    <p-table
+      #pairTable
+      [value]="generatorService.pairStats()"
+      [sortField]="'total'"
+      [sortOrder]="-1"
+      [paginator]="generatorService.pairStats().length > 10"
+      [rows]="20"
+      [globalFilterFields]="['player1.firstName', 'player1.lastName', 'player2.firstName', 'player2.lastName']"
+      styleClass="p-datatable-sm p-datatable-striped"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="player1.lastName">{{ 'all.competition.team-assembly.stats.player1' | translate }} <p-sortIcon field="player1.lastName" /></th>
+          <th pSortableColumn="player2.lastName">{{ 'all.competition.team-assembly.stats.player2' | translate }} <p-sortIcon field="player2.lastName" /></th>
+          <th pSortableColumn="total">{{ 'all.competition.team-assembly.stats.games-played' | translate }} <p-sortIcon field="total" /></th>
+          <th pSortableColumn="wins">{{ 'all.competition.team-assembly.stats.wins' | translate }} <p-sortIcon field="wins" /></th>
+          <th pSortableColumn="winPct">{{ 'all.competition.team-assembly.stats.win-pct' | translate }} <p-sortIcon field="winPct" /></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.player1.firstName }} {{ row.player1.lastName }}</td>
+          <td>{{ row.player2.firstName }} {{ row.player2.lastName }}</td>
+          <td>{{ row.total }}</td>
+          <td>{{ row.wins }}</td>
+          <td [class]="row.winPct >= 50 ? 'text-green-500' : 'text-red-500'">{{ row.winPct }}%</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center text-muted-color">{{ 'all.competition.team-assembly.stats.no-data' | translate }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-fieldset>
+}

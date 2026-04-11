@@ -38,14 +38,18 @@ export function WhereField(
   };
 }
 
+export interface WhereObjectOptions {
+  nullable?: boolean;
+}
+
 // Custom Object decorator that tracks objects for where conditions
-export function WhereObject(typeFunc: () => Type): PropertyDecorator & MethodDecorator {
+export function WhereObject(typeFunc: () => Type | [Type], options?: WhereObjectOptions): PropertyDecorator & MethodDecorator {
   return function (target: object, propertyKey: string | symbol) {
     // Retrieve the existing tracked objects or initialize a new array
     const existingObjects = Reflect.getMetadata(WHERE_OBJECT_TRACKER_METADATA_KEY, target.constructor) || [];
 
     // Add the object info to the tracked objects list
-    Reflect.defineMetadata(WHERE_OBJECT_TRACKER_METADATA_KEY, [...existingObjects, { propertyKey, typeFunc }], target.constructor);
+    Reflect.defineMetadata(WHERE_OBJECT_TRACKER_METADATA_KEY, [...existingObjects, { propertyKey, typeFunc, options }], target.constructor);
   };
 }
 
@@ -55,7 +59,7 @@ export function getWhereFields(target: Type): string[] {
 }
 
 // Helper function to retrieve tracked where objects
-export function getWhereObjects(target: Type): { propertyKey: string; typeFunc: () => Type }[] {
+export function getWhereObjects(target: Type): { propertyKey: string; typeFunc: () => Type | [Type]; options?: WhereObjectOptions }[] {
   return Reflect.getMetadata(WHERE_OBJECT_TRACKER_METADATA_KEY, target) || [];
 }
 

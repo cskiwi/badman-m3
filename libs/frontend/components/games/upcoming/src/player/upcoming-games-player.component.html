@@ -21,6 +21,15 @@
               }
             }
           </div>
+          <a
+            [routerLink]="['/competition/assembly']"
+            [queryParams]="getAssemblyParams(game)"
+            class="flex items-center"
+            pTooltip="{{ 'all.competition.team-assembly.title' | translate }}"
+            tooltipPosition="left"
+          >
+            <i class="pi pi-list text-sm text-muted-color hover:text-primary cursor-pointer"></i>
+          </a>
         </div>
 
         <!-- Game Content -->

@@ -1212,7 +1212,7 @@ export class GeneralEnrollmentService {
           query: SEARCH_PLAYERS_QUERY,
           variables: {
             args: {
-              where: { fullName: { $iLike: `%${query}%` } },
+              where: { fullName: { iLike: `%${query}%` } },
               take: 10,
             },
           },

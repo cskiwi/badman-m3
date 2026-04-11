@@ -11,7 +11,7 @@ import {
   Relation,
   UpdateDateColumn,
 } from 'typeorm';
-import { SortableField, WhereField } from '@app/utils';
+import { SortableField, WhereField, WhereObject } from '@app/utils';
 import { DrawType } from '@app/models-enum';
 import { CompetitionEncounter } from './competition-encounter.model';
 import { CompetitionSubEvent } from './competition-sub-event.model';
@@ -59,11 +59,12 @@ export class CompetitionDraw extends BaseEntity {
   @Column({ nullable: true, type: 'uuid' })
   declare subeventId?: string;
 
-  @Field(() => CompetitionSubEvent, { nullable: true })
+  @WhereObject(() => CompetitionSubEvent, { nullable: true })
   @ManyToOne(() => CompetitionSubEvent, { nullable: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'subeventId' })
   declare competitionSubEvent?: Relation<CompetitionSubEvent>;
 
+  @WhereObject(() => CompetitionEncounter, { nullable: true })
   @OneToMany(() => CompetitionEncounter, (encounter) => encounter.drawCompetition)
   declare competitionEncounters?: Relation<CompetitionEncounter[]>;
 

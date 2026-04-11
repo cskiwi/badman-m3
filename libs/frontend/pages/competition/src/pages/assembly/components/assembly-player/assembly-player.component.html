@@ -1,0 +1,20 @@
+<div class="flex items-center gap-2 px-2 py-1">
+  @if (!isCompetitionPlayer()) {
+    <i
+      class="pi pi-exclamation-triangle text-yellow-500 text-sm"
+      [pTooltip]="'all.v1.teamFormation.errors.comp-status' | translate: { player: player() }"
+    ></i>
+  }
+  <div class="flex items-center gap-2 flex-1">
+    <span class="flex-1">{{ player().firstName }} {{ player().lastName }}</span>
+    @if (levelException()) {
+      <span
+        class="text-orange-500"
+        [pTooltip]="'all.competition.team-assembly.level-exemption' | translate"
+      >
+        <i class="pi pi-lock text-xs"></i>
+      </span>
+    }
+    <span class="opacity-70 text-sm whitespace-nowrap text-muted-color">{{ ranking() }}</span>
+  </div>
+</div>
