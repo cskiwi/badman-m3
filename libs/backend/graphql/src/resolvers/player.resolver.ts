@@ -376,4 +376,34 @@ export class PlayerResolver {
     // Save and return the updated player
     return await player.save();
   }
+
+  /**
+   * Recent form — last N games (most recent first), as W/L booleans.
+   * A game is considered played when both set1 scores are present.
+   * Used for the 5-dot form strip on team-card player rows.
+   */
+  @ResolveField(() => [Boolean])
+  async recentForm(
+    @Parent() { id }: Player,
+    @Args('take', { type: () => Int, nullable: true, defaultValue: 5 }) take?: number,
+  ): Promise<boolean[]> {
+    const limit = Math.max(1, Math.min(take ?? 5, 10));
+    const rows = await GamePlayerMembership.createQueryBuilder('gpm')
+      .innerJoin(Game, 'game', 'game.id = gpm.gameId')
+      .select('gpm.team', 'playerTeam')
+      .addSelect('game.winner', 'winner')
+      .where('gpm.playerId = :id', { id })
+      .andWhere('game.winner IS NOT NULL')
+      .andWhere('game.set1Team1 > 0')
+      .andWhere('game.set1Team2 > 0')
+      .orderBy('game.playedAt', 'DESC')
+      .limit(limit)
+      .getRawMany<{ playerTeam: number | string | null; winner: number | string | null }>();
+
+    return rows.map((r) => {
+      const t = Number(r.playerTeam);
+      const w = Number(r.winner);
+      return Number.isFinite(t) && Number.isFinite(w) && t === w;
+    });
+  }
 }

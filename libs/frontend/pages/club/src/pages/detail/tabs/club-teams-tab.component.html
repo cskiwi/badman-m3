@@ -19,11 +19,26 @@
     }
   </div>
 } @else if (service.teams().length > 0) {
-  <div class="grid gap-4 md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2">
-    @for (team of service.teams(); track team.id) {
-      <app-team-card [team]="team" [clubId]="clubId()" [canEdit]="canEditTeamFn()(team)" (editClicked)="editTeamClicked.emit($event)" />
-    }
-  </div>
+  <app-team-filter-bar [filter]="service.genderFilter()" [counts]="service.bucketCounts()" (filterChange)="onFilterChange($event)" />
+
+  @if (service.filteredTeams().length > 0) {
+    <div class="grid gap-4 sm:grid-cols-1 xl:grid-cols-2">
+      @for (team of service.filteredTeams(); track team.id) {
+        <app-team-card
+          [team]="team"
+          [clubId]="clubId()"
+          [canEdit]="canEditTeamFn()(team)"
+          [ownPlayerId]="ownPlayerId()"
+          (editClicked)="editTeamClicked.emit($event)"
+        />
+      }
+    </div>
+  } @else {
+    <div class="text-center py-8 text-surface-500">
+      <i class="pi pi-filter text-4xl mb-2 block"></i>
+      <p>No teams match this filter.</p>
+    </div>
+  }
 } @else {
   <div class="text-center py-8 text-surface-500">
     <i class="pi pi-users text-4xl mb-2 block"></i>

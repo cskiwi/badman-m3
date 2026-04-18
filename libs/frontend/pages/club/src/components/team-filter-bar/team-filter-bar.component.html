@@ -1,0 +1,10 @@
+<div class="filter-bar">
+  <span class="filter-bar__count">{{ counts().all }} teams</span>
+
+  <div class="segmented" role="tablist" aria-label="Team gender filter">
+    <button type="button" role="tab" [class.is-active]="filter() === 'all'" (click)="select('all')">All</button>
+    <button type="button" role="tab" [class.is-active]="filter() === 'M'" (click)="select('M')">Men</button>
+    <button type="button" role="tab" [class.is-active]="filter() === 'F'" (click)="select('F')">Women</button>
+    <button type="button" role="tab" [class.is-active]="filter() === 'MX'" (click)="select('MX')">Mixed</button>
+  </div>
+</div>

@@ -1,100 +1,112 @@
-<div class="border-surface rounded-border border">
-  <div class="flex items-center justify-between bg-highlight p-2">
-    @if (clubId()) {
-      <a [routerLink]="['/clubs', clubId(), 'teams', team().id]" class="font-semibold text-primary my-2 no-underline hover:underline">{{
-        team().name
-      }}</a>
+<article class="team" [class.team--own]="playerRows().length > 0 && playerRows()[0].isOwn">
+  <!-- Top gradient band (grows on hover via SCSS) -->
+  <div class="team__band"></div>
+
+  <!-- Head: code · title/division · win% chip -->
+  <div class="team__head">
+    <div class="team__code">{{ teamCode() }}</div>
+    <div class="team__title-wrap">
+      @if (clubId()) {
+        <a [routerLink]="['/clubs', clubId(), 'teams', team().id]" class="team__title">{{ team().name }}</a>
+      } @else {
+        <span class="team__title">{{ team().name }}</span>
+      }
+      <div class="team__division">
+        @if (genderCode() !== 'N') {
+          <span class="team__gender" [attr.data-kind]="genderCode()">{{ genderCode() }}</span>
+        }
+        @if (team().abbreviation) {
+          <span class="text-xs">{{ team().abbreviation }}</span>
+        }
+      </div>
+    </div>
+    @if (statsLoading()) {
+      <p-skeleton width="3rem" height="1.25rem" borderRadius="4px" />
+    } @else if (stats().gamesPlayed > 0) {
+      <span
+        class="team__winpct"
+        [class.team__winpct--good]="winRate() >= 50"
+        [class.team__winpct--bad]="winRate() < 50"
+      >{{ winRate() }}%</span>
+    }
+    @if (canEdit()) {
+      <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-sm team__edit" (click)="onEdit($event)"></button>
+    }
+  </div>
+
+  <!-- Captain row -->
+  @if (team().captain) {
+    <div class="team__captain">
+      <span class="team__captain-avatar">{{ captainInitials() }}</span>
+      <div class="flex flex-col leading-tight min-w-0">
+        <span class="team__captain-name truncate">{{ team().captain!.fullName }}</span>
+        <span class="team__captain-role">Captain</span>
+      </div>
+      <div class="team__captain-contact">
+        @if (team().email) {
+          <a [href]="'mailto:' + team().email" class="team__icon-btn" [title]="team().email"><i class="pi pi-envelope"></i></a>
+        }
+        @if (team().phone) {
+          <a [href]="'tel:' + team().phone" class="team__icon-btn" [title]="team().phone!"><i class="pi pi-phone"></i></a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Roster summary row -->
+  <div class="team__roster">
+    <span class="team__roster-label">Roster · {{ playerRows().length }}</span>
+    <span class="team__summary">
+      <span>M <strong>{{ stats().gamesPlayed }}</strong></span>
+      <span>W <strong>{{ stats().gamesWon }}</strong></span>
+    </span>
+  </div>
+
+  <!-- Player rows -->
+  <div class="team__players">
+    @for (row of visibleRows(); track row.id) {
+      <a class="tp-row" [class.is-own]="row.isOwn" [routerLink]="['/players', row.slug]">
+        <span class="tp-row__avatar">{{ row.initials }}</span>
+        <span class="tp-row__name">
+          {{ row.fullName }}
+          @if (row.role) {
+            <span class="tp-row__role">{{ row.role }}</span>
+          }
+        </span>
+        <span class="tp-row__levels">
+          @if (row.single != null) { <span class="tp-lv" data-kind="S">{{ row.single }}</span> }
+          @if (row.double != null) { <span class="tp-lv" data-kind="D">{{ row.double }}</span> }
+          @if (row.mix != null) { <span class="tp-lv" data-kind="M">{{ row.mix }}</span> }
+        </span>
+        <span class="tp-row__form">
+          @for (dot of row.form; track $index) {
+            <span
+              class="tp-dot"
+              [class.tp-dot--win]="dot === true"
+              [class.tp-dot--loss]="dot === false"
+              [attr.aria-label]="dot === true ? 'Won' : dot === false ? 'Lost' : 'No game'"
+            ></span>
+          }
+        </span>
+      </a>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div class="team__footer">
+    @if (hiddenRowCount() > 0) {
+      <button type="button" class="team__expand" (click)="toggleExpanded($event)" [attr.aria-expanded]="expanded()">
+        @if (expanded()) {
+          <i class="pi pi-chevron-up text-[10px]"></i>
+          <span>Show less</span>
+        } @else {
+          <i class="pi pi-chevron-down text-[10px]"></i>
+          <span>+{{ hiddenRowCount() }} more on roster</span>
+        }
+      </button>
     } @else {
-      <span class="font-semibold text-primary my-2">{{ team().name }}</span>
+      <span>&nbsp;</span>
     }
-    <div class="flex items-center gap-2">
-      @if (team().abbreviation) {
-        <p-badge [value]="team().abbreviation!" />
-      }
-      @if (canEdit()) {
-        <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-sm" (click)="editClicked.emit(team())"></button>
-      }
-    </div>
+    <a [routerLink]="['/clubs', clubId(), 'teams', team().id]">View team ↗</a>
   </div>
-  <div class="p-4">
-    <div class="space-y-1 text-sm text-muted-color-emphasis mb-2">
-      @if (team().captain) {
-        <div class="flex items-center font-semibold gap-1">
-          <i class="pi pi-user text-xs"></i>
-          <span> {{ team().captain!.fullName }}</span>
-        </div>
-      }
-      @if (team().email) {
-        <div class="flex items-center gap-1">
-          <i class="pi pi-envelope text-xs"></i>
-          <a [href]="'mailto:' + team().email" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{ team().email }}</a>
-        </div>
-      }
-      @if (team().phone) {
-        <div class="flex items-center gap-1">
-          <i class="pi pi-phone text-xs"></i>
-          <a [href]="'tel:' + team().phone" class="hover:text-primary-600 hover:underline no-underline text-muted-color">{{
-            team().phone! | phoneNumber
-          }}</a>
-        </div>
-      }
-    </div>
-
-    <!-- Players List -->
-    <div>
-      @if (team().teamPlayerMemberships && team().teamPlayerMemberships!.length > 0) {
-        <div class="text-sm text-muted-color-emphasis">
-          <!-- Clickable header -->
-          <div (click)="togglePlayers()" class="w-full flex items-center gap-2 rounded-lg cursor-pointer">
-            <i class="pi" [class.pi-chevron-right]="!expanded" [class.pi-chevron-down]="expanded"></i>
-            {{ 'all.team.players' | translate }} ({{ team().teamPlayerMemberships!.length }})
-          </div>
-
-          <!-- Expandable content -->
-          <div
-            class="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-300"
-            [class.h-0]="!expanded"
-            [class.opacity-0]="!expanded"
-            [class.h-auto]="expanded"
-            [class.opacity-100]="expanded"
-            [class.mt-2]="expanded"
-          >
-            @for (membership of team().teamPlayerMemberships; track membership.id) {
-              @if (membership.player) {
-                <a
-                  [routerLink]="['/players', membership.player.slug]"
-                  class="flex items-center gap-2 p-1 rounded-lg hover:bg-highlight-emphasis text-color transition-colors cursor-pointer"
-                >
-                  <i class="pi pi-user text-xs text-muted-color"></i>
-                  <span class="truncate">{{ membership.player.firstName }} {{ membership.player.lastName[0] }}.</span>
-                </a>
-              }
-            }
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Team Stats -->
-    @if (team().id) {
-      @defer (on idle) {
-        <app-team-game-stats [teamId]="team().id!" />
-      } @placeholder {
-        <div class="grid grid-cols-3 gap-2 text-center my-3 border-t border-surface pt-3">
-          <div class="p-2">
-            <p-skeleton width="2rem" height="1.25rem" class="mx-auto mb-1" />
-            <p-skeleton width="3rem" height="0.75rem" class="mx-auto" />
-          </div>
-          <div class="p-2">
-            <p-skeleton width="2rem" height="1.25rem" class="mx-auto mb-1" />
-            <p-skeleton width="3rem" height="0.75rem" class="mx-auto" />
-          </div>
-          <div class="p-2">
-            <p-skeleton width="2rem" height="1.25rem" class="mx-auto mb-1" />
-            <p-skeleton width="3rem" height="0.75rem" class="mx-auto" />
-          </div>
-        </div>
-      }
-    }
-  </div>
-</div>
+</article>

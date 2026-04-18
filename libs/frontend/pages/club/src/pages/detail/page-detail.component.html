@@ -1,36 +1,143 @@
 @if (!loading()) {
   @if (this.club(); as club) {
-    <!-- Club Header -->
-    <app-page-header>
-      <i avatar class="pi pi-building text-2xl"></i>
-      <span title>{{ club.fullName || club.name }}</span>
-      <ng-container subTitle>
-        @if (club.clubId) {
-          <span>{{ club.clubId }}</span>
-        }
-        @if (club.state || club.country) {
-          <span>•</span>
-          <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
-        }
-      </ng-container>
-      <ng-container actions>
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4">
+      <a routerLink="/clubs" class="text-surface-500 no-underline hover:text-surface-800">
+        {{ 'all.navigation.clubs' | translate }}
+      </a>
+      <i class="pi pi-angle-right text-[10px]"></i>
+      <span class="text-surface-800 font-semibold">{{ club.fullName || club.name }}</span>
+    </nav>
+
+    <!-- Club Hero -->
+    <app-hero>
+      <!-- Crest -->
+      <div avatar class="club-crest">
+        <span>{{ clubCrestText() }}</span>
+      </div>
+
+      <!-- Identity -->
+      <div identity>
+        <h1 class="club-name">{{ club.fullName || club.name }}</h1>
+        <div class="flex items-center gap-3 flex-wrap text-sm text-surface-600">
+          @if (club.clubId) {
+            <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">#{{ club.clubId }}</span>
+          }
+          @if (club.state) {
+            <span class="inline-flex items-center gap-1.5">
+              <i class="pi pi-map-marker text-primary text-[11px]"></i>
+              <strong class="text-surface-800 font-semibold">{{ club.state }}</strong>
+            </span>
+          }
+          <span class="inline-flex items-center gap-1.5">
+            <i class="pi pi-calendar text-[11px]"></i>
+            Season {{ currentSeason() }}
+          </span>
+          @if (stats(); as s) {
+            <span class="inline-flex items-center gap-1.5">
+              <i class="pi pi-users text-[11px]"></i>
+              {{ s.memberCount }} members
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div actions class="flex items-center gap-2">
         <p-select
           id="season-select"
           [formControl]="seasonControl"
           [options]="availableSeasons()"
           optionLabel="label"
           optionValue="value"
-          [style]="{ 'min-width': '140px' }"
+          [style]="{ 'min-width': '120px' }"
           placeholder="{{ 'all.common.selectSeason' | translate }}"
+          size="small"
         />
-      </ng-container>
-    </app-page-header>
+        <p-button icon="pi pi-share-alt" [outlined]="true" label="Share" size="small" />
+        <p-button icon="pi pi-bookmark" label="Follow" size="small" />
+      </div>
+
+      <!-- Stats strip -->
+      <div stats class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface-200 relative z-[1]">
+        <!-- Teams active -->
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">Teams active</span>
+          <div class="flex items-baseline gap-2">
+            <span class="club-stat-value">{{ teamCount() }}</span>
+            @if (teamLeagueCount() > 0) {
+              <span class="text-xs text-surface-500">across {{ teamLeagueCount() }} {{ teamLeagueCount() === 1 ? 'league' : 'leagues' }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Season record -->
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">Season record</span>
+          <div class="flex items-baseline gap-2">
+            <span class="club-stat-value">{{ stats()?.seasonRecord?.wins ?? '–' }}</span>
+            @if (stats(); as s) {
+              <span class="text-xs text-surface-500 t-mono">– {{ s.seasonRecord.losses }}</span>
+            }
+          </div>
+          @if (stats(); as s) {
+            @if (s.seasonRecord.total > 0) {
+              <span
+                class="self-start inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-semibold"
+                [class.text-win]="s.seasonRecord.winRate >= 0.5"
+                [class.text-loss]="s.seasonRecord.winRate < 0.5"
+                [class.bg-win-muted]="s.seasonRecord.winRate >= 0.5"
+                [class.bg-loss-muted]="s.seasonRecord.winRate < 0.5"
+              >
+                {{ (s.seasonRecord.winRate * 100).toFixed(1) }}% wins
+              </span>
+            }
+          }
+        </div>
+
+        <!-- Club ranking (placeholder for now — no source) -->
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">Club ranking</span>
+          <div class="flex items-baseline gap-2">
+            <span class="club-stat-value club-stat-value--rank">–</span>
+            @if (club.state) {
+              <span class="text-xs text-surface-500">{{ club.state }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Next home match -->
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">Next home match</span>
+          @if (stats()?.nextHomeMatch; as m) {
+            <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center min-w-[44px]">
+                <span class="t-mono text-base font-semibold leading-none">{{ m.date | date: 'dd' }}</span>
+                <span class="t-mono text-[10px] text-surface-500 uppercase">{{ m.date | date: 'MMM' }}</span>
+              </div>
+              <div class="flex flex-col text-xs leading-tight">
+                <span class="font-semibold text-surface-800">
+                  {{ m.homeTeam?.name }} vs {{ m.awayTeam?.name }}
+                </span>
+                <span class="t-mono text-[11px] text-surface-500">
+                  {{ m.date | date: 'EEE · HH:mm' }}
+                </span>
+              </div>
+            </div>
+          } @else {
+            <span class="text-xs text-surface-500">No upcoming home matches</span>
+          }
+        </div>
+      </div>
+    </app-hero>
 
     <!-- Main Content Tabs -->
-    <p-tabs value="0">
+    <div class="club-layout">
+      <div class="club-layout__main">
+        <p-tabs value="0">
       <p-tablist>
         <p-tab value="0">
-          <i class="pi pi-users mr-2"></i>
+          <i class="pi pi-th-large mr-2"></i>
           {{ 'all.team.overview.title' | translate }}
         </p-tab>
         <p-tab value="1">
@@ -47,7 +154,7 @@
         </p-tab>
         @if (canAccessTeamBuilder()) {
           <p-tab value="4">
-            <i class="pi pi-wrench mr-2"></i>
+            <i class="pi pi-sitemap mr-2"></i>
             {{ 'all.club.teamBuilder.tab' | translate }}
           </p-tab>
         }
@@ -95,6 +202,15 @@
         }
       </p-tabpanels>
     </p-tabs>
+      </div>
+
+      <!-- ============ SIDEBAR (right) ============ -->
+      <aside class="club-layout__aside">
+        <app-club-schedule-card [clubId]="club.slug" [season]="currentSeason()" />
+        <app-club-top-performers-card [clubId]="club.slug" [season]="currentSeason()" />
+        <app-club-info-card [clubId]="club.slug" [season]="currentSeason()" />
+      </aside>
+    </div>
   }
 } @else {
   <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
