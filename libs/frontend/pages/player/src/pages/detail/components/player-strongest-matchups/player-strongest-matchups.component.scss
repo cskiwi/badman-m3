@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  background: var(--p-surface-100);
+  border: 1px solid var(--p-surface-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.opp-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  align-items: center;
+  border-bottom: 1px solid var(--p-surface-200);
+}
+
+.opp-row:last-child {
+  border-bottom: 0;
+}
+
+.opp-row__bar {
+  width: 72px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--p-surface-200);
+  overflow: hidden;
+  display: inline-block;
+}
+
+.opp-row__bar > span {
+  display: block;
+  height: 100%;
+  background: var(--g-win);
+}
+
+.opp-row__bar > span.opp-row__bar--loss {
+  background: var(--g-loss);
+}

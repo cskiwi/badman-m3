@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en" class="dark-theme">
+<head>
+<meta charset="utf-8" />
+<title>Glenn Latomme · Gladman</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/primeicons@7.0.0/primeicons.css" />
+<link rel="stylesheet" href="assets/theme.css" />
+<style>
+  /* ---- Player page local layout ---- */
+
+  .player-hero {
+    position: relative;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(600px 300px at 85% 0%, var(--p-primary-muted), transparent 70%),
+      radial-gradient(400px 200px at 0% 100%, var(--g-accent-muted), transparent 70%),
+      var(--p-surface-100);
+    border: 1px solid var(--p-surface-200);
+    overflow: hidden;
+    margin-bottom: var(--space-6);
+  }
+  .player-hero::before {
+    /* diagonal scanline accent */
+    content: "";
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 340px; pointer-events: none;
+    background:
+      repeating-linear-gradient(115deg,
+        transparent 0 22px,
+        oklch(from var(--p-primary-color) l c h / 0.04) 22px 23px);
+    mask: linear-gradient(90deg, transparent, black 40%);
+  }
+  .player-hero__grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-6);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .player-avatar {
+    width: 112px; height: 112px;
+    background: var(--g-gradient-primary);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 2.5rem;
+    color: var(--p-primary-contrast);
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+  .player-avatar::after {
+    content: "";
+    position: absolute; inset: 3px;
+    background: var(--p-surface-100);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    z-index: 0;
+  }
+  .player-avatar span { position: relative; z-index: 1;
+    background: var(--g-gradient-primary);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .player-id {
+    display: flex; flex-direction: column; gap: var(--space-3);
+  }
+  .player-id__name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 3rem; line-height: 1; letter-spacing: -0.02em;
+    color: var(--p-surface-900); margin: 0;
+  }
+  .player-id__meta {
+    display: flex; align-items: center; gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .player-id__club {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: var(--t-body); color: var(--p-surface-600);
+  }
+  .player-id__club strong { color: var(--p-surface-800); font-weight: 600; }
+
+  .player-memberid {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    color: var(--p-surface-500);
+    padding: 3px 8px; border-radius: 3px;
+    background: var(--p-surface-200);
+    letter-spacing: 0.04em;
+  }
+
+  .player-hero__actions { display: flex; gap: var(--space-2); align-items: center; }
+
+  /* Rank block */
+  .rank-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--p-surface-200);
+    position: relative; z-index: 1;
+  }
+  .rank-slot {
+    display: flex; flex-direction: column; gap: var(--space-3);
+  }
+  .rank-slot__head {
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .rank-slot__discipline {
+    font-family: 'Inter', sans-serif; font-weight: 700;
+    font-size: 0.875rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--p-surface-900);
+  }
+  .rank-slot__body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .rank-number {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 4rem; line-height: 0.9; letter-spacing: -0.03em;
+    background: var(--g-gradient-rank);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-detail { display: flex; flex-direction: column; gap: 6px; }
+  .rank-detail__delta {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-detail__delta.up   { color: var(--g-win); }
+  .rank-detail__delta.down { color: var(--g-loss); }
+  .rank-detail__spark { margin-top: 4px; }
+
+  /* Stats strip */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  /* Main content split */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  /* Season distribution (donut-bar) */
+  .form-panel { display: flex; flex-direction: column; gap: var(--space-4); }
+  .form-bar {
+    display: flex; height: 12px; border-radius: 999px; overflow: hidden;
+    background: var(--p-surface-200);
+  }
+  .form-bar__seg { height: 100%; }
+  .form-bar__seg--win  { background: var(--g-win); }
+  .form-bar__seg--loss { background: var(--g-loss); }
+  .form-legend { display: flex; gap: var(--space-4); font-size: var(--t-body-sm); }
+  .form-legend__item { display: inline-flex; align-items: center; gap: 6px; color: var(--p-surface-500); }
+  .form-legend__dot { width: 8px; height: 8px; border-radius: 999px; }
+
+  /* Form sequence (recent W/L dots) */
+  .form-sequence { display: flex; gap: 4px; }
+  .form-sequence__dot {
+    width: 22px; height: 22px; border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px;
+  }
+  .form-sequence__dot--W { background: var(--g-win-muted); color: var(--g-win); }
+  .form-sequence__dot--L { background: var(--g-loss-muted); color: var(--g-loss); }
+
+  /* Upcoming card */
+  .upcoming {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--p-surface-100);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-lg);
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .upcoming::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--p-primary-color);
+  }
+  .upcoming__when {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 1.5rem; line-height: 1;
+    color: var(--p-surface-900);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 0 var(--space-3);
+    border-right: 1px solid var(--p-surface-200);
+  }
+  .upcoming__day { font-size: 0.6875rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--p-surface-400); font-weight: 700;
+    font-family: 'Inter', sans-serif; }
+  .upcoming__time {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem;
+    color: var(--p-surface-500);
+  }
+
+  /* Best-against list */
+  .opp-list { display: flex; flex-direction: column; }
+  .opp-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    align-items: center;
+    border-bottom: 1px solid var(--p-surface-200);
+  }
+  .opp-row:last-child { border-bottom: 0; }
+  .opp-row__name { font-size: var(--t-body-sm); color: var(--p-surface-800); font-weight: 500; }
+  .opp-row__record {
+    font-family: 'JetBrains Mono', monospace; font-size: var(--t-body-sm);
+    color: var(--p-surface-500);
+  }
+  .opp-row__bar {
+    width: 72px; height: 4px; border-radius: 999px; background: var(--p-surface-200);
+    overflow: hidden;
+  }
+  .opp-row__bar span { display: block; height: 100%; background: var(--g-win); }
+
+  /* Filter bar */
+  .filters {
+    display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+  .filters .g-chip { cursor: pointer; }
+  .filters .g-chip.is-active { background: var(--p-primary-muted); color: var(--p-primary-color); }
+
+  .view-toggle {
+    display: inline-flex; padding: 3px;
+    background: var(--p-surface-100); border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-md);
+    margin-left: auto;
+  }
+  .view-toggle button {
+    height: 28px; padding: 0 12px; background: transparent; border: 0; cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: var(--t-body-sm); color: var(--p-surface-500); font-weight: 500;
+  }
+  .view-toggle button.is-active {
+    background: var(--p-surface-300); color: var(--p-surface-900);
+  }
+
+  /* Empty pagination footer */
+  .load-more {
+    margin-top: var(--space-5); display: flex; justify-content: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .rank-panel  { grid-template-columns: 1fr; }
+    .player-hero__grid { grid-template-columns: auto 1fr; }
+    .player-hero__actions { grid-column: 1 / -1; }
+    .g-match__body { grid-template-columns: 1fr; }
+    .g-match { grid-template-columns: 4px 1fr; }
+    .g-match__scores, .g-match__points { display: none; }
+  }
+</style>
+</head>
+<body data-screen-label="01 Player — Glenn Latomme">
+
+<div class="g-shell">
+
+  <!-- ======================= Top bar ======================= -->
+  <header class="g-topbar">
+    <a href="#" class="g-logo">
+      <span class="g-logo__mark"></span>
+      <span>GLADMAN</span>
+    </a>
+    <nav class="g-nav">
+      <a href="#">Dashboard</a>
+      <a href="#" class="is-active">Players</a>
+      <a href="#">Clubs</a>
+      <a href="#">Competitions</a>
+      <a href="#">Tournaments</a>
+      <a href="#">Rankings</a>
+    </nav>
+    <div class="g-topbar__spacer"></div>
+    <div class="g-topbar__tools">
+      <label class="g-search">
+        <i class="pi pi-search" style="font-size:13px"></i>
+        <input placeholder="Search players, clubs, teams…" />
+        <kbd>⌘K</kbd>
+      </label>
+      <button class="g-icon-btn" title="Notifications"><i class="pi pi-bell"></i></button>
+      <button class="g-icon-btn" id="theme-toggle" title="Toggle theme"><i class="pi pi-moon"></i></button>
+      <div class="g-avatar">GL</div>
+    </div>
+  </header>
+
+  <!-- ======================= Main ======================= -->
+  <main class="g-main">
+
+    <!-- Breadcrumb -->
+    <div class="row center gap-2" style="margin-bottom: var(--space-4); font-size: var(--t-body-sm); color: var(--p-surface-500);">
+      <a href="#" style="color: var(--p-surface-500); text-decoration: none;">Players</a>
+      <i class="pi pi-angle-right" style="font-size: 10px;"></i>
+      <span style="color: var(--p-surface-800); font-weight: 600;">Glenn Latomme</span>
+    </div>
+
+    <!-- ------- HERO ------- -->
+    <section class="player-hero">
+      <div class="player-hero__grid">
+        <div class="player-avatar"><span>GL</span></div>
+        <div class="player-id">
+          <h1 class="player-id__name">Glenn Latomme</h1>
+          <div class="player-id__meta">
+            <span class="player-id__club">
+              <i class="pi pi-shield" style="color:var(--p-primary-color);"></i>
+              <strong>Smash For Fun</strong>
+            </span>
+            <span class="player-memberid">#50104197</span>
+            <span class="g-chip g-chip--primary"><i class="pi pi-map-marker" style="font-size:10px"></i> BE-VOV</span>
+            <span class="g-chip">Season 2025</span>
+          </div>
+        </div>
+        <div class="player-hero__actions">
+          <button class="g-btn g-btn--secondary"><i class="pi pi-user-plus"></i> Follow</button>
+          <button class="g-btn g-btn--primary"><i class="pi pi-chart-line"></i> Compare</button>
+        </div>
+      </div>
+
+      <!-- Rank panel — singles / doubles / mixed -->
+      <div class="rank-panel">
+        <div class="rank-slot">
+          <div class="rank-slot__head">
+            <span class="rank-slot__discipline">Singles</span>
+            <span class="g-tier g-tier--sm">LVL 8</span>
+          </div>
+          <div class="rank-slot__body">
+            <div class="rank-number">8</div>
+            <div class="rank-detail">
+              <span class="t-eyebrow">Ranking</span>
+              <span class="rank-detail__delta up"><i class="pi pi-arrow-up" style="font-size:10px"></i> +2 since Jan</span>
+              <div class="g-spark rank-detail__spark">
+                <div class="g-spark__bar" style="height: 35%"></div>
+                <div class="g-spark__bar" style="height: 50%"></div>
+                <div class="g-spark__bar" style="height: 45%"></div>
+                <div class="g-spark__bar" style="height: 60%"></div>
+                <div class="g-spark__bar" style="height: 55%"></div>
+                <div class="g-spark__bar" style="height: 75%"></div>
+                <div class="g-spark__bar g-spark__bar--win" style="height: 90%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rank-slot">
+          <div class="rank-slot__head">
+            <span class="rank-slot__discipline">Doubles</span>
+            <span class="g-tier g-tier--sm">LVL 6</span>
+          </div>
+          <div class="rank-slot__body">
+            <div class="rank-number">6</div>
+            <div class="rank-detail">
+              <span class="t-eyebrow">Ranking</span>
+              <span class="rank-detail__delta up"><i class="pi pi-arrow-up" style="font-size:10px"></i> +1 since Jan</span>
+              <div class="g-spark rank-detail__spark">
+                <div class="g-spark__bar" style="height: 55%"></div>
+                <div class="g-spark__bar" style="height: 40%"></div>
+                <div class="g-spark__bar g-spark__bar--loss" style="height: 30%"></div>
+                <div class="g-spark__bar" style="height: 55%"></div>
+                <div class="g-spark__bar" style="height: 70%"></div>
+                <div class="g-spark__bar g-spark__bar--win" style="height: 85%"></div>
+                <div class="g-spark__bar g-spark__bar--win" style="height: 80%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rank-slot">
+          <div class="rank-slot__head">
+            <span class="rank-slot__discipline">Mixed</span>
+            <span class="g-tier g-tier--sm">LVL 8</span>
+          </div>
+          <div class="rank-slot__body">
+            <div class="rank-number">8</div>
+            <div class="rank-detail">
+              <span class="t-eyebrow">Ranking</span>
+              <span class="rank-detail__delta down"><i class="pi pi-arrow-down" style="font-size:10px"></i> -1 since Jan</span>
+              <div class="g-spark rank-detail__spark">
+                <div class="g-spark__bar g-spark__bar--win" style="height: 90%"></div>
+                <div class="g-spark__bar" style="height: 80%"></div>
+                <div class="g-spark__bar" style="height: 70%"></div>
+                <div class="g-spark__bar g-spark__bar--loss" style="height: 50%"></div>
+                <div class="g-spark__bar" style="height: 55%"></div>
+                <div class="g-spark__bar" style="height: 50%"></div>
+                <div class="g-spark__bar g-spark__bar--loss" style="height: 45%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------- Stats strip ------- -->
+    <section class="stats-strip">
+      <div class="g-card">
+        <div class="t-eyebrow" style="margin-bottom: var(--space-2)">Matches · Season</div>
+        <div class="g-stat__value">
+          <span class="t-stat-lg">132</span>
+          <span class="g-stat__delta g-stat__delta--up">+12 this month</span>
+        </div>
+      </div>
+      <div class="g-card">
+        <div class="t-eyebrow" style="margin-bottom: var(--space-2)">Win rate</div>
+        <div class="g-stat__value">
+          <span class="t-stat-lg">68<span style="font-size: 1.25rem; color: var(--p-surface-400)">%</span></span>
+          <span class="g-stat__delta g-stat__delta--up">+4.1%</span>
+        </div>
+      </div>
+      <div class="g-card">
+        <div class="t-eyebrow" style="margin-bottom: var(--space-2)">Upgrade / downgrade · Doubles</div>
+        <div class="row center gap-3" style="margin-top: 4px;">
+          <div class="col" style="gap: 2px;">
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.5rem;line-height:1;color:var(--g-win);font-variant-numeric:tabular-nums;">+14</span>
+            <span class="t-eyebrow" style="color:var(--g-win);">Upgrade</span>
+          </div>
+          <span style="width:1px;height:32px;background:var(--p-surface-200);"></span>
+          <div class="col" style="gap: 2px;">
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.5rem;line-height:1;color:var(--p-surface-500);font-variant-numeric:tabular-nums;">-3</span>
+            <span class="t-eyebrow">Downgrade</span>
+          </div>
+        </div>
+        <div class="t-body t-muted" style="font-size: 11px; margin-top: 8px;">Threshold to LVL 5 · 6 more</div>
+      </div>
+      <div class="g-card">
+        <div class="t-eyebrow" style="margin-bottom: var(--space-2)">Current form</div>
+        <div class="form-sequence" style="margin-top: 6px;">
+          <span class="form-sequence__dot form-sequence__dot--W">W</span>
+          <span class="form-sequence__dot form-sequence__dot--L">L</span>
+          <span class="form-sequence__dot form-sequence__dot--W">W</span>
+          <span class="form-sequence__dot form-sequence__dot--W">W</span>
+          <span class="form-sequence__dot form-sequence__dot--W">W</span>
+          <span class="form-sequence__dot form-sequence__dot--L">L</span>
+          <span class="form-sequence__dot form-sequence__dot--W">W</span>
+          <span class="form-sequence__dot form-sequence__dot--W">W</span>
+        </div>
+        <div class="t-body t-muted" style="font-size: var(--t-body-sm); margin-top: 10px;">6W – 2L last 8</div>
+      </div>
+    </section>
+
+    <!-- ------- Main grid: matches (left) + sidebar (right) ------- -->
+    <div class="main-grid">
+
+      <!-- ============ LEFT column ============ -->
+      <div class="col gap-6">
+
+        <!-- Upcoming -->
+        <section>
+          <div class="g-section-head">
+            <div class="g-section-head__title">
+              <span class="t-eyebrow">Upcoming</span>
+              <span class="g-chip g-chip--pending g-chip--live"><span class="g-chip__dot"></span>NEXT UP</span>
+            </div>
+            <a href="#" class="g-btn g-btn--ghost" style="height:28px;padding:0 8px;">All fixtures <i class="pi pi-arrow-right" style="font-size:10px"></i></a>
+          </div>
+
+          <div class="upcoming">
+            <div class="upcoming__when">
+              <span class="upcoming__day">Sat</span>
+              <span>25</span>
+              <span class="upcoming__time">21:00</span>
+            </div>
+            <div class="col gap-1">
+              <div class="row center gap-2">
+                <span class="g-chip g-chip--primary">2e Provinciale · B</span>
+                <span class="t-muted" style="font-size: var(--t-body-sm);">Home fixture</span>
+              </div>
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.125rem; color:var(--p-surface-900)">
+                Smash For Fun 1G
+                <span style="color:var(--p-surface-400); font-weight:500; margin: 0 6px;">vs</span>
+                Gentse 3G
+              </div>
+              <span class="t-muted" style="font-size: var(--t-body-sm); font-family:'JetBrains Mono',monospace;">Apr 25 · 2026</span>
+            </div>
+            <button class="g-btn g-btn--secondary"><i class="pi pi-calendar-plus"></i> Add to calendar</button>
+          </div>
+        </section>
+
+        <!-- Recent matches -->
+        <section>
+          <div class="g-section-head">
+            <div class="g-section-head__title">
+              <span class="t-eyebrow">Recent matches</span>
+              <span class="t-muted" style="font-size: var(--t-body-sm);">132 played · 2025–2026</span>
+            </div>
+            <div class="view-toggle">
+              <button class="is-active">List</button>
+              <button>Grid</button>
+              <button>Table</button>
+            </div>
+          </div>
+
+          <div class="filters">
+            <span class="g-chip is-active">All · 132</span>
+            <span class="g-chip">Singles · 24</span>
+            <span class="g-chip">Doubles · 68</span>
+            <span class="g-chip">Mixed · 40</span>
+            <span style="width: 1px; height: 20px; background: var(--p-surface-200); margin: 0 4px;"></span>
+            <span class="g-chip g-chip--win">Wins · 90</span>
+            <span class="g-chip g-chip--loss">Losses · 42</span>
+          </div>
+
+          <!-- Match row — singles loss -->
+          <article class="g-match g-match--loss">
+            <div class="g-match__band"></div>
+            <div class="g-match__body">
+              <div class="g-match__meta">
+                <div class="g-match__league">
+                  <span class="g-chip">3e Liga · B</span>
+                  <span>Vlaamse interclub 25–26</span>
+                </div>
+                <div class="g-match__teams">Dendermondse 1H <span class="t-muted" style="font-weight:500">vs</span> Smash For Fun 1H</div>
+                <div class="g-match__date">SUN 12-04-2026 · 20:00</div>
+              </div>
+              <div class="g-match__players">
+                <div class="g-match__pair">
+                  <span class="g-match__player">Kevin Sterckx <span class="g-tier g-tier--sm">4</span></span>
+                  <span class="g-match__player g-match__player--own">Glenn Latomme <span class="g-tier g-tier--sm">6</span></span>
+                </div>
+                <div class="g-match__pair">
+                  <span class="g-match__player">Nils Ottoy <span class="g-tier g-tier--sm">5</span></span>
+                  <span class="g-match__player">V. Van Poeke <span class="g-tier g-tier--sm">3</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="g-match__scores">
+              <div class="g-match__score-col">
+                <span class="g-match__score">16</span>
+                <span class="g-match__score">15</span>
+              </div>
+              <div class="g-match__score-col">
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score g-match__score--win">21</span>
+              </div>
+            </div>
+            <div class="g-match__points">
+              <span class="g-match__points-value g-match__points-value--down">-1</span>
+              <span class="g-match__points-label">Doubles · Down</span>
+            </div>
+          </article>
+
+          <!-- Match row — singles loss -->
+          <article class="g-match g-match--loss">
+            <div class="g-match__band"></div>
+            <div class="g-match__body">
+              <div class="g-match__meta">
+                <div class="g-match__league">
+                  <span class="g-chip">3e Liga · B</span>
+                  <span>Vlaamse interclub 25–26</span>
+                </div>
+                <div class="g-match__teams">Dendermondse 1H <span class="t-muted" style="font-weight:500">vs</span> Smash For Fun 1H</div>
+                <div class="g-match__date">SUN 12-04-2026 · 20:00</div>
+              </div>
+              <div class="g-match__players">
+                <div class="g-match__pair">
+                  <span class="g-match__player g-match__player--own">Glenn Latomme <span class="g-tier g-tier--sm">8</span></span>
+                </div>
+                <div class="g-match__pair">
+                  <span class="g-match__player">Arno De Wilder <span class="g-tier g-tier--sm">5</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="g-match__scores">
+              <div class="g-match__score-col">
+                <span class="g-match__score">10</span>
+                <span class="g-match__score">10</span>
+              </div>
+              <div class="g-match__score-col">
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score g-match__score--win">21</span>
+              </div>
+            </div>
+            <div class="g-match__points">
+              <span class="g-match__points-value g-match__points-value--down">-1</span>
+              <span class="g-match__points-label">Singles · Down</span>
+            </div>
+          </article>
+
+          <!-- Match row — mixed 3-setter loss -->
+          <article class="g-match g-match--loss">
+            <div class="g-match__band"></div>
+            <div class="g-match__body">
+              <div class="g-match__meta">
+                <div class="g-match__league">
+                  <span class="g-chip">2e Prov · B</span>
+                  <span>PBO Competitie 25–26</span>
+                </div>
+                <div class="g-match__teams">Smash For Fun 1G <span class="t-muted" style="font-weight:500">vs</span> Pluimplukkers 6G</div>
+                <div class="g-match__date">SAT 04-04-2026 · 21:00</div>
+              </div>
+              <div class="g-match__players">
+                <div class="g-match__pair">
+                  <span class="g-match__player">Axelle De Prest <span class="g-tier g-tier--sm">5</span></span>
+                  <span class="g-match__player g-match__player--own">Glenn Latomme <span class="g-tier g-tier--sm">8</span></span>
+                </div>
+                <div class="g-match__pair">
+                  <span class="g-match__player">X. Van Peteghem <span class="g-tier g-tier--sm">6</span></span>
+                  <span class="g-match__player">A. Vertommen <span class="g-tier g-tier--sm">6</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="g-match__scores">
+              <div class="g-match__score-col">
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score">19</span>
+                <span class="g-match__score">16</span>
+              </div>
+              <div class="g-match__score-col">
+                <span class="g-match__score">19</span>
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score g-match__score--win">21</span>
+              </div>
+            </div>
+            <div class="g-match__points">
+              <span class="g-match__points-value g-match__points-value--down">-1</span>
+              <span class="g-match__points-label">Mixed · Down</span>
+            </div>
+          </article>
+
+          <!-- Match row — big win with points -->
+          <article class="g-match g-match--win">
+            <div class="g-match__band"></div>
+            <div class="g-match__body">
+              <div class="g-match__meta">
+                <div class="g-match__league">
+                  <span class="g-chip">2e Prov · B</span>
+                  <span>PBO Competitie 25–26</span>
+                </div>
+                <div class="g-match__teams">Lokerse 5G <span class="t-muted" style="font-weight:500">vs</span> Smash For Fun 1G</div>
+                <div class="g-match__date">SUN 01-03-2026 · 20:00</div>
+              </div>
+              <div class="g-match__players">
+                <div class="g-match__pair">
+                  <span class="g-match__player">Jules Everaert <span class="g-tier g-tier--sm">6</span></span>
+                  <span class="g-match__player">M. Vermeerschen <span class="g-tier g-tier--sm">7</span></span>
+                </div>
+                <div class="g-match__pair">
+                  <span class="g-match__player">Flor Tryhou <span class="g-tier g-tier--sm">6</span></span>
+                  <span class="g-match__player g-match__player--own">Glenn Latomme <span class="g-tier g-tier--sm">6</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="g-match__scores">
+              <div class="g-match__score-col">
+                <span class="g-match__score g-match__score--win">22</span>
+                <span class="g-match__score">23</span>
+                <span class="g-match__score">17</span>
+              </div>
+              <div class="g-match__score-col">
+                <span class="g-match__score">24</span>
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score g-match__score--win">21</span>
+              </div>
+            </div>
+            <div class="g-match__points">
+              <span class="g-match__points-value g-match__points-value--up">+1</span>
+              <span class="g-match__points-label">Doubles · Up</span>
+            </div>
+          </article>
+
+          <!-- Match row — mixed win +217 -->
+          <article class="g-match g-match--win">
+            <div class="g-match__band"></div>
+            <div class="g-match__body">
+              <div class="g-match__meta">
+                <div class="g-match__league">
+                  <span class="g-chip">2e Prov · B</span>
+                  <span>PBO Competitie 25–26</span>
+                </div>
+                <div class="g-match__teams">Lokerse 5G <span class="t-muted" style="font-weight:500">vs</span> Smash For Fun 1G</div>
+                <div class="g-match__date">SUN 01-03-2026 · 20:00</div>
+              </div>
+              <div class="g-match__players">
+                <div class="g-match__pair">
+                  <span class="g-match__player">Jules Everaert <span class="g-tier g-tier--sm">8</span></span>
+                  <span class="g-match__player">C. Van Acker <span class="g-tier g-tier--sm">8</span></span>
+                </div>
+                <div class="g-match__pair">
+                  <span class="g-match__player">Axelle De Prest <span class="g-tier g-tier--sm">5</span></span>
+                  <span class="g-match__player g-match__player--own">Glenn Latomme <span class="g-tier g-tier--sm">8</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="g-match__scores">
+              <div class="g-match__score-col">
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score">12</span>
+                <span class="g-match__score">9</span>
+              </div>
+              <div class="g-match__score-col">
+                <span class="g-match__score">18</span>
+                <span class="g-match__score g-match__score--win">21</span>
+                <span class="g-match__score g-match__score--win">21</span>
+              </div>
+            </div>
+            <div class="g-match__points">
+              <span class="g-match__points-value g-match__points-value--up">+1</span>
+              <span class="g-match__points-label">Mixed · Up</span>
+            </div>
+          </article>
+
+          <!-- Match row — singles win +150 -->
+          <article class="g-match g-match--win">
+            <div class="g-match__band"></div>
+            <div class="g-match__body">
+              <div class="g-match__meta">
+                <div class="g-match__league">
+                  <span class="g-chip">2e Prov · B</span>
+                  <span>PBO Competitie 25–26</span>
+                </div>
+                <div class="g-match__teams">Lokerse 5G <span class="t-muted" style="font-weight:500">vs</span> Smash For Fun 1G</div>
+                <div class="g-match__date">SUN 01-03-2026 · 20:00</div>
+              </div>
+              <div class="g-match__players">
+                <div class="g-match__pair">
+                  <span class="g-match__player">M. Vermeerschen <span class="g-tier g-tier--sm">9</span></span>
+                </div>
+                <div class="g-match__pair">
+                  <span class="g-match__player g-match__player--own">Glenn Latomme <span class="g-tier g-tier--sm">8</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="g-match__scores">
+              <div class="g-match__score-col">
+                <span class="g-match__score">21</span>
+                <span class="g-match__score">13</span>
+              </div>
+              <div class="g-match__score-col">
+                <span class="g-match__score g-match__score--win">23</span>
+                <span class="g-match__score g-match__score--win">21</span>
+              </div>
+            </div>
+            <div class="g-match__points">
+              <span class="g-match__points-value g-match__points-value--up">+1</span>
+              <span class="g-match__points-label">Singles · Up</span>
+            </div>
+          </article>
+
+          <div class="load-more">
+            <button class="g-btn g-btn--secondary"><i class="pi pi-plus"></i> Load more matches</button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ============ RIGHT sidebar ============ -->
+      <aside class="col gap-5">
+
+        <!-- Season distribution -->
+        <div class="g-card form-panel">
+          <div class="t-eyebrow">Season record</div>
+          <div class="row center between" style="align-items: baseline;">
+            <span class="t-stat-lg">90<span style="color:var(--p-surface-400); font-size: 1rem; font-weight: 500; margin: 0 4px;">/ 132</span></span>
+            <span class="g-chip g-chip--win">68% W</span>
+          </div>
+          <div class="form-bar">
+            <div class="form-bar__seg form-bar__seg--win" style="width: 68.2%"></div>
+            <div class="form-bar__seg form-bar__seg--loss" style="width: 31.8%"></div>
+          </div>
+          <div class="form-legend">
+            <div class="form-legend__item"><span class="form-legend__dot" style="background:var(--g-win);"></span>90 W</div>
+            <div class="form-legend__item"><span class="form-legend__dot" style="background:var(--g-loss);"></span>42 L</div>
+          </div>
+          <hr class="g-divider" />
+          <div class="row between">
+            <div class="g-kv"><span class="t-eyebrow">Longest streak</span><span class="g-kv__v">8 wins</span></div>
+            <div class="g-kv"><span class="t-eyebrow">This month</span><span class="g-kv__v">9–3</span></div>
+          </div>
+        </div>
+
+        <!-- Best against -->
+        <div class="g-card">
+          <div class="t-eyebrow" style="margin-bottom: var(--space-3)">Strongest match-ups</div>
+          <div class="opp-list">
+            <div class="opp-row">
+              <span class="opp-row__name">Stan Vertommen <span class="g-tier g-tier--sm" style="margin-left:4px">7</span></span>
+              <span class="opp-row__record">7–1</span>
+              <span class="opp-row__bar"><span style="width: 88%"></span></span>
+            </div>
+            <div class="opp-row">
+              <span class="opp-row__name">Ruben Vercruyssen <span class="g-tier g-tier--sm" style="margin-left:4px">5</span></span>
+              <span class="opp-row__record">6–2</span>
+              <span class="opp-row__bar"><span style="width: 75%"></span></span>
+            </div>
+            <div class="opp-row">
+              <span class="opp-row__name">Niels Van Acker <span class="g-tier g-tier--sm" style="margin-left:4px">5</span></span>
+              <span class="opp-row__record">5–3</span>
+              <span class="opp-row__bar"><span style="width: 62%"></span></span>
+            </div>
+            <div class="opp-row">
+              <span class="opp-row__name">Flor Tryhou <span class="g-tier g-tier--sm" style="margin-left:4px">6</span></span>
+              <span class="opp-row__record">4–4</span>
+              <span class="opp-row__bar"><span style="width: 50%"></span></span>
+            </div>
+            <div class="opp-row">
+              <span class="opp-row__name">Arno De Wilder <span class="g-tier g-tier--sm" style="margin-left:4px">5</span></span>
+              <span class="opp-row__record">1–5</span>
+              <span class="opp-row__bar"><span style="width: 17%; background: var(--g-loss);"></span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teams -->
+        <div class="g-card">
+          <div class="t-eyebrow" style="margin-bottom: var(--space-3)">Teams</div>
+          <div class="col gap-3">
+            <div class="row center between">
+              <div class="row center gap-2">
+                <span class="g-avatar" style="width: 28px; height: 28px; font-size: 11px;">1H</span>
+                <div class="col">
+                  <span style="font-weight: 600; font-size: var(--t-body-sm);">Smash For Fun 1H</span>
+                  <span class="t-muted" style="font-size: 11px;">3e Liga — B</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--primary">Core</span>
+            </div>
+            <div class="row center between">
+              <div class="row center gap-2">
+                <span class="g-avatar" style="width: 28px; height: 28px; font-size: 11px;">1G</span>
+                <div class="col">
+                  <span style="font-weight: 600; font-size: var(--t-body-sm);">Smash For Fun 1G</span>
+                  <span class="t-muted" style="font-size: 11px;">2e Prov — B</span>
+                </div>
+              </div>
+              <span class="g-chip">Mixed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upgrade / downgrade per discipline -->
+        <div class="g-card">
+          <div class="t-eyebrow" style="margin-bottom: var(--space-3)">Ranking progress</div>
+          <div class="col gap-3">
+            <div class="row between center">
+              <span style="font-size:var(--t-body-sm);color:var(--p-surface-700);font-weight:500;">Singles · LVL 8</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:var(--t-body-sm);font-variant-numeric:tabular-nums;"><span style="color:var(--g-win);">+8</span> <span style="color:var(--p-surface-400);">/</span> <span style="color:var(--p-surface-500);">-1</span></span>
+            </div>
+            <div class="row between center">
+              <span style="font-size:var(--t-body-sm);color:var(--p-surface-700);font-weight:500;">Doubles · LVL 6</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:var(--t-body-sm);font-variant-numeric:tabular-nums;"><span style="color:var(--g-win);">+14</span> <span style="color:var(--p-surface-400);">/</span> <span style="color:var(--p-surface-500);">-3</span></span>
+            </div>
+            <div class="row between center">
+              <span style="font-size:var(--t-body-sm);color:var(--p-surface-700);font-weight:500;">Mixed · LVL 8</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:var(--t-body-sm);font-variant-numeric:tabular-nums;"><span style="color:var(--g-win);">+4</span> <span style="color:var(--p-surface-400);">/</span> <span style="color:var(--g-loss);">-9</span></span>
+            </div>
+          </div>
+          <div class="t-body t-muted" style="font-size:11px;margin-top:var(--space-3);">Upgrade points count toward next level; downgrade points toward drop.</div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <footer style="padding: var(--space-5) var(--space-6); color: var(--p-surface-400); font-size: var(--t-body-sm); border-top: 1px solid var(--p-surface-200); margin-top: var(--space-7);">
+    <div class="row center between">
+      <span>Gladman · Arena design system v1.0</span>
+      <span style="font-family: 'JetBrains Mono', monospace;">last sync · 2026-04-18 09:46</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const html = document.documentElement;
+  const saved = localStorage.getItem('gladman:theme');
+  if (saved === 'light') { html.classList.remove('dark-theme'); html.classList.add('light-theme'); }
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const isDark = html.classList.contains('dark-theme');
+    html.classList.toggle('dark-theme', !isDark);
+    html.classList.toggle('light-theme', isDark);
+    localStorage.setItem('gladman:theme', isDark ? 'light' : 'dark');
+    const icon = document.querySelector('#theme-toggle i');
+    icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
+  });
+  if (saved === 'light') document.querySelector('#theme-toggle i').className = 'pi pi-sun';
+</script>
+</body>
+</html>

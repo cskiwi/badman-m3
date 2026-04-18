@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -14,25 +15,36 @@ import {
 
 import { IS_MOBILE } from '@app/frontend-utils';
 import { Game } from '@app/models';
-import { CardModule } from 'primeng/card';
-import { ChipModule } from 'primeng/chip';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { PlayerRecentGamesService } from './recent-games-player.service';
-import { DividerModule } from 'primeng/divider';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
-import { TranslateModule } from '@ngx-translate/core';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TagModule } from 'primeng/tag';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
+import { TierBadgeComponent } from '@app/frontend-components/tier-badge';
 @Component({
   selector: 'app-recent-games-player',
-  imports: [DayjsFormatPipe, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, TranslateModule],
+  imports: [
+    DayjsFormatPipe,
+    RouterLink,
+    FormsModule,
+    SkeletonModule,
+    ButtonModule,
+    SelectButtonModule,
+    TagModule,
+    TranslateModule,
+    TierBadgeComponent,
+  ],
   templateUrl: './recent-games-player.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './recent-games-player.component.scss',
 })
 export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
+  private readonly translate = inject(TranslateService);
 
   readonly scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private intersectionObserver?: IntersectionObserver;
@@ -46,6 +58,35 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   loading = this._playerGamesService.loading;
   loadingMore = this._playerGamesService.loadingMore;
   hasMore = this._playerGamesService.hasMore;
+
+  /** Selected game type filter: 'all' | 'S' | 'D' | 'MX'. */
+  readonly selectedGameType = signal<'all' | 'S' | 'D' | 'MX'>('all');
+
+  /** Server-backed counts of played games per game type. */
+  readonly gameTypeCounts = this._playerGamesService.counts;
+
+  /** Options for the p-selectbutton filter; labels include counts. */
+  readonly filterOptions = computed(() => {
+    const counts = this.gameTypeCounts();
+    const t = (key: string) => this.translate.instant(key);
+    return [
+      { label: `${t('all.game.filter.all')} · ${counts.total}`, value: 'all' as const },
+      { label: `${t('all.game.filter.singles')} · ${counts.singles}`, value: 'S' as const },
+      { label: `${t('all.game.filter.doubles')} · ${counts.doubles}`, value: 'D' as const },
+      { label: `${t('all.game.filter.mixed')} · ${counts.mixed}`, value: 'MX' as const },
+    ];
+  });
+
+  /** Games filtered by the selected game type. */
+  readonly filteredGames = computed(() => {
+    const type = this.selectedGameType();
+    const all = this.games();
+    return type === 'all' ? all : all.filter((g) => g?.gameType === type);
+  });
+
+  selectGameType(type: 'all' | 'S' | 'D' | 'MX'): void {
+    this.selectedGameType.set(type);
+  }
 
   constructor() {
     effect(() => {

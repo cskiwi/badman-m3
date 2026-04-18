@@ -1,91 +1,169 @@
 @if (!loading()) {
-  @if (this.player(); as player) {
-    <app-page-header>
-      <ng-content title>{{ player.fullName }}</ng-content>
-      <ng-content subTitle>
-        <div class="info">
-          <div class="sub-text">
-            <ng-container
-              ><a [routerLink]="['/', 'clubs', this.club()?.slug]" class="text-blue-600 hover:text-blue-800 underline">{{
-                this.club()?.name
-              }}</a></ng-container
-            >
-            @if (this.club()?.name && player.memberId) {
-              -
-            }
-            {{ player.memberId }}
-          </div>
-          @if (player.id) {
-            <div class="levels flex space-x-4 mt-2">
-              <app-show-level [routerLink]="['ranking', 'single']" [playerId]="player.id" type="single" />
-              <app-show-level [routerLink]="['ranking', 'double']" [playerId]="player.id" type="double" />
-              <app-show-level [routerLink]="['ranking', 'mix']" [playerId]="player.id" type="mix" />
-            </div>
-          }
-          <!-- Mobile edit actions below ranking levels -->
-          <div class="lg:hidden flex items-center gap-2 mt-4">
-            <p-button
-              icon="pi pi-users"
-              [outlined]="true"
-              [routerLink]="['head-to-head']"
-              pTooltip="{{ 'all.head-to-head.title' | translate }}"
-              tooltipPosition="bottom"
-            />
-            <p-menu #menu [model]="editMenuItems" [popup]="true" />
-            <p-button icon="pi pi-ellipsis-v" [outlined]="true" (click)="menu.toggle($event)" pTooltip="Edit" tooltipPosition="bottom" />
-          </div>
-        </div>
-      </ng-content>
-      <ng-content actions>
-        <div class="hidden lg:flex items-center gap-2">
-          <p-button
-            icon="pi pi-users"
-            [outlined]="true"
-            [routerLink]="['head-to-head']"
-            pTooltip="{{ 'all.head-to-head.title' | translate }}"
-            tooltipPosition="bottom"
-          />
-          <p-menu #menu [model]="editMenuItems" [popup]="true" />
-          <p-button icon="pi pi-ellipsis-v" [outlined]="true" (click)="menu.toggle($event)" pTooltip="Edit" tooltipPosition="bottom" />
-        </div>
-      </ng-content>
-    </app-page-header>
+@if (this.player(); as player) {
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-sm text-surface-500 mb-4">
+  <a routerLink="/players" class="text-surface-500 no-underline hover:text-surface-800">
+    {{ 'all.navigation.players' | translate }}
+  </a>
+  <i class="pi pi-angle-right text-[10px]"></i>
+  <span class="text-surface-800 font-semibold">{{ player.fullName }}</span>
+</nav>
 
-    <!-- quick-links section removed: head-to-head button moved to header actions -->
-    <section class="games grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
-      <!-- Mobile: upcoming first, desktop: recent first -->
-      <section class="upcoming-games order-1 lg:order-2">
-        <p-card>
-          <ng-template #title>
-            <i class="pi pi-calendar text-primary-500 mr-2"></i>
-            {{ 'all.game.upcoming.title' | translate }}
-          </ng-template>
-          <ng-template #subtitle />
-          <app-upcoming-games [for]="player.id" [type]="'player'" />
-        </p-card>
-      </section>
-      <section class="recent-games order-2 lg:order-1">
-        <p-card>
-          <ng-template #title>
-            <i class="pi pi-history text-primary-500 mr-2"></i>
-            {{ 'all.game.recent.title' | translate }}
-          </ng-template>
-          <ng-template #subtitle />
-
-          <app-recent-games [for]="player.id" [type]="'player'" />
-        </p-card>
-      </section>
-    </section>
-  }
-} @else {
-  <div class="p-4">
-    <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
+<!-- Hero -->
+<app-hero>
+  <!-- Avatar -->
+  <div avatar class="player-avatar">
+    <span>{{ playerInitials() }}</span>
   </div>
+
+  <!-- Identity -->
+  <div identity>
+    <h1 class="player-name">{{ player.fullName }}</h1>
+    <div class="flex items-center gap-3 flex-wrap">
+      @if (this.club(); as club) {
+      <a class="flex items-center gap-2 text-surface-600 no-underline" [routerLink]="['/', 'clubs', club.slug]">
+        <i class="pi pi-shield text-primary"></i>
+        <strong class="text-surface-800 font-semibold">{{ club.name }}</strong>
+      </a>
+      }
+      @if (player.memberId) {
+      <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">
+        #{{ player.memberId }}
+      </span>
+      }
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div actions class="flex items-center gap-2">
+    <p-button
+      icon="pi pi-user-plus"
+      [outlined]="true"
+      label="Follow"
+      size="small"
+      (onClick)="toggleFollow()"
+    />
+    <p-button
+      icon="pi pi-users"
+      [routerLink]="['head-to-head']"
+      [label]="'all.head-to-head.title' | translate"
+      size="small"
+    />
+    <p-menu #menu [model]="editMenuItems" [popup]="true" />
+    <p-button icon="pi pi-ellipsis-v" [outlined]="true" (click)="menu.toggle($event)" size="small" />
+  </div>
+
+  <!-- Rank panel -->
+  @if (rankingPlace()) {
+  <div stats class="grid grid-cols-3 gap-5 mt-5 pt-5 border-t border-surface-200 relative z-[1]">
+    <!-- Singles -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between">
+        <span class="rank-discipline">{{ 'all.ranking.edit.single' | translate }}</span>
+      </div>
+      <div class="flex gap-4 items-center">
+        <span class="rank-number">
+          {{ rankingPlace()?.single ?? maxLevel() }}
+        </span>
+        <div class="flex flex-col gap-1">
+          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
+          @if (rankingPlace()?.singlePoints !== null) {
+            <span class="rank-detail">
+              <span class="rank-upgrade">+{{ rankingPlace()?.singlePoints }}</span>
+              @if (rankingPlace()?.singlePointsDowngrade !== null) {
+                / <span class="rank-downgrade">{{ rankingPlace()?.singlePointsDowngrade }}</span>
+              }
+            </span>
+          }
+          <app-rank-spark [playerId]="player.id" discipline="single" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Doubles -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between">
+        <span class="rank-discipline">{{ 'all.ranking.edit.double' | translate }}</span>
+      </div>
+      <div class="flex gap-4 items-center">
+        <span class="rank-number">
+          {{ rankingPlace()?.double ?? maxLevel() }}
+        </span>
+        <div class="flex flex-col gap-1">
+          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
+          @if (rankingPlace()?.doublePoints !== null) {
+            <span class="rank-detail">
+              <span class="rank-upgrade">+{{ rankingPlace()?.doublePoints }}</span>
+              @if (rankingPlace()?.doublePointsDowngrade !== null) {
+                / <span class="rank-downgrade">{{ rankingPlace()?.doublePointsDowngrade }}</span>
+              }
+            </span>
+          }
+          <app-rank-spark [playerId]="player.id" discipline="double" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Mixed -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between">
+        <span class="rank-discipline">{{ 'all.ranking.edit.mix' | translate }}</span>
+      </div>
+      <div class="flex gap-4 items-center">
+        <span class="rank-number">
+          {{ rankingPlace()?.mix ?? maxLevel() }}
+        </span>
+        <div class="flex flex-col gap-1">
+          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
+          @if (rankingPlace()?.mixPoints !== null) {
+            <span class="rank-detail">
+              <span class="rank-upgrade">+{{ rankingPlace()?.mixPoints }}</span>
+              @if (rankingPlace()?.mixPointsDowngrade !== null) {
+                / <span class="rank-downgrade">{{ rankingPlace()?.mixPointsDowngrade }}</span>
+              }
+            </span>
+          }
+          <app-rank-spark [playerId]="player.id" discipline="mix" />
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</app-hero>
+
+<!-- Main grid: left content + right sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 items-start">
+  <!-- Left column -->
+  <div class="flex flex-col gap-6">
+    <!-- Upcoming -->
+    <section>
+      <app-upcoming-games [for]="player.id" [type]="'player'" />
+    </section>
+
+    <!-- Recent matches -->
+    <section>
+      <app-recent-games [for]="player.id" [type]="'player'" />
+    </section>
+  </div>
+
+  <!-- Right sidebar -->
+  <aside class="flex flex-col gap-5">
+    <app-player-current-form [playerId]="player.id" />
+    <app-player-season-record [playerId]="player.id" />
+    <app-player-strongest-matchups [playerId]="player.id" />
+    <app-player-teams [playerId]="player.id" />
+  </aside>
+</div>
+}
+} @else {
+<div class="p-4">
+  <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
+</div>
 }
 
 @if (error()) {
-  <div class="flex items-center justify-center p-8 text-red-600">
-    <i class="pi pi-exclamation-triangle mr-2"></i>
-    <span>{{ error() }}</span>
-  </div>
+<div class="flex items-center justify-center p-8 text-red-600">
+  <i class="pi pi-exclamation-triangle mr-2"></i>
+  <span>{{ error() }}</span>
+</div>
 }

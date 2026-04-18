@@ -1,0 +1,33 @@
+/* Translucent surface so the body's ambient radial gradients bleed through,
+   plus subtle local radials for a touch of depth on the hero card itself. */
+.g-hero {
+  background:
+    radial-gradient(
+      600px 300px at 85% 0%,
+      var(--p-primary-muted, oklch(0.78 0.15 210 / 0.12)),
+      transparent 70%
+    ),
+    radial-gradient(
+      400px 200px at 0% 100%,
+      var(--g-accent-muted),
+      transparent 70%
+    ),
+    oklch(from var(--p-surface-100) l c h / 0.55);
+}
+
+/* Diagonal scanline accent */
+.g-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 22px,
+    oklch(from var(--p-primary-color) l c h / 0.04) 22px 23px
+  );
+  mask: linear-gradient(90deg, transparent, black 40%);
+}

@@ -559,6 +559,16 @@
       "pts": "pnt",
       "set": "Set (jeu de mots)"
     },
+    "filter": {
+      "all": "Tous",
+      "doubles": "Doubles",
+      "mixed": "Mixte",
+      "singles": "Simples"
+    },
+    "location": {
+      "away": "Extérieur",
+      "home": "Domicile"
+    },
     "recent": {
       "noGamesDescription": "Cette équipe n'a pas encore joué de match.",
       "noGamesFound": "Aucune correspondance récente n'a été trouvée",
@@ -568,6 +578,7 @@
     "upcoming": {
       "awayTeam": "Équipe de plein air",
       "homeTeam": "Équipe locale",
+      "nextUp": "À suivre",
       "noGamesDescription": "Ce joueur n'a pas de match programmé.",
       "noGamesFound": "Aucun match à venir n'a été trouvé",
       "title": "Réunions à venir"

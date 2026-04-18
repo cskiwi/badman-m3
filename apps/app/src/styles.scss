@@ -1,4 +1,5 @@
-@import 'primeicons/primeicons.css';
+@use 'primeicons/primeicons.css';
+@use './styles/theme.scss';
 
 /*Tailwindcss related*/
 @import 'tailwindcss/theme.css' layer(theme);
@@ -16,14 +17,20 @@
 
 html {
   font-size: 0.875rem; /* 0.875 of 16px = 14px */
-  font-family: 'Inter', 'Poppins', Roboto, sans-serif;
+  font-family: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   margin: 0;
-  height: 100%;
-  background-color: var(--p-surface-50);
+  min-height: 100vh;
+  background:
+    radial-gradient(1400px 800px at 85% -5%, var(--p-primary-muted, oklch(0.78 0.15 210 / 0.22)), transparent 70%),
+    radial-gradient(1100px 700px at -5% 35%, var(--g-accent-muted, oklch(0.68 0.22 340 / 0.22)), transparent 70%),
+    var(--p-surface-0);
+  background-attachment: fixed;
   transition:
     background-color 0.3s ease,
     color 0.3s ease;

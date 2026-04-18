@@ -559,6 +559,16 @@
       "pts": "pts",
       "set": "Set"
     },
+    "filter": {
+      "all": "All",
+      "doubles": "Doubles",
+      "mixed": "Mixed",
+      "singles": "Singles"
+    },
+    "location": {
+      "away": "Away",
+      "home": "Home"
+    },
     "recent": {
       "noGamesDescription": "This team hasn't played any games recently.",
       "noGamesFound": "No recent games found",
@@ -568,6 +578,7 @@
     "upcoming": {
       "awayTeam": "Away Team",
       "homeTeam": "Home Team",
+      "nextUp": "Next up",
       "noGamesDescription": "This player has no scheduled games.",
       "noGamesFound": "No upcoming games found",
       "title": "Upcoming games"

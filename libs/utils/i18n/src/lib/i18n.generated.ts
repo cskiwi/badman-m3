@@ -566,6 +566,16 @@ export type I18nTranslations = {
                 "pts": string;
                 "set": string;
             };
+            "filter": {
+                "all": string;
+                "doubles": string;
+                "mixed": string;
+                "singles": string;
+            };
+            "location": {
+                "away": string;
+                "home": string;
+            };
             "recent": {
                 "noGamesDescription": string;
                 "noGamesFound": string;
@@ -575,6 +585,7 @@ export type I18nTranslations = {
             "upcoming": {
                 "awayTeam": string;
                 "homeTeam": string;
+                "nextUp": string;
                 "noGamesDescription": string;
                 "noGamesFound": string;
                 "title": string;

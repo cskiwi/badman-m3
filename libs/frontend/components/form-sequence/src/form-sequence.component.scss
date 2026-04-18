@@ -1,0 +1,14 @@
+/* Colors from CSS variables — can't be Tailwind */
+.g-form-dot {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.g-form-dot--W {
+  background: var(--g-win-muted);
+  color: var(--g-win);
+}
+
+.g-form-dot--L {
+  background: var(--g-loss-muted);
+  color: var(--g-loss);
+}

@@ -559,6 +559,16 @@
       "pts": "pnt",
       "set": "Set"
     },
+    "filter": {
+      "all": "Alle",
+      "doubles": "Dubbel",
+      "mixed": "Gemengd",
+      "singles": "Enkel"
+    },
+    "location": {
+      "away": "Uit",
+      "home": "Thuis"
+    },
     "recent": {
       "noGamesDescription": "Dit team heeft nog geen wedstrijden gespeeld.",
       "noGamesFound": "Geen recente wedstrijden gevonden",
@@ -568,6 +578,7 @@
     "upcoming": {
       "awayTeam": "Uitteam",
       "homeTeam": "Thuisteam",
+      "nextUp": "Volgende",
       "noGamesDescription": "Deze speler heeft geen geplande wedstrijden.",
       "noGamesFound": "Geen komende wedstrijden gevonden",
       "title": "Komende ontmoetingen"

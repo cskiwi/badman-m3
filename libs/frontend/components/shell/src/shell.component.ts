@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, computed, HostListener, inject, PLATFORM_ID, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, RouterLinkActive } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { ThemeService } from '@app/frontend-modules-theme';
@@ -14,15 +14,13 @@ import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import type { MenuItem } from 'primeng/api';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
 import { MenuModule } from 'primeng/menu';
 import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
 import { filter, map } from 'rxjs/operators';
 import { SearchComponent } from './components';
 
 @Component({
-  imports: [RouterModule, TranslateModule, ButtonModule, MenuModule, DividerModule, ToastModule, ToolbarModule, SearchComponent],
+  imports: [RouterModule, RouterLinkActive, TranslateModule, ButtonModule, MenuModule, ToastModule, SearchComponent],
   selector: 'app-shell',
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',

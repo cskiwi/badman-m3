@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  background: var(--p-surface-100);
+  border: 1px solid var(--p-surface-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.form-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1;
+  background: var(--p-surface-200);
+  color: var(--p-text-muted-color);
+}
+
+.form-dot--win {
+  background: var(--g-win-muted);
+  color: var(--g-win);
+}
+
+.form-dot--loss {
+  background: var(--g-loss-muted);
+  color: var(--g-loss);
+}

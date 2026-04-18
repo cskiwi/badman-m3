@@ -1,19 +1,24 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { HeroComponent } from '@app/frontend-components/hero';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
+import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
-import { ShowLevelComponent } from './components/show-level.component';
+import { ShowLevelService } from './components/show-level/show-level.service';
 import { DetailService } from './page-detail.service';
+import { RankSparkComponent } from './components/rank-spark/rank-spark.component';
+import { PlayerCurrentFormComponent } from './components/player-current-form/player-current-form.component';
+import { PlayerSeasonRecordComponent } from './components/player-season-record/player-season-record.component';
+import { PlayerStrongestMatchupsComponent } from './components/player-strongest-matchups/player-strongest-matchups.component';
+import { PlayerTeamsComponent } from './components/player-teams/player-teams.component';
 import { ButtonModule } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { CardModule } from 'primeng/card';
 import { MenuModule } from 'primeng/menu';
-import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-page-detail',
@@ -22,22 +27,26 @@ import { TooltipModule } from 'primeng/tooltip';
     ButtonModule,
     CardModule,
     MenuModule,
-    TooltipModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
-    ShowLevelComponent,
+    HeroComponent,
     RecentGamesComponent,
     UpcomingGamesComponent,
+    RankSparkComponent,
+    PlayerCurrentFormComponent,
+    PlayerSeasonRecordComponent,
+    PlayerStrongestMatchupsComponent,
+    PlayerTeamsComponent,
   ],
   templateUrl: './page-detail.component.html',
-  styleUrl: './page-detail.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './page-detail.component.scss'
 })
 export class PageDetailComponent {
   private readonly dataService = new DetailService();
   private readonly seoService = inject(SeoService);
   private readonly playerId = injectParams('playerId');
+  private readonly rankingService = inject(RankingSystemService);
+  readonly showLevelService = inject(ShowLevelService);
 
   // selectors
   player = this.dataService.player;
@@ -46,10 +55,26 @@ export class PageDetailComponent {
   loading = this.dataService.loading;
 
   auth = inject(AuthService);
-
   user = this.auth.user;
 
-  clubs = computed(() => (this.user()?.clubPlayerMemberships ?? []).filter((membership) => membership?.active));
+  clubs = computed(() =>
+    (this.user()?.clubPlayerMemberships ?? [])
+      .filter((m) => m?.active),
+  );
+
+  rankingPlace = this.showLevelService.rankingPlace;
+  maxLevel = computed(
+    () => this.rankingService.system()?.amountOfLevels ?? 12,
+  );
+
+  playerInitials = computed(() => {
+    const p = this.player();
+    if (!p) return '';
+    const first = (p.firstName ?? '').trim().charAt(0);
+    const lastWords = (p.lastName ?? '').trim().split(/\s+/).filter(Boolean);
+    const last = lastWords.length ? lastWords[lastWords.length - 1].charAt(0) : '';
+    return (first + last).toUpperCase();
+  });
 
   editMenuItems = [
     {
@@ -57,12 +82,19 @@ export class PageDetailComponent {
       icon: 'pi pi-user-edit',
       routerLink: ['edit'],
     },
-    // Additional edit options can be added here in the future
   ];
+
+  // Follow state is UI-only for now; persistence will come later.
+  readonly following = signal(false);
+  toggleFollow(): void {
+    this.following.update((v) => !v);
+  }
 
   constructor() {
     effect(() => {
-      this.dataService.filter.get('playerId')?.setValue(this.playerId());
+      this.dataService
+        .filter.get('playerId')
+        ?.setValue(this.playerId());
     });
 
     effect(() => {
@@ -72,6 +104,15 @@ export class PageDetailComponent {
           seoType: 'player',
           player,
         });
+      }
+    });
+
+    // Load ranking data when player and system are available
+    effect(() => {
+      const player = this.player();
+      const systemId = this.rankingService.systemId();
+      if (player?.id && systemId) {
+        this.showLevelService.getRanking(player.id, systemId);
       }
     });
   }

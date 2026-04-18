@@ -1,0 +1,30 @@
+.rank-spark {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+  width: 84px;
+  margin-top: 4px;
+}
+
+.rank-spark__bar {
+  flex: 1 1 0;
+  min-width: 3px;
+  background: var(--p-surface-400);
+  border-radius: 1px;
+  transition: height 0.2s ease-out;
+}
+
+.rank-spark__bar--win {
+  background: var(--g-win);
+}
+
+.rank-spark__bar--loss {
+  background: var(--g-loss);
+}
+
+.rank-spark__empty {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--p-text-muted-color);
+}
