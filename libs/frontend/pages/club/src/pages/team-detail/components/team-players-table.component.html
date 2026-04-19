@@ -1,8 +1,8 @@
 <section>
-  <h3 class="flex items-center gap-2 text-xl font-semibold mb-6">
-    <i class="pi pi-users text-primary-500"></i>
-    Players
-  </h3>
+  <div class="flex items-baseline gap-2 mb-4">
+    <span class="t-eyebrow">Players</span>
+    <span class="t-mono text-xs text-muted-color">{{ players().length }}</span>
+  </div>
 
   <p-table [value]="players()" sortMode="multiple" [multiSortMeta]="defaultSort" [tableStyle]="{ 'min-width': '40rem' }">
     <ng-template #header>

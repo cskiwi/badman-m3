@@ -88,6 +88,30 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
     this.selectedGameType.set(type);
   }
 
+  /** IDs of games whose expanded panel is open. */
+  private readonly expandedIds = signal<Set<string>>(new Set());
+
+  isExpanded(gameId: string | undefined | null): boolean {
+    if (!gameId) return false;
+    return this.expandedIds().has(gameId);
+  }
+
+  toggleExpanded(gameId: string | undefined | null, event?: Event): void {
+    if (!gameId) return;
+    event?.stopPropagation();
+    this.expandedIds.update((s) => {
+      const next = new Set(s);
+      if (next.has(gameId)) next.delete(gameId);
+      else next.add(gameId);
+      return next;
+    });
+  }
+
+  /** Members of one team on a game; preserves ordering and excludes missing players. */
+  getTeamMembers(game: Game, team: 1 | 2) {
+    return (game?.gamePlayerMemberships ?? []).filter((m) => m?.team === team);
+  }
+
   constructor() {
     effect(() => {
       // take the first playerId if multiple are provided

@@ -22,192 +22,177 @@
 
   @if (!loading()) {
     @for (game of filteredGames(); track game.id) {
-      <article
-        class="g-match game-card"
-        [class.g-match--win]="didCurrentPlayerWin(game) === true"
-        [class.g-match--loss]="didCurrentPlayerWin(game) === false"
-      >
-        <!-- 4px colored band -->
-        <div class="g-match__band"></div>
+      @let won = didCurrentPlayerWin(game);
+      @let ownTeam = getCurrentPlayerTeam(game);
+      @let ownPoints = getCurrentPlayerPoints(game);
+      @let isComp = isCompetitionGame(game);
+      @let myCol = ownTeam === 2 ? 2 : 1;
+      @let oppCol = ownTeam === 2 ? 1 : 2;
 
-        <!-- Body: meta + players -->
-        <div class="g-match__body">
-          <!-- Meta: league, teams, date -->
-          <div class="flex flex-col gap-1.5">
-            <div class="flex items-center gap-2 text-sm font-medium text-muted-color">
-              @if (game?.tournamentDraw?.name) {
-                <a
-                  [routerLink]="[
-                    '/tournament',
-                    game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
-                    'sub-events',
-                    game?.tournamentDraw?.tournamentSubEvent?.id,
-                    'draws',
-                    game?.tournamentDraw?.id,
-                  ]"
-                  class="no-underline hover:opacity-80"
-                >
-                  <p-tag [value]="game?.tournamentDraw?.name ?? ''" severity="info" />
-                </a>
-                @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
-                  <span class="truncate">{{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}</span>
-                }
-              } @else if (game?.competitionEncounter?.drawCompetition?.name) {
-                <a
-                  [routerLink]="[
-                    '/competition',
-                    game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
-                    'sub-events',
-                    game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id,
-                    'draws',
-                    game?.competitionEncounter?.drawCompetition?.id,
-                  ]"
-                  class="no-underline hover:opacity-80"
-                >
-                  <p-tag [value]="game?.competitionEncounter?.drawCompetition?.name ?? ''" severity="info" />
-                </a>
-                @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
-                  <span class="truncate">{{
-                    game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name
-                  }}</span>
-                }
-              } @else {
-                <p-tag [value]="game?.gameType ?? ''" severity="secondary" />
+      <article
+        class="g-card game-card"
+        [class.g-card--win]="won === true"
+        [class.g-card--loss]="won === false"
+        [class.g-card--pending]="won === null"
+      >
+        <!-- Color band -->
+        <div class="g-card__band"></div>
+
+        <!-- Date column -->
+        <div class="g-card__date">
+          <span class="eyebrow">{{ game?.playedAt | dayjsFormat: 'ddd' }}</span>
+          <span class="day">{{ game?.playedAt | dayjsFormat: 'DD' }}</span>
+          <span class="month">{{ game?.playedAt | dayjsFormat: 'MMM' }}</span>
+        </div>
+
+        <!-- Body -->
+        <div class="g-card__body">
+          <!-- Meta: tag + competition/tournament name -->
+          <div class="g-card__meta">
+            @if (game?.tournamentDraw?.name) {
+              <a
+                class="meta-label no-underline"
+                [routerLink]="[
+                  '/tournament',
+                  game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
+                  'sub-events',
+                  game?.tournamentDraw?.tournamentSubEvent?.id,
+                  'draws',
+                  game?.tournamentDraw?.id,
+                ]"
+              >
+                <p-tag [value]="game?.tournamentDraw?.name ?? ''" severity="info" />
+              </a>
+              @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
+                <span class="meta-text">{{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}</span>
+              }
+            } @else if (isComp) {
+              <a
+                class="meta-label no-underline"
+                [routerLink]="[
+                  '/competition',
+                  game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
+                  'sub-events',
+                  game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id,
+                  'draws',
+                  game?.competitionEncounter?.drawCompetition?.id,
+                ]"
+              >
+                <p-tag [value]="game?.competitionEncounter?.drawCompetition?.name ?? ''" severity="info" />
+              </a>
+              @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
+                <span class="meta-text">{{
+                  game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name
+                }}</span>
+              }
+            } @else {
+              <p-tag [value]="game?.gameType ?? ''" severity="secondary" />
+            }
+          </div>
+
+          <!-- Compact pair line: own pair · vs · opponent pair -->
+          <div class="g-card__pairs">
+            <div class="g-card__pair">
+              @for (m of getTeamMembers(game, myCol); track m?.id) {
+                <span class="player" [class.is-own]="isCurrentPlayer(m?.gamePlayer?.id || '')">
+                  @if (isCurrentPlayer(m?.gamePlayer?.id || '')) {
+                    <span class="name">{{ m?.gamePlayer?.fullName }}</span>
+                  } @else {
+                    <a class="name" [routerLink]="['/players', m?.gamePlayer?.id]">
+                      {{ m?.gamePlayer?.fullName }}
+                    </a>
+                  }
+                  @if (getPlayerLevel(game, m?.gamePlayer?.id || ''); as lvl) {
+                    <app-tier-badge [level]="lvl" size="sm" />
+                  }
+                </span>
               }
             </div>
-            @if (isCompetitionGame(game)) {
-              <div class="font-semibold text-color">
-                @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
-                  <a
-                    [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!, 'teams', game.competitionEncounter!.homeTeam!.id!]"
-                    class="text-color no-underline hover:text-primary"
-                  >{{ getTeamName(game, 1) }}</a>
-                } @else {
-                  {{ getTeamName(game, 1) }}
+            <span class="g-card__vs">vs</span>
+            <div class="g-card__pair is-right">
+              @for (m of getTeamMembers(game, oppCol); track m?.id) {
+                <span class="player">
+                  <a class="name" [routerLink]="['/players', m?.gamePlayer?.id]">
+                    {{ m?.gamePlayer?.fullName }}
+                  </a>
+                  @if (getPlayerLevel(game, m?.gamePlayer?.id || ''); as lvl) {
+                    <app-tier-badge [level]="lvl" size="sm" />
+                  }
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: teams line (competitions) + sets + points chip -->
+        <div class="g-card__right">
+          @if (isComp) {
+            <div class="g-card__teams">
+              @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
+                <a
+                  [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!, 'teams', game.competitionEncounter!.homeTeam!.id!]"
+                >{{ getHomeTeamName(game) }}</a>
+              } @else {
+                {{ getHomeTeamName(game) }}
+              }
+              <span class="sep">vs</span>
+              @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
+                <a
+                  [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!, 'teams', game.competitionEncounter!.awayTeam!.id!]"
+                >{{ getAwayTeamName(game) }}</a>
+              } @else {
+                {{ getAwayTeamName(game) }}
+              }
+            </div>
+          }
+
+          <div class="g-card__right-row">
+            <div class="g-card__scores">
+              <!-- Own sets -->
+              <div class="g-card__score-col">
+                @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+                  <span class="score" [class.is-win]="getSetWinner(game?.set1Team1, game?.set1Team2) === myCol">
+                    {{ myCol === 2 ? game?.set1Team2 : game?.set1Team1 }}
+                  </span>
                 }
-                <span class="text-muted-color font-medium mx-1.5">vs</span>
-                @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
-                  <a
-                    [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!, 'teams', game.competitionEncounter!.awayTeam!.id!]"
-                    class="text-color no-underline hover:text-primary"
-                  >{{ getTeamName(game, 2) }}</a>
-                } @else {
-                  {{ getTeamName(game, 2) }}
+                @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+                  <span class="score" [class.is-win]="getSetWinner(game?.set2Team1, game?.set2Team2) === myCol">
+                    {{ myCol === 2 ? game?.set2Team2 : game?.set2Team1 }}
+                  </span>
+                }
+                @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+                  <span class="score" [class.is-win]="getSetWinner(game?.set3Team1, game?.set3Team2) === myCol">
+                    {{ myCol === 2 ? game?.set3Team2 : game?.set3Team1 }}
+                  </span>
                 }
               </div>
-            }
-            <span class="t-mono text-xs text-muted-color uppercase tracking-wider">{{ game?.playedAt | dayjsFormat: 'ddd DD-MM-YYYY · HH:mm' }}</span>
-          </div>
-
-          <!-- Players: two pairs -->
-          <div class="grid grid-cols-2 gap-3 self-stretch">
-            <!-- Team 1 pair -->
-            <div class="flex flex-col justify-center gap-0.5 min-h-0">
-                @for (membership of game?.gamePlayerMemberships; track membership?.id) {
-                  @if (membership?.team === 1) {
-                    <span
-                      class="flex items-center gap-1.5 text-sm text-muted-color"
-                      [class.g-match__player--own]="isCurrentPlayer(membership?.gamePlayer?.id || '')"
-                    >
-                      @if (isCurrentPlayer(membership?.gamePlayer?.id || '')) {
-                        {{ membership?.gamePlayer?.fullName }}
-                      } @else {
-                        <a [routerLink]="['/players', membership?.gamePlayer?.id]" class="text-muted-color no-underline hover:text-primary truncate">
-                          {{ membership?.gamePlayer?.fullName }}
-                        </a>
-                      }
-                      @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
-                        <app-tier-badge [level]="level" size="sm" />
-                      }
-                    </span>
-                  }
+              <!-- Opponent sets -->
+              <div class="g-card__score-col">
+                @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+                  <span class="score" [class.is-win]="getSetWinner(game?.set1Team1, game?.set1Team2) === oppCol">
+                    {{ myCol === 2 ? game?.set1Team1 : game?.set1Team2 }}
+                  </span>
                 }
-              @if (game?.winner === 1 && getCurrentPlayerPoints(game) !== 0) {
-                <span
-                  class="g-match__pair-points"
-                  [class.g-match__pair-points--up]="getCurrentPlayerPoints(game) > 0"
-                  [class.g-match__pair-points--down]="getCurrentPlayerPoints(game) < 0"
-                >
-                  {{ formatPoints(getCurrentPlayerPoints(game)) }} pts
-                </span>
-              }
+                @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+                  <span class="score" [class.is-win]="getSetWinner(game?.set2Team1, game?.set2Team2) === oppCol">
+                    {{ myCol === 2 ? game?.set2Team1 : game?.set2Team2 }}
+                  </span>
+                }
+                @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+                  <span class="score" [class.is-win]="getSetWinner(game?.set3Team1, game?.set3Team2) === oppCol">
+                    {{ myCol === 2 ? game?.set3Team1 : game?.set3Team2 }}
+                  </span>
+                }
+              </div>
             </div>
 
-            <!-- Team 2 pair -->
-            <div class="flex flex-col justify-center gap-0.5 min-h-0">
-                @for (membership of game?.gamePlayerMemberships; track membership?.id) {
-                  @if (membership?.team === 2) {
-                    <span
-                      class="flex items-center gap-1.5 text-sm text-muted-color"
-                      [class.g-match__player--own]="isCurrentPlayer(membership?.gamePlayer?.id || '')"
-                    >
-                      @if (isCurrentPlayer(membership?.gamePlayer?.id || '')) {
-                        {{ membership?.gamePlayer?.fullName }}
-                      } @else {
-                        <a [routerLink]="['/players', membership?.gamePlayer?.id]" class="text-muted-color no-underline hover:text-primary truncate">
-                          {{ membership?.gamePlayer?.fullName }}
-                        </a>
-                      }
-                      @if (getPlayerLevel(game, membership?.gamePlayer?.id || ''); as level) {
-                        <app-tier-badge [level]="level" size="sm" />
-                      }
-                    </span>
-                  }
-                }
-              @if (game?.winner === 2 && getCurrentPlayerPoints(game) !== 0) {
-                <span
-                  class="g-match__pair-points"
-                  [class.g-match__pair-points--up]="getCurrentPlayerPoints(game) > 0"
-                  [class.g-match__pair-points--down]="getCurrentPlayerPoints(game) < 0"
-                >
-                  {{ formatPoints(getCurrentPlayerPoints(game)) }} pts
-                </span>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Scores column -->
-        <div class="g-match__scores">
-          <!-- Team 1 scores -->
-          <div class="flex flex-col gap-0.5 items-end min-w-6">
-            @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-              <span class="g-match__score" [class.g-match__score--win]="getSetWinner(game?.set1Team1, game?.set1Team2) === 1">
-                {{ game?.set1Team1 }}
-              </span>
-            }
-            @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-              <span class="g-match__score" [class.g-match__score--win]="getSetWinner(game?.set2Team1, game?.set2Team2) === 1">
-                {{ game?.set2Team1 }}
-              </span>
-            }
-            @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-              <span class="g-match__score" [class.g-match__score--win]="getSetWinner(game?.set3Team1, game?.set3Team2) === 1">
-                {{ game?.set3Team1 }}
-              </span>
-            }
-          </div>
-          <!-- Team 2 scores -->
-          <div class="flex flex-col gap-0.5 items-end min-w-6">
-            @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-              <span class="g-match__score" [class.g-match__score--win]="getSetWinner(game?.set1Team1, game?.set1Team2) === 2">
-                {{ game?.set1Team2 }}
-              </span>
-            }
-            @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-              <span class="g-match__score" [class.g-match__score--win]="getSetWinner(game?.set2Team1, game?.set2Team2) === 2">
-                {{ game?.set2Team2 }}
-              </span>
-            }
-            @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-              <span class="g-match__score" [class.g-match__score--win]="getSetWinner(game?.set3Team1, game?.set3Team2) === 2">
-                {{ game?.set3Team2 }}
+            @if (ownPoints !== 0) {
+              <span class="g-card__points" [class.is-gain]="ownPoints > 0" [class.is-loss]="ownPoints < 0">
+                {{ formatPoints(ownPoints) }}
               </span>
             }
           </div>
         </div>
-
-        <!-- Points column removed — points are now shown below the winning pair -->
       </article>
     } @empty {
       <div class="p-8 text-center">
@@ -239,14 +224,14 @@
     <!-- Loading more skeletons -->
     @if (loadingMore()) {
       @for (i of [1, 2, 3]; track i) {
-        <div class="g-match">
-          <div class="g-match__band"></div>
+        <div class="g-card">
+          <div class="g-card__band"></div>
           <div class="p-4 space-y-2">
             <p-skeleton width="12rem" height="0.875rem" />
             <p-skeleton width="16rem" height="1rem" />
             <p-skeleton width="8rem" height="0.75rem" />
           </div>
-          <div class="g-match__scores">
+          <div class="g-card__right">
             <p-skeleton width="1.5rem" height="2rem" />
             <p-skeleton width="1.5rem" height="2rem" />
           </div>
@@ -256,14 +241,14 @@
   } @else {
     <!-- Initial loading skeletons -->
     @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-      <div class="g-match">
-        <div class="g-match__band"></div>
+      <div class="g-card">
+        <div class="g-card__band"></div>
         <div class="p-4 space-y-2">
           <p-skeleton width="12rem" height="0.875rem" />
           <p-skeleton width="16rem" height="1rem" />
           <p-skeleton width="8rem" height="0.75rem" />
         </div>
-        <div class="g-match__scores">
+        <div class="g-card__right">
           <p-skeleton width="1.5rem" height="2rem" />
           <p-skeleton width="1.5rem" height="2rem" />
         </div>

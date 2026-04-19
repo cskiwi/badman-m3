@@ -1,60 +1,100 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CompetitionEncounter } from '@app/models';
-import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
+import { CompetitionEncounter, Game } from '@app/models';
 import { TranslateModule } from '@ngx-translate/core';
 import { SkeletonModule } from 'primeng/skeleton';
+import { TierBadgeComponent } from '@app/frontend-components/tier-badge';
+
+type Variant = 'played' | 'upcoming';
 
 @Component({
   selector: 'app-encounter-card',
   standalone: true,
-  imports: [DayjsFormatPipe, TranslateModule, SkeletonModule, RouterModule],
+  imports: [DatePipe, TranslateModule, SkeletonModule, RouterModule, TierBadgeComponent],
   templateUrl: './encounter-card.component.html',
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+      .enc-card {
+        background-color: var(--p-surface-100);
+        border: 1px solid var(--p-surface-200);
+      }
+      .enc-card--clickable:hover {
+        background-color: var(--p-surface-200);
+      }
+      .enc-expanded {
+        background-color: var(--p-surface-50);
+        border-top: 1px solid var(--p-surface-200);
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EncounterCardComponent {
   encounter = input.required<CompetitionEncounter>();
-  onLoadGames = input<(encounterId: string) => Promise<void>>();
-  variant = input<'played' | 'upcoming'>('played');
+  onLoadGames = input<((encounterId: string) => Promise<void>) | undefined | null>(null);
+  variant = input<Variant>('played');
+  /**
+   * Optional list of team IDs to use as "perspective" for win/loss styling.
+   * If the encounter's home team is in this list the card is styled from the
+   * home perspective; if the away team is in this list it uses the away
+   * perspective. When empty the card is rendered without win/loss coloring.
+   */
+  perspectiveTeamIds = input<string[] | null | undefined>(null);
 
   protected expanded = signal(false);
   private _gamesLoading = signal(false);
 
-  // Computed properties
-  hasGames = computed(() => {
-    const encounter = this.encounter();
-    const onLoadGames = this.onLoadGames();
-
-    // Show chevron if games exist, or if games can be loaded (even if they were loaded as empty array)
-    return encounter.games !== null || (onLoadGames !== undefined && onLoadGames !== null);
+  /** 'home' | 'away' | null */
+  readonly perspective = computed<'home' | 'away' | null>(() => {
+    const ids = this.perspectiveTeamIds() ?? [];
+    if (!ids.length) return null;
+    const enc = this.encounter();
+    if (enc.homeTeam?.id && ids.includes(enc.homeTeam.id)) return 'home';
+    if (enc.awayTeam?.id && ids.includes(enc.awayTeam.id)) return 'away';
+    return null;
   });
 
-  games = computed(() => {
-    const encounter = this.encounter();
-    if (encounter.games !== null && encounter.games !== undefined) {
-      // Sort games by their order field
-      return encounter.games.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  readonly ownScore = computed(() => {
+    const enc = this.encounter();
+    return this.perspective() === 'away' ? (enc.awayScore ?? 0) : (enc.homeScore ?? 0);
+  });
+
+  readonly opponentScore = computed(() => {
+    const enc = this.encounter();
+    return this.perspective() === 'away' ? (enc.homeScore ?? 0) : (enc.awayScore ?? 0);
+  });
+
+  /** 'win' | 'loss' | 'draw' | null (null when no perspective) */
+  readonly result = computed<'win' | 'loss' | 'draw' | null>(() => {
+    if (!this.perspective()) return null;
+    const own = this.ownScore();
+    const opp = this.opponentScore();
+    if (own === opp) return 'draw';
+    return own > opp ? 'win' : 'loss';
+  });
+
+  hasGames = computed(() => {
+    const enc = this.encounter();
+    const loader = this.onLoadGames();
+    return enc.games != null || loader != null;
+  });
+
+  games = computed<Game[]>(() => {
+    const enc = this.encounter();
+    if (enc.games != null) {
+      return enc.games.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
     }
     return [];
   });
 
   gamesLoading = computed(() => this._gamesLoading());
 
-  hasSetScores(game: any): boolean {
-    return (
-      (game.set1Team1 !== null && game.set1Team2 !== null) ||
-      (game.set2Team1 !== null && game.set2Team2 !== null) ||
-      (game.set3Team1 !== null && game.set3Team2 !== null) ||
-      game.winner !== null
-    );
-  }
-
-  isWinnerTeam(game: any, team: number): boolean {
-    return game.winner !== null && game.winner !== 0 && game.winner === team;
-  }
-
   isSetPlayed(score1: number | null | undefined, score2: number | null | undefined): boolean {
-    return score1 !== null && score1 !== undefined && score1 > 0 && score2 !== null && score2 !== undefined && score2 > 0;
+    return score1 != null && score2 != null && (score1 > 0 || score2 > 0);
   }
 
   getSetWinner(score1: number | null | undefined, score2: number | null | undefined): 1 | 2 | null {
@@ -64,21 +104,47 @@ export class EncounterCardComponent {
     return null;
   }
 
+  /** Returns the player's level for this game's type (single/double/mix). */
+  getPlayerLevel(game: Game, playerId: string | undefined | null): number | null {
+    if (!playerId || !game?.gamePlayerMemberships || !game.gameType) return null;
+    const m = game.gamePlayerMemberships.find((mm) => mm?.gamePlayer?.id === playerId);
+    if (!m) return null;
+    switch (game.gameType) {
+      case 'S':
+        return m.single ?? null;
+      case 'D':
+        return m.double ?? null;
+      case 'MX':
+        return m.mix ?? null;
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Returns the per-game result from the current perspective.
+   * 'win' | 'loss' | null (neutral when no perspective / no winner).
+   */
+  getGameResult(game: Game): 'win' | 'loss' | null {
+    const p = this.perspective();
+    if (!p || !game?.winner) return null;
+    const ownTeam = p === 'away' ? 2 : 1;
+    return game.winner === ownTeam ? 'win' : 'loss';
+  }
+
   async toggleExpanded(): Promise<void> {
-    const isExpanding = !this.expanded();
-    this.expanded.set(isExpanding);
+    const next = !this.expanded();
+    this.expanded.set(next);
 
-    // If expanding and games haven't been loaded yet, trigger loading
-    const encounter = this.encounter();
-    const onLoadGames = this.onLoadGames();
-
-    if (isExpanding && encounter.games === null && onLoadGames) {
+    const enc = this.encounter();
+    const loader = this.onLoadGames();
+    if (next && enc.games == null && loader) {
       this._gamesLoading.set(true);
       try {
-        await onLoadGames(encounter.id);
-        this._gamesLoading.set(false);
-      } catch (error) {
-        console.error('Failed to load games:', error);
+        await loader(enc.id);
+      } catch (err) {
+        console.error('Failed to load games:', err);
+      } finally {
         this._gamesLoading.set(false);
       }
     }
