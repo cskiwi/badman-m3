@@ -311,8 +311,21 @@ export class TeamMatchingService {
     team: TeamModel,
     club?: Club,
   ): number {
+    // Exact full team name match takes highest priority. This prevents cases like
+    // API "Smash 1H" matching club "Smash For Fun" (team "Smash For Fun 1H")
+    // when a team literally named "Smash 1H" exists.
+    const normalizedApi = this.normalizeTeamName(apiName);
+    const normalizedTeam = this.normalizeTeamName(team.name || '');
+    if (normalizedApi && normalizedApi === normalizedTeam) {
+      return 1;
+    }
+
     let score = 0;
     let weights = 0;
+
+    // Exact club name match bonus: if parsed club name equals the club's name,
+    // teamName, or abbreviation exactly, boost via the similarity function below.
+    // (Handled implicitly by calculateStringSimilarity returning 1 on equality.)
 
     // Club name similarity (50% weight)
     if (parsed.clubName && club) {
@@ -392,9 +405,12 @@ export class TeamMatchingService {
     if (s1 === s2) return 1;
     if (s1.length === 0 || s2.length === 0) return 0;
 
-    // Check if one contains the other
+    // Check if one contains the other — scale by length ratio so that a short
+    // string contained in a much longer one does not look nearly identical.
+    // e.g. "smash" vs "smash for fun" should NOT score 0.9.
     if (s1.includes(s2) || s2.includes(s1)) {
-      return 0.9;
+      const ratio = Math.min(s1.length, s2.length) / Math.max(s1.length, s2.length);
+      return 0.6 + 0.3 * ratio;
     }
 
     const distance = this.levenshteinDistance(s1, s2);
