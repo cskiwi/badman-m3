@@ -38,7 +38,7 @@ export class Standing extends BaseEntity {
   declare entryId?: string;
 
   @Field(() => Entry, { nullable: true })
-  @OneToOne(() => Entry, (entry) => entry.standing)
+  @OneToOne(() => Entry, (entry) => entry.standing, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'entryId' })
   declare entry?: Relation<Entry>;
 
