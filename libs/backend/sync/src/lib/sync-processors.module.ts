@@ -15,6 +15,7 @@ import {
   CompetitionStandingSyncService,
   CompetitionSyncService,
   CompetitionSubEventSyncService,
+  EncounterTeamRepairService,
   TeamMatchingProcessor,
   TeamMatchingService,
   TeamSyncService,
@@ -131,6 +132,7 @@ import { SyncService } from './services/sync.service';
     CompetitionEncounterSyncService,
     CompetitionStandingSyncService,
     CompetitionPlanningService,
+    EncounterTeamRepairService,
     // Tournament sync services
     TournamentSyncService,
     TournamentGameSyncService,

@@ -35,6 +35,12 @@
           "buildTarget": "sync-worker:build:production"
         }
       }
+    },
+    "repair-encounters": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project apps/sync-worker/tsconfig.app.json apps/sync-worker/src/repair-competition-encounter-teams.ts"
+      }
     }
   }
 }
