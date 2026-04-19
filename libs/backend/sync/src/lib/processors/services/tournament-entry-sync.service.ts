@@ -52,12 +52,15 @@ export class TournamentEntrySyncService {
   private async createEntriesFromGames(draw: TournamentDraw): Promise<void> {
     this.logger.debug(`Creating entries from games for draw ${draw.id} (${draw.visualCode})`);
 
-    // Get existing entries for this draw
+    // Remove existing entries before recreating (full sync cleanup)
     const existingEntries = await Entry.find({
       where: { drawId: draw.id },
     });
 
-    this.logger.debug(`Draw ${draw.visualCode} has ${existingEntries.length} existing entries`);
+    if (existingEntries.length > 0) {
+      await Entry.remove(existingEntries);
+      this.logger.debug(`Removed ${existingEntries.length} existing entries for draw ${draw.visualCode} before full sync`);
+    }
 
     // Get games for this draw
     const games = await Game.find({
@@ -73,14 +76,13 @@ export class TournamentEntrySyncService {
       return;
     }
 
-    this.logger.debug(`Found ${games.length} games for draw ${draw.visualCode}, checking for new entries`);
+    this.logger.debug(`Found ${games.length} games for draw ${draw.visualCode}, creating entries`);
 
-    // Collect unique player combinations (teams) from games
+    // Collect unique player combinations (teams)
     const teamPlayerCombinations = new Set<string>();
 
     for (const game of games) {
       if (!game.gamePlayerMemberships || game.gamePlayerMemberships.length === 0) {
-        this.logger.debug(`Game ${game.id} has no player memberships`);
         continue;
       }
 
@@ -97,43 +99,18 @@ export class TournamentEntrySyncService {
         .filter((id): id is string => id !== undefined)
         .sort();
 
-      this.logger.debug(
-        `Game ${game.id}: Team1=[${team1Players.join(',')}] Team2=[${team2Players.join(',')}]`,
-      );
-
       if (team1Players.length > 0) {
-        const team1Key = JSON.stringify(team1Players);
-        teamPlayerCombinations.add(team1Key);
-        this.logger.debug(`Added team1 combination: ${team1Key}`);
+        teamPlayerCombinations.add(JSON.stringify(team1Players));
       }
       if (team2Players.length > 0) {
-        const team2Key = JSON.stringify(team2Players);
-        teamPlayerCombinations.add(team2Key);
-        this.logger.debug(`Added team2 combination: ${team2Key}`);
+        teamPlayerCombinations.add(JSON.stringify(team2Players));
       }
     }
 
-    this.logger.debug(`Found ${teamPlayerCombinations.size} unique player combinations in games`);
-    this.logger.debug(`Team combinations: ${Array.from(teamPlayerCombinations).join(' | ')}`);
+    this.logger.debug(`Found ${teamPlayerCombinations.size} unique player combinations`);
 
-    // Build set of existing team combinations to avoid duplicates
-    const existingTeamCombinations = new Set<string>();
-    for (const entry of existingEntries) {
-      const playerIds = [entry.player1Id, entry.player2Id].filter(Boolean).sort();
-      const key = JSON.stringify(playerIds);
-      existingTeamCombinations.add(key);
-      this.logger.debug(`Existing entry ${entry.id}: ${key}`);
-    }
-    this.logger.debug(`Existing team combinations: ${Array.from(existingTeamCombinations).join(' | ')}`);
-
-    // Create entries only for NEW team combinations
-    let createdCount = 0;
+    // Create entries for each unique team combination
     for (const teamPlayersStr of teamPlayerCombinations) {
-      // Check if this team combination already has an entry
-      if (existingTeamCombinations.has(teamPlayersStr)) {
-        continue;
-      }
-
       const playerIds = JSON.parse(teamPlayersStr) as string[];
 
       const newEntry = new Entry();
@@ -150,13 +127,8 @@ export class TournamentEntrySyncService {
       }
 
       await newEntry.save();
-      createdCount++;
     }
 
-    if (createdCount > 0) {
-      this.logger.log(`Created ${createdCount} new entries for draw ${draw.visualCode} (total: ${existingEntries.length + createdCount})`);
-    } else {
-      this.logger.debug(`No new entries needed for draw ${draw.visualCode} - all teams already have entries`);
-    }
+    this.logger.log(`Created ${teamPlayerCombinations.size} entries for draw ${draw.visualCode}`);
   }
 }
