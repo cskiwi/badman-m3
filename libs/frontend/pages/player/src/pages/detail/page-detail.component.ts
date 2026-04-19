@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
 import { HeroComponent } from '@app/frontend-components/hero';
+import { PlayerRankingProgressComponent } from '@app/frontend-components/player-ranking-progress';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
@@ -10,7 +11,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ShowLevelService } from './components/show-level/show-level.service';
 import { DetailService } from './page-detail.service';
-import { RankSparkComponent } from './components/rank-spark/rank-spark.component';
 import { PlayerCurrentFormComponent } from './components/player-current-form/player-current-form.component';
 import { PlayerSeasonRecordComponent } from './components/player-season-record/player-season-record.component';
 import { PlayerStrongestMatchupsComponent } from './components/player-strongest-matchups/player-strongest-matchups.component';
@@ -30,9 +30,9 @@ import { MenuModule } from 'primeng/menu';
     RouterModule,
     TranslateModule,
     HeroComponent,
+    PlayerRankingProgressComponent,
     RecentGamesComponent,
     UpcomingGamesComponent,
-    RankSparkComponent,
     PlayerCurrentFormComponent,
     PlayerSeasonRecordComponent,
     PlayerStrongestMatchupsComponent,

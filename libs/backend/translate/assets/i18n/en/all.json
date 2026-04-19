@@ -900,6 +900,13 @@
       "single-points": "Single points",
       "update-possible": "Ranking update",
       "updates": "updates"
+    },
+    "progress": {
+      "title": "Your ranking",
+      "to-upgrade": "{{points}} pts to upgrade",
+      "to-downgrade": "{{points}} pts to downgrade",
+      "at-top": "TOP",
+      "at-floor": "FLOOR"
     }
   },
   "search": {

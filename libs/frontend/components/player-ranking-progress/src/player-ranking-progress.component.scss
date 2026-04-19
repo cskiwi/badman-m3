@@ -1,0 +1,7 @@
+/* Gradient-text rank number — Tailwind can't express background-clip:text. */
+.rank-number {
+  background: var(--g-gradient-rank);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

@@ -54,81 +54,9 @@
   </div>
 
   <!-- Rank panel -->
-  @if (rankingPlace()) {
-  <div stats class="grid grid-cols-3 gap-5 mt-5 pt-5 border-t border-surface-200 relative z-[1]">
-    <!-- Singles -->
-    <div class="flex flex-col gap-3">
-      <div class="flex items-baseline justify-between">
-        <span class="rank-discipline">{{ 'all.ranking.edit.single' | translate }}</span>
-      </div>
-      <div class="flex gap-4 items-center">
-        <span class="rank-number">
-          {{ rankingPlace()?.single ?? maxLevel() }}
-        </span>
-        <div class="flex flex-col gap-1">
-          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
-          @if (rankingPlace()?.singlePoints !== null) {
-            <span class="rank-detail">
-              <span class="rank-upgrade">+{{ rankingPlace()?.singlePoints }}</span>
-              @if (rankingPlace()?.singlePointsDowngrade !== null) {
-                / <span class="rank-downgrade">{{ rankingPlace()?.singlePointsDowngrade }}</span>
-              }
-            </span>
-          }
-          <app-rank-spark [playerId]="player.id" discipline="single" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Doubles -->
-    <div class="flex flex-col gap-3">
-      <div class="flex items-baseline justify-between">
-        <span class="rank-discipline">{{ 'all.ranking.edit.double' | translate }}</span>
-      </div>
-      <div class="flex gap-4 items-center">
-        <span class="rank-number">
-          {{ rankingPlace()?.double ?? maxLevel() }}
-        </span>
-        <div class="flex flex-col gap-1">
-          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
-          @if (rankingPlace()?.doublePoints !== null) {
-            <span class="rank-detail">
-              <span class="rank-upgrade">+{{ rankingPlace()?.doublePoints }}</span>
-              @if (rankingPlace()?.doublePointsDowngrade !== null) {
-                / <span class="rank-downgrade">{{ rankingPlace()?.doublePointsDowngrade }}</span>
-              }
-            </span>
-          }
-          <app-rank-spark [playerId]="player.id" discipline="double" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Mixed -->
-    <div class="flex flex-col gap-3">
-      <div class="flex items-baseline justify-between">
-        <span class="rank-discipline">{{ 'all.ranking.edit.mix' | translate }}</span>
-      </div>
-      <div class="flex gap-4 items-center">
-        <span class="rank-number">
-          {{ rankingPlace()?.mix ?? maxLevel() }}
-        </span>
-        <div class="flex flex-col gap-1">
-          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
-          @if (rankingPlace()?.mixPoints !== null) {
-            <span class="rank-detail">
-              <span class="rank-upgrade">+{{ rankingPlace()?.mixPoints }}</span>
-              @if (rankingPlace()?.mixPointsDowngrade !== null) {
-                / <span class="rank-downgrade">{{ rankingPlace()?.mixPointsDowngrade }}</span>
-              }
-            </span>
-          }
-          <app-rank-spark [playerId]="player.id" discipline="mix" />
-        </div>
-      </div>
-    </div>
+  <div stats class="mt-5 pt-5 border-t border-surface-200 relative z-[1]">
+    <app-player-ranking-progress [playerId]="player.id" />
   </div>
-  }
 </app-hero>
 
 <!-- Main grid: left content + right sidebar -->

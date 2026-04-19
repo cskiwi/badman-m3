@@ -900,6 +900,13 @@
       "single-points": "Enkel punten",
       "update-possible": "Ranking update",
       "updates": "updates"
+    },
+    "progress": {
+      "title": "Mijn klassement",
+      "to-upgrade": "{{points}} pt tot promotie",
+      "to-downgrade": "{{points}} pt tot degradatie",
+      "at-top": "TOP",
+      "at-floor": "BODEM"
     }
   },
   "search": {

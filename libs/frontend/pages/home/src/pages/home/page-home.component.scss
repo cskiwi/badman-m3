@@ -8,3 +8,36 @@
     padding: 0.5rem 0.5rem 0;
   }
 }
+
+/* Parallelogram crest — clip-path is not expressible in Tailwind. */
+.ranking-crest {
+  background: var(--g-gradient-rank);
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--p-surface-100);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    z-index: 0;
+  }
+
+  > span {
+    position: relative;
+    z-index: 1;
+    background: var(--g-gradient-rank);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* Gradient-text rank number — Tailwind can't express background-clip:text. */
+.rank-number {
+  background: var(--g-gradient-rank);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

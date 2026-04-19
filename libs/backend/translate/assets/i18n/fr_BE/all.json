@@ -900,6 +900,13 @@
       "single-points": "POINTS UNIQUES",
       "update-possible": "Mise à jour du classement",
       "updates": "Mises à jour"
+    },
+    "progress": {
+      "title": "Mon classement",
+      "to-upgrade": "{{points}} pts pour monter",
+      "to-downgrade": "{{points}} pts pour descendre",
+      "at-top": "TOP",
+      "at-floor": "FOND"
     }
   },
   "search": {

@@ -908,6 +908,13 @@ export type I18nTranslations = {
                 "update-possible": string;
                 "updates": string;
             };
+            "progress": {
+                "title": string;
+                "to-upgrade": string;
+                "to-downgrade": string;
+                "at-top": string;
+                "at-floor": string;
+            };
         };
         "search": {
             "noResults": string;
