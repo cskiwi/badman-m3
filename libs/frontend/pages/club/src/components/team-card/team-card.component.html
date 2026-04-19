@@ -12,9 +12,6 @@
         <span class="team__title">{{ team().name }}</span>
       }
       <div class="team__division">
-        @if (genderCode() !== 'N') {
-          <span class="team__gender" [attr.data-kind]="genderCode()">{{ genderCode() }}</span>
-        }
         @if (team().abbreviation) {
           <span class="text-xs">{{ team().abbreviation }}</span>
         }
