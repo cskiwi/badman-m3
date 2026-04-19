@@ -22,7 +22,7 @@
   <app-team-filter-bar [filter]="service.genderFilter()" [counts]="service.bucketCounts()" (filterChange)="onFilterChange($event)" />
 
   @if (service.filteredTeams().length > 0) {
-    <div class="grid gap-4 sm:grid-cols-1 xl:grid-cols-2">q
+    <div class="grid gap-4 sm:grid-cols-1 xl:grid-cols-2">
       @for (team of service.filteredTeams(); track team.id) {
         <app-team-card
           [team]="team"
