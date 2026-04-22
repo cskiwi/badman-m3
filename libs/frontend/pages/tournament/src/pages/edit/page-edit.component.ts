@@ -5,11 +5,10 @@ import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
+import { SkeletonModule } from 'primeng/skeleton';
 import { ToastModule } from 'primeng/toast';
 import { TabsModule } from 'primeng/tabs';
-
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { RouterModule } from '@angular/router';
 import { TournamentEvent } from '@app/models';
 import { MessageService } from 'primeng/api';
 import { injectParams } from 'ngxtension/inject-params';
@@ -41,10 +40,10 @@ const GET_TOURNAMENT_WITH_DETAILS = gql`
   standalone: true,
   imports: [
     ButtonModule,
-    ProgressBarModule,
+    SkeletonModule,
     ToastModule,
     TabsModule,
-    PageHeaderComponent,
+    RouterModule,
     TranslateModule,
     TournamentInfoComponent,
     TournamentSettingsComponent,
@@ -85,7 +84,7 @@ export class PageEditComponent {
         );
 
         return result?.data?.tournamentEvent || null;
-      } catch (err) {
+      } catch {
         this.error.set('Failed to load tournament data');
         return null;
       } finally {
@@ -118,7 +117,7 @@ export class PageEditComponent {
           break;
         }
       }
-    } catch (err) {
+    } catch {
       // Error handling is done in the individual components
     }
   }
@@ -156,7 +155,7 @@ export class PageEditComponent {
       });
 
       this.router.navigate(['..'], { relativeTo: this.route });
-    } catch (err) {
+    } catch {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -176,7 +175,8 @@ export class PageEditComponent {
     return (infoComponent?.isDirty ?? false) || (settingsComponent?.isDirty ?? false);
   }
 
-  onActiveIndexChange(event: any): void {
-    this.activeTabIndex.set(event.index?.toString() || '0');
+  onActiveIndexChange(event: Event | { index?: number | string }): void {
+    const idx = (event as { index?: number | string })?.index;
+    this.activeTabIndex.set(idx?.toString() || '0');
   }
 }

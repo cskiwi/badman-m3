@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, resource, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
+import { AuthService } from '@app/frontend-modules-auth/service';
 import { TournamentEnrollment, TournamentEvent } from '@app/models';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
@@ -20,7 +21,8 @@ const MY_ENROLLMENT_FRAGMENT = gql`
       name
       eventType
       gameType
-      level
+      minLevel
+      maxLevel
     }
     preferredPartner {
       id
@@ -37,6 +39,7 @@ const MY_ENROLLMENT_FRAGMENT = gql`
 
 export class MyEnrollmentsService {
   private readonly apollo = inject(Apollo);
+  private readonly auth = inject(AuthService);
 
   filter = new FormGroup({
     tournamentEventId: new FormControl<string | null>(null),
@@ -57,40 +60,65 @@ export class MyEnrollmentsService {
       }
 
       try {
+        const isLoggedIn = this.auth.loggedIn();
         const result = await lastValueFrom(
           this.apollo.query<{
             tournamentEvent: TournamentEvent;
-            myTournamentEnrollments: TournamentEnrollment[];
+            myTournamentEnrollments?: TournamentEnrollment[];
           }>({
-            query: gql`
-              ${MY_ENROLLMENT_FRAGMENT}
-              query MyEnrollments($id: ID!, $tournamentEventId: ID!) {
-                tournamentEvent(id: $id) {
-                  id
-                  name
-                  slug
-                  firstDay
-                  phase
-                  enrollmentOpenDate
-                  enrollmentCloseDate
-                  tournamentSubEvents {
-                    id
-                    name
-                    eventType
-                    gameType
-                    minLevel
-                    maxLevel
+            query: isLoggedIn
+              ? gql`
+                  ${MY_ENROLLMENT_FRAGMENT}
+                  query MyEnrollments($id: ID!, $tournamentEventId: ID!) {
+                    tournamentEvent(id: $id) {
+                      id
+                      name
+                      slug
+                      firstDay
+                      phase
+                      enrollmentOpenDate
+                      enrollmentCloseDate
+                      tournamentSubEvents {
+                        id
+                        name
+                        eventType
+                        gameType
+                        minLevel
+                        maxLevel
+                      }
+                    }
+                    myTournamentEnrollments(tournamentEventId: $tournamentEventId) {
+                      ...MyEnrollmentFields
+                    }
                   }
+                `
+              : gql`
+                  query TournamentOnly($id: ID!) {
+                    tournamentEvent(id: $id) {
+                      id
+                      name
+                      slug
+                      firstDay
+                      phase
+                      enrollmentOpenDate
+                      enrollmentCloseDate
+                      tournamentSubEvents {
+                        id
+                        name
+                        eventType
+                        gameType
+                        minLevel
+                        maxLevel
+                      }
+                    }
+                  }
+                `,
+            variables: isLoggedIn
+              ? {
+                  id: params.tournamentEventId,
+                  tournamentEventId: params.tournamentEventId,
                 }
-                myTournamentEnrollments(tournamentEventId: $tournamentEventId) {
-                  ...MyEnrollmentFields
-                }
-              }
-            `,
-            variables: {
-              id: params.tournamentEventId,
-              tournamentEventId: params.tournamentEventId,
-            },
+              : { id: params.tournamentEventId },
             context: { signal: abortSignal },
             fetchPolicy: 'network-only',
           }),
@@ -159,8 +187,9 @@ export class MyEnrollmentsService {
       this.dataResource.reload();
 
       return true;
-    } catch (err: any) {
-      const message = err?.graphQLErrors?.[0]?.message || err?.message || 'Failed to cancel enrollment';
+    } catch (err: unknown) {
+      const e = err as { graphQLErrors?: Array<{ message?: string }>; message?: string };
+      const message = e?.graphQLErrors?.[0]?.message || e?.message || 'Failed to cancel enrollment';
       this.cancelError.set(message);
       return false;
     } finally {

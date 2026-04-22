@@ -125,8 +125,8 @@ export class ClubsService {
     return err.statusText || 'An error occurred';
   }
 
-  private _buildWhereClause(params: any) {
-    const where: any = {};
+  private _buildWhereClause(params: { query?: string | null; state?: string | null; country?: string | null } | undefined | null) {
+    const where: { OR?: unknown[]; state?: unknown; country?: unknown } = {};
 
     if (params?.query) {
       const searchTerms = this._parseSearchQuery(params.query);

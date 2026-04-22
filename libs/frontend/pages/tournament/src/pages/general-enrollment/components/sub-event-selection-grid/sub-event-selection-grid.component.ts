@@ -32,12 +32,17 @@ export class SubEventSelectionGridComponent {
    * Toggle sub-event selection
    */
   toggleSelection(item: SubEventWithCalculations): void {
-    if (this.isSelected(item.id!)) {
-      this.subEventRemove.emit(item.id!);
+    if (!item.id) return;
+    if (this.isSelected(item.id)) {
+      this.subEventRemove.emit(item.id);
     } else {
       // Emit the base TournamentSubEvent (without calculated properties)
-      const { _availableSpots, _isEnrollmentOpen, _isAlreadyEnrolled, _isEligible, ...subEvent } = item;
-      this.subEventSelect.emit(subEvent as TournamentSubEvent);
+      const subEvent: Record<string, unknown> = { ...item };
+      delete subEvent['_availableSpots'];
+      delete subEvent['_isEnrollmentOpen'];
+      delete subEvent['_isAlreadyEnrolled'];
+      delete subEvent['_isEligible'];
+      this.subEventSelect.emit(subEvent as unknown as TournamentSubEvent);
     }
   }
 

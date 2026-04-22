@@ -125,7 +125,13 @@ export class PlayersService {
   }
 
   private _buildPlayerSearchWhere(filters?: PlayerSearchFilters) {
-    const where: any = {};
+    const where: {
+      OR?: unknown[];
+      clubPlayerMemberships?: unknown;
+      gender?: unknown;
+      competitionPlayer?: unknown;
+      rankingPlaces?: unknown;
+    } = {};
 
     // Text search in name
     if (filters?.query && filters.query.trim()) {
@@ -166,7 +172,7 @@ export class PlayersService {
 
     // Rating filters (based on ranking places)
     if (filters?.minRating || filters?.maxRating) {
-      const ratingWhere: any = {};
+      const ratingWhere: { single?: { gte?: number; lte?: number } } = {};
 
       if (filters.minRating) {
         ratingWhere.single = { gte: filters.minRating };

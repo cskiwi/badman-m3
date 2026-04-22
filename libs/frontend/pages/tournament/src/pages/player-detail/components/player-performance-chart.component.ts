@@ -50,7 +50,7 @@ export class PlayerPerformanceChartComponent implements OnInit {
         mode: 'index' as const,
         intersect: false,
         callbacks: {
-          label: (context: any) => {
+          label: (context: { dataset: { label?: string }; parsed: { y: number } }) => {
             const label = context.dataset.label || '';
             const value = context.parsed.y;
             if (label.includes('Win Rate')) {
@@ -135,7 +135,7 @@ export class PlayerPerformanceChartComponent implements OnInit {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - selectedOption.days);
 
-    return games.filter((game) => new Date(game.playedAt!) >= cutoffDate);
+    return games.filter((game) => game.playedAt && new Date(game.playedAt) >= cutoffDate);
   });
 
   performanceData = computed(() => {
@@ -148,7 +148,8 @@ export class PlayerPerformanceChartComponent implements OnInit {
     const weeklyData = new Map<string, PerformanceDataPoint>();
 
     games.forEach((game) => {
-      const gameDate = new Date(game.playedAt!);
+      if (!game.playedAt) return;
+      const gameDate = new Date(game.playedAt);
       const weekStart = new Date(gameDate);
       weekStart.setDate(gameDate.getDate() - gameDate.getDay()); // Start of week
       const weekKey = weekStart.toISOString().split('T')[0];
@@ -163,7 +164,8 @@ export class PlayerPerformanceChartComponent implements OnInit {
         });
       }
 
-      const weekData = weeklyData.get(weekKey)!;
+      const weekData = weeklyData.get(weekKey);
+      if (!weekData) return;
       weekData.totalGames++;
 
       if (this.isPlayerWinner(game)) {

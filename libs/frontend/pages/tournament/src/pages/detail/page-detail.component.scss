@@ -1,4 +1,104 @@
 :host {
+  display: block;
+  padding: 1.5rem 1.5rem 3rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 1rem 2rem;
+  }
+}
+
+// Parallelogram crest — Arena style
+.tournament-crest {
+  width: 6rem;
+  height: 6rem;
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  background: var(--g-gradient-primary, linear-gradient(135deg, var(--p-primary-500), var(--p-primary-700)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+
+  span {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    width: 4.5rem;
+    height: 4.5rem;
+
+    span {
+      font-size: 1.15rem;
+    }
+  }
+}
+
+.tournament-name {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--p-surface-900);
+  margin: 0 0 0.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+}
+
+.tournament-stat-value {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--p-surface-900);
+  letter-spacing: -0.01em;
+}
+
+.section-title {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--p-surface-900);
+  letter-spacing: -0.005em;
+}
+
+.subevent-name {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--p-surface-900);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+
+.g-subevent {
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--p-primary-400);
+  }
+}
+
+.g-live-card,
+.g-draw-row {
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.bg-win-muted {
+  background: var(--g-win-muted, rgba(34, 197, 94, 0.12));
+}
+
+.text-win {
+  color: var(--g-win, rgb(22, 163, 74));
+}
+:host {
   display: flex;
   padding: 1rem 1rem 0;
   flex-direction: column;

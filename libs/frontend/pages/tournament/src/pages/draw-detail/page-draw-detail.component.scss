@@ -1,9 +1,45 @@
 :host {
   display: block;
+  padding: 1.5rem 1.5rem 3rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 1rem 2rem;
+  }
 }
 
 .page-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+}
+
+// Parallelogram crest — Arena style
+.draw-crest {
+  width: 6rem;
+  height: 6rem;
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  background: var(--g-gradient-primary, linear-gradient(135deg, var(--p-primary-500), var(--p-primary-700)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+
+  span {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    width: 4.5rem;
+    height: 4.5rem;
+
+    span {
+      font-size: 1.15rem;
+    }
+  }
 }

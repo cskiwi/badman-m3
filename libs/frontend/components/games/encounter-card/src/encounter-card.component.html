@@ -163,16 +163,16 @@
                   @for (m of game.gamePlayerMemberships; track m.id) {
                     @if (m.team === 1) {
                       <span class="inline-flex items-center gap-1.5 min-w-0">
-                        @if (m.gamePlayer?.slug) {
+                        @if (m.gamePlayer.slug) {
                           <a
-                            [routerLink]="['/players', m.gamePlayer!.slug]"
+                            [routerLink]="['/players', m.gamePlayer.slug]"
                             class="text-color no-underline hover:text-primary truncate"
                             (click)="$event.stopPropagation()"
-                          >{{ m.gamePlayer?.fullName }}</a>
+                          >{{ m.gamePlayer.fullName }}</a>
                         } @else {
-                          <span class="text-color truncate">{{ m.gamePlayer?.fullName || '—' }}</span>
+                          <span class="text-color truncate">{{ m.gamePlayer.fullName || '—' }}</span>
                         }
-                        @if (getPlayerLevel(game, m.gamePlayer?.id); as lvl) {
+                        @if (getPlayerLevel(game, m.gamePlayer.id); as lvl) {
                           <app-tier-badge [level]="lvl" size="sm" />
                         }
                       </span>
@@ -183,16 +183,16 @@
                   @for (m of game.gamePlayerMemberships; track m.id) {
                     @if (m.team === 2) {
                       <span class="inline-flex items-center gap-1.5 min-w-0">
-                        @if (m.gamePlayer?.slug) {
+                        @if (m.gamePlayer.slug) {
                           <a
-                            [routerLink]="['/players', m.gamePlayer!.slug]"
+                            [routerLink]="['/players', m.gamePlayer.slug]"
                             class="text-color no-underline hover:text-primary truncate"
                             (click)="$event.stopPropagation()"
-                          >{{ m.gamePlayer?.fullName }}</a>
+                          >{{ m.gamePlayer.fullName }}</a>
                         } @else {
-                          <span class="text-color truncate">{{ m.gamePlayer?.fullName || '—' }}</span>
+                          <span class="text-color truncate">{{ m.gamePlayer.fullName || '—' }}</span>
                         }
-                        @if (getPlayerLevel(game, m.gamePlayer?.id); as lvl) {
+                        @if (getPlayerLevel(game, m.gamePlayer.id); as lvl) {
                           <app-tier-badge [level]="lvl" size="sm" />
                         }
                       </span>

@@ -271,8 +271,8 @@ export class PlayerDetailService {
       ].filter((set) => set.team1 !== null && set.team2 !== null);
 
       sets.forEach((set) => {
-        const playerPoints = playerTeam === 1 ? set.team1! : set.team2!;
-        const opponentPoints = playerTeam === 1 ? set.team2! : set.team1!;
+        const playerPoints = playerTeam === 1 ? (set.team1 ?? 0) : (set.team2 ?? 0);
+        const opponentPoints = playerTeam === 1 ? (set.team2 ?? 0) : (set.team1 ?? 0);
 
         pointsWon += playerPoints;
         pointsLost += opponentPoints;
@@ -288,7 +288,10 @@ export class PlayerDetailService {
     // Calculate tournament statistics
     const tournaments = new Set(entries.map((entry) => entry.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id)).size;
 
-    const positions = entries.filter((entry) => entry.standing?.position).map((entry) => entry.standing!.position);
+    const positions = entries
+      .filter((entry) => entry.standing?.position)
+      .map((entry) => entry.standing?.position)
+      .filter((p): p is number => p != null);
 
     const avgPosition = positions.length > 0 ? positions.reduce((sum, pos) => sum + pos, 0) / positions.length : 0;
 

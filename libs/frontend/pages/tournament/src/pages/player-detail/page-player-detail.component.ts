@@ -39,6 +39,7 @@ import { PlayerDetailService } from './page-player-detail.service';
     PlayerAvatarComponent,
   ],
   templateUrl: './page-player-detail.component.html',
+  styleUrl: './page-player-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePlayerDetailComponent {

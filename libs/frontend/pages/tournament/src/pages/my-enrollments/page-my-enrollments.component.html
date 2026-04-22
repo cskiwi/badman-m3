@@ -1,47 +1,60 @@
 @if (!loading()) {
   @if (tournament(); as tournament) {
-    <app-page-header>
-      <ng-content title>{{ 'all.enrollment.myEnrollments' | translate }}</ng-content>
-      <ng-content subTitle>
-        <div class="flex items-center gap-2 text-sm text-muted-color">
-          <a [routerLink]="['/', 'tournament', tournamentId()]">{{ tournament.name }}</a>
-        </div>
-      </ng-content>
-    </app-page-header>
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
+      <a routerLink="/tournament" class="text-surface-500 hover:text-primary no-underline">{{ 'all.tournament.title' | translate }}</a>
+      <i class="pi pi-angle-right text-[10px]"></i>
+      <a [routerLink]="['/', 'tournament', tournamentId()]" class="text-surface-500 hover:text-primary no-underline">{{ tournament.name }}</a>
+      <i class="pi pi-angle-right text-[10px]"></i>
+      <span class="text-surface-800 font-semibold">{{ 'all.enrollment.myEnrollments' | translate }}</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="flex items-start justify-between flex-wrap gap-4 mb-6">
+      <div class="flex flex-col gap-1 flex-1 min-w-0">
+        <span class="t-eyebrow">{{ tournament.name }}</span>
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-surface-900 leading-tight tracking-tight m-0">
+          {{ 'all.enrollment.myEnrollments' | translate }}
+        </h1>
+      </div>
+    </div>
 
     @if (!isLoggedIn()) {
-      <p-message severity="warn" class="w-full mb-4">
-        <ng-template pTemplate="content">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-lock"></i>
-            <span>{{ 'all.enrollment.loginToSeeEnrollments' | translate }}</span>
-          </div>
-        </ng-template>
-      </p-message>
+      <div class="flex items-center gap-2 p-4 rounded-lg mb-4" style="background: var(--g-pending-muted); color: var(--g-pending)">
+        <i class="pi pi-lock"></i>
+        <span>{{ 'all.enrollment.loginToSeeEnrollments' | translate }}</span>
+      </div>
     } @else {
-      <!-- Summary Cards -->
+      <!-- Summary Cards - Arena stat strip -->
       <div class="grid gap-4 md:grid-cols-3 mb-6">
-        <div class="rounded-border bg-green-50 p-4 text-center">
-          <div class="text-2xl font-bold text-green-600">{{ confirmedEnrollments().length }}</div>
-          <div class="text-sm text-green-800">{{ 'all.enrollment.confirmed' | translate }}</div>
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5 flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.enrollment.confirmed' | translate }}</span>
+          <div class="font-display text-3xl font-bold" style="color: var(--g-win)">{{ confirmedEnrollments().length }}</div>
         </div>
-        <div class="rounded-border bg-orange-50 p-4 text-center">
-          <div class="text-2xl font-bold text-orange-600">{{ pendingEnrollments().length }}</div>
-          <div class="text-sm text-orange-800">{{ 'all.enrollment.pending' | translate }}</div>
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5 flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.enrollment.pending' | translate }}</span>
+          <div class="font-display text-3xl font-bold" style="color: var(--g-pending, rgb(180, 83, 9))">{{ pendingEnrollments().length }}</div>
         </div>
-        <div class="rounded-border bg-blue-50 p-4 text-center">
-          <div class="text-2xl font-bold text-blue-600">{{ waitingListEnrollments().length }}</div>
-          <div class="text-sm text-blue-800">{{ 'all.enrollment.waitingList' | translate }}</div>
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5 flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.enrollment.waitingList' | translate }}</span>
+          <div class="font-display text-3xl font-bold text-primary">{{ waitingListEnrollments().length }}</div>
         </div>
       </div>
 
       @if (cancelError()) {
-        <p-message severity="error" [text]="cancelError()!" class="w-full mb-4" />
+        <div class="flex items-center gap-2 p-3 rounded-md text-sm mb-4" style="background: var(--g-loss-muted); color: var(--g-loss)">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>{{ cancelError() }}</span>
+        </div>
       }
 
       <!-- My Enrollments List -->
       @if (enrollments().length > 0) {
-        <p-card header="{{ 'all.enrollment.yourEnrollments' | translate }}" class="mb-6">
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-display text-lg font-semibold text-surface-900 m-0">{{ 'all.enrollment.yourEnrollments' | translate }}</h2>
+            <span class="t-mono text-xs text-surface-500">{{ enrollments().length }}</span>
+          </div>
           <p-table [value]="enrollments()" [scrollable]="true" styleClass="p-datatable-sm">
             <ng-template pTemplate="header">
               <tr>
@@ -56,7 +69,7 @@
               <tr>
                 <td>
                   <div class="font-medium">{{ enrollment.tournamentSubEvent?.name }}</div>
-                  <div class="text-xs text-muted-color">
+                  <div class="text-xs text-surface-500">
                     {{ enrollment.tournamentSubEvent?.eventType }}
                     @if (enrollment.tournamentSubEvent?.level) {
                       - Level {{ enrollment.tournamentSubEvent?.level }}
@@ -111,25 +124,27 @@
               </tr>
             </ng-template>
           </p-table>
-        </p-card>
+        </div>
       } @else {
-        <p-card class="mb-6">
-          <div class="text-center py-8">
-            <i class="pi pi-inbox text-4xl text-muted-color mb-4"></i>
-            <p class="text-muted-color">{{ 'all.enrollment.noEnrollmentsYet' | translate }}</p>
-          </div>
-        </p-card>
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-8 mb-6 text-center">
+          <i class="pi pi-inbox text-4xl text-surface-400 mb-3 block"></i>
+          <p class="text-surface-500 m-0">{{ 'all.enrollment.noEnrollmentsYet' | translate }}</p>
+        </div>
       }
 
       <!-- Available Sub-Events to Enroll -->
       @if (isEnrollmentOpen() && availableSubEvents().length > 0) {
-        <p-card header="{{ 'all.enrollment.availableEvents' | translate }}">
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-display text-lg font-semibold text-surface-900 m-0">{{ 'all.enrollment.availableEvents' | translate }}</h2>
+            <span class="t-mono text-xs text-surface-500">{{ availableSubEvents().length }}</span>
+          </div>
           <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             @for (subEvent of availableSubEvents(); track subEvent.id) {
-              <div class="rounded-border bg-highlight p-4 flex items-center justify-between">
-                <div>
-                  <div class="font-medium">{{ subEvent.name }}</div>
-                  <div class="text-xs text-muted-color">
+              <div class="rounded-md bg-surface-0 border border-surface-200 p-4 flex items-center justify-between hover:border-primary transition-colors">
+                <div class="min-w-0 flex-1">
+                  <div class="font-medium text-surface-900 truncate">{{ subEvent.name }}</div>
+                  <div class="text-xs text-surface-500 truncate">
                     {{ subEvent.eventType }}
                     @if (subEvent.minLevel || subEvent.maxLevel) {
                       - Level {{ subEvent.minLevel }} - {{ subEvent.maxLevel }}
@@ -144,18 +159,14 @@
               </div>
             }
           </div>
-        </p-card>
+        </div>
       }
 
       @if (!isEnrollmentOpen()) {
-        <p-message severity="info" class="w-full mt-4">
-          <ng-template pTemplate="content">
-            <div class="flex items-center gap-2">
-              <i class="pi pi-info-circle"></i>
-              <span>{{ 'all.enrollment.enrollmentNotOpen' | translate }}</span>
-            </div>
-          </ng-template>
-        </p-message>
+        <div class="flex items-center gap-2 p-4 rounded-lg mt-4" style="background: var(--p-primary-50); color: var(--p-primary-700)">
+          <i class="pi pi-info-circle"></i>
+          <span>{{ 'all.enrollment.enrollmentNotOpen' | translate }}</span>
+        </div>
       }
     }
   }

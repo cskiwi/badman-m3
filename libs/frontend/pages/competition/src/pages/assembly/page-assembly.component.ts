@@ -1,8 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, TemplateRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Club, Player, Team } from '@app/models';
@@ -38,7 +37,7 @@ import { AssemblyGeneratorService } from './assembly-generator.service';
     SelectModule,
     AutoCompleteModule,
     FloatLabelModule,
-    PageHeaderComponent,
+    RouterLink,
     AssemblyComponent,
   ],
   providers: [MessageService, AssemblyService, AssemblyGeneratorService],

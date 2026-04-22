@@ -207,7 +207,8 @@ export class DrawsTabComponent {
     if (!subEvent) return;
 
     const { name, type, size } = this.drawForm.value;
-    const result = await this.dataService.createDraw(subEvent.id, name!, type!, size ?? undefined);
+    if (!name || !type) return;
+    const result = await this.dataService.createDraw(subEvent.id, name, type, size ?? undefined);
 
     if (result) {
       this.showCreateDrawDialog.set(false);

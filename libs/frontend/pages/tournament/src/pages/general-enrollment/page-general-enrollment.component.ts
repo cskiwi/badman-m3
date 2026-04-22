@@ -3,14 +3,12 @@ import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
-import { BadgeModule } from 'primeng/badge';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import type { TournamentSubEvent } from '@app/models';
 import { GameType } from '@app/models-enum';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { PageGeneralEnrollmentService } from './page-general-enrollment.service';
 import { SubEventSelectionGridComponent } from './components/sub-event-selection-grid/sub-event-selection-grid.component';
 import { EnrollmentCartComponent } from './components/enrollment-cart/enrollment-cart.component';
@@ -25,10 +23,8 @@ import { Subject, takeUntil } from 'rxjs';
     RouterModule,
     ProgressSpinnerModule,
     ButtonModule,
-    BadgeModule,
     ToastModule,
     TranslateModule,
-    PageHeaderComponent,
     SubEventSelectionGridComponent,
     EnrollmentCartComponent,
     EnrollmentFiltersComponent,

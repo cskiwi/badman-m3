@@ -159,11 +159,12 @@ export class SubEventsComponent {
       });
     } else {
       // Create new
+      if (!values.name || !values.eventType || !values.gameType) return;
       this.createSubEventRequested.emit({
         eventId: this.tournament().id,
-        name: values.name!,
-        eventType: values.eventType!,
-        gameType: values.gameType!,
+        name: values.name,
+        eventType: values.eventType,
+        gameType: values.gameType,
         minLevel: values.minLevel ?? undefined,
         maxLevel: values.maxLevel ?? undefined,
         maxEntries: values.maxEntries ?? undefined,

@@ -1,27 +1,20 @@
 <!-- Loading State -->
 @if (loading()) {
-  <div class="space-y-6">
-    <!-- Header Skeleton -->
-    <div class="bg-surface-50 p-6 rounded-lg">
-      <div class="flex items-center gap-4">
-        <p-skeleton shape="circle" size="3rem" />
-        <div class="flex-1 space-y-2">
-          <p-skeleton width="12rem" height="1.5rem" />
-          <p-skeleton width="8rem" height="1rem" />
-        </div>
+  <div class="flex flex-col gap-6">
+    <p-skeleton width="16rem" height="1rem" />
+    <div class="rounded-xl bg-surface-100 border border-surface-200 p-6 flex items-center gap-4">
+      <p-skeleton shape="circle" size="4rem" />
+      <div class="flex-1 space-y-2">
+        <p-skeleton width="12rem" height="1.75rem" />
+        <p-skeleton width="8rem" height="1rem" />
       </div>
     </div>
-
-    <!-- Content Skeletons -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      @for (i of [1, 2, 3]; track i) {
-        <p-card>
-          <div class="space-y-3">
-            <p-skeleton width="8rem" height="1.25rem" />
-            <p-skeleton width="100%" height="1rem" />
-            <p-skeleton width="60%" height="1rem" />
-          </div>
-        </p-card>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5 space-y-3">
+          <p-skeleton width="6rem" height="0.75rem" />
+          <p-skeleton width="4rem" height="2rem" />
+        </div>
       }
     </div>
   </div>
@@ -29,45 +22,53 @@
 
 <!-- Main Content -->
 @if (club(); as club) {
-  <!-- Breadcrumb Navigation -->
-  <p-breadcrumb [model]="breadcrumbItems()" class="mb-6" />
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
+    @for (item of breadcrumbItems(); track item.label; let last = $last) {
+      @if (!last) {
+        <a [routerLink]="item.routerLink" class="text-surface-500 no-underline hover:text-surface-800">{{ item.label }}</a>
+        <i class="pi pi-angle-right text-[10px]"></i>
+      } @else {
+        <span class="text-surface-800 font-semibold">{{ item.label }}</span>
+      }
+    }
+  </nav>
 
-  <!-- Club Header -->
-  <app-page-header class="mb-6">
-    <ng-content avatar>
-      <p-avatar
-        [label]="club.abbreviation || club.name.substring(0, 2).toUpperCase()"
-        size="large"
-        shape="circle"
-        styleClass="text-primary-contrast bg-primary"
-      />
-    </ng-content>
+  <!-- Club Hero -->
+  <section class="rounded-xl bg-surface-100 border border-surface-200 overflow-hidden p-6 mb-6">
+    <div class="grid grid-cols-[auto_1fr_auto] gap-6 items-center">
+      <!-- Crest -->
+      <div class="club-crest">
+        <span>{{ club.abbreviation || club.name.substring(0, 3).toUpperCase() }}</span>
+      </div>
 
-    <ng-content title>{{ club.fullName || club.name }}</ng-content>
-
-    <ng-content subTitle>
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2 text-surface-600">
-        <div class="flex items-center gap-1">
-          <i class="pi pi-building text-xs"></i>
-          <span>{{ club.name }}</span>
+      <!-- Identity -->
+      <div class="flex flex-col gap-3 min-w-0">
+        <div class="flex flex-col gap-1">
+          <span class="t-eyebrow">Club</span>
+          <h1 class="club-name m-0">{{ club.fullName || club.name }}</h1>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap text-sm text-surface-600">
           @if (club.clubId) {
-            <span class="text-surface-400">•</span>
-            <span>{{ club.clubId }}</span>
+            <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">#{{ club.clubId }}</span>
+          }
+          @if (club.state || club.country) {
+            <span class="inline-flex items-center gap-1.5">
+              <i class="pi pi-map-marker text-primary text-[11px]"></i>
+              <strong class="text-surface-800 font-semibold">{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</strong>
+            </span>
+          }
+          @if (club.contactCompetition) {
+            <span class="inline-flex items-center gap-1.5">
+              <i class="pi pi-envelope text-[11px]"></i>
+              {{ club.contactCompetition }}
+            </span>
           }
         </div>
-        @if (club.state || club.country) {
-          <div class="flex items-center gap-1">
-            <i class="pi pi-map-marker text-xs"></i>
-            <span>{{ club.state }}{{ club.state && club.country ? ', ' : '' }}{{ club.country }}</span>
-          </div>
-        }
       </div>
-    </ng-content>
 
-    <ng-content actions>
-      <!-- Season Selector -->
-      <div class="flex items-center gap-2">
-        <label for="season-select" class="text-sm font-medium text-surface-600 whitespace-nowrap"> {{ 'all.common.season' | translate }}: </label>
+      <!-- Actions -->
+      <div class="flex items-center gap-2 flex-wrap justify-end">
         <p-select
           id="season-select"
           [formControl]="seasonControl"
@@ -76,59 +77,35 @@
           optionValue="value"
           [style]="{ 'min-width': '120px' }"
           placeholder="{{ 'all.common.selectSeason' | translate }}"
+          size="small"
         />
       </div>
-    </ng-content>
-  </app-page-header>
-
-  <!-- Statistics Overview Cards -->
-  @if (statistics(); as stats) {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <!-- Total Teams -->
-      <p-card styleClass="h-full">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-bold text-primary mb-1">{{ stats.totalTeams }}</h3>
-            <p class="text-sm text-surface-600">{{ 'all.club.stats.totalTeams' | translate }}</p>
-          </div>
-          <i class="pi pi-users text-3xl text-primary-300"></i>
-        </div>
-      </p-card>
-
-      <!-- Total Players -->
-      <p-card styleClass="h-full">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-bold text-green-600 mb-1">{{ stats.totalPlayers }}</h3>
-            <p class="text-sm text-surface-600">{{ 'all.club.stats.totalPlayers' | translate }}</p>
-          </div>
-          <i class="pi pi-user text-3xl text-green-300"></i>
-        </div>
-      </p-card>
-
-      <!-- Total Games -->
-      <p-card styleClass="h-full">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-bold text-blue-600 mb-1">{{ stats.totalGames }}</h3>
-            <p class="text-sm text-surface-600">{{ 'all.club.stats.totalGames' | translate }}</p>
-          </div>
-          <i class="pi pi-calendar text-3xl text-blue-300"></i>
-        </div>
-      </p-card>
-
-      <!-- Win Percentage -->
-      <p-card styleClass="h-full">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-2xl font-bold text-orange-600 mb-1">{{ stats.winPercentage }}%</h3>
-            <p class="text-sm text-surface-600">{{ 'all.club.stats.winPercentage' | translate }}</p>
-          </div>
-          <i class="pi pi-chart-line text-3xl text-orange-300"></i>
-        </div>
-      </p-card>
     </div>
-  }
+
+    <!-- Statistics strip -->
+    @if (statistics(); as stats) {
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface-200">
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.club.stats.totalTeams' | translate }}</span>
+          <span class="club-stat-value">{{ stats.totalTeams }}</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.club.stats.totalPlayers' | translate }}</span>
+          <span class="club-stat-value">{{ stats.totalPlayers }}</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.club.stats.totalGames' | translate }}</span>
+          <span class="club-stat-value">{{ stats.totalGames }}</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="t-eyebrow">{{ 'all.club.stats.winPercentage' | translate }}</span>
+          <div class="flex items-baseline gap-2">
+            <span class="club-stat-value" [class.text-win]="stats.winPercentage >= 50" [class.text-loss]="stats.winPercentage < 50">{{ stats.winPercentage }}%</span>
+          </div>
+        </div>
+      </div>
+    }
+  </section>
 
   <!-- Main Content Tabs -->
   <p-tabs value="0">

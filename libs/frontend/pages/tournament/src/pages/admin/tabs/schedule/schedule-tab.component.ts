@@ -201,8 +201,9 @@ export class ScheduleTabComponent {
     if (!tournament) return;
 
     const { courtIds, dates, startTime, endTime, slotDurationMinutes, breakMinutes } = this.generateSlotsForm.value;
+    if (!courtIds || !dates || !startTime || !endTime || slotDurationMinutes == null) return;
 
-    await this.dataService.generateTimeSlots(tournament.id, courtIds!, dates!, startTime!, endTime!, slotDurationMinutes!, breakMinutes ?? 0);
+    await this.dataService.generateTimeSlots(tournament.id, courtIds, dates, startTime, endTime, slotDurationMinutes, breakMinutes ?? 0);
 
     this.showGenerateSlotsDialog.set(false);
   }
@@ -223,8 +224,9 @@ export class ScheduleTabComponent {
     if (!tournament) return;
 
     const { strategy, minRestMinutes } = this.autoScheduleForm.value;
+    if (!strategy) return;
 
-    const result = await this.dataService.scheduleGames(tournament.id, strategy!, minRestMinutes ?? 15);
+    const result = await this.dataService.scheduleGames(tournament.id, strategy, minRestMinutes ?? 15);
 
     this.lastScheduleResult.set(result);
   }

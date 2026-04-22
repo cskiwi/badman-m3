@@ -1,15 +1,23 @@
 @if (!loading()) {
   @if (subEvent(); as subEvent) {
-    <app-page-header>
-      <ng-content title>{{ 'all.enrollment.title' | translate }}</ng-content>
-      <ng-content subTitle>
-        <div class="flex items-center gap-2 text-sm text-muted-color">
-          <a [routerLink]="['/', 'tournament', tournamentId()]">{{ tournamentEvent()?.name }}</a>
-          <i class="pi pi-angle-right text-xs"></i>
-          <span>{{ subEvent.name }}</span>
-        </div>
-      </ng-content>
-    </app-page-header>
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
+      <a routerLink="/tournament" class="text-surface-500 hover:text-primary no-underline">{{ 'all.tournament.title' | translate }}</a>
+      <i class="pi pi-angle-right text-[10px]"></i>
+      <a [routerLink]="['/', 'tournament', tournamentId()]" class="text-surface-500 hover:text-primary no-underline">{{ tournamentEvent()?.name }}</a>
+      <i class="pi pi-angle-right text-[10px]"></i>
+      <span class="text-surface-800 font-semibold">{{ 'all.enrollment.title' | translate }}</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="flex items-start justify-between flex-wrap gap-4 mb-6">
+      <div class="flex flex-col gap-1 flex-1 min-w-0">
+        <span class="t-eyebrow">{{ subEvent.name }}</span>
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-surface-900 leading-tight tracking-tight m-0">
+          {{ 'all.enrollment.title' | translate }}
+        </h1>
+      </div>
+    </div>
 
     <!-- Enrollment Status Banner -->
     @if (!isEnrollmentOpen()) {

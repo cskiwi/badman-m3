@@ -1,16 +1,13 @@
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
-import { ProgressBarModule } from 'primeng/progressbar';
+import { SkeletonModule } from 'primeng/skeleton';
 import { CreateTournamentService } from './page-create.service';
 
 @Component({
@@ -18,15 +15,13 @@ import { CreateTournamentService } from './page-create.service';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     ButtonModule,
-    CardModule,
     InputTextModule,
     DatePickerModule,
     CheckboxModule,
-    MessageModule,
-    ProgressBarModule,
+    SkeletonModule,
   ],
   templateUrl: './page-create.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,7 +65,7 @@ export class PageCreateComponent {
     const firstDay = tournamentDays && tournamentDays.length > 0 ? tournamentDays[0] : undefined;
 
     const result = await this.dataService.createTournament({
-      name: name!,
+      name: name ?? '',
       firstDay: firstDay || undefined,
       openDate: openDate || undefined,
       closeDate: closeDate || undefined,

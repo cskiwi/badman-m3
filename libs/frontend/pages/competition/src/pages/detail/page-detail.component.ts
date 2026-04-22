@@ -1,7 +1,7 @@
 import { DatePipe, SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { HeroComponent } from '@app/frontend-components/hero';
 import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -19,7 +19,7 @@ import { ButtonModule } from 'primeng/button';
     ProgressBarModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
+    HeroComponent,
     SyncButtonComponent,
     SyncStatusIndicatorComponent,
     ButtonModule,
@@ -36,6 +36,21 @@ export class PageDetailComponent {
 
   // selectors
   competition = this.dataService.competition;
+
+  // Short crest text (first 3 chars of name, uppercase, whitespace removed)
+  competitionCrestText = computed(() => {
+    const name = this.competition()?.name ?? '';
+    return (name.replace(/\s+/g, '').slice(0, 3) || '?').toUpperCase();
+  });
+
+  // Total sub-events count (flat)
+  totalSubEvents = computed(() => this.competition()?.competitionSubEvents?.length ?? 0);
+
+  // Total draws across all sub-events
+  totalDraws = computed(() => {
+    const subs = this.competition()?.competitionSubEvents ?? [];
+    return subs.reduce((acc, s) => acc + (s.competitionDraws?.length ?? 0), 0);
+  });
 
   // Check if user can edit the competition
   canEdit = computed(() => {

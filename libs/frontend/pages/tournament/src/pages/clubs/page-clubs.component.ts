@@ -83,12 +83,12 @@ export class PageClubsComponent {
     this.dataService.filter.reset();
   }
 
-  getPlayersCountLabel(club: any): string {
+  getPlayersCountLabel(club: { playersCount?: number }): string {
     const count = club.playersCount || 0;
     return count === 1 ? '1 player' : `${count} players`;
   }
 
-  getTeamsCountLabel(club: any): string {
+  getTeamsCountLabel(club: { teamsCount?: number }): string {
     const count = club.teamsCount || 0;
     return count === 1 ? '1 team' : `${count} teams`;
   }

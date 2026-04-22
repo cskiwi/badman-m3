@@ -1,6 +1,11 @@
 <div class="p-4 min-h-screen bg-surface-50">
-  <header class="flex justify-between items-center mb-6 pb-4 border-b border-surface">
-    <h1 class="m-0 text-3xl text-color">{{ 'all.tournament.live.nowPlaying' | translate }}</h1>
+  <header class="flex justify-between items-center mb-6 pb-4 border-b border-surface-200 flex-wrap gap-3">
+    <div class="flex flex-col gap-1">
+      <span class="t-eyebrow">Live</span>
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-surface-900 leading-tight tracking-tight m-0">
+        {{ 'all.tournament.live.nowPlaying' | translate }}
+      </h1>
+    </div>
     <div>
       @if (liveService.isConnected()) {
         <p-tag severity="success" value="Live" icon="pi pi-wifi" />
@@ -13,22 +18,22 @@
   </header>
 
   @if (stats(); as stats) {
-    <div class="flex justify-around gap-4 mb-8 p-4 bg-surface-0 rounded-border shadow">
-      <div class="text-center">
-        <span class="block text-4xl font-bold text-primary">{{ stats.gamesInProgress }}</span>
-        <span class="block text-sm text-muted-color">{{ 'all.tournament.live.inProgress' | translate }}</span>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 p-5 rounded-xl bg-surface-100 border border-surface-200">
+      <div class="flex flex-col gap-1">
+        <span class="t-eyebrow">{{ 'all.tournament.live.inProgress' | translate }}</span>
+        <span class="font-display text-3xl font-bold text-surface-900">{{ stats.gamesInProgress }}</span>
       </div>
-      <div class="text-center">
-        <span class="block text-4xl font-bold text-primary">{{ stats.gamesCompleted }}</span>
-        <span class="block text-sm text-muted-color">{{ 'all.tournament.live.completed' | translate }}</span>
+      <div class="flex flex-col gap-1">
+        <span class="t-eyebrow">{{ 'all.tournament.live.completed' | translate }}</span>
+        <span class="font-display text-3xl font-bold" style="color: var(--g-win)">{{ stats.gamesCompleted }}</span>
       </div>
-      <div class="text-center">
-        <span class="block text-4xl font-bold text-primary">{{ stats.gamesRemaining }}</span>
-        <span class="block text-sm text-muted-color">{{ 'all.tournament.live.remaining' | translate }}</span>
+      <div class="flex flex-col gap-1">
+        <span class="t-eyebrow">{{ 'all.tournament.live.remaining' | translate }}</span>
+        <span class="font-display text-3xl font-bold" style="color: var(--g-pending, rgb(180, 83, 9))">{{ stats.gamesRemaining }}</span>
       </div>
-      <div class="text-center">
-        <span class="block text-4xl font-bold text-primary">{{ stats.courtsInUse }}/{{ stats.courtsInUse + stats.courtsAvailable }}</span>
-        <span class="block text-sm text-muted-color">{{ 'all.tournament.live.courtsInUse' | translate }}</span>
+      <div class="flex flex-col gap-1">
+        <span class="t-eyebrow">{{ 'all.tournament.live.courtsInUse' | translate }}</span>
+        <span class="font-display text-3xl font-bold text-primary t-mono">{{ stats.courtsInUse }}/{{ stats.courtsInUse + stats.courtsAvailable }}</span>
       </div>
     </div>
   }

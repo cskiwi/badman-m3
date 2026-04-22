@@ -93,7 +93,8 @@ export class PlayerHeadToHeadComponent {
           });
         }
 
-        const record = recordsMap.get(opponentId)!;
+        const record = recordsMap.get(opponentId);
+        if (!record) return;
         record.gamesPlayed++;
 
         const isWinner = game.winner === playerMembership.team;
@@ -118,8 +119,8 @@ export class PlayerHeadToHeadComponent {
         ].filter((set) => set.team1 !== null && set.team2 !== null);
 
         sets.forEach((set) => {
-          const playerPoints = playerMembership.team === 1 ? set.team1! : set.team2!;
-          const opponentPoints = playerMembership.team === 1 ? set.team2! : set.team1!;
+          const playerPoints = playerMembership.team === 1 ? (set.team1 ?? 0) : (set.team2 ?? 0);
+          const opponentPoints = playerMembership.team === 1 ? (set.team2 ?? 0) : (set.team1 ?? 0);
 
           record.pointsWon += playerPoints;
           record.pointsLost += opponentPoints;

@@ -1,35 +1,67 @@
-<app-page-header>
-  <i avatar class="pi pi-trophy text-2xl"></i>
-  <span title>{{ 'all.tournament.create.title' | translate }}</span>
-  <ng-container subTitle>
-    @if (club(); as club) {
-      <span>{{ club.fullName || club.name }}</span>
-    }
-  </ng-container>
-</app-page-header>
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
+  <a routerLink="/tournament" class="text-surface-500 hover:text-primary no-underline">{{ 'all.tournament.title' | translate }}</a>
+  <i class="pi pi-angle-right text-[10px]"></i>
+  <span class="text-surface-800 font-semibold">{{ 'all.tournament.create.title' | translate }}</span>
+</nav>
+
+<!-- Header -->
+<div class="flex items-start gap-4 mb-6 flex-wrap">
+  <div class="flex flex-col gap-1 flex-1 min-w-0">
+    <span class="t-eyebrow">
+      @if (club(); as club) {
+        {{ club.fullName || club.name }}
+      } @else {
+        New tournament
+      }
+    </span>
+    <h1 class="font-display text-3xl md:text-4xl font-bold text-surface-900 leading-tight tracking-tight m-0">
+      {{ 'all.tournament.create.title' | translate }}
+    </h1>
+  </div>
+</div>
 
 @if (loading()) {
-  <p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />
+  <div class="rounded-xl bg-surface-100 border border-surface-200 p-5">
+    <p-skeleton height="3rem" styleClass="mb-3" />
+    <p-skeleton height="15rem" />
+  </div>
 } @else if (error()) {
-  <p-message severity="error" [text]="error()!" />
+  <div class="flex items-center gap-2 p-4 rounded-lg" style="background: var(--g-loss-muted); color: var(--g-loss)">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>{{ error() }}</span>
+  </div>
 } @else if (!club()) {
-  <p-message severity="warn" [text]="'all.tournament.create.noClub' | translate" />
+  <div class="flex items-center gap-2 p-4 rounded-lg" style="background: var(--g-pending-muted); color: var(--g-pending)">
+    <i class="pi pi-info-circle"></i>
+    <span>{{ 'all.tournament.create.noClub' | translate }}</span>
+  </div>
 } @else {
-  <p-card>
+  <div class="rounded-xl bg-surface-100 border border-surface-200 p-6">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-5">
         <!-- Tournament Name -->
         <div class="flex flex-col gap-2">
-          <label for="name">{{ 'all.tournament.create.name' | translate }} *</label>
-          <input pInputText id="name" formControlName="name" class="max-w-md" [placeholder]="'all.tournament.create.namePlaceholder' | translate" />
+          <label for="name" class="text-sm font-medium text-surface-700">
+            {{ 'all.tournament.create.name' | translate }} <span style="color: var(--g-loss)">*</span>
+          </label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            class="max-w-md"
+            [placeholder]="'all.tournament.create.namePlaceholder' | translate"
+          />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
-            <small class="text-red-500">{{ 'all.tournament.create.nameRequired' | translate }}</small>
+            <small style="color: var(--g-loss)">{{ 'all.tournament.create.nameRequired' | translate }}</small>
           }
         </div>
 
-        <!-- Tournament Days (Range Selection) -->
+        <!-- Tournament Days -->
         <div class="flex flex-col gap-2">
-          <label for="tournamentDays">{{ 'all.tournament.create.tournamentDays' | translate }}</label>
+          <label for="tournamentDays" class="text-sm font-medium text-surface-700">
+            {{ 'all.tournament.create.tournamentDays' | translate }}
+          </label>
           @defer {
             <p-datepicker
               id="tournamentDays"
@@ -41,13 +73,13 @@
               styleClass="w-64"
             />
           }
-          <small class="text-muted-color">{{ 'all.tournament.create.tournamentDaysHelp' | translate }}</small>
+          <small class="text-xs text-surface-500">{{ 'all.tournament.create.tournamentDaysHelp' | translate }}</small>
         </div>
 
         <!-- Registration Dates -->
-        <div class="flex flex-row gap-4">
+        <div class="flex flex-row gap-4 flex-wrap">
           <div class="flex flex-col gap-2">
-            <label for="openDate">{{ 'all.tournament.create.openDate' | translate }}</label>
+            <label for="openDate" class="text-sm font-medium text-surface-700">{{ 'all.tournament.create.openDate' | translate }}</label>
             @defer {
               <p-datepicker
                 id="openDate"
@@ -60,7 +92,7 @@
             }
           </div>
           <div class="flex flex-col gap-2">
-            <label for="closeDate">{{ 'all.tournament.create.closeDate' | translate }}</label>
+            <label for="closeDate" class="text-sm font-medium text-surface-700">{{ 'all.tournament.create.closeDate' | translate }}</label>
             @defer {
               <p-datepicker
                 id="closeDate"
@@ -77,24 +109,34 @@
         <!-- Official Toggle -->
         <div class="flex items-center gap-2">
           <p-checkbox formControlName="official" [binary]="true" inputId="official" />
-          <label for="official">{{ 'all.tournament.create.official' | translate }}</label>
+          <label for="official" class="text-sm text-surface-700">{{ 'all.tournament.create.official' | translate }}</label>
         </div>
 
         @if (createError()) {
-          <p-message severity="error" [text]="createError()!" />
+          <div class="flex items-center gap-2 p-3 rounded-md text-sm" style="background: var(--g-loss-muted); color: var(--g-loss)">
+            <i class="pi pi-exclamation-triangle"></i>
+            <span>{{ createError() }}</span>
+          </div>
         }
 
         <!-- Actions -->
-        <div class="flex justify-end gap-2 mt-4">
-          <p-button [label]="'all.common.cancel' | translate" severity="secondary" (onClick)="cancel()" />
+        <div class="flex justify-end gap-2 mt-2 pt-4 border-t border-surface-200">
+          <p-button
+            [label]="'all.common.cancel' | translate"
+            severity="secondary"
+            [outlined]="true"
+            size="small"
+            (onClick)="cancel()"
+          />
           <p-button
             type="submit"
             [label]="'all.tournament.create.submit' | translate"
+            size="small"
             [loading]="creating()"
             [disabled]="form.invalid || creating()"
           />
         </div>
       </div>
     </form>
-  </p-card>
+  </div>
 }

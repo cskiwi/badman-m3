@@ -1,17 +1,15 @@
 import { Component, computed, inject, signal, resource, viewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 
 import { lastValueFrom } from 'rxjs';
 
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
 import { TabsModule } from 'primeng/tabs';
 
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { CompetitionEvent } from '@app/models';
 import { MessageService } from 'primeng/api';
 import { injectParams } from 'ngxtension/inject-params';
@@ -54,13 +52,12 @@ const GET_COMPETITION_WITH_DETAILS = gql`
   selector: 'app-page-edit',
   standalone: true,
   imports: [
-    CardModule,
     ButtonModule,
     MessageModule,
     ProgressBarModule,
     ToastModule,
     TabsModule,
-    PageHeaderComponent,
+    RouterLink,
     TranslateModule,
     CompetitionInfoComponent,
     CompetitionDatesComponent,

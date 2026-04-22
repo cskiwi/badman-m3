@@ -180,8 +180,9 @@ export class EnrollmentService {
       this.subEventResource.reload();
 
       return result.data?.enrollInTournament ?? null;
-    } catch (err: any) {
-      const message = err?.graphQLErrors?.[0]?.message || err?.message || 'Failed to enroll';
+    } catch (err: unknown) {
+      const e = err as { graphQLErrors?: Array<{ message?: string }>; message?: string };
+      const message = e?.graphQLErrors?.[0]?.message || e?.message || 'Failed to enroll';
       this.enrollError.set(message);
       return null;
     } finally {
@@ -231,8 +232,9 @@ export class EnrollmentService {
       this.subEventResource.reload();
 
       return result.data?.enrollGuest ?? null;
-    } catch (err: any) {
-      const message = err?.graphQLErrors?.[0]?.message || err?.message || 'Failed to enroll guest';
+    } catch (err: unknown) {
+      const e = err as { graphQLErrors?: Array<{ message?: string }>; message?: string };
+      const message = e?.graphQLErrors?.[0]?.message || e?.message || 'Failed to enroll guest';
       this.enrollError.set(message);
       return null;
     } finally {
@@ -264,8 +266,9 @@ export class EnrollmentService {
       this.subEventResource.reload();
 
       return true;
-    } catch (err: any) {
-      const message = err?.graphQLErrors?.[0]?.message || err?.message || 'Failed to cancel enrollment';
+    } catch (err: unknown) {
+      const e = err as { graphQLErrors?: Array<{ message?: string }>; message?: string };
+      const message = e?.graphQLErrors?.[0]?.message || e?.message || 'Failed to cancel enrollment';
       this.enrollError.set(message);
       return false;
     } finally {

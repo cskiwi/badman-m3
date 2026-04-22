@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -21,7 +20,6 @@ import { DatePipe } from '@angular/common';
     DatePipe,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     ButtonModule,
     CardModule,
     MessageModule,

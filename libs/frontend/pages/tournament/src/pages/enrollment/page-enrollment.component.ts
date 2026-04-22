@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -26,7 +25,6 @@ import { DialogModule } from 'primeng/dialog';
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     ButtonModule,
     CardModule,
     InputTextModule,
@@ -140,7 +138,7 @@ export class PageEnrollmentComponent {
 
     const { guestName, guestEmail, guestPhone, preferredPartner, notes } = this.guestForm.value;
 
-    const result = await this.dataService.enrollGuest(guestName!, guestEmail!, guestPhone || undefined, preferredPartner?.id, notes || undefined);
+    const result = await this.dataService.enrollGuest(guestName ?? '', guestEmail ?? '', guestPhone || undefined, preferredPartner?.id, notes || undefined);
 
     if (result) {
       this.showGuestDialog.set(false);

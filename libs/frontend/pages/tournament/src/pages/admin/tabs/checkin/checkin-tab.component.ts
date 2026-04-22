@@ -169,7 +169,10 @@ export class CheckinTabComponent {
     if (!tournament) return;
 
     const selected = this.selectedCheckIns();
-    const enrollmentIds = selected.filter((c) => c.enrollment?.id && c.status === CheckInStatus.PENDING).map((c) => c.enrollment!.id);
+    const enrollmentIds = selected
+      .filter((c) => c.enrollment?.id && c.status === CheckInStatus.PENDING)
+      .map((c) => c.enrollment?.id)
+      .filter((id): id is string => !!id);
 
     if (enrollmentIds.length === 0) return;
 
