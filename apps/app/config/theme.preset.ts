@@ -187,6 +187,31 @@ export const BadmanPreset = definePreset(Aura, {
   // background/border, which in our inverted dark.surface scale is
   // the LIGHTEST color. Remap it to the dark end of the scale.
   components: {
+    // Aura's dark Button outlined/text "secondary" variant defaults to
+    // `{surface.400}` for the foreground, which in our inverted dark
+    // surface scale is a mid-dark gray — producing dark-on-dark text.
+    // Remap to semantic text tokens so the label stays legible.
+    button: {
+      colorScheme: {
+        dark: {
+          outlined: {
+            secondary: {
+              color: '{text.muted.color}',
+              borderColor: '{surface.300}',
+              hoverBackground: '{surface.100}',
+              activeBackground: '{surface.200}',
+            },
+          },
+          text: {
+            secondary: {
+              color: '{text.muted.color}',
+              hoverBackground: '{surface.100}',
+              activeBackground: '{surface.200}',
+            },
+          },
+        },
+      },
+    },
     togglebutton: {
       colorScheme: {
         dark: {
