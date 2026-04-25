@@ -8,258 +8,216 @@
 
   <!-- Filter: All / Singles / Doubles / Mixed -->
   @if (!loading() && games().length > 0) {
-    <div class="flex items-center flex-wrap gap-2 mb-4">
-      <p-selectbutton
-        [options]="filterOptions()"
-        [ngModel]="selectedGameType()"
-        (ngModelChange)="selectGameType($event)"
-        optionLabel="label"
-        optionValue="value"
-        [allowEmpty]="false"
-      />
-    </div>
+  <div class="flex items-center flex-wrap gap-2 mb-4">
+    <p-selectbutton [options]="filterOptions()" [ngModel]="selectedGameType()" (ngModelChange)="selectGameType($event)" optionLabel="label" optionValue="value" [allowEmpty]="false" />
+  </div>
   }
 
   @if (!loading()) {
-    @for (game of filteredGames(); track game.id) {
-      @let won = didCurrentPlayerWin(game);
-      @let ownTeam = getCurrentPlayerTeam(game);
-      @let ownPoints = getCurrentPlayerPoints(game);
-      @let isComp = isCompetitionGame(game);
-      @let myCol = ownTeam === 2 ? 2 : 1;
-      @let oppCol = ownTeam === 2 ? 1 : 2;
+  @for (game of filteredGames(); track game.id) {
+  @let won = didCurrentPlayerWin(game);
+  @let ownTeam = getCurrentPlayerTeam(game);
+  @let ownPoints = getCurrentPlayerPoints(game);
+  @let isComp = isCompetitionGame(game);
+  @let myCol = ownTeam === 2 ? 2 : 1;
+  @let oppCol = ownTeam === 2 ? 1 : 2;
 
-      <article
-        class="g-card game-card"
-        [class.g-card--win]="won === true"
-        [class.g-card--loss]="won === false"
-        [class.g-card--pending]="won === null"
-      >
-        <!-- Color band -->
-        <div class="g-card__band"></div>
+  <article class="grid grid-cols-[4px_1fr_auto] lg:grid-cols-[4px_auto_1fr_auto] grid-rows-[auto_1fr] bg-emphasis border border-surface rounded-border overflow-hidden mt-3 first:mt-0">
+    <!-- Color band -->
+    <div class="row-span-2" [ngClass]="{
+            'bg-[var(--g-win)]': won === true,
+            'bg-[var(--g-loss)]': won === false,
+            'bg-primary': won === null,
+          }"></div>
 
-        <!-- Date column -->
-        <div class="g-card__date">
-          <span class="eyebrow">{{ game?.playedAt | dayjsFormat: 'ddd' }}</span>
-          <span class="day">{{ game?.playedAt | dayjsFormat: 'DD' }}</span>
-          <span class="month">{{ game?.playedAt | dayjsFormat: 'MMM' }}</span>
-        </div>
+    <!-- Date column (hidden on mobile) -->
+    <div class="row-span-2 hidden lg:flex flex-col items-center justify-center gap-1 px-4 py-4 pl-5 border-r border-surface min-w-[72px]">
+      <span class="t-eyebrow">{{ game?.playedAt | dayjsFormat: 'ddd' }}</span>
+      <span class="font-['Space_Grotesk',sans-serif] font-bold text-2xl leading-none text-color">{{ game?.playedAt | dayjsFormat: 'DD' }}</span>
+      <span class="t-mono text-[0.8125rem] text-muted-color">{{ game?.playedAt | dayjsFormat: 'MMM' }}</span>
+    </div>
 
-        <!-- Body -->
-        <div class="g-card__body">
-          <!-- Top row: meta + teams (right-aligned) -->
-          <div class="g-card__top-row">
-          <!-- Meta: tag + competition/tournament name -->
-          <div class="g-card__meta">
-            @if (game?.tournamentDraw?.name) {
-              <a
-                class="meta-label no-underline"
-                [routerLink]="[
+    <!-- Top row: meta + teams (right-aligned) -->
+    <div class="col-start-2 lg:col-start-3 row-start-1 flex items-center justify-between gap-3 min-w-0 px-5 pt-3">
+      <!-- Meta: tag + competition/tournament name -->
+      <div class="flex items-center gap-2 text-xs text-muted-color min-w-0">
+        @if (game?.tournamentDraw?.name) {
+        <a class="no-underline shrink-0" [routerLink]="[
                   '/tournament',
                   game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.id,
                   'sub-events',
                   game?.tournamentDraw?.tournamentSubEvent?.id,
                   'draws',
                   game?.tournamentDraw?.id,
-                ]"
-              >
-                <p-tag [value]="game?.tournamentDraw?.name ?? ''" severity="info" />
-              </a>
-              @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
-                <span class="meta-text">{{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}</span>
-              }
-            } @else if (isComp) {
-              <a
-                class="meta-label no-underline"
-                [routerLink]="[
+                ]">
+          <p-tag [value]="game?.tournamentDraw?.name ?? ''" severity="info" />
+        </a>
+        @if (game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name) {
+        <span class="truncate">{{ game?.tournamentDraw?.tournamentSubEvent?.tournamentEvent?.name }}</span>
+        }
+        } @else if (isComp) {
+        <a class="no-underline shrink-0" [routerLink]="[
                   '/competition',
                   game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.id,
                   'sub-events',
                   game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.id,
                   'draws',
                   game?.competitionEncounter?.drawCompetition?.id,
-                ]"
-              >
-                <p-tag [value]="game?.competitionEncounter?.drawCompetition?.name ?? ''" severity="info" />
-              </a>
-              @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
-                <span class="meta-text">{{
-                  game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name
-                }}</span>
-              }
-            } @else {
-              <p-tag [value]="game?.gameType ?? ''" severity="secondary" />
-            }
-          </div>
-
-          <!-- Teams (competitions only) -->
-          @if (isComp) {
-            <div class="g-card__teams">
-              @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
-                <a
-                  [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!, 'teams', game.competitionEncounter!.homeTeam!.id!]"
-                >{{ getHomeTeamName(game) }}</a>
-              } @else {
-                {{ getHomeTeamName(game) }}
-              }
-              <span class="sep">vs</span>
-              @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
-                <a
-                  [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!, 'teams', game.competitionEncounter!.awayTeam!.id!]"
-                >{{ getAwayTeamName(game) }}</a>
-              } @else {
-                {{ getAwayTeamName(game) }}
-              }
-            </div>
-          }
-          </div>
-
-          <!-- Compact pair line: own pair · vs · opponent pair -->
-          <div class="g-card__pairs">
-            <div class="g-card__pair">
-              @for (m of getTeamMembers(game, myCol); track m?.id) {
-                <span class="player" [class.is-own]="isCurrentPlayer(m?.gamePlayer?.id || '')">
-                  @if (isCurrentPlayer(m?.gamePlayer?.id || '')) {
-                    <span class="name">{{ m?.gamePlayer?.fullName }}</span>
-                  } @else {
-                    <a class="name" [routerLink]="['/players', m?.gamePlayer?.id]">
-                      {{ m?.gamePlayer?.fullName }}
-                    </a>
-                  }
-                  @if (getPlayerLevel(game, m?.gamePlayer?.id || ''); as lvl) {
-                    <app-tier-badge [level]="lvl" size="sm" />
-                  }
-                </span>
-              }
-            </div>
-            <span class="g-card__vs">vs</span>
-            <div class="g-card__pair is-right">
-              @for (m of getTeamMembers(game, oppCol); track m?.id) {
-                <span class="player">
-                  <a class="name" [routerLink]="['/players', m?.gamePlayer?.id]">
-                    {{ m?.gamePlayer?.fullName }}
-                  </a>
-                  @if (getPlayerLevel(game, m?.gamePlayer?.id || ''); as lvl) {
-                    <app-tier-badge [level]="lvl" size="sm" />
-                  }
-                </span>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: sets + points chip -->
-        <div class="g-card__right">
-          <!-- Top: points chip + extends border next to teams -->
-          <div class="g-card__right-top">
-            @if (ownPoints !== 0) {
-              <span class="g-card__points" [class.is-gain]="ownPoints > 0" [class.is-loss]="ownPoints < 0">
-                {{ formatPoints(ownPoints) }}
-              </span>
-            }
-          </div>
-
-          <div class="g-card__right-row">
-            <div class="g-card__scores">
-              <!-- Own sets -->
-              <div class="g-card__score-col">
-                @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-                  <span class="score" [class.is-win]="getSetWinner(game?.set1Team1, game?.set1Team2) === myCol">
-                    {{ myCol === 2 ? game?.set1Team2 : game?.set1Team1 }}
-                  </span>
-                }
-                @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-                  <span class="score" [class.is-win]="getSetWinner(game?.set2Team1, game?.set2Team2) === myCol">
-                    {{ myCol === 2 ? game?.set2Team2 : game?.set2Team1 }}
-                  </span>
-                }
-                @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-                  <span class="score" [class.is-win]="getSetWinner(game?.set3Team1, game?.set3Team2) === myCol">
-                    {{ myCol === 2 ? game?.set3Team2 : game?.set3Team1 }}
-                  </span>
-                }
-              </div>
-              <!-- Opponent sets -->
-              <div class="g-card__score-col">
-                @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
-                  <span class="score" [class.is-win]="getSetWinner(game?.set1Team1, game?.set1Team2) === oppCol">
-                    {{ myCol === 2 ? game?.set1Team1 : game?.set1Team2 }}
-                  </span>
-                }
-                @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
-                  <span class="score" [class.is-win]="getSetWinner(game?.set2Team1, game?.set2Team2) === oppCol">
-                    {{ myCol === 2 ? game?.set2Team1 : game?.set2Team2 }}
-                  </span>
-                }
-                @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
-                  <span class="score" [class.is-win]="getSetWinner(game?.set3Team1, game?.set3Team2) === oppCol">
-                    {{ myCol === 2 ? game?.set3Team1 : game?.set3Team2 }}
-                  </span>
-                }
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-    } @empty {
-      <div class="p-8 text-center">
-        <i class="pi pi-search text-4xl text-muted-color mb-4"></i>
-        <h3 class="text-lg font-semibold text-color mb-2">{{ 'all.game.recent.noGamesFound' | translate }}</h3>
-        <p class="text-muted-color text-sm">{{ 'all.game.recent.noPlayerGamesDescription' | translate }}</p>
+                ]">
+          <p-tag [value]="game?.competitionEncounter?.drawCompetition?.name ?? ''" severity="info" />
+        </a>
+        @if (game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name) {
+        <span class="truncate">{{ game?.competitionEncounter?.drawCompetition?.competitionSubEvent?.competitionEvent?.name }}</span>
+        }
+        } @else {
+        <p-tag [value]="game?.gameType ?? ''" severity="secondary" />
+        }
       </div>
-    }
 
-    <!-- Infinite scroll sentinel for large screens -->
-    @if (!isMobile() && hasMore() && games().length > 0) {
-      <div #scrollSentinel class="h-1"></div>
-      <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" [outlined]="true" icon="pi pi-plus" />
-    }
-
-    <!-- Load more button for mobile -->
-    @if (isMobile() && hasMore() && games().length > 0) {
-      <div class="flex justify-center mt-4">
-        <p-button
-          [label]="'all.game.common.loadMore' | translate"
-          [loading]="loadingMore()"
-          (onClick)="loadMore()"
-          [outlined]="true"
-          icon="pi pi-plus"
-        />
+      <!-- Teams (competitions only) -->
+      @if (isComp) {
+      <div class="font-['Space_Grotesk',sans-serif] font-semibold text-[0.8125rem] text-color text-right leading-tight shrink-0 max-w-[220px]">
+        @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
+        <a class="text-color no-underline hover:text-primary" [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!, 'teams', game.competitionEncounter!.homeTeam!.id!]">{{ getHomeTeamName(game) }}</a>
+        } @else {
+        {{ getHomeTeamName(game) }}
+        }
+        <span class="text-muted-color font-medium mx-1">vs</span>
+        @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
+        <a class="text-color no-underline hover:text-primary" [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!, 'teams', game.competitionEncounter!.awayTeam!.id!]">{{ getAwayTeamName(game) }}</a>
+        } @else {
+        {{ getAwayTeamName(game) }}
+        }
       </div>
-    }
-
-    <!-- Loading more skeletons -->
-    @if (loadingMore()) {
-      @for (i of [1, 2, 3]; track i) {
-        <div class="g-card">
-          <div class="g-card__band"></div>
-          <div class="p-4 space-y-2">
-            <p-skeleton width="12rem" height="0.875rem" />
-            <p-skeleton width="16rem" height="1rem" />
-            <p-skeleton width="8rem" height="0.75rem" />
-          </div>
-          <div class="g-card__right">
-            <p-skeleton width="1.5rem" height="2rem" />
-            <p-skeleton width="1.5rem" height="2rem" />
-          </div>
-        </div>
       }
-    }
-  } @else {
-    <!-- Initial loading skeletons -->
-    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-      <div class="g-card">
-        <div class="g-card__band"></div>
-        <div class="p-4 space-y-2">
-          <p-skeleton width="12rem" height="0.875rem" />
-          <p-skeleton width="16rem" height="1rem" />
-          <p-skeleton width="8rem" height="0.75rem" />
+    </div>
+
+    <!-- Pairs row -->
+    <div class="col-start-2 lg:col-start-3 row-start-2 grid grid-cols-[1fr_auto_1fr] gap-2.5 items-center px-5 pb-4 pt-2">
+      <div class="flex flex-col gap-0.5 min-w-0">
+        @for (m of getTeamMembers(game, myCol); track m?.id) {
+        <span class="inline-flex items-center gap-1.5 text-sm max-w-full" [class.text-color]="isCurrentPlayer(m?.gamePlayer?.id || '')" [class.font-semibold]="isCurrentPlayer(m?.gamePlayer?.id || '')" [class.text-muted-color]="!isCurrentPlayer(m?.gamePlayer?.id || '')">
+          @if (isCurrentPlayer(m?.gamePlayer?.id || '')) {
+          <span class="truncate">{{ m?.gamePlayer?.fullName }}</span>
+          } @else {
+          <a class="text-inherit no-underline hover:text-primary truncate" [routerLink]="['/players', m?.gamePlayer?.id]">
+            {{ m?.gamePlayer?.fullName }}
+          </a>
+          }
+          @if (getPlayerLevel(game, m?.gamePlayer?.id || ''); as lvl) {
+          <app-tier-badge [level]="lvl" size="sm" />
+          }
+        </span>
+        }
+      </div>
+      <span class="t-mono text-[0.6875rem] text-muted-color uppercase tracking-[0.14em]">vs</span>
+      <div class="flex flex-col gap-0.5 min-w-0 items-end text-right">
+        @for (m of getTeamMembers(game, oppCol); track m?.id) {
+        <span class="inline-flex items-center gap-1.5 text-sm text-muted-color max-w-full">
+          <a class="text-inherit no-underline hover:text-primary truncate" [routerLink]="['/players', m?.gamePlayer?.id]">
+            {{ m?.gamePlayer?.fullName }}
+          </a>
+          @if (getPlayerLevel(game, m?.gamePlayer?.id || ''); as lvl) {
+          <app-tier-badge [level]="lvl" size="sm" />
+          }
+        </span>
+        }
+      </div>
+    </div>
+
+    <!-- Right top: points chip + extends border next to teams -->
+    <div class="col-start-3 lg:col-start-4 row-start-1 flex items-center justify-center px-5 pt-3 border-l border-surface">
+      @if (ownPoints !== 0) {
+      <span class="t-mono text-[0.8125rem] font-bold tabular-nums px-2 py-0.5 rounded-sm" [ngClass]="{
+                'text-[var(--g-win)] bg-[var(--g-win-muted)]': ownPoints > 0,
+                'text-[var(--g-loss)] bg-[var(--g-loss-muted)]': ownPoints < 0,
+              }">{{ formatPoints(ownPoints) }}</span>
+      }
+    </div>
+
+    <!-- Right row: scores -->
+    <div class="col-start-3 lg:col-start-4 row-start-2 flex items-center justify-end gap-3 px-5 pb-4 pt-2 border-l border-surface">
+      <div class="flex gap-2.5 t-mono tabular-nums font-semibold leading-tight">
+        <!-- Own sets -->
+        <div class="flex flex-col items-end gap-0.5 min-w-[1.25rem]">
+          @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+          <span class="text-base" [class.text-[var(--g-win)]]="getSetWinner(game?.set1Team1, game?.set1Team2) === myCol" [class.text-muted-color]="getSetWinner(game?.set1Team1, game?.set1Team2) !== myCol">{{ myCol === 2 ? game?.set1Team2 : game?.set1Team1 }}</span>
+          }
+          @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+          <span class="text-base" [class.text-[var(--g-win)]]="getSetWinner(game?.set2Team1, game?.set2Team2) === myCol" [class.text-muted-color]="getSetWinner(game?.set2Team1, game?.set2Team2) !== myCol">{{ myCol === 2 ? game?.set2Team2 : game?.set2Team1 }}</span>
+          }
+          @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+          <span class="text-base" [class.text-[var(--g-win)]]="getSetWinner(game?.set3Team1, game?.set3Team2) === myCol" [class.text-muted-color]="getSetWinner(game?.set3Team1, game?.set3Team2) !== myCol">{{ myCol === 2 ? game?.set3Team2 : game?.set3Team1 }}</span>
+          }
         </div>
-        <div class="g-card__right">
-          <p-skeleton width="1.5rem" height="2rem" />
-          <p-skeleton width="1.5rem" height="2rem" />
+        <!-- Opponent sets -->
+        <div class="flex flex-col items-end gap-0.5 min-w-[1.25rem]">
+          @if (isSetPlayed(game?.set1Team1, game?.set1Team2)) {
+          <span class="text-base" [class.text-[var(--g-win)]]="getSetWinner(game?.set1Team1, game?.set1Team2) === oppCol" [class.text-muted-color]="getSetWinner(game?.set1Team1, game?.set1Team2) !== oppCol">{{ myCol === 2 ? game?.set1Team1 : game?.set1Team2 }}</span>
+          }
+          @if (isSetPlayed(game?.set2Team1, game?.set2Team2)) {
+          <span class="text-base" [class.text-[var(--g-win)]]="getSetWinner(game?.set2Team1, game?.set2Team2) === oppCol" [class.text-muted-color]="getSetWinner(game?.set2Team1, game?.set2Team2) !== oppCol">{{ myCol === 2 ? game?.set2Team1 : game?.set2Team2 }}</span>
+          }
+          @if (isSetPlayed(game?.set3Team1, game?.set3Team2)) {
+          <span class="text-base" [class.text-[var(--g-win)]]="getSetWinner(game?.set3Team1, game?.set3Team2) === oppCol" [class.text-muted-color]="getSetWinner(game?.set3Team1, game?.set3Team2) !== oppCol">{{ myCol === 2 ? game?.set3Team1 : game?.set3Team2 }}</span>
+          }
         </div>
       </div>
-    }
+    </div>
+  </article>
+  } @empty {
+  <div class="p-8 text-center">
+    <i class="pi pi-search text-4xl text-muted-color mb-4"></i>
+    <h3 class="text-lg font-semibold text-color mb-2">{{ 'all.game.recent.noGamesFound' | translate }}</h3>
+    <p class="text-muted-color text-sm">{{ 'all.game.recent.noPlayerGamesDescription' | translate }}</p>
+  </div>
+  }
+
+  <!-- Infinite scroll sentinel for large screens -->
+  @if (!isMobile() && hasMore() && games().length > 0) {
+  <div #scrollSentinel class="h-1"></div>
+  <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" [outlined]="true" icon="pi pi-plus" />
+  }
+
+  <!-- Load more button for mobile -->
+  @if (isMobile() && hasMore() && games().length > 0) {
+  <div class="flex justify-center mt-4">
+    <p-button [label]="'all.game.common.loadMore' | translate" [loading]="loadingMore()" (onClick)="loadMore()" [outlined]="true" icon="pi pi-plus" />
+  </div>
+  }
+
+  <!-- Loading more skeletons -->
+  @if (loadingMore()) {
+  @for (i of [1, 2, 3]; track i) {
+  <div class="g-card">
+    <div class="g-card__band"></div>
+    <div class="p-4 space-y-2">
+      <p-skeleton width="12rem" height="0.875rem" />
+      <p-skeleton width="16rem" height="1rem" />
+      <p-skeleton width="8rem" height="0.75rem" />
+    </div>
+    <div class="g-card__right">
+      <p-skeleton width="1.5rem" height="2rem" />
+      <p-skeleton width="1.5rem" height="2rem" />
+    </div>
+  </div>
+  }
+  }
+  } @else {
+  <!-- Initial loading skeletons -->
+  @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+  <div class="g-card">
+    <div class="g-card__band"></div>
+    <div class="p-4 space-y-2">
+      <p-skeleton width="12rem" height="0.875rem" />
+      <p-skeleton width="16rem" height="1rem" />
+      <p-skeleton width="8rem" height="0.75rem" />
+    </div>
+    <div class="g-card__right">
+      <p-skeleton width="1.5rem" height="2rem" />
+      <p-skeleton width="1.5rem" height="2rem" />
+    </div>
+  </div>
+  }
   }
 </div>

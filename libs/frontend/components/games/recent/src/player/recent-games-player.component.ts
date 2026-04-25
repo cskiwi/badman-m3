@@ -1,33 +1,22 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  ElementRef,
-  AfterViewInit,
-  OnDestroy,
-  afterRenderEffect,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, afterRenderEffect, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 
-import { IS_MOBILE } from '@app/frontend-utils';
-import { Game } from '@app/models';
-import { PlayerRecentGamesService } from './recent-games-player.service';
-import { RouterLink } from '@angular/router';
+import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SkeletonModule } from 'primeng/skeleton';
+import { RouterLink } from '@angular/router';
+import { TierBadgeComponent } from '@app/frontend-components/tier-badge';
+import { IS_MOBILE } from '@app/frontend-utils';
+import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
+import { Game } from '@app/models';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
-import { TierBadgeComponent } from '@app/frontend-components/tier-badge';
+import { PlayerRecentGamesService } from './recent-games-player.service';
 @Component({
   selector: 'app-recent-games-player',
   imports: [
+    NgClass,
     DayjsFormatPipe,
     RouterLink,
     FormsModule,
