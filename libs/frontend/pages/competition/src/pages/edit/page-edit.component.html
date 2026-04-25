@@ -1,17 +1,10 @@
 @if (!loading()) {
   @if (this.competition(); as competition) {
     <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
-      <a routerLink="/competition" class="text-surface-500 no-underline hover:text-surface-800">
-        {{ 'all.navigation.competitions' | translate }}
-      </a>
-      <i class="pi pi-angle-right text-[10px]"></i>
-      <a [routerLink]="['/', 'competition', competition.slug]" class="text-surface-500 no-underline hover:text-surface-800">
-        {{ competition.name }}
-      </a>
-      <i class="pi pi-angle-right text-[10px]"></i>
-      <span class="text-surface-800 font-semibold">{{ 'all.competition.edit.title' | translate }}</span>
-    </nav>
+    <app-breadcrumb [items]="[
+      { label: competition.name, routerLink: ['/', 'competition', competition.slug] },
+      { label: ('all.competition.edit.title' | translate) },
+    ]" />
 
     <!-- Header -->
     <header class="flex items-start justify-between flex-wrap gap-4 mb-6">
@@ -54,7 +47,7 @@
     }
 
     <!-- Tabbed Interface -->
-    <div class="rounded-xl bg-surface-100 border border-surface-200 p-4">
+    <div class="bg-emphasis border border-surface rounded-border p-4">
       <p-tabs [value]="activeTabIndex()" (activeIndexChange)="onActiveIndexChange($event)">
         <p-tablist>
           <p-tab value="0">
@@ -89,7 +82,7 @@
   }
 } @else {
   <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
-  <p class="text-center text-surface-500 mt-4 text-sm">{{ 'all.competition.edit.messages.loading' | translate }}</p>
+  <p class="text-center text-muted-color mt-4 text-sm">{{ 'all.competition.edit.messages.loading' | translate }}</p>
 }
 
 @if (error(); as errorMessage) {

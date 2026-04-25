@@ -1,0 +1,18 @@
+:host {
+  color: var(--p-text-color);
+}
+
+:host(.hero-stat-value--rank) {
+  background-image: var(--g-gradient-rank);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+:host(.hero-stat-value--win) {
+  color: var(--g-win);
+}
+
+:host(.hero-stat-value--loss) {
+  color: var(--g-loss);
+}

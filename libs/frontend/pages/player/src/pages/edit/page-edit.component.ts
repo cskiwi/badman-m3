@@ -12,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { TabsModule } from 'primeng/tabs';
 
 import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { Player } from '@app/models';
 import { MessageService } from 'primeng/api';
 import { injectParams } from 'ngxtension/inject-params';
@@ -56,6 +57,7 @@ const GET_PLAYER_WITH_DETAILS = gql`
     ToastModule,
     TabsModule,
     PageHeaderComponent,
+    BreadcrumbComponent,
     TranslateModule,
     PlayerProfileComponent,
     PlayerClaimsComponent,

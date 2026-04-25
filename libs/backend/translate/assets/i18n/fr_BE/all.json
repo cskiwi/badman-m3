@@ -206,6 +206,7 @@
     "details": "Détails du concours",
     "draw": "Calendrier",
     "draws": "Série",
+    "maxLevel": "Niveau max",
     "edit": {
       "actions": {
         "cancel": "Annuler",

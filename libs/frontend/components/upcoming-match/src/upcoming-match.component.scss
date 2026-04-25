@@ -21,7 +21,7 @@
   font-weight: 700;
   font-size: 1.5rem;
   line-height: 1;
-  color: var(--p-surface-900);
+  color: var(--p-text-color);
 }
 
 /* Day label */
@@ -29,7 +29,7 @@
   font-size: 0.6875rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--p-surface-400);
+  color: var(--p-text-muted-color);
   font-weight: 700;
 }
 
@@ -37,7 +37,7 @@
 .g-upcoming__time {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8125rem;
-  color: var(--p-surface-500);
+  color: var(--p-text-muted-color);
 }
 
 /* Teams line */
@@ -45,12 +45,12 @@
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 600;
   font-size: 1.125rem;
-  color: var(--p-surface-900);
+  color: var(--p-text-color);
 }
 
 /* Full date */
 .g-upcoming__full-date {
   font-family: 'JetBrains Mono', monospace;
   font-size: var(--t-body-sm);
-  color: var(--p-surface-500);
+  color: var(--p-text-muted-color);
 }

@@ -3,90 +3,75 @@
     @if (this.subEvent(); as subEvent) {
       @if (this.draw(); as draw) {
         <!-- Breadcrumb -->
-        <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
-          <a routerLink="/competition" class="text-surface-500 no-underline hover:text-surface-800">
-            {{ 'all.navigation.competitions' | translate }}
-          </a>
-          <i class="pi pi-angle-right text-[10px]"></i>
-          <a [routerLink]="['/', 'competition', competition.slug]" class="text-surface-500 no-underline hover:text-surface-800">
-            {{ competition.name }}
-          </a>
-          <i class="pi pi-angle-right text-[10px]"></i>
-          <span class="text-surface-500">{{ subEvent.name }}</span>
-          <i class="pi pi-angle-right text-[10px]"></i>
-          <span class="text-surface-800 font-semibold">{{ draw.name || ('all.competition.draw' | translate) }}</span>
-        </nav>
+        <app-breadcrumb [items]="[
+          { label: competition.name, routerLink: ['/', 'competition', competition.slug] },
+          { label: subEvent.name },
+          { label: draw.name || ('all.competition.draw' | translate) },
+        ]" />
 
         <!-- Draw Hero -->
-        <section class="rounded-xl bg-surface-100 border border-surface-200 p-6 mb-6">
-          <div class="flex items-start justify-between flex-wrap gap-4">
-            <div class="flex flex-col gap-2 min-w-0">
-              <span class="t-eyebrow">{{ subEvent.name }}</span>
-              <h1 class="draw-name m-0">{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</h1>
-              <div class="flex items-center gap-2 flex-wrap mt-1">
-                @if (draw.type) {
-                  <span class="t-mono text-xs text-surface-700 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">{{ draw.type }}</span>
-                }
-                @if (draw.size) {
-                  <span class="t-mono text-xs text-surface-700 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">Size {{ draw.size }}</span>
-                }
-                @if (subEvent.level) {
-                  <span class="t-mono text-xs text-surface-700 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">
-                    LVL {{ subEvent.level }}
-                    @if (subEvent.maxLevel && subEvent.maxLevel !== subEvent.level) {
-                      – {{ subEvent.maxLevel }}
-                    }
-                  </span>
-                }
-                @if (subEvent.eventType) {
-                  <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">{{ subEvent.eventType }}</span>
-                }
-              </div>
-            </div>
+        <app-hero>
+          <app-hero-avatar avatar>{{ (draw.type || 'D').substring(0, 1) }}</app-hero-avatar>
 
-            <div class="flex items-center gap-2 flex-wrap justify-end">
-              @if (competition.visualCode && draw.visualCode) {
-                <a
-                  [href]="'https://www.toernooi.nl/sport/league/draw?id=' + competition.visualCode + '&draw=' + draw.visualCode"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-surface-500 hover:text-primary hover:bg-surface-200 transition-colors text-xs no-underline"
-                  title="View draw on toernooi.nl"
-                >
-                  <i class="pi pi-external-link text-xs"></i>
-                  <span>toernooi.nl</span>
-                </a>
+          <div identity>
+            <span class="t-eyebrow">{{ subEvent.name }}</span>
+            <app-hero-title>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</app-hero-title>
+            <div class="flex items-center gap-2 flex-wrap">
+              @if (draw.type) {
+                <span class="t-mono text-xs text-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">{{ draw.type }}</span>
               }
-              @if (syncConfig(); as config) {
-                <app-sync-button [config]="config" />
+              @if (draw.size) {
+                <span class="t-mono text-xs text-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">Size {{ draw.size }}</span>
+              }
+              @if (subEvent.maxLevel) {
+                <span class="t-mono text-xs text-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
+                  {{ 'all.competition.maxLevel' | translate }} {{ subEvent.maxLevel }}
+                </span>
+              }
+              @if (subEvent.eventType) {
+                <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">{{ subEvent.eventType }}</span>
               }
             </div>
+          </div>
+
+          <div actions class="flex items-center gap-2 flex-wrap justify-end">
+            @if (competition.visualCode && draw.visualCode) {
+              <a
+                [href]="'https://www.toernooi.nl/sport/league/draw?id=' + competition.visualCode + '&draw=' + draw.visualCode"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-muted-color hover:text-primary hover:bg-emphasis transition-colors text-xs no-underline"
+                title="View draw on toernooi.nl"
+              >
+                <i class="pi pi-external-link text-xs"></i>
+                <span>toernooi.nl</span>
+              </a>
+            }
+            @if (syncConfig(); as config) {
+              <app-sync-button [config]="config" />
+            }
           </div>
 
           <!-- Stat strip -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface-200">
+          <div stats class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface relative z-[1]">
             <div class="flex flex-col gap-2">
               <span class="t-eyebrow">Encounters</span>
-              <span class="draw-stat-value">{{ encounters().length }}</span>
+              <app-hero-stat-value>{{ encounters().length }}</app-hero-stat-value>
             </div>
             <div class="flex flex-col gap-2">
               <span class="t-eyebrow">Played</span>
-              <div class="flex items-baseline gap-2">
-                <span class="draw-stat-value" style="color: var(--g-win)">{{ playedEncounters().length }}</span>
-              </div>
+              <app-hero-stat-value variant="win">{{ playedEncounters().length }}</app-hero-stat-value>
             </div>
             <div class="flex flex-col gap-2">
               <span class="t-eyebrow">Upcoming</span>
-              <div class="flex items-baseline gap-2">
-                <span class="draw-stat-value">{{ upcomingEncounters().length }}</span>
-              </div>
+              <app-hero-stat-value>{{ upcomingEncounters().length }}</app-hero-stat-value>
             </div>
             <div class="flex flex-col gap-2">
               <span class="t-eyebrow">Teams</span>
-              <span class="draw-stat-value">{{ standings().length || '–' }}</span>
+              <app-hero-stat-value>{{ standings().length || '–' }}</app-hero-stat-value>
             </div>
           </div>
-        </section>
+        </app-hero>
 
         <!-- Draw Type Specific Content -->
         @switch (draw.type) {
@@ -94,7 +79,7 @@
             <section class="mb-6">
               <div class="flex items-center gap-3 mb-4">
                 <span class="t-eyebrow">Standings</span>
-                <div class="flex-1 h-px bg-surface-200"></div>
+                <div class="flex-1 h-px bg-emphasis"></div>
               </div>
               <app-poule-draw [entries]="standings()" />
             </section>
@@ -103,7 +88,7 @@
             <section class="mb-6">
               <div class="flex items-center gap-3 mb-4">
                 <span class="t-eyebrow">Qualification</span>
-                <div class="flex-1 h-px bg-surface-200"></div>
+                <div class="flex-1 h-px bg-emphasis"></div>
               </div>
               <app-qualification-draw [encounters]="encounters()" [standings]="standings()" />
             </section>
@@ -114,13 +99,13 @@
         @if (encounters().length > 0) {
           <section class="grid gap-6 lg:grid-cols-[minmax(0,_1fr)_360px]">
             <!-- Played encounters -->
-            <div class="rounded-xl bg-surface-100 border border-surface-200 p-5">
+            <div class="bg-emphasis border border-surface rounded-border p-5">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex flex-col gap-1">
                   <span class="t-eyebrow">{{ 'all.competition.played_encounters' | translate }}</span>
                   <h3 class="encounters-title m-0">Played</h3>
                 </div>
-                <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm">{{ playedEncounters().length }}</span>
+                <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm">{{ playedEncounters().length }}</span>
               </div>
               @if (playedEncounters().length > 0) {
                 <div class="flex flex-col gap-3">
@@ -129,18 +114,18 @@
                   }
                 </div>
               } @else {
-                <p class="text-surface-500 text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
+                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
               }
             </div>
 
             <!-- Upcoming encounters -->
-            <div class="rounded-xl bg-surface-100 border border-surface-200 p-5">
+            <div class="bg-emphasis border border-surface rounded-border p-5">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex flex-col gap-1">
                   <span class="t-eyebrow">{{ 'all.competition.upcoming_encounters' | translate }}</span>
                   <h3 class="encounters-title m-0">Upcoming</h3>
                 </div>
-                <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm">{{ upcomingEncounters().length }}</span>
+                <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm">{{ upcomingEncounters().length }}</span>
               </div>
               @if (upcomingEncounters().length > 0) {
                 <div class="flex flex-col gap-3">
@@ -149,15 +134,15 @@
                   }
                 </div>
               } @else {
-                <p class="text-surface-500 text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
+                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
               }
             </div>
           </section>
         } @else {
-          <div class="text-center py-12 rounded-xl bg-surface-100 border border-surface-200">
-            <i class="pi pi-calendar text-3xl mb-3 block text-surface-400"></i>
-            <h3 class="text-lg font-semibold mb-1 text-surface-900">{{ 'all.competition.no_encounters' | translate }}</h3>
-            <p class="text-surface-500 text-sm">{{ 'all.competition.no_encounters_description' | translate }}</p>
+          <div class="text-center py-12 bg-emphasis border border-surface rounded-border">
+            <i class="pi pi-calendar text-3xl mb-3 block text-muted-color"></i>
+            <h3 class="text-lg font-semibold mb-1 text-color">{{ 'all.competition.no_encounters' | translate }}</h3>
+            <p class="text-muted-color text-sm">{{ 'all.competition.no_encounters_description' | translate }}</p>
           </div>
         }
       }
@@ -167,13 +152,13 @@
   <!-- Loading skeleton -->
   <div class="flex flex-col gap-5">
     <p-skeleton width="22rem" height="1rem" />
-    <div class="rounded-xl bg-surface-100 border border-surface-200 p-6 flex flex-col gap-4">
+    <div class="bg-emphasis border border-surface rounded-border p-6 flex flex-col gap-4">
       <p-skeleton width="18rem" height="2rem" />
       <div class="flex gap-2">
         <p-skeleton width="5rem" height="1.5rem" />
         <p-skeleton width="5rem" height="1.5rem" />
       </div>
-      <div class="grid grid-cols-4 gap-4 mt-3 pt-4 border-t border-surface-200">
+      <div class="grid grid-cols-4 gap-4 mt-3 pt-4 border-t border-surface">
         @for (j of [1, 2, 3, 4]; track j) {
           <div class="flex flex-col gap-2">
             <p-skeleton width="4rem" height="0.75rem" />
@@ -184,7 +169,7 @@
     </div>
     <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
       @for (i of [1, 2]; track i) {
-        <div class="rounded-xl bg-surface-100 border border-surface-200 p-5 space-y-3">
+        <div class="bg-emphasis border border-surface rounded-border p-5 space-y-3">
           <p-skeleton width="10rem" height="1.25rem" />
           @for (k of [1, 2, 3]; track k) {
             <p-skeleton width="100%" height="3rem" />

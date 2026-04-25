@@ -2,6 +2,7 @@ import { DatePipe, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { HeroComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -15,6 +16,7 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-page-detail',
   imports: [
+    BreadcrumbComponent,
     DatePipe,
     SlicePipe,
     NgTemplateOutlet,

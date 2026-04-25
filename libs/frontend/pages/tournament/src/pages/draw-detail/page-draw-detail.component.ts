@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@a
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { HeroComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { SyncButtonComponent, SyncButtonConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,6 +18,7 @@ import { DrawKoTreeComponent } from './components/draw-ko-tree.component';
 @Component({
   selector: 'app-page-draw-detail',
   imports: [
+    BreadcrumbComponent,
     SlicePipe,
     RouterModule,
     TranslateModule,

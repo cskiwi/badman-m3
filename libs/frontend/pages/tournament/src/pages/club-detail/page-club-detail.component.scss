@@ -1,48 +1,5 @@
 :host {
   display: block;
-  padding: var(--space-5) var(--space-5) var(--space-6);
-
-  @media (max-width: 768px) {
-    padding: var(--space-4) var(--space-4) var(--space-5);
-  }
-}
-
-.club-crest {
-  width: 96px;
-  height: 96px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-  background: var(--g-gradient-primary);
-  color: var(--p-primary-contrast);
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 1.75rem;
-  letter-spacing: 0.05em;
-
-  span {
-    transform: skewX(-4deg);
-  }
-}
-
-.club-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 2.25rem;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--p-text-color);
-}
-
-.club-stat-value {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  font-size: 2rem;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  color: var(--p-text-color);
 }
 
 .text-win {
@@ -113,7 +70,7 @@
   // Avatar group styling
   .p-avatar-group .p-avatar {
     margin-left: -0.5rem;
-    border: 2px solid var(--surface-ground);
+    border: 2px solid var(--p-content-background);
   }
 
   // Tab panel content
@@ -123,7 +80,7 @@
 
   // Skeleton improvements
   .p-skeleton {
-    background: linear-gradient(90deg, var(--surface-200) 25%, var(--surface-300) 50%, var(--surface-200) 75%);
+    background: linear-gradient(90deg, var(--p-content-border-color) 25%, var(--p-content-border-color) 50%, var(--p-content-border-color) 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
   }
@@ -189,7 +146,7 @@
   }
 
   &.neutral {
-    background-color: var(--surface-200);
+    background-color: var(--p-content-border-color);
     color: var(--text-color-secondary);
   }
 }

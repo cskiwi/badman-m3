@@ -14,6 +14,7 @@ import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ListGamesComponent, PeriodSelectionComponent } from './components';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { RankingBreakdownService, RankingType } from './page-ranking-breakdown.service';
 import { ShowLevelService } from '../detail/components/show-level/show-level.service';
 import { RankingSystem } from '@app/models';
@@ -38,6 +39,7 @@ import { AuthService } from '@app/frontend-modules-auth/service';
     ToggleButtonModule,
     ListGamesComponent,
     PeriodSelectionComponent,
+    BreadcrumbComponent,
   ],
 })
 export class PageRankingBreakdownComponent {

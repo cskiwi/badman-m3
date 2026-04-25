@@ -1,29 +1,29 @@
 <section class="g-card">
-  <div class="g-card__head">
-    <span class="t-eyebrow">Upcoming · Club</span>
-    <a routerLink="." [fragment]="'schedule'" class="g-card__link">All ↗</a>
-  </div>
+ <div class="g-card__head">
+ <span class="t-eyebrow">Upcoming · Club</span>
+ <a routerLink="." [fragment]="'schedule'" class="g-card__link">All ↗</a>
+ </div>
 
-  @if (loading()) {
-    <span class="t-body-sm text-surface-500">Loading…</span>
-  } @else if (items().length > 0) {
-    <div class="sched">
-      @for (enc of items(); track enc.id) {
-        <div class="sched__item">
-          <div class="sched__date">
-            <span class="day">{{ enc.date | date: 'EEE' }}</span>
-            <span class="num">{{ enc.date | date: 'dd' }}</span>
-          </div>
-          <div class="sched__body">
-            <span class="sched__teams">
-              {{ enc.homeTeam?.name || '—' }} · vs · {{ enc.awayTeam?.name || '—' }}
-            </span>
-            <span class="sched__meta">{{ enc.date | date: 'HH:mm' }}</span>
-          </div>
-        </div>
-      }
-    </div>
-  } @else {
-    <span class="t-body-sm text-surface-500">No upcoming fixtures.</span>
-  }
+ @if (loading()) {
+ <span class="t-body-sm text-muted-color">Loading…</span>
+ } @else if (items().length > 0) {
+ <div class="sched">
+ @for (enc of items(); track enc.id) {
+ <div class="sched__item">
+ <div class="sched__date">
+ <span class="day">{{ enc.date | date: 'EEE' }}</span>
+ <span class="num">{{ enc.date | date: 'dd' }}</span>
+ </div>
+ <div class="sched__body">
+ <span class="sched__teams">
+ {{ enc.homeTeam?.name || '—' }} · vs · {{ enc.awayTeam?.name || '—' }}
+ </span>
+ <span class="sched__meta">{{ enc.date | date: 'HH:mm' }}</span>
+ </div>
+ </div>
+ }
+ </div>
+ } @else {
+ <span class="t-body-sm text-muted-color">No upcoming fixtures.</span>
+ }
 </section>

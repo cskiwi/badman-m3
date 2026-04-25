@@ -1,129 +1,129 @@
 <!-- Toolbar: search + team filter -->
 <div class="flex flex-row flex-wrap gap-3 items-center mb-5">
-  <p-iconfield class="flex-1" [style]="{ 'min-width': '200px' }">
-    <p-inputicon class="pi pi-search" />
-    <input
-      pInputText
-      type="text"
-      (input)="searchQuery.set($any($event.target).value)"
-      [placeholder]="('all.common.search' | translate) + '...'"
-      class="w-full"
-    />
-  </p-iconfield>
-  @if (service.availableTeams().length > 1) {
-    <p-multiSelect
-      [options]="service.availableTeams()"
-      [ngModel]="selectedTeamIds()"
-      (ngModelChange)="selectedTeamIds.set($event)"
-      optionLabel="name"
-      optionValue="id"
-      [showClear]="true"
-      display="chip"
-      [placeholder]="'all.team.filterByTeam' | translate"
-      [style]="{ 'min-width': '200px', 'max-width': '340px' }"
-    />
-  }
+ <p-iconfield class="flex-1" [style]="{ 'min-width': '200px' }">
+ <p-inputicon class="pi pi-search" />
+ <input
+ pInputText
+ type="text"
+ (input)="searchQuery.set($any($event.target).value)"
+ [placeholder]="('all.common.search' | translate) + '...'"
+ class="w-full"
+ />
+ </p-iconfield>
+ @if (service.availableTeams().length > 1) {
+ <p-multiSelect
+ [options]="service.availableTeams()"
+ [ngModel]="selectedTeamIds()"
+ (ngModelChange)="selectedTeamIds.set($event)"
+ optionLabel="name"
+ optionValue="id"
+ [showClear]="true"
+ display="chip"
+ [placeholder]="'all.team.filterByTeam' | translate"
+ [style]="{ 'min-width': '200px', 'max-width': '340px' }"
+ />
+ }
 </div>
 
 @if (service.loading()) {
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-    @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
-      <div class="border-surface rounded-border border bg-surface-0">
-        <div class="flex items-center gap-2 p-3 border-b border-surface">
-          <p-skeleton shape="circle" size="2.25rem" />
-          <p-skeleton width="8rem" height="1.25rem" />
-        </div>
-        <div class="p-4 space-y-2">
-          <p-skeleton width="7rem" height="1rem" />
-          <p-skeleton width="5rem" height="1rem" />
-        </div>
-      </div>
-    }
-  </div>
+ <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+ @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+ <div class="border-surface rounded-border border bg-emphasis">
+ <div class="flex items-center gap-2 p-3 border-b border-surface">
+ <p-skeleton shape="circle" size="2.25rem" />
+ <p-skeleton width="8rem" height="1.25rem" />
+ </div>
+ <div class="p-4 space-y-2">
+ <p-skeleton width="7rem" height="1rem" />
+ <p-skeleton width="5rem" height="1rem" />
+ </div>
+ </div>
+ }
+ </div>
 } @else if (filteredPlayers().length > 0) {
-  <!-- Eyebrow header -->
-  <div class="flex items-baseline justify-between mb-3">
-    <span class="t-eyebrow">{{ 'all.player.players' | translate }}</span>
-    <span class="t-mono text-xs text-muted-color">
-      <strong class="text-color font-semibold">{{ filteredPlayers().length }}</strong>
-      / {{ service.players().length }}
-    </span>
-  </div>
+ <!-- Eyebrow header -->
+ <div class="flex items-baseline justify-between mb-3">
+ <span class="t-eyebrow">{{ 'all.player.players' | translate }}</span>
+ <span class="t-mono text-xs text-muted-color">
+ <strong class="text-color font-semibold">{{ filteredPlayers().length }}</strong>
+ / {{ service.players().length }}
+ </span>
+ </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-    @for (player of filteredPlayers(); track player.id) {
-      <article
-        class="group relative flex flex-col bg-surface-100 border border-surface-200 rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-surface-300"
-      >
-        <!-- Top gradient band -->
-        <div
-          class="absolute top-0 left-0 h-[3px] w-[30%] bg-primary transition-[width] duration-300 ease-out group-hover:w-full"
-        ></div>
+ <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+ @for (player of filteredPlayers(); track player.id) {
+ <article
+ class="group relative flex flex-col bg-emphasis border border-surface rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:border-surface"
+ >
+ <!-- Top gradient band -->
+ <div
+ class="absolute top-0 left-0 h-[3px] w-[30%] bg-primary transition-[width] duration-300 ease-out group-hover:w-full"
+ ></div>
 
-        <!-- Head: avatar | name + memberId -->
-        <div class="flex items-center gap-3 px-5 py-4">
-          <span
-            class="w-11 h-11 rounded-full bg-primary/15 text-primary grid place-items-center font-['Space_Grotesk',sans-serif] font-bold text-[0.9375rem] tracking-wide flex-shrink-0"
-          >
-            {{ getPlayerInitials(player) }}
-          </span>
-          <div class="flex flex-col min-w-0 flex-1">
-            <a
-              [routerLink]="['/players', player.slug]"
-              class="font-['Space_Grotesk',sans-serif] font-semibold text-[0.9375rem] leading-tight text-color truncate no-underline hover:text-primary"
-            >
-              {{ player.fullName }}
-            </a>
-            @if (player.memberId) {
-              <div class="t-mono text-[11px] text-muted-color tracking-wider mt-1">#{{ player.memberId }}</div>
-            }
-          </div>
-        </div>
+ <!-- Head: avatar | name + memberId -->
+ <div class="flex items-center gap-3 px-5 py-4">
+ <span
+ class="w-11 h-11 rounded-full bg-primary/15 text-primary grid place-items-center font-['Space_Grotesk',sans-serif] font-bold text-[0.9375rem] tracking-wide flex-shrink-0"
+ >
+ {{ getPlayerInitials(player) }}
+ </span>
+ <div class="flex flex-col min-w-0 flex-1">
+ <a
+ [routerLink]="['/players', player.slug]"
+ class="font-['Space_Grotesk',sans-serif] font-semibold text-[0.9375rem] leading-tight text-color truncate no-underline hover:text-primary"
+ >
+ {{ player.fullName }}
+ </a>
+ @if (player.memberId) {
+ <div class="t-mono text-[11px] text-muted-color tracking-wider mt-1">#{{ player.memberId }}</div>
+ }
+ </div>
+ </div>
 
-        <!-- Teams eyebrow -->
-        <div class="flex items-center gap-3 px-5 py-3 border-t border-surface-200">
-          <span class="t-eyebrow">
-            {{ 'all.club.totalTeams' | translate }} · {{ player.teamPlayerMemberships.length }}
-          </span>
-        </div>
+ <!-- Teams eyebrow -->
+ <div class="flex items-center gap-3 px-5 py-3 border-t border-surface">
+ <span class="t-eyebrow">
+ {{ 'all.club.totalTeams' | translate }} · {{ player.teamPlayerMemberships.length }}
+ </span>
+ </div>
 
-        <!-- Team rows -->
-        <div class="flex flex-col flex-1">
-          @for (membership of player.teamPlayerMemberships; track membership.id) {
-            <a
-              class="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center px-5 py-2 border-t border-surface-200 no-underline text-color hover:bg-surface-50 hover:text-primary transition-colors"
-              [routerLink]="['/clubs', clubId(), 'teams', membership.team.id]"
-            >
-              <span
-                class="t-mono font-bold text-[11px] tracking-wider min-w-[32px] h-[22px] px-1.5 grid place-items-center rounded-sm bg-surface-200 text-muted-color"
-              >
-                {{ membership.team.abbreviation || '—' }}
-              </span>
-              <span class="text-[0.8125rem] font-medium truncate">{{ membership.team.name }}</span>
-            </a>
-          }
-        </div>
+ <!-- Team rows -->
+ <div class="flex flex-col flex-1">
+ @for (membership of player.teamPlayerMemberships; track membership.id) {
+ <a
+ class="grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center px-5 py-2 border-t border-surface no-underline text-color hover:bg-emphasis hover:text-primary transition-colors"
+ [routerLink]="['/clubs', clubId(), 'teams', membership.team.id]"
+ >
+ <span
+ class="t-mono font-bold text-[11px] tracking-wider min-w-[32px] h-[22px] px-1.5 grid place-items-center rounded-sm bg-emphasis text-muted-color"
+ >
+ {{ membership.team.abbreviation || '—' }}
+ </span>
+ <span class="text-[0.8125rem] font-medium truncate">{{ membership.team.name }}</span>
+ </a>
+ }
+ </div>
 
-        <!-- Footer -->
-        <div
-          class="flex justify-end items-center px-5 py-2 border-t border-surface-200 bg-surface-50 t-mono text-[11px] mt-auto"
-        >
-          <a
-            [routerLink]="['/players', player.slug]"
-            class="text-primary font-semibold no-underline hover:underline"
-          >
-            View profile ↗
-          </a>
-        </div>
-      </article>
-    }
-  </div>
+ <!-- Footer -->
+ <div
+ class="flex justify-end items-center px-5 py-2 border-t border-surface bg-emphasis t-mono text-[11px] mt-auto"
+ >
+ <a
+ [routerLink]="['/players', player.slug]"
+ class="text-primary font-semibold no-underline hover:underline"
+ >
+ View profile ↗
+ </a>
+ </div>
+ </article>
+ }
+ </div>
 } @else {
-  <div class="text-center py-12 text-muted-color">
-    <i class="pi pi-users text-6xl mb-4 block"></i>
-    <h3 class="text-xl font-medium text-color mb-2">
-      {{ 'all.player.noPlayers' | translate }}
-    </h3>
-    <p>{{ 'all.club.players.noPlayersDescription' | translate }}</p>
-  </div>
+ <div class="text-center py-12 text-muted-color">
+ <i class="pi pi-users text-6xl mb-4 block"></i>
+ <h3 class="text-xl font-medium text-color mb-2">
+ {{ 'all.player.noPlayers' | translate }}
+ </h3>
+ <p>{{ 'all.club.players.noPlayersDescription' | translate }}</p>
+ </div>
 }

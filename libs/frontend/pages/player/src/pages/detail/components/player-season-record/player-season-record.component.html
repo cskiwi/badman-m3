@@ -1,28 +1,28 @@
 <div class="t-eyebrow">Season record</div>
 <div class="flex items-baseline justify-between">
-  <span class="t-stat-lg">{{ wins() }}<span class="text-surface-400 text-base font-medium mx-1">/ {{ totalGames() }}</span></span>
-  <p-chip [label]="winRate() + '% W'" styleClass="g-chip--win" />
+ <span class="t-stat-lg">{{ wins() }}<span class="text-muted-color text-base font-medium mx-1">/ {{ totalGames() }}</span></span>
+ <p-chip [label]="winRate() + '% W'" styleClass="g-chip--win" />
 </div>
 <div class="record-bar">
-  <div class="record-bar__seg record-bar__seg--win" [style.width.%]="winPct()"></div>
-  <div class="record-bar__seg record-bar__seg--loss" [style.width.%]="lossPct()"></div>
+ <div class="record-bar__seg record-bar__seg--win" [style.width.%]="winPct()"></div>
+ <div class="record-bar__seg record-bar__seg--loss" [style.width.%]="lossPct()"></div>
 </div>
 <div class="flex gap-4 text-sm">
-  <span class="flex items-center gap-2 text-surface-500">
-    <span class="legend-dot legend-dot--win"></span>{{ wins() }} W
-  </span>
-  <span class="flex items-center gap-2 text-surface-500">
-    <span class="legend-dot legend-dot--loss"></span>{{ losses() }} L
-  </span>
+ <span class="flex items-center gap-2 text-muted-color">
+ <span class="legend-dot legend-dot--win"></span>{{ wins() }} W
+ </span>
+ <span class="flex items-center gap-2 text-muted-color">
+ <span class="legend-dot legend-dot--loss"></span>{{ losses() }} L
+ </span>
 </div>
-<hr class="border-surface-200" />
+<hr class="border-surface" />
 <div class="flex justify-between">
-  <div class="flex flex-col gap-1">
-    <span class="t-eyebrow">Longest streak</span>
-    <span class="text-sm font-semibold">{{ longestStreak() }} wins</span>
-  </div>
-  <div class="flex flex-col gap-1 text-right">
-    <span class="t-eyebrow">This month</span>
-    <span class="text-sm font-semibold t-mono">{{ thisMonth().wins }}–{{ thisMonth().losses }}</span>
-  </div>
+ <div class="flex flex-col gap-1">
+ <span class="t-eyebrow">Longest streak</span>
+ <span class="text-sm font-semibold">{{ longestStreak() }} wins</span>
+ </div>
+ <div class="flex flex-col gap-1 text-right">
+ <span class="t-eyebrow">This month</span>
+ <span class="text-sm font-semibold t-mono">{{ thisMonth().wins }}–{{ thisMonth().losses }}</span>
+ </div>
 </div>

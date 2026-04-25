@@ -8,8 +8,8 @@
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-4);
-  background: var(--p-surface-50);
-  border: 1px solid var(--p-surface-100);
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-background);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-4);
 }
@@ -26,7 +26,7 @@
   display: inline-flex;
   gap: 2px;
   padding: 4px;
-  background: var(--p-surface-100);
+  background: var(--p-content-background);
   border-radius: 999px;
 
   button {

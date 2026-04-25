@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  background: var(--p-surface-100);
-  border: 1px solid var(--p-surface-200);
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
 }
@@ -13,7 +13,7 @@
   height: 12px;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--p-surface-200);
+  background: var(--p-content-border-color);
 }
 
 .record-bar__seg {
@@ -33,7 +33,7 @@
   height: 8px;
   border-radius: 999px;
   display: inline-block;
-  background: var(--p-surface-400);
+  background: var(--p-text-muted-color);
 }
 
 .legend-dot--win {

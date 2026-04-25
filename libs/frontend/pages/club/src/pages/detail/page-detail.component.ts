@@ -2,7 +2,8 @@
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { HeroComponent } from '@app/frontend-components/hero';
+import { HeroAvatarComponent, HeroComponent, HeroStatValueComponent, HeroTitleComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { Team } from '@app/models';
@@ -30,6 +31,7 @@ import {
 @Component({
   selector: 'app-page-detail',
   imports: [
+    BreadcrumbComponent,
     CommonModule,
     RouterModule,
     ProgressBarModule,
@@ -40,6 +42,9 @@ import {
     CardModule,
     TabsModule,
     HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
+    HeroStatValueComponent,
     ClubTeamsTabComponent,
     ClubPlayersTabComponent,
     ClubScheduleTabComponent,

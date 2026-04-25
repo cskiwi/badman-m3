@@ -206,6 +206,7 @@
     "details": "Competition Details",
     "draw": "Draw",
     "draws": "Draws",
+    "maxLevel": "Max level",
     "edit": {
       "actions": {
         "cancel": "Cancel",

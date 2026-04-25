@@ -1,27 +1,27 @@
 <section class="g-card">
-  <div class="g-card__head">
-    <span class="t-eyebrow">Top performers · Season</span>
-    <span class="g-card__sub">W %</span>
-  </div>
+ <div class="g-card__head">
+ <span class="t-eyebrow">Top performers · Season</span>
+ <span class="g-card__sub">W %</span>
+ </div>
 
-  @if (loading()) {
-    <span class="t-body-sm text-surface-500">Loading…</span>
-  } @else if (rows().length > 0) {
-    <div>
-      @for (p of rows(); track p.id; let i = $index) {
-        <div class="perf-row">
-          <span class="perf-row__rank">{{ i + 1 }}</span>
-          <div class="min-w-0">
-            <a [routerLink]="['/player', p.slug]" class="perf-row__name truncate block">
-              {{ p.fullName }}
-            </a>
-            <div class="perf-row__meta truncate">{{ p.wins }}–{{ p.losses }}</div>
-          </div>
-          <span class="perf-row__record">{{ p.winRatePct }}%</span>
-        </div>
-      }
-    </div>
-  } @else {
-    <span class="t-body-sm text-surface-500">No season stats yet.</span>
-  }
+ @if (loading()) {
+ <span class="t-body-sm text-muted-color">Loading…</span>
+ } @else if (rows().length > 0) {
+ <div>
+ @for (p of rows(); track p.id; let i = $index) {
+ <div class="perf-row">
+ <span class="perf-row__rank">{{ i + 1 }}</span>
+ <div class="min-w-0">
+ <a [routerLink]="['/player', p.slug]" class="perf-row__name truncate block">
+ {{ p.fullName }}
+ </a>
+ <div class="perf-row__meta truncate">{{ p.wins }}–{{ p.losses }}</div>
+ </div>
+ <span class="perf-row__record">{{ p.winRatePct }}%</span>
+ </div>
+ }
+ </div>
+ } @else {
+ <span class="t-body-sm text-muted-color">No season stats yet.</span>
+ }
 </section>

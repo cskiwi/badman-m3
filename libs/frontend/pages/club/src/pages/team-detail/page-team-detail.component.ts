@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { EncounterCardComponent } from '@app/frontend-components/games/encounter-card';
 import { HeroComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +16,7 @@ import { TeamPlayersTableComponent } from './components/team-players-table.compo
 @Component({
   selector: 'app-page-team-detail',
   imports: [
+    BreadcrumbComponent,
     RouterModule,
     TranslateModule,
     DatePipe,

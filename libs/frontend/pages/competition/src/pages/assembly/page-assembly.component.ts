@@ -21,11 +21,13 @@ import { MessageService } from 'primeng/api';
 import { AssemblyComponent } from './components/assembly/assembly.component';
 import { AssemblyService } from './page-assembly.service';
 import { AssemblyGeneratorService } from './assembly-generator.service';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-assembly',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     FormsModule,
     ReactiveFormsModule,
     NgTemplateOutlet,
@@ -37,7 +39,6 @@ import { AssemblyGeneratorService } from './assembly-generator.service';
     SelectModule,
     AutoCompleteModule,
     FloatLabelModule,
-    RouterLink,
     AssemblyComponent,
   ],
   providers: [MessageService, AssemblyService, AssemblyGeneratorService],

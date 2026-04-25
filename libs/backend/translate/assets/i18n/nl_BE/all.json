@@ -206,6 +206,7 @@
     "details": "Competitie Details",
     "draw": "Schema",
     "draws": "Reeks",
+    "maxLevel": "Max niveau",
     "edit": {
       "actions": {
         "cancel": "Annuleren",

@@ -16,11 +16,13 @@ import { EnrollmentsTabComponent } from './tabs/enrollments/enrollments-tab.comp
 import { DrawsTabComponent } from './tabs/draws/draws-tab.component';
 import { ScheduleTabComponent } from './tabs/schedule/schedule-tab.component';
 import { CheckinTabComponent } from './tabs/checkin/checkin-tab.component';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-admin',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     RouterModule,
     TranslateModule,
     SkeletonModule,

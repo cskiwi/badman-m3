@@ -1,6 +1,5 @@
 export * from './admin';
 export * from './club-detail';
-export * from './clubs';
 export * from './create';
 export * from './detail';
 export * from './edit';
@@ -11,5 +10,3 @@ export * from './live-kiosk';
 export * from './live-results';
 export * from './live-upcoming';
 export * from './my-enrollments';
-export * from './player-detail';
-export * from './players';

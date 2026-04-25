@@ -213,6 +213,7 @@ export type I18nTranslations = {
             "details": string;
             "draw": string;
             "draws": string;
+            "maxLevel": string;
             "edit": {
                 "actions": {
                     "cancel": string;

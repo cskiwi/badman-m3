@@ -1,13 +1,13 @@
 <!-- Breadcrumb -->
-<nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
-  <a routerLink="/tournament" class="text-surface-500 hover:text-primary no-underline">{{ 'all.tournament.title' | translate }}</a>
-  @if (tournament(); as t) {
-    <i class="pi pi-angle-right text-[10px]"></i>
-    <a [routerLink]="['/tournament', t.id]" class="text-surface-500 hover:text-primary no-underline">{{ t.name }}</a>
-    <i class="pi pi-angle-right text-[10px]"></i>
-    <span class="text-surface-800 font-semibold">{{ 'all.tournament.admin.title' | translate }}</span>
-  }
-</nav>
+<app-breadcrumb [items]="tournament()
+  ? [
+      { label: ('all.tournament.title' | translate), routerLink: '/tournament' },
+      { label: tournament()!.name, routerLink: ['/tournament', tournament()!.id] },
+      { label: ('all.tournament.admin.title' | translate) },
+    ]
+  : [
+      { label: ('all.tournament.title' | translate), routerLink: '/tournament' },
+    ]" />
 
 <!-- Header -->
 <div class="flex items-start justify-between flex-wrap gap-4 mb-6">
@@ -16,7 +16,7 @@
     @if (loading()) {
       <p-skeleton width="18rem" height="2rem" />
     } @else if (tournament(); as t) {
-      <h1 class="font-display text-3xl md:text-4xl font-bold text-surface-900 leading-tight tracking-tight m-0">
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-color leading-tight tracking-tight m-0">
         {{ 'all.tournament.admin.title' | translate }}: {{ t.name }}
       </h1>
     }
@@ -32,7 +32,7 @@
     <span>{{ err }}</span>
   </div>
 } @else if (loading()) {
-  <div class="rounded-xl bg-surface-100 border border-surface-200 p-5">
+  <div class="bg-emphasis border border-surface rounded-border p-5">
     <p-skeleton height="3rem" styleClass="mb-3" />
     <p-skeleton height="20rem" />
   </div>
@@ -42,7 +42,7 @@
     <span>{{ 'all.tournament.admin.noPermission' | translate }}</span>
   </div>
 } @else if (tournament(); as tournament) {
-  <div class="rounded-xl bg-surface-100 border border-surface-200 p-5">
+  <div class="bg-emphasis border border-surface rounded-border p-5">
     <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
       <p-tablist>
         <p-tab [value]="0">

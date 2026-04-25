@@ -8,13 +8,16 @@ import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { EncounterCardComponent } from '@app/frontend-components/games/encounter-card';
+import { HeroComponent, HeroAvatarComponent, HeroTitleComponent, HeroStatValueComponent } from '@app/frontend-components/hero';
 import { PouleDrawComponent } from './components/poule-draw.component';
 import { QualificationDrawComponent } from './components/qualification-draw.component';
 import { DrawsService } from './page-draws.service';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-draws',
   imports: [
+    BreadcrumbComponent,
     SlicePipe,
     ProgressBarModule,
     RouterModule,
@@ -24,6 +27,10 @@ import { DrawsService } from './page-draws.service';
     PouleDrawComponent,
     QualificationDrawComponent,
     EncounterCardComponent,
+    HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
+    HeroStatValueComponent,
   ],
   templateUrl: './page-draws.component.html',
   styleUrl: './page-draws.component.scss',

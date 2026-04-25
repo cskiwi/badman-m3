@@ -1,33 +1,27 @@
 @if (!loading()) {
 @if (this.player(); as player) {
 <!-- Breadcrumb -->
-<nav class="flex items-center gap-2 text-sm text-surface-500 mb-4">
-  <a routerLink="/players" class="text-surface-500 no-underline hover:text-surface-800">
-    {{ 'all.navigation.players' | translate }}
-  </a>
-  <i class="pi pi-angle-right text-[10px]"></i>
-  <span class="text-surface-800 font-semibold">{{ player.fullName }}</span>
-</nav>
+<app-breadcrumb [items]="[
+  { label: player.fullName },
+]" />
 
 <!-- Hero -->
 <app-hero>
   <!-- Avatar -->
-  <div avatar class="player-avatar">
-    <span>{{ playerInitials() }}</span>
-  </div>
+  <app-hero-avatar avatar>{{ playerInitials() }}</app-hero-avatar>
 
   <!-- Identity -->
   <div identity>
-    <h1 class="player-name">{{ player.fullName }}</h1>
+    <app-hero-title>{{ player.fullName }}</app-hero-title>
     <div class="flex items-center gap-3 flex-wrap">
       @if (this.club(); as club) {
-      <a class="flex items-center gap-2 text-surface-600 no-underline" [routerLink]="['/', 'clubs', club.slug]">
+      <a class="flex items-center gap-2 text-muted-color no-underline" [routerLink]="['/', 'clubs', club.slug]">
         <i class="pi pi-shield text-primary"></i>
-        <strong class="text-surface-800 font-semibold">{{ club.name }}</strong>
+        <strong class="text-color font-semibold">{{ club.name }}</strong>
       </a>
       }
       @if (player.memberId) {
-      <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">
+      <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
         #{{ player.memberId }}
       </span>
       }
@@ -36,25 +30,14 @@
 
   <!-- Actions -->
   <div actions class="flex items-center gap-2">
-    <p-button
-      icon="pi pi-user-plus"
-      [outlined]="true"
-      label="Follow"
-      size="small"
-      (onClick)="toggleFollow()"
-    />
-    <p-button
-      icon="pi pi-users"
-      [routerLink]="['head-to-head']"
-      [label]="'all.head-to-head.title' | translate"
-      size="small"
-    />
+    <p-button icon="pi pi-user-plus" [outlined]="true" label="Follow" size="small" (onClick)="toggleFollow()" />
+    <p-button icon="pi pi-users" [routerLink]="['head-to-head']" [label]="'all.head-to-head.title' | translate" size="small" />
     <p-menu #menu [model]="editMenuItems" [popup]="true" />
     <p-button icon="pi pi-ellipsis-v" [outlined]="true" (click)="menu.toggle($event)" size="small" />
   </div>
 
   <!-- Rank panel -->
-  <div stats class="mt-5 pt-5 border-t border-surface-200 relative z-[1]">
+  <div stats class="mt-5 pt-5 border-t border-surface relative z-[1]">
     <app-player-ranking-progress [playerId]="player.id" />
   </div>
 </app-hero>

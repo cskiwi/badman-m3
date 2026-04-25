@@ -15,11 +15,13 @@ import { EnrollmentCartComponent } from './components/enrollment-cart/enrollment
 import { EnrollmentFiltersComponent } from './components/enrollment-filters/enrollment-filters.component';
 import { PartnerSelectionDialogComponent } from './components/partner-selection-dialog/partner-selection-dialog.component';
 import { Subject, takeUntil } from 'rxjs';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-general-enrollment',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     RouterModule,
     ProgressSpinnerModule,
     ButtonModule,

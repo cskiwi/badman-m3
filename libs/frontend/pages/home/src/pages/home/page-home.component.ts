@@ -1,6 +1,6 @@
 import { AsyncPipe, DatePipe, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, PLATFORM_ID } from '@angular/core';
-import { HeroComponent } from '@app/frontend-components/hero';
+import { HeroAvatarComponent, HeroComponent, HeroTitleComponent } from '@app/frontend-components/hero';
 import { PlayerRankingProgressComponent } from '@app/frontend-components/player-ranking-progress';
 import { SectionHeaderComponent } from '@app/frontend-components/section-header';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -17,6 +17,8 @@ import { HomeService } from './page-home.service';
     TranslateModule,
     ProgressBarModule,
     HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
     PlayerRankingProgressComponent,
     SectionHeaderComponent,
   ],

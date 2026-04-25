@@ -1,8 +1,8 @@
 :host { display: block; }
 
 .g-card {
-  background: var(--p-surface-50);
-  border: 1px solid var(--p-surface-100);
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-background);
   border-radius: var(--radius-lg, 12px);
   padding: var(--space-4, 1rem);
 }
@@ -28,7 +28,7 @@
   align-items: center;
   gap: var(--space-3, 0.75rem);
   padding: var(--space-3, 0.75rem) 0;
-  border-bottom: 1px solid var(--p-surface-100);
+  border-bottom: 1px solid var(--p-content-background);
 
   &:last-child { border-bottom: 0; }
   &:first-child { padding-top: 0; }

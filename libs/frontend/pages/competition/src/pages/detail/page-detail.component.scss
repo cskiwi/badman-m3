@@ -1,39 +1,62 @@
 :host {
   display: block;
-  padding: var(--space-5) var(--space-5) var(--space-6);
-
-  @media (max-width: 768px) {
-    padding: var(--space-4) var(--space-4) var(--space-5);
-  }
 }
 
 .comp-crest {
-  width: 96px;
-  height: 96px;
+  width: 112px;
+  height: 112px;
   display: flex;
   align-items: center;
   justify-content: center;
-  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
   background: var(--g-gradient-primary);
-  color: var(--p-primary-contrast);
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 1.75rem;
-  letter-spacing: 0.05em;
+  position: relative;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--p-content-background);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    z-index: 0;
+  }
 
   span {
-    transform: skewX(-4deg);
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 0.02em;
+    background: var(--g-gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  @media (max-width: 768px) {
+    width: 88px;
+    height: 88px;
+
+    span {
+      font-size: 1.75rem;
+    }
   }
 }
 
 .comp-name {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
-  font-size: 2.5rem;
-  line-height: 1.1;
+  font-size: 3rem;
+  line-height: 1;
   letter-spacing: -0.02em;
   color: var(--p-text-color);
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
 }
 
 .section-title {
@@ -68,6 +91,6 @@
   transition: border-color 150ms ease;
 
   &:hover {
-    border-color: var(--p-surface-300);
+    border-color: var(--p-content-border-color);
   }
 }

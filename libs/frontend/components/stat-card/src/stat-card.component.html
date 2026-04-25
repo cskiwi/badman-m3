@@ -1,15 +1,15 @@
-<div class="bg-surface-100 border border-surface-200 rounded-xl p-5">
-  <div class="t-eyebrow mb-2">{{ label() }}</div>
-  <div class="flex items-baseline gap-2">
-    <span class="t-stat-lg">{{ value() }}</span>
-    @if (delta()) {
-      <span
-        class="g-stat-delta text-xs font-semibold"
-        [attr.data-dir]="deltaDirection() ?? 'neutral'"
-      >
-        {{ delta() }}
-      </span>
-    }
-  </div>
-  <ng-content />
+<div class="bg-emphasis border border-surface rounded-xl p-5">
+ <div class="t-eyebrow mb-2">{{ label() }}</div>
+ <div class="flex items-baseline gap-2">
+ <span class="t-stat-lg">{{ value() }}</span>
+ @if (delta()) {
+ <span
+ class="g-stat-delta text-xs font-semibold"
+ [attr.data-dir]="deltaDirection() ?? 'neutral'"
+ >
+ {{ delta() }}
+ </span>
+ }
+ </div>
+ <ng-content />
 </div>

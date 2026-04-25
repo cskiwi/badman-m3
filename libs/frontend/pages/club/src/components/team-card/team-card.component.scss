@@ -6,8 +6,8 @@
 
 .team {
   position: relative;
-  background: var(--p-surface-100);
-  border: 1px solid var(--p-surface-200);
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
@@ -18,7 +18,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: var(--p-surface-300);
+    border-color: var(--p-content-border-color);
 
     .team__band {
       width: 100%;
@@ -51,7 +51,7 @@
 .team__code {
   width: 44px;
   height: 44px;
-  background: var(--p-surface-200);
+  background: var(--p-content-border-color);
   color: var(--p-text-color);
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
@@ -144,9 +144,9 @@
   grid-template-columns: auto 1fr auto;
   gap: var(--space-3);
   align-items: center;
-  border-top: 1px solid var(--p-surface-200);
-  border-bottom: 1px solid var(--p-surface-200);
-  background: var(--p-surface-50);
+  border-top: 1px solid var(--p-content-border-color);
+  border-bottom: 1px solid var(--p-content-border-color);
+  background: var(--p-content-background);
 }
 
 .team__captain-avatar {
@@ -187,7 +187,7 @@
   display: grid;
   place-items: center;
   background: transparent;
-  border: 1px solid var(--p-surface-200);
+  border: 1px solid var(--p-content-border-color);
   border-radius: var(--radius-sm);
   color: var(--p-text-muted-color);
   text-decoration: none;
@@ -211,7 +211,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  border-top: 1px solid var(--p-surface-200);
+  border-top: 1px solid var(--p-content-border-color);
 }
 
 .team__roster-label {
@@ -248,14 +248,14 @@
   grid-template-columns: 24px 1fr auto auto;
   gap: var(--space-3);
   padding: 8px var(--space-5);
-  border-top: 1px solid var(--p-surface-200);
+  border-top: 1px solid var(--p-content-border-color);
   align-items: center;
   text-decoration: none;
   color: inherit;
   transition: background-color 150ms cubic-bezier(0.22, 1, 0.36, 1);
 
   &:hover {
-    background: var(--p-surface-50);
+    background: var(--p-content-background);
   }
 
   &.is-own {
@@ -276,7 +276,7 @@
   width: 24px;
   height: 24px;
   border-radius: 999px;
-  background: var(--p-surface-200);
+  background: var(--p-content-border-color);
   color: var(--p-text-muted-color);
   display: grid;
   place-items: center;
@@ -328,7 +328,7 @@
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--p-surface-300);
+  background: var(--p-content-border-color);
   transition: background 180ms ease;
 
   &.tp-dot--win {
@@ -347,8 +347,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px var(--space-5);
-  border-top: 1px solid var(--p-surface-200);
-  background: var(--p-surface-50);
+  border-top: 1px solid var(--p-content-border-color);
+  background: var(--p-content-background);
   font-size: 11px;
   font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;

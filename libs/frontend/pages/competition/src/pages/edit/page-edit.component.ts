@@ -18,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CompetitionInfoComponent } from './components/competition-info/competition-info.component';
 import { CompetitionDatesComponent } from './components/competition-dates/competition-dates.component';
 import { CompetitionSettingsComponent } from './components/competition-settings/competition-settings.component';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 const GET_COMPETITION_WITH_DETAILS = gql`
   query GetCompetitionWithDetails($id: ID!) {
@@ -52,12 +53,12 @@ const GET_COMPETITION_WITH_DETAILS = gql`
   selector: 'app-page-edit',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     ButtonModule,
     MessageModule,
     ProgressBarModule,
     ToastModule,
     TabsModule,
-    RouterLink,
     TranslateModule,
     CompetitionInfoComponent,
     CompetitionDatesComponent,

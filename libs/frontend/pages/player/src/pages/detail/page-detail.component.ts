@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { RouterModule } from '@angular/router';
 import { RecentGamesComponent } from '@app/frontend-components/games/recent';
 import { UpcomingGamesComponent } from '@app/frontend-components/games/upcoming';
-import { HeroComponent } from '@app/frontend-components/hero';
+import { HeroAvatarComponent, HeroComponent, HeroTitleComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { PlayerRankingProgressComponent } from '@app/frontend-components/player-ranking-progress';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -23,6 +24,7 @@ import { MenuModule } from 'primeng/menu';
 @Component({
   selector: 'app-page-detail',
   imports: [
+    BreadcrumbComponent,
     ProgressBarModule,
     ButtonModule,
     CardModule,
@@ -30,6 +32,8 @@ import { MenuModule } from 'primeng/menu';
     RouterModule,
     TranslateModule,
     HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
     PlayerRankingProgressComponent,
     RecentGamesComponent,
     UpcomingGamesComponent,

@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
+import { HeroAvatarComponent, HeroComponent, HeroStatValueComponent, HeroTitleComponent } from '@app/frontend-components/hero';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ClubDetailService } from './page-club-detail.service';
@@ -21,7 +22,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -43,8 +44,12 @@ import { MenuItem } from 'primeng/api';
     ChartModule,
     TagModule,
     AvatarModule,
-    BreadcrumbModule,
+    BreadcrumbComponent,
     TooltipModule,
+    HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
+    HeroStatValueComponent,
   ],
   templateUrl: './page-club-detail.component.html',
   styleUrl: './page-club-detail.component.scss',
@@ -79,9 +84,7 @@ export class PageClubDetailComponent {
   breadcrumbItems = computed((): MenuItem[] => {
     const club = this.club();
     return [
-      { label: 'Home', routerLink: '/' },
       { label: 'Tournaments', routerLink: '/tournament' },
-      { label: 'Clubs', routerLink: '/clubs' },
       { label: club?.name || 'Club Details' },
     ];
   });

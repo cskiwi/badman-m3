@@ -17,11 +17,13 @@ import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Player } from '@app/models';
 import { DialogModule } from 'primeng/dialog';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-enrollment',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,

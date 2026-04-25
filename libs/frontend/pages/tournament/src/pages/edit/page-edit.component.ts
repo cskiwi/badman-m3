@@ -16,6 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { TournamentInfoComponent } from './components/tournament-info/tournament-info.component';
 import { TournamentSettingsComponent } from './components/tournament-settings/tournament-settings.component';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 const GET_TOURNAMENT_WITH_DETAILS = gql`
   query GetTournamentWithDetails($id: ID!) {
@@ -39,6 +40,7 @@ const GET_TOURNAMENT_WITH_DETAILS = gql`
   selector: 'app-page-edit',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     ButtonModule,
     SkeletonModule,
     ToastModule,

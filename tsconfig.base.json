@@ -41,6 +41,7 @@
       "@app/frontend-components/form-sequence": ["libs/frontend/components/form-sequence/src/index.ts"],
       "@app/frontend-components/section-header": ["libs/frontend/components/section-header/src/index.ts"],
       "@app/frontend-components/hero": ["libs/frontend/components/hero/src/index.ts"],
+      "@app/frontend-components/breadcrumb": ["libs/frontend/components/breadcrumb/src/index.ts"],
       "@app/frontend-components/match-row": ["libs/frontend/components/match-row/src/index.ts"],
       "@app/frontend-components/upcoming-match": ["libs/frontend/components/upcoming-match/src/index.ts"],
       "@app/frontend-components/player-ranking-progress": ["libs/frontend/components/player-ranking-progress/src/index.ts"],

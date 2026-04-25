@@ -47,6 +47,8 @@
 
         <!-- Body -->
         <div class="g-card__body">
+          <!-- Top row: meta + teams (right-aligned) -->
+          <div class="g-card__top-row">
           <!-- Meta: tag + competition/tournament name -->
           <div class="g-card__meta">
             @if (game?.tournamentDraw?.name) {
@@ -90,6 +92,28 @@
             }
           </div>
 
+          <!-- Teams (competitions only) -->
+          @if (isComp) {
+            <div class="g-card__teams">
+              @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
+                <a
+                  [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!, 'teams', game.competitionEncounter!.homeTeam!.id!]"
+                >{{ getHomeTeamName(game) }}</a>
+              } @else {
+                {{ getHomeTeamName(game) }}
+              }
+              <span class="sep">vs</span>
+              @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
+                <a
+                  [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!, 'teams', game.competitionEncounter!.awayTeam!.id!]"
+                >{{ getAwayTeamName(game) }}</a>
+              } @else {
+                {{ getAwayTeamName(game) }}
+              }
+            </div>
+          }
+          </div>
+
           <!-- Compact pair line: own pair · vs · opponent pair -->
           <div class="g-card__pairs">
             <div class="g-card__pair">
@@ -124,27 +148,16 @@
           </div>
         </div>
 
-        <!-- Right: teams line (competitions) + sets + points chip -->
+        <!-- Right: sets + points chip -->
         <div class="g-card__right">
-          @if (isComp) {
-            <div class="g-card__teams">
-              @if (game?.competitionEncounter?.homeTeam?.club?.slug) {
-                <a
-                  [routerLink]="['/clubs', game.competitionEncounter!.homeTeam!.club!.slug!, 'teams', game.competitionEncounter!.homeTeam!.id!]"
-                >{{ getHomeTeamName(game) }}</a>
-              } @else {
-                {{ getHomeTeamName(game) }}
-              }
-              <span class="sep">vs</span>
-              @if (game?.competitionEncounter?.awayTeam?.club?.slug) {
-                <a
-                  [routerLink]="['/clubs', game.competitionEncounter!.awayTeam!.club!.slug!, 'teams', game.competitionEncounter!.awayTeam!.id!]"
-                >{{ getAwayTeamName(game) }}</a>
-              } @else {
-                {{ getAwayTeamName(game) }}
-              }
-            </div>
-          }
+          <!-- Top: points chip + extends border next to teams -->
+          <div class="g-card__right-top">
+            @if (ownPoints !== 0) {
+              <span class="g-card__points" [class.is-gain]="ownPoints > 0" [class.is-loss]="ownPoints < 0">
+                {{ formatPoints(ownPoints) }}
+              </span>
+            }
+          </div>
 
           <div class="g-card__right-row">
             <div class="g-card__scores">
@@ -185,12 +198,6 @@
                 }
               </div>
             </div>
-
-            @if (ownPoints !== 0) {
-              <span class="g-card__points" [class.is-gain]="ownPoints > 0" [class.is-loss]="ownPoints < 0">
-                {{ formatPoints(ownPoints) }}
-              </span>
-            }
           </div>
         </div>
       </article>

@@ -12,11 +12,13 @@ import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { DatePipe } from '@angular/common';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-my-enrollments',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     DatePipe,
     RouterModule,
     TranslateModule,

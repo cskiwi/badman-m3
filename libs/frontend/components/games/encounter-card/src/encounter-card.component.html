@@ -4,263 +4,240 @@
 @let isUpcoming = variant() === 'upcoming';
 
 <div
-  class="enc-card rounded-xl overflow-hidden transition-colors"
-  [style.background-color]="'var(--p-surface-100)'"
+ class="enc-card rounded-xl overflow-hidden transition-colors bg-emphasis"
 >
-  <!-- Collapsed row -->
-  <div
-    class="relative grid grid-cols-[auto_1fr_auto] items-stretch"
-    [class.enc-card--clickable]="!isUpcoming && hasGames()"
-    [class.cursor-pointer]="!isUpcoming && hasGames()"
-    (click)="!isUpcoming && hasGames() && toggleExpanded()"
-  >
-    <!-- Accent bar -->
-    <div
-      class="absolute inset-y-0 left-0 w-[4px] pointer-events-none"
-      [class.bg-primary]="isUpcoming || res == null"
-      [class.bg-green-500]="!isUpcoming && res === 'win'"
-      [class.bg-red-500]="!isUpcoming && res === 'loss'"
-      [class.bg-surface-300]="!isUpcoming && res === 'draw'"
-    ></div>
+ <!-- Collapsed row -->
+ <div
+ class="relative grid grid-cols-[auto_1fr_auto] items-stretch"
+ [class.enc-card--clickable]="!isUpcoming && hasGames()"
+ [class.cursor-pointer]="!isUpcoming && hasGames()"
+ (click)="!isUpcoming && hasGames() && toggleExpanded()"
+ >
+ <!-- Accent bar -->
+ <div
+ class="absolute inset-y-0 left-0 w-[4px] pointer-events-none"
+ [class.bg-primary]="isUpcoming || res == null"
+ [class.bg-green-500]="!isUpcoming && res === 'win'"
+ [class.bg-red-500]="!isUpcoming && res === 'loss'"
+ [class.bg-emphasis]="!isUpcoming && res === 'draw'"
+ ></div>
 
-  <!-- Date column -->
-    <div class="flex flex-col items-center gap-1 px-4 py-4 pl-5 border-r border-surface-200 min-w-[72px]">
-      <span class="t-eyebrow">{{ enc.date | date: 'EEE' }}</span>
-      <span class="font-['Space_Grotesk',sans-serif] font-bold text-2xl leading-none text-color">
-        {{ enc.date | date: 'dd' }}
-      </span>
-      <span class="t-mono text-[0.8125rem] text-muted-color">
-        {{ enc.date | date: isUpcoming ? 'HH:mm' : 'MMM' }}
-      </span>
-    </div>
+ <!-- Date column -->
+ <div class="flex flex-col items-center gap-1 px-4 py-4 pl-5 border-r border-surface min-w-[72px]">
+ <span class="t-eyebrow">{{ enc.date | date: 'EEE' }}</span>
+ <span class="font-['Space_Grotesk',sans-serif] font-bold text-2xl leading-none text-color">
+ {{ enc.date | date: 'dd' }}
+ </span>
+ <span class="t-mono text-[0.8125rem] text-muted-color">
+ {{ enc.date | date: isUpcoming ? 'HH:mm' : 'MMM' }}
+ </span>
+ </div>
 
-    <!-- Info column -->
-    <div class="flex flex-col gap-1 min-w-0 px-5 py-4">
-      <div class="font-['Space_Grotesk',sans-serif] font-semibold text-lg text-color truncate">
-        @if (enc.homeTeam?.club?.slug) {
-          <a
-            [routerLink]="['/clubs', enc.homeTeam!.club!.slug!, 'teams', enc.homeTeam!.id!]"
-            class="text-color no-underline hover:text-primary"
-            (click)="$event.stopPropagation()"
-          >
-            {{ enc.homeTeam?.name || enc.homeTeam?.abbreviation }}
-          </a>
-        } @else {
-          {{ enc.homeTeam?.name || enc.homeTeam?.abbreviation || 'TBD' }}
-        }
-        <span class="text-muted-color font-medium mx-1.5">vs</span>
-        @if (enc.awayTeam?.club?.slug) {
-          <a
-            [routerLink]="['/clubs', enc.awayTeam!.club!.slug!, 'teams', enc.awayTeam!.id!]"
-            class="text-color no-underline hover:text-primary"
-            (click)="$event.stopPropagation()"
-          >
-            {{ enc.awayTeam?.name || enc.awayTeam?.abbreviation }}
-          </a>
-        } @else {
-          {{ enc.awayTeam?.name || enc.awayTeam?.abbreviation || 'TBD' }}
-        }
-      </div>
-      @if (p) {
-        <span class="t-mono text-xs text-muted-color">
-          @if (p === 'home') {
-            {{ 'all.game.location.home' | translate }}
-          } @else {
-            {{ 'all.game.location.away' | translate }}
-          }
-        </span>
-      } @else {
-        <span class="t-mono text-xs text-muted-color">{{ enc.date | date: 'HH:mm' }}</span>
-      }
-    </div>
+ <!-- Info column -->
+ <div class="flex flex-col gap-1 min-w-0 px-5 py-4">
+ <div class="font-['Space_Grotesk',sans-serif] font-semibold text-lg text-color truncate">
+ @if (enc.homeTeam?.club?.slug) {
+ <a
+ [routerLink]="['/clubs', enc.homeTeam!.club!.slug!, 'teams', enc.homeTeam!.id!]"
+ class="text-color no-underline hover:text-primary"
+ (click)="$event.stopPropagation()"
+ >
+ {{ enc.homeTeam?.name || enc.homeTeam?.abbreviation }}
+ </a>
+ } @else {
+ {{ enc.homeTeam?.name || enc.homeTeam?.abbreviation || 'TBD' }}
+ }
+ <span class="text-muted-color font-medium mx-1.5">vs</span>
+ @if (enc.awayTeam?.club?.slug) {
+ <a
+ [routerLink]="['/clubs', enc.awayTeam!.club!.slug!, 'teams', enc.awayTeam!.id!]"
+ class="text-color no-underline hover:text-primary"
+ (click)="$event.stopPropagation()"
+ >
+ {{ enc.awayTeam?.name || enc.awayTeam?.abbreviation }}
+ </a>
+ } @else {
+ {{ enc.awayTeam?.name || enc.awayTeam?.abbreviation || 'TBD' }}
+ }
+ </div>
+ @if (p) {
+ <span class="t-mono text-xs text-muted-color">
+ @if (p === 'home') {
+ {{ 'all.game.location.home' | translate }}
+ } @else {
+ {{ 'all.game.location.away' | translate }}
+ }
+ </span>
+ } @else {
+ <span class="t-mono text-xs text-muted-color">{{ enc.date | date: 'HH:mm' }}</span>
+ }
+ </div>
 
-    <!-- Right column: score (played) or chevron placeholder (upcoming) -->
-    <div class="flex items-center gap-4 px-5 py-4">
-      @if (!isUpcoming) {
-        @let home = enc.homeScore ?? 0;
-        @let away = enc.awayScore ?? 0;
-        @let homeClass =
-          p == null
-            ? (home > away ? 'text-color' : 'text-muted-color')
-            : (p === 'home'
-                ? (res === 'win' ? 'text-green-600 dark:text-green-400' : res === 'loss' ? 'text-red-600 dark:text-red-400' : 'text-color')
-                : (res === 'win' ? 'text-red-600 dark:text-red-400' : res === 'loss' ? 'text-green-600 dark:text-green-400' : 'text-muted-color'));
-        @let awayClass =
-          p == null
-            ? (away > home ? 'text-color' : 'text-muted-color')
-            : (p === 'away'
-                ? (res === 'win' ? 'text-green-600 dark:text-green-400' : res === 'loss' ? 'text-red-600 dark:text-red-400' : 'text-color')
-                : (res === 'win' ? 'text-red-600 dark:text-red-400' : res === 'loss' ? 'text-green-600 dark:text-green-400' : 'text-muted-color'));
+ <!-- Right column: score (played) or chevron placeholder (upcoming) -->
+ <div class="flex items-center gap-4 px-5 py-4">
+ @if (!isUpcoming) {
+ @let home = enc.homeScore ?? 0;
+ @let away = enc.awayScore ?? 0;
+ @let homeClass =
+ p == null
+ ? (home > away ? 'text-color' : 'text-muted-color')
+ : (p === 'home'
+ ? (res === 'win' ? 'text-green-600 dark:text-green-400' : res === 'loss' ? 'text-red-600 dark:text-red-400' : 'text-color')
+ : (res === 'win' ? 'text-red-600 dark:text-red-400' : res === 'loss' ? 'text-green-600 dark:text-green-400' : 'text-muted-color'));
+ @let awayClass =
+ p == null
+ ? (away > home ? 'text-color' : 'text-muted-color')
+ : (p === 'away'
+ ? (res === 'win' ? 'text-green-600 dark:text-green-400' : res === 'loss' ? 'text-red-600 dark:text-red-400' : 'text-color')
+ : (res === 'win' ? 'text-red-600 dark:text-red-400' : res === 'loss' ? 'text-green-600 dark:text-green-400' : 'text-muted-color'));
 
-        <div class="flex items-baseline gap-2 t-mono">
-          <span
-            class="font-['Space_Grotesk',sans-serif] font-bold text-3xl leading-none tabular-nums"
-            [class]="homeClass"
-          >
-            {{ home }}
-          </span>
-          <span class="text-muted-color text-lg">–</span>
-          <span
-            class="font-['Space_Grotesk',sans-serif] font-bold text-3xl leading-none tabular-nums"
-            [class]="awayClass"
-          >
-            {{ away }}
-          </span>
-        </div>
-        @if (hasGames()) {
-          <i
-            class="pi text-muted-color transition-transform duration-200"
-            [class.pi-chevron-down]="!expanded()"
-            [class.pi-chevron-up]="expanded()"
-          ></i>
-        }
-      }
-    </div>
+ <div class="flex items-baseline gap-2 t-mono">
+ <span
+ class="font-['Space_Grotesk',sans-serif] font-bold text-3xl leading-none tabular-nums"
+ [class]="homeClass"
+ >
+ {{ home }}
+ </span>
+ <span class="text-muted-color text-lg">–</span>
+ <span
+ class="font-['Space_Grotesk',sans-serif] font-bold text-3xl leading-none tabular-nums"
+ [class]="awayClass"
+ >
+ {{ away }}
+ </span>
+ </div>
+ @if (hasGames()) {
+ <i
+ class="pi text-muted-color transition-transform duration-200"
+ [class.pi-chevron-down]="!expanded()"
+ [class.pi-chevron-up]="expanded()"
+ ></i>
+ }
+ }
+ </div>
 
-  </div>
+ </div>
 
-  <!-- Expanded games section -->
-  @if (!isUpcoming && expanded() && hasGames()) {
-    <div class="enc-expanded">
-      @if (gamesLoading()) {
-        <div class="flex flex-col gap-2 p-4">
-          @for (i of [1, 2, 3]; track i) {
-            <div class="flex items-center justify-between gap-3">
-              <p-skeleton width="10rem" height="1rem" />
-              <p-skeleton width="5rem" height="1rem" />
-            </div>
-          }
-        </div>
-      } @else if (games().length > 0) {
-        <ul class="flex flex-col divide-y divide-surface-200 m-0 p-0 list-none">
-          @for (game of games(); track game.id) {
-            @let gRes = getGameResult(game);
-            <li
-              class="grid grid-cols-[4px_auto_1fr_auto] items-center gap-4 pr-5 py-3"
-              [style.padding-left.px]="0"
-            >
-              <!-- Per-game result band -->
-              <div
-                class="self-stretch"
-                [style.background-color]="
-                  gRes === 'win' ? 'var(--g-win)' :
-                  gRes === 'loss' ? 'var(--g-loss)' :
-                  'var(--p-surface-300)'
-                "
-              ></div>
+ <!-- Expanded games section -->
+ @if (!isUpcoming && expanded() && hasGames()) {
+ <div class="enc-expanded">
+ @if (gamesLoading()) {
+ <div class="flex flex-col gap-2 p-4">
+ @for (i of [1, 2, 3]; track i) {
+ <div class="flex items-center justify-between gap-3">
+ <p-skeleton width="10rem" height="1rem" />
+ <p-skeleton width="5rem" height="1rem" />
+ </div>
+ }
+ </div>
+ } @else if (games().length > 0) {
+ <div class="flex flex-col gap-3 p-4">
+ @for (game of games(); track game.id) {
+ @let gRes = getGameResult(game);
+ @let homeWin = game.winner === 1;
+ @let awayWin = game.winner === 2;
+ <article
+ class="g-card"
+ [class.g-card--win]="gRes === 'win'"
+ [class.g-card--loss]="gRes === 'loss'"
+ [class.g-card--neutral]="gRes == null"
+ >
+ <!-- Color band -->
+ <div class="g-card__band"></div>
 
-              <!-- Game type / order -->
-              <div class="flex flex-col items-center gap-0.5 min-w-[48px] pl-2">
-                <span class="t-eyebrow">{{ game.gameType }}</span>
-                @if (game.order) {
-                  <span class="t-mono text-[10px] text-muted-color">#{{ game.order }}</span>
-                }
-              </div>
+ <!-- Game type column -->
+ <div class="g-card__type">
+ <span class="g-card__type-label">{{ game.gameType }}</span>
+ @if (game.order) {
+ <span class="g-card__type-order">#{{ game.order }}</span>
+ }
+ </div>
 
-              <!-- Players: two lines, home on top, away below -->
-              <div class="flex flex-col gap-1 min-w-0 text-sm">
-                <div class="flex items-center gap-2 flex-wrap min-w-0" [class.font-semibold]="game.winner === 1">
-                  @for (m of game.gamePlayerMemberships; track m.id) {
-                    @if (m.team === 1) {
-                      <span class="inline-flex items-center gap-1.5 min-w-0">
-                        @if (m.gamePlayer.slug) {
-                          <a
-                            [routerLink]="['/players', m.gamePlayer.slug]"
-                            class="text-color no-underline hover:text-primary truncate"
-                            (click)="$event.stopPropagation()"
-                          >{{ m.gamePlayer.fullName }}</a>
-                        } @else {
-                          <span class="text-color truncate">{{ m.gamePlayer.fullName || '—' }}</span>
-                        }
-                        @if (getPlayerLevel(game, m.gamePlayer.id); as lvl) {
-                          <app-tier-badge [level]="lvl" size="sm" />
-                        }
-                      </span>
-                    }
-                  }
-                </div>
-                <div class="flex items-center gap-2 flex-wrap min-w-0" [class.font-semibold]="game.winner === 2">
-                  @for (m of game.gamePlayerMemberships; track m.id) {
-                    @if (m.team === 2) {
-                      <span class="inline-flex items-center gap-1.5 min-w-0">
-                        @if (m.gamePlayer.slug) {
-                          <a
-                            [routerLink]="['/players', m.gamePlayer.slug]"
-                            class="text-color no-underline hover:text-primary truncate"
-                            (click)="$event.stopPropagation()"
-                          >{{ m.gamePlayer.fullName }}</a>
-                        } @else {
-                          <span class="text-color truncate">{{ m.gamePlayer.fullName || '—' }}</span>
-                        }
-                        @if (getPlayerLevel(game, m.gamePlayer.id); as lvl) {
-                          <app-tier-badge [level]="lvl" size="sm" />
-                        }
-                      </span>
-                    }
-                  }
-                </div>
-              </div>
+ <!-- Body: pairs -->
+ <div class="g-card__body">
+ <div class="g-card__pairs">
+ <div class="g-card__pair" [class.is-winner]="homeWin">
+ @for (m of game.gamePlayerMemberships; track m.id) {
+ @if (m.team === 1) {
+ <span class="player">
+ @if (m.gamePlayer.slug) {
+ <a
+ class="name"
+ [routerLink]="['/players', m.gamePlayer.slug]"
+ (click)="$event.stopPropagation()"
+ >{{ m.gamePlayer.fullName }}</a>
+ } @else {
+ <span class="name">{{ m.gamePlayer.fullName || '—' }}</span>
+ }
+ @if (getPlayerLevel(game, m.gamePlayer.id); as lvl) {
+ <app-tier-badge [level]="lvl" size="sm" />
+ }
+ </span>
+ }
+ }
+ </div>
+ <span class="g-card__vs">vs</span>
+ <div class="g-card__pair is-right" [class.is-winner]="awayWin">
+ @for (m of game.gamePlayerMemberships; track m.id) {
+ @if (m.team === 2) {
+ <span class="player">
+ @if (m.gamePlayer.slug) {
+ <a
+ class="name"
+ [routerLink]="['/players', m.gamePlayer.slug]"
+ (click)="$event.stopPropagation()"
+ >{{ m.gamePlayer.fullName }}</a>
+ } @else {
+ <span class="name">{{ m.gamePlayer.fullName || '—' }}</span>
+ }
+ @if (getPlayerLevel(game, m.gamePlayer.id); as lvl) {
+ <app-tier-badge [level]="lvl" size="sm" />
+ }
+ </span>
+ }
+ }
+ </div>
+ </div>
+ </div>
 
-              <!-- Set scores: two stacked columns -->
-              <div class="flex gap-2 t-mono text-sm font-semibold tabular-nums">
-                <!-- Team 1 sets -->
-                <div class="flex flex-col items-end gap-0.5 min-w-[1.25rem]">
-                  @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
-                    <span
-                      [class.text-green-600]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
-                      [class.dark:text-green-400]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
-                      [class.text-muted-color]="getSetWinner(game.set1Team1, game.set1Team2) !== 1"
-                    >{{ game.set1Team1 }}</span>
-                  }
-                  @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
-                    <span
-                      [class.text-green-600]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
-                      [class.dark:text-green-400]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
-                      [class.text-muted-color]="getSetWinner(game.set2Team1, game.set2Team2) !== 1"
-                    >{{ game.set2Team1 }}</span>
-                  }
-                  @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
-                    <span
-                      [class.text-green-600]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
-                      [class.dark:text-green-400]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
-                      [class.text-muted-color]="getSetWinner(game.set3Team1, game.set3Team2) !== 1"
-                    >{{ game.set3Team1 }}</span>
-                  }
-                </div>
-                <!-- Team 2 sets -->
-                <div class="flex flex-col items-end gap-0.5 min-w-[1.25rem]">
-                  @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
-                    <span
-                      [class.text-green-600]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
-                      [class.dark:text-green-400]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
-                      [class.text-muted-color]="getSetWinner(game.set1Team1, game.set1Team2) !== 2"
-                    >{{ game.set1Team2 }}</span>
-                  }
-                  @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
-                    <span
-                      [class.text-green-600]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
-                      [class.dark:text-green-400]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
-                      [class.text-muted-color]="getSetWinner(game.set2Team1, game.set2Team2) !== 2"
-                    >{{ game.set2Team2 }}</span>
-                  }
-                  @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
-                    <span
-                      [class.text-green-600]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
-                      [class.dark:text-green-400]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
-                      [class.text-muted-color]="getSetWinner(game.set3Team1, game.set3Team2) !== 2"
-                    >{{ game.set3Team2 }}</span>
-                  }
-                </div>
-              </div>
-            </li>
-          }
-        </ul>
-      } @else {
-        <div class="text-center py-4 px-4 text-muted-color text-sm">
-          <i class="pi pi-info-circle text-2xl mb-2 block"></i>
-          {{ 'all.competition.no_games' | translate }}
-        </div>
-      }
-    </div>
-  }
+ <!-- Right: set scores -->
+ <div class="g-card__right">
+ <div class="g-card__scores">
+ <!-- Team 1 sets -->
+ <div class="g-card__score-col">
+ @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+ <span class="score" [class.is-win]="getSetWinner(game.set1Team1, game.set1Team2) === 1">{{ game.set1Team1 }}</span>
+ }
+ @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+ <span class="score" [class.is-win]="getSetWinner(game.set2Team1, game.set2Team2) === 1">{{ game.set2Team1 }}</span>
+ }
+ @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+ <span class="score" [class.is-win]="getSetWinner(game.set3Team1, game.set3Team2) === 1">{{ game.set3Team1 }}</span>
+ }
+ </div>
+ <!-- Team 2 sets -->
+ <div class="g-card__score-col">
+ @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+ <span class="score" [class.is-win]="getSetWinner(game.set1Team1, game.set1Team2) === 2">{{ game.set1Team2 }}</span>
+ }
+ @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+ <span class="score" [class.is-win]="getSetWinner(game.set2Team1, game.set2Team2) === 2">{{ game.set2Team2 }}</span>
+ }
+ @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+ <span class="score" [class.is-win]="getSetWinner(game.set3Team1, game.set3Team2) === 2">{{ game.set3Team2 }}</span>
+ }
+ </div>
+ </div>
+ </div>
+ </article>
+ }
+ </div>
+ } @else {
+ <div class="text-center py-4 px-4 text-muted-color text-sm">
+ <i class="pi pi-info-circle text-2xl mb-2 block"></i>
+ {{ 'all.competition.no_games' | translate }}
+ </div>
+ }
+ </div>
+ }
 </div>

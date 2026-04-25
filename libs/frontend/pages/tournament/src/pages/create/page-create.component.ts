@@ -9,11 +9,13 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
 import { CreateTournamentService } from './page-create.service';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-create',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,

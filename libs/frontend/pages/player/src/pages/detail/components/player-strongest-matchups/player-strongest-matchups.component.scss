@@ -1,7 +1,7 @@
 :host {
   display: block;
-  background: var(--p-surface-100);
-  border: 1px solid var(--p-surface-200);
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
 }
@@ -12,7 +12,7 @@
   gap: var(--space-3);
   padding: var(--space-3) 0;
   align-items: center;
-  border-bottom: 1px solid var(--p-surface-200);
+  border-bottom: 1px solid var(--p-content-border-color);
 }
 
 .opp-row:last-child {
@@ -23,7 +23,7 @@
   width: 72px;
   height: 4px;
   border-radius: 999px;
-  background: var(--p-surface-200);
+  background: var(--p-content-border-color);
   overflow: hidden;
   display: inline-block;
 }

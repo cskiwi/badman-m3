@@ -1,29 +1,5 @@
 :host {
   display: block;
-  padding: var(--space-5) var(--space-5) var(--space-6);
-
-  @media (max-width: 768px) {
-    padding: var(--space-4) var(--space-4) var(--space-5);
-  }
-}
-
-.draw-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--p-text-color);
-}
-
-.draw-stat-value {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 600;
-  font-size: 2rem;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  color: var(--p-text-color);
 }
 
 .encounters-title {

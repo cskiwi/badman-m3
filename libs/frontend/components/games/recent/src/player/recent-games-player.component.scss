@@ -11,8 +11,9 @@
 .g-card {
   display: grid;
   grid-template-columns: 4px auto 1fr auto;
-  background: var(--p-surface-100);
-  border: 1px solid var(--p-surface-200);
+  grid-template-rows: auto 1fr;
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-border-color);
   border-radius: 0.75rem;
   overflow: hidden;
 
@@ -22,7 +23,8 @@
 }
 
 .g-card__band {
-  background: var(--p-surface-border, var(--p-surface-300));
+  background: var(--p-content-border-color);
+  grid-row: 1 / span 2;
 }
 
 .g-card--win .g-card__band {
@@ -41,10 +43,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 16px 16px 16px 20px;
-  border-right: 1px solid var(--p-surface-200);
+  border-right: 1px solid var(--p-content-border-color);
   min-width: 72px;
+  grid-row: 1 / span 2;
 
   .eyebrow {
     font-family: 'Inter', sans-serif;
@@ -72,11 +76,18 @@
 }
 
 .g-card__body {
+  display: contents;
+}
+
+.g-card__top-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   min-width: 0;
-  padding: 16px 20px;
+  padding: 12px 20px 0;
+  grid-column: 3;
+  grid-row: 1;
 }
 
 .g-card__meta {
@@ -105,6 +116,7 @@
   color: var(--p-text-color);
   text-align: right;
   line-height: 1.25;
+  flex-shrink: 0;
   max-width: 220px;
 
   a {
@@ -128,7 +140,9 @@
   grid-template-columns: 1fr auto 1fr;
   gap: 10px;
   align-items: center;
-  margin-top: 2px;
+  padding: 8px 20px 16px;
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .g-card__pair {
@@ -181,20 +195,28 @@
 }
 
 .g-card__right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 20px;
-  border-left: 1px solid var(--p-surface-200);
-  align-self: stretch;
+  display: contents;
 }
 
 .g-card__right-row {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 14px;
+  padding: 8px 20px 16px;
+  border-left: 1px solid var(--p-content-border-color);
+  grid-column: 4;
+  grid-row: 2;
+}
+
+.g-card__right-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px 0;
+  border-left: 1px solid var(--p-content-border-color);
+  grid-column: 4;
+  grid-row: 1;
 }
 
 .g-card__scores {
@@ -249,5 +271,21 @@
 
   .g-card__date {
     display: none;
+  }
+
+  .g-card__top-row {
+    grid-column: 2;
+  }
+
+  .g-card__pairs {
+    grid-column: 2;
+  }
+
+  .g-card__right-row {
+    grid-column: 3;
+  }
+
+  .g-card__right-top {
+    grid-column: 3;
   }
 }

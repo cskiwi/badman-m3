@@ -1,97 +1,97 @@
 <article
-  class="g-match grid overflow-hidden bg-surface-100 border border-surface-200 rounded-xl transition-colors duration-150 hover:border-surface-300"
-  [class.g-match--win]="match().outcome === 'win'"
-  [class.g-match--loss]="match().outcome === 'loss'"
-  [class.g-match--pending]="match().outcome === 'pending'"
+ class="g-match grid overflow-hidden bg-emphasis border border-surface rounded-xl transition-colors duration-150 hover:border-surface"
+ [class.g-match--win]="match().outcome === 'win'"
+ [class.g-match--loss]="match().outcome === 'loss'"
+ [class.g-match--pending]="match().outcome === 'pending'"
 >
-  <!-- Color band -->
-  <div class="g-match__band"></div>
+ <!-- Color band -->
+ <div class="g-match__band"></div>
 
-  <!-- Body: meta + players -->
-  <div class="grid grid-cols-2 gap-4 items-center p-4 px-5">
-    <!-- Meta -->
-    <div class="flex flex-col gap-1.5">
-      <div class="flex items-center gap-2 text-sm font-medium text-surface-500">
-        <span class="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-sm font-semibold bg-surface-200 text-surface-700">
-          {{ match().league }}
-        </span>
-        <span>{{ match().competition }}</span>
-      </div>
-      <div class="font-semibold text-surface-900">
-        {{ match().homeTeam }}
-        <span class="text-surface-400 font-medium mx-1.5">vs</span>
-        {{ match().awayTeam }}
-      </div>
-      <div class="g-match__date">{{ match().date }}</div>
-    </div>
+ <!-- Body: meta + players -->
+ <div class="grid grid-cols-2 gap-4 items-center p-4 px-5">
+ <!-- Meta -->
+ <div class="flex flex-col gap-1.5">
+ <div class="flex items-center gap-2 text-sm font-medium text-muted-color">
+ <span class="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-sm font-semibold bg-emphasis text-color">
+ {{ match().league }}
+ </span>
+ <span>{{ match().competition }}</span>
+ </div>
+ <div class="font-semibold text-color">
+ {{ match().homeTeam }}
+ <span class="text-muted-color font-medium mx-1.5">vs</span>
+ {{ match().awayTeam }}
+ </div>
+ <div class="g-match__date">{{ match().date }}</div>
+ </div>
 
-    <!-- Players -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="flex flex-col gap-0.5">
-        @for (player of match().homePair.players; track player.name) {
-          <span
-            class="flex items-center gap-1.5 text-sm text-surface-600"
-            [class.g-match__player--own]="player.isOwn"
-          >
-            {{ player.name }}
-            @if (player.level) {
-              <app-tier-badge [level]="player.level" size="sm" />
-            }
-          </span>
-        }
-      </div>
-      <div class="flex flex-col gap-0.5">
-        @for (player of match().awayPair.players; track player.name) {
-          <span
-            class="flex items-center gap-1.5 text-sm text-surface-600"
-            [class.g-match__player--own]="player.isOwn"
-          >
-            {{ player.name }}
-            @if (player.level) {
-              <app-tier-badge [level]="player.level" size="sm" />
-            }
-          </span>
-        }
-      </div>
-    </div>
-  </div>
+ <!-- Players -->
+ <div class="grid grid-cols-2 gap-3">
+ <div class="flex flex-col gap-0.5">
+ @for (player of match().homePair.players; track player.name) {
+ <span
+ class="flex items-center gap-1.5 text-sm text-muted-color"
+ [class.g-match__player--own]="player.isOwn"
+ >
+ {{ player.name }}
+ @if (player.level) {
+ <app-tier-badge [level]="player.level" size="sm" />
+ }
+ </span>
+ }
+ </div>
+ <div class="flex flex-col gap-0.5">
+ @for (player of match().awayPair.players; track player.name) {
+ <span
+ class="flex items-center gap-1.5 text-sm text-muted-color"
+ [class.g-match__player--own]="player.isOwn"
+ >
+ {{ player.name }}
+ @if (player.level) {
+ <app-tier-badge [level]="player.level" size="sm" />
+ }
+ </span>
+ }
+ </div>
+ </div>
+ </div>
 
-  <!-- Scores -->
-  <div class="flex gap-4 px-4 items-center self-stretch border-l border-surface-200">
-    <div class="flex flex-col gap-0.5 items-end min-w-6">
-      @for (score of match().scores; track $index) {
-        <span
-          class="g-match__score"
-          [class.g-match__score--win]="score.home > score.away"
-        >
-          {{ score.home }}
-        </span>
-      }
-    </div>
-    <div class="flex flex-col gap-0.5 items-end min-w-6">
-      @for (score of match().scores; track $index) {
-        <span
-          class="g-match__score"
-          [class.g-match__score--win]="score.away > score.home"
-        >
-          {{ score.away }}
-        </span>
-      }
-    </div>
-  </div>
+ <!-- Scores -->
+ <div class="flex gap-4 px-4 items-center self-stretch border-l border-surface">
+ <div class="flex flex-col gap-0.5 items-end min-w-6">
+ @for (score of match().scores; track $index) {
+ <span
+ class="g-match__score"
+ [class.g-match__score--win]="score.home > score.away"
+ >
+ {{ score.home }}
+ </span>
+ }
+ </div>
+ <div class="flex flex-col gap-0.5 items-end min-w-6">
+ @for (score of match().scores; track $index) {
+ <span
+ class="g-match__score"
+ [class.g-match__score--win]="score.away > score.home"
+ >
+ {{ score.away }}
+ </span>
+ }
+ </div>
+ </div>
 
-  <!-- Points delta -->
-  @if (match().pointsDelta) {
-    <div class="flex flex-col justify-center items-end gap-0.5 px-4 self-stretch border-l border-surface-200 min-w-[104px]">
-      <span
-        class="g-match__points-value"
-        [attr.data-dir]="match().outcome === 'win' ? 'up' : 'down'"
-      >
-        {{ match().pointsDelta }}
-      </span>
-      @if (match().pointsLabel) {
-        <span class="g-match__points-label">{{ match().pointsLabel }}</span>
-      }
-    </div>
-  }
+ <!-- Points delta -->
+ @if (match().pointsDelta) {
+ <div class="flex flex-col justify-center items-end gap-0.5 px-4 self-stretch border-l border-surface min-w-[104px]">
+ <span
+ class="g-match__points-value"
+ [attr.data-dir]="match().outcome === 'win' ? 'up' : 'down'"
+ >
+ {{ match().pointsDelta }}
+ </span>
+ @if (match().pointsLabel) {
+ <span class="g-match__points-label">{{ match().pointsLabel }}</span>
+ }
+ </div>
+ }
 </article>

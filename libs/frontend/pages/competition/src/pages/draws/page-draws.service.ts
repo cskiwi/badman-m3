@@ -237,11 +237,15 @@ export class DrawsService {
                     playerId
                     gamePlayer {
                       id
+                      slug
                       fullName
                       firstName
                       lastName
                     }
                     team
+                    single
+                    double
+                    mix
                   }
                 }
               }

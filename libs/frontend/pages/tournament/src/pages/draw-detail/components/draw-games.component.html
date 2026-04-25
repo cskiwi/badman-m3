@@ -1,35 +1,35 @@
 <section class="mt-2">
   <div class="flex items-center gap-3 mb-4">
     <span class="t-eyebrow">Games</span>
-    <div class="flex-1 h-px bg-surface-200"></div>
-    <span class="t-mono text-xs text-surface-500">{{ games().length }}</span>
+    <div class="flex-1 h-px bg-emphasis"></div>
+    <span class="t-mono text-xs text-muted-color">{{ games().length }}</span>
   </div>
 
   @if (games().length === 0) {
-    <div class="rounded-xl bg-surface-100 border border-dashed border-surface-200 p-10 text-center">
-      <i class="pi pi-inbox text-3xl text-surface-400 mb-2 block"></i>
-      <p class="text-surface-500 m-0 italic">No games found for this draw</p>
+    <div class="rounded-xl border border-dashed border-surface p-10 text-center">
+      <i class="pi pi-inbox text-3xl text-muted-color mb-2 block"></i>
+      <p class="text-muted-color m-0 italic">No games found for this draw</p>
     </div>
   } @else {
     <div class="flex flex-col gap-3">
       @for (game of games(); track game.id) {
-        <div class="rounded-xl bg-surface-100 border border-surface-200 p-4 hover:border-primary transition-colors">
+        <div class="bg-emphasis border border-surface rounded-border p-4 hover:border-primary transition-colors">
           <!-- Header with status and round info -->
           <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
             <div class="flex items-center gap-2 flex-wrap">
               @if (game.playedAt) {
-                <span class="t-mono text-[11px] text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">
+                <span class="t-mono text-[11px] text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
                   {{ game.playedAt | date: 'short' }}
                 </span>
               }
               @if (game.round) {
-                <span class="t-mono text-[11px] text-primary bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider uppercase">
+                <span class="t-mono text-[11px] text-primary bg-emphasis px-2 py-0.5 rounded-sm tracking-wider uppercase">
                   {{ game.round }}
                 </span>
               }
             </div>
             @if (!isBye(game) && game.winner) {
-              <div class="flex items-center gap-1 text-xs text-surface-500">
+              <div class="flex items-center gap-1 text-xs text-muted-color">
                 <i class="pi pi-trophy text-xs" style="color: var(--g-win)"></i>
                 <span>Team {{ game.winner }}</span>
               </div>
@@ -52,8 +52,8 @@
                       <div
                         class="flex items-center gap-2 min-w-0"
                         [class.font-semibold]="getWinnerIndicator(game, teamIndex)"
-                        [class.text-surface-900]="getWinnerIndicator(game, teamIndex)"
-                        [class.text-surface-600]="!getWinnerIndicator(game, teamIndex)"
+                        [class.text-color]="getWinnerIndicator(game, teamIndex)"
+                        [class.text-muted-color]="!getWinnerIndicator(game, teamIndex)"
                       >
                         @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
                           <i class="pi pi-crown text-xs" style="color: var(--g-win)"></i>
@@ -66,7 +66,7 @@
                           <span class="truncate text-sm">{{ membership.gamePlayer.fullName || 'Unknown' }}</span>
                         }
                         @if (getPlayerLevel(membership, game.gameType); as level) {
-                          <span class="t-mono bg-surface-200 text-surface-700 px-1.5 py-0.5 rounded-sm text-[11px] font-medium">
+                          <span class="t-mono bg-emphasis text-color px-1.5 py-0.5 rounded-sm text-[11px] font-medium">
                             {{ level }}
                           </span>
                         }
@@ -90,7 +90,7 @@
                 <div class="flex items-center h-8">
                   <div class="flex gap-1">
                     @for (setScore of setScores.team1Sets; track $index) {
-                      <span class="t-mono bg-surface-200 text-surface-900 px-2 py-1 rounded-sm text-xs font-semibold">
+                      <span class="t-mono bg-emphasis text-color px-2 py-1 rounded-sm text-xs font-semibold">
                         {{ setScore }}
                       </span>
                     }
@@ -99,7 +99,7 @@
                 <div class="flex items-center h-8">
                   <div class="flex gap-1">
                     @for (setScore of setScores.team2Sets; track $index) {
-                      <span class="t-mono bg-surface-200 text-surface-900 px-2 py-1 rounded-sm text-xs font-semibold">
+                      <span class="t-mono bg-emphasis text-color px-2 py-1 rounded-sm text-xs font-semibold">
                         {{ setScore }}
                       </span>
                     }

@@ -1,4 +1,8 @@
 @if (player()?.fullName) {
+  <app-breadcrumb [items]="[
+    { label: player()!.fullName!, routerLink: ['/players', player()!.slug || player()!.id] },
+    { label: ('all.head-to-head.title' | translate) },
+  ]" />
   <app-page-header>
     <i avatar class="pi pi-users text-2xl"></i>
     <span title>{{ 'all.head-to-head.title' | translate }}</span>

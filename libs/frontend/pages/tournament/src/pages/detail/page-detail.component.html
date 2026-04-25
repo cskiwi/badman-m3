@@ -1,340 +1,339 @@
 @if (!loading()) {
-  @if (this.tournament(); as tournament) {
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-sm text-surface-500 mb-4 flex-wrap">
-      <span class="text-surface-500">Tournaments</span>
-      <i class="pi pi-angle-right text-[10px]"></i>
-      <span class="text-surface-800 font-semibold">{{ tournament.name }}</span>
-    </nav>
+ @if (this.tournament(); as tournament) {
+ <!-- Breadcrumb -->
+ <app-breadcrumb [items]="[
+  { label: ('all.tournament.title' | translate), routerLink: '/tournament' },
+  { label: tournament.name },
+ ]" />
 
-    <!-- Tournament Hero -->
-    <app-hero>
-      <div avatar class="tournament-crest">
-        <span>{{ tournamentCrestText() }}</span>
-      </div>
+ <!-- Tournament Hero -->
+ <app-hero>
+ <div avatar class="tournament-crest">
+ <span>{{ tournamentCrestText() }}</span>
+ </div>
 
-      <div identity>
-        <h1 class="tournament-name">{{ tournament.name }}</h1>
-        <div class="flex items-center gap-3 flex-wrap text-sm text-surface-600">
-          @if (tournament.tournamentNumber) {
-            <span class="t-mono text-xs text-surface-500 bg-surface-200 px-2 py-0.5 rounded-sm tracking-wider">#{{ tournament.tournamentNumber }}</span>
-          }
-          @if (tournament.state || tournament.country) {
-            <span class="inline-flex items-center gap-1.5">
-              <i class="pi pi-map-marker text-primary text-[11px]"></i>
-              <strong class="text-surface-800 font-semibold">
-                @if (tournament.state) { {{ tournament.state }} }
-                @if (tournament.state && tournament.country) { , }
-                @if (tournament.country) { {{ tournament.country }} }
-              </strong>
-            </span>
-          }
-          @if (tournament.dates) {
-            <span class="inline-flex items-center gap-1.5">
-              <i class="pi pi-calendar text-[11px]"></i>
-              @for (dateStr of tournament.dates.split(','); track $index; let isLast = $last) {
-                <span>{{ dateStr.trim() | date: 'd MMM yyyy' }}</span>
-                @if (!isLast) { <span>,&nbsp;</span> }
-              }
-            </span>
-          }
-          <span
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-xs font-semibold"
-            [class.bg-win-muted]="tournament.official"
-            [class.text-win]="tournament.official"
-            [class.bg-surface-200]="!tournament.official"
-            [class.text-surface-500]="!tournament.official"
-          >
-            <i class="pi pi-shield text-[10px]"></i>
-            {{ (tournament.official ? 'all.tournament.official' : 'all.common.no') | translate }}
-          </span>
-        </div>
-      </div>
+ <div identity>
+ <h1 class="tournament-name">{{ tournament.name }}</h1>
+ <div class="flex items-center gap-3 flex-wrap text-sm text-muted-color">
+ @if (tournament.tournamentNumber) {
+ <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">#{{ tournament.tournamentNumber }}</span>
+ }
+ @if (tournament.state || tournament.country) {
+ <span class="inline-flex items-center gap-1.5">
+ <i class="pi pi-map-marker text-primary text-[11px]"></i>
+ <strong class="text-color font-semibold">
+ @if (tournament.state) { {{ tournament.state }} }
+ @if (tournament.state && tournament.country) { , }
+ @if (tournament.country) { {{ tournament.country }} }
+ </strong>
+ </span>
+ }
+ @if (tournament.dates) {
+ <span class="inline-flex items-center gap-1.5">
+ <i class="pi pi-calendar text-[11px]"></i>
+ @for (dateStr of tournament.dates.split(','); track $index; let isLast = $last) {
+ <span>{{ dateStr.trim() | date: 'd MMM yyyy' }}</span>
+ @if (!isLast) { <span>,&nbsp;</span> }
+ }
+ </span>
+ }
+ <span
+ class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-xs font-semibold"
+ [class.bg-win-muted]="tournament.official"
+ [class.text-win]="tournament.official"
+ [class.bg-emphasis]="!tournament.official"
+ [class.text-muted-color]="!tournament.official"
+ >
+ <i class="pi pi-shield text-[10px]"></i>
+ {{ (tournament.official ? 'all.tournament.official' : 'all.common.no') | translate }}
+ </span>
+ </div>
+ </div>
 
-      <div actions class="flex items-center gap-2 flex-wrap justify-end">
-        @if (canEdit()) {
-          <p-button
-            [routerLink]="['/', 'tournament', tournament.id, 'admin']"
-            icon="pi pi-cog"
-            [label]="'all.tournament.admin.title' | translate"
-            [outlined]="true"
-            size="small"
-          />
-        }
-        <p-button
-          [routerLink]="['/', 'tournament', tournament.id, 'my-enrollments']"
-          icon="pi pi-list"
-          [label]="'all.enrollment.myEnrollments' | translate"
-          [outlined]="true"
-          size="small"
-        />
-        @if (tournament.phase === 'ENROLLMENT_OPEN') {
-          <p-button
-            [routerLink]="['/', 'tournament', tournament.id, 'enroll']"
-            icon="pi pi-user-plus"
-            [label]="'all.enrollment.enrollNow' | translate"
-            size="small"
-          />
-        }
-        @if (tournament.visualCode) {
-          <a
-            [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-surface-500 hover:text-primary hover:bg-surface-200 transition-colors text-xs no-underline"
-            title="View on toernooi.nl"
-          >
-            <i class="pi pi-external-link text-xs"></i>
-            <span>toernooi.nl</span>
-          </a>
-        }
-        @if (syncStatusConfig(); as statusConfig) {
-          <app-sync-status-indicator [config]="statusConfig" />
-        }
-        @if (syncConfig(); as config) {
-          <app-sync-button [config]="config" />
-        }
-      </div>
+ <div actions class="flex items-center gap-2 flex-wrap justify-end">
+ @if (canEdit()) {
+ <p-button
+ [routerLink]="['/', 'tournament', tournament.id, 'admin']"
+ icon="pi pi-cog"
+ [label]="'all.tournament.admin.title' | translate"
+ [outlined]="true"
+ size="small"
+ />
+ }
+ <p-button
+ [routerLink]="['/', 'tournament', tournament.id, 'my-enrollments']"
+ icon="pi pi-list"
+ [label]="'all.enrollment.myEnrollments' | translate"
+ [outlined]="true"
+ size="small"
+ />
+ @if (tournament.phase === 'ENROLLMENT_OPEN') {
+ <p-button
+ [routerLink]="['/', 'tournament', tournament.id, 'enroll']"
+ icon="pi pi-user-plus"
+ [label]="'all.enrollment.enrollNow' | translate"
+ size="small"
+ />
+ }
+ @if (tournament.visualCode) {
+ <a
+ [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode"
+ target="_blank"
+ rel="noopener noreferrer"
+ class="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-muted-color hover:text-primary hover:bg-emphasis transition-colors text-xs no-underline"
+ title="View on toernooi.nl"
+ >
+ <i class="pi pi-external-link text-xs"></i>
+ <span>toernooi.nl</span>
+ </a>
+ }
+ @if (syncStatusConfig(); as statusConfig) {
+ <app-sync-status-indicator [config]="statusConfig" />
+ }
+ @if (syncConfig(); as config) {
+ <app-sync-button [config]="config" />
+ }
+ </div>
 
-      <div stats class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface-200 relative z-[1]">
-        <div class="flex flex-col gap-2">
-          <span class="t-eyebrow">Sub-events</span>
-          <div class="flex items-baseline gap-2">
-            <span class="tournament-stat-value">{{ totalSubEvents() }}</span>
-            @if (groupedSubEvents().length > 0) {
-              <span class="text-xs text-surface-500">{{ groupedSubEvents().length }} {{ groupedSubEvents().length === 1 ? 'type' : 'types' }}</span>
-            }
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <span class="t-eyebrow">Draws</span>
-          <span class="tournament-stat-value">{{ totalDraws() }}</span>
-        </div>
-        <div class="flex flex-col gap-2">
-          <span class="t-eyebrow">Registration</span>
-          @if (tournament.openDate || tournament.closeDate) {
-            <div class="flex flex-col gap-0.5">
-              @if (tournament.openDate) {
-                <span class="t-mono text-xs text-surface-700">Opens {{ tournament.openDate | date: 'd MMM yyyy' }}</span>
-              }
-              @if (tournament.closeDate) {
-                <span class="t-mono text-xs text-surface-500">Closes {{ tournament.closeDate | date: 'd MMM yyyy' }}</span>
-              }
-            </div>
-          } @else {
-            <span class="text-sm text-surface-500">–</span>
-          }
-        </div>
-        <div class="flex flex-col gap-2">
-          <span class="t-eyebrow">Phase</span>
-          <div class="flex">
-            <span
-              class="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-semibold uppercase tracking-wider"
-              [class.bg-win-muted]="tournament.phase === 'ENROLLMENT_OPEN'"
-              [class.text-win]="tournament.phase === 'ENROLLMENT_OPEN'"
-              [class.bg-surface-200]="tournament.phase !== 'ENROLLMENT_OPEN'"
-              [class.text-surface-700]="tournament.phase !== 'ENROLLMENT_OPEN'"
-            >
-              {{ tournament.phase || 'Unknown' }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </app-hero>
+ <div stats class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface relative z-[1]">
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Sub-events</span>
+ <div class="flex items-baseline gap-2">
+ <span class="tournament-stat-value">{{ totalSubEvents() }}</span>
+ @if (groupedSubEvents().length > 0) {
+ <span class="text-xs text-muted-color">{{ groupedSubEvents().length }} {{ groupedSubEvents().length === 1 ? 'type' : 'types' }}</span>
+ }
+ </div>
+ </div>
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Draws</span>
+ <span class="tournament-stat-value">{{ totalDraws() }}</span>
+ </div>
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Registration</span>
+ @if (tournament.openDate || tournament.closeDate) {
+ <div class="flex flex-col gap-0.5">
+ @if (tournament.openDate) {
+ <span class="t-mono text-xs text-color">Opens {{ tournament.openDate | date: 'd MMM yyyy' }}</span>
+ }
+ @if (tournament.closeDate) {
+ <span class="t-mono text-xs text-muted-color">Closes {{ tournament.closeDate | date: 'd MMM yyyy' }}</span>
+ }
+ </div>
+ } @else {
+ <span class="text-sm text-muted-color">–</span>
+ }
+ </div>
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Phase</span>
+ <div class="flex">
+ <span
+ class="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm text-xs font-semibold uppercase tracking-wider"
+ [class.bg-win-muted]="tournament.phase === 'ENROLLMENT_OPEN'"
+ [class.text-win]="tournament.phase === 'ENROLLMENT_OPEN'"
+ [class.bg-emphasis]="tournament.phase !== 'ENROLLMENT_OPEN'"
+ [class.text-color]="tournament.phase !== 'ENROLLMENT_OPEN'"
+ >
+ {{ tournament.phase || 'Unknown' }}
+ </span>
+ </div>
+ </div>
+ </div>
+ </app-hero>
 
-    <!-- Live Pages Section -->
-    <section class="mb-6">
-      <div class="flex items-end justify-between flex-wrap gap-3 mb-4">
-        <div class="flex flex-col gap-1">
-          <span class="t-eyebrow">Live</span>
-          <h2 class="section-title m-0">{{ 'all.tournament.live.title' | translate }}</h2>
-        </div>
-      </div>
-      <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-        <a
-          [routerLink]="['/', 'tournament', tournament.id, 'live', 'courts']"
-          class="g-live-card flex items-center gap-3 p-4 rounded-xl bg-surface-100 border border-surface-200 hover:border-primary transition-colors no-underline"
-        >
-          <i class="pi pi-th-large text-xl text-primary"></i>
-          <div class="flex flex-col min-w-0">
-            <span class="font-semibold text-surface-900 truncate">{{ 'all.tournament.live.courts' | translate }}</span>
-            <span class="text-xs text-surface-500 truncate">{{ 'all.tournament.live.courtsDesc' | translate }}</span>
-          </div>
-        </a>
-        <a
-          [routerLink]="['/', 'tournament', tournament.id, 'live', 'results']"
-          class="g-live-card flex items-center gap-3 p-4 rounded-xl bg-surface-100 border border-surface-200 hover:border-primary transition-colors no-underline"
-        >
-          <i class="pi pi-check-circle text-xl" style="color: var(--g-win)"></i>
-          <div class="flex flex-col min-w-0">
-            <span class="font-semibold text-surface-900 truncate">{{ 'all.tournament.live.results' | translate }}</span>
-            <span class="text-xs text-surface-500 truncate">{{ 'all.tournament.live.resultsDesc' | translate }}</span>
-          </div>
-        </a>
-        <a
-          [routerLink]="['/', 'tournament', tournament.id, 'live', 'upcoming']"
-          class="g-live-card flex items-center gap-3 p-4 rounded-xl bg-surface-100 border border-surface-200 hover:border-primary transition-colors no-underline"
-        >
-          <i class="pi pi-clock text-xl" style="color: var(--g-pending, var(--p-orange-500))"></i>
-          <div class="flex flex-col min-w-0">
-            <span class="font-semibold text-surface-900 truncate">{{ 'all.tournament.live.upcoming' | translate }}</span>
-            <span class="text-xs text-surface-500 truncate">{{ 'all.tournament.live.upcomingDesc' | translate }}</span>
-          </div>
-        </a>
-        <a
-          [routerLink]="['/', 'tournament', tournament.id, 'live', 'kiosk']"
-          class="g-live-card flex items-center gap-3 p-4 rounded-xl bg-surface-100 border border-surface-200 hover:border-primary transition-colors no-underline"
-        >
-          <i class="pi pi-window-maximize text-xl text-primary"></i>
-          <div class="flex flex-col min-w-0">
-            <span class="font-semibold text-surface-900 truncate">{{ 'all.tournament.live.kiosk' | translate }}</span>
-            <span class="text-xs text-surface-500 truncate">{{ 'all.tournament.live.kioskDesc' | translate }}</span>
-          </div>
-        </a>
-      </div>
-    </section>
+ <!-- Live Pages Section -->
+ <section class="mb-6">
+ <div class="flex items-end justify-between flex-wrap gap-3 mb-4">
+ <div class="flex flex-col gap-1">
+ <span class="t-eyebrow">Live</span>
+ <h2 class="section-title m-0">{{ 'all.tournament.live.title' | translate }}</h2>
+ </div>
+ </div>
+ <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+ <a
+ [routerLink]="['/', 'tournament', tournament.id, 'live', 'courts']"
+ class="g-live-card flex items-center gap-3 p-4 bg-emphasis border border-surface rounded-border hover:border-primary transition-colors no-underline"
+ >
+ <i class="pi pi-th-large text-xl text-primary"></i>
+ <div class="flex flex-col min-w-0">
+ <span class="font-semibold text-color truncate">{{ 'all.tournament.live.courts' | translate }}</span>
+ <span class="text-xs text-muted-color truncate">{{ 'all.tournament.live.courtsDesc' | translate }}</span>
+ </div>
+ </a>
+ <a
+ [routerLink]="['/', 'tournament', tournament.id, 'live', 'results']"
+ class="g-live-card flex items-center gap-3 p-4 bg-emphasis border border-surface rounded-border hover:border-primary transition-colors no-underline"
+ >
+ <i class="pi pi-check-circle text-xl" style="color: var(--g-win)"></i>
+ <div class="flex flex-col min-w-0">
+ <span class="font-semibold text-color truncate">{{ 'all.tournament.live.results' | translate }}</span>
+ <span class="text-xs text-muted-color truncate">{{ 'all.tournament.live.resultsDesc' | translate }}</span>
+ </div>
+ </a>
+ <a
+ [routerLink]="['/', 'tournament', tournament.id, 'live', 'upcoming']"
+ class="g-live-card flex items-center gap-3 p-4 bg-emphasis border border-surface rounded-border hover:border-primary transition-colors no-underline"
+ >
+ <i class="pi pi-clock text-xl" style="color: var(--g-pending, var(--p-orange-500))"></i>
+ <div class="flex flex-col min-w-0">
+ <span class="font-semibold text-color truncate">{{ 'all.tournament.live.upcoming' | translate }}</span>
+ <span class="text-xs text-muted-color truncate">{{ 'all.tournament.live.upcomingDesc' | translate }}</span>
+ </div>
+ </a>
+ <a
+ [routerLink]="['/', 'tournament', tournament.id, 'live', 'kiosk']"
+ class="g-live-card flex items-center gap-3 p-4 bg-emphasis border border-surface rounded-border hover:border-primary transition-colors no-underline"
+ >
+ <i class="pi pi-window-maximize text-xl text-primary"></i>
+ <div class="flex flex-col min-w-0">
+ <span class="font-semibold text-color truncate">{{ 'all.tournament.live.kiosk' | translate }}</span>
+ <span class="text-xs text-muted-color truncate">{{ 'all.tournament.live.kioskDesc' | translate }}</span>
+ </div>
+ </a>
+ </div>
+ </section>
 
-    <!-- Tournament Events Section -->
-    @if (groupedSubEvents().length > 0) {
-      <section class="mb-6">
-        <div class="flex items-end justify-between flex-wrap gap-3 mb-5">
-          <div class="flex flex-col gap-1">
-            <span class="t-eyebrow">Events</span>
-            <h2 class="section-title m-0">{{ 'all.tournament.events' | translate }}</h2>
-          </div>
-        </div>
+ <!-- Tournament Events Section -->
+ @if (groupedSubEvents().length > 0) {
+ <section class="mb-6">
+ <div class="flex items-end justify-between flex-wrap gap-3 mb-5">
+ <div class="flex flex-col gap-1">
+ <span class="t-eyebrow">Events</span>
+ <h2 class="section-title m-0">{{ 'all.tournament.events' | translate }}</h2>
+ </div>
+ </div>
 
-        @if (groupedSubEvents().length > 1) {
-          <p-tabs [value]="groupedSubEvents()[0].type">
-            <p-tablist>
-              @for (group of groupedSubEvents(); track group.type) {
-                <p-tab [value]="group.type">{{ group.label | translate }}</p-tab>
-              }
-            </p-tablist>
-            <p-tabpanels>
-              @for (group of groupedSubEvents(); track group.type) {
-                <p-tabpanel [value]="group.type">
-                  <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group, tournament: tournament }" />
-                </p-tabpanel>
-              }
-            </p-tabpanels>
-          </p-tabs>
-        } @else {
-          @for (group of groupedSubEvents(); track group.type) {
-            <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group, tournament: tournament }" />
-          }
-        }
-      </section>
-    }
-  }
+ @if (groupedSubEvents().length > 1) {
+ <p-tabs [value]="groupedSubEvents()[0].type">
+ <p-tablist>
+ @for (group of groupedSubEvents(); track group.type) {
+ <p-tab [value]="group.type">{{ group.label | translate }}</p-tab>
+ }
+ </p-tablist>
+ <p-tabpanels>
+ @for (group of groupedSubEvents(); track group.type) {
+ <p-tabpanel [value]="group.type">
+ <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group, tournament: tournament }" />
+ </p-tabpanel>
+ }
+ </p-tabpanels>
+ </p-tabs>
+ } @else {
+ @for (group of groupedSubEvents(); track group.type) {
+ <ng-container *ngTemplateOutlet="groupTpl; context: { $implicit: group, tournament: tournament }" />
+ }
+ }
+ </section>
+ }
+ }
 } @else {
-  <!-- Loading skeleton -->
-  <div class="flex flex-col gap-6">
-    <p-skeleton width="18rem" height="1rem" />
-    <div class="rounded-xl bg-surface-100 border border-surface-200 p-6 flex items-center gap-4">
-      <p-skeleton shape="rectangle" width="6rem" height="6rem" />
-      <div class="flex-1 space-y-2">
-        <p-skeleton width="16rem" height="2rem" />
-        <p-skeleton width="10rem" height="1rem" />
-      </div>
-    </div>
-    <div class="grid gap-3 md:grid-cols-4">
-      @for (i of [1, 2, 3, 4]; track i) {
-        <p-skeleton height="4rem" />
-      }
-    </div>
-  </div>
+ <!-- Loading skeleton -->
+ <div class="flex flex-col gap-6">
+ <p-skeleton width="18rem" height="1rem" />
+ <div class="bg-emphasis border border-surface rounded-border p-6 flex items-center gap-4">
+ <p-skeleton shape="rectangle" width="6rem" height="6rem" />
+ <div class="flex-1 space-y-2">
+ <p-skeleton width="16rem" height="2rem" />
+ <p-skeleton width="10rem" height="1rem" />
+ </div>
+ </div>
+ <div class="grid gap-3 md:grid-cols-4">
+ @for (i of [1, 2, 3, 4]; track i) {
+ <p-skeleton height="4rem" />
+ }
+ </div>
+ </div>
 }
 
 @if (error()) {
-  <div class="flex items-center gap-2 p-4 rounded-lg mt-4" style="background: var(--g-loss-muted); color: var(--g-loss)">
-    <i class="pi pi-exclamation-triangle"></i>
-    {{ error() }}
-  </div>
+ <div class="flex items-center gap-2 p-4 rounded-lg mt-4" style="background: var(--g-loss-muted); color: var(--g-loss)">
+ <i class="pi pi-exclamation-triangle"></i>
+ {{ error() }}
+ </div>
 }
 
 <!-- Reusable group rendering -->
 <ng-template #groupTpl let-group let-tournament="tournament">
-  @for (gameTypeTab of group.gameTypeTabs; track gameTypeTab.gameType) {
-    <div class="mb-8" [attr.id]="'gametype-' + group.type + '-' + gameTypeTab.gameType">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="t-eyebrow">{{ gameTypeTab.label | translate }}</span>
-        <div class="flex-1 h-px bg-surface-200"></div>
-        <span class="t-mono text-xs text-surface-500">{{ gameTypeTab.events.length }}</span>
-      </div>
+ @for (gameTypeTab of group.gameTypeTabs; track gameTypeTab.gameType) {
+ <div class="mb-8" [attr.id]="'gametype-' + group.type + '-' + gameTypeTab.gameType">
+ <div class="flex items-center gap-3 mb-4">
+ <span class="t-eyebrow">{{ gameTypeTab.label | translate }}</span>
+ <div class="flex-1 h-px bg-emphasis"></div>
+ <span class="t-mono text-xs text-muted-color">{{ gameTypeTab.events.length }}</span>
+ </div>
 
-      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        @for (subEvent of gameTypeTab.events; track subEvent.id) {
-          <article class="g-subevent rounded-xl bg-surface-100 border border-surface-200 p-5 flex flex-col gap-4">
-            <header class="flex items-start justify-between gap-2">
-              <div class="flex flex-col gap-1 min-w-0">
-                <span class="t-eyebrow">Event</span>
-                <h3 class="subevent-name m-0">{{ subEvent.name }}</h3>
-              </div>
-              <div class="flex items-center gap-1 flex-shrink-0">
-                @if (tournament.visualCode && subEvent.visualCode) {
-                  <a
-                    [href]="'https://www.toernooi.nl/sport/event.aspx?id=' + tournament.visualCode + '&event=' + subEvent.visualCode"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center justify-center w-6 h-6 rounded-sm text-surface-500 hover:text-primary hover:bg-surface-200 transition-colors no-underline"
-                    title="View on toernooi.nl"
-                  >
-                    <i class="pi pi-external-link text-xs"></i>
-                  </a>
-                }
-                @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
-                  <app-sync-status-indicator [config]="statusConfig" />
-                }
-                @if (getSubEventSyncConfig(subEvent); as config) {
-                  <app-sync-button [config]="config" />
-                }
-              </div>
-            </header>
+ <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+ @for (subEvent of gameTypeTab.events; track subEvent.id) {
+ <article class="g-subevent bg-emphasis border border-surface rounded-border p-5 flex flex-col gap-4">
+ <header class="flex items-start justify-between gap-2">
+ <div class="flex flex-col gap-1 min-w-0">
+ <span class="t-eyebrow">Event</span>
+ <h3 class="subevent-name m-0">{{ subEvent.name }}</h3>
+ </div>
+ <div class="flex items-center gap-1 flex-shrink-0">
+ @if (tournament.visualCode && subEvent.visualCode) {
+ <a
+ [href]="'https://www.toernooi.nl/sport/event.aspx?id=' + tournament.visualCode + '&event=' + subEvent.visualCode"
+ target="_blank"
+ rel="noopener noreferrer"
+ class="inline-flex items-center justify-center w-6 h-6 rounded-sm text-muted-color hover:text-primary hover:bg-emphasis transition-colors no-underline"
+ title="View on toernooi.nl"
+ >
+ <i class="pi pi-external-link text-xs"></i>
+ </a>
+ }
+ @if (getSubEventSyncStatusConfig(subEvent); as statusConfig) {
+ <app-sync-status-indicator [config]="statusConfig" />
+ }
+ @if (getSubEventSyncConfig(subEvent); as config) {
+ <app-sync-button [config]="config" />
+ }
+ </div>
+ </header>
 
-            @if (subEvent.drawTournaments && subEvent.drawTournaments.length > 0) {
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center justify-between">
-                  <span class="t-eyebrow">{{ 'all.tournament.draws' | translate }}</span>
-                  <span class="t-mono text-xs text-surface-500">{{ subEvent.drawTournaments.length }}</span>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                  @for (draw of subEvent.drawTournaments; track draw.id) {
-                    <div class="flex items-center gap-1.5">
-                      <a
-                        [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
-                        class="g-draw-row flex-1 flex items-center justify-between rounded-md bg-surface-0 border border-surface-200 px-3 py-2 text-sm hover:border-primary transition-colors no-underline"
-                      >
-                        <span class="font-medium text-surface-900 truncate">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
-                        <span class="text-surface-500 text-xs flex items-center gap-2 flex-shrink-0 t-mono">
-                          @if (draw.type) { <span>{{ draw.type }}</span> }
-                          @if (draw.size) { <span>S{{ draw.size }}</span> }
-                        </span>
-                      </a>
-                      @if (tournament.visualCode && draw.visualCode) {
-                        <a
-                          [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="inline-flex items-center justify-center w-7 h-7 rounded-md text-surface-500 hover:text-primary hover:bg-surface-200 transition-colors no-underline flex-shrink-0"
-                          title="View draw on toernooi.nl"
-                        >
-                          <i class="pi pi-external-link text-xs"></i>
-                        </a>
-                      }
-                    </div>
-                  }
-                </div>
-              </div>
-            } @else {
-              <div class="flex items-center gap-2 px-3 py-2 rounded-md bg-surface-0 border border-dashed border-surface-200 text-xs text-surface-500">
-                <i class="pi pi-info-circle"></i>
-                No draws configured yet
-              </div>
-            }
-          </article>
-        }
-      </div>
-    </div>
-  }
+ @if (subEvent.drawTournaments && subEvent.drawTournaments.length > 0) {
+ <div class="flex flex-col gap-2">
+ <div class="flex items-center justify-between">
+ <span class="t-eyebrow">{{ 'all.tournament.draws' | translate }}</span>
+ <span class="t-mono text-xs text-muted-color">{{ subEvent.drawTournaments.length }}</span>
+ </div>
+ <div class="flex flex-col gap-1.5">
+ @for (draw of subEvent.drawTournaments; track draw.id) {
+ <div class="flex items-center gap-1.5">
+ <a
+ [routerLink]="['/', 'tournament', tournament.slug, 'sub-events', subEvent.id, 'draws', draw.id]"
+ class="g-draw-row flex-1 flex items-center justify-between rounded-md bg-emphasis border border-surface px-3 py-2 text-sm hover:border-primary transition-colors no-underline"
+ >
+ <span class="font-medium text-color truncate">{{ draw.name || 'Draw ' + (draw.id | slice: 0 : 8) }}</span>
+ <span class="text-muted-color text-xs flex items-center gap-2 flex-shrink-0 t-mono">
+ @if (draw.type) { <span>{{ draw.type }}</span> }
+ @if (draw.size) { <span>S{{ draw.size }}</span> }
+ </span>
+ </a>
+ @if (tournament.visualCode && draw.visualCode) {
+ <a
+ [href]="'https://www.toernooi.nl/tournament/' + tournament.visualCode + '/draw/' + draw.visualCode"
+ target="_blank"
+ rel="noopener noreferrer"
+ class="inline-flex items-center justify-center w-7 h-7 rounded-md text-muted-color hover:text-primary hover:bg-emphasis transition-colors no-underline flex-shrink-0"
+ title="View draw on toernooi.nl"
+ >
+ <i class="pi pi-external-link text-xs"></i>
+ </a>
+ }
+ </div>
+ }
+ </div>
+ </div>
+ } @else {
+ <div class="flex items-center gap-2 px-3 py-2 rounded-md bg-emphasis border border-dashed border-surface text-xs text-muted-color">
+ <i class="pi pi-info-circle"></i>
+ No draws configured yet
+ </div>
+ }
+ </article>
+ }
+ </div>
+ </div>
+ }
 </ng-template>
