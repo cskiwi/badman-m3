@@ -212,6 +212,58 @@ export const BadmanPreset = definePreset(Aura, {
         },
       },
     },
+    // Aura's dark DataTable striped row background defaults to
+    // `{surface.950}` which is the LIGHTEST color in our inverted
+    // dark surface scale, making striped rows nearly white and the
+    // text on them illegible. Remap to a subtle dark tint.
+    datatable: {
+      colorScheme: {
+        dark: {
+          header: {
+            background: '{surface.50}',
+            borderColor: '{surface.200}',
+            color: '{text.color}',
+          },
+          headerCell: {
+            background: '{surface.50}',
+            hoverBackground: '{surface.100}',
+            selectedBackground: '{highlight.background}',
+            borderColor: '{surface.200}',
+            color: '{text.color}',
+            hoverColor: '{text.hoverColor}',
+            selectedColor: '{highlight.color}',
+          },
+          row: {
+            background: '{surface.0}',
+            hoverBackground: '{surface.100}',
+            selectedBackground: '{highlight.background}',
+            color: '{text.color}',
+            hoverColor: '{text.hoverColor}',
+            selectedColor: '{highlight.color}',
+            stripedBackground: '{surface.50}',
+          },
+          bodyCell: {
+            borderColor: '{surface.200}',
+          },
+          footerCell: {
+            background: '{surface.50}',
+            borderColor: '{surface.200}',
+            color: '{text.color}',
+          },
+          footer: {
+            background: '{surface.50}',
+            borderColor: '{surface.200}',
+            color: '{text.color}',
+          },
+          paginatorTop: {
+            borderColor: '{surface.200}',
+          },
+          paginatorBottom: {
+            borderColor: '{surface.200}',
+          },
+        },
+      },
+    },
     togglebutton: {
       colorScheme: {
         dark: {

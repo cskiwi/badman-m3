@@ -16,7 +16,7 @@
   <div class="flex flex-col md:flex-row gap-4 items-start">
     <div class="flex flex-wrap gap-4 flex-1">
       <div class="w-40 shrink-0">
-        <p-floatLabel>
+        <p-floatLabel variant="on">
           <p-select
             [options]="seasonOptions()"
             [ngModel]="selectedSeason()"
@@ -29,7 +29,7 @@
         </p-floatLabel>
       </div>
 
-      <p-floatLabel class="min-w-[180px] flex-1">
+      <p-floatLabel variant="on" class="min-w-[180px] flex-1">
         <p-autoComplete
           [suggestions]="clubSuggestions()"
           (completeMethod)="searchClub($event)"
@@ -44,7 +44,7 @@
         <label for="club-select">{{ 'all.competition.team-assembly.club' | translate }}</label>
       </p-floatLabel>
 
-      <p-floatLabel class="min-w-[180px] flex-1">
+      <p-floatLabel variant="on" class="min-w-[180px] flex-1">
         <p-select
           [options]="teams()"
           [ngModel]="selectedTeamId()"
@@ -61,7 +61,7 @@
         <label for="team-select">{{ 'all.competition.team-assembly.team' | translate }}</label>
       </p-floatLabel>
 
-      <p-floatLabel class="min-w-[180px] flex-1">
+      <p-floatLabel variant="on" class="min-w-[180px] flex-1">
         <p-select
           [options]="encounters()"
           [ngModel]="selectedEncounterId()"
