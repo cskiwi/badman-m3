@@ -4,6 +4,7 @@ import { RankingSystemService } from '@app/frontend-modules-graphql/ranking';
 import { TranslateModule } from '@ngx-translate/core';
 import { Apollo, gql } from 'apollo-angular';
 import { lastValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 type DisciplineKey = 'single' | 'double' | 'mix';
 
@@ -25,7 +26,7 @@ interface DisciplineProgress {
 
 @Component({
   selector: 'app-player-ranking-progress',
-  imports: [TranslateModule],
+  imports: [TranslateModule, RouterLink],
   templateUrl: './player-ranking-progress.component.html',
   styleUrl: './player-ranking-progress.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

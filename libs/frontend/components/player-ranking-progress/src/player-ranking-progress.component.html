@@ -1,81 +1,79 @@
 @if (visible() && system(); as sys) {
-  <div class="flex flex-col gap-4">
-    <span class="t-eyebrow">{{ 'all.ranking.progress.title' | translate }}</span>
+<div class="flex flex-col gap-4">
+  <span class="t-eyebrow">{{ 'all.ranking.progress.title' | translate }}</span>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      @for (d of disciplines(); track d.key) {
-        <div class="flex flex-col gap-3">
-          <div class="flex items-baseline justify-between">
-            <span class="t-eyebrow">{{ d.labelKey | translate }}</span>
-            @if (d.atTop) {
-              <span class="t-mono text-[10px] text-green-600 dark:text-green-400 tracking-wider uppercase">
-                {{ 'all.ranking.progress.at-top' | translate }}
-              </span>
-            }
-            @if (d.atFloor) {
-              <span class="t-mono text-[10px] text-muted-color tracking-wider uppercase">
-                {{ 'all.ranking.progress.at-floor' | translate }}
-              </span>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    @for (d of disciplines(); track d.key) {
+    <div class="flex flex-col gap-3">
+      <div class="flex items-baseline justify-between">
+        <span class="t-eyebrow">{{ d.labelKey | translate }}</span>
+        @if (d.atTop) {
+        <span class="t-mono text-[10px] text-green-600 dark:text-green-400 tracking-wider uppercase">
+          {{ 'all.ranking.progress.at-top' | translate }}
+        </span>
+        }
+        @if (d.atFloor) {
+        <span class="t-mono text-[10px] text-muted-color tracking-wider uppercase">
+          {{ 'all.ranking.progress.at-floor' | translate }}
+        </span>
+        }
+      </div>
+
+      <div class="flex items-center gap-4">
+        <span [routerLink]="['ranking', d.key]" class="rank-number font-bold text-6xl leading-none tracking-tight tabular-nums font-['Space_Grotesk',sans-serif]">
+          {{ d.level ?? sys.amountOfLevels }}
+        </span>
+
+        <div class="flex flex-col gap-1.5 min-w-0">
+          <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
+
+          <!-- Upgrade row -->
+          <div class="flex items-center gap-2 t-mono text-xs">
+            <i class="pi pi-arrow-up text-[10px] text-green-600 dark:text-green-400"></i>
+            <span class="text-green-600 dark:text-green-400 font-semibold">{{ d.points ?? 0 }}</span>
+            @if (d.upgradeThreshold !== null) {
+            <span class="text-muted-color">/</span>
+            <span class="text-muted-color">{{ d.upgradeThreshold }}</span>
             }
           </div>
 
-          <div class="flex items-center gap-4">
-            <span
-              class="rank-number font-bold text-6xl leading-none tracking-tight tabular-nums font-['Space_Grotesk',sans-serif]"
-            >
-              {{ d.level ?? sys.amountOfLevels }}
-            </span>
+          <!-- Single summary line: closer of upgrade/downgrade -->
+          @if (d.nearer === 'upgrade' && d.pointsToUpgrade !== null) {
+          <span class="t-mono text-[11px] text-muted-color">
+            {{ 'all.ranking.progress.to-upgrade' | translate: { points: d.pointsToUpgrade } }}
+          </span>
+          } @else if (d.nearer === 'downgrade' && d.pointsBeforeDowngrade !== null) {
+          <span class="t-mono text-[11px] text-muted-color">
+            {{ 'all.ranking.progress.to-downgrade' | translate: { points: d.pointsBeforeDowngrade } }}
+          </span>
+          }
 
-            <div class="flex flex-col gap-1.5 min-w-0">
-              <span class="t-eyebrow">{{ 'all.ranking.breakdown.points' | translate }}</span>
-
-              <!-- Upgrade row -->
-              <div class="flex items-center gap-2 t-mono text-xs">
-                <i class="pi pi-arrow-up text-[10px] text-green-600 dark:text-green-400"></i>
-                <span class="text-green-600 dark:text-green-400 font-semibold">{{ d.points ?? 0 }}</span>
-                @if (d.upgradeThreshold !== null) {
-                  <span class="text-muted-color">/</span>
-                  <span class="text-muted-color">{{ d.upgradeThreshold }}</span>
-                }
-              </div>
-
-              <!-- Single summary line: closer of upgrade/downgrade -->
-              @if (d.nearer === 'upgrade' && d.pointsToUpgrade !== null) {
-                <span class="t-mono text-[11px] text-muted-color">
-                  {{ 'all.ranking.progress.to-upgrade' | translate: { points: d.pointsToUpgrade } }}
-                </span>
-              } @else if (d.nearer === 'downgrade' && d.pointsBeforeDowngrade !== null) {
-                <span class="t-mono text-[11px] text-muted-color">
-                  {{ 'all.ranking.progress.to-downgrade' | translate: { points: d.pointsBeforeDowngrade } }}
-                </span>
-              }
-
-              <!-- Downgrade row -->
-              @if (d.downgradeThreshold !== null && d.downPoints !== null && d.downPoints !== undefined) {
-                <div class="flex items-center gap-2 t-mono text-xs">
-                  <i class="pi pi-arrow-down text-[10px] text-red-600 dark:text-red-400"></i>
-                  <span class="text-red-600 dark:text-red-400 font-semibold">{{ d.downPoints }}</span>
-                  <span class="text-muted-color">/</span>
-                  <span class="text-muted-color">{{ d.downgradeThreshold }}</span>
-                </div>
-              }
-
-              <!-- Per-discipline extension slot -->
-              @switch (d.key) {
-                @case ('single') {
-                  <ng-content select="[singleExtra]" />
-                }
-                @case ('double') {
-                  <ng-content select="[doubleExtra]" />
-                }
-                @case ('mix') {
-                  <ng-content select="[mixExtra]" />
-                }
-              }
-            </div>
+          <!-- Downgrade row -->
+          @if (d.downgradeThreshold !== null && d.downPoints !== null && d.downPoints !== undefined) {
+          <div class="flex items-center gap-2 t-mono text-xs">
+            <i class="pi pi-arrow-down text-[10px] text-red-600 dark:text-red-400"></i>
+            <span class="text-red-600 dark:text-red-400 font-semibold">{{ d.downPoints }}</span>
+            <span class="text-muted-color">/</span>
+            <span class="text-muted-color">{{ d.downgradeThreshold }}</span>
           </div>
+          }
+
+          <!-- Per-discipline extension slot -->
+          @switch (d.key) {
+          @case ('single') {
+          <ng-content select="[singleExtra]" />
+          }
+          @case ('double') {
+          <ng-content select="[doubleExtra]" />
+          }
+          @case ('mix') {
+          <ng-content select="[mixExtra]" />
+          }
+          }
         </div>
-      }
+      </div>
     </div>
+    }
   </div>
+</div>
 }
