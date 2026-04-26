@@ -20,6 +20,8 @@ const PLAYER_ID_QUERY = gql`
   query ResolvePlayer($id: ID!) {
     player(id: $id) {
       id
+      slug
+      fullName
     }
   }
 `;
@@ -157,6 +159,7 @@ export class RankingBreakdownService {
 
   // The resolved player ID (always a UUID)
   resolvedPlayerId = computed(() => this.playerResource.value()?.id ?? null);
+  resolvedPlayer = computed(() => this.playerResource.value() ?? null);
   playerLoading = computed(() => this.playerResource.isLoading());
 
   // Shared view toggles

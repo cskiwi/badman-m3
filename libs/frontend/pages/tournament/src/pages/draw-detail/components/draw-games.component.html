@@ -1,114 +1,262 @@
 <section class="mt-2">
   <div class="flex items-center gap-3 mb-4">
-    <span class="t-eyebrow">Games</span>
+    <span class="t-eyebrow">{{ 'all.games.gamesList' | translate }}</span>
     <div class="flex-1 h-px bg-emphasis"></div>
     <span class="t-mono text-xs text-muted-color">{{ games().length }}</span>
   </div>
 
   @if (games().length === 0) {
-    <div class="rounded-xl border border-dashed border-surface p-10 text-center">
+    <div class="bg-emphasis border border-dashed border-surface rounded-border p-10 text-center">
       <i class="pi pi-inbox text-3xl text-muted-color mb-2 block"></i>
       <p class="text-muted-color m-0 italic">No games found for this draw</p>
     </div>
   } @else {
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col">
       @for (game of games(); track game.id) {
-        <div class="bg-emphasis border border-surface rounded-border p-4 hover:border-primary transition-colors">
-          <!-- Header with status and round info -->
-          <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
-            <div class="flex items-center gap-2 flex-wrap">
-              @if (game.playedAt) {
-                <span class="t-mono text-[11px] text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
-                  {{ game.playedAt | date: 'short' }}
-                </span>
-              }
+        @let team1Won = getWinnerIndicator(game, 0);
+        @let team2Won = getWinnerIndicator(game, 1);
+        @let bye = isBye(game);
+
+        <article
+          class="grid grid-cols-[4px_1fr_auto] lg:grid-cols-[4px_auto_1fr_auto] grid-rows-[auto_1fr] bg-emphasis border border-surface rounded-border overflow-hidden mt-3 first:mt-0"
+        >
+          <!-- Color band -->
+          <div
+            class="row-span-2"
+            [class.bg-primary]="!game.winner || bye"
+            [class.bg-[var(--g-win)]]="!!game.winner && !bye"
+          ></div>
+
+          <!-- Date column (lg only) -->
+          @if (game.playedAt) {
+            <div
+              class="row-span-2 hidden lg:flex flex-col items-center justify-center gap-1 px-4 py-4 pl-5 border-r border-surface min-w-[72px]"
+            >
+              <span class="t-eyebrow">{{ game.playedAt | dayjsFormat: 'ddd' }}</span>
+              <span class="font-['Space_Grotesk',sans-serif] font-bold text-2xl leading-none text-color">
+                {{ game.playedAt | dayjsFormat: 'DD' }}
+              </span>
+              <span class="t-mono text-[0.8125rem] text-muted-color">{{ game.playedAt | dayjsFormat: 'MMM' }}</span>
+            </div>
+          }
+
+          <!-- Top row: meta -->
+          <div class="col-start-2 lg:col-start-3 row-start-1 flex items-center justify-between gap-3 min-w-0 px-5 pt-3">
+            <div class="flex items-center gap-2 text-xs text-muted-color min-w-0 flex-wrap">
               @if (game.round) {
                 <span class="t-mono text-[11px] text-primary bg-emphasis px-2 py-0.5 rounded-sm tracking-wider uppercase">
                   {{ game.round }}
                 </span>
               }
+              @if (game.gameType) {
+                <span class="t-mono text-[11px] text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
+                  {{ game.gameType }}
+                </span>
+              }
+              <!-- Mobile date -->
+              @if (game.playedAt) {
+                <span class="t-mono text-[11px] text-muted-color lg:hidden truncate">
+                  {{ game.playedAt | date: 'short' }}
+                </span>
+              }
             </div>
-            @if (!isBye(game) && game.winner) {
-              <div class="flex items-center gap-1 text-xs text-muted-color">
+            @if (!bye && game.winner) {
+              <div class="flex items-center gap-1 text-xs text-muted-color shrink-0">
                 <i class="pi pi-trophy text-xs" style="color: var(--g-win)"></i>
                 <span>Team {{ game.winner }}</span>
               </div>
             }
           </div>
 
-          <!-- Players and Score -->
-          <div class="flex items-start relative">
-            <div class="flex flex-col flex-1 min-w-0">
-              @if (isBye(game)) {
-                <div class="flex items-center h-16">
-                  <span class="px-3 py-1 rounded-sm text-sm font-medium italic" style="background: var(--g-pending-muted); color: var(--g-pending)">
+          <!-- Pairs row -->
+          <div
+            class="col-start-2 lg:col-start-3 row-start-2 grid grid-cols-[1fr_auto_1fr] gap-2.5 items-center px-5 pb-4 pt-2"
+          >
+            @if (bye) {
+              @let team1 = getTeamMemberships(game, 1);
+              @let team2 = getTeamMemberships(game, 2);
+              <!-- Team 1 (or empty placeholder if bye is on team 1) -->
+              <div class="flex flex-col gap-0.5 min-w-0">
+                @if (team1.length > 0) {
+                  @for (m of team1; track m.id) {
+                    <span class="inline-flex items-center gap-1.5 text-sm max-w-full text-color font-semibold">
+                      @if (m.gamePlayer?.id) {
+                        <a class="text-inherit no-underline hover:text-primary truncate" [routerLink]="['/players', m.gamePlayer.id]">
+                          {{ m.gamePlayer.fullName || 'Unknown' }}
+                        </a>
+                      } @else {
+                        <span class="truncate">{{ m.gamePlayer?.fullName || 'Unknown' }}</span>
+                      }
+                      @if (getPlayerLevel(m, game.gameType); as lvl) {
+                        <app-tier-badge [level]="lvl" size="sm" />
+                      }
+                    </span>
+                  }
+                } @else {
+                  <span
+                    class="self-start px-3 py-1 rounded-sm text-sm font-medium italic"
+                    style="background: var(--g-pending-muted); color: var(--g-pending)"
+                  >
                     Bye
                   </span>
-                </div>
-              } @else {
-                @for (teamNumber of teamNumbers; track teamNumber; let teamIndex = $index) {
-                  <div class="flex flex-col gap-1 py-1">
-                    @for (membership of getTeamMemberships(game, teamNumber); track membership.id; let playerIndex = $index) {
-                      <div
-                        class="flex items-center gap-2 min-w-0"
-                        [class.font-semibold]="getWinnerIndicator(game, teamIndex)"
-                        [class.text-color]="getWinnerIndicator(game, teamIndex)"
-                        [class.text-muted-color]="!getWinnerIndicator(game, teamIndex)"
-                      >
-                        @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
-                          <i class="pi pi-crown text-xs" style="color: var(--g-win)"></i>
-                        }
-                        @if (membership.gamePlayer.id) {
-                          <a [routerLink]="['/players', membership.gamePlayer.id]" class="truncate text-sm no-underline text-current hover:text-primary transition-colors">
-                            {{ membership.gamePlayer.fullName || 'Unknown' }}
-                          </a>
-                        } @else {
-                          <span class="truncate text-sm">{{ membership.gamePlayer.fullName || 'Unknown' }}</span>
-                        }
-                        @if (getPlayerLevel(membership, game.gameType); as level) {
-                          <span class="t-mono bg-emphasis text-color px-1.5 py-0.5 rounded-sm text-[11px] font-medium">
-                            {{ level }}
-                          </span>
-                        }
-                      </div>
-                    }
-                  </div>
                 }
-              }
-            </div>
+              </div>
 
-            <!-- Scores positioned at right -->
-            <div class="absolute left-75 flex flex-col">
-              @if (isBye(game)) {
-                <div class="flex items-center h-16">
-                  <span class="px-3 py-1 rounded-sm text-sm font-medium italic" style="background: var(--g-pending-muted); color: var(--g-pending)">
+              <span class="t-mono text-[0.6875rem] text-muted-color uppercase tracking-[0.14em]">vs</span>
+
+              <!-- Team 2 (or empty placeholder if bye is on team 2) -->
+              <div class="flex flex-col gap-0.5 min-w-0 items-end text-right">
+                @if (team2.length > 0) {
+                  @for (m of team2; track m.id) {
+                    <span class="inline-flex items-center gap-1.5 text-sm max-w-full text-color font-semibold">
+                      @if (m.gamePlayer?.id) {
+                        <a class="text-inherit no-underline hover:text-primary truncate" [routerLink]="['/players', m.gamePlayer.id]">
+                          {{ m.gamePlayer.fullName || 'Unknown' }}
+                        </a>
+                      } @else {
+                        <span class="truncate">{{ m.gamePlayer?.fullName || 'Unknown' }}</span>
+                      }
+                      @if (getPlayerLevel(m, game.gameType); as lvl) {
+                        <app-tier-badge [level]="lvl" size="sm" />
+                      }
+                    </span>
+                  }
+                } @else {
+                  <span
+                    class="self-end px-3 py-1 rounded-sm text-sm font-medium italic"
+                    style="background: var(--g-pending-muted); color: var(--g-pending)"
+                  >
                     Bye
                   </span>
-                </div>
-              } @else {
-                @let setScores = getSetScores(game);
-                <div class="flex items-center h-8">
-                  <div class="flex gap-1">
-                    @for (setScore of setScores.team1Sets; track $index) {
-                      <span class="t-mono bg-emphasis text-color px-2 py-1 rounded-sm text-xs font-semibold">
-                        {{ setScore }}
-                      </span>
+                }
+              </div>
+            } @else {
+              <!-- Team 1 -->
+              <div class="flex flex-col gap-0.5 min-w-0">
+                @for (m of getTeamMemberships(game, 1); track m.id) {
+                  <span
+                    class="inline-flex items-center gap-1.5 text-sm max-w-full"
+                    [class.text-color]="team1Won"
+                    [class.font-semibold]="team1Won"
+                    [class.text-muted-color]="!team1Won"
+                  >
+                    @if (m.gamePlayer?.id) {
+                      <a
+                        class="text-inherit no-underline hover:text-primary truncate"
+                        [routerLink]="['/players', m.gamePlayer.id]"
+                      >
+                        {{ m.gamePlayer.fullName || 'Unknown' }}
+                      </a>
+                    } @else {
+                      <span class="truncate">{{ m.gamePlayer?.fullName || 'Unknown' }}</span>
                     }
-                  </div>
-                </div>
-                <div class="flex items-center h-8">
-                  <div class="flex gap-1">
-                    @for (setScore of setScores.team2Sets; track $index) {
-                      <span class="t-mono bg-emphasis text-color px-2 py-1 rounded-sm text-xs font-semibold">
-                        {{ setScore }}
-                      </span>
+                    @if (getPlayerLevel(m, game.gameType); as lvl) {
+                      <app-tier-badge [level]="lvl" size="sm" />
                     }
-                  </div>
-                </div>
-              }
-            </div>
+                  </span>
+                }
+              </div>
+
+              <span class="t-mono text-[0.6875rem] text-muted-color uppercase tracking-[0.14em]">vs</span>
+
+              <!-- Team 2 -->
+              <div class="flex flex-col gap-0.5 min-w-0 items-end text-right">
+                @for (m of getTeamMemberships(game, 2); track m.id) {
+                  <span
+                    class="inline-flex items-center gap-1.5 text-sm max-w-full"
+                    [class.text-color]="team2Won"
+                    [class.font-semibold]="team2Won"
+                    [class.text-muted-color]="!team2Won"
+                  >
+                    @if (m.gamePlayer?.id) {
+                      <a
+                        class="text-inherit no-underline hover:text-primary truncate"
+                        [routerLink]="['/players', m.gamePlayer.id]"
+                      >
+                        {{ m.gamePlayer.fullName || 'Unknown' }}
+                      </a>
+                    } @else {
+                      <span class="truncate">{{ m.gamePlayer?.fullName || 'Unknown' }}</span>
+                    }
+                    @if (getPlayerLevel(m, game.gameType); as lvl) {
+                      <app-tier-badge [level]="lvl" size="sm" />
+                    }
+                  </span>
+                }
+              </div>
+            }
           </div>
-        </div>
+
+          <!-- Right column: scores -->
+          @if (!bye) {
+            <div
+              class="col-start-3 lg:col-start-4 row-start-1 row-span-2 flex items-center justify-end gap-3 px-5 py-3 border-l border-surface"
+            >
+              <div class="flex gap-2.5 t-mono tabular-nums font-semibold leading-tight">
+                <!-- Team 1 sets -->
+                <div class="flex flex-col items-end gap-0.5 min-w-[1.25rem]">
+                  @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+                    <span
+                      class="text-base"
+                      [class.text-[var(--g-win)]]="getSetWinner(game.set1Team1, game.set1Team2) === 1"
+                      [class.text-muted-color]="getSetWinner(game.set1Team1, game.set1Team2) !== 1"
+                    >
+                      {{ game.set1Team1 }}
+                    </span>
+                  }
+                  @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+                    <span
+                      class="text-base"
+                      [class.text-[var(--g-win)]]="getSetWinner(game.set2Team1, game.set2Team2) === 1"
+                      [class.text-muted-color]="getSetWinner(game.set2Team1, game.set2Team2) !== 1"
+                    >
+                      {{ game.set2Team1 }}
+                    </span>
+                  }
+                  @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+                    <span
+                      class="text-base"
+                      [class.text-[var(--g-win)]]="getSetWinner(game.set3Team1, game.set3Team2) === 1"
+                      [class.text-muted-color]="getSetWinner(game.set3Team1, game.set3Team2) !== 1"
+                    >
+                      {{ game.set3Team1 }}
+                    </span>
+                  }
+                </div>
+                <!-- Team 2 sets -->
+                <div class="flex flex-col items-end gap-0.5 min-w-[1.25rem]">
+                  @if (isSetPlayed(game.set1Team1, game.set1Team2)) {
+                    <span
+                      class="text-base"
+                      [class.text-[var(--g-win)]]="getSetWinner(game.set1Team1, game.set1Team2) === 2"
+                      [class.text-muted-color]="getSetWinner(game.set1Team1, game.set1Team2) !== 2"
+                    >
+                      {{ game.set1Team2 }}
+                    </span>
+                  }
+                  @if (isSetPlayed(game.set2Team1, game.set2Team2)) {
+                    <span
+                      class="text-base"
+                      [class.text-[var(--g-win)]]="getSetWinner(game.set2Team1, game.set2Team2) === 2"
+                      [class.text-muted-color]="getSetWinner(game.set2Team1, game.set2Team2) !== 2"
+                    >
+                      {{ game.set2Team2 }}
+                    </span>
+                  }
+                  @if (isSetPlayed(game.set3Team1, game.set3Team2)) {
+                    <span
+                      class="text-base"
+                      [class.text-[var(--g-win)]]="getSetWinner(game.set3Team1, game.set3Team2) === 2"
+                      [class.text-muted-color]="getSetWinner(game.set3Team1, game.set3Team2) !== 2"
+                    >
+                      {{ game.set3Team2 }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </article>
       }
     </div>
   }
