@@ -275,11 +275,11 @@ export class RankingSystem extends BaseEntity {
   @OneToMany(() => RankingLastPlace, (rankingLastPlace) => rankingLastPlace.system)
   declare rankingLastPlaces: Relation<RankingLastPlace[]>;
 
-  static async findActiveSystem(date?: Date): Promise<RankingSystem | null> {
+  static async findActiveSystem(date?: Date, type: RankingSystems = RankingSystems.VISUAL): Promise<RankingSystem | null> {
     const d = date ?? new Date();
     return RankingSystem.findOne({
       where: {
-        rankingSystem: RankingSystems.BVL,
+        rankingSystem: type,
         startDate: LessThanOrEqual(d),
         endDate: Or(MoreThanOrEqual(d), IsNull()),
       },
