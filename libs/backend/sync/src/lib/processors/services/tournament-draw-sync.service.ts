@@ -28,6 +28,7 @@ export type TournamentDrawSyncData = (
   includeSubComponents?: boolean;
   workPlan?: TournamentWorkPlan;
   childJobsCreated?: boolean;
+  standingJobCreated?: boolean;
 };
 
 @Injectable()
@@ -67,11 +68,15 @@ export class TournamentDrawSyncService {
       await updateProgress(this.tournamentPlanningService.calculateProgress(completedSteps, totalSteps, includeSubComponents));
       this.logger.debug(`Completed draw update`);
 
-      // Step 3: If includeSubComponents, create game/entry/standing child jobs
+      // Phase 1: create game + entry child jobs (run in parallel as siblings).
+      // BullMQ Flow does NOT enforce ordering between siblings via a `dependencies`
+      // option, so we use a two-phase approach to ensure entry sync completes
+      // before the standing sync starts. Otherwise the standing job can race with
+      // entry sync (which deletes/recreates Entries with new UUIDs) and produce
+      // FK violations on the Standings table (FK_8e23443cc2621bd06c7e3cbb44b).
       if (includeSubComponents && !childJobsCreated) {
         const gameJobName = generateJobId('tournament', 'game', tournamentCode, drawCode);
         const entryJobName = generateJobId('tournament', 'entry', tournamentCode, drawCode);
-        const standingJobName = generateJobId('tournament', 'standing', tournamentCode, drawCode);
 
         const children = [
           {
@@ -112,35 +117,13 @@ export class TournamentDrawSyncService {
                 id: job.id!,
                 queue: job.queueQualifiedName,
               },
-              dependencies: [gameJobName],
-            },
-          },
-          {
-            name: standingJobName,
-            queueName: TOURNAMENT_EVENT_QUEUE,
-            data: {
-              drawId: draw.id, // Pass internal ID
-              metadata: {
-                displayName: `Standing: ${drawName}`,
-                drawName: drawName,
-                description: `Standing synchronization for draw ${drawName}`,
-              },
-            },
-            opts: {
-              jobId: standingJobName,
-              failParentOnFailure: true,
-              parent: {
-                id: job.id!,
-                queue: job.queueQualifiedName,
-              },
-              dependencies: [entryJobName],
             },
           },
         ];
 
         try {
           await this.tournamentSyncFlow.addBulk(children);
-          this.logger.log(`Added game, entry, standing jobs for draw ${drawName}`);
+          this.logger.log(`Added game + entry jobs for draw ${drawName}`);
         } catch (err: unknown) {
           const errMsg = err instanceof Error ? err.message : String(err);
           this.logger.warn(`addBulk for draw children returned error: ${errMsg}`);
@@ -154,7 +137,56 @@ export class TournamentDrawSyncService {
         const shouldWait = await job.moveToWaitingChildren(token!);
         this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
         if (shouldWait) {
-          this.logger.log(`Releasing job to wait for draw children (will be resumed by any available worker)`);
+          this.logger.log(`Phase 1 done — releasing job to wait for game + entry (will be resumed by any available worker)`);
+          throw new WaitingChildrenError();
+        }
+      }
+
+      // Phase 2: After game + entry complete, create the standing child job.
+      // This guarantees Entries are stable in the database before Standings are
+      // calculated and inserted, avoiding FK violations.
+      if (includeSubComponents && !job.data.standingJobCreated) {
+        this.logger.log(`Game + entry completed, creating standing job`);
+        const standingJobName = generateJobId('tournament', 'standing', tournamentCode, drawCode);
+
+        try {
+          await this.tournamentSyncFlow.addBulk([
+            {
+              name: standingJobName,
+              queueName: TOURNAMENT_EVENT_QUEUE,
+              data: {
+                drawId: draw.id, // Pass internal ID
+                metadata: {
+                  displayName: `Standing: ${drawName}`,
+                  drawName: drawName,
+                  description: `Standing synchronization for draw ${drawName}`,
+                },
+              },
+              opts: {
+                jobId: standingJobName,
+                failParentOnFailure: true,
+                parent: {
+                  id: job.id!,
+                  queue: job.queueQualifiedName,
+                },
+              },
+            },
+          ]);
+          this.logger.log(`Added standing job for draw ${drawName}`);
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          this.logger.warn(`addBulk for standing returned error: ${errMsg}`);
+        }
+
+        await job.updateData({
+          ...job.data,
+          standingJobCreated: true,
+        });
+
+        const shouldWait = await job.moveToWaitingChildren(token!);
+        this.logger.log(`moveToWaitingChildren returned shouldWait=${shouldWait} for job ${job.id}`);
+        if (shouldWait) {
+          this.logger.log(`Phase 2 done — releasing job to wait for standing (will be resumed by any available worker)`);
           throw new WaitingChildrenError();
         }
 
