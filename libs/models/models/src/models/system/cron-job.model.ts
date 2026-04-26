@@ -48,7 +48,7 @@ export class CronJob extends BaseEntity {
 
   @SortableField()
   @WhereField()
-  @Column({ type: 'character varying', length: 50 })
+  @Column({ type: 'character varying', length: 255 })
   declare type: 'ranking' | 'sync';
 
   @SortableField()

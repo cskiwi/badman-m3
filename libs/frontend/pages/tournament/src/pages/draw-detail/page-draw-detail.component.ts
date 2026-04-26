@@ -2,12 +2,12 @@ import { SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { HeroComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { SyncButtonComponent, SyncButtonConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DrawDetailService } from './page-draw-detail.service';
@@ -18,13 +18,13 @@ import { DrawKoTreeComponent } from './components/draw-ko-tree.component';
 @Component({
   selector: 'app-page-draw-detail',
   imports: [
+    BreadcrumbComponent,
     SlicePipe,
-    ProgressBarModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     ButtonModule,
     SkeletonModule,
+    HeroComponent,
     SyncButtonComponent,
     DrawGamesComponent,
     DrawStandingsTableComponent,
@@ -64,6 +64,21 @@ export class PageDrawDetailComponent {
   });
 
   hasMultipleDraws = computed(() => this.draws().length > 1);
+
+  // Arena hero helpers
+  drawCrestText = computed(() => {
+    const d = this.draw();
+    if (!d) return '?';
+    const name = d.name?.trim();
+    if (name) {
+      const words = name.split(/\s+/).filter(Boolean);
+      if (words.length >= 2) {
+        return (words[0][0] + words[1][0]).toUpperCase();
+      }
+      return name.slice(0, 3).toUpperCase();
+    }
+    return (d.id?.slice(0, 2) || '??').toUpperCase();
+  });
 
   onDrawChange(selectedDrawId: string) {
     const tournament = this.tournament();

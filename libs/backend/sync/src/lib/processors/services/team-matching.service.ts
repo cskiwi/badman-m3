@@ -41,25 +41,32 @@ export class TeamMatchingService {
     // it is a sequential number (1, 2, 3, …) scoped to a draw/subevent/event,
     // so the same value appears on many unrelated teams across the database.
 
+    // Only apply state filter for provincial (PROV) competitions, not for LIGA
+    // or NATIONAL. The same rule is used for both teamMatcher and fuzzy paths
+    // so a team in the wrong province can never be selected for a PROV event.
+    const applyStateFilter = competitionEvent?.type === LevelType.PROV;
+    const state = applyStateFilter ? competitionEvent?.state : undefined;
+
     // 1. Try teamMatcher pattern if event has one
     if (competitionEvent?.teamMatcher) {
-      const matchedTeam = await this.matchByTeamMatcher(name, competitionEvent.teamMatcher, season);
+      const matchedTeam = await this.matchByTeamMatcher(name, competitionEvent.teamMatcher, season, state);
       if (matchedTeam) {
         return { team: matchedTeam, confidence: 'high', score: 0.95 };
       }
     }
 
     // 2. Fuzzy match with state and season filtering
-    // Only apply state filter for provincial (PROV) competitions, not for LIGA or NATIONAL
-    const applyStateFilter = competitionEvent?.type === LevelType.PROV;
-    const state = applyStateFilter ? competitionEvent?.state : undefined;
     return this.fuzzyMatch(name, state, season);
   }
 
   /**
-   * Match team using the event's teamMatcher regex pattern
+   * Match team using the event's teamMatcher regex pattern.
+   *
+   * @param state When provided, candidate clubs are restricted to this state
+   *   (used for provincial competitions — a PROV team in the wrong province
+   *   must never be matched).
    */
-  private async matchByTeamMatcher(apiName: string, teamMatcher: string, season: number): Promise<TeamModel | null> {
+  private async matchByTeamMatcher(apiName: string, teamMatcher: string, season: number, state?: string): Promise<TeamModel | null> {
     try {
       const regex = new RegExp(teamMatcher, 'i');
       const match = apiName.match(regex);
@@ -75,35 +82,78 @@ export class TeamMatchingService {
         return null;
       }
 
-      // Find clubs matching the extracted name (case-insensitive)
+      const trimmedClubName = clubName.trim();
+
+      // Find clubs matching the extracted name (case-insensitive). Apply the
+      // state filter here when present so teams in other provinces are never
+      // even considered.
+      const baseTerms = [
+        { name: ILike(`%${trimmedClubName}%`) },
+        { teamName: ILike(`%${trimmedClubName}%`) },
+        { abbreviation: ILike(`%${trimmedClubName}%`) },
+      ];
+      const where = state ? baseTerms.map((term) => ({ ...term, state })) : baseTerms;
+
       const clubs = await Club.find({
-        where: [
-          { name: ILike(`%${clubName.trim()}%`) },
-          { teamName: ILike(`%${clubName.trim()}%`) },
-          { abbreviation: ILike(`%${clubName.trim()}%`) },
-        ],
+        where,
         relations: ['teams'],
       });
 
+      // Collect every team that satisfies season + number + gender, then rank
+      // them. Previously we returned the first hit, which is non-deterministic
+      // when multiple clubs match the extracted clubName pattern (e.g. "Smash"
+      // matches both club "Smash" and club "Smash For Fun").
+      const candidates: { team: TeamModel; club: Club }[] = [];
       for (const club of clubs) {
         if (!club.teams) continue;
-
         for (const team of club.teams) {
-          // Filter by season
-          if (team.season !== season) {
-            continue;
-          }
-
-          // Match team number and gender
-          const teamMatches = this.matchTeamNumberAndGender(team, teamNumber, gender);
-          if (teamMatches) {
-            this.logger.debug(`Matched team via teamMatcher: ${apiName} -> ${team.name} (season: ${season})`);
-            return team;
-          }
+          if (team.season !== season) continue;
+          if (!this.matchTeamNumberAndGender(team, teamNumber, gender)) continue;
+          candidates.push({ team, club });
         }
       }
 
-      return null;
+      if (candidates.length === 0) {
+        this.logger.debug(
+          `teamMatcher found no candidates for "${apiName}" ` +
+            `(clubName=${trimmedClubName}, season=${season}${state ? `, state=${state}` : ''})`,
+        );
+        return null;
+      }
+
+      // 1. Exact full team-name match against the API name wins outright.
+      const normalizedApi = this.normalizeTeamName(apiName);
+      const exact = candidates.find(({ team }) => {
+        const normalized = this.normalizeTeamName(team.name || '');
+        return normalized && normalized === normalizedApi;
+      });
+      if (exact) {
+        this.logger.debug(
+          `Matched team via teamMatcher (exact name): ${apiName} -> ${exact.team.name} ` +
+            `(club: ${exact.club.name}, season: ${season}${state ? `, state: ${state}` : ''})`,
+        );
+        return exact.team;
+      }
+
+      // 2. Otherwise rank by club-name similarity against the extracted
+      //    clubName and prefer the shortest (most specific) club name on ties.
+      const ranked = candidates
+        .map(({ team, club }) => {
+          const sim = Math.max(
+            this.calculateStringSimilarity(trimmedClubName, club.name || ''),
+            this.calculateStringSimilarity(trimmedClubName, club.teamName || ''),
+            this.calculateStringSimilarity(trimmedClubName, club.abbreviation || ''),
+          );
+          return { team, club, sim, clubLen: (club.name || '').length };
+        })
+        .sort((a, b) => b.sim - a.sim || a.clubLen - b.clubLen);
+
+      const best = ranked[0];
+      this.logger.debug(
+        `Matched team via teamMatcher (ranked): ${apiName} -> ${best.team.name} ` +
+          `(club: ${best.club.name}, sim: ${best.sim.toFixed(3)}, season: ${season}${state ? `, state: ${state}` : ''})`,
+      );
+      return best.team;
     } catch (error) {
       this.logger.warn(`Invalid teamMatcher regex: ${teamMatcher}`, error);
       return null;
@@ -311,8 +361,21 @@ export class TeamMatchingService {
     team: TeamModel,
     club?: Club,
   ): number {
+    // Exact full team name match takes highest priority. This prevents cases like
+    // API "Smash 1H" matching club "Smash For Fun" (team "Smash For Fun 1H")
+    // when a team literally named "Smash 1H" exists.
+    const normalizedApi = this.normalizeTeamName(apiName);
+    const normalizedTeam = this.normalizeTeamName(team.name || '');
+    if (normalizedApi && normalizedApi === normalizedTeam) {
+      return 1;
+    }
+
     let score = 0;
     let weights = 0;
+
+    // Exact club name match bonus: if parsed club name equals the club's name,
+    // teamName, or abbreviation exactly, boost via the similarity function below.
+    // (Handled implicitly by calculateStringSimilarity returning 1 on equality.)
 
     // Club name similarity (50% weight)
     if (parsed.clubName && club) {
@@ -392,9 +455,12 @@ export class TeamMatchingService {
     if (s1 === s2) return 1;
     if (s1.length === 0 || s2.length === 0) return 0;
 
-    // Check if one contains the other
+    // Check if one contains the other — scale by length ratio so that a short
+    // string contained in a much longer one does not look nearly identical.
+    // e.g. "smash" vs "smash for fun" should NOT score 0.9.
     if (s1.includes(s2) || s2.includes(s1)) {
-      return 0.9;
+      const ratio = Math.min(s1.length, s2.length) / Math.max(s1.length, s2.length);
+      return 0.6 + 0.3 * ratio;
     }
 
     const distance = this.levenshteinDistance(s1, s2);

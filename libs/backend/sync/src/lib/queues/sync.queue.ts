@@ -174,7 +174,7 @@ export interface TournamentRankingRecalcJobData {
 }
 
 export interface RankingSyncInitJobData {
-  startDate?: string; // ISO date string, defaults to system's updateLastUpdate
+  startDate?: string; // ISO date string, defaults to the latest system's calculationLastUpdate
   metadata?: JobDisplayMetadata;
 }
 

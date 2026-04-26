@@ -1,84 +1,10 @@
 :host {
   display: flex;
-  padding: 1rem 1rem 0;
   flex-direction: column;
-  gap: 1rem;
-
-  @media (max-width: 959.98px) {
-    padding: 0.5rem 0.5rem 0;
-  }
 }
 
-.games {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-
-  // switch to row for mobile
-  @media (max-width: 959.98px) {
-    flex-direction: column-reverse;
-  }
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  .levels {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    flex-wrap: wrap;
-
-    badman-show-level {
-      cursor: pointer;
-    }
-  }
-
-  .sub-text a {
-    text-decoration: none;
-  }
-}
-
-.recent-games {
-  width: 100%;
-  max-width: 750px;
-}
-
-.upcoming-games {
-  flex: 1 1 250px;
-  max-width: 400px;
-
-  @media (max-width: 959.98px) {
-    flex: 1;
-  }
-}
-
-h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.teams-overview {
-  margin-bottom: 2rem;
-
-  .grid {
-    margin-top: 1rem;
-  }
-
-  .rounded-border {
-    border: 1px solid;
-    border-radius: 0.5rem;
-  }
-
-  .bg-highlight {
-    background-color: var(--surface-50);
-    border-color: var(--surface-200);
-  }
-
-  .hover\\:bg-surface-100:hover {
-    background-color: var(--surface-100);
-  }
-}
+/* Win/loss helpers (semantic colors not exposed as Tailwind utilities) */
+.text-win { color: var(--g-win); }
+.text-loss { color: var(--g-loss); }
+.bg-win-muted { background: var(--g-win-muted); }
+.bg-loss-muted { background: var(--g-loss-muted); }

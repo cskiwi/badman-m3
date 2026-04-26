@@ -1,51 +1,53 @@
 @if (!loading()) {
   @if (this.competition(); as competition) {
-    <app-page-header>
-      <i avatar class="pi pi-pencil text-2xl"></i>
-      <span title>{{ 'all.competition.edit.title' | translate }} - {{ competition.name }}</span>
-      <ng-container subTitle>
-        <span>{{ 'all.competition.edit.subtitle' | translate }}</span>
-      </ng-container>
-      <ng-container actions>
-        <div class="flex gap-3">
-          <p-button
-            [label]="'all.competition.edit.actions.save-all' | translate"
-            icon="pi pi-save"
-            (click)="saveAll()"
-            [disabled]="!hasUnsavedChanges"
-            [loading]="false"
-          />
-          <p-button
-            [label]="'all.competition.edit.actions.save-current' | translate"
-            icon="pi pi-check"
-            [outlined]="true"
-            (click)="saveCurrentTab()"
-            [disabled]="false"
-            [loading]="false"
-          />
-          <p-button
-            [label]="'all.competition.edit.actions.cancel' | translate"
-            icon="pi pi-times"
-            severity="secondary"
-            [outlined]="true"
-            (click)="cancel()"
-          />
-        </div>
-      </ng-container>
-    </app-page-header>
+    <!-- Breadcrumb -->
+    <app-breadcrumb [items]="[
+      { label: competition.name, routerLink: ['/', 'competition', competition.slug] },
+      { label: ('all.competition.edit.title' | translate) },
+    ]" />
 
-    <div class="p-4">
-      <!-- Unsaved changes indicator -->
-      @if (hasUnsavedChanges) {
-        <div class="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-          <div class="flex items-center gap-2 text-orange-800">
-            <i class="pi pi-exclamation-triangle"></i>
-            <span class="font-medium">{{ 'all.competition.edit.messages.unsaved-changes' | translate }}</span>
-          </div>
-        </div>
-      }
+    <!-- Header -->
+    <header class="flex items-start justify-between flex-wrap gap-4 mb-6">
+      <div class="flex flex-col gap-2 min-w-0">
+        <span class="t-eyebrow">{{ 'all.competition.edit.subtitle' | translate }}</span>
+        <h1 class="edit-title m-0">{{ 'all.competition.edit.title' | translate }}</h1>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <p-button
+          [label]="'all.competition.edit.actions.cancel' | translate"
+          icon="pi pi-times"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          (click)="cancel()"
+        />
+        <p-button
+          [label]="'all.competition.edit.actions.save-current' | translate"
+          icon="pi pi-check"
+          [outlined]="true"
+          size="small"
+          (click)="saveCurrentTab()"
+        />
+        <p-button
+          [label]="'all.competition.edit.actions.save-all' | translate"
+          icon="pi pi-save"
+          size="small"
+          (click)="saveAll()"
+          [disabled]="!hasUnsavedChanges"
+        />
+      </div>
+    </header>
 
-      <!-- Tabbed Interface -->
+    <!-- Unsaved changes indicator -->
+    @if (hasUnsavedChanges) {
+      <div class="mb-4 p-3 rounded-lg flex items-center gap-2" style="background: var(--g-pending-muted, var(--p-yellow-100)); color: var(--g-pending, var(--p-yellow-700))">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span class="font-medium text-sm">{{ 'all.competition.edit.messages.unsaved-changes' | translate }}</span>
+      </div>
+    }
+
+    <!-- Tabbed Interface -->
+    <div class="bg-emphasis border border-surface rounded-border p-4">
       <p-tabs [value]="activeTabIndex()" (activeIndexChange)="onActiveIndexChange($event)">
         <p-tablist>
           <p-tab value="0">
@@ -79,15 +81,13 @@
     </div>
   }
 } @else {
-  <div class="p-4">
-    <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
-    <p class="text-center text-surface-500 mt-4">{{ 'all.competition.edit.messages.loading' | translate }}</p>
-  </div>
+  <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+  <p class="text-center text-muted-color mt-4 text-sm">{{ 'all.competition.edit.messages.loading' | translate }}</p>
 }
 
 @if (error(); as errorMessage) {
-  <div class="flex items-center justify-center p-8 text-red-600">
-    <i class="pi pi-exclamation-triangle mr-2"></i>
+  <div class="flex items-center gap-2 p-4 rounded-lg mt-4" style="background: var(--g-loss-muted); color: var(--g-loss)">
+    <i class="pi pi-exclamation-triangle"></i>
     <span>{{ errorMessage }}</span>
   </div>
 }

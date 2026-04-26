@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@app/frontend-components": "*",
+    "@app/frontend-modules-auth": "*",
     "@app/frontend-modules-graphql": "*",
     "@app/models": "*",
     "@angular/core": "20.1.0",

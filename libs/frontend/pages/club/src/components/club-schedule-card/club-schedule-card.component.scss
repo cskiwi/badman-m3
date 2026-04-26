@@ -1,0 +1,79 @@
+:host { display: block; }
+
+.g-card {
+  background: var(--p-content-background);
+  border: 1px solid var(--p-content-background);
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-4, 1rem);
+}
+
+.g-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.g-card__link {
+  font-size: 0.8125rem;
+  color: var(--p-primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  &:hover { text-decoration: underline; }
+}
+
+.sched__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-3, 0.75rem) 0;
+  border-bottom: 1px solid var(--p-content-background);
+
+  &:last-child { border-bottom: 0; }
+  &:first-child { padding-top: 0; }
+}
+
+.sched__date {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--p-text-color);
+  width: 44px;
+  text-align: center;
+
+  .day {
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--p-text-muted-color);
+    display: block;
+    margin-bottom: 2px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+  }
+
+  .num { font-size: 1.5rem; }
+}
+
+.sched__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sched__teams {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  color: var(--p-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sched__meta {
+  font-size: 0.6875rem;
+  color: var(--p-text-muted-color);
+  letter-spacing: 0.03em;
+  font-family: var(--t-mono, 'JetBrains Mono', monospace);
+}

@@ -170,7 +170,7 @@ export class ScheduleTabService {
       if (!grouped.has(timeKey)) {
         grouped.set(timeKey, []);
       }
-      grouped.get(timeKey)!.push(slot);
+      grouped.get(timeKey)?.push(slot);
     }
 
     // Sort by time

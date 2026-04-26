@@ -1,1 +1,12 @@
-// Competition edit page styles
+:host {
+  display: block;
+}
+
+.edit-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--p-text-color);
+}

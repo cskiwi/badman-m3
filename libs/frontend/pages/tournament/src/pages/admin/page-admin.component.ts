@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TournamentPhase } from '@app/models-enum';
@@ -9,7 +8,6 @@ import { injectParams } from 'ngxtension/inject-params';
 import { injectQueryParams } from 'ngxtension/inject-query-params';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TabsModule } from 'primeng/tabs';
 import { AdminService } from './page-admin.service';
@@ -18,19 +16,19 @@ import { EnrollmentsTabComponent } from './tabs/enrollments/enrollments-tab.comp
 import { DrawsTabComponent } from './tabs/draws/draws-tab.component';
 import { ScheduleTabComponent } from './tabs/schedule/schedule-tab.component';
 import { CheckinTabComponent } from './tabs/checkin/checkin-tab.component';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-admin',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     RouterModule,
     TranslateModule,
     SkeletonModule,
     TabsModule,
     ButtonModule,
     MessageModule,
-    ProgressBarModule,
-    PageHeaderComponent,
     SettingsTabComponent,
     EnrollmentsTabComponent,
     DrawsTabComponent,

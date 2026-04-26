@@ -1,38 +1,39 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  input,
-  ElementRef,
-  AfterViewInit,
-  OnDestroy,
-  afterRenderEffect,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, afterRenderEffect, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 
-import { IS_MOBILE } from '@app/frontend-utils';
-import { Game } from '@app/models';
-import { CardModule } from 'primeng/card';
-import { ChipModule } from 'primeng/chip';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { PlayerRecentGamesService } from './recent-games-player.service';
-import { DividerModule } from 'primeng/divider';
+import { NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { SkeletonModule } from 'primeng/skeleton';
-import { ButtonModule } from 'primeng/button';
-import { TranslateModule } from '@ngx-translate/core';
+import { TierBadgeComponent } from '@app/frontend-components/tier-badge';
+import { IS_MOBILE } from '@app/frontend-utils';
 import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
+import { Game } from '@app/models';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ButtonModule } from 'primeng/button';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TagModule } from 'primeng/tag';
+import { PlayerRecentGamesService } from './recent-games-player.service';
 @Component({
   selector: 'app-recent-games-player',
-  imports: [DayjsFormatPipe, CardModule, ChipModule, ProgressBarModule, DividerModule, RouterLink, SkeletonModule, ButtonModule, TranslateModule],
+  imports: [
+    NgClass,
+    DayjsFormatPipe,
+    RouterLink,
+    FormsModule,
+    SkeletonModule,
+    ButtonModule,
+    SelectButtonModule,
+    TagModule,
+    TranslateModule,
+    TierBadgeComponent,
+  ],
   templateUrl: './recent-games-player.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: './recent-games-player.component.scss',
 })
 export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   for = input.required<string | string[]>();
   isMobile = inject(IS_MOBILE);
+  private readonly translate = inject(TranslateService);
 
   readonly scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private intersectionObserver?: IntersectionObserver;
@@ -46,6 +47,59 @@ export class RecentGamesPlayerComponent implements AfterViewInit, OnDestroy {
   loading = this._playerGamesService.loading;
   loadingMore = this._playerGamesService.loadingMore;
   hasMore = this._playerGamesService.hasMore;
+
+  /** Selected game type filter: 'all' | 'S' | 'D' | 'MX'. */
+  readonly selectedGameType = signal<'all' | 'S' | 'D' | 'MX'>('all');
+
+  /** Server-backed counts of played games per game type. */
+  readonly gameTypeCounts = this._playerGamesService.counts;
+
+  /** Options for the p-selectbutton filter; labels include counts. */
+  readonly filterOptions = computed(() => {
+    const counts = this.gameTypeCounts();
+    const t = (key: string) => this.translate.instant(key);
+    return [
+      { label: `${t('all.game.filter.all')} · ${counts.total}`, value: 'all' as const },
+      { label: `${t('all.game.filter.singles')} · ${counts.singles}`, value: 'S' as const },
+      { label: `${t('all.game.filter.doubles')} · ${counts.doubles}`, value: 'D' as const },
+      { label: `${t('all.game.filter.mixed')} · ${counts.mixed}`, value: 'MX' as const },
+    ];
+  });
+
+  /** Games filtered by the selected game type. */
+  readonly filteredGames = computed(() => {
+    const type = this.selectedGameType();
+    const all = this.games();
+    return type === 'all' ? all : all.filter((g) => g?.gameType === type);
+  });
+
+  selectGameType(type: 'all' | 'S' | 'D' | 'MX'): void {
+    this.selectedGameType.set(type);
+  }
+
+  /** IDs of games whose expanded panel is open. */
+  private readonly expandedIds = signal<Set<string>>(new Set());
+
+  isExpanded(gameId: string | undefined | null): boolean {
+    if (!gameId) return false;
+    return this.expandedIds().has(gameId);
+  }
+
+  toggleExpanded(gameId: string | undefined | null, event?: Event): void {
+    if (!gameId) return;
+    event?.stopPropagation();
+    this.expandedIds.update((s) => {
+      const next = new Set(s);
+      if (next.has(gameId)) next.delete(gameId);
+      else next.add(gameId);
+      return next;
+    });
+  }
+
+  /** Members of one team on a game; preserves ordering and excludes missing players. */
+  getTeamMembers(game: Game, team: 1 | 2) {
+    return (game?.gamePlayerMemberships ?? []).filter((m) => m?.team === team);
+  }
 
   constructor() {
     effect(() => {

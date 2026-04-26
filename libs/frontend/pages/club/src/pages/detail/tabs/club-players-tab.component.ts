@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { AvatarModule } from 'primeng/avatar';
-import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -22,8 +20,6 @@ import { ClubPlayersTabService } from './club-players-tab.service';
     FormsModule,
     RouterModule,
     TranslateModule,
-    AvatarModule,
-    BadgeModule,
     ButtonModule,
     InputTextModule,
     IconFieldModule,

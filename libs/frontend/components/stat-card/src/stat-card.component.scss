@@ -1,0 +1,11 @@
+.g-stat-delta[data-dir='up'] {
+  color: var(--g-win);
+}
+
+.g-stat-delta[data-dir='down'] {
+  color: var(--g-loss);
+}
+
+.g-stat-delta[data-dir='neutral'] {
+  color: var(--p-text-muted-color);
+}

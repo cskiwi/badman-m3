@@ -1,161 +1,161 @@
 @if (encounters().length === 0) {
-  <p class="text-center italic p-8 bg-surface-ground rounded-lg text-muted-color">No matches found</p>
+ <p class="text-center italic p-8 bg-surface-ground rounded-lg text-muted-color">No matches found</p>
 } @else {
-  <div class="space-y-3">
-    @for (encounter of encounters(); track encounter.id) {
-      <div class="bg-surface-card border border-surface-border rounded-lg hover:bg-surface-hover transition-colors">
-        <!-- Encounter header (clickable to expand) -->
-        <div class="flex items-center justify-between p-4 cursor-pointer" (click)="toggleEncounter(encounter.id)">
-          <div class="flex items-center gap-3">
-            @if (encounter.date) {
-              <span class="bg-emphasis text-muted-color px-2 py-1 rounded text-xs font-medium">
-                {{ encounter.date | date: 'shortDate' }}
-              </span>
-            }
-            <div class="flex items-center gap-2 text-sm">
-              <span [class.font-semibold]="isHomeTeam(encounter)" [class.text-primary]="isHomeTeam(encounter)">
-                {{ encounter.homeTeam?.name || encounter.homeTeam?.abbreviation || 'Home' }}
-              </span>
-              <span class="text-muted-color">vs</span>
-              <span [class.font-semibold]="!isHomeTeam(encounter)" [class.text-primary]="!isHomeTeam(encounter)">
-                {{ encounter.awayTeam?.name || encounter.awayTeam?.abbreviation || 'Away' }}
-              </span>
-            </div>
-          </div>
-          <div class="flex items-center gap-3">
-            @if (
-              encounter.homeScore !== null && encounter.homeScore !== undefined && encounter.awayScore !== null && encounter.awayScore !== undefined
-            ) {
-              <span class="font-semibold text-sm">{{ encounter.homeScore }} - {{ encounter.awayScore }}</span>
-            }
-            @if (getResult(encounter); as result) {
-              @if (result === 'W') {
-                <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-semibold">Won</span>
-              } @else if (result === 'L') {
-                <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-semibold">Lost</span>
-              } @else {
-                <span class="bg-surface-200 text-color px-2 py-0.5 rounded text-xs font-semibold">Draw</span>
-              }
-            }
-            <i
-              class="pi text-xs text-muted-color"
-              [class.pi-chevron-down]="isExpanded(encounter.id)"
-              [class.pi-chevron-right]="!isExpanded(encounter.id)"
-            ></i>
-          </div>
-        </div>
+ <div class="space-y-3">
+ @for (encounter of encounters(); track encounter.id) {
+ <div class="bg-surface-card border border-surface-border rounded-lg hover:bg-surface-hover transition-colors">
+ <!-- Encounter header (clickable to expand) -->
+ <div class="flex items-center justify-between p-4 cursor-pointer" (click)="toggleEncounter(encounter.id)">
+ <div class="flex items-center gap-3">
+ @if (encounter.date) {
+ <span class="bg-emphasis text-muted-color px-2 py-1 rounded text-xs font-medium">
+ {{ encounter.date | date: 'shortDate' }}
+ </span>
+ }
+ <div class="flex items-center gap-2 text-sm">
+ <span [class.font-semibold]="isHomeTeam(encounter)" [class.text-primary]="isHomeTeam(encounter)">
+ {{ encounter.homeTeam?.name || encounter.homeTeam?.abbreviation || 'Home' }}
+ </span>
+ <span class="text-muted-color">vs</span>
+ <span [class.font-semibold]="!isHomeTeam(encounter)" [class.text-primary]="!isHomeTeam(encounter)">
+ {{ encounter.awayTeam?.name || encounter.awayTeam?.abbreviation || 'Away' }}
+ </span>
+ </div>
+ </div>
+ <div class="flex items-center gap-3">
+ @if (
+ encounter.homeScore !== null && encounter.homeScore !== undefined && encounter.awayScore !== null && encounter.awayScore !== undefined
+ ) {
+ <span class="font-semibold text-sm">{{ encounter.homeScore }} - {{ encounter.awayScore }}</span>
+ }
+ @if (getResult(encounter); as result) {
+ @if (result === 'W') {
+ <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-semibold">Won</span>
+ } @else if (result === 'L') {
+ <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-semibold">Lost</span>
+ } @else {
+ <span class="bg-emphasis text-color px-2 py-0.5 rounded text-xs font-semibold">Draw</span>
+ }
+ }
+ <i
+ class="pi text-xs text-muted-color"
+ [class.pi-chevron-down]="isExpanded(encounter.id)"
+ [class.pi-chevron-right]="!isExpanded(encounter.id)"
+ ></i>
+ </div>
+ </div>
 
-        <!-- Expanded games (exact draw-games layout) -->
-        @if (isExpanded(encounter.id) && encounter.games?.length > 0) {
-          <div class="border-t border-surface-border px-4 pb-4">
-            <div class="space-y-3 mt-3">
-              @for (game of encounter.games; track game.id) {
-                <div class="bg-surface-ground border border-surface-border rounded-lg p-4">
-                  <!-- Header with status and round info -->
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                      @if (game.playedAt) {
-                        <span class="bg-emphasis text-muted-color px-2 py-1 rounded text-xs font-medium">
-                          {{ game.playedAt | date: 'short' }}
-                        </span>
-                      }
-                      @if (game.round) {
-                        <span class="bg-primary-50 text-primary px-2 py-1 rounded text-xs font-medium">
-                          {{ game.round }}
-                        </span>
-                      }
-                    </div>
-                    <div class="flex items-center gap-2">
-                      @if (!isBye(game) && game.winner) {
-                        <div class="flex items-center gap-1">
-                          <i class="pi pi-trophy text-yellow-500 text-xs"></i>
-                          <span class="text-xs text-muted-color"> Team {{ game.winner }} </span>
-                        </div>
-                      }
-                    </div>
-                  </div>
+ <!-- Expanded games (exact draw-games layout) -->
+ @if (isExpanded(encounter.id) && encounter.games?.length > 0) {
+ <div class="border-t border-surface-border px-4 pb-4">
+ <div class="space-y-3 mt-3">
+ @for (game of encounter.games; track game.id) {
+ <div class="bg-surface-ground border border-surface-border rounded-lg p-4">
+ <!-- Header with status and round info -->
+ <div class="flex items-center justify-between mb-3">
+ <div class="flex items-center gap-2">
+ @if (game.playedAt) {
+ <span class="bg-emphasis text-muted-color px-2 py-1 rounded text-xs font-medium">
+ {{ game.playedAt | date: 'short' }}
+ </span>
+ }
+ @if (game.round) {
+ <span class="bg-primary-50 text-primary px-2 py-1 rounded text-xs font-medium">
+ {{ game.round }}
+ </span>
+ }
+ </div>
+ <div class="flex items-center gap-2">
+ @if (!isBye(game) && game.winner) {
+ <div class="flex items-center gap-1">
+ <i class="pi pi-trophy text-yellow-500 text-xs"></i>
+ <span class="text-xs text-muted-color"> Team {{ game.winner }} </span>
+ </div>
+ }
+ </div>
+ </div>
 
-                  <!-- Players and Score -->
-                  <div class="flex items-start relative">
-                    <!-- Players stacked vertically on the left -->
-                    <div class="flex flex-col flex-1 min-w-0">
-                      @if (isBye(game)) {
-                        <div class="flex items-center h-16">
-                          <span
-                            class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic"
-                          >
-                            Bye
-                          </span>
-                        </div>
-                      } @else {
-                        @for (teamNumber of teamNumbers; track teamNumber; let teamIndex = $index) {
-                          <div class="flex flex-col gap-1 py-1">
-                            @for (membership of getTeamMemberships(game, teamNumber); track membership.id; let playerIndex = $index) {
-                              <div
-                                class="flex items-center gap-2 min-w-0"
-                                [class]="getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'"
-                              >
-                                @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
-                                  <i class="pi pi-crown text-yellow-500 text-xs"></i>
-                                }
-                                @if (membership.gamePlayer.id) {
-                                  <a [routerLink]="['/players', membership.gamePlayer.id]" class="truncate text-sm no-underline text-current">
-                                    {{ membership.gamePlayer.fullName || 'Unknown' }}
-                                  </a>
-                                } @else {
-                                  <span class="truncate text-sm">{{ membership.gamePlayer.fullName || 'Unknown' }}</span>
-                                }
-                                @if (getPlayerLevel(membership, game.gameType); as level) {
-                                  <span class="bg-highlight text-color px-1.5 py-0.5 rounded text-xs font-medium">
-                                    {{ level }}
-                                  </span>
-                                }
-                              </div>
-                            }
-                          </div>
-                        }
-                      }
-                    </div>
+ <!-- Players and Score -->
+ <div class="flex items-start relative">
+ <!-- Players stacked vertically on the left -->
+ <div class="flex flex-col flex-1 min-w-0">
+ @if (isBye(game)) {
+ <div class="flex items-center h-16">
+ <span
+ class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic"
+ >
+ Bye
+ </span>
+ </div>
+ } @else {
+ @for (teamNumber of teamNumbers; track teamNumber; let teamIndex = $index) {
+ <div class="flex flex-col gap-1 py-1">
+ @for (membership of getTeamMemberships(game, teamNumber); track membership.id; let playerIndex = $index) {
+ <div
+ class="flex items-center gap-2 min-w-0"
+ [class]="getWinnerIndicator(game, teamIndex) ? 'text-primary font-semibold' : 'text-color'"
+ >
+ @if (getWinnerIndicator(game, teamIndex) && playerIndex === 0) {
+ <i class="pi pi-crown text-yellow-500 text-xs"></i>
+ }
+ @if (membership.gamePlayer.id) {
+ <a [routerLink]="['/players', membership.gamePlayer.id]" class="truncate text-sm no-underline text-current">
+ {{ membership.gamePlayer.fullName || 'Unknown' }}
+ </a>
+ } @else {
+ <span class="truncate text-sm">{{ membership.gamePlayer.fullName || 'Unknown' }}</span>
+ }
+ @if (getPlayerLevel(membership, game.gameType); as level) {
+ <span class="bg-highlight text-color px-1.5 py-0.5 rounded text-xs font-medium">
+ {{ level }}
+ </span>
+ }
+ </div>
+ }
+ </div>
+ }
+ }
+ </div>
 
-                    <!-- Scores positioned at 300px from left border -->
-                    <div class="absolute left-75 flex flex-col">
-                      @if (isBye(game)) {
-                        <div class="flex items-center h-16">
-                          <span
-                            class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic"
-                          >
-                            Bye
-                          </span>
-                        </div>
-                      } @else {
-                        @let setScores = getSetScores(game);
-                        <div class="flex items-center h-8">
-                          <div class="flex gap-1">
-                            @for (setScore of setScores.team1Sets; track $index) {
-                              <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
-                                {{ setScore }}
-                              </span>
-                            }
-                          </div>
-                        </div>
-                        <div class="flex items-center h-8">
-                          <div class="flex gap-1">
-                            @for (setScore of setScores.team2Sets; track $index) {
-                              <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
-                                {{ setScore }}
-                              </span>
-                            }
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
-    }
-  </div>
+ <!-- Scores positioned at 300px from left border -->
+ <div class="absolute left-75 flex flex-col">
+ @if (isBye(game)) {
+ <div class="flex items-center h-16">
+ <span
+ class="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200 px-3 py-1 rounded text-sm font-medium italic"
+ >
+ Bye
+ </span>
+ </div>
+ } @else {
+ @let setScores = getSetScores(game);
+ <div class="flex items-center h-8">
+ <div class="flex gap-1">
+ @for (setScore of setScores.team1Sets; track $index) {
+ <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
+ {{ setScore }}
+ </span>
+ }
+ </div>
+ </div>
+ <div class="flex items-center h-8">
+ <div class="flex gap-1">
+ @for (setScore of setScores.team2Sets; track $index) {
+ <span class="bg-highlight text-color-emphasis px-2 py-1 rounded text-xs font-semibold">
+ {{ setScore }}
+ </span>
+ }
+ </div>
+ </div>
+ }
+ </div>
+ </div>
+ </div>
+ }
+ </div>
+ </div>
+ }
+ </div>
+ }
+ </div>
 }

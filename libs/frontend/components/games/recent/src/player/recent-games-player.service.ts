@@ -7,6 +7,27 @@ import { Apollo, gql } from 'apollo-angular';
 import dayjs from 'dayjs';
 import { lastValueFrom } from 'rxjs';
 
+export interface PlayerGameTypeCounts {
+  total: number;
+  singles: number;
+  doubles: number;
+  mixed: number;
+}
+
+const PLAYER_GAME_TYPE_COUNTS_QUERY = gql`
+  query PlayerGameTypeCounts($playerId: ID!) {
+    player(id: $playerId) {
+      id
+      gameTypeCounts {
+        total
+        singles
+        doubles
+        mixed
+      }
+    }
+  }
+`;
+
 const PLAYER_RECENT_GAMES_QUERY = gql`
   query PlayerRecentGames($playerId: ID!, $args: GamePlayerMembershipArgs) {
     player(id: $playerId) {
@@ -138,6 +159,38 @@ export class PlayerRecentGamesService {
 
   // Convert form to signal for resource
   private filterSignal = toSignal(this.filter.valueChanges);
+
+  private playerIdSignal = computed(() => this.filterSignal()?.playerId ?? null);
+
+  private countsResource = resource({
+    params: this.playerIdSignal,
+    loader: async ({ params: playerId, abortSignal }) => {
+      if (!playerId) {
+        return { total: 0, singles: 0, doubles: 0, mixed: 0 };
+      }
+      try {
+        const result = await lastValueFrom(
+          this.apollo.query<{ player: { gameTypeCounts: PlayerGameTypeCounts } }>({
+            query: PLAYER_GAME_TYPE_COUNTS_QUERY,
+            variables: {
+              playerId,
+            },
+            context: { signal: abortSignal },
+          }),
+        );
+        return (
+          result?.data?.player?.gameTypeCounts ?? { total: 0, singles: 0, doubles: 0, mixed: 0 }
+        );
+      } catch {
+        return { total: 0, singles: 0, doubles: 0, mixed: 0 };
+      }
+    },
+  });
+
+  /** Server-provided counts broken down by game type. */
+  readonly counts = computed<PlayerGameTypeCounts>(
+    () => this.countsResource.value() ?? { total: 0, singles: 0, doubles: 0, mixed: 0 },
+  );
 
   private recentGamesResource = resource({
     params: this.filterSignal,

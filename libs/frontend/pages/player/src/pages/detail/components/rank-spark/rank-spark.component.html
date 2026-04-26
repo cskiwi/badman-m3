@@ -1,0 +1,13 @@
+<div class="rank-spark" [attr.aria-label]="label()">
+  @for (bar of bars(); track $index) {
+    <span
+      class="rank-spark__bar"
+      [class.rank-spark__bar--win]="bar.result === 'W'"
+      [class.rank-spark__bar--loss]="bar.result === 'L'"
+      [style.height.%]="bar.height"
+    ></span>
+  }
+  @if (!bars().length) {
+    <span class="rank-spark__empty">—</span>
+  }
+</div>

@@ -1,64 +1,69 @@
-<div class="p-4 min-h-screen bg-surface-50">
-  <header class="flex justify-between items-center mb-6 pb-4 border-b border-surface">
-    <h1 class="m-0 text-3xl text-color">{{ 'all.tournament.live.recentResults' | translate }}</h1>
-    <div>
-      @if (liveService.isConnected()) {
-        <p-tag severity="success" value="Live" icon="pi pi-wifi" />
-      } @else if (liveService.isConnecting()) {
-        <p-tag severity="warn" value="Connecting..." icon="pi pi-spin pi-spinner" />
-      } @else {
-        <p-tag severity="danger" value="Offline" icon="pi pi-times" />
-      }
-    </div>
-  </header>
+<div class="p-4 min-h-screen bg-emphasis">
+ <header class="flex justify-between items-center mb-6 pb-4 border-b border-surface flex-wrap gap-3">
+ <div class="flex flex-col gap-1">
+ <span class="t-eyebrow">Live</span>
+ <h1 class="font-display text-3xl md:text-4xl font-bold text-color leading-tight tracking-tight m-0">
+ {{ 'all.tournament.live.recentResults' | translate }}
+ </h1>
+ </div>
+ <div>
+ @if (liveService.isConnected()) {
+ <p-tag severity="success" value="Live" icon="pi pi-wifi" />
+ } @else if (liveService.isConnecting()) {
+ <p-tag severity="warn" value="Connecting..." icon="pi pi-spin pi-spinner" />
+ } @else {
+ <p-tag severity="danger" value="Offline" icon="pi pi-times" />
+ }
+ </div>
+ </header>
 
-  <div class="flex flex-col gap-4">
-    @for (game of recentGames(); track game.gameId; let i = $index) {
-      <p-card [styleClass]="i === 0 ? 'border-2 border-primary' : ''">
-        <div class="p-4">
-          <div class="flex justify-between items-center mb-4">
-            @if (i === 0) {
-              <p-tag severity="info" value="{{ 'all.tournament.live.justFinished' | translate }}" />
-            }
-            @if (game.endTime) {
-              <span class="text-muted-color text-sm">{{ game.endTime | date: 'HH:mm' }}</span>
-            }
-          </div>
+ <div class="flex flex-col gap-4">
+ @for (game of recentGames(); track game.gameId; let i = $index) {
+ <p-card [styleClass]="i === 0 ? 'border-2 border-primary' : ''">
+ <div class="p-4">
+ <div class="flex justify-between items-center mb-4">
+ @if (i === 0) {
+ <p-tag severity="info" value="{{ 'all.tournament.live.justFinished' | translate }}" />
+ }
+ @if (game.endTime) {
+ <span class="text-muted-color text-sm">{{ game.endTime | date: 'HH:mm' }}</span>
+ }
+ </div>
 
-          <div class="flex items-center justify-between">
-            <div class="flex-1 flex items-center gap-2 p-3 rounded-border" [class.bg-green-100]="game.winner === 1">
-              <span class="text-lg" [class.font-bold]="game.winner === 1">Team 1</span>
-              @if (game.winner === 1) {
-                <i class="pi pi-trophy text-yellow-500 text-xl"></i>
-              }
-            </div>
-            <div class="shrink-0 px-6">
-              <div class="flex gap-3">
-                @if (game.set1Team1 !== undefined) {
-                  <span class="px-4 py-2 bg-surface-100 rounded-border text-xl font-bold">{{ game.set1Team1 }}-{{ game.set1Team2 }}</span>
-                }
-                @if (game.set2Team1 !== undefined) {
-                  <span class="px-4 py-2 bg-surface-100 rounded-border text-xl font-bold">{{ game.set2Team1 }}-{{ game.set2Team2 }}</span>
-                }
-                @if (game.set3Team1 !== undefined) {
-                  <span class="px-4 py-2 bg-surface-100 rounded-border text-xl font-bold">{{ game.set3Team1 }}-{{ game.set3Team2 }}</span>
-                }
-              </div>
-            </div>
-            <div class="flex-1 flex items-center justify-end gap-2 p-3 rounded-border" [class.bg-green-100]="game.winner === 2">
-              @if (game.winner === 2) {
-                <i class="pi pi-trophy text-yellow-500 text-xl"></i>
-              }
-              <span class="text-lg" [class.font-bold]="game.winner === 2">Team 2</span>
-            </div>
-          </div>
-        </div>
-      </p-card>
-    } @empty {
-      <div class="flex flex-col items-center justify-center py-16 text-muted-color">
-        <i class="pi pi-clock text-5xl mb-4"></i>
-        <p class="text-xl">{{ 'all.tournament.live.noResultsYet' | translate }}</p>
-      </div>
-    }
-  </div>
+ <div class="flex items-center justify-between">
+ <div class="flex-1 flex items-center gap-2 p-3 rounded-border" [class.bg-green-100]="game.winner === 1">
+ <span class="text-lg" [class.font-bold]="game.winner === 1">Team 1</span>
+ @if (game.winner === 1) {
+ <i class="pi pi-trophy text-yellow-500 text-xl"></i>
+ }
+ </div>
+ <div class="shrink-0 px-6">
+ <div class="flex gap-3">
+ @if (game.set1Team1 !== undefined) {
+ <span class="px-4 py-2 bg-emphasis rounded-border text-xl font-bold">{{ game.set1Team1 }}-{{ game.set1Team2 }}</span>
+ }
+ @if (game.set2Team1 !== undefined) {
+ <span class="px-4 py-2 bg-emphasis rounded-border text-xl font-bold">{{ game.set2Team1 }}-{{ game.set2Team2 }}</span>
+ }
+ @if (game.set3Team1 !== undefined) {
+ <span class="px-4 py-2 bg-emphasis rounded-border text-xl font-bold">{{ game.set3Team1 }}-{{ game.set3Team2 }}</span>
+ }
+ </div>
+ </div>
+ <div class="flex-1 flex items-center justify-end gap-2 p-3 rounded-border" [class.bg-green-100]="game.winner === 2">
+ @if (game.winner === 2) {
+ <i class="pi pi-trophy text-yellow-500 text-xl"></i>
+ }
+ <span class="text-lg" [class.font-bold]="game.winner === 2">Team 2</span>
+ </div>
+ </div>
+ </div>
+ </p-card>
+ } @empty {
+ <div class="flex flex-col items-center justify-center py-16 text-muted-color">
+ <i class="pi pi-clock text-5xl mb-4"></i>
+ <p class="text-xl">{{ 'all.tournament.live.noResultsYet' | translate }}</p>
+ </div>
+ }
+ </div>
 </div>

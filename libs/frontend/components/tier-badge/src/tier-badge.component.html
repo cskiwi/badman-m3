@@ -1,0 +1,12 @@
+<span
+  class="g-tier inline-flex items-center justify-center font-bold"
+  [class.g-tier--sm]="size() === 'sm'"
+>
+  <span class="g-tier__label">
+    @if (label()) {
+      {{ label() }} {{ level() }}
+    } @else {
+      {{ level() }}
+    }
+  </span>
+</span>

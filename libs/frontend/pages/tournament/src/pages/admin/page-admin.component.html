@@ -1,84 +1,97 @@
-<app-page-header>
-  <span breadcrumb>
-    <a routerLink="/tournament">{{ 'all.tournament.title' | translate }}</a>
-    @if (tournament(); as t) {
-      <span> / </span>
-      <a [routerLink]="['/tournament', t.id]">{{ t.name }}</a>
-      <span> / </span>
-      <span>{{ 'all.tournament.admin.title' | translate }}</span>
-    }
-  </span>
-  <span title>
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="tournament()
+  ? [
+      { label: ('all.tournament.title' | translate), routerLink: '/tournament' },
+      { label: tournament()!.name, routerLink: ['/tournament', tournament()!.id] },
+      { label: ('all.tournament.admin.title' | translate) },
+    ]
+  : [
+      { label: ('all.tournament.title' | translate), routerLink: '/tournament' },
+    ]" />
+
+<!-- Header -->
+<div class="flex items-start justify-between flex-wrap gap-4 mb-6">
+  <div class="flex flex-col gap-1">
+    <span class="t-eyebrow">Admin</span>
     @if (loading()) {
-      <p-skeleton width="200px" height="2rem" />
+      <p-skeleton width="18rem" height="2rem" />
     } @else if (tournament(); as t) {
-      {{ 'all.tournament.admin.title' | translate }}: {{ t.name }}
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-color leading-tight tracking-tight m-0">
+        {{ 'all.tournament.admin.title' | translate }}: {{ t.name }}
+      </h1>
     }
-  </span>
-  <span actions>
-    <p-button icon="pi pi-arrow-left" [label]="'all.button.back' | translate" severity="secondary" [text]="true" (click)="goBack()" />
-  </span>
-</app-page-header>
+  </div>
+  <div class="flex gap-2">
+    <p-button icon="pi pi-arrow-left" [label]="'all.button.back' | translate" severity="secondary" [outlined]="true" size="small" (click)="goBack()" />
+  </div>
+</div>
 
 @if (error(); as err) {
-  <p-message severity="error" [text]="err" />
+  <div class="flex items-center gap-2 p-4 rounded-lg" style="background: var(--g-loss-muted); color: var(--g-loss)">
+    <i class="pi pi-exclamation-triangle"></i>
+    <span>{{ err }}</span>
+  </div>
 } @else if (loading()) {
-  <div class="p-4">
-    <p-skeleton height="4rem" styleClass="mb-4" />
+  <div class="bg-emphasis border border-surface rounded-border p-5">
     <p-skeleton height="3rem" styleClass="mb-3" />
     <p-skeleton height="20rem" />
   </div>
 } @else if (!canEdit()) {
-  <p-message severity="warn" [text]="'all.tournament.admin.noPermission' | translate" />
+  <div class="flex items-center gap-2 p-4 rounded-lg" style="background: var(--g-pending-muted); color: var(--g-pending)">
+    <i class="pi pi-info-circle"></i>
+    <span>{{ 'all.tournament.admin.noPermission' | translate }}</span>
+  </div>
 } @else if (tournament(); as tournament) {
-  <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
-    <p-tablist>
-      <p-tab [value]="0">
-        <i class="pi pi-cog mr-2"></i>
-        {{ 'all.tournament.admin.tabs.settings' | translate }}
-      </p-tab>
-      <p-tab [value]="1" [disabled]="!canAccessEnrollments()">
-        <i class="pi pi-users mr-2"></i>
-        {{ 'all.tournament.admin.tabs.enrollments' | translate }}
-      </p-tab>
-      <p-tab [value]="2" [disabled]="!canAccessDraws()">
-        <i class="pi pi-sitemap mr-2"></i>
-        {{ 'all.tournament.admin.tabs.draws' | translate }}
-      </p-tab>
-      <p-tab [value]="3" [disabled]="!canAccessSchedule()">
-        <i class="pi pi-calendar mr-2"></i>
-        {{ 'all.tournament.admin.tabs.schedule' | translate }}
-      </p-tab>
-      <p-tab [value]="4" [disabled]="!canAccessCheckin()">
-        <i class="pi pi-check-circle mr-2"></i>
-        {{ 'all.tournament.admin.tabs.checkin' | translate }}
-      </p-tab>
-    </p-tablist>
+  <div class="bg-emphasis border border-surface rounded-border p-5">
+    <p-tabs [value]="activeTabIndex()" (valueChange)="onTabChange($event)">
+      <p-tablist>
+        <p-tab [value]="0">
+          <i class="pi pi-cog mr-2"></i>
+          {{ 'all.tournament.admin.tabs.settings' | translate }}
+        </p-tab>
+        <p-tab [value]="1" [disabled]="!canAccessEnrollments()">
+          <i class="pi pi-users mr-2"></i>
+          {{ 'all.tournament.admin.tabs.enrollments' | translate }}
+        </p-tab>
+        <p-tab [value]="2" [disabled]="!canAccessDraws()">
+          <i class="pi pi-sitemap mr-2"></i>
+          {{ 'all.tournament.admin.tabs.draws' | translate }}
+        </p-tab>
+        <p-tab [value]="3" [disabled]="!canAccessSchedule()">
+          <i class="pi pi-calendar mr-2"></i>
+          {{ 'all.tournament.admin.tabs.schedule' | translate }}
+        </p-tab>
+        <p-tab [value]="4" [disabled]="!canAccessCheckin()">
+          <i class="pi pi-check-circle mr-2"></i>
+          {{ 'all.tournament.admin.tabs.checkin' | translate }}
+        </p-tab>
+      </p-tablist>
 
-    <p-tabpanels>
-      <p-tabpanel [value]="0">
-        <app-settings-tab [tournament]="tournament" (tournamentUpdated)="refetchTournament()" />
-      </p-tabpanel>
-      <p-tabpanel [value]="1">
-        @if (canAccessEnrollments()) {
-          <app-enrollments-tab [tournament]="tournament" />
-        }
-      </p-tabpanel>
-      <p-tabpanel [value]="2">
-        @if (canAccessDraws()) {
-          <app-draws-tab [tournament]="tournament" />
-        }
-      </p-tabpanel>
-      <p-tabpanel [value]="3">
-        @if (canAccessSchedule()) {
-          <app-schedule-tab [tournament]="tournament" />
-        }
-      </p-tabpanel>
-      <p-tabpanel [value]="4">
-        @if (canAccessCheckin()) {
-          <app-checkin-tab [tournament]="tournament" />
-        }
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+      <p-tabpanels>
+        <p-tabpanel [value]="0">
+          <app-settings-tab [tournament]="tournament" (tournamentUpdated)="refetchTournament()" />
+        </p-tabpanel>
+        <p-tabpanel [value]="1">
+          @if (canAccessEnrollments()) {
+            <app-enrollments-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="2">
+          @if (canAccessDraws()) {
+            <app-draws-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="3">
+          @if (canAccessSchedule()) {
+            <app-schedule-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="4">
+          @if (canAccessCheckin()) {
+            <app-checkin-tab [tournament]="tournament" />
+          }
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
 }

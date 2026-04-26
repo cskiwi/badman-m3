@@ -1,35 +1,39 @@
 import { SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SyncButtonComponent, SyncButtonConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
-import { CardModule } from 'primeng/card';
 import { EncounterCardComponent } from '@app/frontend-components/games/encounter-card';
+import { HeroComponent, HeroAvatarComponent, HeroTitleComponent, HeroStatValueComponent } from '@app/frontend-components/hero';
 import { PouleDrawComponent } from './components/poule-draw.component';
 import { QualificationDrawComponent } from './components/qualification-draw.component';
 import { DrawsService } from './page-draws.service';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-draws',
   imports: [
+    BreadcrumbComponent,
     SlicePipe,
     ProgressBarModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     SkeletonModule,
-    CardModule,
     SyncButtonComponent,
     PouleDrawComponent,
     QualificationDrawComponent,
     EncounterCardComponent,
+    HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
+    HeroStatValueComponent,
   ],
   templateUrl: './page-draws.component.html',
+  styleUrl: './page-draws.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageDrawsComponent {

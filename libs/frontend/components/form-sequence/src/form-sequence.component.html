@@ -1,0 +1,11 @@
+<div class="flex gap-1">
+  @for (result of results(); track $index) {
+    <span
+      class="g-form-dot size-[22px] inline-flex items-center justify-center rounded-sm font-bold text-[11px]"
+      [class.g-form-dot--W]="result === 'W'"
+      [class.g-form-dot--L]="result === 'L'"
+    >
+      {{ result }}
+    </span>
+  }
+</div>

@@ -1,0 +1,42 @@
+/* Gradient border + gradient text; transparent inner so only outline and text carry color */
+.g-tier {
+  position: relative;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 11px;
+  background: var(--g-gradient-rank);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.875rem;
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+  letter-spacing: 0.02em;
+
+  /* inner fill — sits on top of the gradient, leaving ~1.5px gradient rim visible */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1.5px;
+    background: var(--p-content-background);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    z-index: 0;
+  }
+}
+
+.g-tier__label {
+  position: relative;
+  z-index: 1;
+  background: var(--g-gradient-rank);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.g-tier--sm {
+  min-width: 28px;
+  height: 22px;
+  padding: 0 8px;
+  font-size: 0.8125rem;
+
+  &::before {
+    inset: 1.25px;
+  }
+}

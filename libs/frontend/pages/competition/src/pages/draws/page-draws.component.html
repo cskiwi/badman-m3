@@ -2,23 +2,45 @@
   @if (this.competition(); as competition) {
     @if (this.subEvent(); as subEvent) {
       @if (this.draw(); as draw) {
-        <app-page-header>
-          <i avatar class="pi pi-sitemap text-2xl"></i>
-          <span title>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</span>
-          <ng-container subTitle>
-            <a [routerLink]="['/', 'competition', competition.slug]">{{ competition.name }}</a>
-            <span>›</span>
-            <span>{{ subEvent.name }}</span>
-            <span>›</span>
-            <span>{{ draw.name || ('all.competition.draw' | translate) }}</span>
-          </ng-container>
-          <ng-container actions>
+        <!-- Breadcrumb -->
+        <app-breadcrumb [items]="[
+          { label: competition.name, routerLink: ['/', 'competition', competition.slug] },
+          { label: subEvent.name },
+          { label: draw.name || ('all.competition.draw' | translate) },
+        ]" />
+
+        <!-- Draw Hero -->
+        <app-hero>
+          <app-hero-avatar avatar>{{ (draw.type || 'D').substring(0, 1) }}</app-hero-avatar>
+
+          <div identity>
+            <span class="t-eyebrow">{{ subEvent.name }}</span>
+            <app-hero-title>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</app-hero-title>
+            <div class="flex items-center gap-2 flex-wrap">
+              @if (draw.type) {
+                <span class="t-mono text-xs text-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">{{ draw.type }}</span>
+              }
+              @if (draw.size) {
+                <span class="t-mono text-xs text-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">Size {{ draw.size }}</span>
+              }
+              @if (subEvent.maxLevel) {
+                <span class="t-mono text-xs text-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
+                  {{ 'all.competition.maxLevel' | translate }} {{ subEvent.maxLevel }}
+                </span>
+              }
+              @if (subEvent.eventType) {
+                <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">{{ subEvent.eventType }}</span>
+              }
+            </div>
+          </div>
+
+          <div actions class="flex items-center gap-2 flex-wrap justify-end">
             @if (competition.visualCode && draw.visualCode) {
               <a
                 [href]="'https://www.toernooi.nl/sport/league/draw?id=' + competition.visualCode + '&draw=' + draw.visualCode"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center gap-1 px-2 py-1 rounded text-muted-color hover:text-primary-600 hover:bg-surface-100 transition-colors text-xs no-underline"
+                class="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-muted-color hover:text-primary hover:bg-emphasis transition-colors text-xs no-underline"
                 title="View draw on toernooi.nl"
               >
                 <i class="pi pi-external-link text-xs"></i>
@@ -28,189 +50,138 @@
             @if (syncConfig(); as config) {
               <app-sync-button [config]="config" />
             }
-          </ng-container>
-        </app-page-header>
+          </div>
 
-        <!-- Draw Information Section -->
-        <section class="draw-info">
-          <h3 class="flex items-center gap-2 text-xl font-semibold mb-4">
-            <i class="pi pi-sitemap text-primary-500"></i>
-            {{ 'all.competition.draw' | translate }} {{ 'all.competition.information' | translate }}
-          </h3>
-
-          <div class="grid gap-6 md:grid-cols-2">
-            <!-- Draw Details -->
-            <div class="rounded-border bg-highlight p-4">
-              <h4 class="font-semibold mb-3 text-lg">{{ 'all.competition.details' | translate }}</h4>
-              <div class="space-y-2 text-sm">
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-info-circle text-muted-color"></i>
-                  <span class="font-medium">{{ 'all.common.name' | translate }}:</span>
-                  <span>{{ draw.name || ('all.competition.draw' | translate) + ' ' + (draw.id | slice: 0 : 8) }}</span>
-                </div>
-
-                @if (draw.type) {
-                  <div class="flex items-center gap-2">
-                    <i class="pi pi-tag text-muted-color"></i>
-                    <span class="font-medium">{{ 'all.competition.type' | translate }}:</span>
-                    <span>{{ draw.type }}</span>
-                  </div>
-                }
-
-                @if (draw.size) {
-                  <div class="flex items-center gap-2">
-                    <i class="pi pi-users text-muted-color"></i>
-                    <span class="font-medium">{{ 'all.competition.size' | translate }}:</span>
-                    <span>{{ draw.size }}</span>
-                  </div>
-                }
-              </div>
+          <!-- Stat strip -->
+          <div stats class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface relative z-[1]">
+            <div class="flex flex-col gap-2">
+              <span class="t-eyebrow">Encounters</span>
+              <app-hero-stat-value>{{ encounters().length }}</app-hero-stat-value>
             </div>
-
-            <!-- Sub Event Context -->
-            <div class="rounded-border bg-highlight p-4">
-              <h4 class="font-semibold mb-3 text-lg">{{ 'all.competition.subEvent' | translate }}</h4>
-              <div class="space-y-2 text-sm">
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-info-circle text-muted-color"></i>
-                  <span class="font-medium">{{ 'all.common.name' | translate }}:</span>
-                  <span>{{ subEvent.name }}</span>
-                </div>
-
-                @if (subEvent.eventType) {
-                  <div class="flex items-center gap-2">
-                    <i class="pi pi-tag text-muted-color"></i>
-                    <span class="font-medium">{{ 'all.competition.eventType' | translate }}:</span>
-                    <span>{{ subEvent.eventType }}</span>
-                  </div>
-                }
-
-                @if (subEvent.level) {
-                  <div class="flex items-center gap-2">
-                    <i class="pi pi-chart-line text-muted-color"></i>
-                    <span class="font-medium">{{ 'all.competition.level' | translate }}:</span>
-                    <span
-                      >{{ subEvent.level }}
-                      @if (subEvent.maxLevel && subEvent.maxLevel !== subEvent.level) {
-                        - {{ subEvent.maxLevel }}
-                      }
-                    </span>
-                  </div>
-                }
-              </div>
+            <div class="flex flex-col gap-2">
+              <span class="t-eyebrow">Played</span>
+              <app-hero-stat-value variant="win">{{ playedEncounters().length }}</app-hero-stat-value>
+            </div>
+            <div class="flex flex-col gap-2">
+              <span class="t-eyebrow">Upcoming</span>
+              <app-hero-stat-value>{{ upcomingEncounters().length }}</app-hero-stat-value>
+            </div>
+            <div class="flex flex-col gap-2">
+              <span class="t-eyebrow">Teams</span>
+              <app-hero-stat-value>{{ standings().length || '–' }}</app-hero-stat-value>
             </div>
           </div>
-        </section>
+        </app-hero>
 
         <!-- Draw Type Specific Content -->
         @switch (draw.type) {
           @case ('POULE') {
-            <app-poule-draw [entries]="standings()" />
+            <section class="mb-6">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="t-eyebrow">Standings</span>
+                <div class="flex-1 h-px bg-emphasis"></div>
+              </div>
+              <app-poule-draw [entries]="standings()" />
+            </section>
           }
           @case ('QUALIFICATION') {
-            <app-qualification-draw [encounters]="encounters()" [standings]="standings()" />
-          }
-          @default {
-            <!-- No specific component for this draw type -->
+            <section class="mb-6">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="t-eyebrow">Qualification</span>
+                <div class="flex-1 h-px bg-emphasis"></div>
+              </div>
+              <app-qualification-draw [encounters]="encounters()" [standings]="standings()" />
+            </section>
           }
         }
 
         <!-- Encounters Section -->
         @if (encounters().length > 0) {
-          <section class="encounters">
-            <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
-              <!-- Played encounters (most recent first) -->
-              <p-card>
-                <ng-template #title>
-                  <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                  {{ 'all.competition.played_encounters' | translate }}
-                  <span class="text-muted-color text-xs font-normal ml-1">({{ playedEncounters().length }})</span>
-                </ng-template>
-                <ng-template #subtitle />
-                @if (playedEncounters().length > 0) {
+          <section class="grid gap-6 lg:grid-cols-[minmax(0,_1fr)_360px]">
+            <!-- Played encounters -->
+            <div class="bg-emphasis border border-surface rounded-border p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-col gap-1">
+                  <span class="t-eyebrow">{{ 'all.competition.played_encounters' | translate }}</span>
+                  <h3 class="encounters-title m-0">Played</h3>
+                </div>
+                <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm">{{ playedEncounters().length }}</span>
+              </div>
+              @if (playedEncounters().length > 0) {
+                <div class="flex flex-col gap-3">
                   @for (encounter of playedEncounters(); track encounter.id) {
                     <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="played" />
                   }
-                } @else {
-                  <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
-                }
-              </p-card>
+                </div>
+              } @else {
+                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
+              }
+            </div>
 
-              <!-- Upcoming encounters (soonest first) -->
-              <p-card>
-                <ng-template #title>
-                  <i class="pi pi-clock text-blue-500 mr-2"></i>
-                  {{ 'all.competition.upcoming_encounters' | translate }}
-                  <span class="text-muted-color text-xs font-normal ml-1">({{ upcomingEncounters().length }})</span>
-                </ng-template>
-                <ng-template #subtitle />
-                @if (upcomingEncounters().length > 0) {
+            <!-- Upcoming encounters -->
+            <div class="bg-emphasis border border-surface rounded-border p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-col gap-1">
+                  <span class="t-eyebrow">{{ 'all.competition.upcoming_encounters' | translate }}</span>
+                  <h3 class="encounters-title m-0">Upcoming</h3>
+                </div>
+                <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm">{{ upcomingEncounters().length }}</span>
+              </div>
+              @if (upcomingEncounters().length > 0) {
+                <div class="flex flex-col gap-3">
                   @for (encounter of upcomingEncounters(); track encounter.id) {
                     <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="upcoming" />
                   }
-                } @else {
-                  <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
-                }
-              </p-card>
+                </div>
+              } @else {
+                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
+              }
             </div>
           </section>
         } @else {
-          <div class="text-center py-12 text-surface-500">
-            <i class="pi pi-calendar text-4xl mb-4 block"></i>
-            <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
-            <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
+          <div class="text-center py-12 bg-emphasis border border-surface rounded-border">
+            <i class="pi pi-calendar text-3xl mb-3 block text-muted-color"></i>
+            <h3 class="text-lg font-semibold mb-1 text-color">{{ 'all.competition.no_encounters' | translate }}</h3>
+            <p class="text-muted-color text-sm">{{ 'all.competition.no_encounters_description' | translate }}</p>
           </div>
         }
       }
     }
   }
 } @else {
-  <!-- Loading Skeletons -->
-  <div class="space-y-6">
-    <!-- Header skeleton -->
-    <div class="space-y-2">
-      <p-skeleton width="25rem" height="2rem" />
-      <p-skeleton width="20rem" height="1rem" />
-    </div>
-
-    <!-- Sub event info skeleton -->
-    <div class="rounded-border bg-highlight p-4 space-y-2">
-      <p-skeleton width="15rem" height="1.5rem" />
-      <p-skeleton width="20rem" height="1rem" />
-    </div>
-
-    <!-- Draws skeletons -->
-    @for (i of [1, 2, 3]; track i) {
-      <div class="rounded-border bg-highlight p-6 space-y-4">
-        <div class="flex justify-between">
-          <p-skeleton width="12rem" height="1.5rem" />
-          <div class="flex gap-2">
-            <p-skeleton width="4rem" height="1.5rem" />
-            <p-skeleton width="5rem" height="1.5rem" />
+  <!-- Loading skeleton -->
+  <div class="flex flex-col gap-5">
+    <p-skeleton width="22rem" height="1rem" />
+    <div class="bg-emphasis border border-surface rounded-border p-6 flex flex-col gap-4">
+      <p-skeleton width="18rem" height="2rem" />
+      <div class="flex gap-2">
+        <p-skeleton width="5rem" height="1.5rem" />
+        <p-skeleton width="5rem" height="1.5rem" />
+      </div>
+      <div class="grid grid-cols-4 gap-4 mt-3 pt-4 border-t border-surface">
+        @for (j of [1, 2, 3, 4]; track j) {
+          <div class="flex flex-col gap-2">
+            <p-skeleton width="4rem" height="0.75rem" />
+            <p-skeleton width="3rem" height="2rem" />
           </div>
-        </div>
-
-        <div class="grid grid-cols-4 gap-4">
-          @for (j of [1, 2, 3, 4]; track j) {
-            <div class="text-center space-y-1">
-              <p-skeleton width="3rem" height="2rem" class="mx-auto" />
-              <p-skeleton width="4rem" height="1rem" class="mx-auto" />
-            </div>
-          }
-        </div>
-
-        <div class="border-t pt-4 space-y-2">
+        }
+      </div>
+    </div>
+    <div class="grid gap-6 lg:grid-cols-[1fr_360px]">
+      @for (i of [1, 2]; track i) {
+        <div class="bg-emphasis border border-surface rounded-border p-5 space-y-3">
+          <p-skeleton width="10rem" height="1.25rem" />
           @for (k of [1, 2, 3]; track k) {
             <p-skeleton width="100%" height="3rem" />
           }
         </div>
-      </div>
-    }
+      }
+    </div>
   </div>
 }
 
 @if (error()) {
-  <div class="error flex items-center gap-2 p-4 text-red-600">
+  <div class="flex items-center gap-2 p-4 rounded-lg mt-4" style="background: var(--g-loss-muted); color: var(--g-loss)">
     <i class="pi pi-exclamation-triangle"></i>
     {{ error() }}
   </div>

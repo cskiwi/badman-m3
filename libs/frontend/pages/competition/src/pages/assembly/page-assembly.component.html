@@ -1,84 +1,97 @@
-<app-page-header>
-  <span title>{{ 'all.competition.team-assembly.title' | translate }}</span>
-</app-page-header>
+<!-- Breadcrumb -->
+<app-breadcrumb [items]="[
+  { label: ('all.competition.team-assembly.title' | translate) },
+]" />
 
-<section class="flex flex-col md:flex-row gap-4 pb-4 items-start">
-  <div class="flex flex-wrap gap-4 flex-1">
-    <div class="w-40 shrink-0">
-      <p-floatLabel>
-        <p-select
-          [options]="seasonOptions()"
-          [ngModel]="selectedSeason()"
-          (ngModelChange)="onSeasonChange($event)"
-          optionLabel="label"
-          optionValue="value"
-          inputId="season-select"
+<!-- Header -->
+<header class="flex items-end justify-between flex-wrap gap-3 mb-6">
+  <div class="flex flex-col gap-2">
+    <span class="t-eyebrow">Team builder</span>
+    <h1 class="assembly-title m-0">{{ 'all.competition.team-assembly.title' | translate }}</h1>
+  </div>
+</header>
+
+<!-- Filters -->
+<section class="bg-emphasis border border-surface rounded-border p-5 mb-6">
+  <div class="flex flex-col md:flex-row gap-4 items-start">
+    <div class="flex flex-wrap gap-4 flex-1">
+      <div class="w-40 shrink-0">
+        <p-floatLabel variant="on">
+          <p-select
+            [options]="seasonOptions()"
+            [ngModel]="selectedSeason()"
+            (ngModelChange)="onSeasonChange($event)"
+            optionLabel="label"
+            optionValue="value"
+            inputId="season-select"
+          />
+          <label for="season-select">{{ 'all.competition.team-assembly.season' | translate }}</label>
+        </p-floatLabel>
+      </div>
+
+      <p-floatLabel variant="on" class="min-w-[180px] flex-1">
+        <p-autoComplete
+          [suggestions]="clubSuggestions()"
+          (completeMethod)="searchClub($event)"
+          (onSelect)="onClubSelect($event.value)"
+          (onClear)="onClubClear()"
+          optionLabel="name"
+          [forceSelection]="true"
+          [ngModel]="selectedClub()"
+          inputId="club-select"
+          class="w-full"
         />
-        <label for="season-select">{{ 'all.competition.team-assembly.season' | translate }}</label>
+        <label for="club-select">{{ 'all.competition.team-assembly.club' | translate }}</label>
+      </p-floatLabel>
+
+      <p-floatLabel variant="on" class="min-w-[180px] flex-1">
+        <p-select
+          [options]="teams()"
+          [ngModel]="selectedTeamId()"
+          (ngModelChange)="onTeamChange($event)"
+          optionLabel="name"
+          optionValue="id"
+          [optionGroupLabel]="'type'"
+          [optionGroupChildren]="'teams'"
+          [group]="true"
+          [disabled]="!selectedClub()"
+          class="w-full"
+          inputId="team-select"
+        />
+        <label for="team-select">{{ 'all.competition.team-assembly.team' | translate }}</label>
+      </p-floatLabel>
+
+      <p-floatLabel variant="on" class="min-w-[180px] flex-1">
+        <p-select
+          [options]="encounters()"
+          [ngModel]="selectedEncounterId()"
+          (ngModelChange)="onEncounterChange($event)"
+          optionLabel="label"
+          optionValue="id"
+          [showClear]="true"
+          [disabled]="!selectedTeamId()"
+          class="w-full"
+          inputId="encounter-select"
+        />
+        <label for="encounter-select">{{ 'all.competition.team-assembly.encounter' | translate }}</label>
       </p-floatLabel>
     </div>
-
-    <p-floatLabel class="min-w-[180px] flex-1">
-      <p-autoComplete
-        [suggestions]="clubSuggestions()"
-        (completeMethod)="searchClub($event)"
-        (onSelect)="onClubSelect($event.value)"
-        (onClear)="onClubClear()"
-        optionLabel="name"
-        [forceSelection]="true"
-        [ngModel]="selectedClub()"
-        inputId="club-select"
-        class="w-full"
+    <div class="flex gap-1 shrink-0">
+      <p-button
+        [label]="'all.button.download' | translate"
+        icon="pi pi-download"
+        size="small"
+        [loading]="pdfLoading()"
+        [disabled]="pdfLoading()"
+        (onClick)="download()"
+        severity="secondary"
+        [outlined]="true"
       />
-      <label for="club-select">{{ 'all.competition.team-assembly.club' | translate }}</label>
-    </p-floatLabel>
-
-    <p-floatLabel class="min-w-[180px] flex-1">
-      <p-select
-        [options]="teams()"
-        [ngModel]="selectedTeamId()"
-        (ngModelChange)="onTeamChange($event)"
-        optionLabel="name"
-        optionValue="id"
-        [optionGroupLabel]="'type'"
-        [optionGroupChildren]="'teams'"
-        [group]="true"
-        [disabled]="!selectedClub()"
-        class="w-full"
-        inputId="team-select"
-      />
-      <label for="team-select">{{ 'all.competition.team-assembly.team' | translate }}</label>
-    </p-floatLabel>
-
-    <p-floatLabel class="min-w-[180px] flex-1">
-      <p-select
-        [options]="encounters()"
-        [ngModel]="selectedEncounterId()"
-        (ngModelChange)="onEncounterChange($event)"
-        optionLabel="label"
-        optionValue="id"
-        [showClear]="true"
-        [disabled]="!selectedTeamId()"
-        class="w-full"
-        inputId="encounter-select"
-      />
-      <label for="encounter-select">{{ 'all.competition.team-assembly.encounter' | translate }}</label>
-    </p-floatLabel>
-  </div>
-  <div class="flex shrink-0">
-    <p-button
-      [label]="'all.button.download' | translate"
-      icon="pi pi-download"
-      [loading]="pdfLoading()"
-      [disabled]="pdfLoading()"
-      (onClick)="download()"
-      severity="secondary"
-      [outlined]="true"
-    />
-    @if (loggedIn()) {
-      <p-button icon="pi pi-chevron-down" [outlined]="true" severity="secondary" (onClick)="saveMenu.toggle($event)" />
-      <p-menu #saveMenu [model]="saveMenuItems()" [popup]="true" />
-    }
+      @if (loggedIn()) {
+        <p-button icon="pi pi-chevron-down" size="small" [outlined]="true" severity="secondary" (onClick)="saveMenu.toggle($event)" />
+        <p-menu #saveMenu [model]="saveMenuItems()" [popup]="true" />
+      }
+    </div>
   </div>
 </section>
 

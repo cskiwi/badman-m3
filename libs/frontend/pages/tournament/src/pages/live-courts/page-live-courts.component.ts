@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy } from '@angular/core';
 import { NgClass, DatePipe } from '@angular/common';
 import { injectParams } from 'ngxtension/inject-params';
 import { TranslateModule } from '@ngx-translate/core';

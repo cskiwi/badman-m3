@@ -1,0 +1,23 @@
+<div class="t-eyebrow mb-3">Toughest match-ups</div>
+@if (opponents().length) {
+ <div class="flex flex-col">
+ @for (opp of opponents(); track opp.playerId) {
+ <div class="opp-row">
+ <span class="text-sm text-color font-medium inline-flex items-center gap-1.5 min-w-0">
+ <span class="truncate">{{ opp.fullName }}</span>
+ @if (opp.level != null) {
+ <app-tier-badge [level]="opp.level" size="sm" />
+ }
+ </span>
+ <span class="t-mono text-xs text-muted-color">{{ opp.wins }}–{{ opp.losses }}</span>
+ <span class="opp-row__bar">
+ <span [style.width.%]="opp.winRate * 100" [class.opp-row__bar--loss]="opp.winRate < 0.5"></span>
+ </span>
+ </div>
+ }
+ </div>
+} @else if (loading()) {
+ <span class="text-sm t-muted">Loading…</span>
+} @else {
+ <span class="text-sm t-muted">No losing match-ups — nicely done.</span>
+}

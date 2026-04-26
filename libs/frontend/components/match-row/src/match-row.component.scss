@@ -1,0 +1,83 @@
+/* Grid with 4px band column — can't do in Tailwind */
+.g-match {
+  grid-template-columns: 4px 1fr auto auto;
+}
+
+/* Band color by outcome — CSS variable colors */
+.g-match__band {
+  background: var(--p-content-border-color);
+}
+
+.g-match--win .g-match__band {
+  background: var(--g-win);
+}
+
+.g-match--loss .g-match__band {
+  background: var(--g-loss);
+}
+
+.g-match--pending .g-match__band {
+  background: var(--p-primary-color);
+}
+
+/* Own player dot — pseudo-element */
+.g-match__player--own {
+  color: var(--p-text-color);
+  font-weight: 600;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--p-primary-color);
+    flex: none;
+  }
+}
+
+/* Date mono font */
+.g-match__date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--p-text-muted-color);
+  letter-spacing: 0.02em;
+}
+
+/* Score styling — mono font + variant */
+.g-match__score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--p-text-muted-color);
+  line-height: 1.1;
+}
+
+.g-match__score--win {
+  color: var(--p-text-color);
+  font-weight: 600;
+}
+
+/* Points delta */
+.g-match__points-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--p-text-muted-color);
+}
+
+.g-match__points-value[data-dir='up'] {
+  color: var(--g-win);
+}
+
+.g-match__points-value[data-dir='down'] {
+  color: var(--g-loss);
+}
+
+.g-match__points-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color);
+  font-weight: 700;
+}

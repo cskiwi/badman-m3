@@ -1,6 +1,13 @@
 :host {
   display: block;
-  padding: 0;
+}
+
+.text-win {
+  color: var(--g-win);
+}
+
+.text-loss {
+  color: var(--g-loss);
 }
 
 // Responsive adjustments for mobile
@@ -63,7 +70,7 @@
   // Avatar group styling
   .p-avatar-group .p-avatar {
     margin-left: -0.5rem;
-    border: 2px solid var(--surface-ground);
+    border: 2px solid var(--p-content-background);
   }
 
   // Tab panel content
@@ -73,7 +80,7 @@
 
   // Skeleton improvements
   .p-skeleton {
-    background: linear-gradient(90deg, var(--surface-200) 25%, var(--surface-300) 50%, var(--surface-200) 75%);
+    background: linear-gradient(90deg, var(--p-content-border-color) 25%, var(--p-content-border-color) 50%, var(--p-content-border-color) 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
   }
@@ -139,7 +146,7 @@
   }
 
   &.neutral {
-    background-color: var(--surface-200);
+    background-color: var(--p-content-border-color);
     color: var(--text-color-secondary);
   }
 }

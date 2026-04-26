@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en" class="dark-theme">
+<head>
+<meta charset="utf-8" />
+<title>Club · Smash For Fun · Gladman</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/primeicons@7.0.0/primeicons.css" />
+<link rel="stylesheet" href="assets/theme.css" />
+<style>
+  /* --- Club hero --- */
+  .club-hero {
+    position: relative;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(700px 300px at 90% 0%, var(--p-primary-muted), transparent 70%),
+      radial-gradient(500px 260px at 0% 100%, var(--g-accent-muted), transparent 70%),
+      var(--p-surface-100);
+    border: 1px solid var(--p-surface-200);
+    overflow: hidden;
+    margin-bottom: var(--space-5);
+  }
+  .club-hero::before {
+    content: ""; position: absolute; top:0; right:0; bottom:0; width: 420px; pointer-events: none;
+    background: repeating-linear-gradient(115deg, transparent 0 22px,
+      oklch(from var(--g-accent) l c h / 0.04) 22px 23px);
+    mask: linear-gradient(90deg, transparent, black 40%);
+  }
+  .club-hero__grid {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: var(--space-6); align-items: center; position: relative; z-index: 1;
+  }
+  .club-crest {
+    width: 96px; height: 96px;
+    display: grid; place-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.625rem;
+    color: var(--p-primary-contrast);
+    background: var(--g-gradient-primary);
+    clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+  .club-crest::after {
+    content: ""; position: absolute; inset: 3px;
+    clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+    background: var(--p-surface-100);
+  }
+  .club-crest span {
+    position: relative; z-index: 1;
+    background: var(--g-gradient-primary);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .club-id__name {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 2.75rem; line-height: 1; letter-spacing: -0.02em;
+    color: var(--p-surface-900); margin: 0;
+  }
+  .club-id__meta {
+    display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3);
+    flex-wrap: wrap; color: var(--p-surface-500); font-size: var(--t-body-sm);
+  }
+  .club-id__id {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    color: var(--p-surface-500);
+    padding: 3px 8px; border-radius: 3px; background: var(--p-surface-200);
+    letter-spacing: 0.04em;
+  }
+
+  /* Club stat strip — integrated into hero */
+  .club-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--p-surface-200);
+    position: relative; z-index: 1;
+  }
+  .club-stat { display: flex; flex-direction: column; gap: var(--space-2); }
+  .club-stat__value { display: flex; align-items: baseline; gap: 6px; }
+  .club-stat__value .unit { color: var(--p-surface-400); font-size: 1rem; font-weight: 500; }
+
+  /* Team cards grid */
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .team {
+    position: relative;
+    background: var(--p-surface-100);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 200ms cubic-bezier(.22,1,.36,1),
+                border-color 200ms cubic-bezier(.22,1,.36,1);
+    display: flex; flex-direction: column;
+  }
+  .team:hover { transform: translateY(-2px); border-color: var(--p-surface-300); }
+  .team::before {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: var(--g-gradient-primary);
+    width: 30%;
+    transition: width 300ms cubic-bezier(.22,1,.36,1);
+  }
+  .team:hover::before { width: 100%; }
+
+  .team__head {
+    padding: var(--space-4) var(--space-5);
+    display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-3);
+    align-items: center;
+  }
+  .team__code {
+    width: 44px; height: 44px;
+    background: var(--p-surface-200);
+    color: var(--p-surface-900);
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 0.875rem;
+    display: grid; place-items: center;
+    border-radius: var(--radius-md);
+    letter-spacing: 0.03em;
+  }
+  .team__title {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: 1.0625rem; color: var(--p-surface-900);
+    line-height: 1.1;
+  }
+  .team__division {
+    display: flex; align-items: center; gap: 8px;
+    font-size: var(--t-body-sm); color: var(--p-surface-500); margin-top: 4px;
+  }
+  .team__gender {
+    width: 28px; height: 22px;
+    display: grid; place-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    border-radius: var(--radius-sm);
+  }
+  .team__gender--D { background: var(--g-accent-muted); color: var(--g-accent); }
+  .team__gender--H { background: var(--p-primary-muted); color: var(--p-primary-color); }
+  .team__gender--G { background: var(--g-pending-muted); color: var(--g-pending); }
+
+  .team__captain {
+    padding: var(--space-3) var(--space-5);
+    display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-3);
+    align-items: center;
+    border-top: 1px solid var(--p-surface-200);
+    border-bottom: 1px solid var(--p-surface-200);
+    background: var(--p-surface-50);
+  }
+  .team__captain-name {
+    font-size: var(--t-body-sm); font-weight: 600; color: var(--p-surface-800);
+  }
+  .team__captain-role {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--p-surface-400); font-weight: 700;
+  }
+  .team__captain-contact { display: flex; gap: 6px; }
+
+  .team__roster {
+    padding: var(--space-3) var(--space-5);
+    display: flex; align-items: center; gap: var(--space-3);
+    border-top: 1px solid var(--p-surface-200);
+  }
+  .team__roster-label {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--p-surface-400); font-weight: 700;
+  }
+  .team__summary {
+    display: inline-flex; gap: 12px; margin-left: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    font-variant-numeric: tabular-nums; color: var(--p-surface-500);
+  }
+  .team__summary strong { color: var(--p-surface-800); font-weight: 600; }
+
+  /* Player list inside team card */
+  .team__players {
+    display: flex; flex-direction: column;
+    margin-top: auto;
+  }
+  .tp-row {
+    display: grid;
+    grid-template-columns: 24px 1fr auto auto;
+    gap: var(--space-3);
+    padding: 8px var(--space-5);
+    border-top: 1px solid var(--p-surface-200);
+    align-items: center;
+  }
+  .tp-row.is-own { background: var(--p-primary-muted); }
+  .tp-row.is-own .tp-row__name { color: var(--p-surface-900); font-weight: 600; }
+  .tp-row__avatar {
+    width: 24px; height: 24px; border-radius: 999px;
+    background: var(--p-surface-200); color: var(--p-surface-700);
+    display: grid; place-items: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 10px;
+  }
+  .tp-row.is-own .tp-row__avatar { background: var(--p-primary-color); color: var(--p-primary-contrast); }
+  .tp-row__name {
+    font-size: 12.5px; color: var(--p-surface-800); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tp-row__role {
+    display: inline-block; margin-left: 6px;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700; color: var(--p-surface-400);
+  }
+  .tp-row__levels {
+    display: flex; gap: 3px;
+  }
+  .tp-lv {
+    min-width: 22px; height: 18px; padding: 0 5px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--p-surface-200); color: var(--p-surface-600);
+  }
+  .tp-lv[data-kind="S"] { background: var(--p-primary-muted); color: var(--p-primary-color); }
+  .tp-lv[data-kind="D"] { background: var(--g-accent-muted); color: var(--g-accent); }
+  .tp-lv[data-kind="M"] { background: var(--g-pending-muted); color: var(--g-pending); }
+  .tp-row__form {
+    display: flex; gap: 2px;
+  }
+  .tp-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--p-surface-300); }
+  .tp-dot--W { background: var(--g-win); }
+  .tp-dot--L { background: var(--g-loss); }
+
+  .team__footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px var(--space-5);
+    border-top: 1px solid var(--p-surface-200);
+    background: var(--p-surface-50);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--p-surface-500);
+  }
+  .team__footer a { color: var(--p-primary-color); text-decoration: none; font-weight: 600; }
+
+  .team__stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--p-surface-200);
+    margin-top: auto;
+  }
+  .team-stat {
+    padding: var(--space-3) var(--space-4);
+    display: flex; flex-direction: column; gap: 2px;
+    border-right: 1px solid var(--p-surface-200);
+  }
+  .team-stat:last-child { border-right: 0; }
+  .team-stat__label {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--p-surface-400); font-weight: 700;
+  }
+  .team-stat__value {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 600;
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--p-surface-900);
+  }
+  .team-stat__value--pct {
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .team-stat__winbar {
+    margin-top: 4px;
+    height: 3px; border-radius: 999px;
+    background: var(--p-surface-200);
+    overflow: hidden;
+  }
+  .team-stat__winbar span { display: block; height: 100%; background: var(--g-win); }
+
+  /* Filters row */
+  .club-toolbar {
+    display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+    margin-bottom: var(--space-5);
+  }
+
+  .segmented {
+    display: inline-flex; padding: 3px;
+    background: var(--p-surface-100); border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-md);
+  }
+  .segmented button {
+    height: 30px; padding: 0 12px; background: transparent; border: 0; cursor: pointer;
+    border-radius: var(--radius-sm);
+    font-size: var(--t-body-sm); color: var(--p-surface-500); font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .segmented button.is-active {
+    background: var(--p-surface-300); color: var(--p-surface-900);
+  }
+
+  /* Right sidebar */
+  .club-layout {
+    display: grid; grid-template-columns: 1fr 320px;
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  /* Schedule card */
+  .sched {
+    display: flex; flex-direction: column;
+  }
+  .sched__item {
+    display: grid; grid-template-columns: auto 1fr;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--p-surface-200);
+  }
+  .sched__item:last-child { border-bottom: 0; }
+  .sched__date {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    line-height: 1;
+    color: var(--p-surface-900);
+    width: 44px; text-align: center;
+  }
+  .sched__date .day { font-size: 0.625rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--p-surface-400); display: block; margin-bottom: 2px;
+    font-family: 'Inter', sans-serif; font-weight: 700; }
+  .sched__date .num { font-size: 1.5rem; }
+  .sched__body { display: flex; flex-direction: column; gap: 3px; }
+  .sched__teams {
+    font-weight: 600; font-size: var(--t-body-sm); color: var(--p-surface-900);
+  }
+  .sched__league {
+    font-size: 11px; color: var(--p-surface-400);
+    letter-spacing: 0.03em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Top performers row */
+  .perf-row {
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: center; gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--p-surface-200);
+  }
+  .perf-row:last-child { border-bottom: 0; }
+  .perf-row__rank {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    font-size: 1.25rem; color: var(--p-surface-400);
+    font-variant-numeric: tabular-nums;
+    width: 20px; text-align: right;
+  }
+  .perf-row__name { font-weight: 600; font-size: var(--t-body-sm); color: var(--p-surface-900); }
+  .perf-row__meta { font-size: 11px; color: var(--p-surface-500); margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;}
+  .perf-row__record {
+    font-family: 'JetBrains Mono', monospace; font-size: var(--t-body-sm);
+    font-weight: 600; color: var(--g-win);
+  }
+
+  @media (max-width: 1100px) {
+    .club-layout { grid-template-columns: 1fr; }
+    .club-stats  { grid-template-columns: repeat(2, 1fr); }
+    .club-hero__grid { grid-template-columns: auto 1fr; }
+    .club-hero__actions { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body data-screen-label="02 Club — Smash For Fun">
+
+<div class="g-shell">
+
+  <!-- Top bar (reused pattern) -->
+  <header class="g-topbar">
+    <a href="#" class="g-logo">
+      <span class="g-logo__mark"></span>
+      <span>GLADMAN</span>
+    </a>
+    <nav class="g-nav">
+      <a href="#">Dashboard</a>
+      <a href="Player Page — Glenn Latomme.html">Players</a>
+      <a href="#" class="is-active">Clubs</a>
+      <a href="#">Competitions</a>
+      <a href="#">Tournaments</a>
+      <a href="#">Rankings</a>
+    </nav>
+    <div class="g-topbar__spacer"></div>
+    <div class="g-topbar__tools">
+      <label class="g-search">
+        <i class="pi pi-search" style="font-size:13px"></i>
+        <input placeholder="Search clubs, teams, players…" />
+        <kbd>⌘K</kbd>
+      </label>
+      <button class="g-icon-btn" title="Notifications"><i class="pi pi-bell"></i></button>
+      <button class="g-icon-btn" id="theme-toggle" title="Toggle theme"><i class="pi pi-moon"></i></button>
+      <div class="g-avatar">GL</div>
+    </div>
+  </header>
+
+  <main class="g-main">
+
+    <!-- Breadcrumb -->
+    <div class="row center gap-2" style="margin-bottom: var(--space-4); font-size: var(--t-body-sm); color: var(--p-surface-500);">
+      <a href="#" style="color: var(--p-surface-500); text-decoration: none;">Clubs</a>
+      <i class="pi pi-angle-right" style="font-size: 10px;"></i>
+      <span style="color: var(--p-surface-800); font-weight: 600;">Smash For Fun</span>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <section class="club-hero">
+      <div class="club-hero__grid">
+        <div class="club-crest"><span>SFF</span></div>
+        <div>
+          <h1 class="club-id__name">Smash For Fun</h1>
+          <div class="club-id__meta">
+            <span class="club-id__id">#30076</span>
+            <span class="g-chip g-chip--primary"><i class="pi pi-map-marker" style="font-size:10px"></i> BE-VOV</span>
+            <span class="g-chip">Season 2025</span>
+            <span style="display:inline-flex; align-items:center; gap:6px;"><i class="pi pi-users" style="font-size: 11px;"></i> 68 members</span>
+            <span style="display:inline-flex; align-items:center; gap:6px;"><i class="pi pi-flag-fill" style="font-size: 10px;"></i> Est. 1998</span>
+          </div>
+        </div>
+        <div class="row center gap-2 club-hero__actions">
+          <button class="g-btn g-btn--secondary"><i class="pi pi-share-alt"></i> Share</button>
+          <button class="g-btn g-btn--primary"><i class="pi pi-bookmark"></i> Follow club</button>
+        </div>
+      </div>
+
+      <div class="club-stats">
+        <div class="club-stat">
+          <span class="t-eyebrow">Teams active</span>
+          <div class="club-stat__value">
+            <span class="t-stat-lg">10</span>
+            <span class="unit">across 3 leagues</span>
+          </div>
+        </div>
+        <div class="club-stat">
+          <span class="t-eyebrow">Season record</span>
+          <div class="club-stat__value">
+            <span class="t-stat-lg">971</span>
+            <span class="unit">–  1 124</span>
+          </div>
+          <span class="g-chip g-chip--win" style="align-self: flex-start;">46.4% wins</span>
+        </div>
+        <div class="club-stat">
+          <span class="t-eyebrow">Club ranking</span>
+          <div class="club-stat__value">
+            <span class="t-stat-lg" style="background:var(--g-gradient-rank); -webkit-background-clip:text; background-clip:text; color:transparent;">#12</span>
+            <span class="unit">East Flanders</span>
+          </div>
+          <span class="g-stat__delta g-stat__delta--up">▲ 3 since Jan</span>
+        </div>
+        <div class="club-stat">
+          <span class="t-eyebrow">Next home match</span>
+          <div class="row center gap-3" style="margin-top: 4px;">
+            <div style="font-family:'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.5rem; color: var(--p-surface-900); line-height: 1;">25<span style="font-weight: 500; color: var(--p-surface-400); font-size: 1rem; margin: 0 4px;">/</span>04</div>
+            <div class="col">
+              <span style="font-size: var(--t-body-sm); font-weight: 600;">SFF 1G vs Gentse 3G</span>
+              <span class="t-muted" style="font-size: 11px; font-family: 'JetBrains Mono', monospace;">SAT · 21:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="g-tabs" role="tablist">
+      <button class="g-tabs__tab is-active"><i class="pi pi-th-large"></i>Teams overview</button>
+      <button class="g-tabs__tab"><i class="pi pi-users"></i>Players</button>
+      <button class="g-tabs__tab"><i class="pi pi-calendar"></i>Schedule</button>
+      <button class="g-tabs__tab"><i class="pi pi-trophy"></i>Tournaments</button>
+      <button class="g-tabs__tab"><i class="pi pi-sitemap"></i>Line-ups</button>
+    </nav>
+
+    <div class="club-layout">
+
+      <!-- ============ TEAMS (left) ============ -->
+      <div>
+        <div class="club-toolbar">
+          <span class="t-eyebrow" style="margin-right: var(--space-2)">10 teams</span>
+          <div class="segmented">
+            <button class="is-active">All</button>
+            <button>Men</button>
+            <button>Women</button>
+            <button>Mixed</button>
+          </div>
+          <div class="segmented">
+            <button class="is-active">Interclub</button>
+            <button>PBO</button>
+            <button>Jeugd</button>
+          </div>
+          <div style="flex:1"></div>
+          <button class="g-btn g-btn--ghost" style="height:32px; padding: 0 10px; font-size: var(--t-body-sm);"><i class="pi pi-sort-alt"></i> Sort · Division</button>
+        </div>
+
+        <div class="teams-grid">
+          <!-- 1D -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">1D</div>
+              <div>
+                <div class="team__title">Smash For Fun 1D</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--D">D</span>
+                  <span>1e Nationale · Women</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">36%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Kyrlyn Van Hootegem</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px" title="kyrlynvh@gmail.com"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px" title="+32 476 86 55 51"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 6</span>
+              <span class="team__summary"><span>M <strong>223</strong></span><span>W <strong>80</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">BM</span>
+                <span class="tp-row__name">Béatrice Marot<span class="tp-row__role">VC</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">2</span><span class="tp-lv" data-kind="D">2</span><span class="tp-lv" data-kind="M">3</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">SG</span>
+                <span class="tp-row__name">Sarah Gryffon</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">3</span><span class="tp-lv" data-kind="D">2</span><span class="tp-lv" data-kind="M">3</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">VS</span>
+                <span class="tp-row__name">Veerle Sanders</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">3</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">KV</span>
+                <span class="tp-row__name">Kyrlyn Van Hootegem<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">3</span><span class="tp-lv" data-kind="D">2</span><span class="tp-lv" data-kind="M">3</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+2 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 2D -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">2D</div>
+              <div>
+                <div class="team__title">Smash For Fun 2D</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--D">D</span>
+                  <span>2e Provinciale · Women</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--loss">32%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Stéphanie Bauwens</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 6</span>
+              <span class="team__summary"><span>M <strong>168</strong></span><span>W <strong>54</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">SB</span>
+                <span class="tp-row__name">Stéphanie Bauwens<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">5</span><span class="tp-lv" data-kind="D">4</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">LD</span>
+                <span class="tp-row__name">Lisa De Ryck</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">5</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">RM</span>
+                <span class="tp-row__name">Rana Medharametla</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">HC</span>
+                <span class="tp-row__name">Hannah Cools</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+2 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 1H -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">1H</div>
+              <div>
+                <div class="team__title">Smash For Fun 1H</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--H">H</span>
+                  <span>3e Liga · B · Men</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">43%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Shane Herssens</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 8</span>
+              <span class="team__summary"><span>M <strong>272</strong></span><span>W <strong>117</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row is-own">
+                <span class="tp-row__avatar">GL</span>
+                <span class="tp-row__name">Glenn Latomme<span class="tp-row__role">You</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">6</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">SH</span>
+                <span class="tp-row__name">Shane Herssens<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">3</span><span class="tp-lv" data-kind="D">3</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">NV</span>
+                <span class="tp-row__name">Niels Verhelst</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">3</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">JT</span>
+                <span class="tp-row__name">Jonas Tytgat</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">4</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+4 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 2H -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">2H</div>
+              <div>
+                <div class="team__title">Smash For Fun 2H</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--H">H</span>
+                  <span>1e Provinciale · Men</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">55%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Anton D'hooge</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 7</span>
+              <span class="team__summary"><span>M <strong>272</strong></span><span>W <strong>149</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">AD</span>
+                <span class="tp-row__name">Anton D'hooge<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">5</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">MH</span>
+                <span class="tp-row__name">Mats Hermans<span class="tp-row__role">VC</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">4</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">AP</span>
+                <span class="tp-row__name">Arne Packet</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">5</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">DC</span>
+                <span class="tp-row__name">Dries Coorevits</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">5</span><span class="tp-lv" data-kind="D">4</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+3 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 3H -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">3H</div>
+              <div>
+                <div class="team__title">Smash For Fun 3H</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--H">H</span>
+                  <span>3e Provinciale · Men</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">41%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Bòdhi Deschamps</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 9</span>
+              <span class="team__summary"><span>M <strong>256</strong></span><span>W <strong>104</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">BD</span>
+                <span class="tp-row__name">Bòdhi Deschamps<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">7</span><span class="tp-lv" data-kind="D">7</span><span class="tp-lv" data-kind="M">7</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">MV</span>
+                <span class="tp-row__name">Michiel Vermeersch</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">7</span><span class="tp-lv" data-kind="D">6</span><span class="tp-lv" data-kind="M">7</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">TW</span>
+                <span class="tp-row__name">Tom Wouters</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">7</span><span class="tp-lv" data-kind="D">7</span><span class="tp-lv" data-kind="M">7</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">BN</span>
+                <span class="tp-row__name">Brent Neels</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">8</span><span class="tp-lv" data-kind="D">7</span><span class="tp-lv" data-kind="M">7</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+5 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 4H -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">4H</div>
+              <div>
+                <div class="team__title">Smash For Fun 4H</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--H">H</span>
+                  <span>4e Provinciale · Men</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">63%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Tony Wittevrongel</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 8</span>
+              <span class="team__summary"><span>M <strong>144</strong></span><span>W <strong>91</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">TW</span>
+                <span class="tp-row__name">Tony Wittevrongel<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">7</span><span class="tp-lv" data-kind="D">7</span><span class="tp-lv" data-kind="M">7</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">PC</span>
+                <span class="tp-row__name">Pieter Claerhout</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">8</span><span class="tp-lv" data-kind="D">8</span><span class="tp-lv" data-kind="M">8</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">MV</span>
+                <span class="tp-row__name">Mathias Verstuyft</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">8</span><span class="tp-lv" data-kind="D">7</span><span class="tp-lv" data-kind="M">8</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">RG</span>
+                <span class="tp-row__name">Robin Goetghebeur</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">8</span><span class="tp-lv" data-kind="D">8</span><span class="tp-lv" data-kind="M">8</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+4 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 1G -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">1G</div>
+              <div>
+                <div class="team__title">Smash For Fun 1G</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--G">G</span>
+                  <span>2e Provinciale · B · Mixed</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">52%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Flor Tryhou</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 8</span>
+              <span class="team__summary"><span>M <strong>248</strong></span><span>W <strong>128</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row is-own">
+                <span class="tp-row__avatar">GL</span>
+                <span class="tp-row__name">Glenn Latomme<span class="tp-row__role">You</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">6</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">FT</span>
+                <span class="tp-row__name">Flor Tryhou<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">VS</span>
+                <span class="tp-row__name">Veerle Sanders</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">3</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">NV</span>
+                <span class="tp-row__name">Niels Verhelst</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">3</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+4 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 2G -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">2G</div>
+              <div>
+                <div class="team__title">Smash For Fun 2G</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--G">G</span>
+                  <span>3e Provinciale · Mixed</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">40%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Rana Medharametla</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 7</span>
+              <span class="team__summary"><span>M <strong>304</strong></span><span>W <strong>122</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">RM</span>
+                <span class="tp-row__name">Rana Medharametla<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">MV</span>
+                <span class="tp-row__name">Marijke Vansteenkiste</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">5</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">MH</span>
+                <span class="tp-row__name">Mats Hermans</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">4</span><span class="tp-lv" data-kind="D">4</span><span class="tp-lv" data-kind="M">4</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">BV</span>
+                <span class="tp-row__name">Bram Verhaeghe</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">5</span><span class="tp-lv" data-kind="M">5</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+3 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+
+          <!-- 3G -->
+          <article class="team">
+            <div class="team__head">
+              <div class="team__code">3G</div>
+              <div>
+                <div class="team__title">Smash For Fun 3G</div>
+                <div class="team__division">
+                  <span class="team__gender team__gender--G">G</span>
+                  <span>4e Provinciale · Mixed</span>
+                </div>
+              </div>
+              <span class="g-chip g-chip--win">61%</span>
+            </div>
+            <div class="team__captain">
+              <i class="pi pi-user" style="color: var(--p-primary-color);"></i>
+              <div class="col">
+                <span class="team__captain-name">Bart Steps</span>
+                <span class="team__captain-role">Captain</span>
+              </div>
+              <div class="team__captain-contact">
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-envelope" style="font-size:12px"></i></button>
+                <button class="g-icon-btn" style="width:28px;height:28px"><i class="pi pi-phone" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="team__roster">
+              <span class="team__roster-label">Roster · 6</span>
+              <span class="team__summary"><span>M <strong>208</strong></span><span>W <strong>126</strong></span></span>
+            </div>
+            <div class="team__players">
+              <div class="tp-row">
+                <span class="tp-row__avatar">BS</span>
+                <span class="tp-row__name">Bart Steps<span class="tp-row__role">C</span></span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">6</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">SL</span>
+                <span class="tp-row__name">Sanne Lammens</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">7</span><span class="tp-lv" data-kind="D">6</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">MV</span>
+                <span class="tp-row__name">Maarten Vandamme</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">7</span><span class="tp-lv" data-kind="D">7</span><span class="tp-lv" data-kind="M">7</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+              <div class="tp-row">
+                <span class="tp-row__avatar">KD</span>
+                <span class="tp-row__name">Karen De Bruyne</span>
+                <span class="tp-row__levels"><span class="tp-lv" data-kind="S">6</span><span class="tp-lv" data-kind="D">6</span><span class="tp-lv" data-kind="M">6</span></span>
+                <span class="tp-row__form"><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--L"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span><span class="tp-dot tp-dot--W"></span></span>
+              </div>
+            </div>
+            <div class="team__footer"><span>+2 more on roster</span><a href="#">View team ↗</a></div>
+          </article>
+        </div>
+      </div>
+
+      <!-- ============ SIDEBAR (right) ============ -->
+      <aside class="col gap-5">
+
+        <!-- Upcoming fixtures -->
+        <div class="g-card">
+          <div class="row between center" style="margin-bottom: var(--space-3);">
+            <span class="t-eyebrow">Upcoming · Club</span>
+            <a href="#" style="font-size: var(--t-body-sm); color: var(--p-primary-color); text-decoration: none;">All ↗</a>
+          </div>
+          <div class="sched">
+            <div class="sched__item">
+              <div class="sched__date"><span class="day">Sat</span><span class="num">25</span></div>
+              <div class="sched__body">
+                <span class="sched__teams">SFF 1G · vs · Gentse 3G</span>
+                <span class="sched__league">2E PROV B · 21:00</span>
+              </div>
+            </div>
+            <div class="sched__item">
+              <div class="sched__date"><span class="day">Sun</span><span class="num">26</span></div>
+              <div class="sched__body">
+                <span class="sched__teams">SFF 2H · vs · Pluimbroek 2H</span>
+                <span class="sched__league">1E PROV · 10:30</span>
+              </div>
+            </div>
+            <div class="sched__item">
+              <div class="sched__date"><span class="day">Sat</span><span class="num">02</span></div>
+              <div class="sched__body">
+                <span class="sched__teams">Dendermondse 1H · vs · SFF 1H</span>
+                <span class="sched__league">3E LIGA B · 20:00</span>
+              </div>
+            </div>
+            <div class="sched__item">
+              <div class="sched__date"><span class="day">Sun</span><span class="num">03</span></div>
+              <div class="sched__body">
+                <span class="sched__teams">SFF 3G · vs · Lokerse 5G</span>
+                <span class="sched__league">4E PROV · 20:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top performers -->
+        <div class="g-card">
+          <div class="row between center" style="margin-bottom: var(--space-3);">
+            <span class="t-eyebrow">Top performers · Season</span>
+            <span class="g-chip">W %</span>
+          </div>
+          <div class="col">
+            <div class="perf-row">
+              <span class="perf-row__rank">1</span>
+              <div>
+                <div class="perf-row__name">Mats Hermans</div>
+                <div class="perf-row__meta">SFF 2H · LVL 4</div>
+              </div>
+              <span class="perf-row__record">72%</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-row__rank">2</span>
+              <div>
+                <div class="perf-row__name">Glenn Latomme</div>
+                <div class="perf-row__meta">SFF 1H / 1G · LVL 6-8</div>
+              </div>
+              <span class="perf-row__record">68%</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-row__rank">3</span>
+              <div>
+                <div class="perf-row__name">Tony Wittevrongel</div>
+                <div class="perf-row__meta">SFF 4H · LVL 7</div>
+              </div>
+              <span class="perf-row__record">65%</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-row__rank">4</span>
+              <div>
+                <div class="perf-row__name">Bart Steps</div>
+                <div class="perf-row__meta">SFF 3G · LVL 6</div>
+              </div>
+              <span class="perf-row__record">63%</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-row__rank">5</span>
+              <div>
+                <div class="perf-row__name">Flor Tryhou</div>
+                <div class="perf-row__meta">SFF 1G · LVL 6</div>
+              </div>
+              <span class="perf-row__record">58%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact / venue -->
+        <div class="g-card">
+          <span class="t-eyebrow">Club info</span>
+          <div class="col gap-3" style="margin-top: var(--space-3);">
+            <div class="g-kv">
+              <span class="t-eyebrow">Federation</span>
+              <span class="g-kv__v">BE-VOV · Badminton Vlaanderen</span>
+            </div>
+            <div class="g-kv">
+              <span class="t-eyebrow">Club ID</span>
+              <span class="g-kv__v" style="font-family:'JetBrains Mono',monospace;">#30076</span>
+            </div>
+            <div class="g-kv">
+              <span class="t-eyebrow">Season</span>
+              <span class="g-kv__v">2025 – 2026</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer style="padding: var(--space-5) var(--space-6); color: var(--p-surface-400); font-size: var(--t-body-sm); border-top: 1px solid var(--p-surface-200); margin-top: var(--space-7);">
+    <div class="row center between">
+      <span>Gladman · Arena design system v1.0</span>
+      <span style="font-family: 'JetBrains Mono', monospace;">last sync · 2026-04-18 09:46</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const html = document.documentElement;
+  const saved = localStorage.getItem('gladman:theme');
+  if (saved === 'light') { html.classList.remove('dark-theme'); html.classList.add('light-theme'); }
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const isDark = html.classList.contains('dark-theme');
+    html.classList.toggle('dark-theme', !isDark);
+    html.classList.toggle('light-theme', isDark);
+    localStorage.setItem('gladman:theme', isDark ? 'light' : 'dark');
+    const icon = document.querySelector('#theme-toggle i');
+    icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
+  });
+  if (saved === 'light') document.querySelector('#theme-toggle i').className = 'pi pi-sun';
+</script>
+</body>
+</html>

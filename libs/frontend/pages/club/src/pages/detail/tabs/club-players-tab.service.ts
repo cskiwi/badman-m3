@@ -40,6 +40,7 @@ export class ClubPlayersTabService {
                         fullName
                         firstName
                         lastName
+                        memberId
                       }
                     }
                   }

@@ -274,25 +274,28 @@ export class SyncService implements OnModuleInit {
   /**
    * Enqueue calculation jobs for all non-VISUAL ranking systems that are due
    */
-  async queueRankingCalc(options?: { startDate?: Date; stopDate?: Date }): Promise<void> {
-    const systems = await RankingSystem.find({ where: { runCurrently: true } });
+  async queueRankingCalc(options?: { startDate?: Date; stopDate?: Date, type?: RankingSystems }): Promise<void> {
+    // Use the canonical "currently active BVL system" lookup so this stays
+    // in sync with how publications are bucketed elsewhere.
+    const system = await RankingSystem.findActiveSystem(new Date(), options?.type ?? RankingSystems.BVL);
 
-    for (const system of systems) {
-      if (system.rankingSystem === RankingSystems.VISUAL) continue;
+    if (!system) {
+      this.logger.warn('queueRankingCalc: no active BVL ranking system for current date — nothing queued');
+      return;
+    }
 
-      const snapshotDates = this.getNextSnapshotDates(system, options);
-      for (const { calcDate, isUpdateDate } of snapshotDates) {
-        const data: RankingCalcInitJobData = {
-          systemId: system.id,
-          calcDate: calcDate.toISOString(),
-          isUpdateDate,
-          metadata: {
-            displayName: `Ranking calc: ${system.name} (${calcDate.toISOString().slice(0, 10)})`,
-          },
-        };
-        await this.rankingCalcQueue.add(JOB_TYPES.RANKING_CALC_INIT, data, { priority: 10 });
-        this.logger.log(`Queued ranking calc for ${system.name} on ${calcDate.toISOString()}`);
-      }
+    const snapshotDates = this.getNextSnapshotDates(system, options);
+    for (const { calcDate, isUpdateDate } of snapshotDates) {
+      const data: RankingCalcInitJobData = {
+        systemId: system.id,
+        calcDate: calcDate.toISOString(),
+        isUpdateDate,
+        metadata: {
+          displayName: `Ranking calc: ${system.name} (${calcDate.toISOString().slice(0, 10)})`,
+        },
+      };
+      await this.rankingCalcQueue.add(JOB_TYPES.RANKING_CALC_INIT, data, { priority: 10 });
+      this.logger.log(`Queued ranking calc for ${system.name} on ${calcDate.toISOString()}`);
     }
   }
 

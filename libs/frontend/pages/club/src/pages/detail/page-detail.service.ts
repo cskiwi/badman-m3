@@ -8,6 +8,28 @@ import { lastValueFrom } from 'rxjs';
 import { getSeason } from '@app/utils/comp';
 import { sortTeams } from '@app/utils/sorts';
 
+export interface ClubSeasonRecord {
+  wins: number;
+  losses: number;
+  draws: number;
+  total: number;
+  winRate: number;
+}
+
+export interface ClubNextHomeMatch {
+  id: string;
+  date: string | null;
+  homeTeam: { id: string; name: string | null } | null;
+  awayTeam: { id: string; name: string | null } | null;
+}
+
+export interface ClubStatsPayload {
+  id: string;
+  memberCount: number;
+  seasonRecord: ClubSeasonRecord;
+  nextHomeMatch: ClubNextHomeMatch | null;
+}
+
 export class DetailService {
   private readonly apollo = inject(Apollo);
 
@@ -65,13 +87,61 @@ export class DetailService {
     },
   });
 
+  private clubStatsResource = resource({
+    params: this.filterSignal,
+    loader: async ({ params, abortSignal }) => {
+      if (!params.clubId || params.season == null) {
+        return null;
+      }
+      try {
+        const result = await lastValueFrom(
+          this.apollo.query<{ club: ClubStatsPayload | null }>({
+            query: gql`
+              query ClubStats($id: ID!, $season: Int!) {
+                club(id: $id) {
+                  id
+                  memberCount(season: $season)
+                  seasonRecord(season: $season) {
+                    wins
+                    losses
+                    draws
+                    total
+                    winRate
+                  }
+                  nextHomeMatch(season: $season) {
+                    id
+                    date
+                    homeTeam {
+                      id
+                      name
+                    }
+                    awayTeam {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            `,
+            variables: { id: params.clubId, season: params.season },
+            context: { signal: abortSignal },
+          }),
+        );
+        return result.data?.club ?? null;
+      } catch (err) {
+        // Stats are non-critical — log but don't surface as page error.
+        console.warn('Club stats query failed', err);
+        return null;
+      }
+    },
+  });
+
   private teamsResource = resource({
     params: this.filterSignal,
     loader: async ({ params, abortSignal }) => {
       if (!params.clubId || !params.season) {
         return { teams: [], encounters: [] };
       }
-
       try {
         // First query: get teams for the club
         const teamsResult = await lastValueFrom(
@@ -105,6 +175,12 @@ export class DetailService {
                         fullName
                         firstName
                         lastName
+                        rankingLastPlaces {
+                          id
+                          single
+                          double
+                          mix
+                        }
                       }
                     }
                   }
@@ -141,6 +217,8 @@ export class DetailService {
   // Public selectors
   club = computed(() => this.clubResource.value());
   teams = computed(() => this.teamsResource.value()?.teams || []);
+  stats = computed(() => this.clubStatsResource.value());
+  teamCount = computed(() => this.teams().length);
 
   error = computed(() => this.clubResource.error()?.message || null);
   loading = computed(() => this.clubResource.isLoading());

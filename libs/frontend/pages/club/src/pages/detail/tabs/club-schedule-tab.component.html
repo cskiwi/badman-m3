@@ -1,72 +1,72 @@
 @if (loading()) {
-  <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
-    @for (i of [1, 2]; track i) {
-      <p-card>
-        <ng-template #title>
-          <p-skeleton width="12rem" height="1.25rem" />
-        </ng-template>
-        <ng-template #subtitle />
-        <div class="space-y-3">
-          @for (j of [1, 2, 3]; track j) {
-            <div class="rounded-border border border-surface p-3 space-y-2">
-              <div class="flex items-center justify-between">
-                <p-skeleton width="8rem" height="0.875rem" />
-                <p-skeleton width="4rem" height="0.875rem" />
-              </div>
-              <p-skeleton width="6rem" height="0.875rem" />
-            </div>
-          }
-        </div>
-      </p-card>
-    }
-  </div>
+ <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
+ @for (i of [1, 2]; track i) {
+ <p-card>
+ <ng-template #title>
+ <p-skeleton width="12rem" height="1.25rem" />
+ </ng-template>
+ <ng-template #subtitle />
+ <div class="space-y-3">
+ @for (j of [1, 2, 3]; track j) {
+ <div class="rounded-border border border-surface p-3 space-y-2">
+ <div class="flex items-center justify-between">
+ <p-skeleton width="8rem" height="0.875rem" />
+ <p-skeleton width="4rem" height="0.875rem" />
+ </div>
+ <p-skeleton width="6rem" height="0.875rem" />
+ </div>
+ }
+ </div>
+ </p-card>
+ }
+ </div>
 } @else if (playedEncounters().length > 0 || upcomingEncounters().length > 0) {
-  <section class="encounters">
-    <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
-      <!-- Played encounters (most recent first) -->
-      <p-card>
-        <ng-template #title>
-          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-          {{ 'all.competition.played_encounters' | translate }}
-          <span class="text-muted-color text-xs font-normal ml-1">({{ playedEncounters().length }})</span>
-        </ng-template>
-        <ng-template #subtitle />
-        @if (playedEncounters().length > 0) {
-          @for (encounter of playedEncounters(); track encounter.id) {
-            <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="played" />
-          }
-        } @else {
-          <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
-        }
-      </p-card>
+ <section class="encounters">
+ <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
+ <!-- Played encounters (most recent first) -->
+ <p-card>
+ <ng-template #title>
+ <i class="pi pi-check-circle text-green-500 mr-2"></i>
+ {{ 'all.competition.played_encounters' | translate }}
+ <span class="text-muted-color text-xs font-normal ml-1">({{ playedEncounters().length }})</span>
+ </ng-template>
+ <ng-template #subtitle />
+ @if (playedEncounters().length > 0) {
+ @for (encounter of playedEncounters(); track encounter.id) {
+ <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="played" />
+ }
+ } @else {
+ <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
+ }
+ </p-card>
 
-      <!-- Upcoming encounters (soonest first) -->
-      <p-card>
-        <ng-template #title>
-          <i class="pi pi-clock text-blue-500 mr-2"></i>
-          {{ 'all.competition.upcoming_encounters' | translate }}
-          <span class="text-muted-color text-xs font-normal ml-1">({{ upcomingEncounters().length }})</span>
-        </ng-template>
-        <ng-template #subtitle />
-        @if (upcomingEncounters().length > 0) {
-          @for (encounter of upcomingEncounters(); track encounter.id) {
-            <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="upcoming" />
-          }
-        } @else {
-          <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
-        }
-      </p-card>
-    </div>
-  </section>
+ <!-- Upcoming encounters (soonest first) -->
+ <p-card>
+ <ng-template #title>
+ <i class="pi pi-clock text-blue-500 mr-2"></i>
+ {{ 'all.competition.upcoming_encounters' | translate }}
+ <span class="text-muted-color text-xs font-normal ml-1">({{ upcomingEncounters().length }})</span>
+ </ng-template>
+ <ng-template #subtitle />
+ @if (upcomingEncounters().length > 0) {
+ @for (encounter of upcomingEncounters(); track encounter.id) {
+ <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="upcoming" />
+ }
+ } @else {
+ <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
+ }
+ </p-card>
+ </div>
+ </section>
 } @else if (teamIds().length === 0) {
-  <div class="text-center py-8 text-surface-500">
-    <i class="pi pi-calendar text-4xl mb-2 block"></i>
-    <p>{{ 'all.team.noTeams' | translate }}</p>
-  </div>
+ <div class="text-center py-8 text-muted-color">
+ <i class="pi pi-calendar text-4xl mb-2 block"></i>
+ <p>{{ 'all.team.noTeams' | translate }}</p>
+ </div>
 } @else {
-  <div class="text-center py-12 text-surface-500">
-    <i class="pi pi-calendar text-4xl mb-4 block"></i>
-    <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
-    <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
-  </div>
+ <div class="text-center py-12 text-muted-color">
+ <i class="pi pi-calendar text-4xl mb-4 block"></i>
+ <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
+ <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
+ </div>
 }

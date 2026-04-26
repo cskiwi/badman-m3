@@ -10,8 +10,8 @@ export class ThemeService {
   private readonly cookieService = inject(SsrCookieService);
   private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly THEME_COOKIE_KEY = 'app-theme';
-  private readonly DEFAULT_THEME: Theme = 'light';
+  private readonly THEME_COOKIE_KEY = 'gladman:theme';
+  private readonly DEFAULT_THEME: Theme = 'dark';
 
   // Create a signal for reactive theme management
   private readonly _currentTheme = signal<Theme>(this.getInitialTheme());

@@ -1,4 +1,7 @@
 @if (systemLoaded() && system() && breakdownService.resolvedPlayerId()) {
+  <app-breadcrumb [items]="[
+    { label: ('all.ranking.breakdown.pointsPerGame' | translate) },
+  ]" />
   <!-- Page Header Section -->
   <section class="mb-6">
     <div class="rounded-border border border-surface overflow-hidden">

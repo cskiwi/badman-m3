@@ -2,9 +2,9 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
+import { HeroAvatarComponent, HeroComponent, HeroStatValueComponent, HeroTitleComponent } from '@app/frontend-components/hero';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
 import { ClubDetailService } from './page-club-detail.service';
@@ -22,7 +22,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ChartModule } from 'primeng/chart';
 import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { MenuItem } from 'primeng/api';
 
 @Component({
@@ -33,7 +33,6 @@ import { MenuItem } from 'primeng/api';
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     CardModule,
     TableModule,
     TabsModule,
@@ -45,8 +44,12 @@ import { MenuItem } from 'primeng/api';
     ChartModule,
     TagModule,
     AvatarModule,
-    BreadcrumbModule,
+    BreadcrumbComponent,
     TooltipModule,
+    HeroComponent,
+    HeroAvatarComponent,
+    HeroTitleComponent,
+    HeroStatValueComponent,
   ],
   templateUrl: './page-club-detail.component.html',
   styleUrl: './page-club-detail.component.scss',
@@ -81,9 +84,7 @@ export class PageClubDetailComponent {
   breadcrumbItems = computed((): MenuItem[] => {
     const club = this.club();
     return [
-      { label: 'Home', routerLink: '/' },
       { label: 'Tournaments', routerLink: '/tournament' },
-      { label: 'Clubs', routerLink: '/clubs' },
       { label: club?.name || 'Club Details' },
     ];
   });
@@ -121,7 +122,7 @@ export class PageClubDetailComponent {
     const teams = this.teams();
     if (!teams.length) return null;
 
-    const seasonCounts = teams.reduce((acc: any, team) => {
+    const seasonCounts = teams.reduce((acc: Record<string, number>, team) => {
       acc[team.season] = (acc[team.season] || 0) + 1;
       return acc;
     }, {});
@@ -159,7 +160,7 @@ export class PageClubDetailComponent {
   ];
 
   // Utility methods
-  getPlayerInitials(player: any): string {
+  getPlayerInitials(player: { firstName?: string; lastName?: string }): string {
     if (!player.firstName || !player.lastName) return '??';
     return `${player.firstName.charAt(0)}${player.lastName.charAt(0)}`.toUpperCase();
   }
@@ -184,7 +185,7 @@ export class PageClubDetailComponent {
     return 'danger';
   }
 
-  getTournamentDate(tournament: any): Date | null {
+  getTournamentDate(tournament: { drawTournaments?: Array<{ tournamentEvent?: { firstDay?: string | Date } }> } | null | undefined): Date | null {
     return tournament?.drawTournaments?.[0]?.tournamentEvent?.firstDay ? new Date(tournament.drawTournaments[0].tournamentEvent.firstDay) : null;
   }
 
@@ -197,9 +198,9 @@ export class PageClubDetailComponent {
   }
 
   // Track by functions for performance
-  trackByPlayerId = (index: number, player: any) => player.id;
-  trackByTeamId = (index: number, team: any) => team.id;
-  trackByEntryId = (index: number, entry: any) => entry.entry.id;
+  trackByPlayerId = (_index: number, player: { id: string }) => player.id;
+  trackByTeamId = (_index: number, team: { id: string }) => team.id;
+  trackByEntryId = (_index: number, entry: { entry: { id: string } }) => entry.entry.id;
 
   constructor() {
     // Set club ID when component loads

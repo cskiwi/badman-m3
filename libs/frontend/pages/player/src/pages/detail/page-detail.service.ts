@@ -31,6 +31,8 @@ export class DetailService {
                 player(id: $id) {
                   id
                   fullName
+                  firstName
+                  lastName
                   memberId
                   slug
                   clubPlayerMemberships {

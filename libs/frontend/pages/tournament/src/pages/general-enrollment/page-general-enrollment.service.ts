@@ -278,7 +278,7 @@ export class PageGeneralEnrollmentService {
    */
   private isEligible(subEvent: TournamentSubEvent): boolean {
     // Must not already be enrolled
-    if (this.isAlreadyEnrolled(subEvent.id!)) {
+    if (subEvent.id && this.isAlreadyEnrolled(subEvent.id)) {
       return false;
     }
 
@@ -313,7 +313,7 @@ export class PageGeneralEnrollmentService {
           // Client-side calculations
           _availableSpots: this.getAvailableSpots(subEvent),
           _isEnrollmentOpen: this.isEnrollmentOpen(subEvent),
-          _isAlreadyEnrolled: this.isAlreadyEnrolled(subEvent.id!),
+          _isAlreadyEnrolled: subEvent.id ? this.isAlreadyEnrolled(subEvent.id) : false,
           _isEligible: this.isEligible(subEvent),
         }) as SubEventWithCalculations,
     );
@@ -418,7 +418,7 @@ export class PageGeneralEnrollmentService {
             // Get the most recent ranking
             if (user.rankingLastPlaces && user.rankingLastPlaces.length > 0) {
               const mostRecent = user.rankingLastPlaces.reduce((prev, current) => {
-                return new Date(current.rankingDate!) > new Date(prev.rankingDate!) ? current : prev;
+                return new Date(current.rankingDate ?? 0) > new Date(prev.rankingDate ?? 0) ? current : prev;
               });
               this._userRanking.set(mostRecent);
             }
@@ -576,9 +576,11 @@ export class PageGeneralEnrollmentService {
             // Load cart items
             const items = new Map<string, CartItem>();
             cart.items?.forEach((item) => {
-              items.set(item.tournamentSubEvent.id!, {
-                subEventId: item.tournamentSubEvent.id!,
-                subEventName: item.tournamentSubEvent.name!,
+              const subEventId = item.tournamentSubEvent.id;
+              if (!subEventId) return;
+              items.set(subEventId, {
+                subEventId,
+                subEventName: item.tournamentSubEvent.name ?? '',
                 eventType: item.tournamentSubEvent.eventType || '',
                 gameType: item.tournamentSubEvent.gameType || '',
                 preferredPartnerId: item.preferredPartnerId,
@@ -611,7 +613,7 @@ export class PageGeneralEnrollmentService {
             tournamentId,
             items: [
               {
-                subEventId: subEvent.id!,
+                subEventId: subEvent.id ?? '',
                 preferredPartnerId,
                 notes,
               },
@@ -658,14 +660,16 @@ export class PageGeneralEnrollmentService {
 
           // Update local state
           const items = new Map(this._cartItems());
-          items.set(subEvent.id!, {
-            subEventId: subEvent.id!,
-            subEventName: subEvent.name!,
-            eventType: subEvent.eventType || '',
-            gameType: subEvent.gameType || '',
-            preferredPartnerId,
-            notes,
-          });
+          if (subEvent.id) {
+            items.set(subEvent.id, {
+              subEventId: subEvent.id,
+              subEventName: subEvent.name ?? '',
+              eventType: subEvent.eventType || '',
+              gameType: subEvent.gameType || '',
+              preferredPartnerId,
+              notes,
+            });
+          }
           this._cartItems.set(items);
         },
         error: (error) => {
@@ -813,9 +817,10 @@ export class PageGeneralEnrollmentService {
    * Toggle sub-event in cart
    */
   toggleInCart(subEvent: TournamentSubEvent, cartId?: string, preferredPartnerId?: string, notes?: string): void {
-    if (this.isInCart(subEvent.id!)) {
+    if (!subEvent.id) return;
+    if (this.isInCart(subEvent.id)) {
       if (cartId) {
-        this.removeFromCart(subEvent.id!, cartId);
+        this.removeFromCart(subEvent.id, cartId);
       }
     } else {
       this.addToCart(subEvent, preferredPartnerId, notes);

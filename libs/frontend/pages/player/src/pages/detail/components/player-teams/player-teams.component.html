@@ -1,0 +1,29 @@
+<div class="t-eyebrow mb-3">Teams</div>
+@if (loading()) {
+ <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
+} @else if (memberships().length) {
+ <div class="flex flex-col gap-3">
+ @for (tpm of memberships(); track tpm.id) {
+ @if (tpm.team; as team) {
+ <div class="flex items-center justify-between gap-3">
+ <a
+ class="flex items-center gap-2 min-w-0 flex-1 no-underline text-color"
+ [routerLink]="team.club?.slug ? ['/', 'clubs', team.club!.slug, 'teams', team.slug] : null"
+ >
+ <span class="team-avatar">{{ abbreviation(team) }}</span>
+ <span class="flex flex-col min-w-0">
+ <span class="font-semibold text-sm truncate leading-tight">{{ team.name }}</span>
+ <span class="t-muted text-[11px] truncate leading-snug">{{ team.club?.name }}</span>
+ </span>
+ </a>
+ <p-chip
+ [label]="tpm.membershipType"
+ [styleClass]="tpm.membershipType === 'REGULAR' ? 'g-chip--primary' : ''"
+ />
+ </div>
+ }
+ }
+ </div>
+} @else {
+ <span class="text-sm t-muted">No teams this season.</span>
+}

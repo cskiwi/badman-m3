@@ -3,32 +3,30 @@ import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
-import { BadgeModule } from 'primeng/badge';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import type { TournamentSubEvent } from '@app/models';
 import { GameType } from '@app/models-enum';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { PageGeneralEnrollmentService } from './page-general-enrollment.service';
 import { SubEventSelectionGridComponent } from './components/sub-event-selection-grid/sub-event-selection-grid.component';
 import { EnrollmentCartComponent } from './components/enrollment-cart/enrollment-cart.component';
 import { EnrollmentFiltersComponent } from './components/enrollment-filters/enrollment-filters.component';
 import { PartnerSelectionDialogComponent } from './components/partner-selection-dialog/partner-selection-dialog.component';
 import { Subject, takeUntil } from 'rxjs';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-general-enrollment',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     RouterModule,
     ProgressSpinnerModule,
     ButtonModule,
-    BadgeModule,
     ToastModule,
     TranslateModule,
-    PageHeaderComponent,
     SubEventSelectionGridComponent,
     EnrollmentCartComponent,
     EnrollmentFiltersComponent,

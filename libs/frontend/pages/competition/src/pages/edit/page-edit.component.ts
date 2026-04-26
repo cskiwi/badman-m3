@@ -1,17 +1,15 @@
 import { Component, computed, inject, signal, resource, viewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 
 import { lastValueFrom } from 'rxjs';
 
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
 import { TabsModule } from 'primeng/tabs';
 
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { CompetitionEvent } from '@app/models';
 import { MessageService } from 'primeng/api';
 import { injectParams } from 'ngxtension/inject-params';
@@ -20,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CompetitionInfoComponent } from './components/competition-info/competition-info.component';
 import { CompetitionDatesComponent } from './components/competition-dates/competition-dates.component';
 import { CompetitionSettingsComponent } from './components/competition-settings/competition-settings.component';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 const GET_COMPETITION_WITH_DETAILS = gql`
   query GetCompetitionWithDetails($id: ID!) {
@@ -54,13 +53,12 @@ const GET_COMPETITION_WITH_DETAILS = gql`
   selector: 'app-page-edit',
   standalone: true,
   imports: [
-    CardModule,
+    BreadcrumbComponent,
     ButtonModule,
     MessageModule,
     ProgressBarModule,
     ToastModule,
     TabsModule,
-    PageHeaderComponent,
     TranslateModule,
     CompetitionInfoComponent,
     CompetitionDatesComponent,

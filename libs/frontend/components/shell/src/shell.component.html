@@ -1,155 +1,123 @@
-<div class="flex flex-col min-h-screen bg-emphasis text-color">
-  <!-- Pinned Toolbar -->
-  <div class="fixed top-0 left-0 right-0 !p-0 z-50 w-full pinned-toolbar" [class.scrolled]="isScrolled()">
-    <div class="max-w-screen-2xl mx-auto px-6">
-      @if (isDesktop) {
-        <!-- Desktop Layout -->
-        <p-toolbar class="modern-toolbar" [class.toolbar-scrolled]="isScrolled()">
-          <ng-template #start>
-            <div class="flex items-center space-x-4">
-              <h1 class="text-xl font-bold text-color cursor-pointer" [routerLink]="['/']">Gladman</h1>
-              <!-- Desktop Navigation Links -->
-              <nav class="flex items-center space-x-2">
-                @if (user()?.slug) {
-                  <p-button [label]="'all.players.my-profile' | translate" [routerLink]="['/players', user()?.slug]" [text]="true" size="small" />
-                  @if (clubs().length === 1) {
-                    <p-button
-                      [label]="'all.players.my-club' | translate"
-                      [routerLink]="['/clubs', clubs()[0].club.slug]"
-                      [text]="true"
-                      size="small"
-                    />
-                  }
-                }
-              </nav>
-            </div>
-          </ng-template>
+<div class="flex flex-col min-h-screen text-color">
+ <!-- Top bar -->
+ <header class="g-topbar sticky top-0 z-50 border-b border-surface">
+ <div class="flex items-center gap-5 h-14 px-6 max-w-[1440px] mx-auto">
+ @if (isDesktop) {
+ <!-- Logo -->
+ <a class="g-logo flex items-center gap-2.5 no-underline cursor-pointer font-bold text-lg tracking-wide text-color" [routerLink]="['/']">
+ <span class="g-logo__mark"></span>
+ <span>GLADMAN</span>
+ </a>
 
-          <ng-template #center>
-            <app-search />
-          </ng-template>
+ <!-- Desktop Navigation -->
+ <nav class="g-nav flex gap-1">
+ @if (user()?.slug) {
+ <a class="inline-flex items-center h-14 px-4 text-sm font-medium text-muted-color no-underline relative transition-colors duration-150 hover:text-color" [routerLink]="['/players', user()?.slug]" routerLinkActive="is-active">
+ {{ 'all.players.my-profile' | translate }}
+ </a>
+ }
+ @for (club of clubs(); track club.club.slug) {
+ <a class="inline-flex items-center h-14 px-4 text-sm font-medium text-muted-color no-underline relative transition-colors duration-150 hover:text-color" [routerLink]="['/clubs', club.club.slug]" routerLinkActive="is-active">
+ {{ club.club.name || ('all.players.my-club' | translate) }}
+ </a>
+ }
+ </nav>
 
-          <ng-template #end>
-            <div class="flex items-center space-x-2">
-              <!-- Theme Toggle Icon Button -->
-              <p-button
-                [icon]="themeToggleIcon()"
-                [outlined]="true"
-                [rounded]="true"
-                (click)="toggleTheme()"
-                [ariaLabel]="themeToggleLabel()"
-                size="small"
-              />
-              @if (user()?.firstName) {
-                <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
-                <p-button [label]="user()?.firstName" [outlined]="true" (click)="menu.toggle($event)" aria-label="User menu" />
-              } @else {
-                <p-button [label]="'all.navigation.login' | translate" [outlined]="true" (click)="login()" />
-              }
-            </div>
-          </ng-template>
-        </p-toolbar>
-      } @else {
-        <!-- Mobile Layout -->
-        <div class="mobile-header-layout py-3 mb-3">
-          <!-- Top Row: Brand + Menu + Profile -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <p-button icon="pi pi-bars" (click)="toggleSidebar()" [outlined]="true" [rounded]="true" size="small" aria-label="Toggle sidebar" />
-              <h1 class="text-lg font-bold text-color cursor-pointer" [routerLink]="['/']">Gladman</h1>
-            </div>
-            <div class="flex items-center space-x-2">
-              <!-- Theme Toggle Icon Button -->
-              <p-button
-                [icon]="themeToggleIcon()"
-                [outlined]="true"
-                [rounded]="true"
-                (click)="toggleTheme()"
-                [ariaLabel]="themeToggleLabel()"
-                size="small"
-              />
-              @if (user()?.firstName) {
-                <span class="text-sm font-medium text-color">{{ user()?.firstName }}</span>
-                <p-menu #mobileMenu [model]="userMenuItems()" [popup]="true" appendTo="body" />
-                <p-button
-                  icon="pi pi-user"
-                  [outlined]="true"
-                  [rounded]="true"
-                  size="small"
-                  (click)="mobileMenu.toggle($event)"
-                  aria-label="User menu"
-                />
-              } @else {
-                <p-button [label]="'all.navigation.login' | translate" [outlined]="true" size="small" (click)="login()" />
-              }
-            </div>
-          </div>
-          <!-- Bottom Row: Search Only -->
-          <div class="flex items-center">
-            <div class="flex-1">
-              <app-search />
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
+ <div class="flex-1"></div>
 
-  <div [class]="isDesktop ? 'pt-20' : 'pt-26'">
-    <!-- Mobile Sidebar Overlay -->
-    @if (sidebarVisible && !isDesktop) {
-      <div class="fixed inset-0 z-40 mobile-overlay" (click)="sidebarVisible = false"></div>
-      <aside
-        class="fixed left-0 top-0 w-64 shadow-md p-4 min-h-screen z-50 transform transition-transform mobile-sidebar"
-        [class.translate-x-0]="sidebarVisible"
-        [class.-translate-x-full]="!sidebarVisible"
-      >
-        <nav class="space-y-2 mt-20">
-          @if (user()?.slug) {
-            <a
-              [routerLink]="['/players', user()?.slug]"
-              class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
-              (click)="sidebarVisible = false"
-            >
-              {{ 'all.players.my-profile' | translate }}
-            </a>
+ <!-- Tools -->
+ <div class="flex items-center gap-2">
+ <app-search />
+ <button class="size-9 inline-flex items-center justify-center rounded-lg cursor-pointer bg-transparent border border-transparent text-muted-color hover:bg-emphasis hover:border-surface hover:text-color transition-all duration-150" title="Notifications">
+ <i class="pi pi-bell"></i>
+ </button>
+ <button class="size-9 inline-flex items-center justify-center rounded-lg cursor-pointer bg-transparent border border-transparent text-muted-color hover:bg-emphasis hover:border-surface hover:text-color transition-all duration-150" (click)="toggleTheme()"
+ [attr.aria-label]="themeToggleLabel()" [title]="themeToggleLabel()">
+ <i [class]="themeToggleIcon()"></i>
+ </button>
+ @if (user()?.firstName) {
+ <p-menu #menu [model]="userMenuItems()" [popup]="true" appendTo="body" />
+ <button class="g-avatar size-9 rounded-full inline-flex items-center justify-center font-bold text-xs cursor-pointer border-0" (click)="menu.toggle($event)" aria-label="User menu">
+ {{ user()?.firstName?.charAt(0) }}{{ user()?.lastName?.charAt(0) }}
+ </button>
+ } @else {
+ <p-button [label]="'all.navigation.login' | translate" [outlined]="true" size="small" (click)="login()" />
+ }
+ </div>
+ } @else {
+ <!-- Mobile Layout -->
+ <button class="size-9 inline-flex items-center justify-center rounded-lg cursor-pointer bg-transparent border border-transparent text-muted-color hover:bg-emphasis hover:border-surface hover:text-color transition-all duration-150" (click)="toggleSidebar()"
+ aria-label="Toggle sidebar">
+ <i class="pi pi-bars"></i>
+ </button>
+ <a class="g-logo flex items-center gap-2.5 no-underline cursor-pointer font-bold text-lg tracking-wide text-color" [routerLink]="['/']">
+ <span class="g-logo__mark"></span>
+ <span>GLADMAN</span>
+ </a>
+ <div class="flex-1"></div>
+ <div class="flex items-center gap-2">
+ <button class="size-9 inline-flex items-center justify-center rounded-lg cursor-pointer bg-transparent border border-transparent text-muted-color hover:bg-emphasis hover:border-surface hover:text-color transition-all duration-150" (click)="toggleTheme()"
+ [attr.aria-label]="themeToggleLabel()">
+ <i [class]="themeToggleIcon()"></i>
+ </button>
+ @if (user()?.firstName) {
+ <p-menu #mobileMenu [model]="userMenuItems()" [popup]="true" appendTo="body" />
+ <button class="g-avatar size-9 rounded-full inline-flex items-center justify-center font-bold text-xs cursor-pointer border-0" (click)="mobileMenu.toggle($event)" aria-label="User menu">
+ {{ user()?.firstName?.charAt(0) }}{{ user()?.lastName?.charAt(0) }}
+ </button>
+ } @else {
+ <p-button [label]="'all.navigation.login' | translate" [outlined]="true" size="small" (click)="login()" />
+ }
+ </div>
+ }
+ </div>
+ @if (!isDesktop) {
+ <div class="px-6 pb-3">
+ <app-search />
+ </div>
+ }
+ </header>
 
-            @if (clubs().length === 1) {
-              <a
-                [routerLink]="['/clubs', clubs()[0].club.slug]"
-                class="block px-4 py-2 text-color hover:bg-emphasis rounded-lg transition-colors"
-                (click)="sidebarVisible = false"
-              >
-                {{ 'all.players.my-club' | translate }}
-              </a>
-            }
-          }
-        </nav>
-      </aside>
-    }
+ <!-- Mobile Sidebar Overlay -->
+ @if (sidebarVisible && !isDesktop) {
+ <div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" (click)="sidebarVisible = false"></div>
+ <aside class="fixed left-0 top-0 w-70 min-h-screen z-50 bg-emphasis border-r border-surface transition-transform duration-300" [class.translate-x-0]="sidebarVisible" [class.-translate-x-full]="!sidebarVisible">
+ <div class="flex items-center gap-2.5 px-4 pt-5 pb-3">
+ <span class="g-logo__mark"></span>
+ <span class="g-logo font-bold text-lg tracking-wide text-color">GLADMAN</span>
+ </div>
+ <nav class="flex flex-col gap-1 p-4">
+ @if (user()?.slug) {
+ <a [routerLink]="['/players', user()?.slug]" class="flex items-center gap-3 py-2.5 px-4 rounded-lg text-muted-color no-underline transition-all duration-150 hover:bg-emphasis hover:text-color" routerLinkActive="!text-primary !bg-emphasis" (click)="sidebarVisible = false">
+ <i class="pi pi-user"></i>
+ {{ 'all.players.my-profile' | translate }}
+ </a>
+ }
+ @for (club of clubs(); track club.club.slug) {
+ <a [routerLink]="['/clubs', club.club.slug]" class="flex items-center gap-3 py-2.5 px-4 rounded-lg text-muted-color no-underline transition-all duration-150 hover:bg-emphasis hover:text-color" routerLinkActive="!text-primary !bg-emphasis" (click)="sidebarVisible = false">
+ <i class="pi pi-building"></i>
+ {{ club.club.name || ('all.players.my-club' | translate) }}
+ </a>
+ }
+ </nav>
+ </aside>
+ }
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-8xl mx-auto p-1 md:p-6">
-      <router-outlet />
-    </main>
-  </div>
+ <!-- Main Content -->
+ <main class="flex-1 w-full max-w-[1440px] mx-auto p-4 md:p-6">
+ <router-outlet />
+ </main>
 
-  <!-- Toast for notifications -->
-  <p-toast position="top-right">
-    <ng-template let-message #message>
-      <div class="flex flex-col items-start flex-auto">
-        <div class="flex items-center gap-2">
-          <span class="font-semibold text-base">{{ message.summary | translate }}</span>
-        </div>
-        <div class="font-medium text-lg my-4">{{ message.detail | translate }}</div>
-        <p-button
-          [label]="'all.system.update.refresh' | translate"
-          [size]="'small'"
-          [outlined]="true"
-          (click)="refreshApp()"
-          class="update-refresh-button"
-        />
-      </div>
-    </ng-template>
-  </p-toast>
+ <!-- Toast for notifications -->
+ <p-toast position="top-right">
+ <ng-template let-message #message>
+ <div class="flex flex-col items-start flex-auto">
+ <div class="flex items-center gap-2">
+ <span class="font-semibold text-base">{{ message.summary | translate }}</span>
+ </div>
+ <div class="font-medium text-lg my-4">{{ message.detail | translate }}</div>
+ <p-button [label]="'all.system.update.refresh' | translate" [size]="'small'" [outlined]="true" (click)="refreshApp()" />
+ </div>
+ </ng-template>
+ </p-toast>
 </div>

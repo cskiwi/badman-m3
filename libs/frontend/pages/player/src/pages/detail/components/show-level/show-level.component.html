@@ -1,0 +1,23 @@
+<div [pTooltip]="tooltip()" tooltipStyleClass="tooltip-multi-line" class="border border-surface">
+ @if (this.showLevelService.rankingPlace()) {
+ <div class="level border-r border-surface text-color text-lg px-2 py-1">
+ {{ this.showLevelService.rankingPlace()?.[type()] }}
+ </div>
+
+ @if (this.showLevelService.rankingPlace()?.[upgrade] !== null) {
+ <span class="points text-color text-lg px-1" [ngClass]="{ upgrade: this.canUpgrade() }">
+ {{ this.showLevelService.rankingPlace()?.[upgrade] }}
+ </span>
+ }
+
+ @if (this.showLevelService.rankingPlace()?.[upgrade] !== null && this.showLevelService.rankingPlace()?.[downgrade] !== null) {
+ <span class="separator text-color px-1">-</span>
+ }
+
+ @if (this.showLevelService.rankingPlace()?.[downgrade] !== null) {
+ <span class="points text-color text-lg px-1" [ngClass]="{ downgrade: this.canDowngrade() }">
+ {{ this.showLevelService.rankingPlace()?.[downgrade] }}
+ </span>
+ }
+ }
+</div>

@@ -1,7 +1,8 @@
-import { DatePipe, SlicePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
+import { HeroComponent } from '@app/frontend-components/hero';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 import { SyncButtonComponent, SyncButtonConfig, SyncStatusIndicatorComponent, SyncStatusConfig } from '@app/frontend-components/sync';
 import { SeoService } from '@app/frontend-modules-seo/service';
 import { AuthService } from '@app/frontend-modules-auth/service';
@@ -15,12 +16,14 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-page-detail',
   imports: [
+    BreadcrumbComponent,
     DatePipe,
     SlicePipe,
+    NgTemplateOutlet,
     SkeletonModule,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
+    HeroComponent,
     SyncButtonComponent,
     SyncStatusIndicatorComponent,
     TabsModule,
@@ -116,7 +119,7 @@ export class PageDetailComponent {
         if (!gameTypeMap.has(gameType)) {
           gameTypeMap.set(gameType, []);
         }
-        gameTypeMap.get(gameType)!.push(event);
+        gameTypeMap.get(gameType)?.push(event);
       });
 
       // Convert to tabs array and sort
@@ -147,6 +150,29 @@ export class PageDetailComponent {
   error = this.dataService.error;
   loading = this.dataService.loading;
 
+  // Arena hero helpers
+  tournamentCrestText = computed(() => {
+    const t = this.tournament();
+    if (!t?.name) return '?';
+    const cleaned = t.name.trim();
+    const words = cleaned.split(/\s+/).filter(Boolean);
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return cleaned.slice(0, 3).toUpperCase();
+  });
+
+  totalSubEvents = computed(() => {
+    return this.groupedSubEvents().reduce((sum, g) => sum + g.events.length, 0);
+  });
+
+  totalDraws = computed(() => {
+    return this.groupedSubEvents().reduce(
+      (sum, g) => sum + g.events.reduce((s, e) => s + (e.drawTournaments?.length || 0), 0),
+      0,
+    );
+  });
+
   // Sync configuration for tournament level
   syncConfig = computed((): SyncButtonConfig | null => {
     const tournament = this.tournament();
@@ -172,14 +198,14 @@ export class PageDetailComponent {
 
     return {
       entityType: 'event',
-      entityCode: tournament.visualCode!,
+      entityCode: tournament.visualCode ?? '',
       entityName: tournament?.name,
       lastSync: tournament.lastSync,
     };
   });
 
   // Helper method to create sync config for individual subevents
-  getSubEventSyncConfig(subEvent: any): SyncButtonConfig | null {
+  getSubEventSyncConfig(subEvent: { id?: string; name?: string } | null | undefined): SyncButtonConfig | null {
     const tournament = this.tournament();
 
     if (!tournament || !subEvent || !this.auth.loggedIn()) {
@@ -195,7 +221,7 @@ export class PageDetailComponent {
   }
 
   // Helper method to create sync status config for individual subevents
-  getSubEventSyncStatusConfig(subEvent: any): SyncStatusConfig | null {
+  getSubEventSyncStatusConfig(subEvent: { visualCode?: string; name?: string; lastSync?: Date | string | null } | null | undefined): SyncStatusConfig | null {
     const tournament = this.tournament();
 
     if (!tournament || !subEvent || !this.auth.loggedIn()) {
@@ -204,9 +230,9 @@ export class PageDetailComponent {
 
     return {
       entityType: 'event',
-      entityCode: subEvent.visualCode,
+      entityCode: subEvent.visualCode ?? '',
       entityName: subEvent.name,
-      lastSync: subEvent.lastSync, // Use sub-event's own lastSync field
+      lastSync: subEvent.lastSync ? (typeof subEvent.lastSync === 'string' ? new Date(subEvent.lastSync) : subEvent.lastSync) : null,
     };
   }
 

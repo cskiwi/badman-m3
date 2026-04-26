@@ -6,6 +6,7 @@ export * from './competition-planning.service';
 export * from './competition-standing-sync.service';
 export * from './competition-sync.service';
 export * from './competition-subevent-sync.service';
+export * from './encounter-team-repair.service';
 export * from './team-matching.service';
 export * from './team-sync.service';
 export * from './tournament-draw-sync.service';

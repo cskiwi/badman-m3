@@ -7,3 +7,62 @@
   margin: 0 auto;
   padding: 0 1rem;
 }
+
+// Parallelogram crest — hollow, gradient text (matches player/club avatars)
+.draw-crest {
+  width: 112px;
+  height: 112px;
+  background: var(--g-gradient-primary);
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--p-content-background);
+    clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    z-index: 0;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 0.02em;
+    background: var(--g-gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  @media (max-width: 768px) {
+    width: 88px;
+    height: 88px;
+
+    span {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+// Draw name — Space Grotesk display
+.draw-name {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--p-text-color);
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+}

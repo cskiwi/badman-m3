@@ -1,31 +1,89 @@
-<section class="flex flex-col gap-2">
-  <p-card>
-    <p-table [value]="dataSource()" [loading]="loading()" [sortField]="'level'" [sortOrder]="1" styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
+@if (rankingSystem(); as system) {
+<!-- Hero -->
+<app-hero>
+  <!-- Crest -->
+  <app-hero-avatar avatar variant="rank">{{ system.amountOfLevels ?? '?' }}</app-hero-avatar>
+
+  <!-- Identity -->
+  <div identity>
+    <span class="t-eyebrow">Ranking system</span>
+    <app-hero-title>{{ system.name }}</app-hero-title>
+    <div class="flex items-center gap-3 flex-wrap">
+      @if (system.calculationLastUpdate) {
+      <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
+        <i class="pi pi-refresh text-[10px] mr-1"></i>
+        {{ system.calculationLastUpdate | date: 'mediumDate' }}
+      </span>
+      }
+      <span class="t-mono text-xs text-muted-color bg-emphasis px-2 py-0.5 rounded-sm tracking-wider">
+        {{ system.amountOfLevels }} levels
+      </span>
+    </div>
+  </div>
+
+  <!-- Player ranking strip — only when logged in and ranking is loaded -->
+  @if (user()?.id; as playerId) {
+  <div stats class="mt-5 pt-5 border-t border-surface relative z-[1]">
+    <app-player-ranking-progress [playerId]="playerId" />
+  </div>
+  }
+</app-hero>
+
+<!-- Reference table -->
+<section>
+  <app-section-header title="Level reference" />
+
+  <div class="bg-emphasis border border-surface rounded-xl overflow-hidden">
+    <table class="w-full border-collapse tabular-nums">
+      <thead>
         <tr>
-          @for (col of columns; track col) {
-            <th>
-              {{ col.header | async }}
-            </th>
+          @for (col of columns; track col.field) {
+          <th class="t-eyebrow text-left px-3 py-3.5 border-b border-surface bg-emphasis" [class.text-right]="col.field !== 'level'">
+            {{ col.header | async }}
+          </th>
           }
         </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-rowData>
-        <tr>
-          @for (col of columns; track col) {
-            <td>
-              {{ rowData[col.field] }}
-            </td>
-          }
+      </thead>
+      <tbody>
+        @for (row of dataSource(); track row.level) {
+        <tr class="transition-colors hover:bg-emphasis [&:last-child>td]:border-b-0">
+          <td class="px-3 py-3 border-b border-surface align-middle">
+            <span class="inline-flex items-center justify-center min-w-[36px] h-7 px-2.5 rounded-sm bg-emphasis text-color font-bold text-sm tabular-nums font-['Space_Grotesk',sans-serif]">
+              {{ row.level }}
+            </span>
+          </td>
+          <td class="t-mono text-right px-3 py-3 border-b border-surface align-middle">
+            @if (row.pointsToGoUp !== null) {
+            <span class="text-green-600 dark:text-green-400">{{ row.pointsToGoUp }}</span>
+            } @else {
+            <span class="text-muted-color">—</span>
+            }
+          </td>
+          <td class="t-mono text-right px-3 py-3 border-b border-surface align-middle">
+            @if (row.pointsToGoDown !== null) {
+            <span class="text-muted-color">{{ row.pointsToGoDown }}</span>
+            } @else {
+            <span class="text-muted-color">—</span>
+            }
+          </td>
+          <td class="t-mono text-right px-3 py-3 border-b border-surface align-middle text-color font-semibold">
+            {{ row.pointsWhenWinningAgainst }}
+          </td>
         </tr>
-      </ng-template>
-    </p-table>
-  </p-card>
+        }
+      </tbody>
+    </table>
+  </div>
 </section>
+} @else if (loading()) {
+<div class="bg-emphasis border border-surface rounded-xl p-8">
+  <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
+</div>
+}
 
 @if (error()) {
-  <div class="error flex items-center gap-2 p-4 text-red-600">
-    <i class="pi pi-exclamation-triangle"></i>
-    {{ error() }}
-  </div>
+<div class="flex items-center gap-2 p-4 mt-4 rounded-md border border-surface bg-emphasis text-red-600 dark:text-red-400">
+  <i class="pi pi-exclamation-triangle"></i>
+  {{ error() }}
+</div>
 }

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, inject, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '@app/frontend-components/page-header';
 import { AuthService } from '@app/frontend-modules-auth/service';
 import { TranslateModule } from '@ngx-translate/core';
 import { injectParams } from 'ngxtension/inject-params';
@@ -13,15 +12,16 @@ import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { DatePipe } from '@angular/common';
+import { BreadcrumbComponent } from '@app/frontend-components/breadcrumb';
 
 @Component({
   selector: 'app-page-my-enrollments',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     DatePipe,
     RouterModule,
     TranslateModule,
-    PageHeaderComponent,
     ButtonModule,
     CardModule,
     MessageModule,

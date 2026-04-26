@@ -3,6 +3,7 @@
     [icon]="getSyncIcon(cfg.level)"
     size="small"
     severity="secondary"
+    [outlined]="true"
     [disabled]="loading()"
     (onClick)="handleSyncClick(cfg.level)"
     [label]="getSyncLabel(cfg.level) | translate"

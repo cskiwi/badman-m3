@@ -1,202 +1,244 @@
 @if (!loading()) {
-  @if (this.team(); as team) {
-    <div class="px-4">
-      <app-page-header>
-        <ng-content title>{{ team.name }}</ng-content>
-        <ng-content subTitle>
-          <div class="info">
-            <div class="sub-text">
-              @if (team.club) {
-                <a [routerLink]="['/clubs', team.club.slug || team.club.id]">{{ team.club.name }}</a>
-                <span class="mx-2">></span>
-              }
-              <span>{{ team.name }}</span>
-            </div>
-          </div>
-        </ng-content>
-      </app-page-header>
+ @if (this.team(); as team) {
+ <div class="px-4 flex flex-col gap-6">
+ <!-- Breadcrumb -->
+ <app-breadcrumb [items]="team.club
+  ? [
+      { label: team.club.name, routerLink: ['/clubs', team.club.slug || team.club.id] },
+      { label: team.name },
+    ]
+  : [
+      { label: team.name },
+    ]" />
 
-      <!-- Team Information -->
-      <section class="draw-info mb-8">
-        <div class="rounded-border bg-highlight p-6">
-          <!-- Team Details -->
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-sm">
-            @if (team.captain) {
-              <div class="flex items-center gap-2">
-                <i class="pi pi-user text-xs text-muted-color"></i>
-                <span class="font-medium">{{ 'all.team.captain-label' | translate }}:</span>
-                <a [routerLink]="['/players', team.captain.slug || team.captain.id]" class="no-underline hover:underline text-primary">
-                  {{ team.captain.fullName }}
-                </a>
-              </div>
-            }
+ <!-- Hero -->
+ <app-hero>
+ <!-- Crest: parallelogram with team code -->
+ <div
+ avatar
+ class="relative w-24 h-24 grid place-items-center bg-primary [clip-path:polygon(14%_0,100%_0,86%_100%,0_100%)]"
+ >
+ <div class="absolute inset-[3px] bg-emphasis [clip-path:polygon(14%_0,100%_0,86%_100%,0_100%)]"></div>
+ <span class="relative z-[1] text-primary font-['Space_Grotesk',sans-serif] font-bold text-2xl tracking-wide">
+ {{ teamCode() }}
+ </span>
+ </div>
 
-            @if (team.email) {
-              <div class="flex items-center gap-2">
-                <i class="pi pi-envelope text-xs text-muted-color"></i>
-                <span class="font-medium">{{ 'all.team.email-label' | translate }}:</span>
-                <a [href]="'mailto:' + team.email" class="no-underline hover:underline text-color">
-                  {{ team.email }}
-                </a>
-              </div>
-            }
+ <!-- Identity -->
+ <div identity class="flex flex-col gap-2 min-w-0">
+ <h1 class="font-['Space_Grotesk',sans-serif] font-bold text-4xl leading-none tracking-tight text-color m-0 truncate">
+ {{ team.name }}
+ </h1>
+ <div class="flex items-center gap-3 flex-wrap text-sm text-muted-color">
+ @if (entry()?.competitionDraw?.competitionSubEvent; as subEvent) {
+ <span class="inline-flex items-center gap-1.5">
+ <i class="pi pi-sitemap text-[11px]"></i>
+ <strong class="text-color font-semibold">
+ {{ entry()?.competitionDraw?.name || ('all.team.view-draw' | translate) }}
+ </strong>
+ </span>
+ @if (subEvent.level != null || subEvent.maxLevel != null) {
+ <span
+ class="t-mono text-[11px] bg-emphasis text-muted-color px-2 py-0.5 rounded-sm tracking-wider"
+ [pTooltip]="'all.team.level-tooltip' | translate"
+ tooltipPosition="top"
+ >
+ L{{
+ subEvent.level != null && subEvent.maxLevel != null
+ ? subEvent.level + '–' + subEvent.maxLevel
+ : (subEvent.level ?? subEvent.maxLevel)
+ }}
+ </span>
+ }
+ }
+ @if (team.captain) {
+ <a
+ [routerLink]="['/players', team.captain.slug || team.captain.id]"
+ class="inline-flex items-center gap-1.5 text-color no-underline hover:text-primary"
+ >
+ <i class="pi pi-user text-primary text-[11px]"></i>
+ <strong class="font-semibold">{{ team.captain.fullName }}</strong>
+ <span class="t-mono text-[10px] text-muted-color tracking-wider uppercase">
+ {{ 'all.team.captain-label' | translate }}
+ </span>
+ </a>
+ }
+ </div>
+ </div>
 
-            @if (team.phone) {
-              <div class="flex items-center gap-2">
-                <i class="pi pi-phone text-xs text-muted-color"></i>
-                <span class="font-medium">{{ 'all.team.phone-label' | translate }}:</span>
-                <a [href]="'tel:' + team.phone" class="no-underline hover:underline text-color">
-                  {{ team.phone }}
-                </a>
-              </div>
-            }
+ <!-- Actions -->
+ <div actions class="flex items-center gap-2">
+ @if (team.email) {
+ <a
+ [href]="'mailto:' + team.email"
+ [pTooltip]="team.email"
+ class="grid place-items-center w-9 h-9 rounded-md border border-surface text-muted-color hover:text-primary hover:border-primary transition-colors no-underline"
+ >
+ <i class="pi pi-envelope text-xs"></i>
+ </a>
+ }
+ @if (team.phone) {
+ <a
+ [href]="'tel:' + team.phone"
+ [pTooltip]="team.phone"
+ class="grid place-items-center w-9 h-9 rounded-md border border-surface text-muted-color hover:text-primary hover:border-primary transition-colors no-underline"
+ >
+ <i class="pi pi-phone text-xs"></i>
+ </a>
+ }
+ </div>
 
-            @if (entry(); as entry) {
-              @if (entry.competitionDraw?.competitionSubEvent; as subEvent) {
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-sitemap text-xs text-muted-color"></i>
-                  <span class="font-medium">{{ 'all.team.draw-label' | translate }}:</span>
-                  <a
-                    [routerLink]="['/competition', subEvent.eventId, 'sub-events', subEvent.id, 'draws', entry.drawId]"
-                    class="no-underline hover:underline text-primary"
-                  >
-                    {{ entry.competitionDraw?.name || ('all.team.view-draw' | translate) }}
-                  </a>
-                  @if (subEvent.level != null || subEvent.maxLevel != null) {
-                    <p-tag
-                      [pTooltip]="'all.team.level-tooltip' | translate"
-                      tooltipPosition="top"
-                      [value]="
-                        subEvent.level != null && subEvent.maxLevel != null
-                          ? subEvent.level + ' - ' + subEvent.maxLevel
-                          : '' + (subEvent.level ?? subEvent.maxLevel)
-                      "
-                    />
-                  }
-                </div>
-              }
-            }
-          </div>
-        </div>
-      </section>
-    </div>
+ <!-- Stats strip -->
+ <div
+ stats
+ class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5 pt-5 border-t border-surface relative z-[1]"
+ >
+ <!-- Roster -->
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Roster</span>
+ <span class="font-['Space_Grotesk',sans-serif] font-semibold text-[2.5rem] leading-none tabular-nums text-color">
+ {{ players().length }}
+ </span>
+ </div>
 
-    <div class="px-4">
-      <!-- Players Section -->
-      @if (players().length > 0) {
-        <app-team-players-table
-          [players]="players()"
-          [playerStats]="playerStats()"
-          [onAddPlayerToTeam]="canEditClub() ? onAddPlayerToTeam : null"
-          [onRemovePlayerFromTeam]="canEditClub() ? onRemovePlayerFromTeam : null"
-        />
-      } @else {
-        <div class="text-center py-12 text-surface-500">
-          <i class="pi pi-users text-4xl mb-4 block"></i>
-          <h3 class="text-lg font-medium mb-2">{{ 'all.team.no-players' | translate }}</h3>
-          <p>{{ 'all.team.no-players-description' | translate }}</p>
-        </div>
-      }
-    </div>
+ <!-- Season record -->
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Season record</span>
+ <div class="flex items-baseline gap-2">
+ <span class="font-['Space_Grotesk',sans-serif] font-semibold text-[2.5rem] leading-none tabular-nums text-color">
+ {{ teamStats().won }}
+ </span>
+ <span class="t-mono text-xs text-muted-color">– {{ teamStats().lost }}</span>
+ </div>
+ @if (teamStats().played > 0) {
+ <span
+ class="self-start inline-flex items-center px-2 py-0.5 rounded-sm t-mono text-xs font-semibold"
+ [class.text-green-600]="teamStats().winRate >= 0.5"
+ [class.dark:text-green-400]="teamStats().winRate >= 0.5"
+ [class.bg-green-500/15]="teamStats().winRate >= 0.5"
+ [class.text-red-600]="teamStats().winRate < 0.5"
+ [class.dark:text-red-400]="teamStats().winRate < 0.5"
+ [class.bg-red-500/15]="teamStats().winRate < 0.5"
+ >
+ {{ (teamStats().winRate * 100).toFixed(0) }}% wins
+ </span>
+ }
+ </div>
 
-    <!-- Encounters Section -->
-    <div class="px-4">
-      @if (encounters().length > 0) {
-        <section class="encounters mt-8">
-          <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
-            <!-- Played encounters (most recent first) -->
-            <p-card>
-              <ng-template #title>
-                <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                {{ 'all.competition.played_encounters' | translate }}
-                <span class="text-muted-color text-xs font-normal ml-1">({{ playedEncounters().length }})</span>
-              </ng-template>
-              <ng-template #subtitle />
-              @if (playedEncounters().length > 0) {
-                @for (encounter of playedEncounters(); track encounter.id) {
-                  <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="played" />
-                }
-              } @else {
-                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_played_encounters' | translate }}</p>
-              }
-            </p-card>
+ <!-- Matches -->
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Matches</span>
+ <span class="font-['Space_Grotesk',sans-serif] font-semibold text-[2.5rem] leading-none tabular-nums text-color">
+ {{ encounters().length }}
+ </span>
+ </div>
 
-            <!-- Upcoming encounters (soonest first) -->
-            <p-card>
-              <ng-template #title>
-                <i class="pi pi-clock text-blue-500 mr-2"></i>
-                {{ 'all.competition.upcoming_encounters' | translate }}
-                <span class="text-muted-color text-xs font-normal ml-1">({{ upcomingEncounters().length }})</span>
-              </ng-template>
-              <ng-template #subtitle />
-              @if (upcomingEncounters().length > 0) {
-                @for (encounter of upcomingEncounters(); track encounter.id) {
-                  <app-encounter-card [encounter]="encounter" [onLoadGames]="onLoadGames" variant="upcoming" />
-                }
-              } @else {
-                <p class="text-muted-color text-sm py-4">{{ 'all.competition.no_upcoming_encounters' | translate }}</p>
-              }
-            </p-card>
-          </div>
-        </section>
-      } @else {
-        <div class="text-center py-12 text-surface-500">
-          <i class="pi pi-calendar text-4xl mb-4 block"></i>
-          <h3 class="text-lg font-medium mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
-          <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
-        </div>
-      }
-    </div>
-  }
+ <!-- Next match -->
+ <div class="flex flex-col gap-2">
+ <span class="t-eyebrow">Next match</span>
+ @if (upcomingEncounters()[0]; as next) {
+ <div class="flex items-center gap-3">
+ <div class="flex flex-col items-center min-w-[44px]">
+ <span class="t-mono text-base font-semibold leading-none text-color">
+ {{ next.date | date: 'dd' }}
+ </span>
+ <span class="t-mono text-[10px] text-muted-color uppercase">{{ next.date | date: 'MMM' }}</span>
+ </div>
+ <div class="flex flex-col text-xs leading-tight min-w-0">
+ <span class="font-semibold text-color truncate">
+ {{ next.homeTeam?.name }} vs {{ next.awayTeam?.name }}
+ </span>
+ <span class="t-mono text-muted-color">{{ next.date | date: 'EEE · HH:mm' }}</span>
+ </div>
+ </div>
+ } @else {
+ <span class="text-muted-color text-sm">—</span>
+ }
+ </div>
+ </div>
+ </app-hero>
+
+ <!-- Players Section -->
+ @if (players().length > 0) {
+ <section>
+ <app-team-players-table
+ [players]="players()"
+ [playerStats]="playerStats()"
+ [onAddPlayerToTeam]="canEditClub() ? onAddPlayerToTeam : null"
+ [onRemovePlayerFromTeam]="canEditClub() ? onRemovePlayerFromTeam : null"
+ />
+ </section>
+ } @else {
+ <div class="text-center py-12 text-muted-color">
+ <i class="pi pi-users text-4xl mb-4 block"></i>
+ <h3 class="text-lg font-medium text-color mb-2">{{ 'all.team.no-players' | translate }}</h3>
+ <p>{{ 'all.team.no-players-description' | translate }}</p>
+ </div>
+ }
+
+ <!-- Upcoming encounters -->
+ @if (upcomingEncounters().length > 0) {
+ <section class="flex flex-col gap-3">
+ <div class="flex items-baseline gap-2">
+ <span class="t-eyebrow">{{ 'all.game.upcoming.title' | translate }}</span>
+ <span class="t-mono text-xs text-muted-color">{{ upcomingEncounters().length }}</span>
+ </div>
+
+ <div class="flex flex-col gap-3">
+ @for (enc of upcomingEncounters(); track enc.id) {
+ <app-encounter-card
+ [encounter]="enc"
+ variant="upcoming"
+ [perspectiveTeamIds]="[team.id!]"
+ />
+ }
+ </div>
+ </section>
+ }
+
+ <!-- Played encounters -->
+ @if (playedEncounters().length > 0) {
+ <section class="flex flex-col gap-3">
+ <div class="flex items-baseline gap-2">
+ <span class="t-eyebrow">{{ 'all.competition.played_encounters' | translate }}</span>
+ <span class="t-mono text-xs text-muted-color">{{ playedEncounters().length }}</span>
+ </div>
+
+ <div class="flex flex-col gap-3">
+ @for (enc of playedEncounters(); track enc.id) {
+ <app-encounter-card
+ [encounter]="enc"
+ variant="played"
+ [perspectiveTeamIds]="[team.id!]"
+ />
+ }
+ </div>
+ </section>
+ }
+
+ @if (encounters().length === 0) {
+ <div class="text-center py-12 text-muted-color">
+ <i class="pi pi-calendar text-4xl mb-4 block"></i>
+ <h3 class="text-lg font-medium text-color mb-2">{{ 'all.competition.no_encounters' | translate }}</h3>
+ <p>{{ 'all.competition.no_encounters_description' | translate }}</p>
+ </div>
+ }
+ </div>
+ }
 } @else {
-  <!-- Loading Skeletons -->
-  <div class="px-4">
-    <div class="space-y-6">
-      <!-- Header skeleton -->
-      <div class="space-y-2">
-        <p-skeleton width="25rem" height="2rem" />
-        <p-skeleton width="20rem" height="1rem" />
-      </div>
-
-      <!-- Team info skeleton -->
-      <div class="rounded-border bg-highlight p-6 space-y-4">
-        <div class="flex justify-between">
-          <p-skeleton width="15rem" height="1.5rem" />
-          <p-skeleton width="4rem" height="1.5rem" />
-        </div>
-
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 space-y-2">
-          <p-skeleton width="8rem" height="1rem" />
-          <p-skeleton width="6rem" height="1rem" />
-          <p-skeleton width="10rem" height="1rem" />
-        </div>
-      </div>
-
-      <!-- Two column skeleton -->
-      <div class="grid gap-6 lg:grid-cols-[70%_1fr]">
-        @for (col of [1, 2]; track col) {
-          <div class="space-y-4">
-            <p-skeleton width="12rem" height="1.5rem" />
-            @for (i of [1, 2, 3]; track i) {
-              <div class="rounded-border bg-highlight p-4 space-y-2">
-                <div class="flex justify-between">
-                  <p-skeleton width="10rem" height="1rem" />
-                  <p-skeleton width="4rem" height="1rem" />
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-    </div>
-  </div>
+ <!-- Loading skeleton -->
+ <div class="px-4 flex flex-col gap-6">
+ <p-skeleton width="20rem" height="1rem" />
+ <p-skeleton width="100%" height="11rem" borderRadius="1rem" />
+ <p-skeleton width="100%" height="20rem" borderRadius="0.75rem" />
+ </div>
 }
 
 @if (error()) {
-  <div class="px-4">
-    <div class="error flex items-center gap-2 p-4 text-red-600">
-      <i class="pi pi-exclamation-triangle"></i>
-      {{ error() }}
-    </div>
-  </div>
+ <div class="px-4">
+ <div class="flex items-center gap-2 p-4 text-red-600 dark:text-red-400">
+ <i class="pi pi-exclamation-triangle"></i>
+ {{ error() }}
+ </div>
+ </div>
 }

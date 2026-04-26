@@ -1,0 +1,56 @@
+/* Grid layout + left accent bar — can't do in Tailwind */
+.g-upcoming {
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+}
+
+/* Primary accent bar on left edge */
+.g-upcoming::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--p-primary-color);
+}
+
+/* Date number — Space Grotesk display */
+.g-upcoming__date-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--p-text-color);
+}
+
+/* Day label */
+.g-upcoming__day {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color);
+  font-weight: 700;
+}
+
+/* Time */
+.g-upcoming__time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+}
+
+/* Teams line */
+.g-upcoming__teams {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--p-text-color);
+}
+
+/* Full date */
+.g-upcoming__full-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--t-body-sm);
+  color: var(--p-text-muted-color);
+}

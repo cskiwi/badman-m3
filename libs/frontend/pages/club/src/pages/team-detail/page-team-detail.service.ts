@@ -34,14 +34,15 @@ export class TeamDetailService {
       }
 
       try {
-        const result = await lastValueFrom(
-          this.apollo.query<{
-            team: any;
-            competitionEncounters: CompetitionEncounter[];
-            entries: Entry[];
-          }>({
+        // Step 1: resolve the team. The backend `team(id)` query accepts both
+        // a UUID and a slug (see team.resolver.ts), so we can pass whatever
+        // the caller provided. We must NOT pass a slug directly into the
+        // encounter/entry filters below — those expect UUIDs and Postgres
+        // will throw on an invalid UUID literal.
+        const teamResult = await lastValueFrom(
+          this.apollo.query<{ team: any }>({
             query: gql`
-              query TeamDetail($teamId: ID!, $teamIdStr: String!) {
+              query TeamDetailTeam($teamId: ID!) {
                 team(id: $teamId) {
                   id
                   name
@@ -81,6 +82,26 @@ export class TeamDetailService {
                     }
                   }
                 }
+              }
+            `,
+            variables: { teamId: params.teamId },
+            context: { signal: abortSignal },
+          }),
+        );
+
+        const team = teamResult?.data?.team;
+        if (!team) {
+          throw new Error('Team not found');
+        }
+
+        // Step 2: use the resolved UUID for encounter/entry filters.
+        const relatedResult = await lastValueFrom(
+          this.apollo.query<{
+            competitionEncounters: CompetitionEncounter[];
+            entries: Entry[];
+          }>({
+            query: gql`
+              query TeamDetailRelated($teamIdStr: String!) {
                 competitionEncounters(args: { where: [{ OR: [{ homeTeamId: { eq: $teamIdStr } }, { awayTeamId: { eq: $teamIdStr } }] }] }) {
                   id
                   drawId
@@ -162,25 +183,18 @@ export class TeamDetailService {
                 }
               }
             `,
-            variables: {
-              teamId: params.teamId,
-              teamIdStr: params.teamId,
-            },
+            variables: { teamIdStr: team.id },
             context: { signal: abortSignal },
           }),
         );
 
-        if (!result?.data?.team) {
-          throw new Error('Team not found');
-        }
-
-        const encounters = (result.data.competitionEncounters || []) as CompetitionEncounter[];
-        const entries = (result.data.entries || []) as Entry[];
+        const encounters = (relatedResult?.data?.competitionEncounters || []) as CompetitionEncounter[];
+        const entries = (relatedResult?.data?.entries || []) as Entry[];
 
         this._encounters.set(encounters);
 
         return {
-          team: result.data.team,
+          team,
           entries,
         };
       } catch (err) {

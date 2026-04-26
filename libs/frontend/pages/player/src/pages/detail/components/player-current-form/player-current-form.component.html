@@ -1,0 +1,20 @@
+<div class="t-eyebrow mb-3">Current form</div>
+@if (form().length) {
+ <div class="flex gap-1">
+ @for (sample of form(); track $index) {
+ <span
+ class="form-dot"
+ [class.form-dot--win]="sample.result === 'W'"
+ [class.form-dot--loss]="sample.result === 'L'"
+ >{{ sample.result }}</span>
+ }
+ </div>
+ <div class="t-body t-muted mt-2 text-xs">
+ {{ wins() }}W – {{ losses() }}L
+ <span class="text-muted-color">· last {{ form().length }}</span>
+ </div>
+} @else if (loading()) {
+ <span class="text-sm t-muted">Loading…</span>
+} @else {
+ <span class="text-sm t-muted">No recent games</span>
+}

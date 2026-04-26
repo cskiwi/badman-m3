@@ -1,0 +1,10 @@
+<div class="flex items-end gap-0.5 h-6">
+  @for (bar of bars(); track $index) {
+    <div
+      class="g-spark-bar w-[3px] rounded-sm"
+      [class.g-spark-bar--win]="bar.status === 'win'"
+      [class.g-spark-bar--loss]="bar.status === 'loss'"
+      [style.height.%]="bar.height"
+    ></div>
+  }
+</div>

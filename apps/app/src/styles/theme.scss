@@ -1,0 +1,145 @@
+/* ============================================================
+   Gladman "Arena" — Custom design tokens
+   Only contains tokens and classes NOT covered by PrimeNG's
+   theme preset (see apps/app/config/theme.preset.ts). Anything
+   that has a PrimeNG equivalent (colors, spacing, form fields,
+   etc.) should be configured in the preset, not here.
+   ============================================================ */
+
+:root {
+  /* --- Semantic accent colors (used by hero gradient, W/L badges) --- */
+  --g-accent-muted: oklch(0.68 0.22 340 / 0.18);
+
+  --g-win: oklch(0.85 0.18 135);
+  --g-win-muted: oklch(0.85 0.18 135 / 0.16);
+
+  --g-loss: oklch(0.65 0.22 25);
+  --g-loss-muted: oklch(0.65 0.22 25 / 0.16);
+
+  /* --- Gradients --- */
+  --g-gradient-primary: linear-gradient(
+    135deg,
+    oklch(0.78 0.15 210) 0%,
+    oklch(0.68 0.22 280) 100%
+  );
+  --g-gradient-rank: linear-gradient(
+    135deg,
+    oklch(0.82 0.15 85) 0%,
+    oklch(0.68 0.22 340) 55%,
+    oklch(0.78 0.15 210) 100%
+  );
+
+  /* --- Typography scale (only sizes we actually use) --- */
+  --t-stat-lg: 2.5rem;
+  --t-eyebrow: 0.6875rem;
+  --t-mono: 0.9375rem;
+  --t-body: 0.9375rem;
+
+  /* --- Spacing scale (consumed by component SCSS files) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* --- Radius (consumed by component SCSS files) --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+}
+
+/* --- Light mode overrides for the g-* semantic palette --- */
+html.light-theme {
+  --g-accent-muted: oklch(0.54 0.22 340 / 0.18);
+
+  --g-win: oklch(0.62 0.19 145);
+  --g-win-muted: oklch(0.62 0.19 145 / 0.16);
+
+  --g-loss: oklch(0.55 0.22 25);
+  --g-loss-muted: oklch(0.55 0.22 25 / 0.16);
+}
+
+/* ============================================================
+   Typography utility classes
+   ============================================================ */
+
+.t-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: var(--t-eyebrow);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color);
+  line-height: 1;
+}
+
+.t-stat-lg {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: var(--t-stat-lg);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  color: var(--p-text-color);
+}
+
+.t-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: var(--t-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.t-body {
+  font-size: var(--t-body);
+}
+
+.t-muted {
+  color: var(--p-text-muted-color);
+}
+
+/* ============================================================
+   Chip / Tag semantic modifiers — layered on top of PrimeNG.
+   Base look comes from PrimeNG's design tokens. These classes
+   only add semantic coloring (primary tint / win tint) or the
+   live pulse indicator.
+   ============================================================ */
+
+.p-chip.g-chip--primary {
+  background: oklch(from var(--p-primary-color) l c h / 0.14);
+  color: var(--p-primary-color);
+}
+
+.p-chip.g-chip--win {
+  background: oklch(from var(--g-win) l c h / 0.18);
+  color: var(--g-win);
+}
+
+.g-tag__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  border-radius: 999px;
+  background: currentColor;
+  vertical-align: middle;
+}
+
+.g-tag--live .g-tag__dot {
+  animation: g-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes g-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}

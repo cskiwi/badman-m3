@@ -1,21 +1,20 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
 
 import { IS_MOBILE } from '@app/frontend-utils';
-import { CardModule } from 'primeng/card';
-import { ChipModule } from 'primeng/chip';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PlayerUpcommingGamesService } from './upcoming-games-player.service';
 import { CompetitionEncounter } from '@app/models';
-import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
 import { RouterModule } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { ChipModule } from 'primeng/chip';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-upcoming-games-player',
-  imports: [DayjsFormatPipe, CardModule, ChipModule, ProgressBarModule, ButtonModule, SkeletonModule, TranslateModule, RouterModule, TooltipModule],
+  imports: [DayjsFormatPipe, SkeletonModule, TranslateModule, RouterModule, ButtonModule, ChipModule, TagModule],
   templateUrl: './upcoming-games-player.component.html',
   styleUrls: ['./upcoming-games-player.component.scss'],
 })
@@ -66,5 +65,20 @@ export class UpcomingGamesPlayerComponent {
     }
 
     return params;
+  }
+
+  /**
+   * Determines whether the upcoming game is played at the player's team's venue.
+   * Returns true for a home game, false for an away game, null when we cannot tell.
+   */
+  isHomeGame(game: CompetitionEncounter): boolean | null {
+    const homeId = game?.homeTeam?.id;
+    const awayId = game?.awayTeam?.id;
+    if (!homeId && !awayId) return null;
+
+    const ids = this.teamIds();
+    if (ids.includes(homeId ?? '')) return true;
+    if (ids.includes(awayId ?? '')) return false;
+    return null;
   }
 }

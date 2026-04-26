@@ -72,12 +72,18 @@ export class RankingSyncService {
     if (job.data.startDate) {
       checkpointDate = dayjs(job.data.startDate);
     } else {
-      // Find the latest updateLastUpdate across all ranking systems
+      // Find the latest calculationLastUpdate across all ranking systems.
+      // We use calculationLastUpdate (advanced on every synced publication) rather than
+      // updateLastUpdate (only advanced on "update publications" — first Monday of May/Sept),
+      // otherwise every init run between update windows would re-enqueue every publication
+      // since the last update window.
       const latestSystem = await RankingSystem.findOne({
-        where: { updateLastUpdate: Not(IsNull()) },
-        order: { updateLastUpdate: 'DESC' },
+        where: { calculationLastUpdate: Not(IsNull()) },
+        order: { calculationLastUpdate: 'DESC' },
       });
-      checkpointDate = latestSystem?.updateLastUpdate ? dayjs(latestSystem.updateLastUpdate) : dayjs().subtract(1, 'week');
+      checkpointDate = latestSystem?.calculationLastUpdate
+        ? dayjs(latestSystem.calculationLastUpdate)
+        : dayjs().subtract(1, 'week');
     }
 
     const visiblePublications = allPublications

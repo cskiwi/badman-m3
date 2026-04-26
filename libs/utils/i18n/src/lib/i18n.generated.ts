@@ -213,6 +213,7 @@ export type I18nTranslations = {
             "details": string;
             "draw": string;
             "draws": string;
+            "maxLevel": string;
             "edit": {
                 "actions": {
                     "cancel": string;
@@ -566,6 +567,16 @@ export type I18nTranslations = {
                 "pts": string;
                 "set": string;
             };
+            "filter": {
+                "all": string;
+                "doubles": string;
+                "mixed": string;
+                "singles": string;
+            };
+            "location": {
+                "away": string;
+                "home": string;
+            };
             "recent": {
                 "noGamesDescription": string;
                 "noGamesFound": string;
@@ -575,6 +586,7 @@ export type I18nTranslations = {
             "upcoming": {
                 "awayTeam": string;
                 "homeTeam": string;
+                "nextUp": string;
                 "noGamesDescription": string;
                 "noGamesFound": string;
                 "title": string;
@@ -896,6 +908,13 @@ export type I18nTranslations = {
                 "single-points": string;
                 "update-possible": string;
                 "updates": string;
+            };
+            "progress": {
+                "title": string;
+                "to-upgrade": string;
+                "to-downgrade": string;
+                "at-top": string;
+                "at-floor": string;
             };
         };
         "search": {

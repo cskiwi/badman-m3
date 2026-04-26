@@ -206,6 +206,7 @@
     "details": "Competitie Details",
     "draw": "Schema",
     "draws": "Reeks",
+    "maxLevel": "Max niveau",
     "edit": {
       "actions": {
         "cancel": "Annuleren",
@@ -559,6 +560,16 @@
       "pts": "pnt",
       "set": "Set"
     },
+    "filter": {
+      "all": "Alle",
+      "doubles": "Dubbel",
+      "mixed": "Gemengd",
+      "singles": "Enkel"
+    },
+    "location": {
+      "away": "Uit",
+      "home": "Thuis"
+    },
     "recent": {
       "noGamesDescription": "Dit team heeft nog geen wedstrijden gespeeld.",
       "noGamesFound": "Geen recente wedstrijden gevonden",
@@ -568,6 +579,7 @@
     "upcoming": {
       "awayTeam": "Uitteam",
       "homeTeam": "Thuisteam",
+      "nextUp": "Volgende",
       "noGamesDescription": "Deze speler heeft geen geplande wedstrijden.",
       "noGamesFound": "Geen komende wedstrijden gevonden",
       "title": "Komende ontmoetingen"
@@ -889,6 +901,13 @@
       "single-points": "Enkel punten",
       "update-possible": "Ranking update",
       "updates": "updates"
+    },
+    "progress": {
+      "title": "Mijn klassement",
+      "to-upgrade": "{{points}} pt tot promotie",
+      "to-downgrade": "{{points}} pt tot degradatie",
+      "at-top": "TOP",
+      "at-floor": "BODEM"
     }
   },
   "search": {

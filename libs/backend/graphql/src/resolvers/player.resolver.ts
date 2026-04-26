@@ -1,8 +1,8 @@
 import { AllowAnonymous, PermGuard, User } from '@app/backend-authorization';
-import { ClubPlayerMembership, GamePlayerMembership, Player, RankingLastPlace, RankingPlace, TeamPlayerMembership, Claim } from '@app/models';
+import { ClubPlayerMembership, Game, GamePlayerMembership, Player, RankingLastPlace, RankingPlace, TeamPlayerMembership, Claim } from '@app/models';
 import { IsUUID } from '@app/utils';
 import { NotFoundException, UseGuards, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { Args, ID, Parent, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql';
+import { Args, Field, ID, Int, ObjectType, Parent, Query, ResolveField, Resolver, Mutation } from '@nestjs/graphql';
 import {
   ClubPlayerMembershipArgs,
   GamePlayerMembershipArgs,
@@ -14,6 +14,14 @@ import {
 } from '../args';
 import dayjs from 'dayjs';
 import { PlayerUpdateInput } from '../inputs';
+
+@ObjectType('PlayerGameTypeCounts', { description: 'Counts of played games for a player, broken down by game type.' })
+class PlayerGameTypeCounts {
+  @Field(() => Int) total!: number;
+  @Field(() => Int) singles!: number;
+  @Field(() => Int) doubles!: number;
+  @Field(() => Int) mixed!: number;
+}
 
 @Resolver(() => Player)
 export class PlayerResolver {
@@ -157,6 +165,49 @@ export class PlayerResolver {
     }
 
     return GamePlayerMembership.find(args);
+  }
+
+  @ResolveField(() => PlayerGameTypeCounts)
+  async gameTypeCounts(
+    @Parent() { id }: Player,
+    @Args('playedAfter', { type: () => String, nullable: true }) playedAfter?: string,
+    @Args('playedBefore', { type: () => String, nullable: true }) playedBefore?: string,
+  ): Promise<PlayerGameTypeCounts> {
+    const qb = GamePlayerMembership.createQueryBuilder('gpm')
+      .innerJoin(Game, 'game', 'game.id = gpm.gameId')
+      .select('game.gameType', 'gameType')
+      .addSelect('COUNT(*)', 'count')
+      .where('gpm.playerId = :id', { id })
+      .andWhere('game.set1Team1 > 0')
+      .andWhere('game.set1Team2 > 0')
+      .groupBy('game.gameType');
+
+    if (playedAfter) {
+      qb.andWhere('game.playedAt >= :playedAfter', { playedAfter });
+    }
+    if (playedBefore) {
+      qb.andWhere('game.playedAt <= :playedBefore', { playedBefore });
+    }
+
+    const rows = await qb.getRawMany<{ gameType: string; count: string }>();
+
+    const counts: PlayerGameTypeCounts = { total: 0, singles: 0, doubles: 0, mixed: 0 };
+    for (const row of rows) {
+      const n = Number(row.count) || 0;
+      counts.total += n;
+      switch (row.gameType) {
+        case 'S':
+          counts.singles = n;
+          break;
+        case 'D':
+          counts.doubles = n;
+          break;
+        case 'MX':
+          counts.mixed = n;
+          break;
+      }
+    }
+    return counts;
   }
 
   @ResolveField(() => [RankingPlace], { nullable: true })
@@ -324,5 +375,35 @@ export class PlayerResolver {
 
     // Save and return the updated player
     return await player.save();
+  }
+
+  /**
+   * Recent form — last N games (most recent first), as W/L booleans.
+   * A game is considered played when both set1 scores are present.
+   * Used for the 5-dot form strip on team-card player rows.
+   */
+  @ResolveField(() => [Boolean])
+  async recentForm(
+    @Parent() { id }: Player,
+    @Args('take', { type: () => Int, nullable: true, defaultValue: 5 }) take?: number,
+  ): Promise<boolean[]> {
+    const limit = Math.max(1, Math.min(take ?? 5, 10));
+    const rows = await GamePlayerMembership.createQueryBuilder('gpm')
+      .innerJoin(Game, 'game', 'game.id = gpm.gameId')
+      .select('gpm.team', 'playerTeam')
+      .addSelect('game.winner', 'winner')
+      .where('gpm.playerId = :id', { id })
+      .andWhere('game.winner IS NOT NULL')
+      .andWhere('game.set1Team1 > 0')
+      .andWhere('game.set1Team2 > 0')
+      .orderBy('game.playedAt', 'DESC')
+      .limit(limit)
+      .getRawMany<{ playerTeam: number | string | null; winner: number | string | null }>();
+
+    return rows.map((r) => {
+      const t = Number(r.playerTeam);
+      const w = Number(r.winner);
+      return Number.isFinite(t) && Number.isFinite(w) && t === w;
+    });
   }
 }

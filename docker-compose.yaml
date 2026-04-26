@@ -1,5 +1,4 @@
-version: '3'
-name: badman-next
+name: gladman
 services:
   # Databases
   postgres:

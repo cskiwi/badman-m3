@@ -1,9 +1,0 @@
-<div class="player-avatar-container">
-  @if (imageUrl()) {
-    <!-- Player photo -->
-    <img [src]="imageUrl()" [alt]="altText()" [class]="avatarClasses()" (error)="onImageError($event)" loading="lazy" />
-  } @else {
-    <!-- Fallback to initials -->
-    <p-avatar [label]="initials()" [size]="size()" shape="circle" [styleClass]="fallbackClasses()" />
-  }
-</div>

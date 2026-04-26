@@ -5,7 +5,6 @@ export const routes: Route[] = [
     path: '',
     loadComponent: () => import('@app/frontend-components/layout').then((m) => m.CenterLayoutComponent),
     children: [
-      { path: '', loadComponent: () => import('./pages/overview/page-overview.component').then((m) => m.PageOverviewComponent) },
       {
         path: 'assembly',
         loadComponent: () => import('./pages/assembly/page-assembly.component').then(m => m.PageAssemblyComponent),
