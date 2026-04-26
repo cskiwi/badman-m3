@@ -4,7 +4,6 @@
       @if (this.draw(); as draw) {
         <!-- Breadcrumb -->
         <app-breadcrumb [items]="[
-          { label: ('all.tournament.title' | translate), routerLink: '/tournament' },
           { label: tournament.name, routerLink: ['/', 'tournament', tournament.slug] },
           { label: subEvent.name },
           { label: draw.name || 'Draw ' + (draw.id | slice: 0 : 8) },

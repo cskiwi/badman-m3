@@ -1,121 +1,116 @@
 @if (systemLoaded() && system() && breakdownService.resolvedPlayerId()) {
-  <app-breadcrumb [items]="[
-    { label: ('all.ranking.breakdown.pointsPerGame' | translate) },
-  ]" />
-  <!-- Page Header Section -->
-  <section class="mb-6">
-    <div class="rounded-border border border-surface overflow-hidden">
-      <!-- Header with title and controls -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-4 py-4 bg-highlight">
-        <div class="flex items-center gap-3">
-          <p-button icon="pi pi-arrow-left" severity="secondary" [text]="true" [rounded]="true" (click)="goBack()" />
-          <i class="pi pi-chart-bar text-2xl text-primary"></i>
-          <div>
-            <h2 class="text-xl font-semibold text-color m-0">{{ 'all.ranking.breakdown.pointsPerGame' | translate }}</h2>
-            <p class="text-sm text-muted-color m-0 mt-1">{{ system().name }}</p>
-          </div>
-        </div>
+  <app-breadcrumb
+    [items]="[
+      { label: breakdownService.resolvedPlayer()?.fullName ?? '', routerLink: ['/', 'players', breakdownService.resolvedPlayer()?.slug ?? playerId()] },
+      { label: ('all.ranking.breakdown.pointsPerGame' | translate) },
+    ]"
+  />
 
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <p-select
-            [options]="gameTypeOptions"
-            [ngModel]="gameTypeControl.value"
-            (onChange)="onGameTypeChange($event.value)"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="{{ 'all.game.types.title' | translate }}"
-            class="w-full sm:w-auto"
-          />
+  <!-- Hero -->
+  <app-hero>
+    <app-hero-avatar avatar>
+      <i class="pi pi-chart-bar"></i>
+    </app-hero-avatar>
 
-          <app-period-selection [system]="system()" />
-        </div>
-      </div>
+    <div identity>
+      <span class="t-eyebrow">{{ system().name }}</span>
+      <app-hero-title>{{ 'all.ranking.breakdown.pointsPerGame' | translate }}</app-hero-title>
     </div>
-  </section>
+
+    <div actions class="flex items-center gap-2 flex-wrap justify-end">
+      <p-select
+        [options]="gameTypeOptions"
+        [ngModel]="gameTypeControl.value"
+        (onChange)="onGameTypeChange($event.value)"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="{{ 'all.game.types.title' | translate }}"
+        size="small"
+      />
+      <app-period-selection [system]="system()" />
+    </div>
+  </app-hero>
 
   <!-- Filters & View Toggles -->
-  <section class="mb-6">
-    <div class="rounded-border border border-surface overflow-hidden">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 bg-highlight">
-        <!-- Filter Toggles -->
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-medium text-muted-color mr-2">
-            <i class="pi pi-filter text-xs mr-1"></i>
-            {{ 'all.ranking.breakdown.filters' | translate }}:
-          </span>
-          <p-togglebutton
-            [(ngModel)]="filter.controls.includedUpgrade.value"
-            onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ breakdownService.lostGamesUpgrade() }}"
-            offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ breakdownService.lostGamesUpgrade() }}"
-            (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
-          />
-          <p-togglebutton
-            [(ngModel)]="filter.controls.includedDowngrade.value"
-            onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ breakdownService.lostGamesDowngrade() }}"
-            offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ breakdownService.lostGamesDowngrade() }}"
-            (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
-          />
-          @if ((system().latestXGamesToUse ?? 0) > 0) {
-            <p-togglebutton
-              [(ngModel)]="filter.controls.includedIgnored.value"
-              onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ breakdownService.lostGamesIgnored() }}"
-              offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ breakdownService.lostGamesIgnored() }}"
-              (onChange)="filter.controls.includedIgnored.setValue($event.checked)"
-            />
-            <p-togglebutton
-              [(ngModel)]="filter.controls.includeOutOfScopeLatestX.value"
-              onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{
-                breakdownService.outOfScopeLatestXGames()
-              }}"
-              offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{
-                breakdownService.outOfScopeLatestXGames()
-              }}"
-              (onChange)="filter.controls.includeOutOfScopeLatestX.setValue($event.checked)"
-            />
-          }
-        </div>
+  <section class="bg-emphasis border border-surface rounded-border p-4 mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <!-- Filter Toggles -->
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-sm font-medium text-muted-color mr-2">
+        <i class="pi pi-filter text-xs mr-1"></i>
+        {{ 'all.ranking.breakdown.filters' | translate }}:
+      </span>
+      <p-togglebutton
+        [(ngModel)]="filter.controls.includedUpgrade.value"
+        onLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ breakdownService.lostGamesUpgrade() }}"
+        offLabel="{{ 'all.ranking.breakdown.usedForUpgrade' | translate }}: {{ breakdownService.lostGamesUpgrade() }}"
+        (onChange)="filter.controls.includedUpgrade.setValue($event.checked)"
+      />
+      <p-togglebutton
+        [(ngModel)]="filter.controls.includedDowngrade.value"
+        onLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ breakdownService.lostGamesDowngrade() }}"
+        offLabel="{{ 'all.ranking.breakdown.usedForDowngrade' | translate }}: {{ breakdownService.lostGamesDowngrade() }}"
+        (onChange)="filter.controls.includedDowngrade.setValue($event.checked)"
+      />
+      @if ((system().latestXGamesToUse ?? 0) > 0) {
+        <p-togglebutton
+          [(ngModel)]="filter.controls.includedIgnored.value"
+          onLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ breakdownService.lostGamesIgnored() }}"
+          offLabel="{{ 'all.ranking.breakdown.notUsed' | translate }}: {{ breakdownService.lostGamesIgnored() }}"
+          (onChange)="filter.controls.includedIgnored.setValue($event.checked)"
+        />
+        <p-togglebutton
+          [(ngModel)]="filter.controls.includeOutOfScopeLatestX.value"
+          onLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{
+            breakdownService.outOfScopeLatestXGames()
+          }}"
+          offLabel="{{ 'all.ranking.breakdown.outOfScopeLatestX' | translate: { latestX: system().latestXGamesToUse } }}: {{
+            breakdownService.outOfScopeLatestXGames()
+          }}"
+          (onChange)="filter.controls.includeOutOfScopeLatestX.setValue($event.checked)"
+        />
+      }
+    </div>
 
-        <!-- View Toggles -->
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-medium text-muted-color mr-2">
-            <i class="pi pi-eye text-xs mr-1"></i>
-            {{ 'all.ranking.breakdown.show' | translate }}:
-          </span>
-          <p-togglebutton
-            [ngModel]="breakdownService.showUpgrade()"
-            onLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
-            offLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
-            (onChange)="breakdownService.showUpgrade.set($event.checked)"
-          />
-          <p-togglebutton
-            [ngModel]="breakdownService.showDowngrade()"
-            onLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
-            offLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
-            (onChange)="breakdownService.showDowngrade.set($event.checked)"
-          />
-        </div>
-      </div>
+    <!-- View Toggles -->
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-sm font-medium text-muted-color mr-2">
+        <i class="pi pi-eye text-xs mr-1"></i>
+        {{ 'all.ranking.breakdown.show' | translate }}:
+      </span>
+      <p-togglebutton
+        [ngModel]="breakdownService.showUpgrade()"
+        onLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
+        offLabel="{{ 'all.ranking.breakdown.show-upgrade' | translate }}"
+        (onChange)="breakdownService.showUpgrade.set($event.checked)"
+      />
+      <p-togglebutton
+        [ngModel]="breakdownService.showDowngrade()"
+        onLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
+        offLabel="{{ 'all.ranking.breakdown.show-downgrade' | translate }}"
+        (onChange)="breakdownService.showDowngrade.set($event.checked)"
+      />
     </div>
   </section>
 
   <!-- Games List Section -->
-  <section>
-    <div class="rounded-border border border-surface overflow-hidden">
-      <app-list-games [system]="system()" [player]="{ id: breakdownService.resolvedPlayerId()! }" [rankingPlace]="rankingPlace()" [type]="type()" />
-    </div>
+  <section class="bg-emphasis border border-surface rounded-border overflow-hidden">
+    <app-list-games
+      [system]="system()"
+      [player]="{ id: breakdownService.resolvedPlayerId()! }"
+      [rankingPlace]="rankingPlace()"
+      [type]="type()"
+    />
   </section>
 } @else {
   <!-- Loading State -->
-  <div class="rounded-border border border-surface overflow-hidden">
-    <div class="flex items-center gap-3 px-4 py-4 bg-highlight">
+  <div class="bg-emphasis border border-surface rounded-border p-4">
+    <div class="flex items-center gap-3 mb-4">
       <p-skeleton width="2rem" height="2rem" borderRadius="0.5rem" />
       <div class="flex-1">
         <p-skeleton width="12rem" height="1.5rem" styleClass="mb-2" />
         <p-skeleton width="8rem" height="1rem" />
       </div>
     </div>
-    <div class="p-4">
-      <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
-    </div>
+    <p-progressBar mode="indeterminate" [style]="{ height: '4px' }" />
   </div>
 }
