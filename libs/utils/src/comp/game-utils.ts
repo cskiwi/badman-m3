@@ -58,7 +58,7 @@ export function getSetScores(game: GameLike): { team1Sets: number[]; team2Sets: 
 }
 
 export function isBye(game: GameLike): boolean {
-  const isPastGame = game.playedAt ? new Date(game.playedAt) < new Date() : false;
+  const isPastGame = game.playedAt ? new Date(game.playedAt) < new Date() : true;
 
   return getSetScores(game).team1Sets.length === 0 && getSetScores(game).team2Sets.length === 0 && isPastGame;
 }
