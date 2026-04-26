@@ -3,10 +3,9 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Game, GamePlayerMembership } from '@app/models';
-import { CardModule } from 'primeng/card';
-import { TagModule } from 'primeng/tag';
-import { DividerModule } from 'primeng/divider';
 import { GameStatus, GameType } from '@app/models-enum';
+import { TierBadgeComponent } from '@app/frontend-components/tier-badge';
+import { DayjsFormatPipe } from '@app/frontend-utils/dayjs/fmt';
 import {
   getSetScores as _getSetScores,
   isBye as _isBye,
@@ -17,13 +16,13 @@ import {
 
 @Component({
   selector: 'app-draw-games',
-  imports: [DatePipe, TranslateModule, CardModule, TagModule, DividerModule, RouterModule],
+  imports: [DatePipe, TranslateModule, RouterModule, TierBadgeComponent, DayjsFormatPipe],
   templateUrl: './draw-games.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawGamesComponent {
   games = input.required<Game[]>();
-  teamNumbers = [1, 2] as const;
+  readonly teamNumbers = [1, 2] as const;
 
   getGameStatus(game: Game): 'success' | 'warning' | 'info' {
     if (game.status !== GameStatus.NO_MATCH) return 'success';
@@ -85,5 +84,16 @@ export class DrawGamesComponent {
 
   getSetScores(game: Game): { team1Sets: number[]; team2Sets: number[] } {
     return _getSetScores(game);
+  }
+
+  isSetPlayed(team1Score: number | undefined | null, team2Score: number | undefined | null): boolean {
+    return team1Score != null && team2Score != null && (team1Score > 0 || team2Score > 0);
+  }
+
+  getSetWinner(team1Score: number | undefined | null, team2Score: number | undefined | null): 1 | 2 | 0 {
+    if (!this.isSetPlayed(team1Score, team2Score)) return 0;
+    if ((team1Score ?? 0) > (team2Score ?? 0)) return 1;
+    if ((team2Score ?? 0) > (team1Score ?? 0)) return 2;
+    return 0;
   }
 }
