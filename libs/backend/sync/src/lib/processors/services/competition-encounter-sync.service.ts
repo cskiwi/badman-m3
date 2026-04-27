@@ -495,6 +495,7 @@ export class CompetitionEncounterSyncService {
         existingMembership.single = protectedRanking.single;
         existingMembership.double = protectedRanking.double;
         existingMembership.mix = protectedRanking.mix;
+        existingMembership.systemId = activeSystem!.id;
         await existingMembership.save();
       } else {
         const membership = new GamePlayerMembership();
@@ -505,6 +506,7 @@ export class CompetitionEncounterSyncService {
         membership.single = protectedRanking.single;
         membership.double = protectedRanking.double;
         membership.mix = protectedRanking.mix;
+        membership.systemId = activeSystem!.id;
         await membership.save();
       }
     };
