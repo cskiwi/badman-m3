@@ -21,7 +21,7 @@ export class TournamentGameSyncService {
     private readonly tournamentApiClient: TournamentApiClient,
     private readonly tournamentPlanningService: TournamentPlanningService,
     private readonly pointService: PointService,
-  ) {}
+  ) { }
 
   async processGameSync(job: Job<TournamentGameSyncOptions>, updateProgress: (progress: number) => Promise<void>): Promise<void> {
     try {
@@ -340,7 +340,7 @@ export class TournamentGameSyncService {
     }
   }
 
-   private mapGenderType(genderId: number | string): 'F' | 'M'  {
+  private mapGenderType(genderId: number | string): 'F' | 'M' {
     if (typeof genderId === 'string') {
       genderId = parseInt(genderId, 10);
     }
@@ -366,7 +366,7 @@ export class TournamentGameSyncService {
     });
 
     const gender = this.mapGenderType(player.GenderID);
-    
+
 
     if (existingPlayer) {
       existingPlayer.firstName = player.Firstname;
@@ -385,7 +385,7 @@ export class TournamentGameSyncService {
     }
   }
 
-  
+
   private async createGamePlayerMemberships(game: Game, match: Match): Promise<void> {
     this.logger.debug(`Creating game player memberships for game: ${game.visualCode}`);
 
@@ -442,6 +442,7 @@ export class TournamentGameSyncService {
         existingMembership.single = protectedRanking.single;
         existingMembership.double = protectedRanking.double;
         existingMembership.mix = protectedRanking.mix;
+        existingMembership.systemId = activeSystem!.id;
 
         await existingMembership.save();
         this.logger.debug(`Updated game player membership for player ${player.id} in game ${game.id}`);
@@ -456,6 +457,7 @@ export class TournamentGameSyncService {
         membership.single = protectedRanking.single;
         membership.double = protectedRanking.double;
         membership.mix = protectedRanking.mix;
+        membership.systemId = activeSystem!.id;
 
         await membership.save();
         this.logger.debug(`Created game player membership for player ${player.id} in game ${game.id}`);
