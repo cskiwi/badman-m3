@@ -20,7 +20,7 @@
     "@app/models-enum": "*",
     "dayjs": "^1.11.13",
     "@apollo/client": "^4.0.10",
-    "uuid": "11.1.0",
+    "uuid": "14.0.0",
     "@app/backend-tournament-api": "0.0.1"
   },
   "type": "commonjs",
