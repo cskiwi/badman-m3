@@ -153,7 +153,7 @@
     "jsonc-eslint-parser": "^2.4.2",
     "ng-packagr": "21.0.1",
     "nodemon": "^3.1.11",
-    "nx": "22.5.4",
+    "nx": "22.7.7",
     "patch-package": "^8.0.1",
     "postcss": "^8.5.8",
     "postcss-url": "~10.1.3",
