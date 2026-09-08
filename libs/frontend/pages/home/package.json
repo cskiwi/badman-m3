@@ -6,7 +6,7 @@
     "@app/frontend-modules-auth": "*",
     "@app/frontend-modules-graphql": "*",
     "@app/models": "*",
-    "@angular/core": "20.1.0",
+    "@angular/core": "21.2.19",
     "primeng": "^20.0.0-rc.3",
     "@ngx-translate/core": "^16.0.4",
     "@angular/common": "20.1.0",

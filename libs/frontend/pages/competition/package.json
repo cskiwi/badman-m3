@@ -5,7 +5,7 @@
     "@app/frontend-modules-seo": "*",
     "@app/frontend-components": "*",
     "@app/models": "*",
-    "@angular/core": "20.1.0",
+    "@angular/core": "21.2.19",
     "@angular/router": "20.1.0",
     "@ngx-translate/core": "^16.0.4",
     "ngxtension": "^5.1.0",
