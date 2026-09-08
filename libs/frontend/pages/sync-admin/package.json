@@ -2,7 +2,7 @@
   "name": "@app/frontend-pages-sync-admin",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^20.1.0",
+    "@angular/common": "^21.2.19",
     "@angular/core": "^20.1.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.31.0",
